@@ -1,9 +1,9 @@
 !SceneAsset
 Id: d5969c6e-1456-4aac-a656-598bf1e16c2d
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
+    Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: da55c81b-bec9-42b9-acd0-ddb40b107b8b
         Cameras: []
@@ -40,17 +40,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 53f15ce7-e9e4-4ce1-98cc-183c1f2f7ec3
-                        Position: {X: 0.0, Y: 0.0, Z: -90.96857}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -90.96857}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: 72bd4045-52b6-49fc-af82-c4ac79ccf1f0
+                        MaxNbObstacles: 1
                         Holes:
                             -   ~Id: 511c88a8-bd8e-4b28-af7b-4a3c4e67fea4
                                 Area: {X: -7.5, Y: 15.0, Width: 5.0, Height: 30.0}
                                 Height: -2.0
-                        MaxNbObstacles: 1
                     - !ModelComponent
                         ~Id: c648682d-f2e1-4f54-a539-1aea5ebb194e
                         Model: 315d9d19-48b4-44ef-a82e-f90d26625d28/c8901469-88c0-43e1-bffe-f1fe2dc02aea:bg_b02
@@ -64,14 +64,14 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: cf75ba8d-d349-4ca9-a189-0b4429e978df
-                        Position: {X: 0.0, Y: 0.0, Z: 79.82038}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 79.82038}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: a92c0b2d-b588-4964-b6b9-6d997ba46c75
-                        Holes: []
                         MaxNbObstacles: 1
+                        Holes: []
                     - !ModelComponent
                         ~Id: d8bd2c66-de1a-4726-a300-0f466a57be4f
                         Model: b964e929-7150-4ccf-bcf3-e12262234583/82360e61-196c-4c07-9fae-af7ee4f265a1:bg_b00
@@ -85,10 +85,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 2521522c-2245-48fc-bf0d-946ac4f81d39
-                        Position: {X: 76.0982742, Y: 0.0, Z: 54.5350227}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 76.0982742, Y: 0.0, Z: 54.5350227}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.ObstacleInfo,SpaceEscape.Game
                         ~Id: 788f0e96-0f68-4b47-822f-a746b2ea27a9
                         UseSubMeshBoundingBoxes: true
@@ -103,17 +103,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: a3f63d54-96dd-4cf0-8fb9-88fb6f4651bf
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: 28f68842-71c4-4197-93fe-d2f2b8ef29fb
+                        MaxNbObstacles: 1
                         Holes:
                             -   ~Id: d6e89ad3-e282-40d5-8d75-2b27a61e7794
                                 Area: {X: -2.5, Y: 15.0, Width: 5.0, Height: 30.0}
                                 Height: -2.0
-                        MaxNbObstacles: 1
                     - !ModelComponent
                         ~Id: c7a1aec3-b9bd-4c13-9e74-a68360b9d3d9
                         Model: 86ae4495-79ca-4ac4-9ea0-ce284ed7dd3d/f0088b04-5990-4dd4-9824-77fcf8a8a62c:bg_b01
@@ -127,40 +127,33 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 2a82f9c9-a9c0-41a3-9e42-a7c990906524
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.LevelGenerator,SpaceEscape.Game
                         ~Id: 83207100-992d-45ac-b9d2-dd8f664b2baa
-                        Background_a00:
-                            Id: d594e60f-c93c-4ae2-add6-8f2fa6b7c170
-                        Background_b00:
-                            Id: 375a70a7-8bd1-42c8-ba80-db8ccd698c28
-                        Background_b01:
-                            Id: 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
-                        Background_b02:
-                            Id: 1a63d9fd-0265-4837-8996-8c8f1cd0c17c
-                        Background_b03:
-                            Id: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
-                        Background_b04:
-                            Id: cedaf0e3-3c28-49ef-b60f-05b755b85cdc
-                        Obstacle1:
-                            Id: 422d91bc-cfe1-439e-a2d1-631886e95537
-                        Obstacle2:
-                            Id: e322652e-175e-4563-9135-82ddef7c8973
+                        Background_a00: d594e60f-c93c-4ae2-add6-8f2fa6b7c170
+                        Background_b00: 375a70a7-8bd1-42c8-ba80-db8ccd698c28
+                        Background_b01: 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
+                        Background_b02: 1a63d9fd-0265-4837-8996-8c8f1cd0c17c
+                        Background_b03: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
+                        Background_b04: cedaf0e3-3c28-49ef-b60f-05b755b85cdc
+                        Obstacle1: 422d91bc-cfe1-439e-a2d1-631886e95537
+                        Obstacle2: e322652e-175e-4563-9135-82ddef7c8973
         -   Entity:
                 Id: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
                 Name: Background_b03
                 Components:
                     - !TransformComponent
                         ~Id: 14794414-988d-43b8-8ec2-e1db66d5e88f
-                        Position: {X: 67.15388, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 67.15388, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: 04142da1-4c10-4ff5-a399-f616448b3c16
+                        MaxNbObstacles: 0
                         Holes:
                             -   ~Id: f45b5a10-f014-4629-89ce-0eba325f3d0a
                                 Area: {X: -7.5, Y: 15.0, Width: 5.0, Height: 30.0}
@@ -168,7 +161,6 @@ Hierarchy:
                             -   ~Id: 320c8cd0-707f-496b-81b8-ab91e0d5a97c
                                 Area: {X: 2.5, Y: 15.0, Width: 5.0, Height: 30.0}
                                 Height: -2.0
-                        MaxNbObstacles: 0
                     - !ModelComponent
                         ~Id: 43a25a44-5e1d-48d6-b78f-81a1ea4a3af4
                         Model: 2ea5723e-4b59-4308-9907-e7fef3275d72/a966e37f-0bb7-4a02-9630-d871321a615d:bg_b03
@@ -182,10 +174,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d2f0bb37-2625-4dad-9dcf-e61c02616959
-                        Position: {X: 0.0, Y: 39.9356346, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 39.9356346, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: c4633f7f-e0b1-4b3b-a9dd-eb33f5575e96
                         Type: !LightAmbient
@@ -199,17 +191,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: e16652fa-282c-4b2a-b0ec-205c76a64eed
-                        Position: {X: 65.3026352, Y: 0.0, Z: -83.52101}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 65.3026352, Y: 0.0, Z: -83.52101}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: b3856632-90bd-4634-8e27-5a06033a8660
+                        MaxNbObstacles: 0
                         Holes:
                             -   ~Id: a09c0151-03ce-42f7-b50a-76cd849fe16d
                                 Area: {X: -7.5, Y: 15.0, Width: 10.0, Height: 30.0}
                                 Height: -2.0
-                        MaxNbObstacles: 0
                     - !ModelComponent
                         ~Id: 099013f0-1d70-4ca0-a5ec-13ca1c1fe3eb
                         Model: 24b62bd9-084c-45e5-b9b1-b72e928dcf49/b731fd7d-df09-4059-9cc5-57ba50d0f3f6:bg_b04
@@ -223,14 +215,14 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 79952d6f-cc30-476e-8bfb-267275ee5022
-                        Position: {X: -68.65997, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -68.65997, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundInfo,SpaceEscape.Game
                         ~Id: 0a8aa0d0-18f8-4718-bb41-026c96e89fad
-                        Holes: []
                         MaxNbObstacles: 3
+                        Holes: []
                     - !ModelComponent
                         ~Id: dcac60d0-b2d2-43f3-b50a-f03c4aa5e47e
                         Model: 71ae856f-0b4b-4876-9e5b-19a02968d7ce/3047da8a-bf85-4cdd-99ef-89c2b19c3c04:bg_a00
@@ -245,10 +237,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d004b11a-e60e-4121-94a2-252bf9ccffa5
-                        Position: {X: 48.7573853, Y: 0.0, Z: 54.5350227}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 48.7573853, Y: 0.0, Z: 54.5350227}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 87f5648f-997c-4044-91e3-eb7bb5b39f1c
                         Animations:

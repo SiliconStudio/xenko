@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 41bc08b1-d7db-4466-8661-663be2db1dbf
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 91170d5b-aa57-4171-9551-246791088def
+    Id: 91170d5b-aa57-4171-9551-246791088def
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 5c7bbdb4-5ee6-419a-a871-826cc171dd10
         Cameras:
             -   ~Id: b0300846-b937-4363-989a-7712e89e8e35
                 Name: null
-                Camera:
-                    Entity: {Id: 359ed8d5-5381-47fc-9448-6c3c724eb457}
-                    Id: b2758378-32c9-4a5b-8894-4035a933a2cf
+                Camera: 359ed8d5-5381-47fc-9448-6c3c724eb457/b2758378-32c9-4a5b-8894-4035a933a2cf
         Layers: []
         Master:
             ~Id: f8810ffb-b113-48bf-868a-0dc42f1da984
@@ -61,10 +59,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 04511b73-723c-4f00-bac1-82570b647da5
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: eb299280-6731-4070-b2e6-c1a19cc6d12e
                     - !ModelComponent
@@ -78,10 +76,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: b6ac5870-5619-42b9-b9ba-a5101d209f7d
-                        Position: {X: 2.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 2.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: f0383bea-d5a8-4c5f-8b29-eee0361fcf9d
                     - !ModelComponent
@@ -95,10 +93,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 4fb8b735-f8d5-4443-83cf-af00c2be89fd
-                        Position: {X: 8.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 8.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: 18b6ac31-4ea6-457e-80db-0db5835068ee
                     - !ModelComponent
@@ -112,10 +110,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 4329c782-0ab0-4b4d-9750-976f27caa0ea
-                        Position: {X: 0.0, Y: 1.5, Z: 4.0}
-                        Rotation: {W: 0.9848077, X: -0.173648179, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 1.5, Z: 4.0}
+                        Rotation: {X: -0.173648179, Y: 0.0, Z: 0.0, W: 0.9848077}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.CameraNavigationScript,GeometricPrimitives.Game
                         ~Id: 59e4e024-706b-4875-8269-136020255fc8
                     - !CameraComponent
@@ -128,10 +126,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d2ea5f21-7dd2-4838-926c-1af12777b60c
-                        Position: {X: -6.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -6.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: 18d6a3ed-dff5-40a5-abd1-8a0227ca10f3
                     - !ModelComponent
@@ -145,10 +143,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f336cd57-3366-4105-9f74-d3193a4b1bf2
-                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: a3c4af4c-a57d-416d-ad4d-ea62c3e29b16
                     - !ModelComponent
@@ -162,10 +160,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 2e3a3375-3c97-4832-89bc-779c8b7aeb2d
-                        Position: {X: 4.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 4.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: 9ecb0fd8-b028-4646-ae4c-b54299e2d98f
                     - !ModelComponent
@@ -179,10 +177,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 67e44566-4d09-4e70-ac49-5b1d4db3f5e8
-                        Position: {X: 6.0, Y: -0.75, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 6.0, Y: -0.75, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: f10ef5af-b6d3-4844-a931-56f7e11c62f2
                     - !ModelComponent
@@ -196,10 +194,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 7d68d53a-856f-4035-ac7d-610c0d49ca11
-                        Position: {X: -8.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -8.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: 4b230ebc-3591-4f0e-b6e6-e5486f33ca14
                     - !ModelComponent
@@ -213,10 +211,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5aada7b1-3713-4c85-84dc-456227bf6bc5
-                        Position: {X: 0.0, Y: 300.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 300.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 79787414-a00d-4b16-a52c-9293f3626b59
                         Type: !LightAmbient
@@ -230,10 +228,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: cc658cd5-2fb0-422f-8231-a077e12834e3
-                        Position: {X: -4.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -4.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GeometricPrimitives.RotateEntityScript,GeometricPrimitives.Game
                         ~Id: a8068f05-a902-4304-9e18-b6e500fba716
                     - !ModelComponent
@@ -247,10 +245,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f77d5d70-38e7-45d9-8fac-b36fc059ae69
-                        Position: {X: 0.0, Y: 0.0, Z: -3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: d600dd93-b5a6-4f55-9f5d-c37bdd2a91fc
                         Texture: 13038288-caf6-4645-91a6-8f1532817439/f48790de-bd5a-4f83-a71b-a6a559dcb698:XenkoBackground

@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: e13cbc01-7701-438b-b6d4-c97e66098dd8
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: fa564810-a090-42a2-a7bf-db3b69a3426f
@@ -379,7 +379,7 @@ Hierarchy:
     -   Location: CubePrefabVT
         Asset: !PrefabAsset
             Id: b6784169-c2e8-436b-8945-a9fb1ba4baa5
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.9.0-beta01}
             Tags: []
             Hierarchy:
                 ~Id: 5f6f7847-0e78-4824-8813-a70db8f1176d

@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 5f4a3789-b182-4b32-9088-acbf9e13edb5
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: df51691c-bfdf-40f2-859c-c41a1396724a
+    Id: df51691c-bfdf-40f2-859c-c41a1396724a
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 5fb60a5b-739e-48ac-a79e-e3614447eff9
         Cameras:
             -   ~Id: 0136befd-5aec-4254-a2de-c152f3d3f10e
                 Name: null
-                Camera:
-                    Entity: {Id: 970d3c33-9819-4206-a101-d81f9259477f}
-                    Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
+                Camera: 970d3c33-9819-4206-a101-d81f9259477f/bdf6144e-9398-4baa-9a86-07bd2e81c981
         Layers: []
         Master:
             ~Id: e6b18abc-d20b-465f-a030-7a91143b6311
@@ -56,10 +54,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 2bed5671-c08d-47b7-9d89-7a77ac454d0e
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpriteComponent
                         ~Id: de4e2db1-927b-4b66-b655-23217c514c49
                         SpriteProvider: !SpriteFromTexture
@@ -73,10 +71,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 46b7fb11-1093-47c5-843f-55a5a0ce3d40
-                        Position: {X: 0.0, Y: 0.0, Z: -4.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -4.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: dd3affb0-44b8-4494-a827-ab9efe948aed
                         Texture: 7b7d2947-3c71-4484-9198-eb42031c40a2/e805d745-0992-4f74-87e0-6b87248791de:XenkoBackground
@@ -86,10 +84,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: e7c290ae-0451-4b72-8560-bbfe351950b9
-                        Position: {X: 0.0, Y: 0.0, Z: 7.72791433}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 7.72791433}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
                         Projection: Orthographic
@@ -100,10 +98,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: c69792cc-bc73-4056-8378-4e5742b42d69
-                        Position: {X: 2.5, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: -1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 2.5, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: -1.0, Z: 1.0}
                     - !SpriteComponent
                         ~Id: 3c118852-9444-499b-a091-192ec907b4ae
                         SpriteProvider: !SpriteFromTexture
@@ -117,10 +115,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 004817ea-5a05-4707-b1ae-87fd2d3955db
-                        Position: {X: -2.5, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.5, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpriteComponent
                         ~Id: b0e90cfa-3189-42b8-96c8-f81a71dc0689
                         SpriteProvider: !SpriteFromTexture
@@ -134,33 +132,32 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: c94f42d8-44f4-4123-80ea-20a80f5473cb
-                        Position: {X: 0.0, Y: 0.0, Z: 4.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 4.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SimpleAudio.SoundScript,SimpleAudio.Game
                         ~Id: 48a6638f-a42f-4d59-b3cf-9c5d37cbb31e
-                        LeftWave:
-                            Id: dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
-                        RightWave:
-                            Id: c76eafe8-9bb0-4801-b112-6825735d4fff
-                        SoundEffect: 35e9fa7a-f489-4c2d-aeec-7424e6631c7b/5c8a7de1-f572-41c6-a564-f300f42d7245:SoundEffect
+                        LeftWave: dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
+                        RightWave: c76eafe8-9bb0-4801-b112-6825735d4fff
                         SoundMusic: 098db006-a5b7-4a1c-924a-5e9748d09be5/8005b476-6375-4984-ae01-4ed70428924e:AmbientMusic
+                        SoundEffect: 35e9fa7a-f489-4c2d-aeec-7424e6631c7b/5c8a7de1-f572-41c6-a564-f300f42d7245:SoundEffect
         -   Entity:
                 Id: ea66315a-6e99-498e-b3b7-b20eff3d7a04
                 Name: UIText
                 Components:
                     - !TransformComponent
                         ~Id: de0672a2-6d1b-4a9e-a0fe-f236140f092a
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SimpleAudio.UITextScript,SimpleAudio.Game
                         ~Id: 5cbe8100-1454-44a8-84bd-7860b2290374
-                        Font: 14d85f52-7aec-492f-81ec-a7420e3d9702/61f4751d-2878-4118-b212-ac554de05399:Font
                         UIText: Tap on the screen!
+                        Font: 14d85f52-7aec-492f-81ec-a7420e3d9702/61f4751d-2878-4118-b212-ac554de05399:Font
                     - !UIComponent
                         ~Id: d8888db9-f55d-4b73-9b6b-3ec597f8f469
+                        Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
