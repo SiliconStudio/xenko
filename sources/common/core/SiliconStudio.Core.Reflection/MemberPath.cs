@@ -332,41 +332,9 @@ namespace SiliconStudio.Core.Reflection
         //    return true;
         //}
 
-        /// <summary>
-        /// Get the nodes of the path of <paramref name="rootObject"/>
-        /// </summary>
-        /// <param name="rootObject">The root of the object to visit</param>
-        /// <returns>the path nodes</returns>
-        public IEnumerable<MemberPathNode> GetNodes(object rootObject)
+        public IEnumerable<MemberPathItem> Decompose()
         {
-            if (rootObject == null) throw new ArgumentNullException("rootObject");
-            if (items.Count == 0) throw new InvalidOperationException("No items pushed via Push methods");
-
-                var node = new MemberPathNode
-                {
-                    Object = rootObject,
-                };
-
-                for (var i = 0; i < items.Count; i++)
-                {
-                    var item = items[i];
-
-                    node.Descriptor = item.MemberDescriptor;
-                    yield return node;
-
-                    try
-                    {
-                        node.Object = item.GetValue(node.Object);
-                    }
-                    catch (Exception)
-                    {
-                        yield break;
-                    }
-                }
-
-            // return the last object (leaf) with null descriptor
-            node.Descriptor = null;
-            yield return node;
+            return items;
         }
 
         /// <summary>
@@ -506,7 +474,8 @@ namespace SiliconStudio.Core.Reflection
             string Name { get; }
         }
 
-        private abstract class MemberPathItem
+        // TODO: improve API for these classes (public part/private part, switch to interfaces)
+        public abstract class MemberPathItem
         {
             public MemberPathItem Parent { get; set; }
 
@@ -521,7 +490,7 @@ namespace SiliconStudio.Core.Reflection
             public abstract MemberPathItem Clone(MemberPathItem parent);
         }
 
-        private sealed class PropertyPathItem : MemberPathItem
+        public sealed class PropertyPathItem : MemberPathItem
         {
             private readonly PropertyDescriptor descriptor;
 
@@ -567,7 +536,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        private sealed class FieldPathItem : MemberPathItem
+        public sealed class FieldPathItem : MemberPathItem
         {
             private readonly FieldDescriptor descriptor;
             private readonly bool isValueType;
@@ -612,7 +581,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        private abstract class SpecialMemberPathItemBase : MemberPathItem
+        public abstract class SpecialMemberPathItemBase : MemberPathItem
         {
             public override IMemberDescriptor MemberDescriptor
             {
@@ -623,10 +592,9 @@ namespace SiliconStudio.Core.Reflection
             }            
         }
 
-
-        private sealed class ArrayPathItem : SpecialMemberPathItemBase
+        public sealed class ArrayPathItem : SpecialMemberPathItemBase
         {
-            private readonly int index;
+            public readonly int index;
 
             public ArrayPathItem(int index)
             {
@@ -654,7 +622,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        private sealed class CollectionPathItem : SpecialMemberPathItemBase
+        public sealed class CollectionPathItem : SpecialMemberPathItemBase
         {
             public readonly CollectionDescriptor Descriptor;
 
@@ -687,7 +655,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        private sealed class DictionaryPathItem : SpecialMemberPathItemBase
+        public sealed class DictionaryPathItem : SpecialMemberPathItemBase
         {
             public readonly DictionaryDescriptor Descriptor;
 

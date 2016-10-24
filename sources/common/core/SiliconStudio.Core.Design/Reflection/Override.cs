@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// The OverrideType key.
         /// </summary>
+        [Obsolete]
         public static readonly PropertyKey<OverrideType> OverrideKey = new PropertyKey<OverrideType>("Override", typeof(Override), DefaultValueMetadata.Static(OverrideType.New));
 
         /// <summary>
@@ -26,6 +27,7 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// memberDescriptor
         /// </exception>
+        [Obsolete]
         public static OverrideType GetOverride(this object instance, IMemberDescriptor memberDescriptor)
         {
             if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
@@ -44,6 +46,7 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// memberDescriptor
         /// </exception>
+        [Obsolete]
         public static void SetOverride(this object instance, IMemberDescriptor memberDescriptor, OverrideType overrideType)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
@@ -55,6 +58,7 @@ namespace SiliconStudio.Core.Reflection
         /// Remove all overrides information attached to an instance (Note that this method is not recursive and must be applied on all object).
         /// </summary>
         /// <param name="instance">An object instance</param>
+        [Obsolete]
         public static void RemoveFrom(object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));

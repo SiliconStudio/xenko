@@ -133,6 +133,13 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Gets the collection of overridden members in this asset. It is filled on Load, and must be synchronized before Save.
+        /// </summary>
+        /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
+        [DataMemberIgnore]
+        public IDictionary<MemberPath, OverrideType> Overrides { get; internal set; }
+
+        /// <summary>
         /// Converts this item to a reference.
         /// </summary>
         /// <returns>AssetReference.</returns>
@@ -170,11 +177,12 @@ namespace SiliconStudio.Assets
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
             var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), copyPackage ? Package : null)
-                {
-                    isDirty = isDirty,
-                    SourceFolder = SourceFolder,
-                    SourceProject = SourceProject
-                };
+            {
+                isDirty = isDirty,
+                SourceFolder = SourceFolder,
+                SourceProject = SourceProject,
+                Overrides = Overrides != null ? new Dictionary<MemberPath, OverrideType>(Overrides) : null
+            };
             return item;
         }
 

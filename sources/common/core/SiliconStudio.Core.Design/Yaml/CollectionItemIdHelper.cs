@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -97,6 +98,53 @@ namespace SiliconStudio.Core.Yaml
 
             if (ids.Count != keyToIdMap.Count + deletedItems.Count)
                 throw new InvalidOperationException("An id is both marked as deleted and associated to a key of the collection.");
+        }
+
+        public Guid FindMissingId(CollectionItemIdentifiers baseIds)
+        {
+            var hashSet = new HashSet<Guid>(deletedItems);
+            foreach (var item in keyToIdMap)
+            {
+                hashSet.Add(item.Value);
+            }
+
+            var missingId = Guid.Empty;
+            foreach (var item in baseIds.keyToIdMap)
+            {
+                if (!hashSet.Contains(item.Value))
+                {
+                    // TODO: if we have scenario where this is ok, I guess we can just return the first one.
+                    if (missingId != Guid.Empty)
+                        throw new InvalidOperationException("Multiple ids are missing.");
+
+                    missingId = item.Value;
+                }
+            }
+
+            foreach (var item in baseIds.deletedItems)
+            {
+                if (!hashSet.Contains(item))
+                {
+                    // TODO: if we have scenario where this is ok, I guess we can just return the first one.
+                    if (missingId != Guid.Empty)
+                        throw new InvalidOperationException("Multiple ids are missing.");
+
+                    missingId = item;
+                }
+            }
+
+            return missingId;
+        }
+
+        public object GetKey(Guid identifier)
+        {
+            // TODO: add indexing by guid to avoid O(n)
+            return keyToIdMap.FirstOrDefault(x => x.Value == identifier).Key;
+        }
+
+        public Guid GetId(object key)
+        {
+            return keyToIdMap.FirstOrDefault(x => Equals(x.Key, key)).Value;
         }
     }
 

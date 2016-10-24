@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Yaml
 
             var memberPath = GetCurrentPath(ref objectContext, true);
             memberPath.Push(memberDescriptor);
-            SetCurrentPath(ref objectContext, memberPath);
+            SetCurrentPath(ref memberObjectContext, memberPath);
             var result = ReadYaml(ref memberObjectContext);
             return result;
         }
@@ -147,8 +147,9 @@ namespace SiliconStudio.Core.Yaml
         {
             var memberPath = GetCurrentPath(ref objectContext, true);
             memberPath.Push((CollectionDescriptor)objectContext.Descriptor, index);
-            SetCurrentPath(ref objectContext, memberPath);
-            return base.ReadCollectionItem(ref objectContext, value, itemType, index);
+            var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            SetCurrentPath(ref itemObjectContext, memberPath);
+            return ReadYaml(ref itemObjectContext);
         }
 
         public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
@@ -160,8 +161,9 @@ namespace SiliconStudio.Core.Yaml
         {
             var memberPath = GetCurrentPath(ref objectContext, true);
             memberPath.Push((DictionaryDescriptor)objectContext.Descriptor, key);
-            SetCurrentPath(ref objectContext, memberPath);
-            return base.ReadDictionaryValue(ref objectContext, valueType, key);
+            var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            SetCurrentPath(ref valueObjectContext, memberPath);
+            return ReadYaml(ref valueObjectContext);
         }
 
         private static MemberPath GetCurrentPath(ref ObjectContext objectContext, bool clone)

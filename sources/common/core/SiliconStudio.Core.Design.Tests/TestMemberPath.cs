@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Design.Tests
         /// <summary>
         /// Initialize the tests.
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public override void Initialize()
         {
             base.Initialize();
@@ -29,8 +29,11 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestMyClass()
         {
-            var testClass = new MyClass { Sub = new MyClass() };
-            testClass.Maps["XXX"] = new MyClass();
+            var testClass = new MyClass
+            {
+                Sub = new MyClass(),
+                Maps = { ["XXX"] = new MyClass() }
+            };
             testClass.Subs.Add(new MyClass());
 
             // 1) MyClass.Value = 1
@@ -118,105 +121,6 @@ namespace SiliconStudio.Core.Design.Tests
             memberPath.Push(ListClassDesc, 0);
             Assert.IsTrue(memberPath.Apply(testClass, MemberPathAction.CollectionAdd, new MyClass()));
             Assert.AreEqual(1, testClass.Subs.Count);
-        }
-
-        /// <summary>
-        /// Tests for the <see cref="MemberPath.GetNodes"/> function.
-        /// </summary>
-        [Test]
-        public void TestGetNodes()
-        {
-            var memberPath = new MemberPath();
-            memberPath.Push(MemberSubs);
-            memberPath.Push(ListClassDesc, 2);
-            memberPath.Push(MemberMaps);
-            memberPath.Push(MapClassDesc, "toto");
-            memberPath.Push(MemberStruct);
-            memberPath.Push(MemberClass);
-            memberPath.Push(MemberValue);
-
-            var obj = new MyClass();
-            obj.Subs.Add(new MyClass());
-            obj.Subs.Add(new MyClass());
-            obj.Subs.Add(new MyClass());
-            obj.Subs[2].Maps["toto"] = new MyClass();
-            obj.Subs[2].Maps["toto"].Struct = new MyStruct { Class = new MyClass() };
-
-            var nodes = memberPath.GetNodes(obj).ToList();
-
-            Assert.AreEqual(8, nodes.Count);
-
-            Assert.AreEqual(obj, nodes[0].Object);
-            Assert.AreEqual(obj.Subs, nodes[1].Object);
-            Assert.AreEqual(obj.Subs[2], nodes[2].Object);
-            Assert.AreEqual(obj.Subs[2].Maps, nodes[3].Object);
-            Assert.AreEqual(obj.Subs[2].Maps["toto"], nodes[4].Object);
-            Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct, nodes[5].Object);
-            Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct.Class, nodes[6].Object);
-            Assert.AreEqual(obj.Subs[2].Maps["toto"].Struct.Class.Value, nodes[7].Object);
-
-            Assert.AreEqual(MemberSubs, nodes[0].Descriptor);
-            Assert.AreEqual(null, nodes[1].Descriptor);
-            Assert.AreEqual(MemberMaps, nodes[2].Descriptor);
-            Assert.AreEqual(null, nodes[3].Descriptor);
-            Assert.AreEqual(MemberStruct, nodes[4].Descriptor);
-            Assert.AreEqual(MemberClass, nodes[5].Descriptor);
-            Assert.AreEqual(MemberValue, nodes[6].Descriptor);
-            Assert.AreEqual(null, nodes[7].Descriptor);
-        }
-
-        /// <summary>
-        /// Tests for the <see cref="MemberPathExtensions.GetNodeOverrides"/> function.
-        /// </summary>
-        [Test]
-        public void TestGetNodeAttributes()
-        {
-            var memberPath = new MemberPath();
-            memberPath.Push(MemberSubs);
-            memberPath.Push(ListClassDesc, 2);
-            memberPath.Push(MemberMaps);
-            memberPath.Push(MapClassDesc, "toto");
-            memberPath.Push(MemberStruct);
-            memberPath.Push(MemberClass);
-            memberPath.Push(MemberValue);
-
-            var obj = new MyClass();
-            obj.Subs.Add(new MyClass());
-            obj.Subs.Add(new MyClass());
-            obj.Subs.Add(new MyClass());
-            obj.Subs[2].Maps["toto"] = new MyClass();
-            obj.Subs[2].Maps["toto"].Struct = new MyStruct { Class = new MyClass() };
-
-            obj.SetOverride(MemberSubs, OverrideType.New | OverrideType.Sealed);
-            obj.Subs[2].SetOverride(ThisDescriptor.Default, OverrideType.Sealed);
-            obj.Subs[2].SetOverride(MemberMaps, OverrideType.New);
-            obj.Subs[2].Maps["toto"].SetOverride(ThisDescriptor.Default, OverrideType.Base);
-            obj.Subs[2].Maps["toto"].SetOverride(MemberStruct, OverrideType.Sealed);
-            obj.Subs[2].Maps["toto"].Struct.SetOverride(MemberClass, OverrideType.New);
-            obj.Subs[2].Maps["toto"].Struct.Class.SetOverride(MemberValue, OverrideType.Sealed);
-
-            var overrides = memberPath.GetNodeOverrides(obj).ToList();
-            Assert.AreEqual(6, overrides.Count);
-            Assert.AreEqual(OverrideType.New | OverrideType.Sealed, overrides[0]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[1]);
-            Assert.AreEqual(OverrideType.New, overrides[2]);
-            Assert.AreEqual(OverrideType.Base, overrides[3]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[4]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[5]);
-
-            // check that override from leaf is correctly returned too (special case)
-            var pathToToto = new MemberPath();
-            pathToToto.Push(MemberSubs);
-            pathToToto.Push(ListClassDesc, 2);
-            pathToToto.Push(MemberMaps);
-            pathToToto.Push(MapClassDesc, "toto");
-
-            overrides = pathToToto.GetNodeOverrides(obj).ToList();
-            Assert.AreEqual(4, overrides.Count);
-            Assert.AreEqual(OverrideType.New | OverrideType.Sealed, overrides[0]);
-            Assert.AreEqual(OverrideType.Sealed, overrides[1]);
-            Assert.AreEqual(OverrideType.New, overrides[2]);
-            Assert.AreEqual(OverrideType.Base, overrides[3]);
         }
 
         /// <summary>

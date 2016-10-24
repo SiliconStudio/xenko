@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets
 {
     public class AssetLoadResult<T>
     {
-        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, IReadOnlyDictionary<MemberPath, OverrideType> overrides)
+        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, IDictionary<MemberPath, OverrideType> overrides)
         {
             if (overrides == null) throw new ArgumentNullException(nameof(overrides));
             Asset = asset;
@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets
 
         public bool AliasOccurred { get; }
 
-        public IReadOnlyDictionary<MemberPath, OverrideType> Overrides { get; }
+        public IDictionary<MemberPath, OverrideType> Overrides { get; }
 
     }
     /// <summary>
@@ -114,7 +114,7 @@ namespace SiliconStudio.Assets
             bool aliasOccurred;
             Dictionary<MemberPath, OverrideType> overrides;
             var asset = (T)serializer.Load(stream, assetFileExtension, log, out aliasOccurred, out overrides);
-            return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides);
+            return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<MemberPath, OverrideType>());
         }
 
         /// <summary>

@@ -997,14 +997,16 @@ namespace SiliconStudio.Assets
                 var projectInclude = assetFile.ProjectFile != null ? fileUPath.MakeRelative(assetFile.ProjectFile.GetFullDirectory()) : null;
 
                 bool aliasOccurred;
-                var asset = LoadAsset(context.Log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred);
+                IDictionary<MemberPath, OverrideType> overrides;
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred, out overrides);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
                 {
                     IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory),
-                    SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null
+                    SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null,
+                    Overrides = overrides
                 };
 
                 // Set the modified time to the time loaded from disk
@@ -1067,12 +1069,13 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty, out IDictionary<MemberPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
                 ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log)
                 : AssetSerializer.Load<Asset>(assetFullPath, log);
             assetDirty = loadResult.AliasOccurred;
+            overrides = loadResult.Overrides;
 
             // Set location on source code asset
             var sourceCodeAsset = loadResult.Asset as SourceCodeAsset;

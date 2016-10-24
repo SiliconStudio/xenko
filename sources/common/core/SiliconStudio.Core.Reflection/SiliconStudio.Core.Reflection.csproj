@@ -26,7 +26,6 @@
     </Compile>
     <Compile Include="MemberPath.cs" />
     <Compile Include="MemberPathAction.cs" />
-    <Compile Include="MemberPathNode.cs" />
     <Compile Include="TypeDescriptorFactory.cs" />
     <Compile Include="TypeDescriptors\ArrayDescriptor.cs" />
     <Compile Include="AttributeRegistry.cs" />
