@@ -51,6 +51,7 @@ Hierarchy:
         - b7b7ddf2-8c9d-46cb-9f1f-62c521b46128
         - 2d66856f-0a8c-40f5-a087-4a466ff1902a
         - 679434a1-4b8e-4dce-aaaa-207e709135b1
+        - 40160bfc-cad8-4c09-806e-fc63188ab688
     Parts:
         -   Entity:
                 Id: 01993ebe-1d2f-4441-8f32-2b1da82a64e1
@@ -169,10 +170,28 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
-                        Projection: Perspective
+                        Projection: Orthographic
+                        OrthographicSize: 20.0
+        -   Entity:
+                Id: 40160bfc-cad8-4c09-806e-fc63188ab688
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: d21687b0-6e88-47ea-bd66-73503baa3602
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !UIComponent
+                        ~Id: 715e2c1a-a41d-48f5-84bf-65dce16add40
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !PhysicsSample.NextSceneScript,PhysicsSample.Game
-                        ~Id: d770c007-918e-4f05-9478-965644839f14
-                        NextScene: Raycasting
+                        ~Id: 62ce4fe3-79b2-450d-a976-7e429e9079c7
+                        NextScene: 27611bac-d385-4036-8d5c-f662a720f513/86fed268-baa8-4929-9eba-4d14cf3a0e68:Raycasting
+                        PreviousScene: 9b267ec9-bb6c-4da3-a2e5-8e37065c2331/45f5d521-b83c-4608-937d-64f93812fba7:Constraints
+                        Font: a56d239a-a8fd-4508-aa3c-d6076df6ecfe/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
         -   BaseId: 50ff9733-2722-4321-844f-de2f0edae01b
             BasePartInstanceId: 48e70e41-5363-4872-a639-f67ae43321a4
             Entity:

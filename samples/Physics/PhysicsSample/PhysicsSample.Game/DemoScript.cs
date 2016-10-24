@@ -46,7 +46,7 @@ namespace PhysicsSample
                 TextColor = Color.White,
             };
             constraintNameBlock.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 0));
-            constraintNameBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.93f, 0));
+            constraintNameBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.83f, 0));
 
             Entity.Get<UIComponent>().Page = new UIPage
             {
@@ -234,7 +234,7 @@ namespace PhysicsSample
             };
             button.Click += (sender, args) => ChangeConstraint(offset);
             button.SetCanvasPinOrigin(new Vector3(offset > 0 ? 1 : 0, 0.5f, 0));
-            button.SetCanvasRelativePosition(new Vector3(offset > 0 ? 0.97f : 0.03f, 0.93f, 0));
+            button.SetCanvasRelativePosition(new Vector3(offset > 0 ? 0.87f : 0.13f, 0.93f, 0));
 
             return button;
         }

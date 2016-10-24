@@ -47,6 +47,7 @@ Hierarchy:
         - 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2
         - 13bffda7-d5fb-4941-8858-ce0284ec6fa2
         - fffa40f6-69e7-46fb-909a-77b26bddb3a2
+        - b730bcd8-0018-4ab8-ae0f-4ccdcf08402e
     Parts:
         -   Entity:
                 Id: 13bffda7-d5fb-4941-8858-ce0284ec6fa2
@@ -159,6 +160,26 @@ Hierarchy:
                                     ~Id: cadd46c0-1ff8-488e-932c-28211491d5f2
                         Intensity: 0.75
         -   Entity:
+                Id: b730bcd8-0018-4ab8-ae0f-4ccdcf08402e
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 99a45ff9-a9d1-4ee7-89ab-c791000e1c73
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !UIComponent
+                        ~Id: db9ba0e2-a7c8-4fc3-bcd4-69d9bfb2b16c
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !PhysicsSample.NextSceneScript,PhysicsSample.Game
+                        ~Id: cc2d68f9-860a-4ecb-ac7c-6dea4823f545
+                        NextScene: eb73e7b3-1f05-4148-9aca-2647d7a9020c/a5a4f13e-6366-43de-b071-a87c1dfff115:VolumeTrigger
+                        PreviousScene: 27611bac-d385-4036-8d5c-f662a720f513/86fed268-baa8-4929-9eba-4d14cf3a0e68:Raycasting
+                        Font: a56d239a-a8fd-4508-aa3c-d6076df6ecfe/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
+        -   Entity:
                 Id: b7690cff-f2ad-4f33-ae7e-26573f84dd7f
                 Name: Camera
                 Components:
@@ -172,14 +193,6 @@ Hierarchy:
                         ~Id: f78e32b9-12e9-4587-9032-34c0b683f570
                         Projection: Perspective
                         FarClipPlane: 100.0
-                    - !PhysicsSample.NextSceneScript,PhysicsSample.Game
-                        ~Id: bc017c7d-ed44-4b30-823b-1d6e86eefbff
-                        NextScene: VolumeTrigger
-                    - !UIComponent
-                        ~Id: 2fde5d80-13ee-4233-adef-af689d4208ef
-                        Page: null
-                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
-                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light

@@ -48,6 +48,7 @@ Hierarchy:
         - ab0676cc-90f4-4f72-b6c1-d53dbcb7bec1
         - 98895305-2715-4532-badc-560f93aabf48
         - f23c2f26-8d61-48ad-a040-6dc75a3487ed
+        - bfe4e7b3-64c6-44e0-b2fd-df843f48075b
     Parts:
         -   Entity:
                 Id: 17dfe0be-43e7-4fb6-83eb-e987a8b844e8
@@ -246,6 +247,26 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
+                Id: bfe4e7b3-64c6-44e0-b2fd-df843f48075b
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 39c60745-d604-4ea5-b96d-bf0adf1024f2
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !UIComponent
+                        ~Id: c97f7275-703d-4a3e-87d5-5504c34a60fe
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !PhysicsSample.NextSceneScript,PhysicsSample.Game
+                        ~Id: 29627b54-bc53-4ba8-b9d2-2ab15072d283
+                        NextScene: 9b267ec9-bb6c-4da3-a2e5-8e37065c2331/45f5d521-b83c-4608-937d-64f93812fba7:Constraints
+                        PreviousScene: eb73e7b3-1f05-4148-9aca-2647d7a9020c/a5a4f13e-6366-43de-b071-a87c1dfff115:VolumeTrigger
+                        Font: a56d239a-a8fd-4508-aa3c-d6076df6ecfe/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
+        -   Entity:
                 Id: d296aa0e-cd27-4f65-936f-dfba810e1ef2
                 Name: Camera
                 Components:
@@ -260,9 +281,6 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: 7b8dae54-4ed8-4d4f-b279-6f323fdf0b14
                         Projection: Perspective
-                    - !PhysicsSample.NextSceneScript,PhysicsSample.Game
-                        ~Id: 8cfc7ac1-42cb-445d-b5ff-4118f4e54bee
-                        NextScene: Constraints
         -   Entity:
                 Id: ef7d2057-b70a-4f12-af97-1ac2d8736797
                 Name: Ambient light
