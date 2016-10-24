@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -166,15 +167,25 @@ namespace SiliconStudio.Core.Reflection
                     var pdbBytes = pdbFullPath != null ? File.ReadAllBytes(pdbFullPath) : null;
 
                     // Load the assembly into the current AppDomain
-                    // TODO: Is using AppDomain would provide more opportunities for unloading?
-                    var assembly = pdbBytes != null ? Assembly.Load(assemblyBytes, pdbBytes) : Assembly.Load(assemblyBytes);
-                    loadedAssembly = new LoadedAssembly(assemblyFullPath, assembly);
-                    loadedAssemblies.Add(loadedAssembly);
-                    loadedAssembliesByName.Add(assemblyFullPath, loadedAssembly);
+                    Assembly assembly;
+                    if (new UDirectory(AppDomain.CurrentDomain.BaseDirectory) == new UFile(assemblyFullPath).GetFullDirectory())
+                    {
+                        // If loading from base directory, don't even try to load through byte array, as Assembly.Load will notice there is a "safer" version to load
+                        // This happens usually when opening Xenko assemblies themselves
+                        assembly = Assembly.LoadFrom(assemblyFullPath);
+                    }
+                    else
+                    {
+                        // TODO: Is using AppDomain would provide more opportunities for unloading?
+                        assembly = pdbBytes != null ? Assembly.Load(assemblyBytes, pdbBytes) : Assembly.Load(assemblyBytes);
+                        loadedAssembly = new LoadedAssembly(assemblyFullPath, assembly);
+                        loadedAssemblies.Add(loadedAssembly);
+                        loadedAssembliesByName.Add(assemblyFullPath, loadedAssembly);
 
-                    // Force assembly resolve with proper name
-                    // (doing it here, because if done later, loadingInstance will be set to null and it won't work)
-                    Assembly.Load(assembly.FullName);
+                        // Force assembly resolve with proper name
+                        // (doing it here, because if done later, loadingInstance will be set to null and it won't work)
+                        Assembly.Load(assembly.FullName);
+                    }
 
                     // Make sure that all referenced assemblies are loaded here
                     foreach (var assemblyRef in assembly.GetReferencedAssemblies())
