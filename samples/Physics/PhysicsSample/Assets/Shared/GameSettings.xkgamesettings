@@ -2,7 +2,7 @@
 Id: 8b386f9f-7a68-4d71-afd8-5f10c3cbdaf5
 SerializedVersion: {Xenko: 1.6.1-alpha01}
 Tags: []
-DefaultScene: 89c964f4-4f62-4c02-9383-6413f5ee0b6b/86fed268-baa8-4929-9eba-4d14cf3a0e68:Raycasting
+DefaultScene: 310f4578-2e65-43a9-acc9-095c55bd1f90/86fed268-baa8-4929-9eba-4d14cf3a0e68:Raycasting
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         ~Id: 8c430fda-e594-4e69-a558-5531ac8009e0

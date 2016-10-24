@@ -175,6 +175,11 @@ Hierarchy:
                     - !PhysicsSample.NextSceneScript,PhysicsSample.Game
                         ~Id: bc017c7d-ed44-4b30-823b-1d6e86eefbff
                         NextScene: VolumeTrigger
+                    - !UIComponent
+                        ~Id: 2fde5d80-13ee-4233-adef-af689d4208ef
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light

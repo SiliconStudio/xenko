@@ -43,14 +43,28 @@ Hierarchy:
     RootPartIds:
         - f230b77a-bd6f-40d2-9e98-dbba399c378e
         - ca764465-b676-4a09-986e-c6a74f37bd6d
+        - 01993ebe-1d2f-4441-8f32-2b1da82a64e1
+        - 34123ad7-7f97-4c0a-b592-d844e0400f5e
         - 4946b032-53e8-4029-b72c-4396af3b286d
         - cfe82ef3-b615-435c-a9b6-15793dca565d
         - 8de69e45-ea72-4bf7-a80c-e747c6099e9f
         - b7b7ddf2-8c9d-46cb-9f1f-62c521b46128
-        - 34123ad7-7f97-4c0a-b592-d844e0400f5e
         - 2d66856f-0a8c-40f5-a087-4a466ff1902a
         - 679434a1-4b8e-4dce-aaaa-207e709135b1
     Parts:
+        -   Entity:
+                Id: 01993ebe-1d2f-4441-8f32-2b1da82a64e1
+                Name: Background
+                Components:
+                    - !TransformComponent
+                        ~Id: 8748b795-e8f1-4798-8d9a-599c4ebe9931
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !BackgroundComponent
+                        ~Id: 666344a8-67ab-41a9-acea-5fc2f72b71b9
+                        Texture: 405e3082-0bbd-4561-9c3f-e59a0890175e/d46cb653-bbdb-4b7b-9449-37beb6774cfd:Materials/XenkoBackground
         -   BaseId: bf3d076e-5eb6-4072-aeab-fab508f82166
             BasePartInstanceId: 48e70e41-5363-4872-a639-f67ae43321a4
             Entity:
@@ -158,7 +172,7 @@ Hierarchy:
                         Projection: Perspective
                     - !PhysicsSample.NextSceneScript,PhysicsSample.Game
                         ~Id: d770c007-918e-4f05-9478-965644839f14
-                        NextScene: CharacterController
+                        NextScene: Raycasting
         -   BaseId: 50ff9733-2722-4321-844f-de2f0edae01b
             BasePartInstanceId: 48e70e41-5363-4872-a639-f67ae43321a4
             Entity:

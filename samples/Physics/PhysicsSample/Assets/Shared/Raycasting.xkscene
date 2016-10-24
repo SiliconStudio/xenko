@@ -262,7 +262,7 @@ Hierarchy:
                         Projection: Perspective
                     - !PhysicsSample.NextSceneScript,PhysicsSample.Game
                         ~Id: 8cfc7ac1-42cb-445d-b5ff-4118f4e54bee
-                        NextScene: Scene
+                        NextScene: Constraints
         -   Entity:
                 Id: ef7d2057-b70a-4f12-af97-1ac2d8736797
                 Name: Ambient light
