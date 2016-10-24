@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -12,11 +14,13 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Internal class used when serializing/deserializing an object.
     /// </summary>
-    internal class CustomObjectSerializerBackend : DefaultObjectSerializerBackend
+    // TODO: this class should be internal, and asset-specific code (ie. override, possibly collection with ids) should move in an inheriting class in Assets
+    public class CustomObjectSerializerBackend : DefaultObjectSerializerBackend
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private ITypeDescriptor cachedDescriptor;
-
+        private static readonly object MemberPathKey = new object();
+        public static readonly object OverrideDictionaryKey = new object();
 
         public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
@@ -34,7 +38,11 @@ namespace SiliconStudio.Core.Yaml
                 memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
             }
 
-            return ReadYaml(ref memberObjectContext);
+            var memberPath = GetCurrentPath(ref objectContext, true);
+            memberPath.Push(memberDescriptor);
+            SetCurrentPath(ref objectContext, memberPath);
+            var result = ReadYaml(ref memberObjectContext);
+            return result;
         }
 
         public override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
@@ -78,6 +86,19 @@ namespace SiliconStudio.Core.Yaml
                         cachedDescriptor = typeDescriptorFactory.Find(objectType);
                     }
                     var memberDescriptor = cachedDescriptor[newMemberName];
+
+                    object property;
+                    if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
+                    {
+                        property = new Dictionary<MemberPath, OverrideType>();
+                        objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
+                    }
+                    var overrides = (Dictionary<MemberPath, OverrideType>)property;
+
+                    var memberPath = GetCurrentPath(ref objectContext, true);
+                    memberPath.Push(memberDescriptor);
+                    overrides.Add(memberPath, overrideType);
+
                     objectContext.Instance.SetOverride(memberDescriptor, overrideType);
                 }
             }
@@ -120,6 +141,43 @@ namespace SiliconStudio.Core.Yaml
             }
 
             base.WriteMemberName(ref objectContext, member, memberName);
+        }
+
+        public override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
+        {
+            var memberPath = GetCurrentPath(ref objectContext, true);
+            memberPath.Push((CollectionDescriptor)objectContext.Descriptor, index);
+            SetCurrentPath(ref objectContext, memberPath);
+            return base.ReadCollectionItem(ref objectContext, value, itemType, index);
+        }
+
+        public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
+        {
+            return base.ReadDictionaryKey(ref objectContext, keyType);
+        }
+
+        public override object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
+        {
+            var memberPath = GetCurrentPath(ref objectContext, true);
+            memberPath.Push((DictionaryDescriptor)objectContext.Descriptor, key);
+            SetCurrentPath(ref objectContext, memberPath);
+            return base.ReadDictionaryValue(ref objectContext, valueType, key);
+        }
+
+        private static MemberPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
+        {
+            object property;
+            var memberPath = !objectContext.Properties.TryGetValue(MemberPathKey, out property) ? new MemberPath() : (MemberPath)property;
+            if (clone)
+            {
+                memberPath = memberPath.Clone();
+            }
+            return memberPath;
+        }
+
+        private static void SetCurrentPath(ref ObjectContext objectContext, MemberPath path)
+        {
+            objectContext.Properties[MemberPathKey] = path;
         }
     }
 }
