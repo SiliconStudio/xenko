@@ -86,8 +86,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         /// <param name="objectContext">The object context.</param>
         /// <param name="valueType">Type of the value.</param>
+        /// <param name="key">The key corresponding to the value.</param>
         /// <returns>The value of the dictionary item read from YAML stream.</returns>
-        object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType);
+        object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key);
 
         /// <summary>
         /// Writes the name of the member.

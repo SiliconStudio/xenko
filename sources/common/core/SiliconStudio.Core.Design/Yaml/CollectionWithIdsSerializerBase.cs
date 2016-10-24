@@ -192,7 +192,7 @@ namespace SiliconStudio.Core.Yaml
             {
                 return ReadDeletedDictionaryItem(ref objectContext, keyResult);
             }
-            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value);
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value, keyResult);
             return new KeyValuePair<object, object>(keyResult, valueResult);
         }
 

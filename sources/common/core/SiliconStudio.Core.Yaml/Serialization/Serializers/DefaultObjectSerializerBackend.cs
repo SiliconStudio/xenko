@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return ReadYaml(ref keyObjectContext);
         }
 
-        public virtual object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType)
+        public virtual object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
         {
             var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
             return ReadYaml(ref valueObjectContext);
