@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(null)]
         [DataMember(20)]
         [NotNull]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         MaterialBlendLayers Layers { get; set; }
     }
 }

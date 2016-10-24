@@ -1,9 +1,9 @@
 !SceneAsset
 Id: 29e02098-532b-4738-ac20-a4483eb406b9
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 2487527d-63c9-4a09-afca-822f4a8f4832
+    Id: 2487527d-63c9-4a09-afca-822f4a8f4832
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 6b819208-bc51-44fd-ba88-a197c291e363
         Cameras:
@@ -152,7 +152,7 @@ Hierarchy:
                         CcdMotionThreshold: 0.0
                         CcdSweptSphereRadius: 0.0
                         FallSpeed: 10.0
-                        MaxSlope: 0.0
+                        MaxSlope: {Radians: 0.0}
                         JumpSpeed: 5.0
                         Gravity: -10.0
                         ColliderShapes:

@@ -128,6 +128,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             var d = Math.Abs(projectedTarget.W) + 0.00001f;
             var r = Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter/2.0f));
+
+            // Handle correctly the case where the eye is inside the sphere
+            if (d < r)
+                return Math.Max(renderView.ViewSize.X, renderView.ViewSize.Y);
+
             var coTanFovBy2 = renderView.Projection.M22;
             var pr = r * coTanFovBy2 / (Math.Sqrt(d * d - r * r) + 0.00001f);
 

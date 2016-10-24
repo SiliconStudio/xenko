@@ -1,0 +1,27 @@
+!Package
+Id: ec64fd24-824f-4da4-b077-3661cf988027
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: mannequinModel
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.8.4-beta
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences: []
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

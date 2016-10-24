@@ -112,6 +112,9 @@ namespace SiliconStudio.Xenko.Engine
                 return;
             }
 
+            // Reset the context
+            renderContext.Reset();
+
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.
             if (previousWidth != MainRenderFrame.Width || previousHeight != MainRenderFrame.Height)

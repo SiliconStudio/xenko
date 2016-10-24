@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The views.
         /// </value>
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public IList<Model> Children
         {
             get { return children; }
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The materials.
         /// </value>
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<MaterialInstance> Materials
         {
             get { return materials; }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The meshes.
         /// </value>
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<Mesh> Meshes
         {
             get { return meshes; }

@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 8e9236c1-dca5-49a8-8577-1ad6c63084d8
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: f9a77ff2-8835-4f7b-a7e3-e3040f58d67e
@@ -14,10 +14,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: cc6e8eec-f2ef-4fa4-82c2-2886a2f25869
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.041, Y: 0.041, Z: 0.041}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.041, Y: 0.041, Z: 0.041}
                     - !ParticleSystemComponent
                         ~Id: ba800030-f9c3-4ddd-824e-343cd40a3cd8
                         Control:
@@ -46,12 +46,12 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 462e6bae-87b3-46d9-bfb0-b93fd8e368b8
                                         ComputeColor: !ComputeTextureColor
+                                            Swizzle: null
                                             Texture: fee9459c-4d50-4926-8896-8f719d9fcf08/8b03c447-e775-437b-a178-b7c0921ebf24:hit_effect
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
                                             Offset: {X: 0.0, Y: 0.0}
-                                            Swizzle: null
                                         UVBuilder: !UVBuilderFlipbook
                                             ~Id: 8e0fe41d-a583-4e85-8222-85a9749cea2e
                                             XDivisions: 5
@@ -73,7 +73,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0

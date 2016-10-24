@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [DataMember(200)]
         [Category]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; }
 
         /// <summary>

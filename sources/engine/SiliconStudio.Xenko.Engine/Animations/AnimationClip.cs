@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Animations
         public Dictionary<string, Channel> Channels = new Dictionary<string, Channel>();
 
         // TODO: The curve stored inside should be internal/private (it is public now to avoid implementing custom serialization before first release).
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<AnimationCurve> Curves = new List<AnimationCurve>();
 
         public AnimationData[] OptimizedAnimationDatas;

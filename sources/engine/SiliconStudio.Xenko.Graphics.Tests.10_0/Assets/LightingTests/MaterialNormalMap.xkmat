@@ -11,6 +11,7 @@ Attributes:
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
             Texture: 332c94f0-fde7-44c3-b7a6-4cddc0443b12/270acfc0-1bf9-43ca-8ae1-f8f10a16e009:MaterialTests/stone4_gls
