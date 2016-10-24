@@ -718,18 +718,17 @@ namespace SiliconStudio.Assets
 
             try
             {
-                bool aliasOccurred;
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath)) { CachedFileSize = filePath.Length };
                 var context = new AssetMigrationContext(null, log);
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
-                var package = packageFile.AssetContent != null
-                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
-                    : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
-
+                var loadResult = packageFile.AssetContent != null
+                    ? AssetSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log)
+                    : AssetSerializer.Load<Package>(filePath, log);
+                var package = loadResult.Asset;
                 package.FullPath = filePath;
                 package.previousPackagePath = package.FullPath;
-                package.IsDirty = packageFile.AssetContent != null || aliasOccurred;
+                package.IsDirty = packageFile.AssetContent != null || loadResult.AliasOccurred;
 
                 return package;
             }
@@ -1070,25 +1069,26 @@ namespace SiliconStudio.Assets
 
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty)
         {
-            var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
-                : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
+            var loadResult = assetContent != null
+                ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log)
+                : AssetSerializer.Load<Asset>(assetFullPath, log);
+            assetDirty = loadResult.AliasOccurred;
 
             // Set location on source code asset
-            var sourceCodeAsset = asset as SourceCodeAsset;
+            var sourceCodeAsset = loadResult.Asset as SourceCodeAsset;
             if (sourceCodeAsset != null)
             {
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
             }
 
-            var assetWithLocation = asset as IAssetWithLocation;
+            var assetWithLocation = loadResult.Asset as IAssetWithLocation;
             if (assetWithLocation != null)
             {
                 assetWithLocation.AbsoluteSourceLocation = assetFullPath;
             }
 
-            var projectSourceCodeAsset = asset as IProjectAsset;
+            var projectSourceCodeAsset = loadResult.Asset as IProjectAsset;
             if (projectSourceCodeAsset != null)
             {
                 projectSourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
@@ -1096,13 +1096,13 @@ namespace SiliconStudio.Assets
                 projectSourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath);
             }
 
-            var generatorAsset = asset as IProjectFileGeneratorAsset;
+            var generatorAsset = loadResult.Asset as IProjectFileGeneratorAsset;
             if (generatorAsset != null)
             {
                 generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs"; //we generate only .cs so far
             }
 
-            return asset;
+            return loadResult.Asset;
         }
 
         private void LoadAssemblyReferencesForPackage(ILogger log, PackageLoadParameters loadParameters)
@@ -1221,8 +1221,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        bool aliasOccurred;
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName, null, out aliasOccurred);
+                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName).Asset;
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }

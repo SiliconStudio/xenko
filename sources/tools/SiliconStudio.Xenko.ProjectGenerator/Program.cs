@@ -20,6 +20,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
@@ -256,7 +257,8 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 using (var stream = new FileStream(Path.Combine(outputDirectory, name), FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    var asset = AssetSerializer.Default.Load(stream, null, null, out b) as Asset;
+                    Dictionary<MemberPath,OverrideType> o;
+                    var asset = AssetSerializer.Default.Load(stream, null, null, out b, out o) as Asset;
                     if (asset != null)
                     {
                         guid = asset.Id;

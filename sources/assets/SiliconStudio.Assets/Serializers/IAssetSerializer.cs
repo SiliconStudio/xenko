@@ -1,7 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -12,7 +15,7 @@ namespace SiliconStudio.Assets.Serializers
 
     public interface IAssetSerializer
     {
-        object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred);
+        object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides);
 
         void Save(Stream stream, object asset, ILogger log = null);
     }

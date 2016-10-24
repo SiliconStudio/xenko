@@ -77,7 +77,7 @@ namespace SiliconStudio.Assets.Tests
             GenerateAndCompare("Test Serialization 1", testGenerated1, referenceFilePath, assetObject);
 
             // Deserialize it
-            var newAssetObject = AssetSerializer.Load<MyAsset>(testGenerated1);
+            var newAssetObject = AssetSerializer.Load<MyAsset>(testGenerated1).Asset;
             var overrideKey = newAssetObject.GetOverride((IMemberDescriptor)myAssetDescriptor["Description"]);
             Assert.AreEqual(overrideKey, OverrideType.New | OverrideType.Sealed);
 

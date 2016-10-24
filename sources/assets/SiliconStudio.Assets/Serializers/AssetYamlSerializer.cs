@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -13,9 +15,13 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
+        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides)
         {
-            return YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred);
+            ContextPropertyCollection properties;
+            var result = YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
+            object property;
+            overrides = properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out property) ? (Dictionary<MemberPath, OverrideType>)property : null;
+            return result;
         }
 
         public void Save(Stream stream, object asset, ILogger log)
