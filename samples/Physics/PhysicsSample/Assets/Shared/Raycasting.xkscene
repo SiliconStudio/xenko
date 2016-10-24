@@ -1,9 +1,9 @@
 !SceneAsset
 Id: 86fed268-baa8-4929-9eba-4d14cf3a0e68
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 309ba45b-9be7-4963-bafd-4dcc6de36659
+    Id: 309ba45b-9be7-4963-bafd-4dcc6de36659
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: eedb73a6-f478-491b-9da3-dec4e330c63f
         Cameras:
@@ -293,7 +293,7 @@ Hierarchy:
     -   Location: CubePrefab
         Asset: !PrefabAsset
             Id: 81d2f7ea-8b18-44ab-96fd-6a0383065606
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.9.0-beta01}
             Tags: []
             Hierarchy:
                 ~Id: be299a1b-2b49-45ba-9075-844aff0d5ca0

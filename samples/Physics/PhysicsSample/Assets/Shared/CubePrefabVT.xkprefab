@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: b6784169-c2e8-436b-8945-a9fb1ba4baa5
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Hierarchy:
     ~Id: 5f6f7847-0e78-4824-8813-a70db8f1176d
@@ -13,10 +13,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                         TriggerEntity: null

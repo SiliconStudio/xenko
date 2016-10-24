@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 3b831f6c-eb4c-4276-9f4c-fd6c9fe13f77
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 013586b9-ac71-43da-b43d-e25993b39fa8
+    Id: 013586b9-ac71-43da-b43d-e25993b39fa8
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 35fef855-c622-4a6a-98c3-580f815692de
         Cameras:
             -   ~Id: 45683308-8cb5-49e6-8648-9f4c5ca69ecc
                 Name: null
-                Camera:
-                    Entity: {Id: 339ed07f-b58b-4d72-9d97-b7679f710573}
-                    Id: 6b94cf5f-c890-4d8d-a2be-c91b136bb3ed
+                Camera: 339ed07f-b58b-4d72-9d97-b7679f710573/6b94cf5f-c890-4d8d-a2be-c91b136bb3ed
         Layers: []
         Master:
             ~Id: 375b5234-4c0d-4069-8f14-29bce4371d7e
@@ -57,10 +55,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6cf14761-eda5-45c2-b470-6309168b05bb
-                        Position: {X: 8.89, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 0.707106769, X: 0.0, Y: 0.0, Z: 0.707106769}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 8.89, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.707106769, W: 0.707106769}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GravitySensor.BounceScript,GravitySensor.Game
                         ~Id: 3dc48e9f-e3b3-4e2f-8e04-2cbf497bc08b
                     - !StaticColliderComponent
@@ -82,10 +80,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 29ec249d-f4df-410b-b166-e760b7cb2feb
-                        Position: {X: 0.0, Y: 0.0, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GravitySensor.GravityScript,GravitySensor.Game
                         ~Id: 340ae752-4f79-40d9-88cb-10048105c703
                     - !GravitySensor.GuiScript,GravitySensor.Game
@@ -93,6 +91,7 @@ Hierarchy:
                         Font: 1cd08a03-d7b3-4dab-9660-b78ba787b67a/e69c3c0c-baca-4e05-9c03-a3f95cdeb5ed:SpriteFont
                     - !UIComponent
                         ~Id: f75a332a-6b7d-4a17-b507-810eefd8913f
+                        Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
@@ -105,10 +104,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 2b0e6619-da70-4a38-a0a9-ab46206d93ae
-                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
-                        Rotation: {W: -4.371139E-08, X: 0.0, Y: 0.0, Z: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 1.0, W: -4.371139E-08}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GravitySensor.BounceScript,GravitySensor.Game
                         ~Id: f9212e97-1743-43a1-a61b-97da13bf2aba
                     - !StaticColliderComponent
@@ -130,10 +129,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 74fb6449-8f4f-42dd-8076-6769686efb58
-                        Position: {X: -8.89, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 0.707106769, X: 0.0, Y: 0.0, Z: -0.707106769}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -8.89, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: -0.707106769, W: 0.707106769}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GravitySensor.BounceScript,GravitySensor.Game
                         ~Id: 5e3ff17e-fb05-4d78-92d8-3374451f2f57
                     - !StaticColliderComponent
@@ -155,10 +154,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: a8933475-24e8-4edd-89e7-b130f5ad0048
-                        Position: {X: 0.0, Y: -5.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: -5.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GravitySensor.BounceScript,GravitySensor.Game
                         ~Id: 2014eb85-3594-4e1d-ab51-3e37201366d4
                     - !StaticColliderComponent
@@ -180,10 +179,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f7c7a660-1a1b-4842-a56e-605ad1f66045
-                        Position: {X: -5.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 0.0}
                         Children: []
+                        Position: {X: -5.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 0.0}
                     - !GravitySensor.NoSleepScript,GravitySensor.Game
                         ~Id: bccca136-49c9-46ba-a5df-b10a457c4663
                     - !GravitySensor.BounceScript,GravitySensor.Game
@@ -222,10 +221,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1c3bebcf-3762-4b16-99b9-e808dd1a26af
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 68f9bb55-724e-4415-b042-2dd20d13fc87
                         Texture: 3eaf0857-7c65-4dd9-aa18-9cf470391e76/612ae0d5-a8e6-49eb-8751-0eb9b0a82ea7:XenkoBackground
@@ -235,10 +234,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 89e6f127-42de-4a78-a7d2-420fbcdee945
-                        Position: {X: 5.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 0.0}
                         Children: []
+                        Position: {X: 5.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 0.0}
                     - !GravitySensor.NoSleepScript,GravitySensor.Game
                         ~Id: e4a891e1-ff39-48cd-a585-fc226addf316
                     - !GravitySensor.BounceScript,GravitySensor.Game
