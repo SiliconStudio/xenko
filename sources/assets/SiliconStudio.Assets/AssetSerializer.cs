@@ -96,15 +96,15 @@ namespace SiliconStudio.Assets
         {
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                var result = Load<T>(stream, Path.GetExtension(filePath), log);
+                var result = Load<T>(stream, filePath, log);
                 return result;
             }
         }
 
-        public static AssetLoadResult<T> Load<T>(Stream stream, string assetFileExtension, ILogger log)
+        public static AssetLoadResult<T> Load<T>(Stream stream, string filePath, ILogger log)
         {
-            if (assetFileExtension == null) throw new ArgumentNullException(nameof(assetFileExtension));
-            assetFileExtension = assetFileExtension.ToLowerInvariant();
+            if (filePath == null) throw new ArgumentNullException("filePath");
+            var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
 
             var serializer = FindSerializer(assetFileExtension);
             if (serializer == null)
@@ -113,7 +113,7 @@ namespace SiliconStudio.Assets
             }
             bool aliasOccurred;
             Dictionary<MemberPath, OverrideType> overrides;
-            var asset = (T)serializer.Load(stream, assetFileExtension, log, out aliasOccurred, out overrides);
+            var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out overrides);
             return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<MemberPath, OverrideType>());
         }
 
@@ -122,9 +122,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="asset">The asset object.</param>
+        /// <param name="assetItem"></param>
         /// <param name="log">The logger.</param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, ILogger log = null)
+        public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
 

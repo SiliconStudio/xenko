@@ -176,7 +176,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public event RoutedEventHandler Cancelled { add { AddHandler(CancelledEvent, value); } remove { RemoveHandler(CancelledEvent, value); } }
 
-        internal bool HasChangesToValidate { get; private set; }
+        protected internal bool HasChangesToValidate { get; set; }
 
         /// <summary>
         /// Validates the current changes in the TextBox. Does nothing is there are no changes.

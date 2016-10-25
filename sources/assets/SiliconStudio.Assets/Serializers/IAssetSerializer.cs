@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Serializers
 
     public interface IAssetSerializer
     {
-        object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides);
+        object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides);
 
         void Save(Stream stream, object asset, ILogger log = null);
     }

@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides)
+        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides)
         {
             ContextPropertyCollection properties;
             var result = YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets.Serializers
             return result;
         }
 
-        public void Save(Stream stream, object asset, ILogger log)
+        public void Save(Stream stream, object asset, ILogger log = null)
         {
             YamlSerializer.Serialize(stream, asset, null, log != null ? new SerializerContextSettings { Logger = log } : null);
         }
