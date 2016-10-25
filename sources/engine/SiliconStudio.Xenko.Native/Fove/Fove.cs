@@ -52,5 +52,9 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnFoveGetLeftEyePoint", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetLeftEyePoint(ref Vector2 point);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnFoveRecenter", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Recenter();
     }
 }

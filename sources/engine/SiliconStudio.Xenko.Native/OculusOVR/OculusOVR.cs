@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void PrepareRender(IntPtr session, FrameProperties* properties);
+        public static extern void PrepareRender(IntPtr session, ref FrameProperties properties);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetError", CallingConvention = CallingConvention.Cdecl)]

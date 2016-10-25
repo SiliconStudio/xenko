@@ -119,6 +119,15 @@ extern "C"
 		memcpy(properties->Rot, &pose.orientation, sizeof(float) * 4);
 		properties->Pos[2] = -properties->Pos[2]; //flip Z
 	}
+
+	DLL_EXPORT_API void xnFoveRecenter()
+	{
+		if(sHeadSet)
+		{
+			sHeadSet->TareOrientationSensor();
+			sHeadSet->TarePositionSensors();
+		}
+	}
 }
 
 #else
@@ -150,6 +159,10 @@ extern "C"
 	DLL_EXPORT_API npBool xnFoveGetLeftEyePoint(float* point)
 	{
 		return false;
+	}
+
+	DLL_EXPORT_API void xnFoveRecenter()
+	{
 	}
 }
 
