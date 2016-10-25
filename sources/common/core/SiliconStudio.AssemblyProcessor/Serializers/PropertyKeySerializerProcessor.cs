@@ -13,7 +13,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             {
                 foreach (var member in type.Fields)
                 {
-                    if (!member.IsStatic || member.IsPrivate)
+                    if (!member.IsStatic || !member.IsPublic)
                         continue;
 
                     if (member.FieldType.Name == "PropertyKey`1"
