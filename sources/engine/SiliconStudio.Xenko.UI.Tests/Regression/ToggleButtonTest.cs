@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Extensions;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -61,9 +62,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private void Click()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
+            Input.ClearPointerEvents();
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
         }
 
         [Test]

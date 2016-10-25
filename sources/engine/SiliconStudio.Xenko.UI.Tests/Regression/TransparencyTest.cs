@@ -86,15 +86,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw1()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
+            Input.ClearPointerEvents();
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
             UI.Update(new GameTime());
         }
 
         public void Draw2()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.75f)));
+            Input.ClearPointerEvents();
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.75f)));
             UI.Update(new GameTime());
 
             element1.LocalMatrix = Matrix.Translation(0, 0, -100);
@@ -102,8 +102,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
+            Input.ClearPointerEvents();
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
             UI.Update(new GameTime());
         }
         

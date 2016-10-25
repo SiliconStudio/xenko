@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Threading.Tasks;
-
 using NUnit.Framework;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -67,7 +66,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             grid.Children.Add(img5);
             grid.Children.Add(img6);
 
-            scrollViewer = new ScrollViewer { Content = grid, ScrollMode = ScrollingMode.HorizontalVertical};
+            scrollViewer = new ScrollViewer { Content = grid, ScrollMode = ScrollingMode.HorizontalVertical };
 
             contentDecorator = new ContentDecorator { Content = scrollViewer };
 
@@ -77,7 +76,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            
+
             if (Input.IsKeyReleased(Keys.D1))
                 scrollViewer.Content = grid;
             if (Input.IsKeyReleased(Keys.D2))
@@ -143,9 +142,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw1()
         {
             // show the scroll bars
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.3f, 0.3f)));
+            Input.ClearPointerEvents();
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.5f)));
+            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.3f, 0.3f)));
 
             UI.Update(new GameTime(new TimeSpan(), new TimeSpan(0, 0, 0, 0, 500)));
         }
@@ -172,7 +171,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw5()
         {
             // check that ScrollOf works properly for a content not implementing IScrollInfo
-            scrollViewer.ScrollOf(new Vector3(400,400,400));
+            scrollViewer.ScrollOf(new Vector3(400, 400, 400));
         }
 
         public void Draw6()

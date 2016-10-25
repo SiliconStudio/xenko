@@ -262,9 +262,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     position += -forward * translationSpeed;
                 if (Input.IsKeyDown(Keys.W))
                     position += forward * translationSpeed;
-                if (Input.IsKeyDown(Keys.Z))
-                    position += -up * translationSpeed;
                 if (Input.IsKeyDown(Keys.Q))
+                    position += -up * translationSpeed;
+                if (Input.IsKeyDown(Keys.E))
                     position += up * translationSpeed;
             }
 

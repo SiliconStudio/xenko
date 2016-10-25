@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void PrepareTest2()
         {
             ResetStates();
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.08f);
+            Input.MousePosition = new Vector2(0.1f, 0.08f);
             Input.Update(new GameTime());
         }
 
@@ -158,7 +158,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void PrepareTest3()
         {
             ResetStates();
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.18f);
+            Input.MousePosition = new Vector2(0.1f, 0.18f);
             Input.Update(new GameTime());
         }
 
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void PrepareTest4()
         {
             ResetStates();
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.3f);
+            Input.MousePosition = new Vector2(0.1f, 0.3f);
             Input.Update(new GameTime());
         }
 
@@ -206,7 +206,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void PrepareTest5()
         {
             ResetStates();
-            Input.CurrentMousePosition = new Vector2(0.5f, 0.5f);
+            Input.MousePosition = new Vector2(0.5f, 0.5f);
             Input.Update(new GameTime());
         }
 
@@ -230,7 +230,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void PrepareTest6()
         {
             ResetStates();
-            Input.CurrentMousePosition = new Vector2(0.56f, 0.5f);
+            Input.MousePosition = new Vector2(0.56f, 0.5f);
             Input.Update(new GameTime());
         }
 
@@ -263,14 +263,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private void Draw1()
         {
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.08f);
+            Input.MousePosition = new Vector2(0.1f, 0.08f);
             Input.Update(new GameTime());
             UI.Update(new GameTime());
         }
 
         private void Draw2()
         {
-            Input.CurrentMousePosition = new Vector2(0.1f, 0.18f);
+            Input.MousePosition = new Vector2(0.1f, 0.18f);
             Input.Update(new GameTime());
             UI.Update(new GameTime());
         }
