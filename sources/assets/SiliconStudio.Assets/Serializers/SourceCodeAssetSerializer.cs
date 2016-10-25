@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
@@ -16,11 +17,11 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
         {
             aliasOccurred = false;
 
-            var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+            var assetFileExtension = filePath.GetFileExtension().ToLowerInvariant();
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
 

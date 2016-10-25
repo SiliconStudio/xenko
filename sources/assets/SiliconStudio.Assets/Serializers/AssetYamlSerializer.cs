@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -16,7 +17,7 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
         {
             PropertyContainer properties;
             var result = YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);

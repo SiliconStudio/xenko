@@ -6,6 +6,7 @@ using System.IO;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
@@ -102,7 +103,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static AssetLoadResult<T> Load<T>(Stream stream, string filePath, ILogger log)
+        public static AssetLoadResult<T> Load<T>(Stream stream, UFile filePath, ILogger log)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
             var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
