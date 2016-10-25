@@ -19,12 +19,13 @@ namespace SiliconStudio.Core.Yaml
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private ITypeDescriptor cachedDescriptor;
-        private static readonly PropertyKey<MemberPath> MemberPathKey = new PropertyKey<MemberPath>("MemberPath", typeof(CustomObjectSerializerBackend));
-        public static readonly PropertyKey<Dictionary<MemberPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<MemberPath, OverrideType>>("OverrideDictionary", typeof(CustomObjectSerializerBackend));
+        private static readonly PropertyKey<ObjectPath> MemberPathKey = new PropertyKey<ObjectPath>("MemberPath", typeof(CustomObjectSerializerBackend));
+        public static readonly PropertyKey<Dictionary<ObjectPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<ObjectPath, OverrideType>>("OverrideDictionary", typeof(CustomObjectSerializerBackend));
 
         public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
-            if (typeDescriptorFactory == null) throw new ArgumentNullException(nameof(typeDescriptorFactory));
+            if (typeDescriptorFactory == null)
+                throw new ArgumentNullException(nameof(typeDescriptorFactory));
             this.typeDescriptorFactory = typeDescriptorFactory;
         }
 
@@ -38,9 +39,9 @@ namespace SiliconStudio.Core.Yaml
                 memberObjectContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
             }
 
-            var memberPath = GetCurrentPath(ref objectContext, true);
-            memberPath.Push(memberDescriptor);
-            SetCurrentPath(ref memberObjectContext, memberPath);
+            var path = GetCurrentPath(ref objectContext, true);
+            path.PushMember(memberDescriptor.Name);
+            SetCurrentPath(ref memberObjectContext, path);
             var result = ReadYaml(ref memberObjectContext);
             return result;
         }
@@ -73,16 +74,16 @@ namespace SiliconStudio.Core.Yaml
                 }
                 var memberDescriptor = cachedDescriptor[realMemberName];
 
-                Dictionary<MemberPath, OverrideType> overrides;
+                Dictionary<ObjectPath, OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    overrides = new Dictionary<MemberPath, OverrideType>();
+                    overrides = new Dictionary<ObjectPath, OverrideType>();
                     objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
 
-                var memberPath = GetCurrentPath(ref objectContext, true);
-                memberPath.Push(memberDescriptor);
-                overrides.Add(memberPath, overrideType);
+                var path = GetCurrentPath(ref objectContext, true);
+                path.PushMember(realMemberName);
+                overrides.Add(path, overrideType);
 
                 objectContext.Instance.SetOverride(memberDescriptor, overrideType);
             }
@@ -129,10 +130,10 @@ namespace SiliconStudio.Core.Yaml
 
         public override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
         {
-            var memberPath = GetCurrentPath(ref objectContext, true);
-            memberPath.Push((CollectionDescriptor)objectContext.Descriptor, index);
+            var path = GetCurrentPath(ref objectContext, true);
+            path.PushIndex(index);
             var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
-            SetCurrentPath(ref itemObjectContext, memberPath);
+            SetCurrentPath(ref itemObjectContext, path);
             return ReadYaml(ref itemObjectContext);
         }
 
@@ -147,16 +148,24 @@ namespace SiliconStudio.Core.Yaml
 
             if (overrideType != OverrideType.Base)
             {
-                Dictionary<MemberPath, OverrideType> overrides;
+                Dictionary<ObjectPath, OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    overrides = new Dictionary<MemberPath, OverrideType>();
+                    overrides = new Dictionary<ObjectPath, OverrideType>();
                     objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
 
-                var memberPath = GetCurrentPath(ref objectContext, true);
-                memberPath.Push(objectContext.Descriptor, keyValue);
-                overrides.Add(memberPath, overrideType);
+                var path = GetCurrentPath(ref objectContext, true);
+                Guid id;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
+                {
+                    path.PushItemId(id);
+                }
+                else
+                {
+                    path.PushIndex(keyValue);
+                }
+                overrides.Add(path, overrideType);
             }
 
             return keyValue;
@@ -169,17 +178,25 @@ namespace SiliconStudio.Core.Yaml
 
         public override object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
         {
-            var memberPath = GetCurrentPath(ref objectContext, true);
-            memberPath.Push((DictionaryDescriptor)objectContext.Descriptor, key);
+            var path = GetCurrentPath(ref objectContext, true);
+            Guid id;
+            if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
+            {
+                path.PushItemId(id);
+            }
+            else
+            {
+                path.PushIndex(key);
+            }
             var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
-            SetCurrentPath(ref valueObjectContext, memberPath);
+            SetCurrentPath(ref valueObjectContext, path);
             return ReadYaml(ref valueObjectContext);
         }
 
-        private static MemberPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
+        private static ObjectPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
         {
-            object property;
-            var memberPath = !objectContext.Properties.TryGetValue(MemberPathKey, out property) ? new MemberPath() : (MemberPath)property;
+            ObjectPath property;
+            var memberPath = !objectContext.Properties.TryGetValue(MemberPathKey, out property) ? new ObjectPath() : (ObjectPath)property;
             if (clone)
             {
                 memberPath = memberPath.Clone();
@@ -187,7 +204,7 @@ namespace SiliconStudio.Core.Yaml
             return memberPath;
         }
 
-        private static void SetCurrentPath(ref ObjectContext objectContext, MemberPath path)
+        private static void SetCurrentPath(ref ObjectContext objectContext, ObjectPath path)
         {
             objectContext.Properties.Set(MemberPathKey, path);
         }

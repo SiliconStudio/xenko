@@ -103,6 +103,7 @@
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />
     <Compile Include="Yaml\IDynamicYamlNode.cs" />
     <Compile Include="Yaml\NonIdentifiableCollectionItemsAttribute.cs" />
+    <Compile Include="Yaml\ObjectPath.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
     <Compile Include="Settings\SettingsEntryValue.cs" />

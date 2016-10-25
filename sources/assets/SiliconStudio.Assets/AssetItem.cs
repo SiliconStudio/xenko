@@ -6,6 +6,7 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -137,7 +138,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
         [DataMemberIgnore]
-        public IDictionary<MemberPath, OverrideType> Overrides { get; internal set; }
+        public IDictionary<ObjectPath, OverrideType> Overrides { get; internal set; }
 
         /// <summary>
         /// Converts this item to a reference.
@@ -181,7 +182,7 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
-                Overrides = Overrides != null ? new Dictionary<MemberPath, OverrideType>(Overrides) : null
+                Overrides = Overrides != null ? new Dictionary<ObjectPath, OverrideType>(Overrides) : null
             };
             return item;
         }

@@ -1005,7 +1005,7 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                IDictionary<MemberPath, OverrideType> overrides;
+                IDictionary<ObjectPath, OverrideType> overrides;
                 var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
 
                 // Create asset item
@@ -1077,7 +1077,7 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<MemberPath, OverrideType> overrides)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<ObjectPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
                 ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)

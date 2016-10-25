@@ -8,6 +8,7 @@ using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -72,7 +73,7 @@ namespace SiliconStudio.Assets
             stream.Position = 0;
 
             bool aliasOccurred;
-            Dictionary<MemberPath, OverrideType> overrides;
+            Dictionary<ObjectPath, OverrideType> overrides;
             var assetItems = (AssetItemCollection)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
             if (aliasOccurred)
             {

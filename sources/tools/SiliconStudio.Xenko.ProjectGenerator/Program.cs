@@ -22,6 +22,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.ProjectTemplating;
@@ -258,6 +259,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
+                    Dictionary<ObjectPath, OverrideType> o;
                     var asset = AssetSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
                     if (asset != null)
                     {

@@ -8,6 +8,7 @@ using System.Text;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -15,7 +16,7 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides)
+        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
         {
             aliasOccurred = false;
 
@@ -31,7 +32,7 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             // No override in source code assets
-            overrides = new Dictionary<MemberPath, OverrideType>();
+            overrides = new Dictionary<ObjectPath, OverrideType>();
 
             return asset;
         }
