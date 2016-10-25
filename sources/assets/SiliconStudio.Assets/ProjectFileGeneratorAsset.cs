@@ -8,19 +8,10 @@ namespace SiliconStudio.Assets
         /// <inheritdoc/>
         [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
-        public abstract string Generator { get; set; }
+        public abstract string Generator { get; }
 
+        /// <param name="assetItem"></param>
         /// <inheritdoc/>
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string GeneratedAbsolutePath { get; set; }
-
-        /// <inheritdoc/>
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string GeneratedInclude { get; set; }
-
-        /// <inheritdoc/>
-        public abstract void SaveGeneratedAsset();
+        public abstract void SaveGeneratedAsset(AssetItem assetItem);
     }
 }

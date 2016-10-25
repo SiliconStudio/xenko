@@ -397,13 +397,13 @@ namespace SiliconStudio.Assets
         /// <remarks>When calling this method directly, it does not handle moving assets between packages. 
         /// Call <see cref="PackageSession.Save"/> instead.
         /// </remarks>
-        public LoggerResult Save()
+        public LoggerResult Save(PackageSaveParameters saveParameters = null)
         {
             var result = new LoggerResult();
-            Save(result);
+            Save(result, saveParameters);
             return result;
         }
-
+        
         /// <summary>
         /// Saves this package and all dirty assets. See remarks.
         /// </summary>
@@ -411,7 +411,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">log</exception>
         /// <remarks>When calling this method directly, it does not handle moving assets between packages.
         /// Call <see cref="PackageSession.Save" /> instead.</remarks>
-        public void Save(ILogger log)
+        public void Save(ILogger log, PackageSaveParameters saveParameters = null)
         {
             if (log == null) throw new ArgumentNullException(nameof(log));
 
@@ -420,6 +420,8 @@ namespace SiliconStudio.Assets
                 log.Error(this, null, AssetMessageCode.PackageCannotSave, "null");
                 return;
             }
+
+            saveParameters = saveParameters ?? PackageSaveParameters.Default();
 
             // Use relative paths when saving
             var analysis = new PackageAnalysis(this, new PackageAnalysisParameters()
@@ -431,10 +433,11 @@ namespace SiliconStudio.Assets
             });
             analysis.Run(log);
 
+            var assetsFiltered = false;
             try
             {
                 // Update source folders
-                UpdateSourceFolders();
+                UpdateSourceFolders(Assets);
 
                 if (IsDirty)
                 {
@@ -447,7 +450,7 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        AssetSerializer.Save(FullPath, this);
+                        AssetSerializer.Save(FullPath, this, null);
 
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
@@ -486,112 +489,61 @@ namespace SiliconStudio.Assets
 
                 foreach (var asset in Assets)
                 {
+                    var assetSaved = false;
                     if (asset.IsDirty)
                     {
-                        var assetPath = asset.FullPath;
-
-                        try
+                        if (saveParameters.AssetFilter?.Invoke(asset) ?? true)
                         {
-                            //Handle the ProjectSourceCodeAsset differently then regular assets in regards of Path
-                            var projectAsset = asset.Asset as IProjectAsset;
-                            if (projectAsset != null)
+                            SaveSingleAsset_NoUpdateSourceFolder(asset, log);
+                        }
+                        else
+                        {
+                            assetsFiltered = true;
+                        }
+                    }
+
+                    // Add new files to .csproj
+                    var projectAsset = asset.Asset as IProjectAsset;
+                    if (projectAsset != null)
+                    {
+                        var projectFullPath = asset.SourceProject;
+                        var projectInclude = asset.GetProjectInclude();
+
+                        Project project;
+                        if (!vsProjs.TryGetValue(projectFullPath, out project))
+                        {
+                            project = VSProjectHelper.LoadProject(projectFullPath);
+                            vsProjs.Add(projectFullPath, project);
+                        }
+
+                        //check if the item is already there, this is possible when saving the first time when creating from a template
+                        if (project.Items.All(x => x.EvaluatedInclude != projectInclude))
+                        {
+                            var generatorAsset = projectAsset as IProjectFileGeneratorAsset;
+                            if (generatorAsset != null)
                             {
-                                var profile = Profiles.FindSharedProfile();
+                                var generatedInclude = asset.GetGeneratedInclude();
 
-                                var lib = profile?.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
-                                if (lib == null) continue;
-
-                                var projectFullPath = UPath.Combine(RootDirectory, lib.Location);
-                                var fileFullPath = UPath.Combine(RootDirectory, asset.Location);
-                                var filePath = fileFullPath.MakeRelative(projectFullPath.GetFullDirectory());
-                                var codeFile = new UFile(filePath + AssetRegistry.GetDefaultExtension(projectAsset.GetType()));
-
-                                Project project;
-                                if (!vsProjs.TryGetValue(projectFullPath, out project))
-                                {
-                                    project = VSProjectHelper.LoadProject(projectFullPath);
-                                    vsProjs.Add(projectFullPath, project);
-                                }
-
-                                asset.SourceProject = projectFullPath;
-                                asset.SourceFolder = RootDirectory.GetFullDirectory();
-                                projectAsset.ProjectInclude = codeFile;
-                                projectAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath.ToWindowsPath());
-                                projectAsset.AbsoluteProjectLocation = projectFullPath;
-                                projectAsset.AbsoluteSourceLocation = assetPath = UPath.Combine(projectFullPath.GetFullDirectory(), codeFile);
-
-                                //check if the item is already there, this is possible when saving the first time when creating from a template
-                                if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
-                                {
-                                    var generatorAsset = projectAsset as IProjectFileGeneratorAsset;
-                                    if (generatorAsset != null)
+                                project.AddItem("None", projectInclude,
+                                    new List<KeyValuePair<string, string>>
                                     {
-                                        generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs";
-                                        generatorAsset.GeneratedInclude = new UFile(generatorAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs";
+                                    new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
+                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileNameWithExtension())
+                                    });
 
-                                        project.AddItem("None", codeFile.ToWindowsPath(),
-                                            new List<KeyValuePair<string, string>>
-                                            {
-                                                new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
-                                                new KeyValuePair<string, string>("LastGenOutput", new UFile(generatorAsset.GeneratedInclude).GetFileNameWithExtension())
-                                            });
-
-                                        project.AddItem("Compile", new UFile(generatorAsset.GeneratedInclude).ToWindowsPath(),
-                                            new List<KeyValuePair<string, string>>
-                                            {
-                                                new KeyValuePair<string, string>("AutoGen", "True"),
-                                                new KeyValuePair<string, string>("DesignTime", "True"),
-                                                new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
-                                                new KeyValuePair<string, string>("DependentUpon", new UFile(generatorAsset.ProjectInclude).GetFileNameWithExtension())
-                                            });
-                                    }
-                                    else
+                                project.AddItem("Compile", generatedInclude,
+                                    new List<KeyValuePair<string, string>>
                                     {
-                                        project.AddItem("Compile", codeFile.ToWindowsPath());
-                                    }
-                                }
+                                    new KeyValuePair<string, string>("AutoGen", "True"),
+                                    new KeyValuePair<string, string>("DesignTime", "True"),
+                                    new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
+                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileNameWithExtension())
+                                    });
                             }
                             else
                             {
-                                var assetWithLocation = asset.Asset as IAssetWithLocation;
-                                if (assetWithLocation != null)
-                                {
-                                    assetWithLocation.AbsoluteSourceLocation = assetPath;
-                                }
+                                project.AddItem("Compile", projectInclude);
                             }
-
-                            // Inject a copy of the base into the current asset when saving
-                            var assetBase = asset.Asset.Base;
-                            if (assetBase != null && !assetBase.IsRootImport)
-                            {
-                                asset.Asset.Base = UpdateAssetBase(assetBase);
-                            }
-
-                            // Update base for BaseParts
-                            if (asset.Asset.BaseParts != null)
-                            {
-                                var baseParts = asset.Asset.BaseParts;
-                                for (int i = 0; i < baseParts.Count; i++)
-                                {
-                                    var basePart = baseParts[i];
-                                    baseParts[i] = UpdateAssetBase(basePart);
-                                }
-                            }
-
-                            AssetSerializer.Save(assetPath, asset.Asset);
-
-                            // Save generated asset (if necessary)
-                            var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
-                            if (codeGeneratorAsset != null)
-                            {
-                                codeGeneratorAsset.SaveGeneratedAsset();
-                            }
-
-                            asset.IsDirty = false;
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error(this, asset.ToReference(), AssetMessageCode.AssetCannotSave, ex, assetPath);
                         }
                     }
                 }
@@ -603,7 +555,8 @@ namespace SiliconStudio.Assets
                     project.ProjectCollection.Dispose();
                 }
 
-                Assets.IsDirty = false;
+                // If some assets were filtered out, Assets is still dirty
+                Assets.IsDirty = assetsFiltered;
 
                 // Save properties like the Xenko version used
                 PackageSessionHelper.SaveProperties(this);
@@ -614,6 +567,63 @@ namespace SiliconStudio.Assets
                 analysis.Parameters.ConvertUPathTo = UPathType.Absolute;
                 analysis.Run();
             }
+        }
+
+        public bool SaveSingleAsset(AssetItem asset, ILogger log)
+        {
+            // Make sure AssetItem.SourceFolder/Project are generated if they were null
+            asset.UpdateSourceFolders();
+            return SaveSingleAsset_NoUpdateSourceFolder(asset, log);
+        }
+
+        private bool SaveSingleAsset_NoUpdateSourceFolder(AssetItem asset, ILogger log)
+        {
+            var assetPath = asset.FullPath;
+
+            try
+            {
+                // Handle the ProjectSourceCodeAsset differently then regular assets in regards of Path
+                var projectAsset = asset.Asset as IProjectAsset;
+                if (projectAsset != null)
+                {
+                    assetPath = asset.FullPath;
+                }
+
+                // Inject a copy of the base into the current asset when saving
+                var assetBase = asset.Asset.Base;
+                if (assetBase != null && !assetBase.IsRootImport)
+                {
+                    asset.Asset.Base = UpdateAssetBase(assetBase);
+                }
+
+                // Update base for BaseParts
+                if (asset.Asset.BaseParts != null)
+                {
+                    var baseParts = asset.Asset.BaseParts;
+                    for (int i = 0; i < baseParts.Count; i++)
+                    {
+                        var basePart = baseParts[i];
+                        baseParts[i] = UpdateAssetBase(basePart);
+                    }
+                }
+
+                AssetSerializer.Save(assetPath, asset.Asset, asset);
+
+                // Save generated asset (if necessary)
+                var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
+                if (codeGeneratorAsset != null)
+                {
+                    codeGeneratorAsset.SaveGeneratedAsset(asset);
+                }
+
+                asset.IsDirty = false;
+            }
+            catch (Exception ex)
+            {
+                log.Error(this, asset.ToReference(), AssetMessageCode.AssetCannotSave, ex, assetPath);
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -723,7 +733,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var package = packageFile.AssetContent != null
-                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
+                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), filePath, log, out aliasOccurred)
                     : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
 
                 package.FullPath = filePath;
@@ -991,13 +1001,11 @@ namespace SiliconStudio.Assets
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
                 var assetPath = assetFile.AssetPath;
 
-                var assetFullPath = fileUPath.FullPath;
+                var assetFullPath = fileUPath.ToWindowsPath();
                 var assetContent = assetFile.AssetContent;
 
-                var projectInclude = assetFile.ProjectFile != null ? fileUPath.MakeRelative(assetFile.ProjectFile.GetFullDirectory()) : null;
-
                 bool aliasOccurred;
-                var asset = LoadAsset(context.Log, assetFullPath, assetPath, assetFile.ProjectFile, projectInclude, assetContent, out aliasOccurred);
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
@@ -1067,10 +1075,10 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
+                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), assetFullPath, log, out assetDirty)
                 : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
 
             // Set location on source code asset
@@ -1079,26 +1087,6 @@ namespace SiliconStudio.Assets
             {
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
-            }
-
-            var assetWithLocation = asset as IAssetWithLocation;
-            if (assetWithLocation != null)
-            {
-                assetWithLocation.AbsoluteSourceLocation = assetFullPath;
-            }
-
-            var projectSourceCodeAsset = asset as IProjectAsset;
-            if (projectSourceCodeAsset != null)
-            {
-                projectSourceCodeAsset.AbsoluteProjectLocation = projectFullPath;
-                projectSourceCodeAsset.ProjectInclude = projectInclude;
-                projectSourceCodeAsset.ProjectName = Path.GetFileNameWithoutExtension(projectFullPath);
-            }
-
-            var generatorAsset = asset as IProjectFileGeneratorAsset;
-            if (generatorAsset != null)
-            {
-                generatorAsset.GeneratedAbsolutePath = new UFile(generatorAsset.AbsoluteSourceLocation).GetFullPathWithoutExtension() + ".cs"; //we generate only .cs so far
             }
 
             return asset;
@@ -1162,10 +1150,13 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private void UpdateSourceFolders()
+        /// <summary>
+        /// In case <see cref="AssetItem.SourceFolder"/> or <see cref="AssetItem.SourceProject"/> were null, generates them.
+        /// </summary>
+        internal void UpdateSourceFolders(IReadOnlyCollection<AssetItem> assets)
         {
             // If there are not assets, we don't need to update or create an asset folder
-            if (Assets.Count == 0)
+            if (assets.Count == 0)
             {
                 return;
             }
@@ -1181,22 +1172,37 @@ namespace SiliconStudio.Assets
             // Use by default the first asset folders if not defined on the asset item
             var defaultFolder = sharedProfile.AssetFolders.Count > 0 ? sharedProfile.AssetFolders.First().Path : UDirectory.This;
             var assetFolders = new HashSet<UDirectory>(GetDistinctAssetFolderPaths());
-            foreach (var asset in Assets)
+            foreach (var asset in assets)
             {
-                if(asset.SourceProject != null) continue; //We don't add assets that depend on a project to the asset folders
-
-                if (asset.SourceFolder == null)
+                if (asset.Asset is IProjectAsset)
                 {
-                    asset.SourceFolder = defaultFolder.IsAbsolute ? defaultFolder.MakeRelative(RootDirectory) : defaultFolder;
-                    asset.IsDirty = true;
+                    if (asset.SourceFolder == null)
+                    {
+                        //var assetProjectFolder = asset.Location.FullPath;
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        if (lib != null)
+                        {
+                            asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);
+                            asset.SourceFolder = asset.SourceProject.GetFullDirectory().GetParent().MakeRelative(RootDirectory);
+                            asset.IsDirty = true;
+                        }
+                    }
                 }
-
-                var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
-                if (!assetFolders.Contains(assetFolderAbsolute) && asset.SourceProject == null) //ignore assets that depend on a csproj
+                else
                 {
-                    assetFolders.Add(assetFolderAbsolute);
-                    sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));
-                    IsDirty = true;
+                    if (asset.SourceFolder == null)
+                    {
+                        asset.SourceFolder = defaultFolder.IsAbsolute ? defaultFolder.MakeRelative(RootDirectory) : defaultFolder;
+                        asset.IsDirty = true;
+                    }
+
+                    var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
+                    if (!assetFolders.Contains(assetFolderAbsolute))
+                    {
+                        assetFolders.Add(assetFolderAbsolute);
+                        sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));
+                        IsDirty = true;
+                    }
                 }
             }
         }
@@ -1320,7 +1326,7 @@ namespace SiliconStudio.Assets
             return listFiles;
         }
 
-        public static List<string> FindAssetsInProject(string projectFullPath, out string nameSpace)
+        public static List<UFile> FindAssetsInProject(string projectFullPath, out string nameSpace)
         {
             var realFullPath = new UFile(projectFullPath);
             var project = VSProjectHelper.LoadProject(realFullPath);
@@ -1331,7 +1337,7 @@ namespace SiliconStudio.Assets
 
             var result = project.Items.Where(x => (x.ItemType == "Compile" || x.ItemType == "None") && string.IsNullOrEmpty(x.GetMetadataValue("AutoGen")))
                 .Select(x => new UFile(x.EvaluatedInclude)).Where(x => AssetRegistry.IsProjectAssetFileExtension(x.GetFileExtension()))
-                .Select(projectItem => UPath.Combine(dir, projectItem)).Select(csPath => (string)csPath).ToList();
+                .Select(projectItem => UPath.Combine(dir, projectItem)).ToList();
 
             project.ProjectCollection.UnloadAllProjects();
             project.ProjectCollection.Dispose();

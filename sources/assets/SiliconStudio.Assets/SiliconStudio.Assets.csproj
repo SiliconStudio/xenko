@@ -59,9 +59,9 @@
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="IAssetPartDesign.cs" />
-    <Compile Include="IAssetWithLocation.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
     <Compile Include="Package.Constants.cs" />
