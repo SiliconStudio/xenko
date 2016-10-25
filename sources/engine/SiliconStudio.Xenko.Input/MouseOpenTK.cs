@@ -3,6 +3,7 @@
 
 #if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 using System;
+using System.Drawing;
 using OpenTK.Input;
 using SiliconStudio.Xenko.Games;
 using GameWindow = OpenTK.GameWindow;
@@ -16,31 +17,31 @@ namespace SiliconStudio.Xenko.Input
         public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
         public override bool IsMousePositionLocked => isMousePositionLocked;
 
-        private GameWindow gameWindow;
+        private GameWindow uiControl;
         private readonly GameBase game;
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;
-        private Vector2 capturedPosition;
+        private Point capturedPosition;
 
-        public MouseOpenTK(GameBase game, GameWindow gameWindow)
+        public MouseOpenTK(GameBase game, GameWindow uiControl)
         {
             this.game = game;
-            this.gameWindow = gameWindow;
-            gameWindow.MouseDown += Mouse_ButtonDown;
-            gameWindow.MouseUp += Mouse_ButtonUp;
-            gameWindow.MouseMove += Mouse_Move;
-            gameWindow.MouseWheel += Mouse_Wheel;
-            gameWindow.Resize += GameWindowOnResize;
+            this.uiControl = uiControl;
+            uiControl.MouseDown += Mouse_ButtonDown;
+            uiControl.MouseUp += Mouse_ButtonUp;
+            uiControl.MouseMove += Mouse_Move;
+            uiControl.MouseWheel += Mouse_Wheel;
+            uiControl.Resize += GameWindowOnResize;
             GameWindowOnResize(null, EventArgs.Empty);
         }
 
         public override void Dispose()
         {
-            gameWindow.MouseDown -= Mouse_ButtonDown;
-            gameWindow.MouseUp -= Mouse_ButtonUp;
-            gameWindow.MouseMove -= Mouse_Move;
-            gameWindow.MouseWheel -= Mouse_Wheel;
-            gameWindow.Resize -= GameWindowOnResize;
+            uiControl.MouseDown -= Mouse_ButtonDown;
+            uiControl.MouseUp -= Mouse_ButtonUp;
+            uiControl.MouseMove -= Mouse_Move;
+            uiControl.MouseWheel -= Mouse_Wheel;
+            uiControl.Resize -= GameWindowOnResize;
         }
 
         public override void LockMousePosition(bool forceCenter)
@@ -53,8 +54,8 @@ namespace SiliconStudio.Xenko.Input
                 {
                     SetMousePosition(new Vector2(0.5f, 0.5f));
                 }
-                var mouseState = Mouse.GetState();
-                capturedPosition = new Vector2(mouseState.X, mouseState.Y);
+                var mouseState = Mouse.GetCursorState();
+                capturedPosition = uiControl.PointToClient(new Point(mouseState.X, mouseState.Y));
                 isMousePositionLocked = true;
             }
         }
@@ -64,7 +65,6 @@ namespace SiliconStudio.Xenko.Input
             if (isMousePositionLocked)
             {
                 isMousePositionLocked = false;
-                capturedPosition = new Vector2();
                 game.IsMouseVisible = wasMouseVisibleBeforeCapture;
             }
         }
@@ -72,12 +72,13 @@ namespace SiliconStudio.Xenko.Input
         public override void SetMousePosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition*SurfaceSize;
+            
             Mouse.SetPosition(position.X, position.Y);
         }
 
         private void GameWindowOnResize(object sender, EventArgs eventArgs)
         {
-            SetSurfaceSize(new Vector2(gameWindow.Width, gameWindow.Height));
+            SetSurfaceSize(new Vector2(uiControl.Width, uiControl.Height));
         }
         
         private void Mouse_Wheel(object sender, MouseWheelEventArgs e)
@@ -90,8 +91,7 @@ namespace SiliconStudio.Xenko.Input
             if (isMousePositionLocked)
             {
                 // Register mouse delta and reset
-                var cursorState = Mouse.GetCursorState();
-                HandleMoveDelta(new Vector2(cursorState.X - capturedPosition.X, cursorState.Y - capturedPosition.Y));
+                HandleMoveDelta(new Vector2(e.XDelta, e.YDelta));
                 Mouse.SetPosition(capturedPosition.X, capturedPosition.Y);
             }
             else
