@@ -1,0 +1,6 @@
+!Texture
+Id: a8861278-2fec-4b4a-9e8c-59985e8fa934
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../Resources/Stand/metal03_gls.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
