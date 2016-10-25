@@ -2,7 +2,7 @@
 Id: f5843999-e7e7-47d1-b2fe-b020a1f57982
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
-Source: ../../../Resources/VRtable/Models/tableB.fbx
+Source: ../../../Resources/Models/tableB.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
     -   ~Id: ad6ab7a3-d537-ef11-b4ae-a277b4aea277
@@ -22,4 +22,4 @@ Materials:
             Material: 07a3e28a-a2db-4249-934f-80749f494332/ba13e600-e1c8-4ba7-b66d-aa0e1489e02e:Materials/board1B
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/Models/tableB.fbx: 00000000000000000000000000000000
+    ../../../Resources/Models/tableB.fbx: f4739af3b3a5eee04b8f16c84110a638

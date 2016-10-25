@@ -5950,8 +5950,8 @@ Hierarchy:
                         AnimationComponent: b1c994b5-3745-4e14-84b3-543f53faa09d/2de1f9e7-358d-48d3-b360-d0f05ad26c60
                         AnimationIdle: d244f461-1061-47d3-a7f2-8ba903cfe23c/75e70d0e-0b33-45f6-a18a-c6d65109fb34:Animations/Gun_Idle
                         AnimationWalk: 972a8df0-a257-40bd-924c-98461b2abb04/6917eb15-cd27-453c-838c-1ddc6efc7983:Animations/Gun_Run
-                        AnimationShoot: 8ffa5478-94e5-4271-80d3-ff1a95530535/a49fd478-024a-4aba-a973-5d2ec3d264cc:Animations/Shoot
-                        AnimationReload: 9e0f4762-b6d2-4e3e-9f68-046543811af1/5628ecfb-1167-4f0f-ac8a-34103724252f:Animations/Reload
+                        AnimationShoot: 8ffa5478-94e5-4271-80d3-ff1a95530535/a49fd478-024a-4aba-a973-5d2ec3d264cc:Animations/Gun_Shoot
+                        AnimationReload: 9e0f4762-b6d2-4e3e-9f68-046543811af1/5628ecfb-1167-4f0f-ac8a-34103724252f:Animations/Gun_Reload
                         TimeFactor: 1.0
         -   Entity:
                 Id: b317a133-8ef0-427f-a966-61f6f75c687c

@@ -34,7 +34,7 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <!-- Limited version used by tools but that doesn't require installation of .NET on most computers (4.5.1 is default of many OS, 4.5.2/4.6 isn't) -->
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
-    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
+    <TargetFrameworkVersionTool>v4.6.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
     <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
     <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
