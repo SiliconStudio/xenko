@@ -9,29 +9,52 @@ namespace SiliconStudio.Xenko.Input.Extensions
     public static class InputManagerExtensions
     {
         /// <summary>
-        /// Injects a Key down event into the events stack
+        /// Injects a Key down event into the events stack, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyDown(this InputManager inputManager, Keys key)
         {
-            //lock (inputManager.KeyboardInputEvents)
-            //{
-            //    inputManager.KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key, Type = KeyboardWinforms.InputEventType.Down });
-            //}
+            SimulatedInputSource.Instance.Keyboard.SimulateDown(key);
         }
 
         /// <summary>
-        /// Injects a Key up (release) event into the events stack
+        /// Injects a Key up (release) event into the events stack, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyUp(this InputManager inputManager, Keys key)
         {
-            //lock (inputManager.KeyboardInputEvents)
-            //{
-            //    inputManager.KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key, Type = KeyboardWinforms.InputEventType.Up });
-            //}
+            SimulatedInputSource.Instance.Keyboard.SimulateUp(key);
+        }
+
+        /// <summary>
+        /// Simulate mouse movement, requires SimulatedInputSource to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="position">Target mouse position</param>
+        public static void SimulateMouseMove(this InputManager inputManager, Vector2 position)
+        {
+            SimulatedInputSource.Instance.Mouse.SetMousePosition(position);
+        }
+        /// <summary>
+        /// Simulate mouse button presses, requires SimulatedInputSource to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="button">the mouse button</param>
+        public static void SimulateMouseDown(this InputManager inputManager, MouseButton button)
+        {
+            SimulatedInputSource.Instance.Mouse.SimulateMouseDown(button);
+        }
+
+        /// <summary>
+        /// Simulate mouse button releases, requires SimulatedInputSource to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="button">the mouse button</param>
+        public static void SimulateMouseUp(this InputManager inputManager, MouseButton button)
+        {
+            SimulatedInputSource.Instance.Mouse.SimulateMouseUp(button);
         }
 
         /// <summary>
@@ -41,8 +64,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
         public static void SimulateTapDown(this InputManager inputManager, Vector2 coords)
         {
-            // TODO: Find a nice way to implement these
-            //inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
         }
 
         /// <summary>
@@ -54,7 +76,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="delta">the delta time between events</param>
         public static void SimulateTapMove(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
         {
-            //inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch, true));
         }
 
         /// <summary>
@@ -66,7 +88,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="delta">the delta time between events</param>
         public static void SimulateTapUp(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
         {
-            //inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch, true));
         }
     }
 }

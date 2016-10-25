@@ -14,10 +14,8 @@ namespace SiliconStudio.Xenko.Input
     {
         public override string DeviceName => "OpenTK Mouse";
         public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
-        public override Vector2 SurfaceSize => surfaceSize;
         public override bool IsMousePositionLocked => isMousePositionLocked;
 
-        private Vector2 surfaceSize;
         private GameWindow gameWindow;
         private readonly GameBase game;
         private bool isMousePositionLocked;
@@ -71,15 +69,15 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void SetMousePosition(Vector2 absolutePosition)
+        public override void SetMousePosition(Vector2 normalizedPosition)
         {
-            Mouse.SetPosition(absolutePosition.X, absolutePosition.Y);
+            Vector2 position = normalizedPosition*SurfaceSize;
+            Mouse.SetPosition(position.X, position.Y);
         }
 
         private void GameWindowOnResize(object sender, EventArgs eventArgs)
         {
-            surfaceSize.X = gameWindow.Width;
-            surfaceSize.Y = gameWindow.Height;
+            SetSurfaceSize(new Vector2(gameWindow.Width, gameWindow.Height));
         }
         
         private void Mouse_Wheel(object sender, MouseWheelEventArgs e)

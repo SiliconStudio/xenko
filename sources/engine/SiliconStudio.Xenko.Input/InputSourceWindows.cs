@@ -22,10 +22,7 @@ namespace SiliconStudio.Xenko.Input
 
         private KeyboardWinforms keyboard;
         private MouseWinforms mouse;
-
-        private System.Drawing.Point capturedPosition;
-        private bool wasMouseVisibleBeforeCapture;
-
+        
         private IntPtr defaultWndProc;
         private Win32Native.WndProc inputWndProc;
 
@@ -91,38 +88,6 @@ namespace SiliconStudio.Xenko.Input
             keyboard?.Dispose();
         }
 
-        public void LockMousePosition(bool forceCenter = false)
-        {
-            if (!IsMousePositionLocked)
-            {
-                wasMouseVisibleBeforeCapture = game.IsMouseVisible;
-                game.IsMouseVisible = false;
-                if (forceCenter)
-                {
-                    SetMousePosition(new Vector2(0.5f, 0.5f));
-                }
-                capturedPosition = Cursor.Position;
-                IsMousePositionLocked = true;
-            }
-        }
-
-        public void UnlockMousePosition()
-        {
-            if (IsMousePositionLocked)
-            {
-                IsMousePositionLocked = false;
-                capturedPosition = System.Drawing.Point.Empty;
-                game.IsMouseVisible = wasMouseVisibleBeforeCapture;
-            }
-        }
-
-        private void SetMousePosition(Vector2 normalizedPosition)
-        {
-            var newPos = uiControl.PointToScreen(
-                new System.Drawing.Point((int)(uiControl.ClientRectangle.Width*normalizedPosition.X), (int)(uiControl.ClientRectangle.Height*normalizedPosition.Y)));
-            Cursor.Position = newPos;
-        }
-
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
         {
             WinFormsKeys virtualKey;
@@ -133,11 +98,13 @@ namespace SiliconStudio.Xenko.Input
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     keyboard?.HandleKeyDown(virtualKey);
+                    heldKeys.Add(virtualKey);
                     break;
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
+                    heldKeys.Remove(virtualKey);
                     keyboard?.HandleKeyUp(virtualKey);
                     break;
                 case Win32Native.WM_CHAR:

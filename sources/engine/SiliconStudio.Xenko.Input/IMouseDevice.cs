@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Attempts to set the pointer position, this only makes sense for mouse pointers
         /// </summary>
-        /// <param name="absolutePosition">The desired position</param>
-        void SetMousePosition(Vector2 absolutePosition);
+        /// <param name="normalizedPosition"></param>
+        void SetMousePosition(Vector2 normalizedPosition);
     }
 }

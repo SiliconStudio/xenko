@@ -23,8 +23,18 @@ namespace SiliconStudio.Xenko.Input
         /// Does InputManager support raw input? By default true.
         /// </summary>
         public static bool UseRawInput = true;
-        
+
         public static Logger Logger = GlobalLogger.GetLogger("Input");
+
+        /// <summary>
+        /// Pointer events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<PointerEvent> PointerEvents => pointerEvents;
+
+        /// <summary>
+        /// Keyboard events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
 
         //this is used in some mobile platform for accelerometer stuff
         internal const float G = 9.81f;
@@ -48,15 +58,16 @@ namespace SiliconStudio.Xenko.Input
         private readonly HashSet<MouseButton> downButtonSet = new HashSet<MouseButton>();
         private readonly HashSet<MouseButton> pressedButtonsSet = new HashSet<MouseButton>();
         private readonly HashSet<MouseButton> releasedButtonsSet = new HashSet<MouseButton>();
-        
-        public readonly List<PointerEvent> PointerEvents = new List<PointerEvent>();
-        public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
+
+        private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
+        private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
         private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
+        private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
 
-        private readonly List<SensorBase> sensors = new List<SensorBase>();
+        private readonly List<SensorDeviceBase> sensors = new List<SensorDeviceBase>();
         private readonly List<GestureEvent> currentGestureEvents = new List<GestureEvent>();
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
 
@@ -72,7 +83,7 @@ namespace SiliconStudio.Xenko.Input
         /// Note that once added to the list the <see cref="GestureConfig"/>s are frozen by the system and cannot be modified anymore.</remarks>
         /// <seealso cref="GestureConfig"/>
         public GestureConfigCollection ActivatedGestures { get; private set; }
-        
+
         /// <summary>
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
@@ -81,32 +92,32 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
         /// </summary>
-        public AccelerometerSensor Accelerometer { get; private set; }
+        public IAccelerometerSensor Accelerometer { get; private set; }
 
         /// <summary>
         /// Gets the reference to the compass sensor. The compass measures the angle between the device top and the north.
         /// </summary>
-        public CompassSensor Compass { get; private set; }
+        public ICompassSensor Compass { get; private set; }
 
         /// <summary>
         /// Gets the reference to the gyroscope sensor. The gyroscope measures the rotation speed of the device.
         /// </summary>
-        public GyroscopeSensor Gyroscope { get; private set; }
+        public IGyroscopeSensor Gyroscope { get; private set; }
 
         /// <summary>
         /// Gets the reference to the user acceleration sensor. The user acceleration sensor measures the acceleration produce by the user on the device (no gravity).
         /// </summary>
-        public UserAccelerationSensor UserAcceleration { get; private set; }
+        public IUserAccelerationSensor UserAcceleration { get; private set; }
 
         /// <summary>
         /// Gets the reference to the gravity sensor. The gravity sensor measures the gravity vector applied to the device.
         /// </summary>
-        public GravitySensor Gravity { get; private set; }
+        public IGravitySensor Gravity { get; private set; }
 
         /// <summary>
         /// Gets the reference to the orientation sensor. The orientation sensor measures orientation of device in the world.
         /// </summary>
-        public OrientationSensor Orientation { get; private set; }
+        public IOrientationSensor Orientation { get; private set; }
 
         /// <summary>
         /// Gets the value indicating if the mouse position is currently locked or not.
@@ -124,7 +135,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value>The gesture events.</value>
         public List<GestureEvent> GestureEvents { get; private set; }
-        
+
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
         /// </summary>
@@ -174,7 +185,22 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of connected gamepads, in no particular order
         /// </summary>
         public IReadOnlyCollection<IGamePadDevice> GamePads => gamePadDevices;
+
+        /// <summary>
+        /// Gets the collection of connected pointing devices (mouses, touchpads, etc)
+        /// </summary>
+        public IReadOnlyCollection<IPointerDevice> Pointers => pointerDevices;
+
+        /// <summary>
+        /// Gets the collection of connected keyboard inputs
+        /// </summary>
+        public IReadOnlyCollection<IKeyboardDevice> Keyboards => keyboardDevices;
         
+        /// <summary>
+        /// Gets the collection of connected sensor devices
+        /// </summary>
+        public IReadOnlyCollection<ISensorDevice> Sensors => sensorDevices;
+
         /// <summary>
         /// Gets the list of keys being pressed down.
         /// </summary>
@@ -196,7 +222,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MouseDelta { get; private set; }
-        
+
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
@@ -204,46 +230,9 @@ namespace SiliconStudio.Xenko.Input
             GestureEvents = currentGestureEvents;
 
             ActivatedGestures = new GestureConfigCollection();
-            //ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
+            ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
-
-            Accelerometer = new AccelerometerSensor();
-            Compass = new CompassSensor();
-            Gyroscope = new GyroscopeSensor();
-            UserAcceleration = new UserAccelerationSensor();
-            Gravity = new GravitySensor();
-            Orientation = new OrientationSensor();
-
-            sensors.Add(Accelerometer);
-            sensors.Add(Compass);
-            sensors.Add(Gyroscope);
-            sensors.Add(UserAcceleration);
-            sensors.Add(Gravity);
-            sensors.Add(Orientation);
-
-            //supportedGamePadButtons.Add(GamePadButton.A);
-            //supportedGamePadButtons.Add(GamePadButton.B);
-            //supportedGamePadButtons.Add(GamePadButton.X);
-            //supportedGamePadButtons.Add(GamePadButton.Y);
-            //supportedGamePadButtons.Add(GamePadButton.Start);
-            //supportedGamePadButtons.Add(GamePadButton.Back);
-            //supportedGamePadButtons.Add(GamePadButton.LeftShoulder);
-            //supportedGamePadButtons.Add(GamePadButton.RightShoulder);
-            //supportedGamePadButtons.Add(GamePadButton.RightThumb);
-            //supportedGamePadButtons.Add(GamePadButton.LeftThumb);
-            //supportedGamePadButtons.Add(GamePadButton.PadUp);
-            //supportedGamePadButtons.Add(GamePadButton.PadDown);
-            //supportedGamePadButtons.Add(GamePadButton.PadLeft);
-            //supportedGamePadButtons.Add(GamePadButton.PadRight);
-            //
-            //for (var i = 0; i < MaximumGamePadCount; i++)
-            //{
-            //    pressedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-            //    releasedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-            //    currentGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-            //    activeGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-            //}
         }
 
         public override void Initialize()
@@ -254,7 +243,7 @@ namespace SiliconStudio.Xenko.Input
             Game.Deactivated += OnApplicationPaused;
 
             // Find all classes that inherit from IInputSource and are enabled for the current game context
-            foreach(var inputSource in inputSourceRegistry.CreateAllInstances())
+            foreach (var inputSource in inputSourceRegistry.CreateAllInstances())
             {
                 if (inputSource.IsEnabled(Game.Context))
                 {
@@ -263,194 +252,12 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Initialize sources
-            foreach(var source in inputSources)
+            foreach (var source in inputSources)
             {
                 source.OnInputDeviceAdded += OnInputDeviceAdded;
                 source.OnInputDeviceRemoved += OnInputDeviceRemoved;
                 source.Initialize(this);
             }
-        }
-
-        protected override void Destroy()
-        {
-            base.Destroy();
-
-            // Destroy all input sources
-            foreach (var source in inputSources)
-            {
-                source.Dispose();
-            }
-
-            Game.Activated -= OnApplicationResumed;
-            Game.Deactivated -= OnApplicationPaused;
-
-            // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
-            OnApplicationPaused(this, EventArgs.Empty);
-        }
-
-        private void OnInputDeviceAdded(object sender, IInputDevice device)
-        {
-            inputDevices.Add(device, (IInputSource)sender);
-            inputDevicesById.Add(device.Id, device);
-            
-            if (device is IKeyboardDevice)
-            {
-                RegisterKeyboard(device as IKeyboardDevice);
-            }
-            else if (device is IPointerDevice)
-            {
-                RegisterPointer(device as IPointerDevice);
-            }
-            else if (device is IGamePadDevice)
-            {
-                RegisterGamePad(device as IGamePadDevice);
-            }
-        }
-
-        private void OnInputDeviceRemoved(object sender, IInputDevice device)
-        {
-            inputDevices.Remove(device);
-            inputDevicesById.Remove(device.Id);
-
-            if (device is IKeyboardDevice)
-            {
-                UnregisterKeyboard(device as IKeyboardDevice);
-            }
-            else if (device is IPointerDevice)
-            {
-                UnregisterPointer(device as IPointerDevice);
-            }
-            else if (device is IGamePadDevice)
-            {
-                UnregisterGamePad(device as IGamePadDevice);
-            }
-        }
-
-        void RegisterPointer(IPointerDevice pointer)
-        {
-            pointerDevices.Add(pointer);
-
-            // Handle pointer events
-            pointer.OnPointer += (sender, evt) =>
-            {
-                var dev = sender as IPointerDevice;
-                Vector2 invSurfaceSize = 1.0f / dev.SurfaceSize;
-
-                // Normalize pointer positions
-                evt.Position *= invSurfaceSize;
-                evt.DeltaPosition *= invSurfaceSize;
-
-                PointerEvents.Add(evt);
-            };
-
-            var mouse = pointer as IMouseDevice;
-            if (mouse != null)
-            {
-                // Handle button events for all mice
-                mouse.OnMouseButton += (sender, evt) =>
-                {
-                    if (evt.State == MouseButtonState.Pressed)
-                    {
-                        downButtonSet.Add(evt.Button);
-                        pressedButtonsSet.Add(evt.Button);
-                    }
-                    else
-                    {
-                        downButtonSet.Remove(evt.Button);
-                        releasedButtonsSet.Add(evt.Button);
-                    }
-                };
-
-                mouse.OnMouseWheel += (sender, evt) =>
-                {
-                    if(Math.Abs(evt.WheelDelta) > Math.Abs(MouseWheelDelta))
-                        MouseWheelDelta = evt.WheelDelta;
-                };
-            }
-        }
-
-        void UnregisterPointer(IPointerDevice pointer)
-        {
-            pointerDevices.Remove(pointer);
-            pointer.OnPointer = null;
-            var mouse = pointer as IMouseDevice;
-            if (mouse != null)
-            {
-                mouse.OnMouseButton = null;
-                mouse.OnMouseWheel = null;
-            }
-        }
-
-        void RegisterKeyboard(IKeyboardDevice keyboard)
-        {
-            keyboardDevices.Add(keyboard);
-
-            // Handle key events for all keyboards
-            keyboard.OnKey += (sender, evt) =>
-            {
-                if (evt.Type == KeyEventType.Pressed)
-                {
-                    downKeysSet.Add(evt.Key);
-                    pressedKeysSet.Add(evt.Key);
-                }
-                else
-                {
-                    downKeysSet.Remove(evt.Key);
-                    releasedKeysSet.Add(evt.Key);
-                }
-                KeyEvents.Add(evt);
-            };
-        }
-
-        void UnregisterKeyboard(IKeyboardDevice keyboard)
-        {
-            keyboardDevices.Remove(keyboard);
-            keyboard.OnKey = null;
-        }
-        
-        void RegisterGamePad(IGamePadDevice gamePad)
-        {
-            gamePadDevices.Add(gamePad);
-            
-            // Find a new index for this gamepad
-            int targetIndex = 0;
-            for (int i = 0; i < gamepadIds.Count; i++)
-            {
-                if (gamepadIds[i] == Guid.Empty)
-                {
-                    targetIndex = i;
-                    break;
-                }
-                targetIndex++;
-            }
-
-            if (targetIndex >= gamepadIds.Count)
-            {
-                gamepadIds.Add(gamePad.Id);
-            }
-            else
-            {
-                gamepadIds[targetIndex] = gamePad.Id;
-            }
-
-            var gamepadBase = gamePad as GamePadDeviceBase;
-            if(gamepadBase == null)
-                throw new InvalidOperationException("Cannot register GamePad id, because it does not inherit from GamePadDeviceBase");
-            gamepadBase.IndexInternal = targetIndex;
-        }
-
-        void UnregisterGamePad(IGamePadDevice gamePad)
-        {
-            // Free the gamepad index in the gamepad list
-            // this will allow another gamepad to use this index again
-            if(gamepadIds.Count <= gamePad.Index || gamePad.Index < 0)
-                throw new IndexOutOfRangeException("Gamepad index was out of range");
-            gamepadIds[gamePad.Index] = Guid.Empty;
-
-            gamePadDevices.Remove(gamePad);
-            gamePad.OnButton = null;
-            gamePad.OnAxisChanged = null;
-            gamePad.OnPovControllerChanged = null;
         }
 
         /// <summary>
@@ -478,48 +285,7 @@ namespace SiliconStudio.Xenko.Input
                 Mouse.UnlockMousePosition();
             }
         }
-        
-        /*
-        private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
-        {
-            switch (trackingCollectionChangedEventArgs.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    StartGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    StopGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Reset:
-                    throw new NotSupportedException("ActivatedGestures collection was modified but the action was not supported by the system.");
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
 
-        private void StartGestureRecognition(GestureConfig config)
-        {
-            gestureConfigToRecognizer.Add(config, config.CreateRecognizer(ScreenAspectRatio));
-        }
-
-        private void StopGestureRecognition(GestureConfig config)
-        {
-            gestureConfigToRecognizer.Remove(config);
-        }
-        */
-
-        protected virtual void SetMousePosition(Vector2 normalizedPosition)
-        {
-            // Set mouse position for first pointer device
-            if(HasMouse)
-            {
-                Mouse.SetMousePosition(normalizedPosition * pointerDevices[0].SurfaceSize);
-            }
-        }
-        
         /// <summary>
         /// Determines whether the specified key is being pressed down.
         /// </summary>
@@ -705,8 +471,8 @@ namespace SiliconStudio.Xenko.Input
             releasedKeysSet.Clear();
             pressedButtonsSet.Clear();
             releasedButtonsSet.Clear();
-            PointerEvents.Clear();
-            KeyEvents.Clear();
+            pointerEvents.Clear();
+            keyEvents.Clear();
             MouseWheelDelta = 0;
 
             // Update all input sources so they can route events to input devices and possible register new devices
@@ -724,54 +490,14 @@ namespace SiliconStudio.Xenko.Input
             // Update mouse position from first pointer
             if (HasPointer)
             {
-                Vector2 invSurfaceSize = 1.0f/pointerDevices[0].SurfaceSize;
-                mousePosition =  pointerDevices[0].AbsolutePosition * invSurfaceSize;
-                MouseDelta = pointerDevices[0].Delta * invSurfaceSize;
+                mousePosition = pointerDevices[0].Position;
+                MouseDelta = pointerDevices[0].Delta;
             }
+
+            // Update gestures
+            UpdateGestureEvents(gameTime.Elapsed);
         }
-
-        /// <summary>
-        /// Used internally to simulate pointer events
-        /// </summary>
-        /// <param name="e"></param>
-        internal void InjectPointerEvent(PointerEvent e)
-        {
-            lock (PointerEvents)
-            {
-                PointerEvents.Add(e);
-            }
-        }
-
-        /*
-        private void UpdateSensors()
-        {
-            CheckAndEnableSensors();
-            UpdateEnabledSensorsData();
-            CheckAndDisableSensors();
-
-            // reset ShouldEnable/Disable and Data values sensor
-            foreach (var sensor in sensors)
-            {
-                // reset the data of disabled sensor (we don't want the sensor data value to be frozen to last enabled value)
-                if (!sensor.IsEnabled)
-                    sensor.ResetData();
-
-                // reset the ShouldBeDisable/Enable internal state
-                sensor.ShouldBeDisabled = false;
-                sensor.ShouldBeEnabled = false;
-            }
-        }
-
-
-
-        private void UpdateGestureEvents(TimeSpan elapsedGameTime)
-        {
-            currentGestureEvents.Clear();
-
-            foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, currentPointerEvents));
-        } */
-
+        
         /// <summary>
         /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
         /// If not enabled only the events of one finger at a time are triggered.
@@ -782,8 +508,285 @@ namespace SiliconStudio.Xenko.Input
         {
             // TODO: Disable input updates, or is this disabled automatically?
         }
+
         public virtual void OnApplicationResumed(object sender, EventArgs e)
         {
+        }
+
+        /// <summary>
+        /// Injects a pointer event into a virtual input device
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="pointerEvent">The pointer event to inject</param>
+        internal void InjectPointerEvent(PointerEvent pointerEvent)
+        {
+            pointerEvents.Add(pointerEvent);
+        }
+
+        internal void ClearPointerEvents()
+        {
+            pointerEvents.Clear();
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            // Destroy all input sources
+            foreach (var source in inputSources)
+            {
+                source.Dispose();
+            }
+
+            Game.Activated -= OnApplicationResumed;
+            Game.Deactivated -= OnApplicationPaused;
+
+            // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
+            OnApplicationPaused(this, EventArgs.Empty);
+        }
+        
+        private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
+        {
+            switch (trackingCollectionChangedEventArgs.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    StartGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    StopGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Reset:
+                    throw new NotSupportedException("ActivatedGestures collection was modified but the action was not supported by the system.");
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void StartGestureRecognition(GestureConfig config)
+        {
+            if (!HasPointer)
+                throw new InvalidOperationException("Need a pointer to use gestures");
+            // TODO: Allow gestures for multiple pointer devices?
+            gestureConfigToRecognizer.Add(config, config.CreateRecognizer(Pointer.SurfaceAspectRatio));
+        }
+
+        private void StopGestureRecognition(GestureConfig config)
+        {
+            if (!HasPointer)
+                throw new InvalidOperationException("Need a pointer to use gestures");
+            gestureConfigToRecognizer.Remove(config);
+        }
+
+        private void SetMousePosition(Vector2 normalizedPosition)
+        {
+            // Set mouse position for first pointer device
+            if (HasMouse)
+            {
+                Mouse.SetMousePosition(normalizedPosition);
+            }
+        }
+
+        private void UpdateGestureEvents(TimeSpan elapsedGameTime)
+        {
+            currentGestureEvents.Clear();
+
+            foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
+                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
+        }
+
+        private void OnInputDeviceAdded(object sender, IInputDevice device)
+        {
+            inputDevices.Add(device, (IInputSource)sender);
+            inputDevicesById.Add(device.Id, device);
+
+            if (device is IKeyboardDevice)
+            {
+                RegisterKeyboard(device as IKeyboardDevice);
+                keyboardDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+            }
+            else if (device is IPointerDevice)
+            {
+                RegisterPointer(device as IPointerDevice);
+                pointerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+            }
+            else if (device is IGamePadDevice)
+            {
+                RegisterGamePad(device as IGamePadDevice);
+                gamePadDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+            }
+            else if (device is ISensorDevice)
+            {
+                RegisterSensor(device as ISensorDevice);
+            }
+        }
+
+        private void OnInputDeviceRemoved(object sender, IInputDevice device)
+        {
+            inputDevices.Remove(device);
+            inputDevicesById.Remove(device.Id);
+
+            if (device is IKeyboardDevice)
+            {
+                UnregisterKeyboard(device as IKeyboardDevice);
+            }
+            else if (device is IPointerDevice)
+            {
+                UnregisterPointer(device as IPointerDevice);
+            }
+            else if (device is IGamePadDevice)
+            {
+                UnregisterGamePad(device as IGamePadDevice);
+            }
+            else if (device is ISensorDevice)
+            {
+                UnregisterSensor(device as ISensorDevice);
+            }
+        }
+
+        private void RegisterPointer(IPointerDevice pointer)
+        {
+            pointerDevices.Add(pointer);
+
+            // Handle pointer events
+            pointer.OnPointer += (sender, evt) =>
+            {
+                var dev = sender as IPointerDevice;
+                pointerEvents.Add(evt);
+            };
+
+            var mouse = pointer as IMouseDevice;
+            if (mouse != null)
+            {
+                // Handle button events for all mice
+                mouse.OnMouseButton += (sender, evt) =>
+                {
+                    if (evt.Type == MouseButtonEventType.Pressed)
+                    {
+                        downButtonSet.Add(evt.Button);
+                        pressedButtonsSet.Add(evt.Button);
+                    }
+                    else
+                    {
+                        downButtonSet.Remove(evt.Button);
+                        releasedButtonsSet.Add(evt.Button);
+                    }
+                };
+
+                mouse.OnMouseWheel += (sender, evt) =>
+                {
+                    if (Math.Abs(evt.WheelDelta) > Math.Abs(MouseWheelDelta))
+                        MouseWheelDelta = evt.WheelDelta;
+                };
+            }
+        }
+
+        private void UnregisterPointer(IPointerDevice pointer)
+        {
+            pointerDevices.Remove(pointer);
+            pointer.OnPointer = null;
+            var mouse = pointer as IMouseDevice;
+            if (mouse != null)
+            {
+                mouse.OnMouseButton = null;
+                mouse.OnMouseWheel = null;
+            }
+        }
+
+        private void RegisterKeyboard(IKeyboardDevice keyboard)
+        {
+            keyboardDevices.Add(keyboard);
+
+            // Handle key events for all keyboards
+            keyboard.OnKey += (sender, evt) =>
+            {
+                if (evt.Type == KeyEventType.Pressed)
+                {
+                    downKeysSet.Add(evt.Key);
+                    pressedKeysSet.Add(evt.Key);
+                }
+                else
+                {
+                    downKeysSet.Remove(evt.Key);
+                    releasedKeysSet.Add(evt.Key);
+                }
+                keyEvents.Add(evt);
+            };
+        }
+
+        private void UnregisterKeyboard(IKeyboardDevice keyboard)
+        {
+            keyboardDevices.Remove(keyboard);
+            keyboard.OnKey = null;
+        }
+
+        private void RegisterGamePad(IGamePadDevice gamePad)
+        {
+            gamePadDevices.Add(gamePad);
+
+            // Find a new index for this gamepad
+            int targetIndex = 0;
+            for (int i = 0; i < gamepadIds.Count; i++)
+            {
+                if (gamepadIds[i] == Guid.Empty)
+                {
+                    targetIndex = i;
+                    break;
+                }
+                targetIndex++;
+            }
+
+            if (targetIndex >= gamepadIds.Count)
+            {
+                gamepadIds.Add(gamePad.Id);
+            }
+            else
+            {
+                gamepadIds[targetIndex] = gamePad.Id;
+            }
+
+            var gamepadBase = gamePad as GamePadDeviceBase;
+            if (gamepadBase == null)
+                throw new InvalidOperationException("Cannot register GamePad id, because it does not inherit from GamePadDeviceBase");
+            gamepadBase.IndexInternal = targetIndex;
+        }
+
+        private void UnregisterGamePad(IGamePadDevice gamePad)
+        {
+            // Free the gamepad index in the gamepad list
+            // this will allow another gamepad to use this index again
+            if (gamepadIds.Count <= gamePad.Index || gamePad.Index < 0)
+                throw new IndexOutOfRangeException("Gamepad index was out of range");
+            gamepadIds[gamePad.Index] = Guid.Empty;
+
+            gamePadDevices.Remove(gamePad);
+            gamePad.OnButton = null;
+            gamePad.OnAxisChanged = null;
+            gamePad.OnPovControllerChanged = null;
+        }
+
+        private void UpdateDefaultSensors()
+        {
+            Accelerometer = (IAccelerometerSensor)sensorDevices.FirstOrDefault(x => x is IAccelerometerSensor);
+            Gyroscope = (IGyroscopeSensor)sensorDevices.FirstOrDefault(x => x is IGyroscopeSensor);
+            Compass = (ICompassSensor)sensorDevices.FirstOrDefault(x => x is ICompassSensor);
+            UserAcceleration = (IUserAccelerationSensor)sensorDevices.FirstOrDefault(x => x is IUserAccelerationSensor);
+            Orientation = (IOrientationSensor)sensorDevices.FirstOrDefault(x => x is IOrientationSensor);
+            Gravity = (IGravitySensor)sensorDevices.FirstOrDefault(x => x is IGravitySensor);
+        }
+
+        private void RegisterSensor(ISensorDevice sensorDevice)
+        {
+            sensorDevices.Add(sensorDevice);
+            UpdateDefaultSensors();
+        }
+
+        private void UnregisterSensor(ISensorDevice sensorDevice)
+        {
+            sensorDevices.Remove(sensorDevice);
+            UpdateDefaultSensors();
         }
 
         /// <summary>

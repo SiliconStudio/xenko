@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Input
                 };
                 controller.SetVibration(vibration);
             }
-            catch (SharpDXException ex)
+            catch (SharpDXException)
             {
                 OnDisconnect?.Invoke(this, null);
                 Dispose();

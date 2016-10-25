@@ -8,16 +8,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// This class represents a sensor of type Gyroscope. It measures the rotation speed of device along the x/y/z axis.
     /// </summary>
-    public class GyroscopeSensor : SensorBase
+    public interface IGyroscopeSensor : ISensorDevice
     {
         /// <summary>
         /// Gets the current rotation speed of the device along x/y/z axis.
         /// </summary>
-        public Vector3 RotationRate { get; internal set; }
-
-        internal override void ResetData()
-        {
-            RotationRate = Vector3.Zero;
-        }
+        Vector3 RotationRate { get; }
     }
 }

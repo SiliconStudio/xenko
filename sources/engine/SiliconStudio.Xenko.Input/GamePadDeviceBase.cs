@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using SharpDX.DirectInput;
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -15,6 +13,7 @@ namespace SiliconStudio.Xenko.Input
     {
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
+        public int Priority { get; set; }
         public bool Connected => !disposed;
         public int Index => IndexInternal;
 

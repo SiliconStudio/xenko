@@ -47,6 +47,14 @@
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' ">
       <ItemGroup>
+        <Reference Include="SharpDX">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+        </Reference>
+        <Reference Include="SharpDX.RawInput">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
+        </Reference>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXInputSdkBinDir)\SharpDX.XInput.dll</HintPath>
@@ -58,7 +66,11 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AccelerometerSensor.cs" />
+    <Compile Include="AccelerometerAndroid.cs" />
+    <Compile Include="CompassSensorAndroid.cs" />
+    <Compile Include="GravitySensorAndroid.cs" />
+    <Compile Include="GyroscopeSensorAndroid.cs" />
+    <Compile Include="IAccelerometerSensor.cs" />
     <Compile Include="CustomGamePad.cs" />
     <Compile Include="CustomGamePadState.cs" />
     <Compile Include="Data\GamePadAxisVirtualButtonDesc.cs" />
@@ -94,15 +106,18 @@
     <Compile Include="GestureShape.cs" />
     <Compile Include="GestureState.cs" />
     <Compile Include="GestureType.cs" />
-    <Compile Include="GravitySensor.cs" />
-    <Compile Include="GyroscopeSensor.cs" />
+    <Compile Include="IGravitySensor.cs" />
+    <Compile Include="IGyroscopeSensor.cs" />
     <Compile Include="IGamePadDevice.cs" />
     <Compile Include="IGamePadVibration.cs" />
     <Compile Include="IInputDevice.cs" />
     <Compile Include="IInputSource.cs" />
     <Compile Include="IKeyboardDevice.cs" />
     <Compile Include="IMouseDevice.cs" />
+    <Compile Include="InputDeviceUtils.cs" />
+    <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputSource.cs" />
+    <Compile Include="InputSourceAndroid.cs" />
     <Compile Include="InputSourceOpenTK.cs" />
     <Compile Include="InputSourceSDL.cs" />
     <Compile Include="InputSourceWindowsDirectInput.cs" />
@@ -111,22 +126,30 @@
     <Compile Include="IPointerDevice.cs" />
     <Compile Include="InputBinding.cs" />
     <Compile Include="InputManager.cs" />
-    <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputMapper.cs" />
+    <Compile Include="ISensorDevice.cs" />
+    <Compile Include="KeyboardAndroid.cs" />
     <Compile Include="KeyboardDeviceBase.cs" />
     <Compile Include="KeyboardOpenTK.cs" />
     <Compile Include="KeyboardSDL.cs" />
     <Compile Include="KeyboardWindowsRawInput.cs" />
     <Compile Include="KeyboardWinforms.cs" />
     <Compile Include="MouseButtonEvent.cs" />
-    <Compile Include="MouseButtonState.cs" />
+    <Compile Include="MouseButtonEventType.cs" />
     <Compile Include="MouseDeviceBase.cs" />
     <Compile Include="MouseOpenTK.cs" />
     <Compile Include="MouseSDL.cs" />
     <Compile Include="MouseWheelEvent.cs" />
     <Compile Include="MouseWinforms.cs" />
+    <Compile Include="OrientationSensorAndroid.cs" />
+    <Compile Include="PointerAndroid.cs" />
     <Compile Include="PointerDeviceBase.cs" />
     <Compile Include="PointerDeviceType.cs" />
+    <Compile Include="SensorAndroid.cs" />
+    <Compile Include="SensorDeviceBase.cs" />
+    <Compile Include="SensorEvent.cs" />
+    <Compile Include="SensorExtensions.cs" />
+    <Compile Include="SimulatedInputSource.cs" />
     <Compile Include="TypeBasedRegistry.cs" />
     <Compile Include="InputSourceWindows.cs" />
     <Compile Include="IVirtualButton.cs" />
@@ -139,7 +162,7 @@
     <Compile Include="MouseAxis.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="OrientationSensor.cs" />
+    <Compile Include="IOrientationSensor.cs" />
     <Compile Include="PointerEvent.cs" />
     <Compile Include="PointerState.cs" />
     <Compile Include="PointerType.cs" />
@@ -151,8 +174,8 @@
     <Compile Include="GestureRecognizerLongPress.cs" />
     <Compile Include="GestureRecognizerComposite.cs" />
     <Compile Include="GestureRecognizerTap.cs" />
-    <Compile Include="SensorBase.cs" />
-    <Compile Include="UserAccelerationSensor.cs" />
+    <Compile Include="IUserAccelerationSensor.cs" />
+    <Compile Include="UserAccelerationSensorAndroid.cs" />
     <Compile Include="VirtualButton.cs" />
     <Compile Include="VirtualButton.Keyboard.cs" />
     <Compile Include="VirtualButton.Mouse.cs" />
@@ -194,9 +217,6 @@
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

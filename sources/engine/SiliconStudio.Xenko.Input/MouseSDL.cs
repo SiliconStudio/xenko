@@ -14,10 +14,8 @@ namespace SiliconStudio.Xenko.Input
     {
         public override string DeviceName => "SDL Mouse";
         public override Guid Id => new Guid("0ccaf48e-e371-4b34-b6bb-a3720f6742a8");
-        public override Vector2 SurfaceSize => surfaceSize;
         public override bool IsMousePositionLocked => isMousePositionLocked;
         
-        private Vector2 surfaceSize;
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;
         private GameBase game;
@@ -71,15 +69,15 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void SetMousePosition(Vector2 absolutePosition)
+        public override void SetMousePosition(Vector2 normalizedPosition)
         {
-            Cursor.Position = new Point((int)absolutePosition.X, (int)absolutePosition.Y);
+            Vector2 position = normalizedPosition*SurfaceSize;
+            Cursor.Position = new Point((int)position.X, (int)position.Y);
         }
         
         private void OnSizeChanged(SDL.SDL_WindowEvent eventArgs)
         {
-            surfaceSize.X = uiControl.ClientSize.Width;
-            surfaceSize.Y = uiControl.ClientSize.Height;
+            SetSurfaceSize(new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height));
         }
 
         private void OnMouseWheelEvent(SDL.SDL_MouseWheelEvent sdlMouseWheelEvent)

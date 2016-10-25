@@ -8,16 +8,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// This class represents a sensor of type Accelerometer. It measures the acceleration forces (including gravity) applying on the device.
     /// </summary>
-    public class AccelerometerSensor : SensorBase
+    public interface IAccelerometerSensor : ISensorDevice
     {
         /// <summary>
         /// Gets the current acceleration applied on the device (in meters/seconds^2).
         /// </summary>
-        public Vector3 Acceleration { get; internal set; }
-
-        internal override void ResetData()
-        {
-            Acceleration = Vector3.Zero;
-        }
+        Vector3 Acceleration { get; }
     }
 }

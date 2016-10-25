@@ -15,6 +15,11 @@ namespace SiliconStudio.Xenko.Input
         EventHandler<PointerEvent> OnPointer { get; set; }
 
         /// <summary>
+        /// Raised when the sureface size of this pointer changed
+        /// </summary>
+        EventHandler OnSurfaceSizeChanged { get; set; }
+
+        /// <summary>
         /// List of pointer events since the last update
         /// </summary>
         IReadOnlyList<PointerEvent> PointerEvents { get; }
@@ -25,18 +30,25 @@ namespace SiliconStudio.Xenko.Input
         PointerType Type { get; }
 
         /// <summary>
-        /// Absolute position of the pointer
+        /// Normalized position(0,1) of the pointer
         /// </summary>
-        Vector2 AbsolutePosition { get; }
+        Vector2 Position { get; }
 
         /// <summary>
         /// Difference from the last position to the current position
         /// </summary>
         Vector2 Delta { get; }
+        
+        // TODO: Add interface for multiple pointer Id's, so that the Position,Delta,State,etc. can be retrieved
 
         /// <summary>
         /// The size of the surface used by the pointer, for a mouse this is the size of the window, for a touch device, the size of the touch area, etc.
         /// </summary>
         Vector2 SurfaceSize { get; }
+
+        /// <summary>
+        /// The size of the surface used by the pointer, for a mouse this is the size of the window, for a touch device, the size of the touch area, etc.
+        /// </summary>
+        float SurfaceAspectRatio { get; }
     }
 }

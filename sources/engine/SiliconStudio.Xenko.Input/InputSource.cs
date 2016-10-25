@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Input
             // Does nothing by default
         }
 
+
         public virtual void Scan()
         {
             // Does nothing by default

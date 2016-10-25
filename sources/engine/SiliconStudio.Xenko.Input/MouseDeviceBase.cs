@@ -21,8 +21,7 @@ namespace SiliconStudio.Xenko.Input
         public override PointerType Type => PointerType.Mouse;
 
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
-
-        private readonly List<MouseInputEvent> mouseInputEvents = new List<MouseInputEvent>();
+        protected readonly List<MouseInputEvent> mouseInputEvents = new List<MouseInputEvent>();
 
         public override void Update()
         {
@@ -33,11 +32,11 @@ namespace SiliconStudio.Xenko.Input
             {
                 if (evt.Type == MouseInputEventType.Down)
                 {
-                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Pressed });
+                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, Type = MouseButtonEventType.Pressed });
                 }
                 else if (evt.Type == MouseInputEventType.Up)
                 {
-                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Released });
+                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, Type = MouseButtonEventType.Released });
                 }
                 else if (evt.Type == MouseInputEventType.Scroll)
                 {
@@ -52,7 +51,7 @@ namespace SiliconStudio.Xenko.Input
             return DownButtons.Contains(button);
         }
 
-        public abstract void SetMousePosition(Vector2 absolutePosition);
+        public abstract void SetMousePosition(Vector2 normalizedPosition);
 
         public void HandleButtonDown(MouseButton button)
         {

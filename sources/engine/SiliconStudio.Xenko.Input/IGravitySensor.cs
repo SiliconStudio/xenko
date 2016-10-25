@@ -8,16 +8,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// This class represents a sensor of type Gravity. It measures the gravity force applying on the device.
     /// </summary>
-    public class GravitySensor : SensorBase
+    public interface IGravitySensor : ISensorDevice
     {
         /// <summary>
         /// Gets the current gravity applied on the device (in meters/seconds^2).
         /// </summary>
-        public Vector3 Vector { get; internal set; }
-
-        internal override void ResetData()
-        {
-            Vector = Vector3.Zero;
-        }
+        Vector3 Vector { get; }
     }
 }

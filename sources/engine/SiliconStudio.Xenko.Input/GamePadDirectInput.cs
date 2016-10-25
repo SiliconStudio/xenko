@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Input
                     HandlePovController(i, v, state.PovControllers[i] >= 0);
                 }
             }
-            catch (SharpDXException ex)
+            catch (SharpDXException)
             {
                 OnDisconnect?.Invoke(this, null);
                 Dispose();

@@ -8,6 +8,6 @@ namespace SiliconStudio.Xenko.Input
     public class MouseButtonEvent : EventArgs
     {
         public MouseButton Button;
-        public MouseButtonState State;
+        public MouseButtonEventType Type;
     }
 }

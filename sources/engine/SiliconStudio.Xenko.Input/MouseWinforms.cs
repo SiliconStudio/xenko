@@ -16,29 +16,32 @@ namespace SiliconStudio.Xenko.Input
         public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
         public override bool IsMousePositionLocked => isMousePositionLocked;
         public override PointerType Type => PointerType.Mouse;
-        public override Vector2 SurfaceSize => surfaceSize;
-
-        private Vector2 surfaceSize;
+        
         private readonly GameBase game;
         private readonly Control uiControl;
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;
         private Point capturedPosition;
 
+        // Stored position for SetMousePosition
+        private Point targetMousePosition;
+        private bool shouldSetMousePosition;
+
         public MouseWinforms(GameBase game, Control uiControl)
         {
             this.game = game;
             this.uiControl = uiControl;
-            surfaceSize = new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height);
 
             uiControl.GotFocus += OnGotFocus;
             uiControl.LostFocus += OnLostFocus;
             uiControl.MouseMove += OnMouseMove;
             uiControl.MouseDown += OnMouseDown;
             uiControl.MouseUp += OnMouseUp;
-            uiControl.MouseWheel += OnMouseWheel;
+            uiControl.MouseWheel += OnMouseWheelEvent;
             uiControl.MouseCaptureChanged += OnLostMouseCaptureWinForms;
             uiControl.SizeChanged += OnSizeChanged;
+
+            OnSizeChanged(this, null);
         }
 
         public override void Dispose()
@@ -49,15 +52,31 @@ namespace SiliconStudio.Xenko.Input
             uiControl.MouseMove -= OnMouseMove;
             uiControl.MouseDown -= OnMouseDown;
             uiControl.MouseUp -= OnMouseUp;
-            uiControl.MouseWheel -= OnMouseWheel;
+            uiControl.MouseWheel -= OnMouseWheelEvent;
             uiControl.MouseCaptureChanged -= OnLostMouseCaptureWinForms;
             uiControl.SizeChanged -= OnSizeChanged;
         }
-        
-        public override void SetMousePosition(Vector2 absolutePosition)
+
+        public override void Update()
         {
-            var newPos = uiControl.PointToScreen(new System.Drawing.Point((int)absolutePosition.X, (int)absolutePosition.Y));
-            Cursor.Position = newPos;
+            base.Update();
+
+            // Set mouse position
+            if (shouldSetMousePosition)
+            {
+                Cursor.Position = targetMousePosition;
+                shouldSetMousePosition = false;
+            }
+        }
+
+        public override void SetMousePosition(Vector2 normalizedPosition)
+        {
+            Vector2 position = normalizedPosition*SurfaceSize;
+
+            // Store setting of mouse position since it will keep the message loop goining infinitely otherwise
+            var targetPoint = new Point((int)position.X, (int)position.Y);
+            targetMousePosition = uiControl.PointToScreen(targetPoint);
+            shouldSetMousePosition = true;
         }
 
         public override void LockMousePosition(bool forceCenter = false)
@@ -68,7 +87,7 @@ namespace SiliconStudio.Xenko.Input
                 game.IsMouseVisible = false;
                 if (forceCenter)
                 {
-                    SetMousePosition(new Vector2(0.5f, 0.5f));
+                    capturedPosition = uiControl.PointToScreen(new Point(uiControl.ClientSize.Width/2, uiControl.ClientSize.Height/2));
                 }
                 capturedPosition = Cursor.Position;
                 isMousePositionLocked = true;
@@ -91,7 +110,8 @@ namespace SiliconStudio.Xenko.Input
             {
                 // Register mouse delta and reset
                 HandleMoveDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
-                Cursor.Position = capturedPosition;
+                targetMousePosition = capturedPosition;
+                shouldSetMousePosition = true;
             }
             else
             {
@@ -101,10 +121,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnSizeChanged(object sender, EventArgs eventArgs)
         {
-            surfaceSize = new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height);
+            SetSurfaceSize(new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height));
         }
-        
-        private void OnMouseWheel(object sender, MouseEventArgs mouseEventArgs)
+
+        private void OnMouseWheelEvent(object sender, MouseEventArgs mouseEventArgs)
         {
             HandleMouseWheel(mouseEventArgs.Delta);
         }

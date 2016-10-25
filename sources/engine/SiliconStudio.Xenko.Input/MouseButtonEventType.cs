@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// The state a mouse button can be in or transition from to
+    /// The state a mouse button can be in or transition from to. Used by <see cref="MouseButtonEvent"/>
     /// </summary>
-    public enum MouseButtonState
+    public enum MouseButtonEventType
     {
         Pressed,
         Released

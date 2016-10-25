@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Input
     {
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
+        public int Priority { get; set; }
 
         public EventHandler<KeyEvent> OnKey { get; set; }
         public readonly HashSet<Keys> DownKeys = new HashSet<Keys>();
