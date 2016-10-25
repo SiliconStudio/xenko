@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -17,10 +18,9 @@ namespace SiliconStudio.Assets.Serializers
     {
         public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred, out Dictionary<MemberPath, OverrideType> overrides)
         {
-            ContextPropertyCollection properties;
+            PropertyContainer properties;
             var result = YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
-            object property;
-            overrides = properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out property) ? (Dictionary<MemberPath, OverrideType>)property : null;
+            properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out overrides);
             return result;
         }
 

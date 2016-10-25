@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="contextSettings">The context settings.</param>
         /// <param name="aliasOccurred">if set to <c>true</c> a class/field/property/enum name has been renamed during deserialization.</param>
         /// <returns>An instance of the YAML data.</returns>
-        public static object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred, out ContextPropertyCollection contextProperties)
+        public static object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred, out PropertyContainer contextProperties)
         {
             var serializer = GetYamlSerializer();
             SerializerContext context;

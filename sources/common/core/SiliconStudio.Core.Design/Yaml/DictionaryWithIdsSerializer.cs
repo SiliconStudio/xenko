@@ -38,8 +38,8 @@ namespace SiliconStudio.Core.Yaml
             // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
             if (info.Instance != null)
             {
-                object property;
-                var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+                ICollection<Guid> deletedItems;
+                objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
                 TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
             objectContext.Instance = info.Instance;
@@ -122,8 +122,8 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDeletedItems(ref ObjectContext objectContext)
         {
-            object property;
-            var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+            ICollection<Guid> deletedItems;
+            objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
             if (deletedItems != null)
             {
                 var keyValueType = new KeyValuePair<Type, Type>(typeof(string), typeof(string));

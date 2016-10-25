@@ -43,10 +43,10 @@ namespace SiliconStudio.Core.Yaml
             // Check if we enter a context where collection items are not identifiable anymore (see doc of the related attribute)
             if (objectContext.Descriptor.Type.GetCustomAttribute<NonIdentifiableCollectionItemsAttribute>() != null)
             {
-                if (!objectContext.SerializerContext.Properties.ContainsKey(NonIdentifiableCollectionItemsAttribute.Key))
+                if (!objectContext.SerializerContext.Properties.ContainsKey(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey))
                 {
                     token.NonIdentifiableItems = true;
-                    objectContext.SerializerContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
+                    objectContext.SerializerContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
                 }
             }
             return token;
@@ -57,7 +57,7 @@ namespace SiliconStudio.Core.Yaml
             // Restore contexts that must be restored
             if (contextToken.NonIdentifiableItems)
             {
-                objectContext.SerializerContext.Properties.Remove(NonIdentifiableCollectionItemsAttribute.Key);
+                objectContext.SerializerContext.Properties.Remove(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey);
             }
         }
     }

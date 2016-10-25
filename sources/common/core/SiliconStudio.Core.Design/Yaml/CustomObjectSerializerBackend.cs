@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -20,8 +19,8 @@ namespace SiliconStudio.Core.Yaml
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private ITypeDescriptor cachedDescriptor;
-        private static readonly object MemberPathKey = new object();
-        public static readonly object OverrideDictionaryKey = new object();
+        private static readonly PropertyKey<MemberPath> MemberPathKey = new PropertyKey<MemberPath>("MemberPath", typeof(CustomObjectSerializerBackend));
+        public static readonly PropertyKey<Dictionary<MemberPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<MemberPath, OverrideType>>("OverrideDictionary", typeof(CustomObjectSerializerBackend));
 
         public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
@@ -36,7 +35,7 @@ namespace SiliconStudio.Core.Yaml
             var member = memberDescriptor as MemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
-                memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
+                memberObjectContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
             }
 
             var memberPath = GetCurrentPath(ref objectContext, true);
@@ -53,7 +52,7 @@ namespace SiliconStudio.Core.Yaml
             var member = memberDescriptor as MemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
-                memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
+                memberObjectContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
             }
 
             WriteYaml(ref memberObjectContext);
@@ -74,13 +73,12 @@ namespace SiliconStudio.Core.Yaml
                 }
                 var memberDescriptor = cachedDescriptor[realMemberName];
 
-                object property;
-                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
+                Dictionary<MemberPath, OverrideType> overrides;
+                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    property = new Dictionary<MemberPath, OverrideType>();
-                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
+                    overrides = new Dictionary<MemberPath, OverrideType>();
+                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
-                var overrides = (Dictionary<MemberPath, OverrideType>)property;
 
                 var memberPath = GetCurrentPath(ref objectContext, true);
                 memberPath.Push(memberDescriptor);
@@ -149,13 +147,12 @@ namespace SiliconStudio.Core.Yaml
 
             if (overrideType != OverrideType.Base)
             {
-                object property;
-                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
+                Dictionary<MemberPath, OverrideType> overrides;
+                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {
-                    property = new Dictionary<MemberPath, OverrideType>();
-                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
+                    overrides = new Dictionary<MemberPath, OverrideType>();
+                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
                 }
-                var overrides = (Dictionary<MemberPath, OverrideType>)property;
 
                 var memberPath = GetCurrentPath(ref objectContext, true);
                 memberPath.Push(objectContext.Descriptor, keyValue);
@@ -192,7 +189,7 @@ namespace SiliconStudio.Core.Yaml
 
         private static void SetCurrentPath(ref ObjectContext objectContext, MemberPath path)
         {
-            objectContext.Properties[MemberPathKey] = path;
+            objectContext.Properties.Set(MemberPathKey, path);
         }
 
         private static string TrimAndParseOverride(string name, out OverrideType overrideType)

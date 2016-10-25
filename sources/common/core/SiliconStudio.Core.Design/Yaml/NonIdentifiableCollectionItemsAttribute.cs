@@ -12,7 +12,5 @@ namespace SiliconStudio.Core.Yaml
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Property | AttributeTargets.Field)]
     public class NonIdentifiableCollectionItemsAttribute : Attribute
     {
-        // TODO: switch to PropertyKey and potentially move it somewhere else.
-        public static readonly object Key = new object();
     }
 }

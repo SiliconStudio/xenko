@@ -44,7 +44,6 @@
     <Compile Include="Events\SequenceStart.cs" />
     <Compile Include="MemoryParser.cs" />
     <Compile Include="Serialization\AnchorEventEmitter.cs" />
-    <Compile Include="Serialization\ContextPropertyCollection.cs" />
     <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
     <Compile Include="Serialization\FlatNamingConvention.cs" />
     <Compile Include="Serialization\IOrderedDictionary.cs" />

@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -45,7 +44,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             SerializerContext = serializerContext;
             Instance = instance;
             Descriptor = descriptor;
-            Properties = new ContextPropertyCollection();
+            Properties = new PropertyContainer();
         }
 
         /// <summary>
@@ -105,6 +104,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The dictionary containing custom properties for this context.
         /// </summary>
-        public ContextPropertyCollection Properties { get; }
+        public PropertyContainer Properties;
     }
 }

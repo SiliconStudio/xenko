@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Reflection
     /// Allows to get/set a property/field value on a deeply nested object instance (supporting 
     /// members, list access and dictionary access)
     /// </summary>
+    [DataContract] // TODO: make this class actually serializable (added data contract only to avoid AssemblyProcessor issues since it's used in a property key)
     public sealed class MemberPath
     {
         /// <summary>

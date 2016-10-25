@@ -139,7 +139,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// Gets the dictionary of custom properties associated to this context.
         /// </summary>
-        public ContextPropertyCollection Properties { get; } = new ContextPropertyCollection();
+        public PropertyContainer Properties { get; } = new PropertyContainer();
 
         /// <summary>
         /// Gets or sets the type of the create.

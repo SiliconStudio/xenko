@@ -51,8 +51,8 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            object property;
-            if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out property))
+            InstanceInfo info;
+            if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out info))
             {
                 base.TransformObjectAfterRead(ref objectContext);
 
@@ -74,11 +74,11 @@ namespace SiliconStudio.Core.Yaml
                 }
                 return;
             }
-            var info = (InstanceInfo)property;
 
             if (info.Instance != null)
             {
-                var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+                ICollection<Guid> deletedItems;
+                objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
                 TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
             objectContext.Instance = info.Instance;
@@ -144,8 +144,8 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDeletedItems(ref ObjectContext objectContext)
         {
-            object property;
-            var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+            ICollection<Guid> deletedItems;
+            objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
             if (deletedItems != null)
             {
                 var keyValueType = new KeyValuePair<Type, Type>(typeof(Guid), typeof(string));

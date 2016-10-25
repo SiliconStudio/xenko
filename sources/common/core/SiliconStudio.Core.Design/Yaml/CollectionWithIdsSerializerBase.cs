@@ -20,13 +20,17 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         public const string YamlDeletedKey = "~(Deleted)";
         /// <summary>
+        /// A property key to indicate whether a collection has non-identifiable items
+        /// </summary>
+        public static readonly PropertyKey<bool> NonIdentifiableCollectionItemsKey = new PropertyKey<bool>("NonIdentifiableCollectionItems", typeof(CollectionWithIdsSerializer));
+        /// <summary>
         /// A key that identifies the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary.
         /// </summary>
-        protected static readonly object InstanceInfoKey = new object();
+        protected static readonly PropertyKey<InstanceInfo> InstanceInfoKey = new PropertyKey<InstanceInfo>("InstanceInfo", typeof(CollectionWithIdsSerializer));
         /// <summary>
         /// A key that identifies deleted items during deserialization.
         /// </summary>
-        protected static readonly object DeletedItemsKey = new object();
+        protected static readonly PropertyKey<ICollection<Guid>> DeletedItemsKey = new PropertyKey<ICollection<Guid>>("DeletedItems", typeof(CollectionWithIdsSerializer));
 
         /// <summary>
         /// A structure containing the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary. 
@@ -253,14 +257,14 @@ namespace SiliconStudio.Core.Yaml
 
         protected static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
         {
-            object nonIdentifiableItems;
+            bool nonIdentifiableItems;
 
             // Check in the serializer context first, for disabling of item identifiers at parent type level
-            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
+            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsKey, out nonIdentifiableItems) && nonIdentifiableItems)
                 return false;
 
             // Then check locally for disabling of item identifiers at member level
-            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
+            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsKey, out nonIdentifiableItems) && nonIdentifiableItems)
                 return false;
 
             return true;
