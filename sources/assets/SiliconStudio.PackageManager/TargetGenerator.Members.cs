@@ -2,16 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using NuGet;
 
 namespace SiliconStudio.PackageManager
 {
     partial class TargetGenerator
     {
         private readonly NugetStore store;
-        private readonly List<IPackage> packages;
+        private readonly List<NugetPackage> packages;
 
-        internal TargetGenerator(NugetStore store, List<IPackage> packages)
+        internal TargetGenerator(NugetStore store, List<NugetPackage> packages)
         {
             this.store = store;
             this.packages = packages;

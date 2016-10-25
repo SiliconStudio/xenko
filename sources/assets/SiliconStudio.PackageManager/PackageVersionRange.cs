@@ -14,6 +14,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using NuGet;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.PackageManager
@@ -343,33 +344,6 @@ namespace SiliconStudio.PackageManager
             versionBuilder.Append(IsMaxInclusive ? ']' : ')');
 
             return versionBuilder.ToString();
-        }
-
-        public static PackageVersionRange FromVersionSpec(NugetVersionSpec spec)
-        {
-            if (spec == null)
-            {
-                return null;
-            }
-
-            return new PackageVersionRange()
-                {
-                    MinVersion = PackageVersion.FromSemanticVersion(spec.MinVersion),
-                    IsMinInclusive = spec.IsMinInclusive,
-                    MaxVersion = PackageVersion.FromSemanticVersion(spec.MaxVersion),
-                    IsMaxInclusive = spec.IsMaxInclusive
-                };
-        }
-
-        public NugetVersionSpec ToVersionSpec()
-        {
-            return new NugetVersionSpec()
-                {
-                    MinVersion = MinVersion != null ? MinVersion.ToSemanticVersion() : null,
-                    IsMinInclusive = IsMinInclusive,
-                    MaxVersion = MaxVersion != null ? MaxVersion.ToSemanticVersion() : null,
-                    IsMaxInclusive = IsMaxInclusive
-                };
         }
 
         public Func<T, bool> ToFilter<T>(Func<T, PackageVersion> extractor)

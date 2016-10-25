@@ -23,7 +23,7 @@ namespace SiliconStudio.PackageManager
                 var res = new DefaultConstraintProvider();
                 foreach (var constraint in provider.Constraints)
                 {
-                    res.AddConstraint(constraint.Key, constraint.Value.ToVersionSpec().VersionSpec);
+                    res.AddConstraint(constraint.Key, constraint.Value.ToVersionSpec());
                 }
                 return res;
             }
@@ -41,6 +41,18 @@ namespace SiliconStudio.PackageManager
                 max = new PackageVersion(version.MaxVersion.Version);
             }
             return new PackageVersionRange(min, version.IsMinInclusive, max, version.IsMaxInclusive);
+        }
+
+
+        public static VersionSpec ToVersionSpec(this PackageVersionRange range)
+        {
+            return new VersionSpec()
+            {
+                MinVersion = range.MinVersion != null ? range.MinVersion.ToSemanticVersion().SemanticVersion : null,
+                IsMinInclusive = range.IsMinInclusive,
+                MaxVersion = range.MaxVersion != null ? range.MaxVersion.ToSemanticVersion().SemanticVersion : null,
+                IsMaxInclusive = range.IsMaxInclusive
+            };
         }
     }
 }

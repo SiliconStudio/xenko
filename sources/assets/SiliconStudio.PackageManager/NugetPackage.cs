@@ -34,7 +34,7 @@ namespace SiliconStudio.PackageManager
 
         public override int GetHashCode()
         {
-            return (_packageMetadata != null ? _packageMetadata.GetHashCode() : 0);
+            return _packageMetadata?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetPackage left, NugetPackage right)

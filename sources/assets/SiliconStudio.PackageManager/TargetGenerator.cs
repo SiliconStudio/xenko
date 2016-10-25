@@ -45,7 +45,7 @@ namespace SiliconStudio.PackageManager
 		var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", store.RepositoryPath, package.Id, "$(" + packageVar + ")");
 		
 		// Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
-		var defaultPackageVersion = store.FindLocalPackagesById(package.Id).Select(x => x.Version.SemanticVersion).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
+		var defaultPackageVersion = store.FindLocalPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Major == 1 && x.Minor == 0) ?? package.Version;
 	
             
             #line default

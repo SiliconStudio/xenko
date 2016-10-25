@@ -40,7 +40,6 @@
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
     <Compile Include="NugetSemanticVersion.cs" />
-    <Compile Include="NugetVersionSpec.cs" />
     <Compile Include="PackageManagerConstants.cs" />
     <Compile Include="NullPackageManagerLogger.cs" />
     <Compile Include="PackageVersion.cs" />

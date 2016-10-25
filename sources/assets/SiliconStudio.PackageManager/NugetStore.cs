@@ -204,7 +204,7 @@ namespace SiliconStudio.PackageManager
             }
         }
 
-        private List<NuGet.IPackage> UpdateTargetsInternal()
+        private void UpdateTargetsInternal()
         {
             // We don't want to polute the Common.targets file with internal packages
             var packages = GetRootPackagesInDependencyOrder().Where(package => !(package.Tags != null && package.Tags.Contains("internal"))).ToList();
@@ -221,21 +221,19 @@ namespace SiliconStudio.PackageManager
                 Directory.CreateDirectory(targetFilePath);
 
             File.WriteAllText(targetFile, targetFileContent, Encoding.UTF8);
-
-            return packages;
         }
 
-        private List<NuGet.IPackage> GetRootPackagesInDependencyOrder()
+        private List<NugetPackage> GetRootPackagesInDependencyOrder()
         {
-            var packagesInOrder = new List<NuGet.IPackage>();
+            var packagesInOrder = new List<NugetPackage>();
 
             // Get all packages
-            var packages = new HashSet<NuGet.IPackage>();
+            var packages = new HashSet<NugetPackage>();
             foreach (var package in manager.LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
             {
                 if (packages.All(p => p.Id != package.Id))
                 {
-                    packages.Add(package);
+                    packages.Add(new NugetPackage(package));
                 }
             }
 
@@ -248,7 +246,7 @@ namespace SiliconStudio.PackageManager
             return packagesInOrder;
         }
 
-        private void AddPackageRecursive(List<NuGet.IPackage> packagesOut, HashSet<NuGet.IPackage> packages, NuGet.IPackage packageToTrack)
+        private void AddPackageRecursive(List<NugetPackage> packagesOut, HashSet<NugetPackage> packages, NugetPackage packageToTrack)
         {
             // Go first recursively with all dependencies resolved
             var dependencies = packageToTrack.DependencySets.SelectMany(deps => deps.Dependencies);
@@ -319,9 +317,9 @@ namespace SiliconStudio.PackageManager
             return ToNugetPackages(manager.LocalRepository.GetPackages()).AsQueryable();
         }
 
-        public NugetPackage FindLocalPackage(string packageId, NugetVersionSpec versionSpec, ConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
+        public NugetPackage FindLocalPackage(string packageId, PackageVersionRange versionSpec, ConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
         {
-            var package = manager.LocalRepository.FindPackage(packageId, versionSpec?.VersionSpec, constraintProvider.Provider(), allowPrereleaseVersions, allowUnlisted);
+            var package = manager.LocalRepository.FindPackage(packageId, versionSpec?.ToVersionSpec(), constraintProvider.Provider(), allowPrereleaseVersions, allowUnlisted);
             return package != null ? new NugetPackage(package) : null;
         }
 
@@ -329,21 +327,23 @@ namespace SiliconStudio.PackageManager
         {
             return ToNugetPackages(manager.LocalRepository.FindPackages(packageIds));
         }
+
         public IEnumerable<NugetPackage> FindLocalPackagesById(string packageId)
         {
             return ToNugetPackages(manager.LocalRepository.FindPackagesById(packageId));
         }
 
-        public IEnumerable<NugetPackage> FindSourcePackages(IReadOnlyCollection<string> packageIds)
+        public async Task<IEnumerable<NugetPackage>> FindSourcePackages(IReadOnlyCollection<string> packageIds, CancellationToken cancellationToken)
         {
             return ToNugetPackages(manager.SourceRepository.FindPackages(packageIds));
         }
 
-        public IEnumerable<NugetPackage> FindSourcePackagesById(string packageId)
+        public async Task<IEnumerable<NugetPackage>> FindSourcePackagesById(string packageId, CancellationToken cancellationToken)
         {
             return ToNugetPackages(manager.SourceRepository.FindPackagesById(packageId));
         }
-        public IQueryable<NugetPackage> SourceSearch(string searchTerm, bool allowPrereleaseVersions)
+
+        public async Task<IQueryable<NugetPackage>> SourceSearch(string searchTerm, bool allowPrereleaseVersions)
         {
             return ToNugetPackages(manager.SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
         }

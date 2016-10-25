@@ -28,6 +28,10 @@ namespace SiliconStudio.PackageManager
 
         internal NuGet.SemanticVersion SemanticVersion { get; }
 
+        public int Major => SemanticVersion.Version.Major;
+        public int Minor => SemanticVersion.Version.Minor;
+        public int Patch => SemanticVersion.Version.Build;
+
         public string SpecialVersion { get { return SemanticVersion.SpecialVersion; } }
 
         /// <summary>

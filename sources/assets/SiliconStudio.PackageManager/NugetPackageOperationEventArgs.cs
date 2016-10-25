@@ -9,13 +9,23 @@ namespace SiliconStudio.PackageManager
     {
         private readonly PackageOperationEventArgs _args;
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="PackageOperationEventArgs"/> using the corresponding NuGet abstraction.
+        /// </summary>
+        /// <param name="args">NuGet arguments to use to initialize new instance.</param>
         internal NugetPackageOperationEventArgs(PackageOperationEventArgs args)
         {
             _args = args;
         }
 
-        public string InstallPath => _args.InstallPath;
+        /// <summary>
+        /// Id of the package.
+        /// </summary>
+        public string Id => _args.Package.Id;
 
-        public NugetPackage Package => new NugetPackage(_args.Package);
+        /// <summary>
+        /// Location where package is installed.
+        /// </summary>
+        public string InstallPath => _args.InstallPath;
     }
 }

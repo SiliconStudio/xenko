@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.PackageManager;
+using System.Threading.Tasks;
 
 namespace SiliconStudio.Assets
 {
@@ -143,14 +144,14 @@ namespace SiliconStudio.Assets
         /// Gets the packages available online.
         /// </summary>
         /// <returns>IEnumerable&lt;PackageMeta&gt;.</returns>
-        public IEnumerable<PackageMeta> GetPackages()
+        public async Task<IEnumerable<PackageMeta>> GetPackages()
         {
             if (store == null)
             {
                 return Enumerable.Empty<PackageMeta>().AsQueryable();
             }
 
-            var packages = store.SourceSearch(null, allowPrereleaseVersions: false);
+            var packages = await store.SourceSearch(null, allowPrereleaseVersions: false);
 
             // Order by download count and Id to allow collapsing 
             var orderedPackages = packages.OrderByDescending(p => p.DownloadCount).ThenBy(p => p.Id);
@@ -242,8 +243,7 @@ namespace SiliconStudio.Assets
 
             if (store != null)
             {
-                var versionSpec = versionRange?.ToVersionSpec();
-                var package = store.FindLocalPackage(packageName, versionSpec, constraintProvider, allowPreleaseVersion, allowUnlisted);
+                var package = store.FindLocalPackage(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
                 if (package != null)
