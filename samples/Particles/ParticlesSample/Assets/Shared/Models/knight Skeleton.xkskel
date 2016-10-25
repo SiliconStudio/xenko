@@ -2,7 +2,7 @@
 Id: 84cbd6b6-9d7e-4c63-9d7f-5570b7e14f00
 SerializedVersion: {Xenko: 1.7.8-beta}
 Tags: []
-Source: ../../Resources/knight/knight.fbx
+Source: ../../../Resources/knight/knight.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
     - {~Id: a0a4832b-ddd5-21e6-6f7c-2fe8b32bbfe2, Name: RootNode, Depth: 0}
@@ -78,4 +78,4 @@ Nodes:
     - {~Id: d33b2dda-48d4-79cc-3075-b306f6013752, Name: ch00_Knight_directionalLight2, Depth: 2}
     - {~Id: ad07ce2f-7546-7981-789f-d1f17c2f356e, Name: ch00_Knight_ambientLight1, Depth: 2}
 ~SourceHashes:
-    ../../Resources/knight/knight.fbx: e91ae586b5f1facc6e420d651cc74c05
+    ../../../Resources/knight/knight.fbx: e91ae586b5f1facc6e420d651cc74c05

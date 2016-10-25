@@ -382,7 +382,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
                             - null
@@ -428,7 +428,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -462,7 +462,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -486,7 +486,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -525,7 +525,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -830,7 +830,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1012,7 +1012,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1036,7 +1036,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -1067,7 +1067,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1102,7 +1102,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1312,7 +1312,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1568,7 +1568,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1617,7 +1617,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1799,7 +1799,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1823,7 +1823,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1860,7 +1860,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -1914,7 +1914,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2316,7 +2316,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -2572,7 +2572,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2596,7 +2596,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2664,7 +2664,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2702,7 +2702,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2726,7 +2726,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -2757,7 +2757,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -2781,7 +2781,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -2827,7 +2827,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -3023,7 +3023,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
                             - null
@@ -3041,7 +3041,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -3059,7 +3059,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -3096,7 +3096,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -3160,7 +3160,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -3342,7 +3342,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
                             - null
@@ -3360,7 +3360,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
                             - null
@@ -3463,7 +3463,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
                             - null
@@ -3496,7 +3496,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
                             - null
@@ -3514,7 +3514,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -3538,7 +3538,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -3562,7 +3562,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -3599,7 +3599,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -4355,7 +4355,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -4407,7 +4407,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                             - null
@@ -4774,7 +4774,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                                    Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                                    Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                                     Materials:
                                         - null
                     -   Entity:
@@ -4789,7 +4789,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                                     Materials:
                                         - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game
@@ -4845,7 +4845,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                                    Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                                    Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                                     Materials:
                                         - null
                     -   Entity:
@@ -4860,7 +4860,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                                     Materials:
                                         - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game
@@ -4878,7 +4878,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                                     Materials:
                                         - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game

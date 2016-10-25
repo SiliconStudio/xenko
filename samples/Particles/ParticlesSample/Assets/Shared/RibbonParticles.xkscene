@@ -347,7 +347,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null
@@ -606,7 +606,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null
@@ -691,7 +691,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null
@@ -736,7 +736,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null
@@ -1403,7 +1403,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null
@@ -1506,7 +1506,7 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:knight
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
                         Materials:
                             - null
                             - null

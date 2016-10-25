@@ -1060,7 +1060,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: dde7ed4b-fc1a-4a08-85df-875456ee1dc0
-                        Model: dc77fce1-26fa-4d11-91a4-c47b9fd84d96/f5e260b3-ba79-4990-bf36-047af12becb9:Ground
+                        Model: dc77fce1-26fa-4d11-91a4-c47b9fd84d96/f5e260b3-ba79-4990-bf36-047af12becb9:Models/Ground
                         Materials:
                             - null
         -   Entity:
