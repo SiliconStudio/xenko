@@ -153,7 +153,7 @@ namespace SiliconStudio.Assets
             {
                 throw new InvalidOperationException("Unable to find a serializer for [{0}]".ToFormat(assetFileExtension));
             }
-            var asset = serializer.Load(stream, assetFileExtension, log, out aliasOccurred);
+            var asset = serializer.Load(stream, filePath, log, out aliasOccurred);
             return asset;
         }
 
