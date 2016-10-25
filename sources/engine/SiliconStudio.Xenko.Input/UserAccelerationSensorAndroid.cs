@@ -18,11 +18,12 @@ namespace SiliconStudio.Xenko.Input
         public UserAccelerationSensorAndroid() : base(SensorType.LinearAcceleration)
         {
         }
-        public override void UpdateSensorData(IReadOnlyList<float> newValues)
-        {
-            acceleration = this.AsVector();
-        }
 
+        public override void Update()
+        {
+            base.Update();
+            acceleration = listener.GetCurrentValuesAsVector();
+        }
     }
 }
 #endif

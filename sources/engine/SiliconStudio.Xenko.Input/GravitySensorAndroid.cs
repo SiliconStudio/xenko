@@ -17,11 +17,13 @@ namespace SiliconStudio.Xenko.Input
         public GravitySensorAndroid() : base(SensorType.Gravity)
         {
         }
-        public override void UpdateSensorData(IReadOnlyList<float> newValues)
-        {
-            vector = this.AsVector();
-        }
 
+        public override void Update()
+        {
+            base.Update();
+            vector = listener.GetCurrentValuesAsVector();
+        }
     }
 }
+
 #endif

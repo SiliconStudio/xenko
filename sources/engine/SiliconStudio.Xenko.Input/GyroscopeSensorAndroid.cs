@@ -3,7 +3,6 @@
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 
-using System.Collections.Generic;
 using Android.Hardware;
 using SiliconStudio.Core.Mathematics;
 
@@ -17,10 +16,13 @@ namespace SiliconStudio.Xenko.Input
         public GyroscopeSensorAndroid() : base(SensorType.Gyroscope)
         {
         }
-        public override void UpdateSensorData(IReadOnlyList<float> newValues)
+
+        public override void Update()
         {
-            rotationRate = -this.AsVector();
+            base.Update();
+            rotationRate = -listener.GetCurrentValuesAsVector();
         }
     }
 }
+
 #endif

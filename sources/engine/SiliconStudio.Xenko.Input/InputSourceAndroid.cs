@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Android.InputMethodServices;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Games.Android;
 
@@ -19,7 +18,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<SensorDeviceBase> sensors = new List<SensorDeviceBase>();
         private KeyboardAndroid keyboard;
         private PointerAndroid pointer;
-        
+
         public override void Initialize(InputManager inputManager)
         {
             var context = inputManager.Game.Context as GameContextAndroid;
@@ -37,7 +36,7 @@ namespace SiliconStudio.Xenko.Input
                 new GyroscopeSensorAndroid(),
                 new UserAccelerationSensorAndroid(),
                 new GravitySensorAndroid(),
-                new OrientationSensorAndroid(this),
+                new OrientationSensorAndroid(),
                 new CompassSensorAndroid(this),
             };
 

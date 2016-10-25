@@ -14,14 +14,14 @@ namespace SiliconStudio.Xenko.Input
         public override string DeviceName { get; }
         public override Guid Id { get; }
         public float Heading => heading;
-        
+
         private float heading;
         private InputSourceAndroid source;
         private OrientationSensorAndroid orientationSensor;
 
         public CompassSensorAndroid(InputSourceAndroid source)
         {
-            DeviceName = $"Android Sensor [Compass]";
+            DeviceName = "Android Sensor [Compass]";
             Id = InputDeviceUtils.DeviceNameToGuid("Compass");
             this.source = source;
         }
@@ -32,6 +32,7 @@ namespace SiliconStudio.Xenko.Input
             orientationSensor = (OrientationSensorAndroid)source.TryGetSensor(typeof(OrientationSensorAndroid));
             return orientationSensor != null;
         }
+
         protected override void DisableImpl()
         {
             orientationSensor = null;
@@ -43,9 +44,11 @@ namespace SiliconStudio.Xenko.Input
             if (orientationSensor != null)
             {
                 // Update heading
-                HandleSensorChanged(new List<float> { orientationSensor.YawPitchRollArray[0] + MathUtil.Pi});
+                heading = orientationSensor.YawPitchRollArray[0] + MathUtil.Pi;
+                HandleSensorChanged(new List<float> { heading });
             }
         }
     }
 }
+
 #endif

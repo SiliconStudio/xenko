@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Input
         public int Priority { get; set; }
         public IReadOnlyList<float> Values => values;
         public EventHandler<SensorEvent> OnValuesChanged { get; set; }
+
         public bool IsEnabled
         {
             set
@@ -31,13 +32,12 @@ namespace SiliconStudio.Xenko.Input
                     Disable();
             }
             get { return isEnabled; }
-            
         }
 
         protected bool isEnabled = false;
         private readonly List<SensorEvent> sensorEvents = new List<SensorEvent>();
         private List<float> values = new List<float>();
-        
+
         public virtual void Dispose()
         {
         }

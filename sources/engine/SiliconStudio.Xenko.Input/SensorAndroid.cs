@@ -9,6 +9,7 @@ using System.Linq;
 using Android.Content;
 using Android.Hardware;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -18,16 +19,16 @@ namespace SiliconStudio.Xenko.Input
     public abstract class SensorAndroid : SensorDeviceBase
     {
         private const int SensorDesiredUpdateDelay = (int)(1/InputManager.DesiredSensorUpdateRate*1000f*1000.0f);
-        
+
         public override string DeviceName => sensorName;
         public override Guid Id => sensorId;
-        
+
+        protected AndroidSensorListener listener;
         private string sensorName;
         private Guid sensorId;
-        private AndroidSensorListener listener;
         private Sensor sensor;
         private SensorManager sensorManager;
-
+        private Vector3 lastReading;
 
         public SensorAndroid(SensorType androidType)
         {
@@ -39,11 +40,11 @@ namespace SiliconStudio.Xenko.Input
             sensor = sensorManager.GetDefaultSensor(androidType);
         }
 
-        /// <summary>
-        /// Called when the sensor is updated
-        /// </summary>
-        /// <param name="newValues">Data received from the sensor</param>
-        public abstract void UpdateSensorData(IReadOnlyList<float> newValues);
+        public override void Update()
+        {
+            base.Update();
+            HandleSensorChanged(listener.GetValues());
+        }
 
         public override void Dispose()
         {
@@ -60,10 +61,14 @@ namespace SiliconStudio.Xenko.Input
         {
             sensorManager.UnregisterListener(listener);
         }
-        
+
         public class AndroidSensorListener : Java.Lang.Object, ISensorEventListener
         {
+            private IList<float> lastValues;
+            private readonly List<float> lastQueriedValues = new List<float>();
+            private bool updated = false;
             private SensorAndroid sensor;
+
             public AndroidSensorListener(SensorAndroid sensor)
             {
                 this.sensor = sensor;
@@ -72,13 +77,43 @@ namespace SiliconStudio.Xenko.Input
             public void OnAccuracyChanged(Sensor sensor, SensorStatus accuracy)
             {
             }
+
             public virtual void OnSensorChanged(Android.Hardware.SensorEvent e)
             {
-                var list = e.Values.ToList();
-                sensor.HandleSensorChanged(list);
-                sensor.UpdateSensorData(list);
+                // Store reading
+                lastValues = e.Values;
+                updated = true;
+            }
+
+            public IReadOnlyList<float> GetValues()
+            {
+                if (lastValues == null)
+                    return null;
+                if (updated)
+                {
+                    lastQueriedValues.Clear();
+                    for (int i = 0; i < lastValues.Count; i++)
+                    {
+                        lastQueriedValues.Add(lastValues[i]);
+                    }
+                    updated = false;
+                }
+                return lastQueriedValues;
+            }
+
+            public float GetCurrentValueAsFloat()
+            {
+                var values = GetValues();
+                return values?[0] ?? 0.0f;
+            }
+
+            public Vector3 GetCurrentValuesAsVector()
+            {
+                var values = GetValues();
+                return (values != null && values.Count >= 3) ? new Vector3(-values[0], -values[2], -values[1]) : Vector3.Zero;
             }
         }
     }
 }
+
 #endif

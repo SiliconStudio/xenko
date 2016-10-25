@@ -3,10 +3,9 @@
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using Android.Hardware;
-using Java.Lang;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -18,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
         public float Roll => roll;
         public Quaternion Quaternion => quaternion;
         public Matrix RotationMatrix => rotationMatrix;
-        
+
         internal readonly float[] YawPitchRollArray = new float[3];
         private readonly float[] quaternionArray = new float[4];
         private readonly float[] rotationMatrixArray = new float[9];
@@ -29,15 +28,16 @@ namespace SiliconStudio.Xenko.Input
         public Quaternion quaternion;
         public Matrix rotationMatrix;
 
-        private InputSourceAndroid source;
-
-        public OrientationSensorAndroid(InputSourceAndroid source) : base(SensorType.RotationVector)
+        public OrientationSensorAndroid() : base(SensorType.RotationVector)
         {
-            this.source = source;
         }
-        public override void UpdateSensorData(IReadOnlyList<float> newValues)
+
+        public override void Update()
         {
-            float[] rotationVector = newValues.ToArray();
+            base.Update();
+            float[] rotationVector = Values.ToArray();
+            if (rotationVector.Length < 3)
+                return;
             SensorManager.GetQuaternionFromVector(quaternionArray, rotationVector);
             SensorManager.GetRotationMatrixFromVector(rotationMatrixArray, rotationVector);
             SensorManager.GetOrientation(rotationMatrixArray, YawPitchRollArray);
@@ -51,10 +51,11 @@ namespace SiliconStudio.Xenko.Input
             rotationMatrix = Matrix.RotationQuaternion(quaternion);
 
             var q = quaternion;
-            yaw = (float)Math.Asin(2 * (q.W * q.Y - q.Z * q.X));
-            pitch = (float)Math.Atan2(2 * (q.W * q.X + q.Y * q.Z), 1 - 2 * (q.X * q.X + q.Y * q.Y));
-            roll = (float)Math.Atan2(2 * (q.W * q.Z + q.X * q.Y), 1 - 2 * (q.Y * q.Y + q.Z * q.Z));
+            yaw = (float)Math.Asin(2*(q.W*q.Y - q.Z*q.X));
+            pitch = (float)Math.Atan2(2*(q.W*q.X + q.Y*q.Z), 1 - 2*(q.X*q.X + q.Y*q.Y));
+            roll = (float)Math.Atan2(2*(q.W*q.Z + q.X*q.Y), 1 - 2*(q.Y*q.Y + q.Z*q.Z));
         }
     }
 }
+
 #endif

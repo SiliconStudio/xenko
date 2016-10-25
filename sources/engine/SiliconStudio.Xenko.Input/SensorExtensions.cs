@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="sensor">The sensor</param>
         /// <returns>a single float reading</returns>
-        public static float AsFloat(this ISensorDevice sensor)
+        public static float GetCurrentValueAsFloat(this ISensorDevice sensor)
         {
             return sensor.Values.Count > 0 ? sensor.Values[0] : 0.0f;
         }
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="sensor">The sensor</param>
         /// <returns>a single vector3 reading</returns>
-        public static Vector3 AsVector(this ISensorDevice sensor)
+        public static Vector3 GetCurrentValuesAsVector(this ISensorDevice sensor)
         {
             return sensor.Values.Count >= 3 ? new Vector3(sensor.Values[0], sensor.Values[1], sensor.Values[2]) : Vector3.Zero;
         }
