@@ -14,7 +14,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using NuGet;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.PackageManager
