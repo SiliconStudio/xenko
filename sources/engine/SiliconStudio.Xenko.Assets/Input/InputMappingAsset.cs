@@ -5,7 +5,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Xenko.Assets.Navigation;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Data;
 
