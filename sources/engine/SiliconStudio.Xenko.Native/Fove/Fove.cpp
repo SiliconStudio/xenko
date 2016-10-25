@@ -146,6 +146,11 @@ extern "C"
 	DLL_EXPORT_API void xnFovePrepareRender(void* properties)
 	{
 	}
+
+	DLL_EXPORT_API npBool xnFoveGetLeftEyePoint(float* point)
+	{
+		return false;
+	}
 }
 
 #endif
