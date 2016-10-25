@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
                 var startEvent = parsingEvents.FirstOrDefault() as MappingStart;
                 string typeName = startEvent != null && !string.IsNullOrEmpty(startEvent.Tag) ? startEvent.Tag.Substring(1) : null;
 
-                var log = objectContext.SerializerContext.ContextSettings.Logger;
+                var log = objectContext.SerializerContext.Logger;
                 log?.Warning($"Could not deserialize script {typeName}", ex);
 
                 return new UnloadableComponent(parsingEvents, typeName);

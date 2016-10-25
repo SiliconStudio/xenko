@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Schemas;
@@ -67,7 +68,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
             Serializer = serializer;
             ObjectFactory = serializer.Settings.ObjectFactory;
             ObjectSerializerBackend = serializer.Settings.ObjectSerializerBackend;
-            ContextSettings = serializerContextSettings ?? SerializerContextSettings.Default;
+            var contextSettings = serializerContextSettings ?? SerializerContextSettings.Default;
+            Logger = contextSettings.Logger;
+            MemberMask = contextSettings.MemberMask;
+            Properties = contextSettings.Properties;
         }
 
         /// <summary>
@@ -77,12 +81,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public bool IsSerializing => Writer != null;
 
         /// <summary>
-        /// Gets the context settings.
+        /// Gets the logger.
         /// </summary>
-        /// <value>
-        /// The context settings.
-        /// </value>
-        public SerializerContextSettings ContextSettings { get; }
+        public ILogger Logger { get; }
 
         /// <summary>
         /// Gets the settings.
@@ -129,17 +130,17 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public bool HasRemapOccurred { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the member mask that will be used to filter <see cref="YamlMemberAttribute.Mask"/>.
+        /// Gets or sets the member mask that will be used to filter <see cref="DataMemberAttribute.Mask"/>.
         /// </summary>
         /// <value>
         /// The member mask.
         /// </value>
-        public uint MemberMask => ContextSettings.MemberMask;
+        public uint MemberMask { get; }
 
         /// <summary>
         /// Gets the dictionary of custom properties associated to this context.
         /// </summary>
-        public PropertyContainer Properties = new PropertyContainer();
+        public PropertyContainer Properties;
 
         /// <summary>
         /// Gets or sets the type of the create.
@@ -163,7 +164,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Finds the type descriptor for the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>An instance of <see cref="IYamlTypeDescriptor"/>.</returns>
+        /// <returns>An instance of <see cref="ITypeDescriptor"/>.</returns>
         public ITypeDescriptor FindTypeDescriptor(Type type)
         {
             return Serializer.TypeDescriptorFactory.Find(type);

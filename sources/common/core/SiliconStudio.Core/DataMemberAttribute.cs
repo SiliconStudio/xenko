@@ -10,7 +10,6 @@ namespace SiliconStudio.Core
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class DataMemberAttribute : Attribute
     {
-        // Ideally should point to YamlMemberAttribute.DefaultMask, but it is not referenced in this assembly
         public const uint DefaultMask = 1;
         public const uint IgnoreMask = 0xF0000000;
 

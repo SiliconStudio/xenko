@@ -247,7 +247,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             {
                 if (objectContext.SerializerContext.AllowErrors)
                 {
-                    var logger = objectContext.SerializerContext.ContextSettings.Logger;
+                    var logger = objectContext.SerializerContext.Logger;
                     logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
                     skipMember = true;
                 }
