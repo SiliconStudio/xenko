@@ -12,7 +12,7 @@ namespace SiliconStudio.PackageManager
 {
     public class NugetPackageBuilder
     {
-        internal IPackageBuilder Builder { get; private set; }
+        internal IPackageBuilder Builder { get; }
 
         protected bool Equals(NugetPackageBuilder other)
         {
@@ -23,13 +23,13 @@ namespace SiliconStudio.PackageManager
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetPackageBuilder)obj);
         }
 
         public override int GetHashCode()
         {
-            return (Builder != null ? Builder.GetHashCode() : 0);
+            return Builder?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetPackageBuilder left, NugetPackageBuilder right)
@@ -52,173 +52,47 @@ namespace SiliconStudio.PackageManager
             Builder = new PackageBuilder();
         }
 
-        public IEnumerable<string> Authors
-        {
-            get
-            {
-                return Builder.Authors;
-            }
-        }
+        public IEnumerable<string> Authors => Builder.Authors;
 
-        public string Copyright
-        {
-            get
-            {
-                return Builder.Copyright;
-            }
-        }
+        public string Copyright => Builder.Copyright;
 
-        public IEnumerable<PackageDependencySet> DependencySets
-        {
-            get
-            {
-                return Builder.DependencySets;
-            }
-        }
+        public IEnumerable<PackageDependencySet> DependencySets => Builder.DependencySets;
 
-        public string Description
-        {
-            get
-            {
-                return Builder.Description;
-            }
-        }
+        public string Description => Builder.Description;
 
-        public bool DevelopmentDependency
-        {
-            get
-            {
-                return Builder.DevelopmentDependency;
-            }
-        }
+        public bool DevelopmentDependency => Builder.DevelopmentDependency;
 
-        public Collection<IPackageFile> Files
-        {
-            get
-            {
-                return Builder.Files;
-            }
-        }
+        public Collection<IPackageFile> Files => Builder.Files;
 
-        public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies
-        {
-            get
-            {
-                return Builder.FrameworkAssemblies;
-            }
-        }
+        public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => Builder.FrameworkAssemblies;
 
-        public Uri IconUrl
-        {
-            get
-            {
-                return Builder.IconUrl;
-            }
-        }
+        public Uri IconUrl => Builder.IconUrl;
 
-        public string Id
-        {
-            get
-            {
-                return Builder.Id;
-            }
-        }
+        public string Id => Builder.Id;
 
-        public string Language
-        {
-            get
-            {
-                return Builder.Language;
-            }
-        }
+        public string Language => Builder.Language;
 
-        public Uri LicenseUrl
-        {
-            get
-            {
-                return Builder.LicenseUrl;
-            }
-        }
+        public Uri LicenseUrl => Builder.LicenseUrl;
 
-        public Version MinClientVersion
-        {
-            get
-            {
-                return Builder.MinClientVersion;
-            }
-        }
+        public Version MinClientVersion => Builder.MinClientVersion;
 
-        public IEnumerable<string> Owners
-        {
-            get
-            {
-                return Builder.Owners;
-            }
-        }
+        public IEnumerable<string> Owners => Builder.Owners;
 
-        public ICollection<PackageReferenceSet> PackageAssemblyReferences
-        {
-            get
-            {
-                return Builder.PackageAssemblyReferences;
-            }
-        }
+        public ICollection<PackageReferenceSet> PackageAssemblyReferences => Builder.PackageAssemblyReferences;
 
-        public Uri ProjectUrl
-        {
-            get
-            {
-                return Builder.ProjectUrl;
-            }
-        }
+        public Uri ProjectUrl => Builder.ProjectUrl;
 
-        public string ReleaseNotes
-        {
-            get
-            {
-                return Builder.ReleaseNotes;
-            }
-        }
+        public string ReleaseNotes => Builder.ReleaseNotes;
 
-        public bool RequireLicenseAcceptance
-        {
-            get
-            {
-                return Builder.RequireLicenseAcceptance;
-            }
-        }
+        public bool RequireLicenseAcceptance => Builder.RequireLicenseAcceptance;
 
-        public string Summary
-        {
-            get
-            {
-                return Builder.Summary;
-            }
-        }
+        public string Summary => Builder.Summary;
 
-        public string Tags
-        {
-            get
-            {
-                return Builder.Tags;
-            }
-        }
+        public string Tags => Builder.Tags;
 
-        public string Title
-        {
-            get
-            {
-                return Builder.Title;
-            }
-        }
+        public string Title => Builder.Title;
 
-        public NugetSemanticVersion Version
-        {
-            get
-            {
-                return new NugetSemanticVersion(Builder.Version);
-            }
-        }
+        public NugetSemanticVersion Version => new NugetSemanticVersion(Builder.Version);
 
         public void Save(Stream stream)
         {

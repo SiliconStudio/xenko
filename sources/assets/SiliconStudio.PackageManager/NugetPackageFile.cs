@@ -8,29 +8,29 @@ namespace SiliconStudio.PackageManager
 {
     public class NugetPackageFile
     {
-        private IPackageFile _file;
+        private readonly IPackageFile file;
 
         internal NugetPackageFile(IPackageFile file)
         {
-            _file = file;
+            this.file = file;
         }
 
         protected bool Equals(NugetPackageFile other)
         {
-            return Equals(_file, other._file);
+            return Equals(file, other.file);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetPackageFile)obj);
         }
 
         public override int GetHashCode()
         {
-            return (_file != null ? _file.GetHashCode() : 0);
+            return file?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetPackageFile left, NugetPackageFile right)
@@ -43,11 +43,11 @@ namespace SiliconStudio.PackageManager
             return !Equals(left, right);
         }
 
-        public string Path => _file.Path;
+        public string Path => file.Path;
 
         public Stream GetStream()
         {
-            return _file.GetStream();
+            return file.GetStream();
         }
     }
 }

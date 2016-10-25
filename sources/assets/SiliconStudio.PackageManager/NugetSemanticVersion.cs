@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details
 
 using System;
-using System.ComponentModel;
 
 namespace SiliconStudio.PackageManager
 {
@@ -32,12 +31,12 @@ namespace SiliconStudio.PackageManager
         public int Minor => SemanticVersion.Version.Minor;
         public int Patch => SemanticVersion.Version.Build;
 
-        public string SpecialVersion { get { return SemanticVersion.SpecialVersion; } }
+        public string SpecialVersion => SemanticVersion.SpecialVersion;
 
         /// <summary>
         /// Version of current.
         /// </summary>
-        public Version Version { get { return SemanticVersion.Version; } }
+        public Version Version => SemanticVersion.Version;
 
         public int CompareTo(object obj)
         {
@@ -67,7 +66,7 @@ namespace SiliconStudio.PackageManager
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetSemanticVersion)obj);
         }
 

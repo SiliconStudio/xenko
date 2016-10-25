@@ -8,7 +8,7 @@ using ILogger = NuGet.ILogger;
 namespace SiliconStudio.PackageManager
 {
     /// <summary>
-    /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackagerManagerLogger"/> interface.
+    /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackageManagerLogger"/> interface.
     /// </summary>
     internal class NugetLogger : ILogger
     {

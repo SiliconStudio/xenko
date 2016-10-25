@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using NuGet;
 
@@ -26,13 +25,13 @@ namespace SiliconStudio.PackageManager
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetManifestMetadata)obj);
         }
 
         public override int GetHashCode()
         {
-            return (Metadata != null ? Metadata.GetHashCode() : 0);
+            return Metadata?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetManifestMetadata left, NugetManifestMetadata right)
@@ -50,7 +49,7 @@ namespace SiliconStudio.PackageManager
             Metadata = new ManifestMetadata();
         }
 
-        public ManifestMetadata Metadata { get; set; }
+        public ManifestMetadata Metadata { get; }
 
         public string MinClientVersionString { get { return Metadata.MinClientVersionString; } set { Metadata.MinClientVersionString = value; } }
         public string Id { get { return Metadata.Id; } set { Metadata.Id = value; } }

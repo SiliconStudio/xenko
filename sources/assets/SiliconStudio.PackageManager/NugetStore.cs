@@ -94,8 +94,8 @@ namespace SiliconStudio.PackageManager
             }
             MainPackageIds = mainPackageList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            VSIXPluginId = settings.GetValue(ConfigurationConstants.Config, VsixPluginKey, false);
-            if (string.IsNullOrWhiteSpace(VSIXPluginId))
+            VsixPluginId = settings.GetValue(ConfigurationConstants.Config, VsixPluginKey, false);
+            if (string.IsNullOrWhiteSpace(VsixPluginId))
             {
                 throw new InvalidOperationException($"Invalid configuration. Expecting [{VsixPluginKey}] in config");
             }
@@ -110,7 +110,7 @@ namespace SiliconStudio.PackageManager
             Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
 
             var packagesFileSystem = new PhysicalFileSystem(InstallPath);
-            PathResolver = new NuGet.DefaultPackagePathResolver(packagesFileSystem);
+            PathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
             var packageSourceProvider = new PackageSourceProvider(settings);
             SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
@@ -127,7 +127,7 @@ namespace SiliconStudio.PackageManager
 
         public IReadOnlyCollection<string> MainPackageIds { get; }
 
-        public string VSIXPluginId { get; }
+        public string VsixPluginId { get; }
 
         public string RepositoryPath { get; }
 
@@ -217,7 +217,7 @@ namespace SiliconStudio.PackageManager
             var targetFilePath = Path.GetDirectoryName(targetFile);
 
             // Make sure directory exists
-            if (!Directory.Exists(targetFilePath))
+            if (targetFilePath != null && !Directory.Exists(targetFilePath))
                 Directory.CreateDirectory(targetFilePath);
 
             File.WriteAllText(targetFile, targetFileContent, Encoding.UTF8);
@@ -359,7 +359,7 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 
-        private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<NuGet.IPackage> packages)
+        private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<IPackage> packages)
         {
             var res = new List<NugetPackage>();
             foreach (var package in packages)

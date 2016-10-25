@@ -14,27 +14,27 @@ namespace SiliconStudio.PackageManager
     {
         internal NugetPackage(NuGet.IPackageMetadata package)
         {
-            _packageMetadata = package;
+            packageMetadata = package;
         }
 
-        private readonly NuGet.IPackageMetadata _packageMetadata;
+        private readonly NuGet.IPackageMetadata packageMetadata;
 
         protected bool Equals(NugetPackage other)
         {
-            return Equals(_packageMetadata, other._packageMetadata);
+            return Equals(packageMetadata, other.packageMetadata);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetPackage)obj);
         }
 
         public override int GetHashCode()
         {
-            return _packageMetadata?.GetHashCode() ?? 0;
+            return packageMetadata?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetPackage left, NugetPackage right)
@@ -50,7 +50,7 @@ namespace SiliconStudio.PackageManager
         /// <summary>
         /// Semantic version of current package.
         /// </summary>
-        public NugetSemanticVersion Version => new NugetSemanticVersion(_packageMetadata.Version);
+        public NugetSemanticVersion Version => new NugetSemanticVersion(packageMetadata.Version);
 
         /// <summary>
         /// Nuget IPackage associated to current.
@@ -59,7 +59,7 @@ namespace SiliconStudio.PackageManager
         {
             get
             {
-                var p = _packageMetadata as NuGet.IPackage;
+                var p = packageMetadata as NuGet.IPackage;
                 return p;
             }
         }
@@ -71,12 +71,12 @@ namespace SiliconStudio.PackageManager
         {
             get
             {
-                var p = _packageMetadata as NuGet.IServerPackageMetadata;
+                var p = packageMetadata as NuGet.IServerPackageMetadata;
                 return p;
             }
         }
 
-        public string Id => _packageMetadata.Id;
+        public string Id => packageMetadata.Id;
 
         public bool IsAbsoluteLatestVersion => IPackage?.IsAbsoluteLatestVersion ?? false;
 
@@ -98,41 +98,41 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 
-        public string Title => _packageMetadata.Title;
+        public string Title => packageMetadata.Title;
 
-        public IEnumerable<string> Authors => _packageMetadata.Authors;
+        public IEnumerable<string> Authors => packageMetadata.Authors;
 
-        public IEnumerable<string> Owners => _packageMetadata.Owners;
+        public IEnumerable<string> Owners => packageMetadata.Owners;
 
-        public Uri IconUrl => _packageMetadata.IconUrl;
+        public Uri IconUrl => packageMetadata.IconUrl;
 
-        public Uri LicenseUrl => _packageMetadata.LicenseUrl;
+        public Uri LicenseUrl => packageMetadata.LicenseUrl;
 
-        public Uri ProjectUrl => _packageMetadata.ProjectUrl;
+        public Uri ProjectUrl => packageMetadata.ProjectUrl;
 
-        public bool RequireLicenseAcceptance => _packageMetadata.RequireLicenseAcceptance;
+        public bool RequireLicenseAcceptance => packageMetadata.RequireLicenseAcceptance;
 
-        public bool DevelopmentDependency => _packageMetadata.DevelopmentDependency;
+        public bool DevelopmentDependency => packageMetadata.DevelopmentDependency;
 
-        public string Description => _packageMetadata.Description;
+        public string Description => packageMetadata.Description;
 
-        public string Summary => _packageMetadata.Summary;
+        public string Summary => packageMetadata.Summary;
 
-        public string ReleaseNotes => _packageMetadata.ReleaseNotes;
+        public string ReleaseNotes => packageMetadata.ReleaseNotes;
 
-        public string Language => _packageMetadata.Language;
+        public string Language => packageMetadata.Language;
 
-        public string Tags => _packageMetadata.Tags;
+        public string Tags => packageMetadata.Tags;
 
-        public string Copyright => _packageMetadata.Copyright;
+        public string Copyright => packageMetadata.Copyright;
 
-        public IEnumerable<NuGet.FrameworkAssemblyReference> FrameworkAssemblies => _packageMetadata.FrameworkAssemblies;
+        public IEnumerable<NuGet.FrameworkAssemblyReference> FrameworkAssemblies => packageMetadata.FrameworkAssemblies;
 
-        public ICollection<NuGet.PackageReferenceSet> PackageAssemblyReferences => _packageMetadata.PackageAssemblyReferences;
+        public ICollection<NuGet.PackageReferenceSet> PackageAssemblyReferences => packageMetadata.PackageAssemblyReferences;
 
-        public IEnumerable<NuGet.PackageDependencySet> DependencySets => _packageMetadata.DependencySets;
+        public IEnumerable<NuGet.PackageDependencySet> DependencySets => packageMetadata.DependencySets;
 
-        public Version MinClientVersion => _packageMetadata.MinClientVersion;
+        public Version MinClientVersion => packageMetadata.MinClientVersion;
         
         public int DownloadCount => IServerPackageMetadata?.DownloadCount ?? 0;
 

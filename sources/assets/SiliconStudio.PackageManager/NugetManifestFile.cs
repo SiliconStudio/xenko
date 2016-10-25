@@ -18,13 +18,13 @@ namespace SiliconStudio.PackageManager
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((NugetManifestFile)obj);
         }
 
         public override int GetHashCode()
         {
-            return (File != null ? File.GetHashCode() : 0);
+            return File?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(NugetManifestFile left, NugetManifestFile right)
