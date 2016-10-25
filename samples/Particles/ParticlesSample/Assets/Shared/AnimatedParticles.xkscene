@@ -53,6 +53,7 @@ Hierarchy:
         - 07f85f60-a8bb-4ce9-8643-87466e771720
         - c9164fb7-0dae-431d-b3fd-708d5554efe6
         - fbec4953-37e0-4844-ba62-14843ec6dfa9
+        - 1a0e89f8-9f01-4b62-b1ae-264b28d2fa35
     Parts:
         -   Entity:
                 Id: 01761e53-f594-4948-bbc7-38b554365681
@@ -108,7 +109,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -217,7 +218,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -318,7 +319,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -418,7 +419,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -513,6 +514,26 @@ Hierarchy:
                                             SamplerOptional: null
                                             SeedOffset: 0
         -   Entity:
+                Id: 1a0e89f8-9f01-4b62-b1ae-264b28d2fa35
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 9b105355-3e7d-4d84-833a-518fafae2b8a
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
+                        ~Id: c72030a2-15a7-4ae0-9bb7-af7ef1448bf0
+                        Next: f7d12465-6f74-41e8-9d86-b455cfd9c252/71292a97-5a05-4865-9ac8-e113ffad9561:ChildParticles
+                        Previous: 3c3ff7d2-ab48-45c9-9134-3c503d9e80ff/b4210f42-14a3-4917-80b6-006d7f81b1c6:MainScene
+                        Font: bb9f276d-0c74-4f91-9c43-56267321b3d9/abe2b723-cac1-4cdc-9cbf-109a030873d3:Font
+                    - !UIComponent
+                        ~Id: 2d3bccd7-38dd-4786-a5e7-89c160914e40
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+        -   Entity:
                 Id: 36d3ac1c-8d60-4f8b-9419-def743d5ab91
                 Name: Size Animation
                 Components:
@@ -550,7 +571,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -675,7 +696,9 @@ Hierarchy:
                         Projection: Perspective
                     - !ParticlesSample.NextSceneScript,ParticlesSample.Game
                         ~Id: aba7b52a-6a8c-4839-91c8-d9b17504d930
-                        NextScene: ChildParticles
+                        Next: null
+                        Previous: null
+                        Font: null
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation
@@ -716,7 +739,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                                Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -893,7 +916,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -978,7 +1001,7 @@ Hierarchy:
                                         ~Id: 3f09759b-01af-40c2-8380-617a6d128599
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: 6d5eb04d-61ae-4cdf-951d-01f7e0a99ad2/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -1117,7 +1140,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: edcc3223-297c-44d0-a9e2-361e88fd6867/d550fb3f-f109-494e-a0c5-a79f70f5a63c:radial-grad-gray
+                                                Texture: edcc3223-297c-44d0-a9e2-361e88fd6867/d550fb3f-f109-494e-a0c5-a79f70f5a63c:Textures/radial-grad-gray
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}

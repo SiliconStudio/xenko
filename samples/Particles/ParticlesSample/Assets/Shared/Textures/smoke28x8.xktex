@@ -1,6 +1,6 @@
 !Texture
-Id: c0510cfa-d68e-4a15-8651-6732a73cced1
+Id: 250eb6f0-4f9f-4cf8-9d53-df18e1cc0b46
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../Resources/Sign04.png
+Source: ../../../Resources/smoke28x8.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -103,6 +103,7 @@ Hierarchy:
         - ec35c281-2510-44b4-b37d-927c58ef95e9
         - f195ae7e-31de-4754-a8b8-3658ea3629bb
         - c4271149-6500-4d2b-928b-7eb41b8eb9be
+        - 2f28d407-bd5f-4e11-b415-9ea1fce90ef7
     Parts:
         -   Entity:
                 Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f
@@ -162,6 +163,26 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 98864749-098e-4590-8cd0-319867a3b541
                         Texture: 57095419-b6d2-4885-9942-fb3c6f9a8be5/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
+        -   Entity:
+                Id: 2f28d407-bd5f-4e11-b415-9ea1fce90ef7
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 87999772-91de-4c84-bee5-8ecb806e2a2d
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
+                        ~Id: 897ef322-4236-4eee-a4f7-1d3ff63375e6
+                        Next: 3f8751a0-d455-467a-995d-0ce6f842852d/2195e36c-46ec-496b-8072-098c114f4a7f:AnimatedParticles
+                        Previous: 64e65b1f-936c-4582-a483-ee8721311ed1/6736d805-6194-40bf-8056-7c52758e2e4b:RibbonParticles
+                        Font: bb9f276d-0c74-4f91-9c43-56267321b3d9/abe2b723-cac1-4cdc-9cbf-109a030873d3:Font
+                    - !UIComponent
+                        ~Id: 43cd6f29-fb8b-4b07-9cb7-c55cfeeaa183
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: 3768424f-3ad1-4d06-a396-6f2d881a9606
                 Name: ProceduralTorus
@@ -234,7 +255,7 @@ Hierarchy:
                                                 Value: {X: 4.0, Y: 4.0, Z: 4.0, W: 1.0}
                                             RightChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: c1f28a8b-7ef4-4b16-bcff-a5180ab597c1/864b7ca9-4d8e-4dd4-811f-98c07e826f59:fire8x8
+                                                Texture: c1f28a8b-7ef4-4b16-bcff-a5180ab597c1/864b7ca9-4d8e-4dd4-811f-98c07e826f59:Textures/fire8x8
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -320,7 +341,7 @@ Hierarchy:
                                                     ~Id: d42a3e8b-56d2-4ea6-9cb7-33b4ad8afd8f
                                             RightChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 2a987a44-1a28-4a15-9439-c5406423eae2/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
+                                                Texture: 2a987a44-1a28-4a15-9439-c5406423eae2/3eca7314-84a5-4fb2-9d16-8cf7eab99572:Textures/dota
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -696,9 +717,6 @@ Hierarchy:
                         Projection: Perspective
                     - !ParticlesSample.CameraOrbitScript,ParticlesSample.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
-                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        ~Id: 827217f6-c4bd-44ad-ac78-02557cdd9cab
-                        NextScene: AnimatedParticles
         -   Entity:
                 Id: b300f706-d568-4c45-9cc2-f2bd162f2c31
                 Name: ProceduralCylinder
@@ -785,7 +803,7 @@ Hierarchy:
                                                 Value: {X: 2.0, Y: 2.0, Z: 2.0, W: 1.0}
                                             RightChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 515835fd-a094-4321-bf8f-4e2fb5e981f9/76d2be7d-69b6-4f8b-a529-1aeac751f6a9:flame8x8
+                                                Texture: 515835fd-a094-4321-bf8f-4e2fb5e981f9/76d2be7d-69b6-4f8b-a529-1aeac751f6a9:Textures/flame8x8
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -885,7 +903,7 @@ Hierarchy:
                                         ZOffset: 0.3
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: b8490b24-c824-4803-9448-c9e314cbb059/8ba2aad5-959d-4e56-8f1d-c670b28ec459:bonfire8x8
+                                            Texture: b8490b24-c824-4803-9448-c9e314cbb059/8ba2aad5-959d-4e56-8f1d-c670b28ec459:Textures/bonfire8x8
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -982,7 +1000,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 1aa538aa-10a1-4ec3-bd1a-2cf666e76c60/250eb6f0-4f9f-4cf8-9d53-df18e1cc0b46:smoke28x8
+                                                Texture: 1aa538aa-10a1-4ec3-bd1a-2cf666e76c60/250eb6f0-4f9f-4cf8-9d53-df18e1cc0b46:Textures/smoke28x8
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -1128,7 +1146,7 @@ Hierarchy:
                                                     ~Id: 8bc36822-a6f3-431d-8bba-de244dff1bbe
                                             RightChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 9f9c6aa0-4492-4514-891a-0c9b6a68e319/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
+                                                Texture: 9f9c6aa0-4492-4514-891a-0c9b6a68e319/3eca7314-84a5-4fb2-9d16-8cf7eab99572:Textures/dota
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -1281,7 +1299,7 @@ Hierarchy:
                                         ~Id: 3a2f4d08-f75b-4c30-83c0-10cbf47b8c5f
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 8f9106c6-c7fa-4220-a125-91f8bebb1b3e/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
+                                            Texture: 8f9106c6-c7fa-4220-a125-91f8bebb1b3e/3eca7314-84a5-4fb2-9d16-8cf7eab99572:Textures/dota
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}

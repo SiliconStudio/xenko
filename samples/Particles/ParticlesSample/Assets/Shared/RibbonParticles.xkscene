@@ -51,6 +51,7 @@ Hierarchy:
         - 19b87b8e-9b1a-46e5-9534-fda3f95d23d8
         - 666eeaba-21ff-4595-9005-c91027a334c2
         - 6b65e133-4d5e-49ed-9af9-8949cfe883ce
+        - ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
     Parts:
         -   Entity:
                 Id: 032d264e-ec29-4d14-bbe9-e58290d49cb5
@@ -1373,9 +1374,6 @@ Hierarchy:
                         Projection: Perspective
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
-                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        ~Id: 7bb00355-37e6-4ab6-b4a3-a64ae13279d1
-                        NextScene: MainScene
         -   Entity:
                 Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
                 Name: Angel
@@ -1425,6 +1423,26 @@ Hierarchy:
                         ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
                         Target: null
                         NodeName: RightShoulder
+        -   Entity:
+                Id: ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7faf18-d301-4c71-ba9e-5297df3f5801
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
+                        ~Id: ade3fd87-3d73-49ba-b7d6-9960222f50b0
+                        Next: 3c3ff7d2-ab48-45c9-9134-3c503d9e80ff/b4210f42-14a3-4917-80b6-006d7f81b1c6:MainScene
+                        Previous: 620c59d6-fd9b-4086-b84e-59fe317aafb0/8eb3fe28-2a08-441a-a015-a428d2e17bef:Lasers
+                        Font: bb9f276d-0c74-4f91-9c43-56267321b3d9/abe2b723-cac1-4cdc-9cbf-109a030873d3:Font
+                    - !UIComponent
+                        ~Id: 495003c5-7a29-45e2-a5c2-8ff360026ee3
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: d1043432-3d65-4f68-a696-54921013baeb
                 Name: RedRibbon
