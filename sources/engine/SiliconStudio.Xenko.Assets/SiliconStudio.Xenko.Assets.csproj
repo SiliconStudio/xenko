@@ -326,7 +326,8 @@
     <Compile Include="Scripts\CustomExpression.cs" />
     <Compile Include="Scripts\BlockDropTargetAttribute.cs" />
     <Compile Include="Scripts\ForeachBlock.cs" />
-    <Compile Include="Scripts\Function.cs" />
+    <Compile Include="Scripts\Method.cs" />
+    <Compile Include="Scripts\Property.cs" />
     <Compile Include="Scripts\Parameter.cs" />
     <Compile Include="Scripts\ParameterRefKind.cs" />
     <Compile Include="Scripts\RegenerateSlotsAttribute.cs" />
@@ -359,9 +360,9 @@
     <Compile Include="Scripts\MethodCallBlock.cs" />
     <Compile Include="Scripts\Slot.cs" />
     <Compile Include="Scripts\SlotDefinition.cs" />
-    <Compile Include="Scripts\Variable.cs" />
-    <Compile Include="Scripts\VariableGet.cs" />
-    <Compile Include="Scripts\VariableSet.cs" />
+    <Compile Include="Scripts\Symbol.cs" />
+    <Compile Include="Scripts\PropertyGet.cs" />
+    <Compile Include="Scripts\PropertySet.cs" />
     <Compile Include="Scripts\VisualScriptAsset.cs" />
     <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />

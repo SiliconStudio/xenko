@@ -1,7 +1,7 @@
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     /// <summary>
-    /// Describes accessibility of a <see cref="VisualScriptAsset"/>, <see cref="Function"/> or <see cref="Variable"/>.
+    /// Describes accessibility of a <see cref="VisualScriptAsset"/>, <see cref="Method"/> or <see cref="Symbol"/>.
     /// </summary>
     public enum Accessibility
     {

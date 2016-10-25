@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class VisualScriptCompilerContext
     {
         private readonly VisualScriptAsset asset;
-        private readonly Function function;
+        private readonly Method method;
 
         // Store execution connectivity information
         private readonly Dictionary<ExecutionBlock, List<ExecutionBlock>> executionOutputs = new Dictionary<ExecutionBlock, List<ExecutionBlock>>();
@@ -62,11 +62,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public bool IsInsideLoop { get; set; }
 
-        internal VisualScriptCompilerContext(VisualScriptAsset asset, Function function, Logger log)
+        internal VisualScriptCompilerContext(VisualScriptAsset asset, Method method, Logger log)
         {
             // Create first block
             this.asset = asset;
-            this.function = function;
+            this.method = method;
             Log = log;
         }
 
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -86,12 +86,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public IEnumerable<Link> FindOutputLinks(Slot outputSlot)
         {
-            return function.Links.Where(x => x.Source == outputSlot && x.Target != null);
+            return method.Links.Where(x => x.Source == outputSlot && x.Target != null);
         }
 
         public Link FindInputLink(Slot inputSlot)
         {
-            return function.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
+            return method.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
         }
 
         public ExpressionSyntax GenerateExpression(Slot slot)
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             if (slot != null)
             {
                 // 1. First check if there is a link and use its expression
-                var sourceLink = function.Links.FirstOrDefault(x => x.Target == slot);
+                var sourceLink = method.Links.FirstOrDefault(x => x.Target == slot);
                 if (sourceLink != null)
                 {
                     ExpressionSyntax expression;
@@ -179,7 +179,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return ProcessInnerLoop((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -319,7 +319,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
                 if (nextExecutionSlot != null)
                 {
-                    var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
+                    var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
                     if (nextExecutionLink == null)
                     {
                         // Nothing connected, no need to generate a goto to an empty return
@@ -374,7 +374,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         private void BuildGlobalConnectivityCache()
         {
             // Collect execution connectivity information from links
-            foreach (var link in function.Links)
+            foreach (var link in method.Links)
             {
                 if (link.Source.Kind == SlotKind.Execution)
                 {
@@ -497,7 +497,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var className = options.Class;
 
             // Generate variables
-            foreach (var variable in visualScriptAsset.Variables)
+            foreach (var variable in visualScriptAsset.Properties)
             {
                 var variableType = variable.Type;
                 if (variableType == null)
@@ -522,7 +522,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // Process each function
-            foreach (var function in visualScriptAsset.Functions)
+            foreach (var function in visualScriptAsset.Methods)
             {
                 var functionStartBlock = function.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
                 if (functionStartBlock == null)

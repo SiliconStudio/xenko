@@ -11,10 +11,10 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    [AssetPartReference(typeof(Function), typeof(Block), typeof(Link))]
+    [AssetPartReference(typeof(Method), typeof(Block), typeof(Link), typeof(Symbol))]
     [AssetPartReference(typeof(Block), typeof(Slot), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
     [AssetPartReference(typeof(Link))]
-    [AssetPartReference(typeof(Variable))]
+    [AssetPartReference(typeof(Symbol))]
     [AssetPartReference(typeof(Slot))]
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
@@ -30,13 +30,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// The list of member variables (properties and fields).
         /// </summary>
         [DataMember(20)]
-        public TrackingCollection<Variable> Variables { get; } = new TrackingCollection<Variable>();
+        public TrackingCollection<Property> Properties { get; } = new TrackingCollection<Property>();
 
         /// <summary>
         /// The list of functions.
         /// </summary>
         [DataMember(30)]
-        public TrackingCollection<Function> Functions { get; } = new TrackingCollection<Function>();
+        public TrackingCollection<Method> Methods { get; } = new TrackingCollection<Method>();
 
         #region IProjectFileGeneratorAsset implementation
 
@@ -49,11 +49,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()
         {
-            foreach (var variable in Variables)
-                yield return new AssetPart(variable.Id, variable.BaseId, variable.BasePartInstanceId);
-            foreach (var function in Functions)
+            foreach (var member in Properties)
+                yield return new AssetPart(member.Id, member.BaseId, member.BasePartInstanceId);
+            foreach (var function in Methods)
             {
                 yield return new AssetPart(function.Id, function.BaseId, function.BasePartInstanceId);
+                foreach (var parmeter in function.Parameters)
+                    yield return new AssetPart(parmeter.Id, parmeter.BaseId, parmeter.BasePartInstanceId);
                 foreach (var block in function.Blocks)
                     yield return new AssetPart(block.Id, block.BaseId, block.BasePartInstanceId);
                 foreach (var link in function.Links)
@@ -64,21 +66,27 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         public override bool ContainsPart(Guid id)
         {
-            foreach (var variable in Variables)
+            foreach (var variable in Properties)
             {
                 if (variable.Id == id)
                     return true;
             }
 
-            foreach (var function in Functions)
+            foreach (var method in Methods)
             {
-                if (function.Id == id)
+                if (method.Id == id)
                     return true;
 
-                if (function.Blocks.ContainsKey(id) || function.Links.ContainsKey(id))
+                if (method.Blocks.ContainsKey(id) || method.Links.ContainsKey(id))
                     return true;
 
-                foreach (var block in function.Blocks)
+                foreach (var parameter in method.Parameters)
+                {
+                    if (parameter.Id == id)
+                        return true;
+                }
+
+                foreach (var block in method.Blocks)
                 {
                     foreach (var slot in block.Slots)
                     {
@@ -94,23 +102,33 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
-            foreach (var variable in Variables)
+            foreach (var property in Properties)
             {
-                if (variable.Id == id)
+                if (property.Id == id)
                 {
-                    variable.BaseId = baseId;
-                    variable.BasePartInstanceId = basePartInstanceId;
+                    property.BaseId = baseId;
+                    property.BasePartInstanceId = basePartInstanceId;
                     return;
                 }
             }
 
-            foreach (var function in Functions)
+            foreach (var function in Methods)
             {
                 if (function.Id == id)
                 {
                     function.BaseId = baseId;
                     function.BasePartInstanceId = basePartInstanceId;
                     return;
+                }
+
+                foreach (var parameter in function.Parameters)
+                {
+                    if (parameter.Id == id)
+                    {
+                        parameter.BaseId = baseId;
+                        parameter.BasePartInstanceId = basePartInstanceId;
+                        return;
+                    }
                 }
 
                 Block block;
@@ -134,27 +152,43 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         protected override object ResolvePartReference(object partReference)
         {
-            var variableReference = partReference as Variable;
-            if (variableReference != null)
+            var propertyReference = partReference as Property;
+            if (propertyReference != null)
             {
-                foreach (var variable in Variables)
+                foreach (var property in Properties)
                 {
-                    if (variable.Id == variableReference.Id)
+                    if (property.Id == propertyReference.Id)
                     {
-                        return variable;
+                        return property;
                     }
                 }
                 return null;
             }
 
-            var functionReference = partReference as Function;
-            if (functionReference != null)
+            var parameterReference = partReference as Parameter;
+            if (parameterReference != null)
             {
-                foreach (var function in Functions)
+                foreach (var method in Methods)
                 {
-                    if (function.Id == functionReference.Id)
+                    foreach (var parameter in method.Parameters)
                     {
-                        return function;
+                        if (parameter.Id == parameterReference.Id)
+                        {
+                            return method;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            var methodReference = partReference as Method;
+            if (methodReference != null)
+            {
+                foreach (var method in Methods)
+                {
+                    if (method.Id == methodReference.Id)
+                    {
+                        return method;
                     }
                 }
                 return null;
@@ -163,7 +197,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var blockReference = partReference as Block;
             if (blockReference != null)
             {
-                foreach (var function in Functions)
+                foreach (var function in Methods)
                 {
                     Block realPart;
                     if (function.Blocks.TryGetValue(blockReference.Id, out realPart))
@@ -175,7 +209,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var linkReference = partReference as Link;
             if (linkReference != null)
             {
-                foreach (var function in Functions)
+                foreach (var function in Methods)
                 {
                     Link realPart;
                     if (function.Links.TryGetValue(linkReference.Id, out realPart))
@@ -188,7 +222,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             if (slotReference != null)
             {
                 // TODO: store slot reference as Block Id + Slot Id for faster lookup?
-                foreach (var function in Functions)
+                foreach (var function in Methods)
                 {
                     foreach (var block in function.Blocks)
                     {

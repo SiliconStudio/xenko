@@ -6,14 +6,14 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
-    public class Variable : IIdentifiable, IAssetPartDesign<Variable>
+    public class Symbol : IIdentifiable, IAssetPartDesign<Symbol>
     {
-        public Variable()
+        public Symbol()
         {
             Id = Guid.NewGuid();
         }
 
-        public Variable(string type, string name)
+        public Symbol(string type, string name)
             : this()
         {
             Name = name;
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(-40)]
         public string Type { get; set; }
 
-        Variable IAssetPartDesign<Variable>.Part => this;
+        Symbol IAssetPartDesign<Symbol>.Part => this;
 
         public override string ToString()
         {

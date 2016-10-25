@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// The function that contains this link.
         /// </summary>
         [DataMemberIgnore]
-        public Function Function { get; internal set; }
+        public Method Method { get; internal set; }
 
 
         [DataMember(-100), Display(Browsable = false)]

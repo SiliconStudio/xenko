@@ -76,13 +76,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Variable("bool", "Condition");
-            visualScript.Variables.Add(condition);
+            var condition = new Symbol("bool", "Condition");
+            visualScript.Properties.Add(condition);
 
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
             var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new VariableGet { Variable = condition };
+            var conditionGet = new PropertyGet { Symbol = condition };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
@@ -121,14 +121,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Variable("bool", "Condition");
-            visualScript.Variables.Add(condition);
+            var condition = new Symbol("bool", "Condition");
+            visualScript.Properties.Add(condition);
 
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
             var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new VariableGet { Variable = condition };
-            var conditionSet = new VariableSet { Variable = condition };
+            var conditionGet = new PropertyGet { Symbol = condition };
+            var conditionSet = new PropertySet { Property = condition };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };

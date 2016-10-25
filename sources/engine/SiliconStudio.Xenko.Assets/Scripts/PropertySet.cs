@@ -8,12 +8,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    public class VariableSet : ExecutionBlock
+    public class PropertySet : ExecutionBlock
     {
         [RegenerateTitle, RegenerateSlots, BlockDropTarget]
-        public Variable Variable { get; set; }
+        public Property Property { get; set; }
 
-        public override string Title => Variable != null ? $"Set {Variable.Name}" : "Set";
+        public override string Title => Property != null ? $"Set {Property.Name}" : "Set";
 
         [DataMemberIgnore]
         public Slot InputSlot => FindSlot(SlotDirection.Input, SlotKind.Value, null);
@@ -23,14 +23,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
-            if (Variable == null)
+            if (Property == null)
                 return;
 
             // Evaluate value
             var newValue = context.GenerateExpression(InputSlot);
 
             // Generate assignment statement
-            context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Variable.Name), newValue)));
+            context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Property.Name), newValue)));
         }
 
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);
 
-            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value, type: Variable?.Type));
+            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value, type: Property?.Type));
         }
     }
 }

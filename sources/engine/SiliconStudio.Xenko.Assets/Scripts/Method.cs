@@ -7,14 +7,14 @@ using SiliconStudio.Core.Collections;
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
-    public class Function : IIdentifiable, IAssetPartDesign<Function>
+    public class Method : IIdentifiable, IAssetPartDesign<Method>
     {
-        public Function()
+        public Method()
         {
             Id = Guid.NewGuid();
         }
 
-        public Function(string name) : this()
+        public Method(string name) : this()
         {
             Name = name;
         }
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public string ReturnType { get; set; } = "void";
 
         [DataMember(40)]
-        public TrackingCollection<Variable> Parameters { get; } = new TrackingCollection<Variable>();
+        public TrackingCollection<Parameter> Parameters { get; } = new TrackingCollection<Parameter>();
 
         [DataMember(50)]
         public AssetPartCollection<Block> Blocks { get; } = new AssetPartCollection<Block>();
@@ -60,6 +60,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(60)]
         public AssetPartCollection<Link> Links { get; } = new AssetPartCollection<Link>();
 
-        Function IAssetPartDesign<Function>.Part => this;
+        Method IAssetPartDesign<Method>.Part => this;
     }
 }

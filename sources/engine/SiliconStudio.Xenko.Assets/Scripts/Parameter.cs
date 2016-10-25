@@ -3,7 +3,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
-    public class Parameter : Variable
+    public class Parameter : Symbol
     {
         public Parameter()
         {

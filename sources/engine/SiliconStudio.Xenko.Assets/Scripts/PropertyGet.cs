@@ -8,22 +8,22 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    public class VariableGet : ExpressionBlock
+    public class PropertyGet : ExpressionBlock
     {
         [RegenerateTitle, BlockDropTarget]
-        public Variable Variable { get; set; }
+        public Property Property { get; set; }
 
-        public override string Title => Variable != null ? $"Get {Variable.Name}" : "Get";
+        public override string Title => Property != null ? $"Get {Property.Name}" : "Get";
 
         [DataMemberIgnore]
         public Slot ValueSlot => FindSlot(SlotDirection.Output, SlotKind.Value, null);
 
         public override ExpressionSyntax GenerateExpression(VisualScriptCompilerContext context)
         {
-            if (Variable == null)
+            if (Property == null)
                 return IdentifierName("variable_not_set");
 
-            return IdentifierName(Variable.Name);
+            return IdentifierName(Property.Name);
         }
 
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
