@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "xkentity");
+                var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "test.xkentity");
 
                 Assert.NotNull(newAsset.Base);
                 Assert.NotNull(newAsset.BaseParts);

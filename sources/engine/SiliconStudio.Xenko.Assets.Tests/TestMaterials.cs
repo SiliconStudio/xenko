@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                     Console.WriteLine(serializedVersion);
 
                     stream.Position = 0;
-                    var newPrefab = AssetSerializer.Load<PrefabAsset>(stream, "myentity");
+                    var newPrefab = AssetSerializer.Load<PrefabAsset>(stream, "test.myentity");
                     checkPrefab(newPrefab);
                 }
             }

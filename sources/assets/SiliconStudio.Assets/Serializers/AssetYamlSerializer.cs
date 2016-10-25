@@ -13,12 +13,12 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
+        public object Load(Stream stream, string filePath, ILogger log, out bool aliasOccurred)
         {
             return YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null, out aliasOccurred);
         }
 
-        public void Save(Stream stream, object asset, ILogger log)
+        public void Save(Stream stream, object asset, ILogger log = null)
         {
             YamlSerializer.Serialize(stream, asset, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null);
         }
