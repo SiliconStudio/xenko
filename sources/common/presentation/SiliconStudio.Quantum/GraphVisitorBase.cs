@@ -73,7 +73,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node being visited.</param>
         /// <param name="currentPath">The path of the node being visited.</param>
-        public virtual void VisitChildren(IGraphNode node, GraphNodePath currentPath)
+        protected virtual void VisitChildren(IGraphNode node, GraphNodePath currentPath)
         {
             foreach (var child in node.Children)
             {
@@ -90,7 +90,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node being visited.</param>
         /// <param name="currentPath">The path of the node being visited.</param>
-        public virtual void VisitSingleTarget(IGraphNode node, GraphNodePath currentPath)
+        protected virtual void VisitSingleTarget(IGraphNode node, GraphNodePath currentPath)
         {
             var objectReference = node.Content.Reference as ObjectReference;
             if (objectReference?.TargetNode != null)
