@@ -231,6 +231,7 @@ namespace PhysicsSample
                 Padding = Thickness.UniformRectangle(15),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Content = new TextBlock { Text = text, Font = font, TextSize = 35, TextColor = new Color(200, 200, 200, 255) },
+                BackgroundColor = new Color(new Vector4(0.2f, 0.2f, 0.2f, 0.2f)),
             };
             button.Click += (sender, args) => ChangeConstraint(offset);
             button.SetCanvasPinOrigin(new Vector3(offset > 0 ? 1 : 0, 0.5f, 0));

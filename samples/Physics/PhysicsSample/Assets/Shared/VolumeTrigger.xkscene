@@ -171,7 +171,7 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
                         Projection: Orthographic
-                        OrthographicSize: 20.0
+                        OrthographicSize: 21.0
         -   Entity:
                 Id: 40160bfc-cad8-4c09-806e-fc63188ab688
                 Name: NextScene
