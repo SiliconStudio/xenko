@@ -32,6 +32,7 @@
     </Compile>
     <Compile Include="Audio\Celt.cs" />
     <Compile Include="DirectInput\XInputChecker.cs" />
+    <Compile Include="Fove\Fove.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="OculusOVR\OculusOVR.cs" />
@@ -79,6 +80,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Audio\Common.h" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Fove\Fove.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
