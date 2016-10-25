@@ -290,6 +290,21 @@ Hierarchy:
                         Materials:
                             - null
         -   Entity:
+                Id: 129c81f3-ab34-4783-a889-557620d798d9
+                Name: standCurved
+                Components:
+                    - !TransformComponent
+                        ~Id: db0f30e5-7d95-4420-9a0b-7e990beafaf0
+                        Children: []
+                        Position: {X: 0.0, Y: -0.399930716, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
+                    - !ModelComponent
+                        ~Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
+                        Model: b5fb60a9-472c-4e46-ac8a-2cc671370cba/9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
+                        Materials:
+                            - null
+        -   Entity:
                 Id: 1304e7b3-798b-4602-afe4-374726417b27
                 Name: ProceduralModel
                 Components:
@@ -697,6 +712,29 @@ Hierarchy:
                             - null
                             - null
         -   Entity:
+                Id: 64c9cb43-825d-4501-9977-5cc91bbe09ef
+                Name: SwordModel
+                Components:
+                    - !TransformComponent
+                        ~Id: 7632d55e-a51f-422d-98f5-b1354e82e498
+                        Children:
+                            - f8eb0a0b-de53-4894-8add-ff3d2b6bc173/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
+                        Model: c9c77701-ecb4-46e4-9908-b6c8af95079f/dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
+                        Materials:
+                            - null
+                            - null
+                            - null
+                            - null
+                    - !ModelNodeLinkComponent
+                        ~Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
+                        Target: null
+                        NodeName: wepon_bone_R
+        -   Entity:
                 Id: 664db320-87a7-4342-b7de-4ab3efd17f36
                 Name: PrefabPedestal
                 Components:
@@ -715,20 +753,18 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
                         Children:
-                            - f8eb0a0b-de53-4894-8add-ff3d2b6bc173/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - dee3f678-cff4-45f0-ba78-0c68aab480d1/4e277007-a79d-4193-92a6-0beaab2ec76e
+                            - 129c81f3-ab34-4783-a889-557620d798d9/db0f30e5-7d95-4420-9a0b-7e990beafaf0
+                            - 64c9cb43-825d-4501-9977-5cc91bbe09ef/7632d55e-a51f-422d-98f5-b1354e82e498
                         Position: {X: -5.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
+                        Animations: {}
                         PlayingAnimations:
                             -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
                                 Name: Slash
-                                Clip: 17374e52-4b17-41cd-819c-d031fe16bf1e/32b9842d-fc24-438e-80a4-d8892556187c:Animations/he07_atk_updown Animation
+                                Clip: 4bad48ce-7e53-4a8b-8d57-920309755026/b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
                                 RepeatMode: LoopInfinite
                                 BlendOperation: LinearBlend
                                 CurrentTime: 0:00:00:00.0000000
@@ -736,8 +772,11 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
+                        Model: 89fbfc6e-b1be-460a-893d-9c132a785793/f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials:
+                            - null
+                            - null
+                            - null
                             - null
                             - null
                             - null
@@ -789,21 +828,6 @@ Hierarchy:
                                     ~Id: a04cf1ab-4c95-42a3-8111-7b4de4f99293
                                 BiasParameters:
                                     ~Id: 08cae8b9-87da-4f7a-9821-798773d9e9e9
-        -   Entity:
-                Id: 71513b46-5e4a-4125-b431-311580f1ef8b
-                Name: ProceduralModel (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
-                        Materials:
-                            - null
         -   Entity:
                 Id: 75508145-9633-47b2-932b-4e7087505a68
                 Name: ProceduralModel (3)
@@ -1527,18 +1551,6 @@ Hierarchy:
                         Materials:
                             - null
         -   Entity:
-                Id: dee3f678-cff4-45f0-ba78-0c68aab480d1
-                Name: PrefabPedestal
-                Components:
-                    - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Children:
-                            - fd3518cf-80d7-4fbe-b3fa-12a22df3427a/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - 71513b46-5e4a-4125-b431-311580f1ef8b/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
                 Id: e517c737-f9b8-4e83-b8a5-9ad2adb1e2cd
                 Name: ProceduralModel (3)
                 Components:
@@ -1748,36 +1760,17 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                         Children: []
-                        Position: {X: 0.0, Y: -0.6428363, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Position: {X: -1.44622632E-07, Y: 3.053148E-07, Z: -1.0}
+                        Rotation: {X: 0.707106769, Y: -3.48962878E-15, Z: 3.48962878E-15, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelNodeLinkComponent
-                        ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
-                        Target: null
-                        NodeName: weapon
                     - !ParticlesSample.PrefabInstance,ParticlesSample.Game
                         ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
-                        SourcePrefab: 2d2606e0-f86c-414d-aced-29ad9c81fafc/802fae9e-3183-4fa2-a971-cb7f97e1bcfc:Prefabs/PrefabMovingTrail
+                        SourcePrefab: 67479ae5-bd74-4ab8-a85b-4525b9790114/802fae9e-3183-4fa2-a971-cb7f97e1bcfc:Prefabs/PrefabMovingTrail
                         Following: true
                         InstanceTimeout: 0.5
                         Key: Space
-                        TimeInterval: 1.0
-                        TimeDelay: 0.25
-        -   Entity:
-                Id: fd3518cf-80d7-4fbe-b3fa-12a22df3427a
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
-                        Materials:
-                            - 10cb2fd5-92a9-4f3e-93f5-6023a1ad05be/9c1aa720-fc74-44ec-86b4-0dda38ed9bf6:Prefabs/Material
+                        TimeInterval: 0.833333
+                        TimeDelay: 0.633333
 ~BaseParts:
     -   Location: Prefabs/PrefabRibbon
         Asset: !PrefabAsset
