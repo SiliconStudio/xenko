@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
 // ***********************************************************************
 // Copyright (c) 2007 Charlie Poole
@@ -69,7 +70,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// <summary>
         /// Initializes a new instance of the <see cref="TextUI"/> class.
         /// </summary>
-        public TextUI() : this(ConsoleWriter.Out) { }
+        public TextUI() : this(ConsoleWriter.Out)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextUI"/> class.
@@ -79,11 +82,19 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             // Set the default writer - may be overridden by the args specified
             this.writer = writer;
+
+            // MonoTouch NUnitLite uses an extra parameter
+#if SILICONSTUDIO_PLATFORM_IOS
+            this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()), new FinallyDelegate());
+#else
             this.runner = new NUnitLiteTestAssemblyRunner(new NamespaceAssemblyBuilder(new NUnitLiteTestAssemblyBuilder()));
+#endif
         }
+
         #endregion
 
         #region Public Methods
+
         /// <summary>
         /// Execute a test run based on the aruments passed
         /// from Main.
@@ -305,7 +316,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             writer.WriteLine();
         }
 
-
         #endregion
 
         #region ITestListener Members
@@ -343,4 +353,5 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         #endregion
     }
 }
+
 #endif

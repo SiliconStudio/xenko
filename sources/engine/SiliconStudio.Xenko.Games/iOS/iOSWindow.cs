@@ -7,7 +7,7 @@ using UIKit;
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// Tuple of 3 elements that an iOS GameContext needs to hold on.
+    /// Tuple of 3 elements that an iOS GameContext needs to hold on to.
     /// </summary>
     public struct iOSWindow {
     
@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Games
         public readonly UIWindow MainWindow;
 
         /// <summary>
-        /// The view in which is rendered the game.
+        /// The view in which the game is rendered.
         /// </summary>
         public readonly iPhoneOSGameView GameView;
 
