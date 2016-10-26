@@ -55,8 +55,8 @@ namespace PhysicsSample
                     Children = 
                     { 
                         constraintNameBlock, 
-                        CreateButton("Next Constraint", Font, 1), 
-                        CreateButton("Last Constraint", Font, -1) 
+                        CreateButton("Next", Font, 1), 
+                        CreateButton("Previous", Font, -1) 
                     }
                 }
             };
