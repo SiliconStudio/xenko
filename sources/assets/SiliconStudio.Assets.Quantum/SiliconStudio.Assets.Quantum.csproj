@@ -44,6 +44,15 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssetCompositePropertyNodeGraph.cs" />
+    <Compile Include="AssetContentChangeEventArgs.cs" />
+    <Compile Include="AssetGraphNodeChangeListener.cs" />
+    <Compile Include="AssetNode.cs" />
+    <Compile Include="AssetNodeContainer.cs" />
+    <Compile Include="AssetPropertyNodeGraphContainer.cs" />
+    <Compile Include="AssetPropertyNodeGraph.cs" />
+    <Compile Include="MultiContentNode.cs" />
+    <Compile Include="OverridePathVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +94,10 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
+      <Project>{1D4210BD-FA51-4709-951B-50647617F97E}</Project>
+      <Name>SiliconStudio.Quantum</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
@@ -95,11 +108,18 @@
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
