@@ -8,6 +8,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
+    [AssetPropertyNodeGraphAttribute(typeof(Asset))]
     public class AssetPropertyNodeGraph : IDisposable
     {
         private readonly AssetItem assetItem;

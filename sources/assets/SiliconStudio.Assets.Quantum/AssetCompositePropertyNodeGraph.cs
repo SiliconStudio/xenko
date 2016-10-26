@@ -5,6 +5,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
 {
+    [AssetPropertyNodeGraphAttribute(typeof(AssetComposite))]
     public class AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetPropertyNodeGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
