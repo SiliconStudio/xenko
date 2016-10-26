@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (device.GetPovControllerEnabled(index))
             {
-                return GamePadConversions.PovControllerToButton(device.GetPovController(index));
+                return GamePadUtils.PovControllerToButton(device.GetPovController(index));
             }
             return 0;
         }

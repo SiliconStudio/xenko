@@ -85,14 +85,14 @@ namespace SiliconStudio.Xenko.Input
 
                 if (objInfo != null)
                 {
-                    objInfo.InstanceId = obj.ObjectId.InstanceNumber;
+                    objInfo.Index = obj.ObjectId.InstanceNumber;
                     objInfo.Name = obj.Name.TrimEnd('\0');
                 }
             }
 
-            buttonInfos.Sort((a, b) => a.InstanceId.CompareTo(b.InstanceId));
-            axisInfos.Sort((a, b) => a.InstanceId.CompareTo(b.InstanceId));
-            povControllerInfos.Sort((a, b) => a.InstanceId.CompareTo(b.InstanceId));
+            buttonInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
+            axisInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
+            povControllerInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
 
             // Allocate storage on state
             state.Buttons = new bool[buttonInfos.Count];
@@ -185,14 +185,10 @@ namespace SiliconStudio.Xenko.Input
                 }
 
                 // Convert axes while clamping deadzone
-                state.LeftThumb = new Vector2(
-                    ClampDeadZone(GetAxis(ds4AxisMapping[0]), InputManager.GamePadAxisDeadZone),
-                    ClampDeadZone(-GetAxis(ds4AxisMapping[1]), InputManager.GamePadAxisDeadZone));
-                state.RightThumb = new Vector2(
-                    ClampDeadZone(GetAxis(ds4AxisMapping[2]), InputManager.GamePadAxisDeadZone),
-                    ClampDeadZone(-GetAxis(ds4AxisMapping[3]), InputManager.GamePadAxisDeadZone));
-                state.LeftTrigger = ClampDeadZone(this.GetTrigger(ds4AxisMapping[4]), InputManager.GamePadAxisDeadZone);
-                state.RightTrigger = ClampDeadZone(this.GetTrigger(ds4AxisMapping[5]), InputManager.GamePadAxisDeadZone);
+                state.LeftThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[0]), InputManager.GamePadAxisDeadZone), GamePadUtils.ClampDeadZone(-GetAxis(ds4AxisMapping[1]), InputManager.GamePadAxisDeadZone));
+                state.RightThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[2]), InputManager.GamePadAxisDeadZone), GamePadUtils.ClampDeadZone(-GetAxis(ds4AxisMapping[3]), InputManager.GamePadAxisDeadZone));
+                state.LeftTrigger = GamePadUtils.ClampDeadZone(this.GetTrigger(ds4AxisMapping[4]), InputManager.GamePadAxisDeadZone);
+                state.RightTrigger = GamePadUtils.ClampDeadZone(this.GetTrigger(ds4AxisMapping[5]), InputManager.GamePadAxisDeadZone);
 
                 return true;
             }

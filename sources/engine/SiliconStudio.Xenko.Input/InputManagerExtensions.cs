@@ -29,15 +29,6 @@ namespace SiliconStudio.Xenko.Input.Extensions
         }
 
         /// <summary>
-        /// Simulate mouse movement, requires SimulatedInputSource to be enabled
-        /// </summary>
-        /// <param name="inputManager">the InputManager</param>
-        /// <param name="position">Target mouse position</param>
-        public static void SimulateMouseMove(this InputManager inputManager, Vector2 position)
-        {
-            SimulatedInputSource.Instance.Mouse.SetMousePosition(position);
-        }
-        /// <summary>
         /// Simulate mouse button presses, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
@@ -58,37 +49,33 @@ namespace SiliconStudio.Xenko.Input.Extensions
         }
 
         /// <summary>
-        /// Injects a tap down touch pointer event into the events stack
+        /// Simulates pointer down events, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        public static void SimulateTapDown(this InputManager inputManager, Vector2 coords)
+        public static void SimulatePointerDown(this InputManager inputManager, Vector2 coords)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch));
+            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Down, coords);
         }
 
         /// <summary>
-        /// Injects a tap move touch pointer event into the events stack
+        /// Simulates pointer move events, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        /// <param name="deltaCoords">the delta coordinates from the previous event</param>
-        /// <param name="delta">the delta time between events</param>
-        public static void SimulateTapMove(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
+        public static void SimulatePointerMove(this InputManager inputManager, Vector2 coords)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch));
+            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Move, coords);
         }
 
         /// <summary>
-        /// Injects a tap up (release) touch pointer event into the events stack
+        /// Simulates pointer up events, requires SimulatedInputSource to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
-        /// <param name="deltaCoords">the delta coordinates from the previous event</param>
-        /// <param name="delta">the delta time between events</param>
-        public static void SimulateTapUp(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
+        public static void SimulatePointerUp(this InputManager inputManager, Vector2 coords)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch));
+            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Up, coords);
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_IOS
 using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class OrientationSensoriOS : SensoriOS, IOrientationSensor
+    public class NamedOrientationSensor : NamedSensor, IOrientationSensor
     {
         public float Yaw => yaw;
         public float Pitch => pitch;
@@ -21,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
         private Quaternion quaternion;
         private Matrix rotationMatrix;
 
-        public OrientationSensoriOS() : base("Orientation")
+        public NamedOrientationSensor(string systemName) : base(systemName, "Orientation")
         {
         }
 
@@ -45,4 +44,3 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 }
-#endif

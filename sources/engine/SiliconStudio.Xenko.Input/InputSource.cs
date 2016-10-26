@@ -12,24 +12,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class InputSourceBase : IInputSource
     {
-        public EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
-        public EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
-        public IReadOnlyList<IInputDevice> InputDevices => registeredInputDevices;
         protected List<IInputDevice> registeredInputDevices = new List<IInputDevice>();
-
-        public abstract void Initialize(InputManager inputManager);
-        public abstract bool IsEnabled(GameContext gameContext);
-
-        public virtual void Update()
-        {
-            // Does nothing by default
-        }
-
-
-        public virtual void Scan()
-        {
-            // Does nothing by default
-        }
 
         /// <summary>
         /// Unregisters all devices registered with <see cref="RegisterDevice"/> which have not been unregistered yet
@@ -44,13 +27,50 @@ namespace SiliconStudio.Xenko.Input
             registeredInputDevices.Clear();
         }
 
+        /// <inheritdoc />
+        public EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
+
+        /// <inheritdoc />
+        public EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
+
+        /// <inheritdoc />
+        public IReadOnlyList<IInputDevice> InputDevices => registeredInputDevices;
+
+        /// <inheritdoc />
+        public abstract void Initialize(InputManager inputManager);
+
+        /// <inheritdoc />
+        public abstract bool IsEnabled(GameContext gameContext);
+
+        /// <inheritdoc />
+        public virtual void Update()
+        {
+            // Does nothing by default
+        }
+
+        /// <inheritdoc />
+        public virtual void Pause()
+        {
+        }
+
+        /// <inheritdoc />
+        public virtual void Resume()
+        {
+        }
+
+        /// <inheritdoc />
+        public virtual void Scan()
+        {
+            // Does nothing by default
+        }
+
         /// <summary>
         /// Calls <see cref="OnInputDeviceAdded"/> and adds the device to the list <see cref="InputDevices"/>
         /// </summary>
         /// <param name="device">The device</param>
         protected void RegisterDevice(IInputDevice device)
         {
-            if(registeredInputDevices.Contains(device))
+            if (registeredInputDevices.Contains(device))
                 throw new InvalidOperationException("Tried to use RegisterDevice on an input device twice");
 
             OnInputDeviceAdded?.Invoke(this, device);

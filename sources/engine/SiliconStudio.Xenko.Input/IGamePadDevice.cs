@@ -6,89 +6,10 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public enum GamePadButtonType
-    {
-        PushButton,
-        ToggleButton
-    }
-
-    public enum GamePadAxisType
-    {
-        RelativeAxis,
-        AbsoluteAxis
-    }
-
-    public class GamePadObjectInfo
-    {
-        public int InstanceId;
-        public string Name;
-        public override string ToString()
-        {
-            return $"GamePad Object {{{Name}}}";
-        }
-    }
-
     /// <summary>
-    /// Provides extra information about a gamepad button
+    /// This interface is used for interacting with gamepad devices.
     /// </summary>
-    public class GamePadButtonInfo : GamePadObjectInfo
-    {
-        public GamePadButtonType Type;
-        public override string ToString()
-        {
-            return $"GamePad Button {{{Name}}} [{Type}]";
-        }
-    }
-
-    /// <summary>
-    /// Provides extra information about a gamepad axis
-    /// </summary>
-    public class GamePadAxisInfo : GamePadObjectInfo
-    {
-        public GamePadAxisType Type;
-        public override string ToString()
-        {
-            return $"GamePad Axis {{{Name}}} [{Type}]";
-        }
-    }
-
-
-    /// <summary>
-    /// Provides extra information about a gamepad POV controller
-    /// </summary>
-    public class GamePadPovControllerInfo : GamePadObjectInfo
-    {
-        public override string ToString()
-        {
-            return $"GamePad POVController {{{Name}}}";
-        }
-    }
-
-    public enum GamePadButtonState
-    {
-        Pressed,
-        Released
-    }
-
-    public class GamePadButtonEvent : EventArgs
-    {
-        public int Index;
-        public GamePadButtonState State;
-    }
-
-    public class GamePadAxisEvent : EventArgs
-    {
-        public int Index;
-        public float Value;
-    }
-
-    public class GamePadPovControllerEvent : EventArgs
-    {
-        public int Index;
-        public bool Enabled;
-        public float Value;
-    }
-
+    /// <remarks>If vibration is required, check if the object implements <see cref="IGamePadVibration"/></remarks>
     public interface IGamePadDevice : IInputDevice
     {
         /// <summary>
@@ -105,14 +26,21 @@ namespace SiliconStudio.Xenko.Input
         /// Information about the buttons on this GamePad
         /// </summary>
         IReadOnlyCollection<GamePadButtonInfo> ButtonInfos { get; }
+
         /// <summary>
         /// Information about the axes on this GamePad
         /// </summary>
         IReadOnlyCollection<GamePadAxisInfo> AxisInfos { get; }
+
         /// <summary>
         /// Information about the point of view controllers (dpad) on this GamePad 
         /// </summary>
         IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos { get; }
+
+        /// <summary>
+        /// Raised when this gamepad gets disconnected
+        /// </summary>
+        EventHandler OnDisconnect { get; set; }
 
         /// <summary>
         /// Raised when a button on the GamePad changes state
@@ -128,7 +56,7 @@ namespace SiliconStudio.Xenko.Input
         /// Raised when a point of view controller on the GamePad changes state
         /// </summary>
         EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
-        
+
         /// <summary>
         /// Retrieves the button state of a single button
         /// </summary>

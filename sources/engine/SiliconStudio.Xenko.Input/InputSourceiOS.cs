@@ -19,13 +19,13 @@ namespace SiliconStudio.Xenko.Input
         private float firstNorthValue = float.NegativeInfinity;
         private PointeriOS pointer;
 
-        private CompassSensoriOS compassSensor;
-        private GravitySensoriOS gravitySensor;
-        private AccelerometerSensoriOS accelerometerSensor;
-        private UserAccelerationSensoriOS userAccelerationSensor;
-        private OrientationSensoriOS orientationSensor;
-        private GyroscopeSensoriOS gyroscopeSensor;
-        private List<SensoriOS> sensors = new List<SensoriOS>();
+        private NamedAccelerometerSensor accelerometerSensor;
+        private NamedUserAccelerationSensor userAccelerationSensor;
+        private NamedGyroscopeSensor gyroscopeSensor;
+        private NamedOrientationSensor orientationSensor;
+        private NamedGravitySensor gravitySensor;
+        private NamedCompassSensor compassSensor;
+        private List<NamedSensor> sensors = new List<NamedSensor>();
         
         public override void Initialize(InputManager inputManager)
         {
@@ -49,29 +49,29 @@ namespace SiliconStudio.Xenko.Input
             // Determine supported sensors
             if (motionManager.AccelerometerAvailable)
             {
-                accelerometerSensor = new AccelerometerSensoriOS();
+                accelerometerSensor = new NamedAccelerometerSensor("iOS");
                 RegisterDevice(accelerometerSensor);
             }
             if (CLLocationManager.HeadingAvailable)
             {
-                compassSensor = new CompassSensoriOS();
+                compassSensor = new NamedCompassSensor("iOS");
                 RegisterDevice(compassSensor);
             }
             if (motionManager.GyroAvailable)
             {
-                gyroscopeSensor = new GyroscopeSensoriOS();
+                gyroscopeSensor = new NamedGyroscopeSensor("iOS");
                 RegisterDevice(gyroscopeSensor);
             }
             if (motionManager.DeviceMotionAvailable)
             {
-                gravitySensor = new GravitySensoriOS();
-                userAccelerationSensor = new UserAccelerationSensoriOS();
-                orientationSensor = new OrientationSensoriOS();
+                gravitySensor = new NamedGravitySensor("iOS");
+                userAccelerationSensor = new NamedUserAccelerationSensor("iOS");
+                orientationSensor = new NamedOrientationSensor("iOS");
                 RegisterDevice(gravitySensor);
                 RegisterDevice(userAccelerationSensor);
                 RegisterDevice(orientationSensor);
             }
-            sensors.AddRange(registeredInputDevices.OfType<SensoriOS>());
+            sensors.AddRange(registeredInputDevices.OfType<NamedSensor>());
         }
 
         public override bool IsEnabled(GameContext gameContext)
@@ -86,10 +86,10 @@ namespace SiliconStudio.Xenko.Input
             // Enable/disable supported sensors and update enabled sensors
             if (accelerometerSensor != null)
             {
-                bool enable = accelerometerSensor.ShouldBeEnabled;
+                bool enable = accelerometerSensor.IsEnabled;
                 if (enable != motionManager.AccelerometerActive)
                 {
-                    if(accelerometerSensor.ShouldBeEnabled)
+                    if(accelerometerSensor.IsEnabled)
                         motionManager.StartAccelerometerUpdates();
                     else
                         motionManager.StopAccelerometerUpdates();
@@ -102,14 +102,14 @@ namespace SiliconStudio.Xenko.Input
             }
             if (compassSensor != null)
             {
-                bool enable = compassSensor.ShouldBeEnabled;
+                bool enable = compassSensor.IsEnabled;
                 if (enable != locationManagerActivated)
                 {
-                    if (compassSensor.ShouldBeEnabled)
+                    if (compassSensor.IsEnabled)
                         locationManager.StartUpdatingHeading();
                     else
                         locationManager.StopUpdatingHeading();
-                    locationManagerActivated = compassSensor.ShouldBeEnabled;
+                    locationManagerActivated = compassSensor.IsEnabled;
                 }
                 if (enable)
                 {
@@ -118,10 +118,10 @@ namespace SiliconStudio.Xenko.Input
             }
             if (gyroscopeSensor != null)
             {
-                bool enable = gyroscopeSensor.ShouldBeEnabled;
+                bool enable = gyroscopeSensor.IsEnabled;
                 if (enable != motionManager.GyroActive)
                 {
-                    if (gyroscopeSensor.ShouldBeEnabled)
+                    if (gyroscopeSensor.IsEnabled)
                         motionManager.StartGyroUpdates();
                     else
                         motionManager.StopGyroUpdates();
@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Input
             }
             if (userAccelerationSensor != null)
             {
-                bool enable = userAccelerationSensor.ShouldBeEnabled || gravitySensor.ShouldBeEnabled || orientationSensor.ShouldBeEnabled;
+                bool enable = userAccelerationSensor.IsEnabled || gravitySensor.IsEnabled || orientationSensor.IsEnabled;
                 if (enable != motionManager.DeviceMotionActive)
                 {
                     if (enable)
@@ -174,6 +174,20 @@ namespace SiliconStudio.Xenko.Input
                     userAccelerationSensor.AccelerationInternal = motion != null ? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
                 }
             }
+        }
+
+        public override void Pause()
+        {
+            motionManager.StopAccelerometerUpdates();
+            locationManager.StopUpdatingHeading();
+            motionManager.StopGyroUpdates();
+            motionManager.StopDeviceMotionUpdates();
+            locationManagerActivated = false;
+        }
+
+        public override void Resume()
+        {
+            // Automatic resume when update is called
         }
 
         private static Vector3 CmAccelerationToVector3(CMAcceleration acceleration)

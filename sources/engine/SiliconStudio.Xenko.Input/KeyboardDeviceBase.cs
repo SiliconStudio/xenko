@@ -11,15 +11,24 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
-        public abstract string DeviceName { get; }
-        public abstract Guid Id { get; }
-        public int Priority { get; set; }
-
-        public EventHandler<KeyEvent> OnKey { get; set; }
         public readonly HashSet<Keys> DownKeys = new HashSet<Keys>();
-
         protected List<KeyEvent> KeyboardInputEvents = new List<KeyEvent>();
 
+        /// <inheritdoc />
+        public virtual void Dispose()
+        {
+        }
+
+        /// <inheritdoc />
+        public abstract string DeviceName { get; }
+        /// <inheritdoc />
+        public abstract Guid Id { get; }
+        /// <inheritdoc />
+        public int Priority { get; set; }
+        /// <inheritdoc />
+        public EventHandler<KeyEvent> OnKey { get; set; }
+
+        /// <inheritdoc />
         public virtual void Update()
         {
             // Fire events
@@ -30,6 +39,7 @@ namespace SiliconStudio.Xenko.Input
             KeyboardInputEvents.Clear();
         }
 
+        /// <inheritdoc />
         public virtual bool IsKeyDown(Keys key)
         {
             return DownKeys.Contains(key);
@@ -45,10 +55,6 @@ namespace SiliconStudio.Xenko.Input
         {
             DownKeys.Remove(key);
             KeyboardInputEvents.Add(new KeyEvent(key, KeyEventType.Released));
-        }
-
-        public virtual void Dispose()
-        {
         }
     }
 }

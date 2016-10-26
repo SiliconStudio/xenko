@@ -15,14 +15,22 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
     {
-        public EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
-        public EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
-        public abstract bool IsMousePositionLocked { get; }
-        public override PointerType Type => PointerType.Mouse;
-
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
         protected readonly List<MouseInputEvent> mouseInputEvents = new List<MouseInputEvent>();
 
+        /// <inheritdoc />
+        public EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
+
+        /// <inheritdoc />
+        public EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
+
+        /// <inheritdoc />
+        public abstract bool IsMousePositionLocked { get; }
+
+        /// <inheritdoc />
+        public override PointerType Type => PointerType.Mouse;
+
+        /// <inheritdoc />
         public override void Update()
         {
             base.Update();
@@ -46,12 +54,20 @@ namespace SiliconStudio.Xenko.Input
             mouseInputEvents.Clear();
         }
 
+        /// <inheritdoc />
         public virtual bool IsMouseButtonDown(MouseButton button)
         {
             return DownButtons.Contains(button);
         }
 
+        /// <inheritdoc />
         public abstract void SetMousePosition(Vector2 normalizedPosition);
+
+        /// <inheritdoc />
+        public abstract void LockMousePosition(bool forceCenter = false);
+
+        /// <inheritdoc />
+        public abstract void UnlockMousePosition();
 
         public void HandleButtonDown(MouseButton button)
         {
@@ -59,7 +75,7 @@ namespace SiliconStudio.Xenko.Input
             mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Down });
 
             // Simulate tap on primary mouse button
-            if(button == MouseButton.Left)
+            if (button == MouseButton.Left)
                 HandlePointerDown();
         }
 
@@ -77,10 +93,7 @@ namespace SiliconStudio.Xenko.Input
         {
             mouseInputEvents.Add(new MouseInputEvent { Type = MouseInputEventType.Scroll, WheelDelta = wheelDelta });
         }
-
-        public abstract void LockMousePosition(bool forceCenter = false);
-        public abstract void UnlockMousePosition();
-
+        
         protected struct MouseInputEvent
         {
             public MouseButton Button;

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Sets all the gamepad left and right motors to the given amounts (large and small motors)
+        /// Sets all the gamepad left and right motors to the given amounts
         /// </summary>
         /// <param name="pad">The gamepad</param>
         /// <param name="leftMotors">The amount of vibration for the left side</param>

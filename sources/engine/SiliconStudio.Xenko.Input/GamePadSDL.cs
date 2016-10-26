@@ -32,15 +32,15 @@ namespace SiliconStudio.Xenko.Input
 
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
-                buttonInfos.Add(new GamePadButtonInfo { InstanceId = i, Name = "Buttons" });
+                buttonInfos.Add(new GamePadButtonInfo { Index = i, Name = "Buttons" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumAxes(joystick); i++)
             {
-                axisInfos.Add(new GamePadAxisInfo { InstanceId = i, Name = "Axis" });
+                axisInfos.Add(new GamePadAxisInfo { Index = i, Name = "Axis" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
-                povControllerInfos.Add(new GamePadPovControllerInfo { InstanceId = i, Name = "Hat" });
+                povControllerInfos.Add(new GamePadPovControllerInfo { Index = i, Name = "Hat" });
             }
 
             InitializeButtonStates();
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Input
                 var hat = SDL.SDL_JoystickGetHat(joystick, i);
                 GamePadButton buttons;
                 bool hatEnabled = ConvertJoystickHat(hat, out buttons);
-                HandlePovController(i, GamePadConversions.ButtonToPovController(buttons), hatEnabled);
+                HandlePovController(i, GamePadUtils.ButtonToPovController(buttons), hatEnabled);
             }
 
             base.Update();

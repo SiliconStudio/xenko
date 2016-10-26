@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 // Process DPad as point of view controller
                 GamePadButton padDir = ConvertPadDirection(state.Gamepad.Buttons);
-                float pov = GamePadConversions.ButtonToPovController(padDir);
+                float pov = GamePadUtils.ButtonToPovController(padDir);
                 HandlePovController(0, pov, ((int)padDir & 0xF) != 0);
 
                 // Process buttons
@@ -81,12 +81,8 @@ namespace SiliconStudio.Xenko.Input
 
             float deadzoneL = Gamepad.LeftThumbDeadZone/32768.0f;
             float deadzoneR = Gamepad.RightThumbDeadZone/32768.0f;
-            state.LeftThumb = new Vector2(
-                ClampDeadZone(GetAxis(0), deadzoneL),
-                ClampDeadZone(GetAxis(1), deadzoneL));
-            state.RightThumb = new Vector2(
-                ClampDeadZone(GetAxis(2), deadzoneR),
-                ClampDeadZone(GetAxis(3), deadzoneR));
+            state.LeftThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(0), deadzoneL), GamePadUtils.ClampDeadZone(GetAxis(1), deadzoneL));
+            state.RightThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(2), deadzoneR), GamePadUtils.ClampDeadZone(GetAxis(3), deadzoneR));
             state.LeftTrigger = this.GetTrigger(4);
             state.RightTrigger = this.GetTrigger(5);
 

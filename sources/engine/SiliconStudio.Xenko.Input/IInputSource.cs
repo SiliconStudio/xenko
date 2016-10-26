@@ -14,6 +14,21 @@ namespace SiliconStudio.Xenko.Input
     public interface IInputSource : IDisposable
     {
         /// <summary>
+        /// Raised when an input device is added by this source
+        /// </summary>
+        EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
+
+        /// <summary>
+        /// Raised when an input device is removed by this source
+        /// </summary>
+        EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
+
+        /// <summary>
+        /// All the input devices currently proviced by this source
+        /// </summary>
+        IReadOnlyList<IInputDevice> InputDevices { get; }
+
+        /// <summary>
         /// Initializes the input source
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> initializing this source</param>
@@ -37,18 +52,13 @@ namespace SiliconStudio.Xenko.Input
         void Update();
 
         /// <summary>
-        /// Raised when an input device is added by this source
+        /// Called when input should be paused, for example when the application leaves the foreground
         /// </summary>
-        EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
+        void Pause();
 
         /// <summary>
-        /// Raised when an input device is removed by this source
+        /// Called when input should be resumed, when an application enters the forground
         /// </summary>
-        EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
-
-        /// <summary>
-        /// All the input devices currently proviced by this source
-        /// </summary>
-        IReadOnlyList<IInputDevice> InputDevices { get; }
+        void Resume();
     }
 }

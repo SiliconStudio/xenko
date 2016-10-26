@@ -7,57 +7,61 @@ using System.Collections.Generic;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Base class for GamePads, contains common functionality for gamepad devices
+    /// Base class for gamepads, contains common functionality for gamepad devices
     /// </summary>
     public abstract class GamePadDeviceBase : IGamePadDevice
     {
-        public abstract string DeviceName { get; }
-        public abstract Guid Id { get; }
-        public int Priority { get; set; }
-        public bool Connected => !disposed;
-        public int Index => IndexInternal;
-
-        public abstract IReadOnlyCollection<GamePadButtonInfo> ButtonInfos { get; }
-        public abstract IReadOnlyCollection<GamePadAxisInfo> AxisInfos { get; }
-        public abstract IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos { get; }
-
-        public EventHandler OnDisconnect { get; set; }
-        public EventHandler<GamePadButtonEvent> OnButton { get; set; }
-        public EventHandler<GamePadAxisEvent> OnAxisChanged { get; set; }
-        public EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
-
         internal int IndexInternal;
-        private bool disposed;
         protected bool[] buttonStates;
         protected float[] axisStates;
         protected float[] povStates;
         protected bool[] povEnabledStates;
-
+        private bool disposed;
         private readonly List<GamePadInputEvent> gamePadInputEvents = new List<GamePadInputEvent>();
-        
-        public static float ClampDeadZone(float value, float deadZone)
-        {
-            if (value > 0.0f)
-            {
-                value -= deadZone;
-                if (value < 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
-            else
-            {
-                value += deadZone;
-                if (value > 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
 
-            // Renormalize the value according to the dead zone
-            value = value / (1.0f - deadZone);
-            return value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
+        /// <summary>
+        /// Marks the device as disconnected
+        /// </summary>
+        public virtual void Dispose()
+        {
+            disposed = true;
         }
+        
+        /// <inheritdoc />
+        public abstract string DeviceName { get; }
+
+        /// <inheritdoc />
+        public abstract Guid Id { get; }
+
+        /// <inheritdoc />
+        public int Priority { get; set; }
+
+        /// <inheritdoc />
+        public bool Connected => !disposed;
+
+        /// <inheritdoc />
+        public int Index => IndexInternal;
+
+        /// <inheritdoc />
+        public abstract IReadOnlyCollection<GamePadButtonInfo> ButtonInfos { get; }
+
+        /// <inheritdoc />
+        public abstract IReadOnlyCollection<GamePadAxisInfo> AxisInfos { get; }
+
+        /// <inheritdoc />
+        public abstract IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos { get; }
+        
+        /// <inheritdoc />
+        public EventHandler OnDisconnect { get; set; }
+
+        /// <inheritdoc />
+        public EventHandler<GamePadButtonEvent> OnButton { get; set; }
+
+        /// <inheritdoc />
+        public EventHandler<GamePadAxisEvent> OnAxisChanged { get; set; }
+
+        /// <inheritdoc />
+        public EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
 
         public void InitializeButtonStates()
         {
@@ -67,6 +71,7 @@ namespace SiliconStudio.Xenko.Input
             povEnabledStates = new bool[PovControllerInfos.Count];
         }
 
+        /// <inheritdoc />
         public virtual bool GetButton(int index)
         {
             if (index < 0 || index > buttonStates.Length)
@@ -74,6 +79,7 @@ namespace SiliconStudio.Xenko.Input
             return buttonStates[index];
         }
 
+        /// <inheritdoc />
         public virtual float GetAxis(int index)
         {
             if (index < 0 || index > axisStates.Length)
@@ -81,27 +87,30 @@ namespace SiliconStudio.Xenko.Input
             return axisStates[index];
         }
 
-        public float GetPovController(int index)
+        /// <inheritdoc />
+        public virtual float GetPovController(int index)
         {
             if (index < 0 || index > povStates.Length)
                 return 0.0f;
             return povStates[index];
         }
 
-        public bool GetPovControllerEnabled(int index)
+        /// <inheritdoc />
+        public virtual bool GetPovControllerEnabled(int index)
         {
             if (index < 0 || index > povStates.Length)
                 return false;
             return povEnabledStates[index];
         }
 
+        /// <inheritdoc />
         public virtual bool GetGamePadState(ref GamePadState state)
         {
             return false;
         }
 
         /// <summary>
-        /// Raise gamepad events collected by Handle____ functions
+        /// Raise gamepad events collected by Handle... functions
         /// </summary>
         public virtual void Update()
         {
@@ -122,20 +131,12 @@ namespace SiliconStudio.Xenko.Input
                 {
                     povStates[evt.Index] = evt.Float;
                     povEnabledStates[evt.Index] = evt.Enabled;
-                    OnPovControllerChanged?.Invoke(this, new GamePadPovControllerEvent { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled});
+                    OnPovControllerChanged?.Invoke(this, new GamePadPovControllerEvent { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled });
                 }
             }
             gamePadInputEvents.Clear();
         }
-
-        /// <summary>
-        /// Marks the device as disconnected
-        /// </summary>
-        public virtual void Dispose()
-        {
-            disposed = true;
-        }
-
+        
         protected void HandleButton(int index, bool state)
         {
             if (index < 0 || index > buttonStates.Length)
@@ -177,7 +178,7 @@ namespace SiliconStudio.Xenko.Input
                 });
             }
         }
-    
+
         protected struct GamePadInputEvent
         {
             public InputEventType Type;

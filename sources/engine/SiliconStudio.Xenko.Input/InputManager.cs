@@ -26,16 +26,6 @@ namespace SiliconStudio.Xenko.Input
 
         public static Logger Logger = GlobalLogger.GetLogger("Input");
 
-        /// <summary>
-        /// Pointer events that happened since the last frame
-        /// </summary>
-        public IReadOnlyList<PointerEvent> PointerEvents => pointerEvents;
-
-        /// <summary>
-        /// Keyboard events that happened since the last frame
-        /// </summary>
-        public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
-
         //this is used in some mobile platform for accelerometer stuff
         internal const float G = 9.81f;
         internal const float DesiredSensorUpdateRate = 60;
@@ -61,14 +51,13 @@ namespace SiliconStudio.Xenko.Input
 
         private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
         private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
+        private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
         private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
-
-        private readonly List<SensorDeviceBase> sensors = new List<SensorDeviceBase>();
-        private readonly List<GestureEvent> currentGestureEvents = new List<GestureEvent>();
+        
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
 
         // Backing field of MousePosition
@@ -134,7 +123,17 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of gesture events since the previous updates.
         /// </summary>
         /// <value>The gesture events.</value>
-        public List<GestureEvent> GestureEvents { get; private set; }
+        public IReadOnlyList<GestureEvent> GestureEvents => gestureEvents;
+
+        /// <summary>
+        /// Pointer events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<PointerEvent> PointerEvents => pointerEvents;
+
+        /// <summary>
+        /// Keyboard events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
 
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
@@ -202,9 +201,9 @@ namespace SiliconStudio.Xenko.Input
         public IReadOnlyCollection<ISensorDevice> Sensors => sensorDevices;
 
         /// <summary>
-        /// Gets the list of keys being pressed down.
+        /// Gets a list of keys being pressed down.
         /// </summary>
-        /// <value>The key pressed.</value>
+        /// <value>A list of keys that are pressed</value>
         public List<Keys> KeyDown => downKeysSet.ToList();
 
         /// <summary>
@@ -226,8 +225,6 @@ namespace SiliconStudio.Xenko.Input
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
-
-            GestureEvents = currentGestureEvents;
 
             ActivatedGestures = new GestureConfigCollection();
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
@@ -500,15 +497,24 @@ namespace SiliconStudio.Xenko.Input
 
         public virtual void OnApplicationPaused(object sender, EventArgs e)
         {
-            // TODO: Disable input updates, or is this disabled automatically?
+            // Pause sources
+            foreach (var source in inputSources)
+            {
+                source.Pause();
+            }
         }
 
         public virtual void OnApplicationResumed(object sender, EventArgs e)
         {
+            // Resume sources
+            foreach (var source in inputSources)
+            {
+                source.Resume();
+            }
         }
 
         /// <summary>
-        /// Injects a pointer event into a virtual input device
+        /// Injects a pointer event directly into <see cref="PointerEvents"/>
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="pointerEvent">The pointer event to inject</param>
@@ -517,6 +523,9 @@ namespace SiliconStudio.Xenko.Input
             pointerEvents.Add(pointerEvent);
         }
 
+        /// <summary>
+        /// Clears <see cref="PointerEvents"/>
+        /// </summary>
         internal void ClearPointerEvents()
         {
             pointerEvents.Clear();
@@ -585,10 +594,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
         {
-            currentGestureEvents.Clear();
+            gestureEvents.Clear();
 
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
+                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
         }
 
         private void OnInputDeviceAdded(object sender, IInputDevice device)

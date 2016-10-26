@@ -7,6 +7,9 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides an interface for interacting with pointer devices, this can be a mouse, pen, touch screen, etc.
+    /// </summary>
     public interface IPointerDevice : IInputDevice
     {
         /// <summary>

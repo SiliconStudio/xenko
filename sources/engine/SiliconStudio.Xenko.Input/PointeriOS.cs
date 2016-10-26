@@ -13,32 +13,6 @@ using UIKit;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class SensoriOS : SensorDeviceBase
-    {
-        public override string DeviceName => sensorName;
-        public override Guid Id => sensorId;
-
-        internal bool ShouldBeEnabled;
-        private string sensorName;
-        private Guid sensorId;
-
-        public SensoriOS(string sensorName)
-        {
-            this.sensorName = $"iOS {sensorName} Sensor";
-            sensorId = InputDeviceUtils.DeviceNameToGuid(sensorName);
-        }
-
-        protected override bool EnableImpl()
-        {
-            ShouldBeEnabled = true;
-            return true;
-        }
-        protected override void DisableImpl()
-        {
-            ShouldBeEnabled = false;
-        }
-    }
-
     public class PointeriOS : PointerDeviceBase
     {
         public override string DeviceName => "iOS Pointer";
