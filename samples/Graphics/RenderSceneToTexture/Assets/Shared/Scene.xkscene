@@ -88,7 +88,7 @@ Hierarchy:
                         AspectRatio: 0.56
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
-                Name: knightBack
+                Name: RenderToTexture
                 Group: Group1
                 Components:
                     - !TransformComponent
@@ -127,7 +127,7 @@ Hierarchy:
                             Color: !ColorRgbProvider
                                 ~Id: a5716019-6f80-476f-8429-e23fdfc45ba8
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-                        Intensity: 0.5
+                        Intensity: 0.3
         -   Entity:
                 Id: 94061a3c-bbe5-4ad6-b55c-5905873264e1
                 Name: Camera front
@@ -168,7 +168,7 @@ Hierarchy:
                                     ~Id: 1ffbd487-10d6-4e54-8077-c09c1bbed651
                                 BiasParameters:
                                     ~Id: 178a6b4b-5474-45aa-9a2c-85253b54dac7
-                        Intensity: 0.8
+                        Intensity: 0.6
         -   Entity:
                 Id: bb7065d2-498a-45d7-b4b1-0bb1a573cc69
                 Name: Background
@@ -208,28 +208,34 @@ Hierarchy:
                                     ~Id: 065d45b1-f7b8-4193-9dc7-7e4fda982d06
                                 BiasParameters:
                                     ~Id: 581de9dc-a33a-482c-b592-670f83750786
-                        Intensity: 0.8
+                        Intensity: 0.6
         -   Entity:
                 Id: f63efa01-c45a-4b81-ad59-e49391a813e4
-                Name: knight
+                Name: CharacterModel
                 Components:
                     - !TransformComponent
                         ~Id: 4c23b4c4-21a3-4e6c-a8ff-08659627e818
                         Children: []
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Rotation: {X: 0.0, Y: 0.21643962, Z: 0.0, W: 0.976296}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 6b597dd4-f0b3-488a-a450-01177661fc4d
-                        Animations:
-                            Idle: 86d94d1b-12c8-44ff-aea0-fd8d309a0f8f/144a63cd-8847-447e-8b00-4c33204abfb9:he00_normal_idle
-                        PlayingAnimations: []
-                    - !RenderSceneToTexture.PlayAnimation,RenderSceneToTexture.Game
-                        ~Id: e67ed2c3-6fab-4b93-bfea-3fceab01a27c
+                        Animations: {}
+                        PlayingAnimations:
+                            -   ~Id: 70a8e172-d19b-43f6-b651-0c4ce8d231d6
+                                Name: null
+                                Clip: b5cab62b-1503-4534-98eb-e1ce1092b134/448ca260-c8b7-4f63-9bf6-e58a5970a830:Animations/Run
+                                RepeatMode: LoopInfinite
+                                BlendOperation: LinearBlend
+                                CurrentTime: 0:00:00:00.0000000
                     - !ModelComponent
                         ~Id: 036205d7-8a24-4194-a484-27af5acff6e0
-                        Model: 9fa49480-df48-4f5d-8333-411140c81021/9e7f08db-ca99-4171-b503-6ea0f8e5114d:knight
+                        Model: 55844728-14aa-47c6-a0b1-265525c3d81f/cfb9a357-ac8d-4b98-b49b-923308cf386d:Models/mannequinModel
                         Materials:
+                            - null
+                            - null
+                            - null
                             - null
                             - null
                             - null
