@@ -13,10 +13,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class MouseOpenTK : MouseDeviceBase
     {
-        public override string DeviceName => "OpenTK Mouse";
-        public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
-
         private GameWindow uiControl;
         private readonly GameBase game;
         private bool isMousePositionLocked;
@@ -43,6 +39,10 @@ namespace SiliconStudio.Xenko.Input
             uiControl.MouseWheel -= Mouse_Wheel;
             uiControl.Resize -= GameWindowOnResize;
         }
+
+        public override string DeviceName => "OpenTK Mouse";
+        public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
+        public override bool IsMousePositionLocked => isMousePositionLocked;
 
         public override void LockMousePosition(bool forceCenter)
         {

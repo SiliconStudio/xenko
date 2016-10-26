@@ -16,9 +16,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class KeyboardAndroid : KeyboardDeviceBase
     {
-        public override string DeviceName => "Android Keyboard";
-        public override Guid Id => new Guid("98468e4a-2895-4f87-b750-5ffe2dd943ae");
-
         private AndroidXenkoGameView gameView;
         private Listener listener;
         private InputMethodManager inputService;
@@ -36,6 +33,9 @@ namespace SiliconStudio.Xenko.Input
             base.Dispose();
             gameView.SetOnKeyListener(null);
         }
+
+        public override string DeviceName => "Android Keyboard";
+        public override Guid Id => new Guid("98468e4a-2895-4f87-b750-5ffe2dd943ae");
 
         protected class Listener : Java.Lang.Object, View.IOnKeyListener
         {

@@ -21,20 +21,24 @@ namespace SiliconStudio.Xenko.Input
 
         /// <inheritdoc />
         public abstract string DeviceName { get; }
+
         /// <inheritdoc />
         public abstract Guid Id { get; }
+
         /// <inheritdoc />
         public int Priority { get; set; }
+
         /// <inheritdoc />
         public EventHandler<KeyEvent> OnKey { get; set; }
 
         /// <inheritdoc />
-        public virtual void Update()
+        public virtual void Update(List<InputEvent> inputEvents)
         {
             // Fire events
             foreach (var evt in KeyboardInputEvents)
             {
                 OnKey?.Invoke(this, evt);
+                inputEvents.Add(evt);
             }
             KeyboardInputEvents.Clear();
         }
@@ -48,13 +52,13 @@ namespace SiliconStudio.Xenko.Input
         public void HandleKeyDown(Keys key)
         {
             DownKeys.Add(key);
-            KeyboardInputEvents.Add(new KeyEvent(key, KeyEventType.Pressed));
+            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Pressed, Key = key });
         }
 
         public void HandleKeyUp(Keys key)
         {
             DownKeys.Remove(key);
-            KeyboardInputEvents.Add(new KeyEvent(key, KeyEventType.Released));
+            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Released, Key = key });
         }
     }
 }

@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Base class for input sources, implements common parts of the <see cref="IInputSource"/> interface
+    /// Base class for input sources, implements common parts of the <see cref="IInputSource"/> interface and keeps track of registered devices through <see cref="RegisterDevice"/> and <see cref="UnregisterDevice"/>
     /// </summary>
     public abstract class InputSourceBase : IInputSource
     {

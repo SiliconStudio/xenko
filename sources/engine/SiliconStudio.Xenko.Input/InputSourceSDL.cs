@@ -10,6 +10,9 @@ using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for mouse/keyboard/gamepads using SDL
+    /// </summary>
     public class InputSourceSDL : InputSourceBase
     {
         private Dictionary<Guid, GamePadSDL> registeredDevices = new Dictionary<Guid, GamePadSDL>();

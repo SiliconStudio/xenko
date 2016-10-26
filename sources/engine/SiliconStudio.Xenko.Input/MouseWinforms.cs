@@ -3,6 +3,7 @@
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -12,11 +13,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class MouseWinforms : MouseDeviceBase
     {
-        public override string DeviceName => "Windows Mouse";
-        public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
-        public override PointerType Type => PointerType.Mouse;
-        
         private readonly GameBase game;
         private readonly Control uiControl;
         private bool isMousePositionLocked;
@@ -57,9 +53,14 @@ namespace SiliconStudio.Xenko.Input
             uiControl.SizeChanged -= OnSizeChanged;
         }
 
-        public override void Update()
+        public override string DeviceName => "Windows Mouse";
+        public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
+        public override bool IsMousePositionLocked => isMousePositionLocked;
+        public override PointerType Type => PointerType.Mouse;
+
+        public override void Update(List<InputEvent> inputEvents)
         {
-            base.Update();
+            base.Update(inputEvents);
 
             // Set mouse position
             if (shouldSetMousePosition)

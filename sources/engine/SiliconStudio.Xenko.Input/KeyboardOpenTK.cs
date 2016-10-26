@@ -11,9 +11,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class KeyboardOpenTK : KeyboardDeviceBase
     {
-        public override string DeviceName => "OpenTK Keyboard";
-        public override Guid Id => new Guid("56187014-90b1-4b46-9255-fe55d0acb779");
-
         private GameWindow gameWindow;
 
         public KeyboardOpenTK(GameWindow gameWindow)
@@ -29,6 +26,9 @@ namespace SiliconStudio.Xenko.Input
             gameWindow.KeyUp -= Keyboard_KeyUp;
         }
 
+        public override string DeviceName => "OpenTK Keyboard";
+        public override Guid Id => new Guid("56187014-90b1-4b46-9255-fe55d0acb779");
+        
         void Keyboard_KeyUp(object sender, KeyboardKeyEventArgs arg)
         {
             HandleKeyUp(ConvertKeyFromOpenTK(arg.Key));

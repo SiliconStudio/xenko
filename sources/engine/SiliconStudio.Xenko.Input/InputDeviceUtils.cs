@@ -8,6 +8,9 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Utilities for input devices
+    /// </summary>
     public static class InputDeviceUtils
     {
         /// <summary>

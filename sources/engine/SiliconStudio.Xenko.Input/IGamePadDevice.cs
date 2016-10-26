@@ -25,17 +25,17 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Information about the buttons on this GamePad
         /// </summary>
-        IReadOnlyCollection<GamePadButtonInfo> ButtonInfos { get; }
+        IReadOnlyList<GamePadButtonInfo> ButtonInfos { get; }
 
         /// <summary>
         /// Information about the axes on this GamePad
         /// </summary>
-        IReadOnlyCollection<GamePadAxisInfo> AxisInfos { get; }
+        IReadOnlyList<GamePadAxisInfo> AxisInfos { get; }
 
         /// <summary>
         /// Information about the point of view controllers (dpad) on this GamePad 
         /// </summary>
-        IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos { get; }
+        IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos { get; }
 
         /// <summary>
         /// Raised when this gamepad gets disconnected

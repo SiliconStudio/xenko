@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Input
         public override string DeviceName => deviceName;
         public override Guid Id => deviceId;
 
-        public override IReadOnlyCollection<GamePadButtonInfo> ButtonInfos => buttonInfos;
-        public override IReadOnlyCollection<GamePadAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => buttonInfos;
+        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => axisInfos;
+        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
 
         private readonly List<GamePadButtonInfo> buttonInfos = new List<GamePadButtonInfo>();
         private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Input
             InitializeButtonStates();
         }
 
-        public override void Update()
+        public override void Update(List<InputEvent> inputEvents)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Input
                 }
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
-                    HandleAxis(i, state.Axes[i]);
+                    HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GamePadAxisDeadZone));
                 }
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Input
                 Dispose();
             }
 
-            base.Update();
+            base.Update(inputEvents);
         }
 
         public override void Dispose()

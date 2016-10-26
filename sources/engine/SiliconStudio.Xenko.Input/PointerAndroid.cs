@@ -11,10 +11,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class PointerAndroid : PointerDeviceBase
     {
-        public override string DeviceName => "Android Pointer";
-        public override Guid Id => new Guid("21370b00-aaf9-4ecf-afb2-575dde6c6c56");
-        public override PointerType Type => PointerType.Touch;
-
         private AndroidXenkoGameView uiControl;
         private Listener listener;
 
@@ -34,6 +30,10 @@ namespace SiliconStudio.Xenko.Input
             uiControl.Resize -= OnResize;
             uiControl.SetOnTouchListener(null);
         }
+
+        public override string DeviceName => "Android Pointer";
+        public override Guid Id => new Guid("21370b00-aaf9-4ecf-afb2-575dde6c6c56");
+        public override PointerType Type => PointerType.Touch;
 
         private void OnResize(object sender, EventArgs eventArgs)
         {

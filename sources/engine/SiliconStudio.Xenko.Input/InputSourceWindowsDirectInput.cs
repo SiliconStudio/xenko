@@ -10,6 +10,9 @@ using SiliconStudio.Xenko.Native.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for various game controllers on windows
+    /// </summary>
     public class InputSourceWindowsDirectInput : InputSourceBase
     {
         private DirectInput directInput;

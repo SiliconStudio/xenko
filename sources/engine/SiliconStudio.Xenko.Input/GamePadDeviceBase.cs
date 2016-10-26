@@ -43,13 +43,13 @@ namespace SiliconStudio.Xenko.Input
         public int Index => IndexInternal;
 
         /// <inheritdoc />
-        public abstract IReadOnlyCollection<GamePadButtonInfo> ButtonInfos { get; }
+        public abstract IReadOnlyList<GamePadButtonInfo> ButtonInfos { get; }
 
         /// <inheritdoc />
-        public abstract IReadOnlyCollection<GamePadAxisInfo> AxisInfos { get; }
+        public abstract IReadOnlyList<GamePadAxisInfo> AxisInfos { get; }
 
         /// <inheritdoc />
-        public abstract IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos { get; }
+        public abstract IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos { get; }
         
         /// <inheritdoc />
         public EventHandler OnDisconnect { get; set; }
@@ -112,26 +112,32 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Raise gamepad events collected by Handle... functions
         /// </summary>
-        public virtual void Update()
+        public virtual void Update(List<InputEvent> inputEvents)
         {
             // Fire events
             foreach (var evt in gamePadInputEvents)
             {
                 if (evt.Type == InputEventType.Button)
                 {
-                    buttonStates[evt.Index] = evt.State == GamePadButtonState.Pressed;
-                    OnButton?.Invoke(this, new GamePadButtonEvent { Index = evt.Index, State = evt.State });
+                    buttonStates[evt.Index] = evt.State == ButtonState.Pressed;
+                    var buttonEvent = new GamePadButtonEvent(this) { State = evt.State, Index = evt.Index};
+                    OnButton?.Invoke(this, buttonEvent);
+                    inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == InputEventType.Axis)
                 {
                     axisStates[evt.Index] = evt.Float;
-                    OnAxisChanged?.Invoke(this, new GamePadAxisEvent { Index = evt.Index, Value = evt.Float });
+                    var axisEvent = new GamePadAxisEvent(this) { Index = evt.Index, Value = evt.Float};
+                    OnAxisChanged?.Invoke(this, axisEvent);
+                    inputEvents.Add(axisEvent);
                 }
                 else if (evt.Type == InputEventType.PovController)
                 {
                     povStates[evt.Index] = evt.Float;
                     povEnabledStates[evt.Index] = evt.Enabled;
-                    OnPovControllerChanged?.Invoke(this, new GamePadPovControllerEvent { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled });
+                    var povEvent = new GamePadPovControllerEvent (this) { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled };
+                    OnPovControllerChanged?.Invoke(this, povEvent);
+                    inputEvents.Add(povEvent);
                 }
             }
             gamePadInputEvents.Clear();
@@ -146,7 +152,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     Index = index,
                     Type = InputEventType.Button,
-                    State = state ? GamePadButtonState.Pressed : GamePadButtonState.Released
+                    State = state ? ButtonState.Pressed : ButtonState.Released
                 });
         }
 
@@ -185,7 +191,7 @@ namespace SiliconStudio.Xenko.Input
             public float Float;
             public int Int;
             public bool Enabled;
-            public GamePadButtonState State;
+            public ButtonState State;
             public int Index;
         }
 

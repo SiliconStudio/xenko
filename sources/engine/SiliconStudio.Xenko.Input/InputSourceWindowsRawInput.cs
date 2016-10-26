@@ -10,6 +10,9 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for raw keyboard input on windows
+    /// </summary>
     public class InputSourceWindowsRawInput : InputSourceBase
     {
         private KeyboardWindowsRawInput keyboard;

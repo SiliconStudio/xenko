@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -34,7 +35,7 @@ namespace SiliconStudio.Xenko.Input
         public bool IsEnabled { get; set; }
         
         /// <inheritdoc />
-        public virtual void Update()
+        public virtual void Update(List<InputEvent> inputEvents)
         {
         }
     }

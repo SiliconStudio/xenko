@@ -11,6 +11,9 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for pointer/sensor input on iOS
+    /// </summary>
     public class InputSourceiOS : InputSourceBase
     {
         private CMMotionManager motionManager;

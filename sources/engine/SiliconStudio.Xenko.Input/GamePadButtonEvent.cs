@@ -1,22 +1,34 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// An event to describe a change in gamepad button state
     /// </summary>
-    public class GamePadButtonEvent : EventArgs
+    public class GamePadButtonEvent : ButtonEvent
     {
+        /// <summary>
+        /// Creates a new gamepad button event
+        /// </summary>
+        /// <param name="gamepad">The gamepad that produces this event</param>
+        public GamePadButtonEvent(IGamePadDevice gamepad) : base(gamepad)
+        {
+        }
+
         /// <summary>
         /// The index of the button
         /// </summary>
         public int Index;
 
         /// <summary>
-        /// The new state of the button
+        /// The gamepad that sent this event
         /// </summary>
-        public GamePadButtonState State;
+        public IGamePadDevice GamePad => Device as IGamePadDevice;
+
+        public override string ToString()
+        {
+            return $"{nameof(Index)}: {Index} ({GamePad.ButtonInfos[Index].Name}), {nameof(State)}: {State}, {nameof(GamePad)}: {GamePad.DeviceName}";
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Input
 {
     internal class Module
     {

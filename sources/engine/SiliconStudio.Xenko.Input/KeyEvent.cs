@@ -1,82 +1,34 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// A keyboard event.
+    /// Event for a keyboard button changing state
     /// </summary>
-    public struct KeyEvent : IEquatable<KeyEvent>
+    public class KeyEvent : ButtonEvent
     {
+        /// <summary>
+        /// Creates a new key event
+        /// </summary>
+        /// <param name="keyboard">The keyboard that produces this event</param>
+        public KeyEvent(IKeyboardDevice keyboard) : base(keyboard)
+        {
+        }
+
         /// <summary>
         /// The key that is being pressed or released.
         /// </summary>
-        public readonly Keys Key;
+        public Keys Key;
 
         /// <summary>
-        /// The key event type (released or pressed).
+        /// The keyboard that sent this event
         /// </summary>
-        public readonly KeyEventType Type;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyEvent"/> struct.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="type">The type.</param>
-        public KeyEvent(Keys key, KeyEventType type)
-        {
-            Key = key;
-            Type = type;
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(KeyEvent other)
-        {
-            return Key == other.Key && Type == other.Type;
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is KeyEvent && Equals((KeyEvent)obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((int)Key * 397) ^ (int)Type;
-            }
-        }
-
-        /// <summary>
-        /// Implements the ==.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator ==(KeyEvent left, KeyEvent right)
-        {
-            return left.Equals(right);
-        }
-
-        /// <summary>
-        /// Implements the !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator !=(KeyEvent left, KeyEvent right)
-        {
-            return !left.Equals(right);
-        }
+        public IKeyboardDevice Keyboard => Device as IKeyboardDevice;
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", Key, Type == KeyEventType.Pressed ? "Pressed" : "Release");
+            return $"{nameof(Key)}: {Key}, {nameof(State)}: {State}, {nameof(Keyboard)}: {Keyboard.DeviceName}";
         }
     }
 }

@@ -15,10 +15,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class PointeriOS : PointerDeviceBase
     {
-        public override string DeviceName => "iOS Pointer";
-        public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
-        public override PointerType Type => PointerType.Touch;
-
         private XenkoGameController gameController;
         private iOSWindow uiControl;
         private Dictionary<int, int> touchFingerIndexMap = new Dictionary<int, int>();
@@ -41,7 +37,6 @@ namespace SiliconStudio.Xenko.Input
             OnResize(null, EventArgs.Empty);
         }
 
-
         public override void Dispose()
         {
             base.Dispose();
@@ -52,6 +47,10 @@ namespace SiliconStudio.Xenko.Input
             uiControl.GameView.Resize -= OnResize;
         }
         
+        public override string DeviceName => "iOS Pointer";
+        public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
+        public override PointerType Type => PointerType.Touch;
+
         private void OnTouch(NSSet touchesSet, UIEvent evt)
         {
             var touches = touchesSet.ToArray<UITouch>();

@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Windows.Documents;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -25,6 +27,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Updates the input device, all events sent from this input device must be sent from the Update function. Input devices are always updated after their respective input source
         /// </summary>
-        void Update();
+        /// <param name="inputEvents">A list that gets filled with input events that were generated since the last frame</param>
+        void Update(List<InputEvent> inputEvents);
     }
 }

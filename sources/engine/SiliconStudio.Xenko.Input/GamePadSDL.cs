@@ -12,9 +12,9 @@ namespace SiliconStudio.Xenko.Input
     {
         public override string DeviceName => deviceName;
         public override Guid Id => deviceId;
-        public override IReadOnlyCollection<GamePadButtonInfo> ButtonInfos => buttonInfos;
-        public override IReadOnlyCollection<GamePadAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => buttonInfos;
+        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => axisInfos;
+        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
 
         private readonly List<GamePadButtonInfo> buttonInfos = new List<GamePadButtonInfo>();
         private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
@@ -29,24 +29,24 @@ namespace SiliconStudio.Xenko.Input
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
             this.deviceId = SDL.SDL_JoystickGetGUID(joystick);
             deviceName = SDL.SDL_JoystickName(joystick);
-
+            
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
-                buttonInfos.Add(new GamePadButtonInfo { Index = i, Name = "Buttons" });
+                buttonInfos.Add(new GamePadButtonInfo { Index = i, Name = $"Button {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumAxes(joystick); i++)
             {
-                axisInfos.Add(new GamePadAxisInfo { Index = i, Name = "Axis" });
+                axisInfos.Add(new GamePadAxisInfo { Index = i, Name = $"Axis {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
-                povControllerInfos.Add(new GamePadPovControllerInfo { Index = i, Name = "Hat" });
+                povControllerInfos.Add(new GamePadPovControllerInfo { Index = i, Name = $"Hat {i}" });
             }
 
             InitializeButtonStates();
         }
 
-        public override void Update()
+        public override void Update(List<InputEvent> inputEvents)
         {
             if (SDL.SDL_JoystickGetAttached(joystick) == SDL.SDL_bool.SDL_FALSE)
             {
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Input
                 HandlePovController(i, GamePadUtils.ButtonToPovController(buttons), hatEnabled);
             }
 
-            base.Update();
+            base.Update(inputEvents);
         }
 
         bool ConvertJoystickHat(byte hat, out GamePadButton buttons)

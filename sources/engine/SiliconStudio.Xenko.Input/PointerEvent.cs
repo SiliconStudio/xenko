@@ -9,33 +9,27 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A pointer event.
     /// </summary>
-    public class PointerEvent : EventArgs
+    public class PointerEvent : InputEvent
     {
-        public readonly static Queue<PointerEvent> Pool = new Queue<PointerEvent>();
-
-        public static PointerEvent GetOrCreatePointerEvent()
-        {
-            lock (Pool)
-                return Pool.Count > 0 ? Pool.Dequeue() : new PointerEvent();
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PointerEvent" /> class.
         /// </summary>
-        public PointerEvent()
+        /// <param name="pointer">The device that produces this event</param>
+        internal PointerEvent(IPointerDevice pointer) : base(pointer)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PointerEvent" /> class.
         /// </summary>
+        /// <param name="pointer">The device that produces this event</param>
         /// <param name="pointerId">The pointer id.</param>
         /// <param name="position">The position.</param>
         /// <param name="deltaPosition">The delta position.</param>
         /// <param name="deltaTime">The delta time.</param>
         /// <param name="state">The state.</param>
         /// <param name="pointerType">Type of the pointer.</param>
-        internal PointerEvent(int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType)
+        internal PointerEvent(IPointerDevice pointer, int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType) : base(pointer)
         {
             PointerId = pointerId;
             Position = position;
@@ -81,28 +75,25 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value>The type of the pointer.</value>
         public PointerType PointerType { get; internal set; }
-        
+
         /// <summary>
-        /// Clones this instance.
+        /// Gets if the pointer is down, useful for filtering out move events that are not placed between drags
         /// </summary>
-        /// <returns>PointerEvent.</returns>
-        public PointerEvent Clone()
-        {
-            var clone = GetOrCreatePointerEvent();
+        public bool IsDown { get; internal set; }
 
-            clone.PointerId = PointerId;
-            clone.Position = Position;
-            clone.DeltaPosition = DeltaPosition;
-            clone.DeltaTime = DeltaTime;
-            clone.State = State;
-            clone.PointerType = PointerType;
-
-            return clone;
-        }
+        /// <summary>
+        /// The pointer that sent this event
+        /// </summary>
+        public IPointerDevice Pointer => Device as IPointerDevice;
 
         public override string ToString()
         {
-            return string.Format("PointerId: {0}, Position: {1:0.00}, DeltaPosition: {2:0.00}, DeltaTime: {3:0.000}, State: {4}, PointerType: {5}", PointerId, Position, DeltaPosition, DeltaTime.TotalSeconds, State, PointerType);
+            return $"{nameof(PointerId)}: {PointerId}, {nameof(Position)}: {Position}, {nameof(DeltaPosition)}: {DeltaPosition}, {nameof(DeltaTime)}: {DeltaTime}, {nameof(State)}: {State}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
+        }
+
+        public PointerEvent Clone()
+        {
+            return new PointerEvent(Pointer, PointerId, Position, DeltaPosition, DeltaTime, State, PointerType);
         }
     }
 }

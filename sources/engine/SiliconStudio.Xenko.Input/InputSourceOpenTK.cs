@@ -8,6 +8,9 @@ using GameWindow = OpenTK.GameWindow;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for mouse/keyboard input using OpenTK
+    /// </summary>
     public class InputSourceOpenTK : InputSourceBase
     {
         private GameWindow gameWindow;

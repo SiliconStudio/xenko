@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Input
         private Vector2 surfaceSize;
         private float aspectRatio;
         private Vector2 invSurfaceSize;
+        private Vector2 lastPrimaryPointerPosition;
 
         /// <inheritdoc />
         public virtual void Dispose()
@@ -66,9 +67,9 @@ namespace SiliconStudio.Xenko.Input
         public float SurfaceAspectRatio => aspectRatio;
 
         /// <inheritdoc />
-        public virtual void Update()
+        public virtual void Update(List<InputEvent> inputEvents)
         {
-            ClearPointerEvents();
+            currentPointerEvents.Clear();
 
             // Reset delta for all pointers before processing newly received events
             foreach (var pointerData in pointerDatas)
@@ -79,26 +80,27 @@ namespace SiliconStudio.Xenko.Input
             // Turn internal input events into pointer events and mouse position + delta
             foreach (var evt in pointerInputEvents)
             {
-                ProcessPointerEvent(evt);
+                inputEvents.Add(ProcessPointerEvent(evt));
             }
-
             pointerInputEvents.Clear();
         }
 
         public void HandlePointerDown()
         {
-            pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Down, Position = Position, Id = 0 });
+            pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Down, Position = lastPrimaryPointerPosition, Id = 0 });
         }
 
         public void HandlePointerUp()
         {
-            pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Up, Position = Position, Id = 0 });
+            pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Up, Position = lastPrimaryPointerPosition, Id = 0 });
         }
 
         public void HandleMove(Vector2 newPosition)
         {
             // Normalize position
             newPosition *= invSurfaceSize;
+
+            lastPrimaryPointerPosition = newPosition;
 
             // Generate Event
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Move, Position = newPosition, Id = 0 });
@@ -116,58 +118,6 @@ namespace SiliconStudio.Xenko.Input
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.MoveDelta, Position = delta, Id = 0 });
         }
 
-        private void HandlePointerEvent(PointerState pointerState, int pointerId)
-        {
-            var data = GetPointerData(pointerId);
-            if (pointerState == PointerState.Down)
-            {
-                data.PointerClock.Restart();
-                data.Down = true;
-            }
-            else if (pointerState == PointerState.Up)
-            {
-                data.Down = false;
-            }
-
-            var pointerEvent = PointerEvent.GetOrCreatePointerEvent();
-
-            pointerEvent.PointerId = pointerId;
-            pointerEvent.Position = data.Position;
-            pointerEvent.DeltaPosition = data.Delta;
-            pointerEvent.DeltaTime = data.PointerClock.Elapsed;
-            pointerEvent.State = pointerState;
-            pointerEvent.PointerType = Type;
-            
-            // Don't send pointer events when not between Down/Up events
-            if (pointerState != PointerState.Move || data.Down)
-            {
-                lock (currentPointerEvents)
-                    currentPointerEvents.Add(pointerEvent);
-
-                OnPointer?.Invoke(this, pointerEvent);
-            }
-
-            // Send move event (for mice, etc.)
-            if (pointerState == PointerState.Move)
-                OnMoved?.Invoke(this, pointerEvent);
-
-            // Reset pointer clock
-            data.PointerClock.Restart();
-        }
-
-        protected void ClearPointerEvents()
-        {
-            // Clear pointer events
-            lock (PointerEvent.Pool)
-                lock (currentPointerEvents)
-                {
-                    // Insert back into pool
-                    foreach (var pointerEvent in currentPointerEvents)
-                        PointerEvent.Pool.Enqueue(pointerEvent);
-                    currentPointerEvents.Clear();
-                }
-        }
-
         protected void SetSurfaceSize(Vector2 newSize)
         {
             surfaceSize = newSize;
@@ -180,16 +130,19 @@ namespace SiliconStudio.Xenko.Input
         /// Processes a <see cref="PointerInputEvent"/> by converting calling <see cref="HandlePointerEvent"/> with the correct arguments
         /// </summary>
         /// <param name="evt"></param>
-        protected void ProcessPointerEvent(PointerInputEvent evt)
+        protected PointerEvent ProcessPointerEvent(PointerInputEvent evt)
         {
             var data = GetPointerData(evt.Id);
+            var pointerId = evt.Id;
+            PointerState pointerState = 0;
+
 
             // Update pointer position + delta
             if (evt.Type == InputEventType.MoveDelta)
             {
                 // Special case, used when the cursor is locked to the center of the screen and only wants to send delta events
                 data.Delta = evt.Position;
-                HandlePointerEvent(PointerState.Move, evt.Id);
+                pointerState = PointerState.Move;
             }
             else
             {
@@ -200,17 +153,48 @@ namespace SiliconStudio.Xenko.Input
 
                 if (evt.Type == InputEventType.Down)
                 {
-                    HandlePointerEvent(PointerState.Down, evt.Id);
+                    pointerState = PointerState.Down;
                 }
                 else if (evt.Type == InputEventType.Up)
                 {
-                    HandlePointerEvent(PointerState.Up, evt.Id);
+                    pointerState = PointerState.Up;
                 }
                 else
                 {
-                    HandlePointerEvent(PointerState.Move, evt.Id);
+                    pointerState = PointerState.Move;
                 }
             }
+            
+            if (pointerState == PointerState.Down)
+            {
+                data.PointerClock.Restart();
+                data.Down = true;
+            }
+            else if (pointerState == PointerState.Up)
+            {
+                data.Down = false;
+            }
+
+            var pointerEvent = new PointerEvent(this, pointerId,
+                data.Position, data.Delta, data.PointerClock.Elapsed, pointerState, Type);
+            pointerEvent.IsDown = data.Down;
+
+            // Don't send pointer events when not between Down/Up events
+            if (pointerState != PointerState.Move || data.Down)
+            {
+                currentPointerEvents.Add(pointerEvent);
+
+                OnPointer?.Invoke(this, pointerEvent);
+            }
+
+            // Send move event (for mice, etc.)
+            if (pointerState == PointerState.Move)
+                OnMoved?.Invoke(this, pointerEvent);
+
+            // Reset pointer clock
+            data.PointerClock.Restart();
+
+            return pointerEvent;
         }
 
         private PointerData GetPointerData(int pointerId)

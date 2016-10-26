@@ -31,24 +31,30 @@ namespace SiliconStudio.Xenko.Input
         public override PointerType Type => PointerType.Mouse;
 
         /// <inheritdoc />
-        public override void Update()
+        public override void Update(List<InputEvent> inputEvents)
         {
-            base.Update();
+            base.Update(inputEvents);
 
             // Fire events
             foreach (var evt in mouseInputEvents)
             {
                 if (evt.Type == MouseInputEventType.Down)
                 {
-                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, Type = MouseButtonEventType.Pressed });
+                    var buttonEvent = new MouseButtonEvent(this) { State = ButtonState.Pressed, Button = evt.Button };
+                    OnMouseButton?.Invoke(this, buttonEvent);
+                    inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == MouseInputEventType.Up)
                 {
-                    OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, Type = MouseButtonEventType.Released });
+                    var buttonEvent = new MouseButtonEvent(this) { State = ButtonState.Released, Button = evt.Button };
+                    OnMouseButton?.Invoke(this, buttonEvent);
+                    inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == MouseInputEventType.Scroll)
                 {
-                    OnMouseWheel?.Invoke(this, new MouseWheelEvent { WheelDelta = evt.WheelDelta });
+                    var wheelEvent = new MouseWheelEvent(this) { WheelDelta = evt.WheelDelta };
+                    OnMouseWheel?.Invoke(this, wheelEvent);
+                    inputEvents.Add(wheelEvent);
                 }
             }
             mouseInputEvents.Clear();
@@ -93,7 +99,7 @@ namespace SiliconStudio.Xenko.Input
         {
             mouseInputEvents.Add(new MouseInputEvent { Type = MouseInputEventType.Scroll, WheelDelta = wheelDelta });
         }
-        
+
         protected struct MouseInputEvent
         {
             public MouseButton Button;

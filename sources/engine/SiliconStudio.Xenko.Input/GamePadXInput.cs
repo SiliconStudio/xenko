@@ -14,9 +14,9 @@ namespace SiliconStudio.Xenko.Input
     {
         public override string DeviceName => $"XInput Controller {index}";
         public override Guid Id => id;
-        public override IReadOnlyCollection<GamePadButtonInfo> ButtonInfos => XBoxLayoutInfo.Buttons;
-        public override IReadOnlyCollection<GamePadAxisInfo> AxisInfos => XBoxLayoutInfo.Axes;
-        public override IReadOnlyCollection<GamePadPovControllerInfo> PovControllerInfos => XBoxLayoutInfo.PovControllers;
+        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => XBoxLayoutInfo.Buttons;
+        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => XBoxLayoutInfo.Axes;
+        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => XBoxLayoutInfo.PovControllers;
 
         private Controller controller;
         private Guid id;
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input
             InitializeButtonStates();
         }
 
-        public override void Update()
+        public override void Update(List<InputEvent> inputEvents)
         {
             if (!Connected)
                 return;
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Fire events
-            base.Update();
+            base.Update(inputEvents);
         }
 
         public override bool GetGamePadState(ref GamePadState state)

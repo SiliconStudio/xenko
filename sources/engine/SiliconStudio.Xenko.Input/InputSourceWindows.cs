@@ -13,6 +13,9 @@ using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides support for mouse and keyboard input on windows forms
+    /// </summary>
     public class InputSourceWindows : InputSourceBase
     {
         /// <summary>

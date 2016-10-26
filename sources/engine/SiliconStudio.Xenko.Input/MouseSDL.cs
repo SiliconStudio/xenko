@@ -12,10 +12,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class MouseSDL : MouseDeviceBase
     {
-        public override string DeviceName => "SDL Mouse";
-        public override Guid Id => new Guid("0ccaf48e-e371-4b34-b6bb-a3720f6742a8");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
-        
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;
         private GameBase game;
@@ -43,6 +39,10 @@ namespace SiliconStudio.Xenko.Input
             uiControl.MouseWheelActions -= OnMouseWheelEvent;
             uiControl.ResizeEndActions -= OnSizeChanged;
         }
+
+        public override string DeviceName => "SDL Mouse";
+        public override Guid Id => new Guid("0ccaf48e-e371-4b34-b6bb-a3720f6742a8");
+        public override bool IsMousePositionLocked => isMousePositionLocked;
 
         public override void LockMousePosition(bool forceCenter = false)
         {

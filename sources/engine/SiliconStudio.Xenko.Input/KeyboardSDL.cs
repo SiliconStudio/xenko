@@ -11,9 +11,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public class KeyboardSDL : KeyboardDeviceBase
     {
-        public override string DeviceName => "SDL Keyboard";
-        public override Guid Id => new Guid("a25469ad-804e-4713-82da-347c6b187323");
-
         private Window window;
 
         public KeyboardSDL(Window window)
@@ -28,6 +25,9 @@ namespace SiliconStudio.Xenko.Input
             window.KeyDownActions -= OnKeyEvent;
             window.KeyUpActions -= OnKeyEvent;
         }
+
+        public override string DeviceName => "SDL Keyboard";
+        public override Guid Id => new Guid("a25469ad-804e-4713-82da-347c6b187323");
 
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e)
         {

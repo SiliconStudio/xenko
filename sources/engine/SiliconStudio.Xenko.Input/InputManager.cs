@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
         private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
         private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
+        private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
@@ -59,6 +60,8 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
         
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
+        private Dictionary<int, GamePadState> lastGamePadStates = new Dictionary<int, GamePadState>();
+        private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
         // Backing field of MousePosition
         private Vector2 mousePosition;
@@ -112,12 +115,6 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the value indicating if the mouse position is currently locked or not.
         /// </summary>
         public bool IsMousePositionLocked => HasMouse && Mouse.IsMousePositionLocked;
-
-        /// <summary>
-        /// Gets or sets the configuration for virtual buttons.
-        /// </summary>
-        /// <value>The current binding.</value>
-        public VirtualButtonConfigSet VirtualButtonConfigSet { get; set; }
 
         /// <summary>
         /// Gets the collection of gesture events since the previous updates.
@@ -399,8 +396,26 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>The state of the gamepad</returns>
         public GamePadState GetGamePadState(int gamePadIndex)
         {
-            GamePadState state = new GamePadState();
-            GetGamePad(gamePadIndex)?.GetGamePadState(ref state);
+            if (gamePadIndex == -1 && gamePadDevices.Count > 0)
+                gamePadIndex = gamePadDevices[0].Index;
+
+            GamePadState state;
+            currentGamePadStates.TryGetValue(gamePadIndex, out state);
+            return state;
+        }
+
+        /// <summary>
+        /// Gets the previous state of a gamepad with a given index
+        /// </summary>
+        /// <param name="gamePadIndex">The index of the gamepad. -1 to return the first connected gamepad</param>
+        /// <returns>The state of the gamepad</returns>
+        public GamePadState GetLastGamePadState(int gamePadIndex)
+        {
+            if (gamePadIndex == -1 && gamePadDevices.Count > 0)
+                gamePadIndex = gamePadDevices[0].Index;
+
+            GamePadState state;
+            lastGamePadStates.TryGetValue(gamePadIndex, out state);
             return state;
         }
 
@@ -412,6 +427,11 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
         public void SetGamePadVibration(int gamePadIndex, float leftMotor, float rightMotor)
         {
+            var pad = GetGamePad(gamePadIndex);
+            if (pad == null)
+                return;
+            var padVibration = pad as IGamePadVibration;
+            padVibration?.SetVibration(leftMotor, rightMotor);
         }
 
         /// <summary>
@@ -433,7 +453,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
         {
-            return false;
+            return (GetGamePadState(gamePadIndex).Buttons & button) != 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) == 0;
         }
 
         /// <summary>
@@ -444,7 +464,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
         {
-            return false;
+            return (GetGamePadState(gamePadIndex).Buttons & button) == 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) != 0;
         }
 
         /// <summary>
@@ -470,6 +490,7 @@ namespace SiliconStudio.Xenko.Input
             releasedButtonsSet.Clear();
             pointerEvents.Clear();
             keyEvents.Clear();
+            inputEvents.Clear();
             MouseWheelDelta = 0;
             MouseDelta = Vector2.Zero;
 
@@ -478,11 +499,28 @@ namespace SiliconStudio.Xenko.Input
             {
                 source.Update();
             }
-
+            
             // Update all input sources so they can send events and update their state
             foreach (var pair in inputDevices)
             {
-                pair.Key.Update();
+                pair.Key.Update(inputEvents);
+            }
+
+            if (inputEvents.Count > 0)
+            {
+                foreach (var evt in inputEvents)
+                {
+                    Debug.WriteLine(evt);
+                }
+            }
+            
+            // Update GamePadState for every gamepad
+            Utilities.Swap(ref currentGamePadStates, ref lastGamePadStates);
+            foreach (var gamepad in gamePadDevices)
+            {
+                var state = new GamePadState();
+                gamepad.GetGamePadState(ref state);
+                currentGamePadStates[gamepad.Index] = state;
             }
 
             // Update gestures
@@ -511,24 +549,6 @@ namespace SiliconStudio.Xenko.Input
             {
                 source.Resume();
             }
-        }
-
-        /// <summary>
-        /// Injects a pointer event directly into <see cref="PointerEvents"/>
-        /// </summary>
-        /// <param name="inputManager">the InputManager</param>
-        /// <param name="pointerEvent">The pointer event to inject</param>
-        internal void InjectPointerEvent(PointerEvent pointerEvent)
-        {
-            pointerEvents.Add(pointerEvent);
-        }
-
-        /// <summary>
-        /// Clears <see cref="PointerEvents"/>
-        /// </summary>
-        internal void ClearPointerEvents()
-        {
-            pointerEvents.Clear();
         }
 
         protected override void Destroy()
@@ -596,8 +616,13 @@ namespace SiliconStudio.Xenko.Input
         {
             gestureEvents.Clear();
 
+            // Only pick out events that lie between Up/Down or are Up/Down events
+            var filteredPointerEvents = pointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
+
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
+            {
+                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, filteredPointerEvents));
+            }
         }
 
         private void OnInputDeviceAdded(object sender, IInputDevice device)
@@ -658,10 +683,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 var dev = sender as IPointerDevice;
                 pointerEvents.Add(evt);
-            };
 
-            pointer.OnMoved += (sender, evt) =>
-            {
                 // Update position and delta from whatever device sends position updates
                 mousePosition = evt.Position;
                 MouseDelta = evt.DeltaPosition;
@@ -673,7 +695,7 @@ namespace SiliconStudio.Xenko.Input
                 // Handle button events for all mice
                 mouse.OnMouseButton += (sender, evt) =>
                 {
-                    if (evt.Type == MouseButtonEventType.Pressed)
+                    if (evt.State == ButtonState.Pressed)
                     {
                         downButtonSet.Add(evt.Button);
                         pressedButtonsSet.Add(evt.Button);
@@ -712,7 +734,7 @@ namespace SiliconStudio.Xenko.Input
             // Handle key events for all keyboards
             keyboard.OnKey += (sender, evt) =>
             {
-                if (evt.Type == KeyEventType.Pressed)
+                if (evt.State == ButtonState.Pressed)
                 {
                     downKeysSet.Add(evt.Key);
                     pressedKeysSet.Add(evt.Key);

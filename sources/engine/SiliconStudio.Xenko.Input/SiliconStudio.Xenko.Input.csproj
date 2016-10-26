@@ -66,6 +66,10 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ButtonEvent.cs" />
+    <Compile Include="IInputAction.cs" />
+    <Compile Include="IInputGesture.cs" />
+    <Compile Include="InputEvent.cs" />
     <Compile Include="NamedAccelerometerSensor.cs" />
     <Compile Include="NamedCompassSensor.cs" />
     <Compile Include="GamePadAxisEvent.cs" />
@@ -73,7 +77,7 @@
     <Compile Include="GamePadAxisType.cs" />
     <Compile Include="GamePadButtonEvent.cs" />
     <Compile Include="GamePadButtonInfo.cs" />
-    <Compile Include="GamePadButtonState.cs" />
+    <Compile Include="ButtonState.cs" />
     <Compile Include="GamePadButtonType.cs" />
     <Compile Include="GamePadObjectInfo.cs" />
     <Compile Include="GamePadPovControllerEvent.cs" />
@@ -84,12 +88,6 @@
     <Compile Include="IAccelerometerSensor.cs" />
     <Compile Include="CustomGamePad.cs" />
     <Compile Include="CustomGamePadState.cs" />
-    <Compile Include="Data\GamePadAxisVirtualButtonDesc.cs" />
-    <Compile Include="Data\GamePadVirtualButtonDesc.cs" />
-    <Compile Include="Data\IVirtualButtonDesc.cs" />
-    <Compile Include="Data\KeyboardVirtualButtonDesc.cs" />
-    <Compile Include="Data\MouseAxisVirtualButtonDesc.cs" />
-    <Compile Include="Data\MouseVirtualButtonDesc.cs" />
     <Compile Include="DeviceObjectIdExtensions.cs" />
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
@@ -135,9 +133,7 @@
     <Compile Include="InputSourceWindowsRawInput.cs" />
     <Compile Include="InputSourceWindowsXInput.cs" />
     <Compile Include="IPointerDevice.cs" />
-    <Compile Include="InputBinding.cs" />
     <Compile Include="InputManager.cs" />
-    <Compile Include="InputMapper.cs" />
     <Compile Include="ISensorDevice.cs" />
     <Compile Include="KeyboardAndroid.cs" />
     <Compile Include="KeyboardDeviceBase.cs" />
@@ -146,7 +142,6 @@
     <Compile Include="KeyboardWindowsRawInput.cs" />
     <Compile Include="KeyboardWinforms.cs" />
     <Compile Include="MouseButtonEvent.cs" />
-    <Compile Include="MouseButtonEventType.cs" />
     <Compile Include="MouseDeviceBase.cs" />
     <Compile Include="MouseOpenTK.cs" />
     <Compile Include="MouseSDL.cs" />
@@ -155,17 +150,13 @@
     <Compile Include="NamedOrientationSensor.cs" />
     <Compile Include="PointerAndroid.cs" />
     <Compile Include="PointerDeviceBase.cs" />
-    <Compile Include="PointerDeviceType.cs" />
     <Compile Include="PointeriOS.cs" />
     <Compile Include="AndroidSensorListener.cs" />
     <Compile Include="NamedSensor.cs" />
-    <Compile Include="SensorEvent.cs" />
     <Compile Include="SimulatedInputSource.cs" />
     <Compile Include="TypeBasedRegistry.cs" />
     <Compile Include="InputSourceWindows.cs" />
-    <Compile Include="IVirtualButton.cs" />
     <Compile Include="KeyEvent.cs" />
-    <Compile Include="KeyEventType.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="GestureConfigLongPress.cs" />
     <Compile Include="ICompassSensor.cs" />
@@ -187,16 +178,6 @@
     <Compile Include="GestureRecognizerTap.cs" />
     <Compile Include="IUserAccelerationSensor.cs" />
     <Compile Include="NamedUserAccelerationSensor.cs" />
-    <Compile Include="VirtualButton.cs" />
-    <Compile Include="VirtualButton.Keyboard.cs" />
-    <Compile Include="VirtualButton.Mouse.cs" />
-    <Compile Include="VirtualButtonBinding.cs" />
-    <Compile Include="VirtualButtonConfig.cs" />
-    <Compile Include="VirtualButtonConfigSet.cs" />
-    <Compile Include="VirtualButtonGroup.cs" />
-    <Compile Include="Data\VirtualButtonDescBase.cs" />
-    <Compile Include="VirtualButtonTwoWay.cs" />
-    <Compile Include="VirtualButtonType.cs" />
     <Compile Include="WinKeys.cs" />
   </ItemGroup>
   <ItemGroup>
