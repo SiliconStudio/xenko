@@ -9,9 +9,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -99,6 +103,8 @@ namespace SiliconStudio.Xenko.Input.Tests
 
         protected override Task LoadContent()
         {
+            base.LoadContent();
+
             // Load the fonts
             spriteFont11 = Content.Load<SpriteFont>("Arial");
 
@@ -181,11 +187,17 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             var position = tuple.Item1;
             var duration = DrawTime.Total - tuple.Item2;
+            var id = tuple.Item3;
+
+            // Adjust color for each additional pointer index
+            var hsvColor = ColorHSV.FromColor(baseColor);
+            hsvColor.H += id*24.0f;
+            hsvColor.H %= 360.0f;
 
             var scale = (float)(0.2f * (1f - duration.TotalSeconds / displayPointerDuration.TotalSeconds));
             var pointerScreenPosition = new Vector2(position.X * screenSize.X, position.Y * screenSize.Y);
 
-            spriteBatch.Draw(roundTexture, pointerScreenPosition, baseColor, 0, roundTextureSize / 2, scale * baseScale);
+            spriteBatch.Draw(roundTexture, pointerScreenPosition, hsvColor.ToColor(), 0, roundTextureSize / 2, scale * baseScale);
         }
 
         private async Task UpdateInputStates()
@@ -255,9 +267,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                                 break;
                             case PointerState.Up:
                                 pointerReleased.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
-                                break;
-                            case PointerState.Out:
-                            case PointerState.Cancel:
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();

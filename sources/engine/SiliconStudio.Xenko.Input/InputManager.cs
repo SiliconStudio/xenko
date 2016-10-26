@@ -474,6 +474,7 @@ namespace SiliconStudio.Xenko.Input
             pointerEvents.Clear();
             keyEvents.Clear();
             MouseWheelDelta = 0;
+            MouseDelta = Vector2.Zero;
 
             // Update all input sources so they can route events to input devices and possible register new devices
             foreach (var source in inputSources)
@@ -485,13 +486,6 @@ namespace SiliconStudio.Xenko.Input
             foreach (var pair in inputDevices)
             {
                 pair.Key.Update();
-            }
-
-            // Update mouse position from first pointer
-            if (HasPointer)
-            {
-                mousePosition = pointerDevices[0].Position;
-                MouseDelta = pointerDevices[0].Delta;
             }
 
             // Update gestures
@@ -655,6 +649,13 @@ namespace SiliconStudio.Xenko.Input
             {
                 var dev = sender as IPointerDevice;
                 pointerEvents.Add(evt);
+            };
+
+            pointer.OnMoved += (sender, evt) =>
+            {
+                // Update position and delta from whatever device sends position updates
+                mousePosition = evt.Position;
+                MouseDelta = evt.DeltaPosition;
             };
 
             var mouse = pointer as IMouseDevice;

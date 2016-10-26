@@ -84,6 +84,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// </summary>
         public UITestGameBase()
         {
+            SimulatedInputSource.Enabled = true;
             StopOnFrameCount = -1;
 
             graphicsCompositor = new SceneGraphicsCompositorLayers
@@ -273,7 +274,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (state == PointerState.Down)
                 lastTouchPosition = position;
 
-            var pointerEvent = new PointerEvent(0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
+            var pointerEvent = new PointerEvent(0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch);
 
             lastTouchPosition = position;
 

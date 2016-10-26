@@ -43,6 +43,10 @@ namespace SiliconStudio.Xenko.Input
         {
             foreach (var id in fingerIdsToMovePos.Keys)
             {
+                // Only process if a finger is down
+                if (!FingerIdToBeginPositions.ContainsKey(id))
+                    continue;
+
                 var dist = (fingerIdsToMovePos[id] - FingerIdToBeginPositions[id]).Length();
                 if (dist > ConfigLongPress.MaximumTranslationDistance)
                     HasGestureStarted = false;

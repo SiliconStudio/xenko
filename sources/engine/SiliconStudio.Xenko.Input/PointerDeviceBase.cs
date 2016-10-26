@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Input
         public int Priority { get; set; }
 
         public EventHandler<PointerEvent> OnPointer { get; set; }
+        public EventHandler<PointerEvent> OnMoved { get; set; }
         public EventHandler OnSurfaceSizeChanged { get; set; }
         public IReadOnlyList<PointerEvent> PointerEvents => currentPointerEvents;
 
@@ -85,6 +86,9 @@ namespace SiliconStudio.Xenko.Input
         // Special move that only registers mouse delta
         public void HandleMoveDelta(Vector2 delta)
         {
+            if (delta == Vector2.Zero)
+                return;
+
             // Normalize delta
             delta *= invSurfaceSize;
 
@@ -103,12 +107,6 @@ namespace SiliconStudio.Xenko.Input
             {
                 data.Down = false;
             }
-            else
-            {
-                // Ignore move events when not between Down/Up events
-                if (!data.Down)
-                    return;
-            }
 
             var pointerEvent = PointerEvent.GetOrCreatePointerEvent();
 
@@ -118,12 +116,22 @@ namespace SiliconStudio.Xenko.Input
             pointerEvent.DeltaTime = data.PointerClock.Elapsed;
             pointerEvent.State = pointerState;
             pointerEvent.PointerType = Type;
-            pointerEvent.IsPrimary = pointerId == 0;
 
-            lock (currentPointerEvents)
-                currentPointerEvents.Add(pointerEvent);
 
-            OnPointer?.Invoke(this, pointerEvent);
+            // Don't send pointer events when not between Down/Up events
+            if (pointerState != PointerState.Move || data.Down)
+            {
+                lock (currentPointerEvents)
+                    currentPointerEvents.Add(pointerEvent);
+
+                OnPointer?.Invoke(this, pointerEvent);
+            }
+
+            // Send move event (for mice, etc.)
+            if(pointerState == PointerState.Move)
+                OnMoved?.Invoke(this, pointerEvent);
+
+            // Reset pointer clock
             data.PointerClock.Restart();
         }
 

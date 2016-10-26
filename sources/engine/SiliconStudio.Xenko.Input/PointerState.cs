@@ -21,15 +21,5 @@ namespace SiliconStudio.Xenko.Input
         /// The pointer just released pressure to the digitizer.
         /// </summary>
         Up,
-
-        /// <summary>
-        /// The pointer is out of the digitizer.
-        /// </summary>
-        Out,
-
-        /// <summary>
-        /// The pointer has been canceled.
-        /// </summary>
-        Cancel,
     }
 }

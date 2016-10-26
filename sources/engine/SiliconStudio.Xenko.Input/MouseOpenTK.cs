@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Input
             if (!isMousePositionLocked)
             {
                 wasMouseVisibleBeforeCapture = game.IsMouseVisible;
-                game.IsMouseVisible = false;
+                //game.IsMouseVisible = false;
                 if (forceCenter)
                 {
                     SetMousePosition(new Vector2(0.5f, 0.5f));
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Input
             if (isMousePositionLocked)
             {
                 // Register mouse delta and reset
-                HandleMoveDelta(new Vector2(e.XDelta, e.YDelta));
+                HandleMoveDelta(new Vector2(e.X - capturedPosition.X, e.Y - capturedPosition.Y));
                 Mouse.SetPosition(capturedPosition.X, capturedPosition.Y);
             }
             else

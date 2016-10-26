@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
 
             public KeyboardSimulated()
             {
-                Priority = 1000;
+                Priority = -1000;
             }
             public void SimulateDown(Keys key)
             {
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Input
             
             public MouseSimulated()
             {
-                Priority = 1000;
+                Priority = -1000;
                 SetSurfaceSize(Vector2.One);
             }
             public void SimulateMouseDown(MouseButton button)

@@ -67,9 +67,13 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccelerometerAndroid.cs" />
+    <Compile Include="AccelerometerSensoriOS.cs" />
     <Compile Include="CompassSensorAndroid.cs" />
+    <Compile Include="CompassSensoriOS.cs" />
     <Compile Include="GravitySensorAndroid.cs" />
+    <Compile Include="GravitySensoriOS.cs" />
     <Compile Include="GyroscopeSensorAndroid.cs" />
+    <Compile Include="GyroscopeSensoriOS.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
     <Compile Include="CustomGamePad.cs" />
     <Compile Include="CustomGamePadState.cs" />
@@ -118,6 +122,7 @@
     <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputSource.cs" />
     <Compile Include="InputSourceAndroid.cs" />
+    <Compile Include="InputSourceiOS.cs" />
     <Compile Include="InputSourceOpenTK.cs" />
     <Compile Include="InputSourceSDL.cs" />
     <Compile Include="InputSourceWindowsDirectInput.cs" />
@@ -142,9 +147,11 @@
     <Compile Include="MouseWheelEvent.cs" />
     <Compile Include="MouseWinforms.cs" />
     <Compile Include="OrientationSensorAndroid.cs" />
+    <Compile Include="OrientationSensoriOS.cs" />
     <Compile Include="PointerAndroid.cs" />
     <Compile Include="PointerDeviceBase.cs" />
     <Compile Include="PointerDeviceType.cs" />
+    <Compile Include="PointeriOS.cs" />
     <Compile Include="SensorAndroid.cs" />
     <Compile Include="SensorDeviceBase.cs" />
     <Compile Include="SensorEvent.cs" />
@@ -176,6 +183,7 @@
     <Compile Include="GestureRecognizerTap.cs" />
     <Compile Include="IUserAccelerationSensor.cs" />
     <Compile Include="UserAccelerationSensorAndroid.cs" />
+    <Compile Include="UserAccelerationSensoriOS.cs" />
     <Compile Include="VirtualButton.cs" />
     <Compile Include="VirtualButton.Keyboard.cs" />
     <Compile Include="VirtualButton.Mouse.cs" />

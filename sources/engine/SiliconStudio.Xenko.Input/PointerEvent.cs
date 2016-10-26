@@ -35,8 +35,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="deltaTime">The delta time.</param>
         /// <param name="state">The state.</param>
         /// <param name="pointerType">Type of the pointer.</param>
-        /// <param name="isPrimary">if set to <c>true</c> [is primary].</param>
-        internal PointerEvent(int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType, bool isPrimary)
+        internal PointerEvent(int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType)
         {
             PointerId = pointerId;
             Position = position;
@@ -44,7 +43,6 @@ namespace SiliconStudio.Xenko.Input
             DeltaTime = deltaTime;
             State = state;
             PointerType = pointerType;
-            IsPrimary = isPrimary;
         }
 
         /// <summary>
@@ -83,13 +81,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value>The type of the pointer.</value>
         public PointerType PointerType { get; internal set; }
-
-        /// <summary>
-        /// Gets a boolean indicating whether this is the default primary pointer.
-        /// </summary>
-        /// <value><c>true</c> if this instance is primary; otherwise, <c>false</c>.</value>
-        public bool IsPrimary { get; internal set; }
-
+        
         /// <summary>
         /// Clones this instance.
         /// </summary>
@@ -104,14 +96,13 @@ namespace SiliconStudio.Xenko.Input
             clone.DeltaTime = DeltaTime;
             clone.State = State;
             clone.PointerType = PointerType;
-            clone.IsPrimary = IsPrimary;
 
             return clone;
         }
 
         public override string ToString()
         {
-            return string.Format("PointerId: {0}, Position: {1:0.00}, DeltaPosition: {2:0.00}, DeltaTime: {3:0.000}, State: {4}, PointerType: {5}, IsPrimary: {6}", PointerId, Position, DeltaPosition, DeltaTime.TotalSeconds, State, PointerType, IsPrimary);
+            return string.Format("PointerId: {0}, Position: {1:0.00}, DeltaPosition: {2:0.00}, DeltaTime: {3:0.000}, State: {4}, PointerType: {5}", PointerId, Position, DeltaPosition, DeltaTime.TotalSeconds, State, PointerType);
         }
     }
 }

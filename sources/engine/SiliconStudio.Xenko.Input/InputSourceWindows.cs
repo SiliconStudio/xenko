@@ -66,15 +66,18 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update()
         {
-            // Manually force releasing keys if their up event never gets fired
-            WinFormsKeys[] keysToCheck = heldKeys.ToArray();
-            foreach (WinFormsKeys key in keysToCheck)
+            if (keyboard != null)
             {
-                short keyState = Win32Native.GetKeyState((int)key);
-                if ((keyState & 0x8000) == 0)
+                // Manually force releasing keys if their up event never gets fired
+                WinFormsKeys[] keysToCheck = heldKeys.ToArray();
+                foreach (WinFormsKeys key in keysToCheck)
                 {
-                    keyboard.HandleKeyUp(key);
-                    heldKeys.Remove(key);
+                    short keyState = Win32Native.GetKeyState((int)key);
+                    if ((keyState & 0x8000) == 0)
+                    {
+                        keyboard.HandleKeyUp(key);
+                        heldKeys.Remove(key);
+                    }
                 }
             }
         }

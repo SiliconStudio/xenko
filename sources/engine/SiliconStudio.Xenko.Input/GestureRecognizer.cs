@@ -103,8 +103,6 @@ namespace SiliconStudio.Xenko.Input
                         fingerIdsToLastMovePos[id] = pos;
                         break;
                     case PointerState.Up:
-                    case PointerState.Out:
-                    case PointerState.Cancel:
                         // process previous move events
                         ProcessAndClearMovePointerEvents();
 

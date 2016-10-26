@@ -96,6 +96,10 @@ namespace SiliconStudio.Xenko.Input
 
             foreach (var id in fingerIdsToMovePos.Keys)
             {
+                // Only process if a finger is down
+                if (!FingerIdsToLastPos.ContainsKey(id))
+                    continue;
+
                 if ((fingerIdsToMovePos[id] - FingerIdsToLastPos[id]).Length() > ConfigTap.MaximumDistanceTaps)
                 {
                     EndCurrentTap();

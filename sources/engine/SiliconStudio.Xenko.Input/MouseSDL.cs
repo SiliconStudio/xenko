@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (IsMousePositionLocked)
             {
-                HandleMoveDelta(new Vector2(e.xrel, e.yrel));
+                HandleMoveDelta(new Vector2(e.x - relativeCapturedPosition.X, e.y - relativeCapturedPosition.Y));
 
                 // Restore position to prevent mouse from going out of the window where we would not get
                 // mouse move event.

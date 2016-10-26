@@ -10,9 +10,14 @@ namespace SiliconStudio.Xenko.Input
     public interface IPointerDevice : IInputDevice
     {
         /// <summary>
-        /// Raised when a pointer pointer event is triggered
+        /// Raised when a pointer pointer event is triggered, this event will guarantee that a pointer Move event is always surrounded with a pointer Down and Up event.
         /// </summary>
         EventHandler<PointerEvent> OnPointer { get; set; }
+
+        /// <summary>
+        /// Raised whenever a pointer is moved, this doesn't nessecarily have to happen between Down/Up events (in the case of mice/pens)
+        /// </summary>
+        EventHandler<PointerEvent> OnMoved { get; set; }
 
         /// <summary>
         /// Raised when the sureface size of this pointer changed

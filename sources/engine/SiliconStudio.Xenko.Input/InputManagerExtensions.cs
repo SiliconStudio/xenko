@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
         public static void SimulateTapDown(this InputManager inputManager, Vector2 coords)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch));
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="delta">the delta time between events</param>
         public static void SimulateTapMove(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch));
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="delta">the delta time between events</param>
         public static void SimulateTapUp(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch));
         }
     }
 }

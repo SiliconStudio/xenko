@@ -17,20 +17,17 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Initialize(InputManager inputManager)
         {
-            if (InputManager.UseRawInput)
-            {
-                var gameContext = inputManager.Game.Context as GameContext<Control>;
-                uiControl = gameContext.Control;
+            var gameContext = inputManager.Game.Context as GameContext<Control>;
+            uiControl = gameContext.Control;
 
-                keyboard = new KeyboardWindowsRawInput();
-                RegisterDevice(keyboard);
-                BindRawInputKeyboard(uiControl);
-            }
+            keyboard = new KeyboardWindowsRawInput();
+            RegisterDevice(keyboard);
+            BindRawInputKeyboard(uiControl);
         }
 
         public override bool IsEnabled(GameContext gameContext)
         {
-            return gameContext is GameContext<Control>;
+            return gameContext is GameContext<Control> && InputManager.UseRawInput;
         }
 
         public override void Update()
