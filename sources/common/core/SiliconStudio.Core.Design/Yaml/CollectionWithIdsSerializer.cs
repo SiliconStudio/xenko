@@ -76,13 +76,11 @@ namespace SiliconStudio.Core.Yaml
                 return;
             }
 
-            if (info.Instance != null)
-            {
-                ICollection<ItemId> deletedItems;
-                objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
-                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
-            }
-            objectContext.Instance = info.Instance;
+            var instance = info.Instance ?? objectContext.SerializerContext.ObjectFactory.Create(info.Descriptor.Type);
+            ICollection<ItemId> deletedItems;
+            objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
+            TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, instance, deletedItems);
+            objectContext.Instance = instance;
 
             base.TransformObjectAfterRead(ref objectContext);
         }
