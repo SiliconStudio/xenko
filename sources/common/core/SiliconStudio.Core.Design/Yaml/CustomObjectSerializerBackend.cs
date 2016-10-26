@@ -180,7 +180,7 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 var path = GetCurrentPath(ref objectContext, true);
-                Identifier id;
+                ItemId id;
                 if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
                 {
                     path.PushItemId(id);
@@ -201,7 +201,7 @@ namespace SiliconStudio.Core.Yaml
             if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
             {
                 var path = GetCurrentPath(ref objectContext, true);
-                Identifier id;
+                ItemId id;
                 if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
                 {
                     path.PushItemId(id);
@@ -215,11 +215,11 @@ namespace SiliconStudio.Core.Yaml
                 {
                     if ((overrideType & OverrideType.New) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(IdentifierSerializer.OverrideInfoKey, Override.PostFixNew.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializer.OverrideInfoKey, Override.PostFixNew.ToString());
                     }
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(IdentifierSerializer.OverrideInfoKey, Override.PostFixSealed.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializer.OverrideInfoKey, Override.PostFixSealed.ToString());
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace SiliconStudio.Core.Yaml
         public override object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
         {
             var path = GetCurrentPath(ref objectContext, true);
-            Identifier id;
+            ItemId id;
             if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
             {
                 path.PushItemId(id);
@@ -246,7 +246,7 @@ namespace SiliconStudio.Core.Yaml
         public override void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType)
         {
             var path = GetCurrentPath(ref objectContext, true);
-            Identifier id;
+            ItemId id;
             if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
             {
                 path.PushItemId(id);

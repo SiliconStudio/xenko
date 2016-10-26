@@ -10,28 +10,28 @@ using SiliconStudio.Core.Yaml.Serialization.Serializers;
 namespace SiliconStudio.Core.Yaml
 {
     [DataContract]
-    public struct Identifier : IComparable<Identifier>, IEquatable<Identifier>
+    public struct ItemId : IComparable<ItemId>, IEquatable<ItemId>
     {
         private readonly ObjectId Value;
 
-        public Identifier(byte[] bytes)
+        public ItemId(byte[] bytes)
         {
             Value = new ObjectId(bytes);
         }
 
-        internal Identifier(ObjectId id)
+        internal ItemId(ObjectId id)
         {
             Value = id;
         }
 
-        public static Identifier Empty { get; } = new Identifier(ObjectId.Empty);
+        public static ItemId Empty { get; } = new ItemId(ObjectId.Empty);
 
-        public static Identifier New()
+        public static ItemId New()
         {
-            return new Identifier(ObjectId.New());
+            return new ItemId(ObjectId.New());
         }
 
-        public bool Equals(Identifier other)
+        public bool Equals(ItemId other)
         {
             return Value.Equals(other.Value);
         }
@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Yaml
         {
             if (ReferenceEquals(null, obj))
                 return false;
-            return obj is Identifier && Equals((Identifier)obj);
+            return obj is ItemId && Equals((ItemId)obj);
         }
 
         public override int GetHashCode()
@@ -48,17 +48,17 @@ namespace SiliconStudio.Core.Yaml
             return Value.GetHashCode();
         }
 
-        public static bool operator ==(Identifier left, Identifier right)
+        public static bool operator ==(ItemId left, ItemId right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(Identifier left, Identifier right)
+        public static bool operator !=(ItemId left, ItemId right)
         {
             return !left.Equals(right);
         }
 
-        public int CompareTo(Identifier other)
+        public int CompareTo(ItemId other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -68,43 +68,44 @@ namespace SiliconStudio.Core.Yaml
             return Value.ToString();
         }
 
-        public static Identifier Parse(string input)
+        public static ItemId Parse(string input)
         {
             ObjectId objectId;
             if (!ObjectId.TryParse(input, out objectId))
                 throw new ArgumentException("Unable to parse input string.");
-            return new Identifier(objectId);
+            return new ItemId(objectId);
         }
     }
 
     /// <summary>
-    /// A Yaml serializer for <see cref="Guid"/>
+    /// A Yaml serializer for <see cref="ItemId"/>
     /// </summary>
     [YamlSerializerFactory]
-    internal class IdentifierSerializer : AssetScalarSerializerBase
+    internal class ItemIdSerializer : AssetScalarSerializerBase
     {
-        public static PropertyKey<string> OverrideInfoKey = new PropertyKey<string>("OverrideInfo", typeof(IdentifierSerializer));
+        public static PropertyKey<string> OverrideInfoKey = new PropertyKey<string>("OverrideInfo", typeof(ItemIdSerializer));
+
         public override bool CanVisit(Type type)
         {
-            return type == typeof(Identifier);
+            return type == typeof(ItemId);
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
             ObjectId id;
             ObjectId.TryParse(fromScalar.Value, out id);
-            return new Identifier(id);
+            return new ItemId(id);
         }
 
         public override string ConvertTo(ref ObjectContext objectContext)
         {
-            return ((Identifier)objectContext.Instance).ToString();
+            return ((ItemId)objectContext.Instance).ToString();
         }
 
         protected override void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
         {
             string overrideInfo;
-            if (objectContext.Properties.TryGetValue(OverrideInfoKey, out overrideInfo))
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideInfoKey, out overrideInfo))
             {
                 scalar.RenderedValue += overrideInfo;
             }
@@ -114,7 +115,7 @@ namespace SiliconStudio.Core.Yaml
     }
 
     [DataContract]
-    public class CollectionWithItemIds<TItem> : OrderedDictionary<Identifier, TItem>
+    public class CollectionWithItemIds<TItem> : OrderedDictionary<ItemId, TItem>
     {
 
     }
@@ -128,12 +129,12 @@ namespace SiliconStudio.Core.Yaml
     public class CollectionItemIdentifiers
     {
         // TODO: we could sort only at serialization
-        private readonly SortedList<object, Identifier> keyToIdMap = new SortedList<object, Identifier>(new DefaultKeyComparer());
-        private readonly HashSet<Identifier> deletedItems = new HashSet<Identifier>();
+        private readonly SortedList<object, ItemId> keyToIdMap = new SortedList<object, ItemId>(new DefaultKeyComparer());
+        private readonly HashSet<ItemId> deletedItems = new HashSet<ItemId>();
 
-        public Identifier this[object key] { get { return keyToIdMap[key]; } set { keyToIdMap[key] = value; } }
+        public ItemId this[object key] { get { return keyToIdMap[key]; } set { keyToIdMap[key] = value; } }
 
-        public IEnumerable<Identifier> DeletedItems => deletedItems;
+        public IEnumerable<ItemId> DeletedItems => deletedItems;
 
         public int KeyCount => keyToIdMap.Count;
 
@@ -141,12 +142,12 @@ namespace SiliconStudio.Core.Yaml
 
         public int Count => KeyCount + DeletedCount;
 
-        public void Add(object key, Identifier id)
+        public void Add(object key, ItemId id)
         {
             keyToIdMap.Add(key, id);
         }
 
-        public void Insert(int index, Identifier id)
+        public void Insert(int index, ItemId id)
         {
             for (var i = keyToIdMap.Count; i > index; --i)
             {
@@ -167,7 +168,7 @@ namespace SiliconStudio.Core.Yaml
             return keyToIdMap.ContainsKey(key);
         }
 
-        public bool TryGet(object key, out Identifier id)
+        public bool TryGet(object key, out ItemId id)
         {
             return keyToIdMap.TryGetValue(key, out id);
         }
@@ -197,19 +198,19 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
-        public void MarkAsDeleted(Identifier id)
+        public void MarkAsDeleted(ItemId id)
         {
             deletedItems.Add(id);
         }
 
-        public void UnmarkAsDeleted(Identifier id)
+        public void UnmarkAsDeleted(ItemId id)
         {
             deletedItems.Remove(id);
         }
 
         public void Validate(bool isList)
         {
-            var ids = new HashSet<Identifier>(keyToIdMap.Values);
+            var ids = new HashSet<ItemId>(keyToIdMap.Values);
             if (ids.Count != keyToIdMap.Count)
                 throw new InvalidOperationException("Two elements of the collection have the same id");
 
@@ -220,21 +221,21 @@ namespace SiliconStudio.Core.Yaml
                 throw new InvalidOperationException("An id is both marked as deleted and associated to a key of the collection.");
         }
 
-        public Identifier FindMissingId(CollectionItemIdentifiers baseIds)
+        public ItemId FindMissingId(CollectionItemIdentifiers baseIds)
         {
-            var hashSet = new HashSet<Identifier>(deletedItems);
+            var hashSet = new HashSet<ItemId>(deletedItems);
             foreach (var item in keyToIdMap)
             {
                 hashSet.Add(item.Value);
             }
 
-            var missingId = Identifier.Empty;
+            var missingId = ItemId.Empty;
             foreach (var item in baseIds.keyToIdMap)
             {
                 if (!hashSet.Contains(item.Value))
                 {
                     // TODO: if we have scenario where this is ok, I guess we can just return the first one.
-                    if (missingId != Identifier.Empty)
+                    if (missingId != ItemId.Empty)
                         throw new InvalidOperationException("Multiple ids are missing.");
 
                     missingId = item.Value;
@@ -246,7 +247,7 @@ namespace SiliconStudio.Core.Yaml
                 if (!hashSet.Contains(item))
                 {
                     // TODO: if we have scenario where this is ok, I guess we can just return the first one.
-                    if (missingId != Identifier.Empty)
+                    if (missingId != ItemId.Empty)
                         throw new InvalidOperationException("Multiple ids are missing.");
 
                     missingId = item;
@@ -256,13 +257,13 @@ namespace SiliconStudio.Core.Yaml
             return missingId;
         }
 
-        public object GetKey(Identifier identifier)
+        public object GetKey(ItemId itemId)
         {
             // TODO: add indexing by guid to avoid O(n)
-            return keyToIdMap.FirstOrDefault(x => x.Value == identifier).Key;
+            return keyToIdMap.FirstOrDefault(x => x.Value == itemId).Key;
         }
 
-        public Identifier GetId(object key)
+        public ItemId GetId(object key)
         {
             return keyToIdMap.FirstOrDefault(x => Equals(x.Key, key)).Value;
         }
@@ -270,7 +271,7 @@ namespace SiliconStudio.Core.Yaml
 
     public interface IKeyWithId
     {
-        Identifier Id { get; }
+        ItemId Id { get; }
         object Key { get; }
         Type KeyType { get; }
         bool IsDeleted { get; }
@@ -278,14 +279,14 @@ namespace SiliconStudio.Core.Yaml
 
     public struct KeyWithId<TKey> : IKeyWithId
     {
-        public KeyWithId(Identifier id, TKey key)
+        public KeyWithId(ItemId id, TKey key)
         {
             Id = id;
             Key = key;
         }
-        public readonly Identifier Id;
+        public readonly ItemId Id;
         public TKey Key;
-        Identifier IKeyWithId.Id => Id;
+        ItemId IKeyWithId.Id => Id;
         object IKeyWithId.Key => Key;
         bool IKeyWithId.IsDeleted => false;
         Type IKeyWithId.KeyType => typeof(TKey);
@@ -293,13 +294,13 @@ namespace SiliconStudio.Core.Yaml
 
     public struct DeletedKeyWithId<TKey> : IKeyWithId
     {
-        public DeletedKeyWithId(Identifier id)
+        public DeletedKeyWithId(ItemId id)
         {
             Id = id;
         }
-        public readonly Identifier Id;
+        public readonly ItemId Id;
         public TKey Key => default(TKey);
-        Identifier IKeyWithId.Id => Id;
+        ItemId IKeyWithId.Id => Id;
         object IKeyWithId.Key => Key;
         bool IKeyWithId.IsDeleted => true;
         Type IKeyWithId.KeyType => typeof(TKey);
@@ -310,13 +311,13 @@ namespace SiliconStudio.Core.Yaml
         public override object ConvertFrom(ref ObjectContext objectContext, Scalar fromScalar)
         {
             var idIndex = fromScalar.Value.IndexOf('~');
-            var id = Identifier.Empty;
+            var id = ItemId.Empty;
             var keyString = fromScalar.Value;
             if (idIndex >= 0)
             {
                 var idString = fromScalar.Value.Substring(0, idIndex);
                 keyString = fromScalar.Value.Substring(idIndex + 1);
-                id = Identifier.Parse(idString);
+                id = ItemId.Parse(idString);
             }
             var keyType = objectContext.Descriptor.Type.GetGenericArguments()[0];
             var keyDescriptor = objectContext.SerializerContext.FindTypeDescriptor(keyType);

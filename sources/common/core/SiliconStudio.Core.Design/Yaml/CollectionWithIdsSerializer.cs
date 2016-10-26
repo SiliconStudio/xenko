@@ -68,7 +68,7 @@ namespace SiliconStudio.Core.Yaml
                         foreach (var item in enumerable)
                         {
                             var id = item != null ? IdentifiableHelper.GetId(item) : Guid.NewGuid();
-                            ids[i] = id != Guid.Empty ? new Identifier(id.ToByteArray()) : Identifier.New();
+                            ids[i] = id != Guid.Empty ? new ItemId(id.ToByteArray()) : ItemId.New();
                             ++i;
                         }
                     }
@@ -78,7 +78,7 @@ namespace SiliconStudio.Core.Yaml
 
             if (info.Instance != null)
             {
-                ICollection<Identifier> deletedItems;
+                ICollection<ItemId> deletedItems;
                 objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
                 TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
@@ -95,10 +95,10 @@ namespace SiliconStudio.Core.Yaml
             var i = 0;
             foreach (var item in (IEnumerable)collection)
             {
-                Identifier id;
+                ItemId id;
                 if (!identifier.TryGet(i, out id))
                 {
-                    id = Identifier.New();
+                    id = ItemId.New();
                 }
                 instance.Add(id, item);
                 ++i;
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Identifier> deletedItems = null)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<ItemId> deletedItems = null)
         {
             var collectionDescriptor = (CollectionDescriptor)targetDescriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Yaml
             while (enumerator.MoveNext())
             {
                 collectionDescriptor.Add(targetCollection, enumerator.Value);
-                identifier.Add(i, (Identifier)enumerator.Key);
+                identifier.Add(i, (ItemId)enumerator.Key);
                 ++i;
             }
             if (deletedItems != null)
@@ -145,11 +145,11 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDeletedItems(ref ObjectContext objectContext)
         {
-            ICollection<Identifier> deletedItems;
+            ICollection<ItemId> deletedItems;
             objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
             if (deletedItems != null)
             {
-                var keyValueType = new KeyValuePair<Type, Type>(typeof(Identifier), typeof(string));
+                var keyValueType = new KeyValuePair<Type, Type>(typeof(ItemId), typeof(string));
                 foreach (var deletedItem in deletedItems)
                 {
                     var entry = new KeyValuePair<object, object>(deletedItem, YamlDeletedKey);
@@ -161,7 +161,7 @@ namespace SiliconStudio.Core.Yaml
         protected override KeyValuePair<object, object> ReadDeletedDictionaryItem(ref ObjectContext objectContext, object keyResult)
         {
             var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string), keyResult);
-            var id = (Identifier)keyResult;
+            var id = (ItemId)keyResult;
             return new KeyValuePair<object, object>(id, valueResult);
         }
     }

@@ -10,16 +10,16 @@ namespace SiliconStudio.Core.Design.Tests
 {
     public static class IdentifierGenerator
     {
-        public static Identifier Get(int index)
+        public static ItemId Get(int index)
         {
             var bytes = ToBytes(index);
-            return new Identifier(bytes);
+            return new ItemId(bytes);
         }
 
-        public static bool Match(Identifier guid, int index)
+        public static bool Match(ItemId guid, int index)
         {
             var bytes = ToBytes(index);
-            var id = new Identifier(bytes);
+            var id = new ItemId(bytes);
             return guid == id;
         }
 
@@ -257,8 +257,8 @@ Objects:
             Assert.AreEqual(2, objectIds.Count);
             Assert.IsTrue(objectIds.ContainsKey(0));
             Assert.IsTrue(objectIds.ContainsKey(1));
-            Assert.AreEqual(new Identifier(GuidGenerator.Get(4).ToByteArray()), objectIds[0]);
-            Assert.AreEqual(new Identifier(GuidGenerator.Get(3).ToByteArray()), objectIds[1]);
+            Assert.AreEqual(new ItemId(GuidGenerator.Get(4).ToByteArray()), objectIds[0]);
+            Assert.AreEqual(new ItemId(GuidGenerator.Get(3).ToByteArray()), objectIds[1]);
         }
 
         [Test]
