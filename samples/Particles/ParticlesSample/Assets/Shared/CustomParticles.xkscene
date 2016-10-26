@@ -40,7 +40,6 @@ SceneSettings:
 Hierarchy:
     ~Id: 98dbbab5-03a8-4f89-9541-7265202f5faa
     RootPartIds:
-        - 5700e7f9-4aed-4697-99bc-165c7fb5b549
         - 0aa895fb-6425-436b-b4ae-964210c3ada6
         - f9e60aeb-b946-4d42-b957-d421863da396
         - 79ed5cbf-60bb-4912-89f5-3c1862a01b98
@@ -48,6 +47,7 @@ Hierarchy:
         - f08d1282-a256-4c2c-aa94-048dd95eed88
         - 4855a6ef-94da-4170-abb8-e8c421efa246
         - cc977217-0d7c-4e20-b6b9-7bf3de36c2a0
+        - ba38957d-0c0d-41ec-9c98-10c0f4e91a9a
     Parts:
         -   Entity:
                 Id: 0aa895fb-6425-436b-b4ae-964210c3ada6
@@ -76,28 +76,13 @@ Hierarchy:
                         ~Id: 97292521-5985-4508-95d4-47c3e580f16f
                         Texture: 29e81d18-809d-4074-b640-395a7b603d45/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
         -   Entity:
-                Id: 5700e7f9-4aed-4697-99bc-165c7fb5b549
-                Name: Ground
-                Components:
-                    - !TransformComponent
-                        ~Id: da421446-b53a-477c-a81c-be2f7c5b5101
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 69199f66-4449-4d6a-9481-b4f674294b1a
-                        Model: 4668a137-c7fe-4030-a88a-f8e35dc69556/f5e260b3-ba79-4990-bf36-047af12becb9:Models/Ground
-                        Materials:
-                            - null
-        -   Entity:
                 Id: 79ed5cbf-60bb-4912-89f5-3c1862a01b98
                 Name: ConeEmitter30
                 Components:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
                         Rotation: {X: -0.258819044, Y: 0.0, Z: 0.0, W: 0.9659258}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -196,7 +181,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
+                        Position: {X: -1.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: -0.06540313, Y: 0.0, Z: 0.0, W: 0.997858942}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -289,6 +274,21 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             Curve: CosSin
         -   Entity:
+                Id: ba38957d-0c0d-41ec-9c98-10c0f4e91a9a
+                Name: GridBase10x10
+                Components:
+                    - !TransformComponent
+                        ~Id: af038cae-15ef-4d2d-a0fb-d7ba1fb43c50
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 742475e5-41df-4a38-af89-8a9dcdd07c07
+                        Model: 82f7cafe-fae6-41b1-ab0b-73eb1032df1c/0fb6c306-2953-47bc-86ff-3e79cfec1836:Models/GridBase10x10
+                        Materials:
+                            - null
+        -   Entity:
                 Id: cc977217-0d7c-4e20-b6b9-7bf3de36c2a0
                 Name: NextScene
                 Components:
@@ -315,7 +315,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: 2.0, Y: 0.0, Z: -3.62694263E-05}
+                        Position: {X: 1.0, Y: -1.4987803E-08, Z: -0.5}
                         Rotation: {X: -0.555570245, Y: 0.0, Z: 0.0, W: 0.8314696}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -437,4 +437,4 @@ Hierarchy:
                                     ~Id: cd2423d8-9aed-41f1-959a-3efc529ed1b7
                                 BiasParameters:
                                     ~Id: ea85427b-3dfb-44a0-9f61-74c744539677
-                        Intensity: 0.8
+                        Intensity: 2.0

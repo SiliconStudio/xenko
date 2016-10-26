@@ -44,45 +44,13 @@ Hierarchy:
         - 3aedbca9-d0a2-4833-a577-22f967ba13ee
         - d13ce4bf-5e8e-4bdf-8415-42cfc8405415
         - 1b92f0e7-d75d-4623-826d-c7c1c14489f8
-        - 4954b776-8fc0-4bad-ba33-1bd5f6626553
-        - 61434ff9-95e0-4d57-a1de-dc7182af7ec6
-        - d272773c-92dc-4919-b39e-04971a6ebfd8
         - c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
-        - 19b87b8e-9b1a-46e5-9534-fda3f95d23d8
         - 666eeaba-21ff-4595-9005-c91027a334c2
         - 6b65e133-4d5e-49ed-9af9-8949cfe883ce
         - ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
+        - bbee7259-cb5a-4492-a8fa-18e421148857
+        - 0d9a929a-f6e5-4ca7-b603-7465abe2e8d1
     Parts:
-        -   Entity:
-                Id: 032d264e-ec29-4d14-bbe9-e58290d49cb5
-                Name: ProceduralModel (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 03c8d317-792f-4cea-a12a-f5d62a0222af
-                Name: ProceduralModel (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
-                        Materials:
-                            - null
         -   Entity:
                 Id: 03dd5648-2a32-4ff3-9267-1b1bcf8406b5
                 Name: PrefabRibbon
@@ -263,35 +231,42 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             GravitationalAcceleration: {X: 0.0, Y: -100.0, Z: 0.0}
         -   Entity:
-                Id: 12622a05-f706-4b32-bea0-84dac916eafe
-                Name: PrefabPedestal
+                Id: 0d9a929a-f6e5-4ca7-b603-7465abe2e8d1
+                Name: StaticSlash
                 Components:
                     - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
+                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
                         Children:
-                            - 52d382a7-941a-4235-b62a-2db3da8f165f/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - 75508145-9633-47b2-932b-4e7087505a68/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                            - 471faf25-52d7-492f-9205-ad768bdac163/db0f30e5-7d95-4420-9a0b-7e990beafaf0
+                            - bb339fa8-eea4-497d-a251-030c192d0ac3/7632d55e-a51f-422d-98f5-b1354e82e498
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: 1296a39e-c94d-4589-8bc4-74900238a559
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !AnimationComponent
+                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
+                        Animations: {}
+                        PlayingAnimations:
+                            -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
+                                Name: Slash
+                                Clip: 4bad48ce-7e53-4a8b-8d57-920309755026/b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
+                                RepeatMode: LoopInfinite
+                                BlendOperation: LinearBlend
+                                CurrentTime: 0:00:00:00.0000000
+                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
+                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
+                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
+                        Model: 89fbfc6e-b1be-460a-893d-9c132a785793/f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials:
+                            - null
+                            - null
+                            - null
+                            - null
+                            - null
                             - null
         -   Entity:
                 Id: 129c81f3-ab34-4783-a889-557620d798d9
-                Name: standCurved
+                Name: curvedStand
                 Components:
                     - !TransformComponent
                         ~Id: db0f30e5-7d95-4420-9a0b-7e990beafaf0
@@ -305,69 +280,6 @@ Hierarchy:
                         Materials:
                             - null
         -   Entity:
-                Id: 1304e7b3-798b-4602-afe4-374726417b27
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 196b3578-6c33-421d-923b-f1fb41f50145
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 19b87b8e-9b1a-46e5-9534-fda3f95d23d8
-                Name: Mr Seven
-                Components:
-                    - !TransformComponent
-                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
-                        Children:
-                            - e5c3b2c9-6475-4ff9-b111-e6a87b14a84b/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 56a4f13c-ad90-4bb1-bf0c-cf6a0ab85085/4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Position: {X: 5.0, Y: 0.0, Z: -3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !AnimationComponent
-                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                        PlayingAnimations:
-                            -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
-                                Name: Slash
-                                Clip: fea1aa9f-8945-4816-b6b4-c5679e61f504/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
-                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
-                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
-                    - !ModelComponent
-                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
-                        Materials:
-                            - null
-                            - null
-                            - null
-        -   Entity:
                 Id: 1b92f0e7-d75d-4623-826d-c7c1c14489f8
                 Name: Entity
                 Components:
@@ -379,6 +291,24 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticlesSample.GameProfiler,ParticlesSample.Game
                         ~Id: f5f146ce-7a89-4dc3-8d52-4db6cc951774
+        -   Entity:
+                Id: 278801fc-1b49-4cd5-9bfc-7e80e3be571a
+                Name: 7Ribbons
+                Components:
+                    - !TransformComponent
+                        ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.PrefabInstance,ParticlesSample.Game
+                        ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
+                        SourcePrefab: cb461e92-8459-4159-94fb-264f43f2cd4d/ea4228c5-d4d5-4258-867c-aae5aff0f779:Prefabs/PrefabRainbow
+                        Following: true
+                        InstanceTimeout: 0.4
+                        Key: Space
+                        TimeInterval: 0.833333
+                        TimeDelay: 0.666667
         -   BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
             BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
             Entity:
@@ -552,21 +482,32 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                         Children: []
-                        Position: {X: 0.0, Y: -1.009459, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelNodeLinkComponent
-                        ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
-                        Target: null
-                        NodeName: weapon
                     - !ParticlesSample.PrefabInstance,ParticlesSample.Game
                         ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
                         SourcePrefab: e93e9e8a-a394-4ef3-8e23-6d1ce0398904/305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8:Prefabs/PrefabTrails
                         Following: true
                         InstanceTimeout: 0.5
                         Key: Space
-                        TimeInterval: 1.0
-                        TimeDelay: 0.25
+                        TimeInterval: 0.833333
+                        TimeDelay: 0.7
+        -   Entity:
+                Id: 2de708ed-8a1a-40ac-9d6d-849ea3205f82
+                Name: curvedStand
+                Components:
+                    - !TransformComponent
+                        ~Id: a3b2786b-7113-4898-ad27-1a3b950e7b74
+                        Children: []
+                        Position: {X: 0.0, Y: -0.4, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
+                    - !ModelComponent
+                        ~Id: 6861216c-888e-4d59-9520-9b237962d0fd
+                        Model: cf63550b-6a43-4a9e-8f21-755335ac2e15/9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
+                        Materials:
+                            - null
         -   Entity:
                 Id: 3aedbca9-d0a2-4833-a577-22f967ba13ee
                 Name: Ambient light
@@ -594,77 +535,20 @@ Hierarchy:
                                 BiasParameters:
                                     ~Id: 080577c6-6d6f-47fb-b7a0-5c662f2354a9
         -   Entity:
-                Id: 4954b776-8fc0-4bad-ba33-1bd5f6626553
-                Name: Khan Leaping Rend
+                Id: 471faf25-52d7-492f-9205-ad768bdac163
+                Name: curvedStand
                 Components:
                     - !TransformComponent
-                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
-                        Children:
-                            - 2d0ae995-a282-4530-98f7-46f32ce84599/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 12622a05-f706-4b32-bea0-84dac916eafe/4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Position: {X: -3.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !AnimationComponent
-                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                        PlayingAnimations:
-                            -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
-                                Name: Slash
-                                Clip: 17374e52-4b17-41cd-819c-d031fe16bf1e/32b9842d-fc24-438e-80a4-d8892556187c:Animations/he07_atk_updown Animation
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
-                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
-                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
-                    - !ModelComponent
-                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
-                        Materials:
-                            - null
-                            - null
-                            - null
-        -   Entity:
-                Id: 5155035a-71ad-4958-98e8-e7950c7c8f78
-                Name: PrefabPedestal
-                Components:
-                    - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Children:
-                            - db4ea214-db93-420e-9b01-4127f25ec861/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - e517c737-f9b8-4e83-b8a5-9ad2adb1e2cd/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: 52d382a7-941a-4235-b62a-2db3da8f165f
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
+                        ~Id: db0f30e5-7d95-4420-9a0b-7e990beafaf0
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 0.0, Y: -0.399930716, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
+                        ~Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
+                        Model: b5fb60a9-472c-4e46-ac8a-2cc671370cba/9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials:
                             - null
-        -   Entity:
-                Id: 56a4f13c-ad90-4bb1-bf0c-cf6a0ab85085
-                Name: PrefabPedestal
-                Components:
-                    - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Children:
-                            - 1304e7b3-798b-4602-afe4-374726417b27/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - 03c8d317-792f-4cea-a12a-f5d62a0222af/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: 5acf4055-9e3a-4c1b-98aa-5d8bd93884c8
                 Name: PrefabRibbon
@@ -678,39 +562,6 @@ Hierarchy:
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.440923125, Y: -0.344486952, Z: 0.0, W: 0.828803658}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: 61434ff9-95e0-4d57-a1de-dc7182af7ec6
-                Name: Sir Upperslash
-                Components:
-                    - !TransformComponent
-                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
-                        Children:
-                            - 6a112d70-e784-4a20-850a-9010e43bb3aa/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 5155035a-71ad-4958-98e8-e7950c7c8f78/4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Position: {X: 3.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !AnimationComponent
-                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                        PlayingAnimations:
-                            -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
-                                Name: Slash
-                                Clip: fea1aa9f-8945-4816-b6b4-c5679e61f504/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
-                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
-                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
-                    - !ModelComponent
-                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
-                        Materials:
-                            - null
-                            - null
-                            - null
         -   Entity:
                 Id: 64c9cb43-825d-4501-9977-5cc91bbe09ef
                 Name: SwordModel
@@ -735,20 +586,8 @@ Hierarchy:
                         Target: null
                         NodeName: wepon_bone_R
         -   Entity:
-                Id: 664db320-87a7-4342-b7de-4ab3efd17f36
-                Name: PrefabPedestal
-                Components:
-                    - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Children:
-                            - 1296a39e-c94d-4589-8bc4-74900238a559/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - 92855e75-a308-4fd8-8328-62c00ae56893/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
                 Id: 666eeaba-21ff-4595-9005-c91027a334c2
-                Name: Khan Devastating Rend
+                Name: Propagating Slash
                 Components:
                     - !TransformComponent
                         ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
@@ -781,28 +620,6 @@ Hierarchy:
                             - null
                             - null
         -   Entity:
-                Id: 6a112d70-e784-4a20-850a-9010e43bb3aa
-                Name: RedRibbon
-                Components:
-                    - !TransformComponent
-                        ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                        Children: []
-                        Position: {X: 0.0, Y: -1.009459, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelNodeLinkComponent
-                        ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
-                        Target: null
-                        NodeName: weapon
-                    - !ParticlesSample.PrefabInstance,ParticlesSample.Game
-                        ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
-                        SourcePrefab: 55ceff4d-90e0-4ce2-b69f-9f150c3cb8b9/305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8:Prefabs/PrefabTrails
-                        Following: true
-                        InstanceTimeout: 0.5
-                        Key: Space
-                        TimeInterval: 0.82
-                        TimeDelay: 0.2
-        -   Entity:
                 Id: 6b65e133-4d5e-49ed-9af9-8949cfe883ce
                 Name: Directional light
                 Components:
@@ -829,32 +646,20 @@ Hierarchy:
                                 BiasParameters:
                                     ~Id: 08cae8b9-87da-4f7a-9821-798773d9e9e9
         -   Entity:
-                Id: 75508145-9633-47b2-932b-4e7087505a68
-                Name: ProceduralModel (3)
+                Id: 863e1ab3-96a1-41ca-a727-2af76ce89cdc
+                Name: curvedStand
                 Components:
                     - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
+                        ~Id: db0f30e5-7d95-4420-9a0b-7e990beafaf0
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 0.0, Y: -0.399930716, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
+                        ~Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
+                        Model: b5fb60a9-472c-4e46-ac8a-2cc671370cba/9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials:
                             - null
-        -   Entity:
-                Id: 796468cf-3194-482d-b1a8-8bb105d9bfc7
-                Name: PrefabPedestal
-                Components:
-                    - !TransformComponent
-                        ~Id: 4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Children:
-                            - 196b3578-6c33-421d-923b-f1fb41f50145/21ffa16c-b85b-410f-8b69-13e72c558b07
-                            - 032d264e-ec29-4d14-bbe9-e58290d49cb5/349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: 8a3b8daa-0d73-4522-beea-89bcd38b6c7a
                 Name: LeftShoulder
@@ -864,12 +669,12 @@ Hierarchy:
                         Children:
                             - 5acf4055-9e3a-4c1b-98aa-5d8bd93884c8/b402f996-18b7-469b-b420-43a5b185d974
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.142827243, Y: 0.7949336, Z: -0.5765662, W: 0.123500444}
+                        Rotation: {X: 0.766894, Y: 0.358265758, Z: -0.5310914, W: -0.0382278562}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelNodeLinkComponent
                         ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
                         Target: null
-                        NodeName: LeftShoulder
+                        NodeName: CATRigLArmCollarbone
         -   BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
             BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
             Entity:
@@ -1036,21 +841,6 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                             GravitationalAcceleration: {X: 0.0, Y: -100.0, Z: 0.0}
-        -   Entity:
-                Id: 92855e75-a308-4fd8-8328-62c00ae56893
-                Name: ProceduralModel (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
-                        Materials:
-                            - null
         -   BaseId: 73b67cca-fec1-4630-87d1-113a8ec9036b
             BasePartInstanceId: 2f324a7a-a2f1-4ebd-92ea-7ef9d18e097a
             Entity:
@@ -1399,27 +1189,47 @@ Hierarchy:
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
         -   Entity:
-                Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
-                Name: Angel
+                Id: bb339fa8-eea4-497d-a251-030c192d0ac3
+                Name: SwordModel
+                Components:
+                    - !TransformComponent
+                        ~Id: 7632d55e-a51f-422d-98f5-b1354e82e498
+                        Children:
+                            - 2d0ae995-a282-4530-98f7-46f32ce84599/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
+                        Model: c9c77701-ecb4-46e4-9908-b6c8af95079f/dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
+                        Materials:
+                            - null
+                            - null
+                            - null
+                            - null
+                    - !ModelNodeLinkComponent
+                        ~Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
+                        Target: null
+                        NodeName: wepon_bone_R
+        -   Entity:
+                Id: bbee7259-cb5a-4492-a8fa-18e421148857
+                Name: RainbowSlash
                 Components:
                     - !TransformComponent
                         ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
                         Children:
-                            - ca05946c-cce2-4970-8d8b-56b28c19e01e/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 8a3b8daa-0d73-4522-beea-89bcd38b6c7a/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 796468cf-3194-482d-b1a8-8bb105d9bfc7/4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Position: {X: 0.0, Y: 0.0, Z: -3.0}
+                            - 863e1ab3-96a1-41ca-a727-2af76ce89cdc/db0f30e5-7d95-4420-9a0b-7e990beafaf0
+                            - dde7dd6f-2eeb-4e1c-a057-e9309a05ab0f/7632d55e-a51f-422d-98f5-b1354e82e498
+                        Position: {X: 5.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
+                        Animations: {}
                         PlayingAnimations:
                             -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
                                 Name: Slash
-                                Clip: 56d16a83-ea9d-47ee-a3ca-b0fde225d846/1b3a633d-bc96-45df-92bd-1b3f0a090179:Animations/he03_run Animation
+                                Clip: 4bad48ce-7e53-4a8b-8d57-920309755026/b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
                                 RepeatMode: LoopInfinite
                                 BlendOperation: LinearBlend
                                 CurrentTime: 0:00:00:00.0000000
@@ -1427,8 +1237,46 @@ Hierarchy:
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
+                        Model: 89fbfc6e-b1be-460a-893d-9c132a785793/f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials:
+                            - null
+                            - null
+                            - null
+                            - null
+                            - null
+                            - null
+        -   Entity:
+                Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
+                Name: LoopingRibbons
+                Components:
+                    - !TransformComponent
+                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
+                        Children:
+                            - ca05946c-cce2-4970-8d8b-56b28c19e01e/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            - 8a3b8daa-0d73-4522-beea-89bcd38b6c7a/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            - 2de708ed-8a1a-40ac-9d6d-849ea3205f82/a3b2786b-7113-4898-ad27-1a3b950e7b74
+                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !AnimationComponent
+                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
+                        Animations: {}
+                        PlayingAnimations:
+                            -   ~Id: e12b9587-b30d-480e-aa91-f929b65c61c0
+                                Name: null
+                                Clip: 136975f8-ee2e-4e69-954e-e1b5d81fe2f4/95f54d40-98c6-43ed-9682-73ae114a238b:Animations/Run
+                                RepeatMode: LoopInfinite
+                                BlendOperation: LinearBlend
+                                CurrentTime: 0:00:00:00.0000000
+                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
+                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
+                    - !ModelComponent
+                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
+                        Model: 8cdad39c-b09c-46eb-9186-57f440a11622/f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
+                        Materials:
+                            - null
+                            - null
+                            - null
                             - null
                             - null
                             - null
@@ -1440,13 +1288,13 @@ Hierarchy:
                         ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                         Children:
                             - 03dd5648-2a32-4ff3-9267-1b1bcf8406b5/b402f996-18b7-469b-b420-43a5b185d974
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0299268831, Y: 0.379832029, Z: -0.11761345, W: 0.91706}
+                        Position: {X: 3.525829E-07, Y: -1.27791191E-06, Z: -3.16789283E-07}
+                        Rotation: {X: -0.658349, Y: -0.5697676, Z: -0.265862018, W: 0.4138345}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelNodeLinkComponent
                         ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
                         Target: null
-                        NodeName: RightShoulder
+                        NodeName: CATRigRArmCollarbone
         -   Entity:
                 Id: ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
                 Name: NextScene
@@ -1468,28 +1316,6 @@ Hierarchy:
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
-                Id: d1043432-3d65-4f68-a696-54921013baeb
-                Name: RedRibbon
-                Components:
-                    - !TransformComponent
-                        ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                        Children: []
-                        Position: {X: 0.0, Y: -1.009459, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelNodeLinkComponent
-                        ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
-                        Target: null
-                        NodeName: weapon
-                    - !ParticlesSample.PrefabInstance,ParticlesSample.Game
-                        ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
-                        SourcePrefab: e93e9e8a-a394-4ef3-8e23-6d1ce0398904/305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8:Prefabs/PrefabTrails
-                        Following: true
-                        InstanceTimeout: 0.5
-                        Key: Space
-                        TimeInterval: 0.79
-                        TimeDelay: 0.1
-        -   Entity:
                 Id: d13ce4bf-5e8e-4bdf-8415-42cfc8405415
                 Name: Background
                 Components:
@@ -1503,68 +1329,28 @@ Hierarchy:
                         ~Id: 4a58a89d-ac9b-4066-afb8-0f4656231d6a
                         Texture: daae9484-2784-444e-a7e8-12b6a3f36a07/05c67510-1363-46fd-b0ff-79eca123c1c1:Textures/XenkoBackground
         -   Entity:
-                Id: d272773c-92dc-4919-b39e-04971a6ebfd8
-                Name: Yokogiri Tono
+                Id: dde7dd6f-2eeb-4e1c-a057-e9309a05ab0f
+                Name: SwordModel
                 Components:
                     - !TransformComponent
-                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
+                        ~Id: 7632d55e-a51f-422d-98f5-b1354e82e498
                         Children:
-                            - d1043432-3d65-4f68-a696-54921013baeb/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            - 664db320-87a7-4342-b7de-4ab3efd17f36/4e277007-a79d-4193-92a6-0beaab2ec76e
-                        Position: {X: 0.0, Y: 0.0, Z: 2.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !AnimationComponent
-                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
-                        Animations:
-                            Idle: 8bfbcdab-e927-46a6-8e05-f430acb44947/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                            Run: 6423c94f-20ac-4ea0-9a3b-e2ef5dca7ac5/7a756be6-96b1-4ddf-a455-76a1bb5ca0f1:Animations/he08_atk_downup Animation
-                        PlayingAnimations:
-                            -   ~Id: ab009ab1-1248-4bc3-942e-31cf2d59e519
-                                Name: Slash
-                                Clip: 0659f747-e0d5-47a9-b7bc-1717c4f80aa0/1b270788-a1ad-4e61-a6a5-19c094cf16ba:Animations/he06_atk_leftright Animation
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
-                    - !ParticlesSample.RotateEntity,ParticlesSample.Game
-                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
-                    - !ModelComponent
-                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/523eb034-e48c-4a09-aa0e-69a75404fe85:Models/knight
-                        Materials:
-                            - null
-                            - null
-                            - null
-        -   Entity:
-                Id: db4ea214-db93-420e-9b01-4127f25ec861
-                Name: ProceduralModel
-                Components:
-                    - !TransformComponent
-                        ~Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
-                        Children: []
+                            - 278801fc-1b49-4cd5-9bfc-7e80e3be571a/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
-                        ~Id: c7dd4c56-ab3e-4473-b13e-94131d48ad5c
-                        Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
+                        ~Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
+                        Model: c9c77701-ecb4-46e4-9908-b6c8af95079f/dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
                         Materials:
                             - null
-        -   Entity:
-                Id: e517c737-f9b8-4e83-b8a5-9ad2adb1e2cd
-                Name: ProceduralModel (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 385c8fc2-e39c-4a47-b55f-94d88a506ef6
-                        Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
-                        Materials:
                             - null
+                            - null
+                            - null
+                    - !ModelNodeLinkComponent
+                        ~Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
+                        Target: null
+                        NodeName: wepon_bone_R
         -   BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
             BasePartInstanceId: c77eec2f-790c-4fff-8ced-0f1c48579d41
             Entity:
@@ -1732,30 +1518,8 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             GravitationalAcceleration: {X: 0.0, Y: -100.0, Z: 0.0}
         -   Entity:
-                Id: e5c3b2c9-6475-4ff9-b111-e6a87b14a84b
-                Name: 7Ribbons
-                Components:
-                    - !TransformComponent
-                        ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                        Children: []
-                        Position: {X: 0.0, Y: -1.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelNodeLinkComponent
-                        ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
-                        Target: null
-                        NodeName: weapon
-                    - !ParticlesSample.PrefabInstance,ParticlesSample.Game
-                        ~Id: cfec79dd-35c5-42b3-af29-ced46f15dffd
-                        SourcePrefab: cb461e92-8459-4159-94fb-264f43f2cd4d/ea4228c5-d4d5-4258-867c-aae5aff0f779:Prefabs/PrefabRainbow
-                        Following: true
-                        InstanceTimeout: 0.5
-                        Key: Space
-                        TimeInterval: 0.82
-                        TimeDelay: 0.2
-        -   Entity:
                 Id: f8eb0a0b-de53-4894-8add-ff3d2b6bc173
-                Name: RedRibbon
+                Name: YellowRibbon
                 Components:
                     - !TransformComponent
                         ~Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
@@ -1770,7 +1534,7 @@ Hierarchy:
                         InstanceTimeout: 0.5
                         Key: Space
                         TimeInterval: 0.833333
-                        TimeDelay: 0.633333
+                        TimeDelay: 0.7
 ~BaseParts:
     -   Location: Prefabs/PrefabRibbon
         Asset: !PrefabAsset

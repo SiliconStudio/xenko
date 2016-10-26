@@ -96,61 +96,32 @@ Hierarchy:
         - dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
         - 6a0191a4-fefe-483d-be2b-c55bae7fa77f
         - 2d712fb9-648d-418a-a5de-54d72c35271b
-        - 79133ba3-0fc3-4c37-9c88-497abb280900
-        - ec35c281-2510-44b4-b37d-927c58ef95e9
-        - f195ae7e-31de-4754-a8b8-3658ea3629bb
-        - c4271149-6500-4d2b-928b-7eb41b8eb9be
         - c390f2ae-dd0c-4250-bccd-b0da0890e929
         - c392f952-51b2-4dde-aad9-9449a33be394
         - bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
         - f7181193-0904-41a9-9615-1ae4e56b9627
         - f1abb6b2-1dfd-414e-831c-7972150839d4
         - 5e301371-56f7-4e2a-8da8-fd2c34cbe11f
+        - 023c2453-9702-4f6e-99e0-7ab35d850d7e
+        - 4c5af260-634c-4009-bbf3-4d36845a85d5
+        - 73a14e08-d551-43cd-b43c-084776a89c1c
+        - 994a64a4-fae3-48c7-a68c-50c3ab61ba04
     Parts:
         -   Entity:
-                Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f
-                Name: ProceduralCylinder
+                Id: 023c2453-9702-4f6e-99e0-7ab35d850d7e
+                Name: Stand
                 Components:
                     - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                        ~Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
+                        ~Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials:
                             - null
-        -   Entity:
-                Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
                             - null
         -   Entity:
                 Id: 2d712fb9-648d-418a-a5de-54d72c35271b
@@ -166,49 +137,20 @@ Hierarchy:
                         ~Id: 98864749-098e-4590-8cd0-319867a3b541
                         Texture: 57095419-b6d2-4885-9942-fb3c6f9a8be5/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
         -   Entity:
-                Id: 37f3d857-c364-4b0b-9f47-203c76b707b0
-                Name: ProceduralCylinder
+                Id: 4c5af260-634c-4009-bbf3-4d36845a85d5
+                Name: Stand (6)
                 Components:
                     - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                        ~Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
+                        ~Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials:
                             - null
-        -   Entity:
-                Id: 4e6f902c-15ae-4263-99a4-fffb61c3b407
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
                             - null
         -   Entity:
                 Id: 5e301371-56f7-4e2a-8da8-fd2c34cbe11f
@@ -809,6 +751,22 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
         -   Entity:
+                Id: 73a14e08-d551-43cd-b43c-084776a89c1c
+                Name: Stand (7)
+                Components:
+                    - !TransformComponent
+                        ~Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
+                        Children: []
+                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
+                        Materials:
+                            - null
+                            - null
+        -   Entity:
                 Id: 7698999c-4c4d-43e0-ac5d-5e2360bafde7
                 Name: AmbientLight
                 Components:
@@ -826,18 +784,6 @@ Hierarchy:
                                 ~Id: 534cc5fa-904b-4665-b893-0ee0204094f2
                                 Value: {R: 0.768627465, G: 0.843137264, B: 1.0}
                         Intensity: 0.05
-        -   Entity:
-                Id: 79133ba3-0fc3-4c37-9c88-497abb280900
-                Name: Stand (2)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 2571f0bf-c6ea-4cc7-b300-615d83b8d48f/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: 79735979-e91a-4eae-b702-070a873dfa9c
                 Name: Directional light
@@ -868,21 +814,22 @@ Hierarchy:
                                     ~Id: d1f5f336-617d-4c33-9b24-1eb005e2ec06
                                 BiasParameters:
                                     ~Id: 0f3bf030-229f-4068-8175-ab1f58dc6bb3
-                        Intensity: 0.8
+                        Intensity: 2.0
         -   Entity:
-                Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d
-                Name: ProceduralTorus
+                Id: 994a64a4-fae3-48c7-a68c-50c3ab61ba04
+                Name: Stand (8)
                 Components:
                     - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        ~Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: -3.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
+                        ~Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials:
+                            - null
                             - null
         -   Entity:
                 Id: a41aa685-3271-4e96-a72c-639c52070011
@@ -1328,18 +1275,6 @@ Hierarchy:
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
         -   Entity:
-                Id: c4271149-6500-4d2b-928b-7eb41b8eb9be
-                Name: Stand (5)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 4e6f902c-15ae-4263-99a4-fffb61c3b407/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 85cc27c5-b70a-4419-a0ce-51f11dbc695d/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
-        -   Entity:
                 Id: dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
                 Name: Colliding Particles
                 Components:
@@ -1550,30 +1485,6 @@ Hierarchy:
                                             Restitution: 0.7
                                             Friction: 0.1
         -   Entity:
-                Id: ec35c281-2510-44b4-b37d-927c58ef95e9
-                Name: Stand (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 37f3d857-c364-4b0b-9f47-203c76b707b0/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 2ac9ec66-567f-478f-a6b1-7846d5d95d76/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
-        -   Entity:
-                Id: f195ae7e-31de-4754-a8b8-3658ea3629bb
-                Name: Stand (4)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - fc8d67af-0cc5-4c76-b926-9fd081f745ef/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 2a699cb7-2468-45e6-be28-2f0c1b11d0a5/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: -3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
-        -   Entity:
                 Id: f1abb6b2-1dfd-414e-831c-7972150839d4
                 Name: Sign04
                 Components:
@@ -1611,18 +1522,3 @@ Hierarchy:
                         SpriteType: Billboard
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
-        -   Entity:
-                Id: fc8d67af-0cc5-4c76-b926-9fd081f745ef
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
