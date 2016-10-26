@@ -148,7 +148,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             WriteYaml(ref itemObjectcontext);
         }
 
-        public virtual void WriteDictionaryValue(ref ObjectContext objectContext, object value, Type valueType)
+        public virtual void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType)
         {
             var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
             WriteYaml(ref itemObjectcontext);

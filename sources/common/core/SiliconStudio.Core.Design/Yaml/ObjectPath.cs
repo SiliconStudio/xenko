@@ -24,7 +24,8 @@ namespace SiliconStudio.Core.Yaml
                 Value = value;
             }
             public string AsMember() { if (Type != ItemType.Member) throw new InvalidOperationException("This item is not a Member"); return (string)Value; }
-            public Guid AsItemId() { if (Type != ItemType.ItemId) throw new InvalidOperationException("This item is not a item Id"); return (Guid)Value; }
+            public Identifier AsItemId() { if (Type != ItemType.ItemId) throw new InvalidOperationException("This item is not a item Id"); return (Identifier)Value; }
+
         }
 
         private readonly List<Item> items = new List<Item>(16);
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core.Yaml
             items.Add(new Item(ItemType.Index, index));
         }
 
-        public void PushItemId(Guid itemId)
+        public void PushItemId(Identifier itemId)
         {
             items.Add(new Item(ItemType.ItemId, itemId));
         }
@@ -82,13 +83,13 @@ namespace SiliconStudio.Core.Yaml
             return sb.ToString();
         }
 
-        public static bool IsCollectionWithIdType(Type type, object key, out Guid id)
+        public static bool IsCollectionWithIdType(Type type, object key, out Identifier id)
         {
             if (type.IsGenericType)
             {
                 if (type.GetGenericTypeDefinition() == typeof(CollectionWithItemIds<>))
                 {
-                    id = (Guid)key;
+                    id = (Identifier)key;
                     return true;
                 }
                 if (type.GetGenericTypeDefinition() == typeof(DictionaryWithItemIds<,>))
@@ -98,7 +99,7 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
 
-            id = Guid.Empty;
+            id = Identifier.Empty;
             return false;
         }
     }

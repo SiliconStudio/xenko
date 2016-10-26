@@ -156,7 +156,7 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 var path = GetCurrentPath(ref objectContext, true);
-                Guid id;
+                Identifier id;
                 if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
                 {
                     path.PushItemId(id);
@@ -179,7 +179,7 @@ namespace SiliconStudio.Core.Yaml
         public override object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
         {
             var path = GetCurrentPath(ref objectContext, true);
-            Guid id;
+            Identifier id;
             if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
             {
                 path.PushItemId(id);

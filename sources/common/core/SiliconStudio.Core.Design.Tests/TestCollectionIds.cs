@@ -8,6 +8,35 @@ using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Core.Design.Tests
 {
+    public static class IdentifierGenerator
+    {
+        public static Identifier Get(int index)
+        {
+            var bytes = ToBytes(index);
+            return new Identifier(bytes);
+        }
+
+        public static bool Match(Identifier guid, int index)
+        {
+            var bytes = ToBytes(index);
+            var id = new Identifier(bytes);
+            return guid == id;
+        }
+
+        private static byte[] ToBytes(int index)
+        {
+            var bytes = new byte[16];
+            for (int i = 0; i < 4; ++i)
+            {
+                bytes[4 * i] = (byte)(index);
+                bytes[4 * i + 1] = (byte)(index >> 8);
+                bytes[4 * i + 2] = (byte)(index >> 16);
+                bytes[4 * i + 3] = (byte)(index >> 24);
+            }
+            return bytes;
+        }
+    }
+
     public static class GuidGenerator
     {
         public static Guid Get(int index)
@@ -67,14 +96,14 @@ namespace SiliconStudio.Core.Design.Tests
         private const string YamlCollection = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerCollection,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
-    00000002-0002-0000-0200-000002000000: aaa
-    00000001-0001-0000-0100-000001000000: bbb
+    02000000020000000200000002000000: aaa
+    01000000010000000100000001000000: bbb
 Objects:
-    00000003-0003-0000-0300-000003000000:
+    03000000030000000300000003000000:
         Name: obj1
         Strings: {}
         Objects: {}
-    00000004-0004-0000-0400-000004000000:
+    04000000040000000400000004000000:
         Name: obj2
         Strings: {}
         Objects: {}
@@ -83,14 +112,14 @@ Objects:
         private const string YamlDictionary = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerDictionary,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
-    00000002-0002-0000-0200-000002000000~000000c8-00c8-0000-c800-0000c8000000: aaa
-    00000001-0001-0000-0100-000001000000~00000064-0064-0000-6400-000064000000: bbb
+    02000000020000000200000002000000~000000c8-00c8-0000-c800-0000c8000000: aaa
+    01000000010000000100000001000000~00000064-0064-0000-6400-000064000000: bbb
 Objects:
-    00000003-0003-0000-0300-000003000000~key3:
+    03000000030000000300000003000000~key3:
         Name: obj1
         Strings: {}
         Objects: {}
-    00000004-0004-0000-0400-000004000000~key4:
+    04000000040000000400000004000000~key4:
         Name: obj2
         Strings: {}
         Objects: {}
@@ -99,41 +128,41 @@ Objects:
         private const string YamlCollectionWithDeleted = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerCollection,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
-    00000008-0008-0000-0800-000008000000: aaa
-    00000005-0005-0000-0500-000005000000: bbb
-    00000001-0001-0000-0100-000001000000: ~(Deleted)
-    00000003-0003-0000-0300-000003000000: ~(Deleted)
+    08000000080000000800000008000000: aaa
+    05000000050000000500000005000000: bbb
+    01000000010000000100000001000000: ~(Deleted)
+    03000000030000000300000003000000: ~(Deleted)
 Objects:
-    00000003-0003-0000-0300-000003000000:
+    03000000030000000300000003000000:
         Name: obj1
         Strings: {}
         Objects: {}
-    00000004-0004-0000-0400-000004000000:
+    04000000040000000400000004000000:
         Name: obj2
         Strings: {}
         Objects: {}
-    00000001-0001-0000-0100-000001000000: ~(Deleted)
-    00000006-0006-0000-0600-000006000000: ~(Deleted)
+    01000000010000000100000001000000: ~(Deleted)
+    06000000060000000600000006000000: ~(Deleted)
 ";
 
         private const string YamlDictionaryWithDeleted = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerDictionary,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
-    00000008-0008-0000-0800-000008000000~000000c8-00c8-0000-c800-0000c8000000: aaa
-    00000005-0005-0000-0500-000005000000~00000064-0064-0000-6400-000064000000: bbb
-    00000001-0001-0000-0100-000001000000~: ~(Deleted)
-    00000003-0003-0000-0300-000003000000~: ~(Deleted)
+    08000000080000000800000008000000~000000c8-00c8-0000-c800-0000c8000000: aaa
+    05000000050000000500000005000000~00000064-0064-0000-6400-000064000000: bbb
+    01000000010000000100000001000000~: ~(Deleted)
+    03000000030000000300000003000000~: ~(Deleted)
 Objects:
-    00000003-0003-0000-0300-000003000000~key3:
+    03000000030000000300000003000000~key3:
         Name: obj1
         Strings: {}
         Objects: {}
-    00000004-0004-0000-0400-000004000000~key4:
+    04000000040000000400000004000000~key4:
         Name: obj2
         Strings: {}
         Objects: {}
-    00000001-0001-0000-0100-000001000000~: ~(Deleted)
-    00000006-0006-0000-0600-000006000000~: ~(Deleted)
+    01000000010000000100000001000000~: ~(Deleted)
+    06000000060000000600000006000000~: ~(Deleted)
 ";
 
         [Test]
@@ -147,11 +176,11 @@ Objects:
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            stringIds[0] = GuidGenerator.Get(2);
-            stringIds[1] = GuidGenerator.Get(1);
+            stringIds[0] = IdentifierGenerator.Get(2);
+            stringIds[1] = IdentifierGenerator.Get(1);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            objectIds[0] = GuidGenerator.Get(3);
-            objectIds[1] = GuidGenerator.Get(4);
+            objectIds[0] = IdentifierGenerator.Get(3);
+            objectIds[1] = IdentifierGenerator.Get(4);
             var yaml = YamlSerializer.Serialize(obj);
             Assert.AreEqual(YamlCollection, yaml);
         }
@@ -177,11 +206,11 @@ Objects:
             Assert.AreEqual("obj1", obj.Objects[0].Name);
             Assert.AreEqual("obj2", obj.Objects[1].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            Assert.AreEqual(GuidGenerator.Get(2), stringIds[0]);
-            Assert.AreEqual(GuidGenerator.Get(1), stringIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(2), stringIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), stringIds[1]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds[0]);
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds[1]);
         }
 
         [Test]
@@ -228,8 +257,8 @@ Objects:
             Assert.AreEqual(2, objectIds.Count);
             Assert.IsTrue(objectIds.ContainsKey(0));
             Assert.IsTrue(objectIds.ContainsKey(1));
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds[0]);
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds[1]);
+            Assert.AreEqual(new Identifier(GuidGenerator.Get(4).ToByteArray()), objectIds[0]);
+            Assert.AreEqual(new Identifier(GuidGenerator.Get(3).ToByteArray()), objectIds[1]);
         }
 
         [Test]
@@ -243,11 +272,11 @@ Objects:
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            stringIds[GuidGenerator.Get(200)] = GuidGenerator.Get(2);
-            stringIds[GuidGenerator.Get(100)] = GuidGenerator.Get(1);
+            stringIds[GuidGenerator.Get(200)] = IdentifierGenerator.Get(2);
+            stringIds[GuidGenerator.Get(100)] = IdentifierGenerator.Get(1);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            objectIds["key3"] = GuidGenerator.Get(3);
-            objectIds["key4"] = GuidGenerator.Get(4);
+            objectIds["key3"] = IdentifierGenerator.Get(3);
+            objectIds["key4"] = IdentifierGenerator.Get(4);
             var yaml = YamlSerializer.Serialize(obj);
             Assert.AreEqual(YamlDictionary, yaml);
         }
@@ -273,11 +302,11 @@ Objects:
             Assert.AreEqual("obj1", obj.Objects["key3"].Name);
             Assert.AreEqual("obj2", obj.Objects["key4"].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            Assert.AreEqual(GuidGenerator.Get(2), stringIds[GuidGenerator.Get(200)]);
-            Assert.AreEqual(GuidGenerator.Get(1), stringIds[GuidGenerator.Get(100)]);
+            Assert.AreEqual(IdentifierGenerator.Get(2), stringIds[GuidGenerator.Get(200)]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), stringIds[GuidGenerator.Get(100)]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds["key3"]);
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds["key4"]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds["key3"]);
+            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds["key4"]);
         }
 
         [Test]
@@ -326,8 +355,8 @@ Objects:
             Assert.AreEqual(2, objectIds.Count);
             Assert.IsTrue(objectIds.ContainsKey("key3"));
             Assert.IsTrue(objectIds.ContainsKey("key4"));
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds["key3"]);
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds["key4"]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds["key3"]);
+            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds["key4"]);
         }
 
         [Test]
@@ -351,19 +380,19 @@ Objects:
             Assert.AreEqual("obj1", obj.Objects[0].Name);
             Assert.AreEqual("obj2", obj.Objects[1].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            Assert.AreEqual(GuidGenerator.Get(8), stringIds[0]);
-            Assert.AreEqual(GuidGenerator.Get(5), stringIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(8), stringIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(5), stringIds[1]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds[0]);
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds[1]);
             var deletedItems = stringIds.DeletedItems.ToList();
             Assert.AreEqual(2, deletedItems.Count);
-            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
-            Assert.AreEqual(GuidGenerator.Get(3), deletedItems[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), deletedItems[1]);
             deletedItems = objectIds.DeletedItems.ToList();
             Assert.AreEqual(2, deletedItems.Count);
-            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
-            Assert.AreEqual(GuidGenerator.Get(6), deletedItems[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(6), deletedItems[1]);
         }
 
         [Test]
@@ -377,15 +406,15 @@ Objects:
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            stringIds[0] = GuidGenerator.Get(8);
-            stringIds[1] = GuidGenerator.Get(5);
-            stringIds.MarkAsDeleted(GuidGenerator.Get(3));
-            stringIds.MarkAsDeleted(GuidGenerator.Get(1));
+            stringIds[0] = IdentifierGenerator.Get(8);
+            stringIds[1] = IdentifierGenerator.Get(5);
+            stringIds.MarkAsDeleted(IdentifierGenerator.Get(3));
+            stringIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            objectIds[0] = GuidGenerator.Get(3);
-            objectIds[1] = GuidGenerator.Get(4);
-            objectIds.MarkAsDeleted(GuidGenerator.Get(1));
-            objectIds.MarkAsDeleted(GuidGenerator.Get(6));
+            objectIds[0] = IdentifierGenerator.Get(3);
+            objectIds[1] = IdentifierGenerator.Get(4);
+            objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
+            objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
             var yaml = YamlSerializer.Serialize(obj);
             Assert.AreEqual(YamlCollectionWithDeleted, yaml);
         }
@@ -411,19 +440,19 @@ Objects:
             Assert.AreEqual("obj1", obj.Objects["key3"].Name);
             Assert.AreEqual("obj2", obj.Objects["key4"].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            Assert.AreEqual(GuidGenerator.Get(8), stringIds[GuidGenerator.Get(200)]);
-            Assert.AreEqual(GuidGenerator.Get(5), stringIds[GuidGenerator.Get(100)]);
+            Assert.AreEqual(IdentifierGenerator.Get(8), stringIds[GuidGenerator.Get(200)]);
+            Assert.AreEqual(IdentifierGenerator.Get(5), stringIds[GuidGenerator.Get(100)]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            Assert.AreEqual(GuidGenerator.Get(3), objectIds["key3"]);
-            Assert.AreEqual(GuidGenerator.Get(4), objectIds["key4"]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), objectIds["key3"]);
+            Assert.AreEqual(IdentifierGenerator.Get(4), objectIds["key4"]);
             var deletedItems = stringIds.DeletedItems.ToList();
             Assert.AreEqual(2, deletedItems.Count);
-            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
-            Assert.AreEqual(GuidGenerator.Get(3), deletedItems[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(3), deletedItems[1]);
             deletedItems = objectIds.DeletedItems.ToList();
             Assert.AreEqual(2, deletedItems.Count);
-            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
-            Assert.AreEqual(GuidGenerator.Get(6), deletedItems[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(6), deletedItems[1]);
         }
 
         [Test]
@@ -437,15 +466,15 @@ Objects:
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            stringIds[GuidGenerator.Get(200)] = GuidGenerator.Get(8);
-            stringIds[GuidGenerator.Get(100)] = GuidGenerator.Get(5);
-            stringIds.MarkAsDeleted(GuidGenerator.Get(3));
-            stringIds.MarkAsDeleted(GuidGenerator.Get(1));
+            stringIds[GuidGenerator.Get(200)] = IdentifierGenerator.Get(8);
+            stringIds[GuidGenerator.Get(100)] = IdentifierGenerator.Get(5);
+            stringIds.MarkAsDeleted(IdentifierGenerator.Get(3));
+            stringIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            objectIds["key3"] = GuidGenerator.Get(3);
-            objectIds["key4"] = GuidGenerator.Get(4);
-            objectIds.MarkAsDeleted(GuidGenerator.Get(1));
-            objectIds.MarkAsDeleted(GuidGenerator.Get(6));
+            objectIds["key3"] = IdentifierGenerator.Get(3);
+            objectIds["key4"] = IdentifierGenerator.Get(4);
+            objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
+            objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
             var yaml = YamlSerializer.Serialize(obj);
             Assert.AreEqual(YamlDictionaryWithDeleted, yaml);
         }

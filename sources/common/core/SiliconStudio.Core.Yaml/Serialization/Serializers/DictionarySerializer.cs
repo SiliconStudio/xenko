@@ -210,7 +210,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         protected virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
             objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
-            objectContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Value, keyValueTypes.Value);
+            objectContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Key, keyValue.Value, keyValueTypes.Value);
         }
     }
 }

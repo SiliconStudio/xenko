@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// A key that identifies deleted items during deserialization.
         /// </summary>
-        protected static readonly PropertyKey<ICollection<Guid>> DeletedItemsKey = new PropertyKey<ICollection<Guid>>("DeletedItems", typeof(CollectionWithIdsSerializer));
+        protected static readonly PropertyKey<ICollection<Identifier>> DeletedItemsKey = new PropertyKey<ICollection<Identifier>>("DeletedItems", typeof(CollectionWithIdsSerializer));
 
         /// <summary>
         /// A structure containing the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary. 
@@ -134,7 +134,7 @@ namespace SiliconStudio.Core.Yaml
         {
             var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
-            var deletedItems = new HashSet<Guid>();
+            var deletedItems = new HashSet<Identifier>();
 
             var reader = objectContext.Reader;
             while (!reader.Accept<MappingEnd>())
@@ -145,13 +145,13 @@ namespace SiliconStudio.Core.Yaml
                 {
                     // Read key and value
                     var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
-                    if (!Equals(keyValue.Value, YamlDeletedKey) || !(keyValue.Key is Guid))
+                    if (!Equals(keyValue.Value, YamlDeletedKey) || !(keyValue.Key is Identifier))
                     {
                         dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
                     }
                     else
                     {
-                        deletedItems.Add((Guid)keyValue.Key);
+                        deletedItems.Add((Identifier)keyValue.Key);
                     }
                 }
                 catch (YamlException ex)
@@ -251,7 +251,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="targetDescriptor">The type descriptor of the actual collection to fill.</param>
         /// <param name="targetCollection">The instance of the actual collection to fill.</param>
         /// <param name="deletedItems">A collection of items that are marked as deleted. Can be null.</param>
-        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
+        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Identifier> deletedItems = null);
 
         protected abstract void WriteDeletedItems(ref ObjectContext objectContext);
 

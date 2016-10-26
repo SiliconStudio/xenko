@@ -128,8 +128,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Writes the value of the dictionary item.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
+        /// <param name="key"></param>
         /// <param name="value">The value of the dictionary item.</param>
         /// <param name="valueType">Type of the value.</param>
-        void WriteDictionaryValue(ref ObjectContext objectContext, object value, Type valueType);
+        void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
@@ -38,7 +39,7 @@ namespace SiliconStudio.Core.Yaml
             // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
             if (info.Instance != null)
             {
-                ICollection<Guid> deletedItems;
+                ICollection<Identifier> deletedItems;
                 objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
                 TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
@@ -51,12 +52,12 @@ namespace SiliconStudio.Core.Yaml
                 var descriptor = (DictionaryDescriptor)info.Descriptor;
                 foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
                 {
-                    Guid id;
-                    if (ids.TryGet(item.Key, out id) && id != Guid.Empty)
+                    Identifier id;
+                    if (ids.TryGet(item.Key, out id) && id != Identifier.Empty)
                         continue;
 
-                    id = item.Value != null ? IdentifiableHelper.GetId(item.Value) : Guid.NewGuid();
-                    ids[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
+                    var guid = item.Value != null ? IdentifiableHelper.GetId(item.Value) : Guid.NewGuid();
+                    ids[item.Key] = guid != Guid.Empty ? new Identifier(guid.ToByteArray()) : Identifier.New();
                 }
             }
 
@@ -73,10 +74,10 @@ namespace SiliconStudio.Core.Yaml
             var keyWithIdType = typeof(KeyWithId<>).MakeGenericType(dictionaryDescriptor.KeyType);
             foreach (var item in dictionaryDescriptor.GetEnumerator(collection))
             {
-                Guid id;
+                Identifier id;
                 if (!identifier.TryGet(item.Key, out id))
                 {
-                    id = Guid.NewGuid();
+                    id = Identifier.New();
                 }
                 var keyWithId = Activator.CreateInstance(keyWithIdType, id, item.Key);
                 instance.Add(keyWithId, item.Value);
@@ -96,7 +97,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Identifier> deletedItems = null)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)targetDescriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
@@ -122,15 +123,18 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDeletedItems(ref ObjectContext objectContext)
         {
-            ICollection<Guid> deletedItems;
+            ICollection<Identifier> deletedItems;
             objectContext.Properties.TryGetValue(DeletedItemsKey, out deletedItems);
             if (deletedItems != null)
             {
-                var keyValueType = new KeyValuePair<Type, Type>(typeof(string), typeof(string));
+                var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+                var keyWithIdType = typeof(DeletedKeyWithId<>).MakeGenericType(dictionaryDescriptor.KeyType);
+                var keyValueType = new KeyValuePair<Type, Type>(keyWithIdType, typeof(string));
                 foreach (var deletedItem in deletedItems)
                 {
                     // Add a ~ to allow to parse it back as a KeyWithId.
-                    var entry = new KeyValuePair<object, object>($"{deletedItem}~", YamlDeletedKey);
+                    var keyWithId = Activator.CreateInstance(keyWithIdType, deletedItem);
+                    var entry = new KeyValuePair<object, object>(keyWithId, YamlDeletedKey);
                     WriteDictionaryItem(ref objectContext, entry, keyValueType);
                 }
             }
@@ -138,7 +142,7 @@ namespace SiliconStudio.Core.Yaml
 
         protected override KeyValuePair<object, object> ReadDeletedDictionaryItem(ref ObjectContext objectContext, object keyResult)
         {
-            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string), null);
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string), keyResult);
             var id = ((IKeyWithId)keyResult).Id;
             return new KeyValuePair<object, object>(id, valueResult);
         }
