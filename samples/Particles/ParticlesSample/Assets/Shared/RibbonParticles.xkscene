@@ -306,9 +306,8 @@ Hierarchy:
                         SourcePrefab: cb461e92-8459-4159-94fb-264f43f2cd4d/ea4228c5-d4d5-4258-867c-aae5aff0f779:Prefabs/PrefabRainbow
                         Following: true
                         InstanceTimeout: 0.4
-                        Key: Space
-                        TimeInterval: 0.833333
-                        TimeDelay: 0.666667
+                        TimeDelay: 0.03
+                        Animation: bbee7259-cb5a-4492-a8fa-18e421148857/0b066f56-06f9-4fe5-9319-be71331e8664
         -   BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
             BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
             Entity:
@@ -490,9 +489,8 @@ Hierarchy:
                         SourcePrefab: e93e9e8a-a394-4ef3-8e23-6d1ce0398904/305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8:Prefabs/PrefabTrails
                         Following: true
                         InstanceTimeout: 0.5
-                        Key: Space
-                        TimeInterval: 0.833333
-                        TimeDelay: 0.7
+                        TimeDelay: 0.03
+                        Animation: 0d9a929a-f6e5-4ca7-b603-7465abe2e8d1/0b066f56-06f9-4fe5-9319-be71331e8664
         -   Entity:
                 Id: 2de708ed-8a1a-40ac-9d6d-849ea3205f82
                 Name: curvedStand
@@ -1532,9 +1530,8 @@ Hierarchy:
                         SourcePrefab: 67479ae5-bd74-4ab8-a85b-4525b9790114/802fae9e-3183-4fa2-a971-cb7f97e1bcfc:Prefabs/PrefabMovingTrail
                         Following: true
                         InstanceTimeout: 0.5
-                        Key: Space
-                        TimeInterval: 0.833333
-                        TimeDelay: 0.7
+                        TimeDelay: 0.03
+                        Animation: 666eeaba-21ff-4595-9005-c91027a334c2/0b066f56-06f9-4fe5-9319-be71331e8664
 ~BaseParts:
     -   Location: Prefabs/PrefabRibbon
         Asset: !PrefabAsset
