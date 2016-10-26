@@ -9,7 +9,7 @@ Hierarchy:
     Parts:
         -   Entity:
                 Id: 7bab5198-56f2-4bda-8979-f5b7022b951a
-                Name: cube
+                Name: crate
                 Components:
                     - !TransformComponent
                         ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
@@ -38,9 +38,10 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/353d6001-19b0-4883-b810-fe25b88c19ab:cube_csR
+                                Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     - !ModelComponent
                         ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                        Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/226ee5dd-9c34-426a-8901-c217d0cd8a60:CubeR
+                        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials:
+                            - null
                             - null

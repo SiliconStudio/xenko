@@ -44,6 +44,6 @@ Hierarchy:
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                     - !ModelComponent
                         ~Id: 25b6a499-09c6-4311-8f88-2cfb1100888d
-                        Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Ball
+                        Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Models/Ball
                         Materials:
                             - null

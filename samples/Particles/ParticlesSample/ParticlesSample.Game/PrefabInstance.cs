@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Engine;
 
-
 namespace ParticlesSample
 {
     /// <summary>
@@ -15,8 +14,6 @@ namespace ParticlesSample
     /// </summary>
     public class PrefabInstance : AsyncScript
     {
-        private float timeIntervalCountdown;
-
         /// <summary>
         /// Source to the prefab, selectable by the user
         /// </summary>
@@ -43,29 +40,19 @@ namespace ParticlesSample
         [Display("Timeout")]
         public float InstanceTimeout = 3f;
 
-        /// <summary>
-        /// What event triggers the script. Currently it listens for a key press.
-        /// </summary>
         [DataMember(40)]
-        [Display("Trigger")]
-        public Keys Key = Keys.Space;
-
-
-        /// <summary>
-        /// Set the time interval (in seconds) at which to spawn new instances. Set it to 0 to deactivate.
-        /// </summary>
-        [DataMember(50)]
-        [Display("Interval")]
-        public float TimeInterval { get; set; }
-
-        [DataMember(60)]
-        [Display("Delay")]
+        [Display("Trigger Time")]
         public float TimeDelay { get; set; }
+
+        [DataMember(50)]
+        [Display("Animation")]
+        public AnimationComponent Animation { get; set; }
+
+        private bool canTrigger = true;
+        private double lastTime = 0;
 
         public override async Task Execute()
         {
-            timeIntervalCountdown = TimeDelay;
-
             while (Game.IsRunning)
             {
                 await Script.NextFrame();
@@ -79,17 +66,16 @@ namespace ParticlesSample
 
         protected bool IsTriggered()
         {
-            var isTriggered = Input.IsKeyPressed(Key);
+            var time = Animation?.PlayingAnimations[0].CurrentTime.TotalSeconds ?? 0;
 
-            if (TimeInterval > 0)
-            {
-                timeIntervalCountdown -= (float)Game.UpdateTime.Elapsed.TotalSeconds;
-                if (timeIntervalCountdown <= 0f)
-                {
-                    timeIntervalCountdown = TimeInterval;
-                    isTriggered = true;
-                }
-            }
+            if (time < lastTime)
+                canTrigger = true;
+
+            var isTriggered = (canTrigger && TimeDelay <= time);
+
+            lastTime = time;
+            if (isTriggered)
+                canTrigger = false;
 
             return isTriggered;
         }
