@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets
         /// <param name="stream"></param>
         public virtual void Save(Stream stream)
         {
-            TextAccessor.WriteTo(stream);
+            TextAccessor.WriteTo(stream).Wait();
         }
 
         /// <summary>

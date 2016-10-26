@@ -4,8 +4,7 @@ Name: Animated Model Sample
 Scope: Session
 Description: Creates a sample project which shows how to animate a model
 FullDescription: | 
-   This sample displays the below knight and the user can select its current animation by pressing on buttons.
-   It shows you how to load a model into the screen and animate it with cross-fading.
+   This sample shows how to create a model, assign animations to it and change those animation based on user input.
 Group: Samples/Graphics
 Icon: .xktpl/Icon.png
 DefaultOutputName: AnimatedModel

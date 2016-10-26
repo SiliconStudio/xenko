@@ -32,7 +32,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderTrail
                                         ~Id: 741eb45b-05eb-4459-94d1-3909719f6ffe

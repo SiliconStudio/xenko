@@ -48,7 +48,7 @@ Hierarchy:
     Parts:
         -   Entity:
                 Id: 069945be-764a-4de9-88f4-458740f821ff
-                Name: knight
+                Name: CharacterModel
                 Components:
                     - !TransformComponent
                         ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
@@ -59,15 +59,18 @@ Hierarchy:
                     - !AnimationComponent
                         ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations:
-                            Idle: 006c97bb-20f6-4db1-914d-55311664e33d/0ec9050c-302e-4289-911f-94265cb7b60b:he00_normal_idle Animation
-                            Run: 2646d29d-867d-4078-a8ed-4056e554ae6d/6dc385f9-d6ff-4933-8fb8-1f481477aeb2:he03_run Animation
+                            Idle: d59db7ac-59c5-493f-a08c-ee6b97215013/5f286f7e-7d38-44cf-9bc1-3aad7be4f0fa:Animations/Idle
+                            Run: 5bb41d22-80d4-414f-8e53-f5c812dc2283/448ca260-c8b7-4f63-9bf6-e58a5970a830:Animations/Run
                         PlayingAnimations: []
                     - !AnimatedModel.RotateEntity,AnimatedModel.Game
                         ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     - !ModelComponent
                         ~Id: 52f13394-f393-49e7-98b1-356161a493f4
-                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/7f052b2a-84c2-4f8a-932c-c073b2de47de:knight
+                        Model: b45e0cf1-b3ae-424c-ae33-f3f7928e3b13/f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
                         Materials:
+                            - null
+                            - null
+                            - null
                             - null
                             - null
                             - null
@@ -113,7 +116,7 @@ Hierarchy:
                         Font: 4dcbcef6-a46a-407d-8711-dec0b15cf0aa/dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
                     - !UIComponent
                         ~Id: d9db8bbf-c855-4183-a232-dc46cc190f54
-                        Page: null
+                        Page: e1caff51-7fd6-4084-8952-ed6be2d76d04/0c8d34ec-5a72-42f6-9203-6096216ec54a:Page
                         Resolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
@@ -124,7 +127,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 435feba7-9081-44bb-9c7a-7989c2ec0faf
                         Children: []
-                        Position: {X: 0.0, Y: 1.2, Z: 3.25}
+                        Position: {X: 0.0, Y: 1.2, Z: 5.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent

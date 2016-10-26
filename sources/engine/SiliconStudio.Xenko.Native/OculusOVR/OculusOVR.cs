@@ -166,5 +166,12 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetAudioDeviceID", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern void GetAudioDeviceID(StringBuilder deviceName);
+
+        public static string GetAudioDeviceFullName()
+        {
+            var deviceName = new StringBuilder(128);
+            GetAudioDeviceID(deviceName);
+            return $"\\\\?\\SWD#MMDEVAPI#{deviceName}#{{e6327cad-dcec-4949-ae8a-991e976a79d2}}"; //this should not change the guid is related to audio device type
+        }
     }
 }
