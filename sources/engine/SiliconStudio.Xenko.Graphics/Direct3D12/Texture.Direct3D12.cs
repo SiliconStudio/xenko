@@ -507,7 +507,7 @@ namespace SiliconStudio.Xenko.Graphics
             return viewFormat;
         }
 
-        private static TextureDescription ConvertFromNativeDescription(ResourceDescription description)
+        private static TextureDescription ConvertFromNativeDescription(ResourceDescription description, bool isShaderResource = false)
         {
             var desc = new TextureDescription()
             {
@@ -529,7 +529,7 @@ namespace SiliconStudio.Xenko.Graphics
                 desc.Flags |= TextureFlags.UnorderedAccess;
             if ((description.Flags & ResourceFlags.AllowDepthStencil) != 0)
                 desc.Flags |= TextureFlags.DepthStencil;
-            if ((description.Flags & ResourceFlags.DenyShaderResource) == 0)
+            if ((description.Flags & ResourceFlags.DenyShaderResource) == 0 && isShaderResource)
                 desc.Flags |= TextureFlags.ShaderResource;
 
             return desc;
