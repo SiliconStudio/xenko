@@ -28,8 +28,9 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public static AssetPropertyNodeGraph ConstructPropertyGraph(Type assetType, INodeContainer nodeContainer, AssetItem assetItem)
+        public static AssetPropertyNodeGraph ConstructPropertyGraph(INodeContainer nodeContainer, AssetItem assetItem)
         {
+            var assetType = assetItem.Asset.GetType();
             while (assetType != null)
             {
                 Type propertyGraphType;
