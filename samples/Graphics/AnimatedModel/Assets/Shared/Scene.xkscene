@@ -113,7 +113,7 @@ Hierarchy:
                         Font: 4dcbcef6-a46a-407d-8711-dec0b15cf0aa/dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
                     - !UIComponent
                         ~Id: d9db8bbf-c855-4183-a232-dc46cc190f54
-                        Page: null
+                        Page: e1caff51-7fd6-4084-8952-ed6be2d76d04/0c8d34ec-5a72-42f6-9203-6096216ec54a:Page
                         Resolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
