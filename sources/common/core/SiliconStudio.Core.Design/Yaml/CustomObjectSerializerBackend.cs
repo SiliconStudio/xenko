@@ -42,6 +42,7 @@ namespace SiliconStudio.Core.Yaml
             var path = GetCurrentPath(ref objectContext, true);
             path.PushMember(memberDescriptor.Name);
             SetCurrentPath(ref memberObjectContext, path);
+
             var result = ReadYaml(ref memberObjectContext);
             return result;
         }
@@ -55,6 +56,10 @@ namespace SiliconStudio.Core.Yaml
             {
                 memberObjectContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
             }
+
+            var path = GetCurrentPath(ref objectContext, true);
+            path.PushMember(memberDescriptor.Name);
+            SetCurrentPath(ref memberObjectContext, path);
 
             WriteYaml(ref memberObjectContext);
         }
@@ -113,14 +118,24 @@ namespace SiliconStudio.Core.Yaml
 
                 if (customDescriptor != null)
                 {
-                    var overrideType = objectContext.Instance.GetOverride(customDescriptor);
-                    if ((overrideType & OverrideType.New) != 0)
+                    Dictionary<ObjectPath, OverrideType> overrides;
+                    if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                     {
-                        memberName += Override.PostFixNew;
-                    }
-                    if ((overrideType & OverrideType.Sealed) != 0)
-                    {
-                        memberName += Override.PostFixSealed;
+                        var path = GetCurrentPath(ref objectContext, true);
+                        path.PushMember(memberName);
+
+                        OverrideType overrideType;
+                        if (overrides.TryGetValue(path, out overrideType))
+                        {
+                            if ((overrideType & OverrideType.New) != 0)
+                            {
+                                memberName += Override.PostFixNew;
+                            }
+                            if ((overrideType & OverrideType.Sealed) != 0)
+                            {
+                                memberName += Override.PostFixSealed;
+                            }
+                        }
                     }
                 }
             }
@@ -135,6 +150,15 @@ namespace SiliconStudio.Core.Yaml
             var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
             SetCurrentPath(ref itemObjectContext, path);
             return ReadYaml(ref itemObjectContext);
+        }
+
+        public override void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
+        {
+            var path = GetCurrentPath(ref objectContext, true);
+            path.PushIndex(index);
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, item, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            SetCurrentPath(ref itemObjectcontext, path);
+            WriteYaml(ref itemObjectcontext);
         }
 
         public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
@@ -173,6 +197,32 @@ namespace SiliconStudio.Core.Yaml
 
         public override void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
         {
+            Dictionary<ObjectPath, OverrideType> overrides;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
+            {
+                var path = GetCurrentPath(ref objectContext, true);
+                Identifier id;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
+                {
+                    path.PushItemId(id);
+                }
+                else
+                {
+                    path.PushIndex(key);
+                }
+                OverrideType overrideType;
+                if (overrides.TryGetValue(path, out overrideType))
+                {
+                    if ((overrideType & OverrideType.New) != 0)
+                    {
+                        objectContext.SerializerContext.Properties.Set(IdentifierSerializer.OverrideInfoKey, Override.PostFixNew.ToString());
+                    }
+                    if ((overrideType & OverrideType.Sealed) != 0)
+                    {
+                        objectContext.SerializerContext.Properties.Set(IdentifierSerializer.OverrideInfoKey, Override.PostFixSealed.ToString());
+                    }
+                }
+            }
             base.WriteDictionaryKey(ref objectContext, key, keyType);
         }
 
@@ -193,15 +243,32 @@ namespace SiliconStudio.Core.Yaml
             return ReadYaml(ref valueObjectContext);
         }
 
+        public override void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType)
+        {
+            var path = GetCurrentPath(ref objectContext, true);
+            Identifier id;
+            if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
+            {
+                path.PushItemId(id);
+            }
+            else
+            {
+                path.PushIndex(key);
+            }
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            SetCurrentPath(ref itemObjectcontext, path);
+            WriteYaml(ref itemObjectcontext);
+        }
+
         private static ObjectPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
         {
-            ObjectPath property;
-            var memberPath = !objectContext.Properties.TryGetValue(MemberPathKey, out property) ? new ObjectPath() : (ObjectPath)property;
+            ObjectPath path;
+            path = objectContext.Properties.TryGetValue(MemberPathKey, out path) ? path : new ObjectPath();
             if (clone)
             {
-                memberPath = memberPath.Clone();
+                path = path.Clone();
             }
-            return memberPath;
+            return path;
         }
 
         private static void SetCurrentPath(ref ObjectContext objectContext, ObjectPath path)

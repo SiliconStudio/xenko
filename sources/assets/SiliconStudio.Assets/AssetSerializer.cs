@@ -127,7 +127,7 @@ namespace SiliconStudio.Assets
         /// <param name="assetItem"></param>
         /// <param name="log">The logger.</param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null)
+        public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
 
@@ -141,7 +141,7 @@ namespace SiliconStudio.Assets
 
             using (var stream = new MemoryStream())
             {
-                Save(stream, asset, log);
+                Save(stream, asset, log, overrides);
                 File.WriteAllBytes(filePath, stream.ToArray());
             }
         }
@@ -157,9 +157,9 @@ namespace SiliconStudio.Assets
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null)
+        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
         {
-            if (stream == null) throw new ArgumentNullException("stream");
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;
 
             var assetFileExtension = AssetRegistry.GetDefaultExtension(asset.GetType());
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets
             {
                 throw new InvalidOperationException("Unable to find a serializer for [{0}]".ToFormat(assetFileExtension));
             }
-            serializer.Save(stream, asset, log);
+            serializer.Save(stream, asset, log, overrides);
         }
     }
 }

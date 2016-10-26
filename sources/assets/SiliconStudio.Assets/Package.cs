@@ -608,7 +608,7 @@ namespace SiliconStudio.Assets
                     }
                 }
 
-                AssetSerializer.Save(assetPath, asset.Asset, asset);
+                AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;

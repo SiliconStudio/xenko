@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Serializers
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }

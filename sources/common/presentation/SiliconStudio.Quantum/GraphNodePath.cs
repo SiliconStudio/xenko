@@ -39,7 +39,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// A structure that represents an element of the path.
         /// </summary>
-        private struct NodePathElement : IEquatable<NodePathElement>
+        public struct NodePathElement : IEquatable<NodePathElement>
         {
             public readonly ElementType Type;
             public readonly object Value;
@@ -229,6 +229,11 @@ namespace SiliconStudio.Quantum
         /// Gets the number of items in this path.
         /// </summary>
         public int Count => path.Count;
+
+        /// <summary>
+        /// Gets the items composing this path.
+        /// </summary>
+        public IReadOnlyList<NodePathElement> Path => path;
 
         /// <inheritdoc/>
         public IEnumerator<IGraphNode> GetEnumerator()

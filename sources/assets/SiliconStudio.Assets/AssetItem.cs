@@ -138,7 +138,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
         [DataMemberIgnore]
-        public IDictionary<ObjectPath, OverrideType> Overrides { get; internal set; }
+        public IDictionary<ObjectPath, OverrideType> Overrides { get; set; }
 
         /// <summary>
         /// Converts this item to a reference.
