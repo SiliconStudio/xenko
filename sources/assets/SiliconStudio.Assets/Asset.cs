@@ -75,6 +75,7 @@ namespace SiliconStudio.Assets
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
+        [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
         /// <summary>
