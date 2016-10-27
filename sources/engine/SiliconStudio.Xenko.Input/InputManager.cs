@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.Input
         internal const float DesiredSensorUpdateRate = 60;
         internal const float GamePadAxisDeadZone = 0.05f;
 
-        private readonly TypeBasedRegistry<IInputSource> inputSourceRegistry = new TypeBasedRegistry<IInputSource>();
+        private readonly InstantiatableTypeBasedRegistry<IInputSource> inputSourceRegistry = new InstantiatableTypeBasedRegistry<IInputSource>();
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
 
@@ -65,6 +66,11 @@ namespace SiliconStudio.Xenko.Input
 
         // Backing field of MousePosition
         private Vector2 mousePosition;
+
+        /// <summary>
+        /// Virtual button mapping, maps gestures to input actions
+        /// </summary>
+        public InputActionMapping ActionMapping { get; } = new InputActionMapping();
 
         /// <summary>
         /// List of the gestures to recognize.
@@ -131,6 +137,11 @@ namespace SiliconStudio.Xenko.Input
         /// Keyboard events that happened since the last frame
         /// </summary>
         public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
+
+        /// <summary>
+        /// All input events that happened since the last frame
+        /// </summary>
+        public IReadOnlyList<InputEvent> InputEvents => inputEvents;
 
         /// <summary>
         /// Gets a value indicating whether pointer device is available.
@@ -228,11 +239,11 @@ namespace SiliconStudio.Xenko.Input
 
             Services.AddService(typeof(InputManager), this);
         }
-
+        
         public override void Initialize()
         {
             base.Initialize();
-
+            
             Game.Activated += OnApplicationResumed;
             Game.Deactivated += OnApplicationPaused;
 
@@ -253,7 +264,7 @@ namespace SiliconStudio.Xenko.Input
                 source.Initialize(this);
             }
         }
-
+        
         /// <summary>
         /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
         /// </summary>
@@ -422,7 +433,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Sets the vibration state of the gamepad
         /// </summary>
-        /// <param name="gamepadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
         /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
         /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
         public void SetGamePadVibration(int gamePadIndex, float leftMotor, float rightMotor)
@@ -437,7 +448,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Determines whether the specified game pad button is being pressed down.
         /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
         public bool IsPadButtonDown(int gamePadIndex, GamePadButton button)
@@ -448,7 +459,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Determines whether the specified game pad button is pressed since the previous update.
         /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
         public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
@@ -459,7 +470,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Determines whether the specified game pad button is released since the previous update.
         /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
         public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
@@ -473,7 +484,7 @@ namespace SiliconStudio.Xenko.Input
         /// <remarks>
         /// This method could take several milliseconds and should be used at specific time in a game where performance is not crucial (pause, configuration screen...etc.)
         /// </remarks>
-        public virtual void Scan()
+        public void Scan()
         {
             foreach (var source in inputSources)
             {
@@ -505,15 +516,14 @@ namespace SiliconStudio.Xenko.Input
             {
                 pair.Key.Update(inputEvents);
             }
-
-            if (inputEvents.Count > 0)
-            {
-                foreach (var evt in inputEvents)
-                {
-                    Debug.WriteLine(evt);
-                }
-            }
             
+            // Route input events to gesture mapping
+            ActionMapping.Update(gameTime.Elapsed, inputEvents);
+
+            // Update gestures
+            // TODO: Merge with input actions
+            UpdateGestureEvents(gameTime.Elapsed);
+
             // Update GamePadState for every gamepad
             Utilities.Swap(ref currentGamePadStates, ref lastGamePadStates);
             foreach (var gamepad in gamePadDevices)
@@ -522,9 +532,6 @@ namespace SiliconStudio.Xenko.Input
                 gamepad.GetGamePadState(ref state);
                 currentGamePadStates[gamepad.Index] = state;
             }
-
-            // Update gestures
-            UpdateGestureEvents(gameTime.Elapsed);
         }
         
         /// <summary>
@@ -533,7 +540,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public bool MultiTouchEnabled { get; set; } = false;
 
-        public virtual void OnApplicationPaused(object sender, EventArgs e)
+        public void OnApplicationPaused(object sender, EventArgs e)
         {
             // Pause sources
             foreach (var source in inputSources)
@@ -542,7 +549,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public virtual void OnApplicationResumed(object sender, EventArgs e)
+        public void OnApplicationResumed(object sender, EventArgs e)
         {
             // Resume sources
             foreach (var source in inputSources)
@@ -820,7 +827,7 @@ namespace SiliconStudio.Xenko.Input
             sensorDevices.Remove(sensorDevice);
             UpdateDefaultSensors();
         }
-
+        
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>

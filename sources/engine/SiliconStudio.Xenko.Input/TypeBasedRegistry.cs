@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
     /// <typeparam name="TBase">The base class of the type to use</typeparam>
     public class TypeBasedRegistry<TBase> where TBase : class
     {
-        private readonly Logger log = GlobalLogger.GetLogger("Input.TypeBasedRegistry");
+        protected static readonly Logger log = GlobalLogger.GetLogger("Input.TypeBasedRegistry");
 
         private readonly HashSet<Type> registeredTypes = new HashSet<Type>();
         private readonly HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
@@ -42,59 +42,18 @@ namespace SiliconStudio.Xenko.Input
             AssemblyRegistry.AssemblyUnregistered += AssemblyUnregistered;
         }
 
-        public TBase CreateInstance(Type type)
-        {
-            AssertType(type);
-            EnsureTypes();
-            try
-            {
-                return (TBase)Activator.CreateInstance(type);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Unable to instantiate type [{0}]", ex, type);
-                return null;
-            }
-        }
-
-        public IEnumerable<TBase> CreateAllInstances()
+        public IEnumerable<Type> GetAllTypes()
         {
             EnsureTypes();
-
-            List<TBase> instances = new List<TBase>();
-            foreach (var type in registeredTypes)
-            {
-                instances.Add(CreateInstance(type));
-            }
-            return instances;
+            return registeredTypes;
         }
 
-        private void RegisterTypesFromAssembly(Assembly assembly)
+        protected virtual bool FilterType(Type type)
         {
-            // Process Asset types.
-            foreach (var type in assembly.GetTypes())
-            {
-                var constructor = type.GetConstructor(Type.EmptyTypes);
-
-                // Only process the correct types and make sure it is instantiatable
-                if (!baseType.IsAssignableFrom(type) || type.IsAbstract || type.IsInterface || !type.IsClass || constructor == null)
-                    continue;
-
-                registeredTypes.Add(type);
-            }
+            return true;
         }
 
-        private void UnregisterTypesFromAssembly(Assembly assembly)
-        {
-            foreach (var typeToRemove in registeredTypes.Where(type => type.Assembly == assembly).ToList())
-            {
-                registeredTypes.Remove(typeToRemove);
-            }
-        }
-
-        private
-            void EnsureTypes
-            ()
+        protected void EnsureTypes()
         {
             if (assembliesChanged)
             {
@@ -111,10 +70,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private
-            void AssertType
-            (Type
-                type)
+        protected void AssertType(Type type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -123,41 +79,85 @@ namespace SiliconStudio.Xenko.Input
                 throw new ArgumentException("Type [{0}] must be assignable to {1}".ToFormat(type, baseType), nameof(type));
         }
 
-        private
-            void RegisterAssembly
-            (Assembly
-                assembly)
+        private void RegisterTypesFromAssembly(Assembly assembly)
+        {
+            // Process Asset types.
+            foreach (var type in assembly.GetTypes())
+            {
+                // Only process the correct types and make sure it is instantiatable
+                if (!baseType.IsAssignableFrom(type) || !FilterType(type))
+                    continue;
+
+                registeredTypes.Add(type);
+            }
+        }
+        
+        private void UnregisterTypesFromAssembly(Assembly assembly)
+        {
+            foreach (var typeToRemove in registeredTypes.Where(type => type.Assembly == assembly).ToList())
+            {
+                registeredTypes.Remove(typeToRemove);
+            }
+        }
+        
+        private void RegisterAssembly(Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
             assembliesToRegister.Add(assembly);
             assembliesChanged = true;
         }
 
-        private
-            void UnregisterAssembly
-            (Assembly
-                assembly)
+        private void UnregisterAssembly(Assembly assembly)
         {
             registeredAssemblies.Remove(assembly);
             UnregisterTypesFromAssembly(assembly);
             assembliesChanged = true;
         }
 
-        private
-            void AssemblyRegistered
-            (object sender, AssemblyRegisteredEventArgs e)
+        private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
         {
             // Handle delay-loading assemblies
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 RegisterAssembly(e.Assembly);
         }
 
-        private
-            void AssemblyUnregistered
-            (object sender, AssemblyRegisteredEventArgs e)
+        private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
         {
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 UnregisterAssembly(e.Assembly);
+        }
+    }
+
+
+    public class InstantiatableTypeBasedRegistry<TBase> : TypeBasedRegistry<TBase> where TBase : class
+    {
+        protected override bool FilterType(Type type)
+        {
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+            return !type.IsAbstract && !type.IsInterface && type.IsClass && constructor != null;
+        }
+
+        private TBase CreateInstance(Type type)
+        {
+            try
+            {
+                return (TBase)Activator.CreateInstance(type);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unable to instantiate type [{0}]", ex, type);
+                return null;
+            }
+        }
+
+        public IEnumerable<TBase> CreateAllInstances()
+        {
+            List<TBase> instances = new List<TBase>();
+            foreach (var type in GetAllTypes())
+            {
+                instances.Add(CreateInstance(type));
+            }
+            return instances;
         }
     }
 }

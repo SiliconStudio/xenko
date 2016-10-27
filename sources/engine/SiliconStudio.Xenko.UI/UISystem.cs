@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
                 var key = keyEvent.Key;
-                if (keyEvent.Type == KeyEventType.Pressed)
+                if (keyEvent.State == ButtonState.Pressed)
                 {
                     UIElement.FocusedElement.RaiseKeyPressedEvent(new KeyEventArgs { Key = key, Input = input });
                 }

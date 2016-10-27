@@ -6,7 +6,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Data;
 
 namespace SiliconStudio.Xenko.Assets.Input
 {
@@ -16,8 +15,8 @@ namespace SiliconStudio.Xenko.Assets.Input
     {
         [DataMember(0)]
         public string MappingName;
-        [DataMember(0)]
-        public List<IVirtualButtonDesc> DefaultMappings { get; } = new List<IVirtualButtonDesc>();
+        //[DataMember(0)]
+        //public List<IVirtualButtonDesc> DefaultMappings { get; } = new List<IVirtualButtonDesc>();
     }
 
     public class InputMappingBindingFactory : IObjectFactory

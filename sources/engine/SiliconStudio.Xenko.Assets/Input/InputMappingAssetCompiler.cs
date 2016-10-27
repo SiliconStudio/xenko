@@ -8,7 +8,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Input.Data;
 
 namespace SiliconStudio.Xenko.Assets.Input
 {
@@ -32,21 +31,21 @@ namespace SiliconStudio.Xenko.Assets.Input
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 ContentManager contentManager = new ContentManager();
-                InputMapping generatedInputMapping = new InputMapping();
-                generatedInputMapping.Bindings = new List<InputBinding>();
-
-                foreach (var b in asset.Bindings)
-                {
-                    var ib = new InputBinding();
-                    ib.DefaultMappings = new List<IVirtualButtonDesc>();
-                    foreach (var m in b.DefaultMappings)
-                    {
-                        ib.DefaultMappings.Add(m);
-                    }
-                    generatedInputMapping.Bindings.Add(ib);
-                }
-
-                contentManager.Save(targetUrl, generatedInputMapping);
+                //InputMapping generatedInputMapping = new InputMapping();
+                //generatedInputMapping.Bindings = new List<InputBinding>();
+                //
+                //foreach (var b in asset.Bindings)
+                //{
+                //    var ib = new InputBinding();
+                //    ib.DefaultMappings = new List<IVirtualButtonDesc>();
+                //    foreach (var m in b.DefaultMappings)
+                //    {
+                //        ib.DefaultMappings.Add(m);
+                //    }
+                //    generatedInputMapping.Bindings.Add(ib);
+                //}
+                //
+                //contentManager.Save(targetUrl, generatedInputMapping);
                 return Task.FromResult(ResultStatus.Successful);
             }
         }

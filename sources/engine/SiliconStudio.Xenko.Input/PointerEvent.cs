@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="deltaTime">The delta time.</param>
         /// <param name="state">The state.</param>
         /// <param name="pointerType">Type of the pointer.</param>
-        internal PointerEvent(IPointerDevice pointer, int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType) : base(pointer)
+        internal PointerEvent(IPointerDevice pointer, int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType, bool isDown) : base(pointer)
         {
             PointerId = pointerId;
             Position = position;
@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Input
             DeltaTime = deltaTime;
             State = state;
             PointerType = pointerType;
+            IsDown = isDown;
         }
 
         /// <summary>
@@ -88,12 +89,12 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(PointerId)}: {PointerId}, {nameof(Position)}: {Position}, {nameof(DeltaPosition)}: {DeltaPosition}, {nameof(DeltaTime)}: {DeltaTime}, {nameof(State)}: {State}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
+            return $"Pointer {PointerId} {State}, {Position}, Delta: {DeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
         }
 
         public PointerEvent Clone()
         {
-            return new PointerEvent(Pointer, PointerId, Position, DeltaPosition, DeltaTime, State, PointerType);
+            return new PointerEvent(Pointer, PointerId, Position, DeltaPosition, DeltaTime, State, PointerType, IsDown);
         }
     }
 }

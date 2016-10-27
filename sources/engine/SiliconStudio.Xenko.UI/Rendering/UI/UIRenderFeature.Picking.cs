@@ -71,12 +71,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private void ClearPointerEvents()
         {
-            // collect back pointer event not used anymore
-            lock (PointerEvent.Pool)
-            {
-                foreach (var pointerEvent in compactedPointerEvents)
-                    PointerEvent.Pool.Enqueue(pointerEvent);
-            }
             compactedPointerEvents.Clear();
         }
 
