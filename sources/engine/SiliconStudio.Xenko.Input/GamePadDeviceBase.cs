@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -161,19 +162,21 @@ namespace SiliconStudio.Xenko.Input
             if (index < 0 || index > axisStates.Length)
                 throw new IndexOutOfRangeException();
             if (axisStates[index] != state)
+            {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {
                     Index = index,
                     Type = InputEventType.Axis,
                     Float = state
                 });
+            }
         }
 
         protected void HandlePovController(int index, float state, bool enabled)
         {
             if (index < 0 || index > povStates.Length)
                 throw new IndexOutOfRangeException();
-            if (povStates[index] != state || povEnabledStates[index] != enabled)
+            if (enabled && povStates[index] != state || povEnabledStates[index] != enabled)
             {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {

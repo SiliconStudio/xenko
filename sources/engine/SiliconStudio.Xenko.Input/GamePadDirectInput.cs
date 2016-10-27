@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Input
             gamepad.Dispose();
         }
 
-        // TODO: Move controller specific mappings to class
+        // TODO: Move controller specific mappings to seperate class for each mapping
         private static Guid guidDS4 = new Guid(0x05c4054c, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         private static Dictionary<int, GamePadButton> ds4ButtonMapping = new Dictionary<int, GamePadButton>

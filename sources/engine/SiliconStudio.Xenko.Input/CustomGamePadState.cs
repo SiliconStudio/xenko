@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input
         public const int MaxSupportedAxes = 32;
         public const int MaxSupportedPovControllers = 4;
 
-        [DataObjectFormat(ArrayCount = MaxSupportedButtons, TypeFlags = TypeButtonOpt)] public fixed bool Buttons [32];
+        [DataObjectFormat(ArrayCount = MaxSupportedButtons, TypeFlags = TypeButtonOpt)] public fixed byte Buttons [32];
         [DataObjectFormat(ArrayCount = MaxSupportedAxes, TypeFlags = TypeRelativeAxisOpt)] public fixed int Axes [32];
         [DataObjectFormat(ArrayCount = MaxSupportedPovControllers, TypeFlags = TypePovOpt)] public fixed int PovControllers [4];
     }
@@ -46,10 +46,10 @@ namespace SiliconStudio.Xenko.Input
                 for (int i = 0; i < Axes.Length; i++)
                     Axes[i] = 2.0f*(axesPtr[i]/65535.0f - 0.5f);
             }
-            fixed (bool* buttonsPtr = value.Buttons)
+            fixed (byte* buttonsPtr = value.Buttons)
             {
                 for (int i = 0; i < Buttons.Length; i++)
-                    Buttons[i] = buttonsPtr[i];
+                    Buttons[i] = buttonsPtr[i] != 0;
             }
             fixed (int* hatsPtr = value.PovControllers)
             {
