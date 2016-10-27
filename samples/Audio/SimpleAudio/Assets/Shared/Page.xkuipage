@@ -1,0 +1,47 @@
+!UIPageAsset
+Id: 507637ea-07f7-46e1-96df-f39e5a4cc8b2
+SerializedVersion: {Xenko: 0.0.0}
+Tags: []
+Design:
+    Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+Hierarchy:
+    ~Id: 75823b6a-2b24-43c1-b98e-fa2f3ca06e9c
+    RootPartIds:
+        - c8ffe87b-1905-4151-9af2-e60ed000ba3e
+    Parts:
+        -   UIElement: !ImageElement
+                DependencyProperties:
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.RelativePositionPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                Id: b78d1749-79b1-4753-b0c8-d4134557f2eb
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Width: 367.0
+                Height: 365.0
+                HorizontalAlignment: Left
+                VerticalAlignment: Top
+                Margin: {}
+                Source: !SpriteFromSheet
+                    ~Id: 34b7365f-ab80-4db4-89e2-771ee7e29e56
+                    Sheet: e777803f-b702-413f-b330-28bdae34ff4c/ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
+                Color: {R: 255, G: 255, B: 255, A: 255}
+        -   UIElement: !Canvas
+                DependencyProperties: {}
+                Id: c8ffe87b-1905-4151-9af2-e60ed000ba3e
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Children:
+                    - !TextBlock ea7751e3-ec82-4704-812f-618b04bf4168
+                    - !ImageElement b78d1749-79b1-4753-b0c8-d4134557f2eb
+        -   UIElement: !TextBlock
+                DependencyProperties:
+                    Canvas.RelativePositionPropertyKey: {X: 0.63, Y: 0.8, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
+                Id: ea7751e3-ec82-4704-812f-618b04bf4168
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Margin: {}
+                Text: Tap on the screen!
+                Font: cebf53b7-208f-4a1b-8f14-6468312d67a4/61f4751d-2878-4118-b212-ac554de05399:Font
+                TextSize: 40.0
+                TextColor: {R: 240, G: 240, B: 240, A: 255}

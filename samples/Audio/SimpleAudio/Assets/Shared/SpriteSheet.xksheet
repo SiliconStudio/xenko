@@ -1,0 +1,16 @@
+!SpriteSheet
+Id: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: UI
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Packing:
+    ~Id: eb0e2eb2-2640-4be6-9c38-b50ce4f0bc9f
+Sprites:
+    -   ~Id: e70175ba-1e6d-46fa-9215-a136081ce682
+        Source: ../../Resources/dj.png
+        Name: dj
+        TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

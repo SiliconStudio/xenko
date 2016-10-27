@@ -41,30 +41,12 @@ Hierarchy:
     ~Id: 6bab66c7-1a75-4d3e-8865-8c3fdef200ef
     RootPartIds:
         - 970d3c33-9819-4206-a101-d81f9259477f
-        - 417ebdb3-c892-47ab-b8b0-079d12e1ead1
         - c76eafe8-9bb0-4801-b112-6825735d4fff
         - dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
         - dececd10-b6ea-46fa-8129-c8683f4a6974
         - 969256bc-2fe4-4874-9af8-a87db2d1bd85
         - ea66315a-6e99-498e-b3b7-b20eff3d7a04
     Parts:
-        -   Entity:
-                Id: 417ebdb3-c892-47ab-b8b0-079d12e1ead1
-                Name: DJ Sprite
-                Components:
-                    - !TransformComponent
-                        ~Id: 2bed5671-c08d-47b7-9d89-7a77ac454d0e
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpriteComponent
-                        ~Id: de4e2db1-927b-4b66-b655-23217c514c49
-                        SpriteProvider: !SpriteFromTexture
-                            ~Id: 37682c62-c2d6-42f1-bafa-70c73f9ffaeb
-                            Texture: b4fc3ae7-f9e3-4694-8bd0-b27fa1f21522/2c702280-1481-4bd0-b87c-36640ed371ed:dj
-                            Center: {X: 0.0, Y: 0.0}
-                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
         -   Entity:
                 Id: 969256bc-2fe4-4874-9af8-a87db2d1bd85
                 Name: Background
@@ -152,12 +134,8 @@ Hierarchy:
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SimpleAudio.UITextScript,SimpleAudio.Game
-                        ~Id: 5cbe8100-1454-44a8-84bd-7860b2290374
-                        UIText: Tap on the screen!
-                        Font: 14d85f52-7aec-492f-81ec-a7420e3d9702/61f4751d-2878-4118-b212-ac554de05399:Font
                     - !UIComponent
                         ~Id: d8888db9-f55d-4b73-9b6b-3ec597f8f469
-                        Page: null
+                        Page: b7f985c9-0e7d-4302-a597-2491fe42c58b/507637ea-07f7-46e1-96df-f39e5a4cc8b2:Page
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
