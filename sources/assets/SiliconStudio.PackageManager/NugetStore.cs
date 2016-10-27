@@ -122,17 +122,41 @@ namespace SiliconStudio.PackageManager
             manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
         }
 
-        public string InstallPath { get; }
+        /// <summary>
+        /// Path under which all packages will be installed or cached.
+        /// </summary>
         public string RootDirectory { get; }
 
-        public IReadOnlyCollection<string> MainPackageIds { get; }
+        /// <summary>
+        /// Path where all packages are installed.
+        /// Usually `InstallPath = RootDirectory/RepositoryPath`.
+        /// </summary>
+        public string InstallPath { get; }
 
-        public string VsixPluginId { get; }
-
+        /// <summary>
+        /// Name of folder we use to identify the local repository.
+        /// </summary>
         public string RepositoryPath { get; }
 
+        /// <summary>
+        /// List of package Ids under which the main package is known. Usually just one entry, but
+        /// we could have several in case there is a product name change.
+        /// </summary>
+        public IReadOnlyCollection<string> MainPackageIds { get; }
+
+        /// <summary>
+        /// Package Id of the Visual Studio Integration plugin.
+        /// </summary>
+        public string VsixPluginId { get; }
+
+        /// <summary>
+        /// Path to the Common.targets file. This files list all installed versions
+        /// </summary>
         public string TargetFile => Path.Combine(RootDirectory, DefaultTargets);
 
+        /// <summary>
+        /// Logger for all operations of the package manager.
+        /// </summary>
         public IPackageManagerLogger Logger
         {
             get
@@ -148,7 +172,14 @@ namespace SiliconStudio.PackageManager
             }
         }
 
+        /// <summary>
+        /// Set of repositories used as source for installing packages.
+        /// </summary>
         public AggregateRepository SourceRepository { get; }
+
+        /// <summary>
+        /// Helper to locate packages.
+        /// </summary>
         private PackagePathResolver PathResolver { get; }
 
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalled;
@@ -156,27 +187,62 @@ namespace SiliconStudio.PackageManager
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalled;
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalling;
 
+        /// <summary>
+        /// Installation path of <paramref name="package"/>
+        /// </summary>
+        /// <param name="package">Package to query.</param>
+        /// <returns>The installation path if installed, null otherwise.</returns>
         public string GetInstallPath(NugetPackage package)
         {
             return PathResolver.GetInstallPath(package.IPackage);
         }
 
+        /// <summary>
+        /// Name of the directory containing the <paramref name="package"/>.
+        /// </summary>
+        /// <param name="package">Package to query.</param>
+        /// <returns>The name of the package directory.</returns>
+        public string GetPackageDirectory(NugetPackage package)
+        {
+            return PathResolver.GetPackageDirectory(package.IPackage);
+        }
+
+        /// <summary>
+        /// Get the most recent version associated to <paramref name="packageIds"/>. To make sense
+        /// it is assumed that packageIds represent the same package under a different name.
+        /// </summary>
+        /// <param name="packageIds">List of Ids representing a package name.</param>
+        /// <returns>The most recent version of `GetPackagesInstalled (packageIds)`.</returns>
         public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
         {
-            // TODO: we return the first entry, not necessaryly the one that the callers actually want.
             return GetPackagesInstalled(packageIds).FirstOrDefault();
         }
 
+        /// <summary>
+        /// List of all packages represented by <paramref name="packageIds"/>. The list is ordered
+        /// from the most recent version to the oldest.
+        /// </summary>
+        /// <param name="packageIds">List of Ids representing the package names to retrieve.</param>
+        /// <returns>The list of packages sorted from the most recent to the oldest.</returns>
         public IList<NugetPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
         {
-            var l = new List<NugetPackage>();
-            foreach (var package in manager.LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version))
-            {
-                l.Add(new NugetPackage(package));
-            }
-            return l;
+            return GetLocalPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).ToList();
         }
 
+        /// <summary>
+        /// List of all installed packages.
+        /// </summary>
+        /// <returns>A list of packages.</returns>
+        public IEnumerable<NugetPackage> GetLocalPackages()
+        {
+            return ToNugetPackages(manager.LocalRepository.GetPackages());
+        }
+
+        /// <summary>
+        /// Name of variable used to hold the version of <paramref name="packageId"/>.
+        /// </summary>
+        /// <param name="packageId">The package Id.</param>
+        /// <returns>The name of the variable holding the version of <paramref name="packageId"/>.</returns>
         public static string GetPackageVersionVariable(string packageId)
         {
             if (packageId == null) throw new ArgumentNullException(nameof(packageId));
@@ -184,27 +250,47 @@ namespace SiliconStudio.PackageManager
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
 
-        private IDisposable GetLocalRepositoryLocker()
+        /// <summary>
+        /// Lock to ensure atomicity of updates to the local repository.
+        /// </summary>
+        /// <returns>A Lock.</returns>
+        private IDisposable GetLocalRepositoryLock()
         {
             return FileLock.Wait("nuget.lock");
         }
 
+        /// <summary>
+        /// Is <paramref name="directory"/> a location that has a <see cref="DefaultConfig"/> file?
+        /// </summary>
+        /// <param name="directory">Directory to check.</param>
+        /// <returns><c>true</c> if <paramref name="directory"/> has a <see cref="DefaultConfig"/>, <c>false</c> otherwise.</returns>
         public static bool IsStoreDirectory(string directory)
         {
             if (directory == null) throw new ArgumentNullException(nameof(directory));
+
             var storeConfig = Path.Combine(directory, DefaultConfig);
             return File.Exists(storeConfig);
         }
 
+        /// <summary>
+        /// Update <see cref="TargetFile"/> content with the list of non-internal packages
+        /// that is used to build a solution against a specific revision and handle the case
+        /// that a revision does not exist anymore.
+        /// This can be safely called from multiple instance as it is protected via a <see cref="FileLock"/>.
+        /// </summary>
         public void UpdateTargets()
         {
-            using (GetLocalRepositoryLocker())
+            using (GetLocalRepositoryLock())
             {
-                UpdateTargetsInternal();
+                UpdateTargetsHelper();
             }
         }
 
-        private void UpdateTargetsInternal()
+        /// <summary>
+        /// See <see cref="UpdateTargets"/>. This is the non-concurrent version, always make sure
+        /// to hold the lock for the local repository.
+        /// </summary>
+        private void UpdateTargetsHelper()
         {
             // We don't want to polute the Common.targets file with internal packages
             var packages = GetRootPackagesInDependencyOrder().Where(package => !(package.Tags != null && package.Tags.Contains("internal"))).ToList();
@@ -223,12 +309,18 @@ namespace SiliconStudio.PackageManager
             File.WriteAllText(targetFile, targetFileContent, Encoding.UTF8);
         }
 
+        /// <summary>
+        /// Ignoring version numbers, list packages in a pseudo topological order
+        /// where a package is listed before its dependencies, unless they have already
+        /// been listed.
+        /// </summary>
+        /// <returns>A list of package in dependency prder.</returns>
         private List<NugetPackage> GetRootPackagesInDependencyOrder()
         {
             var packagesInOrder = new List<NugetPackage>();
-
-            // Get all packages
             var packages = new HashSet<NugetPackage>();
+
+            // Get all packages and only keep the most recent version for each package Id.
             foreach (var package in manager.LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
             {
                 if (packages.All(p => p.Id != package.Id))
@@ -237,6 +329,8 @@ namespace SiliconStudio.PackageManager
                 }
             }
 
+            // For all the found packages, perform a pseudo topological sort starting from
+            // the first package we find.
             while (packages.Count > 0)
             {
                 var nextPackage = packages.FirstOrDefault();
@@ -246,6 +340,14 @@ namespace SiliconStudio.PackageManager
             return packagesInOrder;
         }
 
+        /// <summary>
+        /// Add <paramref name="packageToTrack"/> to <paramref name="packagesOut"/> if not already inserted and remove it
+        /// from <paramref name="packages"/>. Process is done recursiverly by adding first the dependencies of
+        /// <paramref name="packages"/> before the remaining packages in <paramref name="packages"/>.
+        /// </summary>
+        /// <param name="packagesOut">List of packages processed so far.</param>
+        /// <param name="packages">Set of packages remaining to be processed.</param>
+        /// <param name="packageToTrack">Current package to check.</param>
         private void AddPackageRecursive(List<NugetPackage> packagesOut, HashSet<NugetPackage> packages, NugetPackage packageToTrack)
         {
             // Go first recursively with all dependencies resolved
@@ -266,55 +368,57 @@ namespace SiliconStudio.PackageManager
             packages.Remove(packageToTrack);
         }
 
-        public string GetPackageDirectory(NugetPackage xenkoPackage)
-        {
-            return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
-        }
-
-        public string GetPackageDirectory(string packageId, NugetSemanticVersion version)
-        {
-            return PathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
-        }
-
+        /// <summary>
+        /// Name of main executable of current store.
+        /// </summary>
+        /// <returns>Name of the executable.</returns>
         public string GetMainExecutables()
         {
             return settings.GetValue(ConfigurationConstants.Config, MainExecutablesKey, false);
         }
 
+        /// <summary>
+        /// Name of prerequisites executable of current store.
+        /// </summary>
+        /// <returns>Name of the executable.</returns>
         public string GetPrerequisitesInstaller()
         {
             return settings.GetValue(ConfigurationConstants.Config, PrerequisitesInstallerKey, false);
         }
 
 #region Manager
+        /// <summary>
+        /// Fetch, if not already downloaded, and install the package represented by
+        /// (<paramref name="packageId"/>, <paramref name="version"/>).
+        /// </summary>
+        /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
+        /// <param name="packageId">Name of package to install.</param>
+        /// <param name="version">Version of package to install.</param>
         public void InstallPackage(string packageId, NugetSemanticVersion version)
         {
-            using (GetLocalRepositoryLocker())
+            using (GetLocalRepositoryLock())
             {
                 manager.InstallPackage(packageId, version.SemanticVersion, false, true);
 
                 // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsInternal();
-
-                // Install vsix
-                ////InstallVsix(GetLatestPackageInstalled(packageId));
+                UpdateTargetsHelper();
             }
         }
 
+        /// <summary>
+        /// Uninstall <paramref name="package"/>, while still keepin the downloaded file in the cache.
+        /// </summary>
+        /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
+        /// <param name="package">Package to uninstall.</param>
         public void UninstallPackage(NugetPackage package)
         {
-            using (GetLocalRepositoryLocker())
+            using (GetLocalRepositoryLock())
             {
                 manager.UninstallPackage(package.IPackage);
 
                 // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsInternal();
+                UpdateTargetsHelper();
             }
-        }
-
-        public IEnumerable<NugetPackage> GetLocalPackages()
-        {
-            return ToNugetPackages(manager.LocalRepository.GetPackages()).AsQueryable();
         }
 
         public NugetPackage FindLocalPackage(string packageId, PackageVersionRange versionSpec, ConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)

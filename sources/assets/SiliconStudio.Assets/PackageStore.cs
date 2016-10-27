@@ -177,7 +177,7 @@ namespace SiliconStudio.Assets
                 var metas = store.GetLocalPackages();
                 foreach (var meta in metas)
                 {
-                    var path = store.GetPackageDirectory(meta.Id, meta.Version);
+                    var path = store.GetPackageDirectory(meta);
 
                     var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
                     if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
