@@ -2,16 +2,17 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
-    <ProjectGuid>{3E7B5D96-CF71-41EE-8CF0-70D090873390}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>SiliconStudio.Assets.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Assets.Tests</AssemblyName>
+    <ProjectGuid>{A1A3EB96-46CE-4F2F-A3B6-EF869043DD49}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Assets.Quantum.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Assets.Quantum.Tests</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Assets.Tests.TestPackage</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,34 +39,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design.Tests\TestMemberPathBase.cs">
-      <Link>TestMemberPathBase.cs</Link>
-    </Compile>
-    <Compile Include="CustomParameterCollection.cs" />
-    <Compile Include="Diff\TestDiffTemplatingAndMerge.cs" />
-    <Compile Include="Diff\TestDiff.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Module.cs" />
-    <Compile Include="PropertyKeySerializerTest.cs" />
-    <Compile Include="TestAssetCloner.cs" />
-    <Compile Include="TestAssetCollision.cs" />
-    <Compile Include="TestAssetInheritance.cs" />
-    <Compile Include="TestAssetReferenceAnalysis.cs" />
-    <Compile Include="AssetObjectTest.cs" />
-    <Compile Include="TestAssetReferenceCollection.cs" />
-    <Compile Include="TestAssetUpgrade.cs" />
-    <Compile Include="TestBase.cs" />
-    <Compile Include="TestDependencyManager.cs" />
-    <Compile Include="TestDerivedAssets.cs" />
-    <Compile Include="TestFileVersionManager.cs" />
-    <Compile Include="TestPackageStore.cs" />
-    <Compile Include="TestSerializing.TestMyAssetObject.cs" />
-    <Compile Include="TestSerializing.cs" />
-    <Compile Include="TestPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestPathSelector.cs" />
-    <Compile Include="TestTemplateManager.cs" />
+    <Compile Include="TestAssetPropertyNodeGraph.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
@@ -106,6 +82,14 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
+      <Project>{1D4210BD-FA51-4709-951B-50647617F97E}</Project>
+      <Name>SiliconStudio.Quantum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Assets.Quantum\SiliconStudio.Assets.Quantum.csproj">
+      <Project>{1123EAAD-3FE3-4FD8-8DF6-4DDCF13EFCFB}</Project>
+      <Name>SiliconStudio.Assets.Quantum</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
       <Name>SiliconStudio.Assets</Name>
@@ -114,41 +98,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.xkpkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\SubFolder\TestAsset.xktest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\TestAsset.xktest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.xkpkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.xkraw">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\CircularDeps\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\entity\texture\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\material\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\ComplexDeps\model\animation\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\EntityDeps\subfolder\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\MaterialDeps\subfolder\" />
-    <Folder Include="SiliconStudio.Assets.Tests\Projects\TextureDeps\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -37,6 +37,7 @@ namespace SiliconStudio.Assets.Quantum
             NodeBuilder.RegisterPrimitiveType(typeof(Matrix));
             NodeBuilder.RegisterPrimitiveType(typeof(UPath));
             NodeBuilder.RegisterPrimitiveType(typeof(AngleSingle));
+            OverrideNodeFactory((name, content, guid) => new AssetNode(name, content, guid));
         }
     }
 }
