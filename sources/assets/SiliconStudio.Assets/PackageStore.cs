@@ -30,6 +30,9 @@ namespace SiliconStudio.Assets
 
         private readonly UDirectory defaultPackageDirectory;
 
+        /// <summary>
+        /// Associated NugetStore for our packages. Cannot be null.
+        /// </summary>
         private readonly NugetStore store;
 
         /// <summary>
@@ -146,11 +149,6 @@ namespace SiliconStudio.Assets
         /// <returns>IEnumerable&lt;PackageMeta&gt;.</returns>
         public async Task<IEnumerable<PackageMeta>> GetPackages()
         {
-            if (store == null)
-            {
-                return Enumerable.Empty<PackageMeta>().AsQueryable();
-            }
-
             var packages = await store.SourceSearch(null, allowPrereleaseVersions: false);
 
             // Order by download count and Id to allow collapsing 
@@ -170,21 +168,18 @@ namespace SiliconStudio.Assets
         {
             var packages = new List<Package> { defaultPackage };
 
-            if (store != null)
+            var log = new LoggerResult();
+
+            var metas = store.GetLocalPackages();
+            foreach (var meta in metas)
             {
-                var log = new LoggerResult();
+                var path = store.GetPackageDirectory(meta);
 
-                var metas = store.GetLocalPackages();
-                foreach (var meta in metas)
+                var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
+                if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
                 {
-                    var path = store.GetPackageDirectory(meta);
-
-                    var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
-                    if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
-                    {
-                        package.IsSystem = true;
-                        packages.Add(package);
-                    }
+                    package.IsSystem = true;
+                    packages.Add(package);
                 }
             }
 
@@ -203,7 +198,8 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the filename to the specific package.
+        /// Gets the filename to the specific package <paramref name="packageName"/> using the version <paramref name="versionRange"/> if not null, otherwise the <paramref name="constraintProvider"/> if specified.
+        /// If no constraints are specified, the first entry if any are founds is used to get the filename.
         /// </summary>
         /// <param name="packageName">Name of the package.</param>
         /// <param name="versionRange">The version range.</param>
@@ -214,9 +210,26 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">packageName</exception>
         public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, ConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
-            if (packageName == null) throw new ArgumentNullException("packageName");
-            var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
-            return directory != null ? UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), directory), new UFile(packageName + Package.PackageFileExtension)) : null;
+            if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+
+            var package = store.FindLocalPackage(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
+
+            // If package was not found, 
+            if (package != null)
+            {
+                return UPath.Combine(store.GetInstallPath(package), new UFile(packageName + Package.PackageFileExtension));
+            }
+
+            // TODO: Check version for default package
+            if (packageName == DefaultPackageName)
+            {
+                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
+                {
+                    return UPath.Combine(UPath.Combine(UPath.Combine(InstallationPath, (UDirectory)store.RepositoryPath), defaultPackageDirectory), new UFile(packageName + Package.PackageFileExtension));
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -235,37 +248,6 @@ namespace SiliconStudio.Assets
         {
             // By default, we are not loading assets for installed packages
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
-        }
-
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, ConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
-        {
-            if (packageName == null) throw new ArgumentNullException("packageName");
-
-            if (store != null)
-            {
-                var package = store.FindLocalPackage(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
-
-                // If package was not found, 
-                if (package != null)
-                {
-                    var directory = store.GetPackageDirectory(package);
-                    if (directory != null)
-                    {
-                        return directory;
-                    }
-                }
-            }
-
-            // TODO: Check version for default package
-            if (packageName == DefaultPackageName)
-            {
-                if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
-                {
-                    return defaultPackageDirectory;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
