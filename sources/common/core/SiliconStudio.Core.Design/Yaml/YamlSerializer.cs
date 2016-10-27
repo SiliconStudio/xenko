@@ -211,7 +211,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
         public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(generateIds);
             serializer.Serialize(stream, instance, type, contextSettings);
         }
 
