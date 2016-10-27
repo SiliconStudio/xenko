@@ -321,11 +321,11 @@ namespace SiliconStudio.PackageManager
             var packages = new HashSet<NugetPackage>();
 
             // Get all packages and only keep the most recent version for each package Id.
-            foreach (var package in manager.LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
+            foreach (var package in GetLocalPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
             {
                 if (packages.All(p => p.Id != package.Id))
                 {
-                    packages.Add(new NugetPackage(package));
+                    packages.Add(package);
                 }
             }
 
