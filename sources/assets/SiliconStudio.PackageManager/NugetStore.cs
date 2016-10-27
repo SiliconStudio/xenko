@@ -421,37 +421,85 @@ namespace SiliconStudio.PackageManager
             }
         }
 
-        public NugetPackage FindLocalPackage(string packageId, PackageVersionRange versionSpec, ConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
+        /// <summary>
+        /// Find the installed package <paramref name="packageId"/> using the version <paramref name="versionRange"/> if not null, otherwise the <paramref name="constraintProvider"/> if specified.
+        /// If no constraints are specified, the first found entry, whatever it means for NuGet, is used.
+        /// </summary>
+        /// <param name="packageId">Name of the package.</param>
+        /// <param name="versionRange">The version range.</param>
+        /// <param name="constraintProvider">The package constraint provider.</param>
+        /// <param name="allowPrereleaseVersions">if set to <c>true</c> [allow prelease version].</param>
+        /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
+        /// <returns>A Package matching the search criterion or null if not found.</returns>
+        /// <exception cref="System.ArgumentNullException">packageId</exception>
+        /// <returns></returns>
+        public NugetPackage FindLocalPackage(string packageId, PackageVersionRange versionRange = null, ConstraintProvider constraintProvider = null, bool allowPrereleaseVersions = true, bool allowUnlisted = false)
         {
-            var package = manager.LocalRepository.FindPackage(packageId, versionSpec?.ToVersionSpec(), constraintProvider.Provider(), allowPrereleaseVersions, allowUnlisted);
+            var package = manager.LocalRepository.FindPackage(packageId, versionRange?.ToVersionSpec(), constraintProvider?.Provider(), allowPrereleaseVersions, allowUnlisted);
             return package != null ? new NugetPackage(package) : null;
         }
 
+        /// <summary>
+        /// Find installed packages with Ids <paramref name="packageIds"/>.
+        /// </summary>
+        /// <param name="packageIds">List of package Ids we are looking for.</param>
+        /// <returns>A list of packages matching <paramref name="packageIds"/> or an empty list if none is found.</returns>
         public IEnumerable<NugetPackage> FindLocalPackages(IReadOnlyCollection<string> packageIds)
         {
             return ToNugetPackages(manager.LocalRepository.FindPackages(packageIds));
         }
 
+        /// <summary>
+        /// Find installed packages with Id <paramref name="packageId"/>.
+        /// </summary>
+        /// <param name="packageId">Id of package we are looking for.</param>
+        /// <returns>A list of packages with Id <paramref name="packageId"/> or an empty list if none is found.</returns>
         public IEnumerable<NugetPackage> FindLocalPackagesById(string packageId)
         {
             return ToNugetPackages(manager.LocalRepository.FindPackagesById(packageId));
         }
 
+        /// <summary>
+        /// Find available packages from <see cref="SourceRepository"/> with Ids matching <paramref name="packageIds"/>.
+        /// </summary>
+        /// <param name="packageIds">List of package Ids we are looking for.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A list of packages matching <paramref name="packageIds"/> or an empty list if none is found.</returns>
         public async Task<IEnumerable<NugetPackage>> FindSourcePackages(IReadOnlyCollection<string> packageIds, CancellationToken cancellationToken)
         {
             return ToNugetPackages(manager.SourceRepository.FindPackages(packageIds));
         }
 
-        public async Task<IEnumerable<NugetPackage>> FindSourcePackagesById(string packageId, CancellationToken cancellationToken)
+        /// <summary>
+        /// Find available packages from <see cref="SourceRepository"/> with Id matching <paramref name="packageId"/>.
+        /// </summary>
+        /// <param name="packageId">Id of package we are looking for.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A list of packages matching <paramref name="packageIds"/> or an empty list if none is found.</returns>
+         public async Task<IEnumerable<NugetPackage>> FindSourcePackagesById(string packageId, CancellationToken cancellationToken)
         {
             return ToNugetPackages(manager.SourceRepository.FindPackagesById(packageId));
         }
 
+        /// <summary>
+        /// Look for available packages from <see cref="SourceRepository"/> with containing <paramref name="searchTerm"/> in either the Id or description of the package.
+        /// </summary>
+        /// <param name="searchTerm">Term used for search.</param>
+        /// <param name="allowPrereleaseVersions">Are we looking in pre-release versions too?</param>
+        /// <returns>A list of packages matching <paramref name="searchTerm"/>.</returns>
         public async Task<IQueryable<NugetPackage>> SourceSearch(string searchTerm, bool allowPrereleaseVersions)
         {
             return ToNugetPackages(manager.SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
         }
 
+        /// <summary>
+        /// Returns updates for packages from the repository 
+        /// </summary>
+        /// <param name="packageName">Package to look for updates</param>
+        /// <param name="includePrerelease">Indicates whether to consider prerelease updates.</param>
+        /// <param name="includeAllVersions">Indicates whether to include all versions of an update as opposed to only including the latest version.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns></returns>
         public async Task<IEnumerable<NugetPackage>> GetUpdates(PackageName packageName, bool includePrerelease, bool includeAllVersions, CancellationToken cancellationToken)
         {
             var list = manager.SourceRepository.GetUpdates(new [] {new NuGet.PackageName(packageName.Id, new SemanticVersion(packageName.Version.Version, packageName.Version.SpecialVersion))}, includePrerelease, includeAllVersions);
@@ -463,12 +511,20 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 
+        /// <summary>
+        /// Convenience feature to convert a list fo <see cref="IPackage"/> into a list of <see cref="NugetPackage"/>
+        /// </summary>
+        /// <param name="packages">List of NuGet packages, possibly null.</param>
+        /// <returns>A list possibly empty of <see cref="NugetPackage"/> matching <paramref name="packages"/>.</returns>
         private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<IPackage> packages)
         {
             var res = new List<NugetPackage>();
-            foreach (var package in packages)
+            if (packages != null)
             {
-                res.Add(new NugetPackage(package));
+                foreach (var package in packages)
+                {
+                    res.Add(new NugetPackage(package));
+                }
             }
             return res;
         }
@@ -477,6 +533,9 @@ namespace SiliconStudio.PackageManager
 
     internal class ConfigurationConstants
     {
+        /// <summary>
+        /// Name of the config section of the NuGet settings file.
+        /// </summary>
         internal static readonly string Config = "config";
     }
 }
