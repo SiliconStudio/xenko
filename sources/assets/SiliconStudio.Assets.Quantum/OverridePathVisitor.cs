@@ -18,20 +18,28 @@ namespace SiliconStudio.Assets.Quantum
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = (AssetNode)node;
-            Dictionary<ItemId, OverrideType> overrides = assetNode.GetAllOverrides();
+            var overrides = assetNode.GetAllMemberFlags();
+
             if (overrides?.Count > 0)
             {
-
                 var path = ConvertPath(currentPath);
                 foreach (var overrideInfo in overrides)
                 {
+                    var overrideType = OverrideType.Base;
+                    if ((overrideInfo.Value & MemberFlags.Inherited) != MemberFlags.Inherited)
+                    {
+                        if (assetNode.BaseContent != null)
+                        {
+                            overrideType = OverrideType.New;
+                        }
+                    }
                     var itemPath = path;
                     if (overrideInfo.Key != ItemId.Empty)
                     {
                         itemPath = itemPath.Clone();
                         itemPath.PushItemId(overrideInfo.Key);
                     }
-                    Result.Add(itemPath, overrideInfo.Value);
+                    Result.Add(itemPath, overrideType);
                 }
             }
             base.VisitNode(node, currentPath);

@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public void InitializeSession()
         {
-            foreach (var asset in session.Packages.SelectMany(x => x.Assets))
+            foreach (var asset in session.Packages.SelectMany(x => x.Assets).Where(x => !(x.Asset is SourceCodeAsset)))
             {
                 InitializeAsset(asset);
             }
@@ -26,6 +26,10 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyNodeGraph InitializeAsset(AssetItem assetItem)
         {
+            // SourceCodeAssets have no property
+            if (assetItem.Asset is SourceCodeAsset)
+                return null;
+
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, assetItem);
             RegisterGraph(assetItem.Id, graph);
             return graph;
@@ -33,7 +37,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyNodeGraph GetGraph(Guid assetId)
         {
-            return registeredGraphs[assetId];
+            AssetPropertyNodeGraph graph;
+            registeredGraphs.TryGetValue(assetId, out graph);
+            return graph;
         }
 
         public void RegisterGraph(Guid assetId, AssetPropertyNodeGraph graph)

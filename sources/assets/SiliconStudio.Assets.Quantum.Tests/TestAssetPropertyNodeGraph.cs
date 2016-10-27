@@ -35,9 +35,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
             var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset1.MyString));
-            Assert.AreEqual(OverrideType.Base, propertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(Index.Empty));
+            Assert.True(propertyNode.IsInherited(Index.Empty));
+            Assert.False(propertyNode.IsOverridden(Index.Empty));
             propertyNode.Content.Update("MyDerivedString");
-            Assert.AreEqual(OverrideType.New, propertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(MemberFlags.Default, propertyNode.GetMemberFlags(Index.Empty));
+            Assert.False(propertyNode.IsInherited(Index.Empty));
+            Assert.True(propertyNode.IsOverridden(Index.Empty));
         }
 
         [Test]
@@ -49,13 +53,26 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedAsset = asset.CreateChildAsset(assetItem.Location);
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
-            var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset1.MyString));
-            Assert.AreEqual(OverrideType.Base, propertyNode.GetOverride(Index.Empty));
-            Assert.AreEqual(OverrideType.Base, propertyNode.GetOverride(new Index(0)));
-            Assert.AreEqual(OverrideType.Base, propertyNode.GetOverride(new Index(1)));
+            var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset2.MyStrings));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(Index.Empty));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(new Index(0)));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(new Index(1)));
+            Assert.True(propertyNode.IsInherited(Index.Empty));
+            Assert.False(propertyNode.IsOverridden(Index.Empty));
+            Assert.True(propertyNode.IsInherited(new Index(0)));
+            Assert.False(propertyNode.IsOverridden(new Index(0)));
+            Assert.True(propertyNode.IsInherited(new Index(1)));
+            Assert.False(propertyNode.IsOverridden(new Index(1)));
             propertyNode.Content.Update("MyDerivedString", new Index(1));
-            Assert.AreEqual(OverrideType.New, propertyNode.GetOverride(Index.Empty));
-            Assert.AreEqual(OverrideType.Base, propertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(Index.Empty));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(new Index(0)));
+            Assert.AreEqual(MemberFlags.Inherited, propertyNode.GetMemberFlags(new Index(1)));
+            Assert.True(propertyNode.IsInherited(Index.Empty));
+            Assert.False(propertyNode.IsOverridden(Index.Empty));
+            Assert.True(propertyNode.IsInherited(new Index(0)));
+            Assert.False(propertyNode.IsOverridden(new Index(0)));
+            Assert.False(propertyNode.IsInherited(new Index(1)));
+            Assert.True(propertyNode.IsOverridden(new Index(1)));
         }
     }
 

@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Assets.Editor.ViewModel.Quantum;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
@@ -50,7 +51,8 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     Index index;
                     var node = RootNode.ResolveObjectPath(overrideInfo.Key, out index);
-                    node.SetOverride(overrideInfo.Value, index);
+                    var isInherited = node.BaseContent != null && (overrideInfo.Value & OverrideType.New) != OverrideType.New;
+                    node.SetIsInherited(isInherited, index);
                 }
             }
         }

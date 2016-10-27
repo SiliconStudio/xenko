@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
             OverrideType overrideType;
-            return instance == null ? OverrideType.Base : instance.TryGetDynamicProperty(memberDescriptor, OverrideKey, out overrideType) ? overrideType : OverrideType.Base;
+            return instance == null ? OverrideType.Base : ShadowObjectExtensions.TryGetDynamicProperty(instance, memberDescriptor, OverrideKey, out overrideType) ? overrideType : OverrideType.Base;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
             if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
-            instance.SetDynamicProperty(memberDescriptor, OverrideKey, overrideType);
+            ShadowObjectExtensions.SetDynamicProperty(instance, memberDescriptor, OverrideKey, overrideType);
         }
 
         /// <summary>

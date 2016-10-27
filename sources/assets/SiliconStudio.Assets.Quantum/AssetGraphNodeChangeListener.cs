@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
 {
     public class AssetGraphNodeChangeListener : GraphNodeChangeListener
     {
-        private readonly Dictionary<IContentNode, OverrideType> previousOverrides = new Dictionary<IContentNode, OverrideType>();
+        private readonly Dictionary<IContentNode, MemberFlags> previousMemberFlags = new Dictionary<IContentNode, MemberFlags>();
 
         public AssetGraphNodeChangeListener(IGraphNode rootNode, Func<MemberContent, IGraphNode, bool> shouldRegisterNode)
             : base(rootNode, shouldRegisterNode)
@@ -64,27 +64,26 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
         {
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
-                var overrideValue = ((AssetNode)e.Content.OwnerNode).GetOverride(e.Index);
-                previousOverrides[e.Content.OwnerNode] = overrideValue;
+                var overrideValue = ((AssetNode)e.Content.OwnerNode).GetMemberFlags(e.Index);
+                previousMemberFlags[e.Content.OwnerNode] = overrideValue;
             }
             if (e.ChangeType == ContentChangeType.CollectionAdd)
             {
-                // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
-                previousOverrides[e.Content.OwnerNode] = OverrideType.New;
+                // If the change is an add, we set the previous flags as Default so the Undo will try to remove the item instead of resetting to the base value
+                previousMemberFlags[e.Content.OwnerNode] = MemberFlags.Default;
             }
         }
 
         private void AssetContentChanged(object sender, ContentChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Content.OwnerNode];
-            previousOverrides.Remove(e.Content.OwnerNode);
-            var overrideValue = OverrideType.Base;
+            var oldMemberFlags = previousMemberFlags[e.Content.OwnerNode];
+            previousMemberFlags.Remove(e.Content.OwnerNode);
+            var newMemberFlags = MemberFlags.Default;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
-                overrideValue = ((AssetNode)e.Content.OwnerNode).GetOverride(e.Index);
+                newMemberFlags = ((AssetNode)e.Content.OwnerNode).GetMemberFlags(e.Index);
             }
-            ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue));
+            ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, oldMemberFlags, newMemberFlags));
         }
-
     }
 }

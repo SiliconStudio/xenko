@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Contents
@@ -68,6 +69,11 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
+
+                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                itemIds.Add(index.Value, ItemId.New());
+
                 NotifyContentChanged(args);
             }
             else
@@ -88,10 +94,18 @@ namespace SiliconStudio.Quantum.Contents
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(value, newItem);
+
+                    // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                    var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                    itemIds[index.Value] = ItemId.New();
                 }
                 else
                 {
                     collectionDescriptor.Insert(value, itemIndex.Int, newItem);
+
+                    // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                    var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                    itemIds.Insert(index.Int, ItemId.New());
                 }
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
@@ -99,6 +113,7 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
+
                 NotifyContentChanged(args);
             }
             else if (dictionaryDescriptor != null)
@@ -113,11 +128,15 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
+
+                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                itemIds[itemIndex.Value] = ItemId.New();
+
                 NotifyContentChanged(args);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-
         }
 
         /// <inheritdoc/>
@@ -138,11 +157,19 @@ namespace SiliconStudio.Quantum.Contents
                 else
                 {
                     collectionDescriptor.Remove(value, item);
-                }               
+                }
+
+                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                itemIds.DeleteAndShift(itemIndex.Int);
             }
             else if (dictionaryDescriptor != null)
             {
                 dictionaryDescriptor.Remove(value, itemIndex.Value);
+
+                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                itemIds.Delete(itemIndex.Value);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
@@ -185,6 +212,10 @@ namespace SiliconStudio.Quantum.Contents
                 }
                 else
                     throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
+                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
+                itemIds[index.Value] = ItemId.New();
             }
             else
             {
