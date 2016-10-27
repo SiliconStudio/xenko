@@ -40,8 +40,9 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
-                        Materials: []
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
+                        Materials:
+                            - null
         -   Entity:
                 Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
                 Name: MetalRing
@@ -54,8 +55,9 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                        Materials: []
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                        Materials:
+                            - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -109,8 +111,9 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
-                        Materials: []
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
+                        Materials:
+                            - null
         -   Entity:
                 Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
                 Name: MetalRing
@@ -123,8 +126,9 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                        Materials: []
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                        Materials:
+                            - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -140,8 +144,9 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                        Materials: []
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                        Materials:
+                            - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8

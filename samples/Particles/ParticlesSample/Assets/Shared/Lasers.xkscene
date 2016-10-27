@@ -44,6 +44,7 @@ SceneSettings:
                     Index: 0
                 AmbientOcclusion:
                     ~Id: 0c83aa79-0b61-4903-a8eb-c7a4cac4fd93
+                    Enabled: false
                     ParamIntensity: 0.5
                     ParamRadius: 1.5
                     BlurScale: 1.75
@@ -93,11 +94,6 @@ Hierarchy:
         - 79735979-e91a-4eae-b702-070a873dfa9c
         - 7698999c-4c4d-43e0-ac5d-5e2360bafde7
         - 2d712fb9-648d-418a-a5de-54d72c35271b
-        - 6132e01d-b643-48ef-b57f-06cd576dac72
-        - 79133ba3-0fc3-4c37-9c88-497abb280900
-        - ec35c281-2510-44b4-b37d-927c58ef95e9
-        - f195ae7e-31de-4754-a8b8-3658ea3629bb
-        - c4271149-6500-4d2b-928b-7eb41b8eb9be
         - 42102787-023a-480b-a3d1-2648b1f533bb
         - 7c54d88e-d96c-496b-923c-896458b82f6f
         - fd406c1e-177f-447a-9a12-51c467000898
@@ -113,6 +109,12 @@ Hierarchy:
         - 03161826-c447-4a12-abef-b9d3d4dd3e12
         - 3193f71d-4a03-4ec7-8322-2368df63ab69
         - ec12fc02-8c3b-47c6-83d4-2f8d48629865
+        - cebe733a-e4ab-4aae-92a6-a2ab2edf6145
+        - ce89b8d2-6eb0-4b6c-b163-c1421e856a6c
+        - 83a43b83-904c-4dce-87e3-15cf6bb4e301
+        - c55ff62f-649e-4c8c-9d71-38b8ea1b6f07
+        - 5a991e37-7289-444f-9bbd-2cdf3640e578
+        - 3e165d22-3def-48eb-97b5-fbaee2f6fa1f
     Parts:
         -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
             BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
@@ -154,7 +156,7 @@ Hierarchy:
                         Children:
                             - 8697e719-8369-441f-a1e8-271dc4dd5688/bba0ccb9-736d-4a2b-8801-71348f616a77
                             - 04cdc8a2-7dac-459c-9f03-2bb75f0ad5dc/bba0ccb9-736d-4a2b-8801-71348f616a77
-                        Position: {X: 3.0, Y: 2.0, Z: 3.0}
+                        Position: {X: 4.0, Y: 2.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticlesSample.LaserOrientationScript,ParticlesSample.Game
@@ -225,7 +227,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: c87af6d2-e603-4295-a35a-22bb24cbbd54/cc56a226-e566-44b9-a454-caa1c6afa40e:TiledPattern04
+                                                Texture: c87af6d2-e603-4295-a35a-22bb24cbbd54/cc56a226-e566-44b9-a454-caa1c6afa40e:Textures/TiledPattern04
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -381,7 +383,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
         -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
@@ -426,9 +428,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -456,9 +461,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -476,27 +484,15 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-        -   Entity:
-                Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
             BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
             Entity:
@@ -511,37 +507,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   Entity:
@@ -737,7 +703,7 @@ Hierarchy:
                         Children:
                             - ffb230b5-c726-4eb1-a7e2-b87a8873d541/bba0ccb9-736d-4a2b-8801-71348f616a77
                             - ed9f0cc7-4aed-46ba-9f15-3b31504c5868/bba0ccb9-736d-4a2b-8801-71348f616a77
-                        Position: {X: 3.0, Y: 2.31988645, Z: -3.0}
+                        Position: {X: 4.0, Y: 2.31988645, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticlesSample.LaserOrientationScript,ParticlesSample.Game
@@ -758,36 +724,6 @@ Hierarchy:
                         Position: {X: 0.0, Y: 10.0, Z: 0.0}
                         Rotation: {X: 0.442723542, Y: -0.0456308872, Z: -0.09181118, W: 0.890777349}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: 3768424f-3ad1-4d06-a396-6f2d881a9606
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
-                            - null
-        -   Entity:
-                Id: 37f3d857-c364-4b0b-9f47-203c76b707b0
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
         -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
             BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
             Entity:
@@ -815,9 +751,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -993,12 +932,31 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
+        -   Entity:
+                Id: 3e165d22-3def-48eb-97b5-fbaee2f6fa1f
+                Name: Stand (10)
+                Components:
+                    - !TransformComponent
+                        ~Id: 97ed3554-3105-4cc6-a1af-dea6f8ad0972
+                        Children: []
+                        Position: {X: 4.0, Y: 0.0, Z: -4.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
+                        Materials:
+                            - null
+                            - null
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
             BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
             Entity:
@@ -1013,7 +971,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
@@ -1043,9 +1001,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1057,7 +1018,7 @@ Hierarchy:
                         ~Id: d5431db9-6c79-4a17-839a-80913c38e5d7
                         Children:
                             - 496e77b8-12c4-4a7e-8cd8-a8854667dbbd/b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
+                        Position: {X: 4.0, Y: 0.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
@@ -1074,9 +1035,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1122,7 +1086,7 @@ Hierarchy:
                                         ~Id: e9fbc71f-148a-42b8-a357-436a74ce3bdf
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: d72ae450-ceb7-49ff-a964-768858402c07/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
+                                            Texture: d72ae450-ceb7-49ff-a964-768858402c07/3eca7314-84a5-4fb2-9d16-8cf7eab99572:Textures/dota
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -1280,27 +1244,15 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-        -   Entity:
-                Id: 4e6f902c-15ae-4263-99a4-fffb61c3b407
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
         -   Entity:
                 Id: 4f7a5705-1693-4776-90f8-2956a1ba4cc9
                 Name: Green Smoke
@@ -1348,7 +1300,7 @@ Hierarchy:
                                                 Value: {X: 10.0, Y: 10.0, Z: 10.0, W: 1.0}
                                             RightChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 8f034c72-6dae-4d25-9b24-011209b2c833/cc56a226-e566-44b9-a454-caa1c6afa40e:TiledPattern04
+                                                Texture: 8f034c72-6dae-4d25-9b24-011209b2c833/cc56a226-e566-44b9-a454-caa1c6afa40e:Textures/TiledPattern04
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -1466,21 +1418,6 @@ Hierarchy:
                                             SamplerOptional: null
                                             SeedOffset: 0
         -   Entity:
-                Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6
-                Name: ProceduralTorus
-                Components:
-                    - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
-                        Materials:
-                            - null
-        -   Entity:
                 Id: 52598991-f421-442a-86b4-98a5f7ce0afc
                 Name: Spinning Target
                 Components:
@@ -1532,12 +1469,31 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
+        -   Entity:
+                Id: 5a991e37-7289-444f-9bbd-2cdf3640e578
+                Name: Stand (9)
+                Components:
+                    - !TransformComponent
+                        ~Id: 97ed3554-3105-4cc6-a1af-dea6f8ad0972
+                        Children: []
+                        Position: {X: 4.0, Y: 0.0, Z: 4.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
+                        Materials:
+                            - null
+                            - null
         -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
             BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
             Entity:
@@ -1577,24 +1533,15 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-        -   Entity:
-                Id: 6132e01d-b643-48ef-b57f-06cd576dac72
-                Name: Stand
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - b300f706-d568-4c45-9cc2-f2bd162f2c31/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 3768424f-3ad1-4d06-a396-6f2d881a9606/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
         -   BaseId: 1fa0ec17-12a1-4c34-ae03-423318c62744
             BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
             Entity:
@@ -1657,7 +1604,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: 66227648-95fc-410b-b253-88bce2d61a32/1b151ab3-5d40-4d87-a5ec-b5f28c94fdf5:TiledPattern02
+                                                Texture: 66227648-95fc-410b-b253-88bce2d61a32/1b151ab3-5d40-4d87-a5ec-b5f28c94fdf5:Textures/TiledPattern02
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -1755,9 +1702,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -1775,9 +1725,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1808,9 +1761,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -1858,9 +1814,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1919,18 +1878,6 @@ Hierarchy:
                                 ~Id: 534cc5fa-904b-4665-b893-0ee0204094f2
                                 Value: {R: 0.768627465, G: 0.843137264, B: 1.0}
                         Intensity: 0.05
-        -   Entity:
-                Id: 79133ba3-0fc3-4c37-9c88-497abb280900
-                Name: Stand (2)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 2571f0bf-c6ea-4cc7-b300-615d83b8d48f/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
             BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
             Entity:
@@ -1979,7 +1926,7 @@ Hierarchy:
                                     ~Id: d1f5f336-617d-4c33-9b24-1eb005e2ec06
                                 BiasParameters:
                                     ~Id: 0f3bf030-229f-4068-8175-ab1f58dc6bb3
-                        Intensity: 0.8
+                        Intensity: 2.0
         -   Entity:
                 Id: 7c54d88e-d96c-496b-923c-896458b82f6f
                 Name: Prefab (2)
@@ -1988,7 +1935,7 @@ Hierarchy:
                         ~Id: ddbb3798-e908-42d2-bce4-8b521635ebde
                         Children:
                             - 91c5fca3-4d73-4f7d-9ae7-43170ac321a9/b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
+                        Position: {X: 4.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.16842544, Y: 1.16842544, Z: 1.16842544}
         -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
@@ -2055,7 +2002,7 @@ Hierarchy:
                                         AlphaAdditive: 1.0
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
+                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:Textures/dot
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -2256,7 +2203,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
@@ -2278,19 +2225,20 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
         -   Entity:
-                Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d
-                Name: ProceduralTorus
+                Id: 83a43b83-904c-4dce-87e3-15cf6bb4e301
+                Name: Stand (7)
                 Components:
                     - !TransformComponent
-                        ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        ~Id: 97ed3554-3105-4cc6-a1af-dea6f8ad0972
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: -4.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
-                        ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
-                        Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
+                        ~Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials:
+                            - null
                             - null
         -   Entity:
                 Id: 8697e719-8369-441f-a1e8-271dc4dd5688
@@ -2338,7 +2286,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: a98c2c7c-d186-423f-a54b-f2e8bd190ad0/fc2fbfe3-d07a-48de-8606-14a47398009a:TiledPattern03
+                                                Texture: a98c2c7c-d186-423f-a54b-f2e8bd190ad0/fc2fbfe3-d07a-48de-8606-14a47398009a:Textures/TiledPattern03
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -2475,7 +2423,7 @@ Hierarchy:
                         ~Id: 9c16f304-c376-450a-870d-07b220f13c59
                         Children:
                             - 543ece3a-c804-4a13-b833-bc742e445c57/79b219e2-b677-48a6-8200-8816798b86ea
-                        Position: {X: -3.0, Y: 1.5, Z: 3.0}
+                        Position: {X: -4.0, Y: 1.5, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticlesSample.LaserOrientationScript,ParticlesSample.Game
@@ -2511,9 +2459,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2531,9 +2482,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2595,9 +2549,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -2629,9 +2586,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2649,7 +2609,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
@@ -2679,9 +2639,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2699,7 +2662,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
@@ -2730,9 +2693,6 @@ Hierarchy:
                         Projection: Perspective
                     - !ParticlesSample.CameraOrbitScript,ParticlesSample.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
-                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        ~Id: 73c3e2cc-baa5-453d-956b-aeddff51543e
-                        NextScene: RibbonParticles
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
             BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
             Entity:
@@ -2747,7 +2707,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
@@ -2771,7 +2731,7 @@ Hierarchy:
                         ~Id: 5020c264-d4ef-42d6-9645-66fbef44efc0
                         Children:
                             - b6470b60-34e1-44dc-bcc3-534e782570ab/49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-                        Position: {X: -3.0, Y: 4.67437165E-14, Z: 3.0}
+                        Position: {X: -4.0, Y: 4.67437165E-14, Z: 4.0}
                         Rotation: {X: 0.7071068, Y: 0.7071067, Z: 3.09086161E-08, W: -3.090862E-08}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
@@ -2942,7 +2902,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2959,7 +2919,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
@@ -2976,9 +2936,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3009,27 +2972,15 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-        -   Entity:
-                Id: b300f706-d568-4c45-9cc2-f2bd162f2c31
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
         -   Entity:
                 Id: b6470b60-34e1-44dc-bcc3-534e782570ab
                 Name: Spinning Target
@@ -3052,7 +3003,7 @@ Hierarchy:
                         ~Id: 5020c264-d4ef-42d6-9645-66fbef44efc0
                         Children:
                             - 9705ec6e-d8b1-4a4f-86f9-c70e943ceaa4/49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-                        Position: {X: 3.0, Y: -6.575368E-07, Z: 3.0}
+                        Position: {X: 4.0, Y: -6.575368E-07, Z: 4.0}
                         Rotation: {X: 0.7071068, Y: 0.7071067, Z: 3.09086161E-08, W: -3.090862E-08}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -3069,7 +3020,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   BaseId: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
@@ -3154,7 +3105,7 @@ Hierarchy:
                                         ~Id: e9fbc71f-148a-42b8-a357-436a74ce3bdf
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: d72ae450-ceb7-49ff-a964-768858402c07/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
+                                            Texture: d72ae450-ceb7-49ff-a964-768858402c07/3eca7314-84a5-4fb2-9d16-8cf7eab99572:Textures/dota
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -3250,7 +3201,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -3267,21 +3218,25 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
+                        Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
                         Materials:
                             - null
         -   Entity:
-                Id: c4271149-6500-4d2b-928b-7eb41b8eb9be
-                Name: Stand (5)
+                Id: c55ff62f-649e-4c8c-9d71-38b8ea1b6f07
+                Name: Stand (8)
                 Components:
                     - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 4e6f902c-15ae-4263-99a4-fffb61c3b407/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 85cc27c5-b70a-4419-a0ce-51f11dbc695d/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
+                        ~Id: 97ed3554-3105-4cc6-a1af-dea6f8ad0972
+                        Children: []
+                        Position: {X: -4.0, Y: 0.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
+                        Materials:
+                            - null
+                            - null
         -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
             BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
             Entity:
@@ -3322,6 +3277,42 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
+                Id: ce89b8d2-6eb0-4b6c-b163-c1421e856a6c
+                Name: Stand (6)
+                Components:
+                    - !TransformComponent
+                        ~Id: 97ed3554-3105-4cc6-a1af-dea6f8ad0972
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
+                        Model: 8f3aff1c-412c-403b-9261-1bad5df9667d/dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
+                        Materials:
+                            - null
+                            - null
+        -   Entity:
+                Id: cebe733a-e4ab-4aae-92a6-a2ab2edf6145
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 611363ca-c79e-45e5-ad64-b99c0c5997d3
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
+                        ~Id: 19a971bf-8f68-42e5-9954-03742abc1a77
+                        Next: 64e65b1f-936c-4582-a483-ee8721311ed1/6736d805-6194-40bf-8056-7c52758e2e4b:RibbonParticles
+                        Previous: c3c04334-616d-48f8-bc47-ca10e3d15593/4b722b46-48b5-4585-9f5e-f9a590faf4eb:CustomParticles
+                        Font: bb9f276d-0c74-4f91-9c43-56267321b3d9/abe2b723-cac1-4cdc-9cbf-109a030873d3:Font
+                    - !UIComponent
+                        ~Id: 9ad7a1d7-64f0-44c5-bcb0-79d72f167f1a
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+        -   Entity:
                 Id: d11eef8e-7f2b-41c6-a63f-df88c3f59b43
                 Name: Spinning Target
                 Components:
@@ -3349,7 +3340,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
         -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
@@ -3381,7 +3372,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
+                        Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
                         Materials:
                             - null
         -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
@@ -3398,9 +3389,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3418,9 +3412,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3438,9 +3435,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -3471,9 +3471,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
+                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -3682,21 +3685,9 @@ Hierarchy:
                         ~Id: 5020c264-d4ef-42d6-9645-66fbef44efc0
                         Children:
                             - 52598991-f421-442a-86b4-98a5f7ce0afc/49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-                        Position: {X: 3.0, Y: -1.8660657E-07, Z: -3.0}
+                        Position: {X: 4.0, Y: -1.8660657E-07, Z: -4.0}
                         Rotation: {X: 0.7071068, Y: 0.7071067, Z: 3.09086161E-08, W: -3.090862E-08}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: ec35c281-2510-44b4-b37d-927c58ef95e9
-                Name: Stand (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - 37f3d857-c364-4b0b-9f47-203c76b707b0/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 2ac9ec66-567f-478f-a6b1-7846d5d95d76/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: ec7d21c4-70b7-4f8c-ba14-8af563224c83
                 Name: Lightning Trail
@@ -3897,7 +3888,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: c87af6d2-e603-4295-a35a-22bb24cbbd54/cc56a226-e566-44b9-a454-caa1c6afa40e:TiledPattern04
+                                                Texture: c87af6d2-e603-4295-a35a-22bb24cbbd54/cc56a226-e566-44b9-a454-caa1c6afa40e:Textures/TiledPattern04
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -4056,21 +4047,9 @@ Hierarchy:
                         ~Id: 5020c264-d4ef-42d6-9645-66fbef44efc0
                         Children:
                             - d11eef8e-7f2b-41c6-a63f-df88c3f59b43/49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-                        Position: {X: -3.0, Y: 8.88334545E-14, Z: -3.0}
+                        Position: {X: -4.0, Y: 8.88334545E-14, Z: -4.0}
                         Rotation: {X: 0.7071068, Y: 0.7071067, Z: 3.09086161E-08, W: -3.090862E-08}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: f195ae7e-31de-4754-a8b8-3658ea3629bb
-                Name: Stand (4)
-                Components:
-                    - !TransformComponent
-                        ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Children:
-                            - fc8d67af-0cc5-4c76-b926-9fd081f745ef/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                            - 2a699cb7-2468-45e6-be28-2f0c1b11d0a5/54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: -3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
             BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
             Entity:
@@ -4105,7 +4084,7 @@ Hierarchy:
                         ~Id: 95211bc6-0657-4e73-bfe8-7f9cd3b47afd
                         Children:
                             - 7962a5a3-95fe-4a09-9c87-3bd2e8cc6c60/b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-                        Position: {X: -3.0, Y: -4.76837158E-07, Z: -3.0}
+                        Position: {X: -4.0, Y: -4.76837158E-07, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.24641252, Y: 1.24641252, Z: 1.24641252}
         -   Entity:
@@ -4145,7 +4124,7 @@ Hierarchy:
                                         AlphaAdditive: 1.0
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
+                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:Textures/dot
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -4223,9 +4202,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
+                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -4242,21 +4224,6 @@ Hierarchy:
                         Position: {X: 0.0, Y: 10.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Entity:
-                Id: fc8d67af-0cc5-4c76-b926-9fd081f745ef
-                Name: ProceduralCylinder
-                Components:
-                    - !TransformComponent
-                        ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
-                        Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
-                        Materials:
-                            - null
         -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
             BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
             Entity:
@@ -4271,9 +4238,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
+                        Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
+                    - !ParticlesSample.RotationScript,ParticlesSample.Game
+                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
+                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -4298,7 +4268,7 @@ Hierarchy:
                         ~Id: 49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
                         Children:
                             - 01fab643-422d-4ad5-94c9-114d87c334bb/b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
+                        Position: {X: -4.0, Y: 0.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.734638035, Y: 0.734638035, Z: 0.734638035}
         -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
@@ -4351,7 +4321,7 @@ Hierarchy:
                                         AlphaAdditive: 1.0
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
+                                            Texture: 057894de-4180-40a9-a5d4-19ac0ac9c6ee/10eb4d2e-1538-4ae6-9924-bf7156c271ce:Textures/dot
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -4461,7 +4431,7 @@ Hierarchy:
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
                                                 Swizzle: null
-                                                Texture: a98c2c7c-d186-423f-a54b-f2e8bd190ad0/fc2fbfe3-d07a-48de-8606-14a47398009a:TiledPattern03
+                                                Texture: a98c2c7c-d186-423f-a54b-f2e8bd190ad0/fc2fbfe3-d07a-48de-8606-14a47398009a:Textures/TiledPattern03
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
@@ -4634,8 +4604,9 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
-                                    Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
-                                    Materials: []
+                                    Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
+                                    Materials:
+                                        - null
                     -   Entity:
                             Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
                             Name: MetalRing
@@ -4648,8 +4619,9 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                                    Materials: []
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                                    Materials:
+                                        - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game
                                     ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                                     TimeFactor: 0.65
@@ -4703,8 +4675,9 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
-                                    Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Sphere
-                                    Materials: []
+                                    Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
+                                    Materials:
+                                        - null
                     -   Entity:
                             Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
                             Name: MetalRing
@@ -4717,8 +4690,9 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                                    Materials: []
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                                    Materials:
+                                        - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game
                                     ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                                     TimeFactor: 1.0
@@ -4734,8 +4708,9 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
-                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:MetalRing
-                                    Materials: []
+                                    Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
+                                    Materials:
+                                        - null
                                 - !ParticlesSample.RotationScript,ParticlesSample.Game
                                     ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                                     TimeFactor: 0.8

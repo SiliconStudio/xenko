@@ -38,7 +38,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -188,7 +188,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -338,7 +338,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -488,7 +488,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -638,7 +638,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -788,7 +788,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
@@ -938,7 +938,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    ParticleLifetime: {X: 0.3, Y: 0.3}
+                                    ParticleLifetime: {X: 0.2, Y: 0.2}
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 4734c5b6-30ef-4d4b-8768-432344ffd47b
