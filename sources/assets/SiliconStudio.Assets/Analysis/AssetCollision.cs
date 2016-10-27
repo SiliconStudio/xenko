@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -159,7 +159,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, Dictionary<Guid, Tuple<Guid, UFile>> idRemap)
+        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, IReadOnlyDictionary<Guid, Tuple<Guid, UFile>> idRemap)
         {
             foreach (var rootAsset in rootAssetCollection.ToArray())
             {

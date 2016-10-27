@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="log">The log to output the result of the validation.</param>
         public override void Run(ILogger log)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             ValidateAssetBase(log);
         }
@@ -110,8 +111,8 @@ namespace SiliconStudio.Assets.Analysis
         /// log</exception>
         public List<Asset> ValidateAssetBase(AssetItem assetItem, ILogger log)
         {
-            if (assetItem == null) throw new ArgumentNullException("asset");
-            if (log == null) throw new ArgumentNullException("log");
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             var baseItems = new List<Asset>();
 
@@ -179,33 +180,6 @@ namespace SiliconStudio.Assets.Analysis
                 baseItems.Add(currentAsset.Asset);
             }
             return baseItems;
-        }
-
-        private class AssetVisitor : DataVisitorBase
-        {
-            private readonly Asset rootAsset;
-            private readonly List<Asset> assets = new List<Asset>();
-
-            public AssetVisitor(ITypeDescriptorFactory typeDescriptorFactory, Asset rootAsset)
-                : base(typeDescriptorFactory)
-            {
-                this.rootAsset = rootAsset;
-            }
-
-            public List<Asset> Collect()
-            {
-                Visit(rootAsset);
-                return assets;
-            }
-
-            public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
-            {
-                if (obj is Asset && !ReferenceEquals(obj, rootAsset))
-                {
-                    assets.Add((Asset)obj);
-                }
-                base.VisitObject(obj, descriptor, visitMembers);
-            }
         }
     }
 }
