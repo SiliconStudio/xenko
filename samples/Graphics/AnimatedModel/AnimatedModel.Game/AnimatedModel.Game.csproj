@@ -75,7 +75,9 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationScript.cs" />
     <Compile Include="RotateEntity.cs" />
+    <Compile Include="SetSpriteSource.cs" />
     <Compile Include="UIScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
