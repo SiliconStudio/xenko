@@ -244,7 +244,7 @@ namespace SiliconStudio.Assets
 
                 var packagesLoaded = new PackageCollection();
 
-                package = PreLoadPackage(this, logger, packagePath, false, packagesLoaded, loadParameters);
+                package = PreLoadPackage(logger, packagePath, false, packagesLoaded, loadParameters);
 
                 // Load all missing references/dependencies
                 LoadMissingReferences(logger, loadParameters);
@@ -348,7 +348,7 @@ namespace SiliconStudio.Assets
                     var packagesLoaded = new PackageCollection();
                     foreach (var packageFilePath in packagePaths)
                     {
-                        PreLoadPackage(session, sessionResult, packageFilePath, false, packagesLoaded, loadParameters);
+                        session.PreLoadPackage(sessionResult, packageFilePath, false, packagesLoaded, loadParameters);
 
                         // Output the session only if there is no cancellation
                         if (cancelToken.HasValue && cancelToken.Value.IsCancellationRequested)
@@ -456,7 +456,7 @@ namespace SiliconStudio.Assets
                     return;
                 }
 
-                PreLoadPackageDependencies(this, log, package, packagesLoaded, loadParameters);
+                PreLoadPackageDependencies(log, package, packagesLoaded, loadParameters);
             }
         }
 
@@ -796,9 +796,8 @@ namespace SiliconStudio.Assets
             AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
-        private static Package PreLoadPackage(PackageSession session, ILogger log, string filePath, bool isSystemPackage, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
+        private Package PreLoadPackage(ILogger log, string filePath, bool isSystemPackage, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
         {
-            if (session == null) throw new ArgumentNullException(nameof(session));
             if (log == null) throw new ArgumentNullException(nameof(log));
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
             if (loadedPackages == null) throw new ArgumentNullException(nameof(loadedPackages));
@@ -809,9 +808,9 @@ namespace SiliconStudio.Assets
                 var packageId = Package.GetPackageIdFromFile(filePath);
 
                 // Check that the package was not already loaded, otherwise return the same instance
-                if (session.Packages.ContainsById(packageId))
+                if (Packages.ContainsById(packageId))
                 {
-                    return session.Packages.Find(packageId);
+                    return Packages.Find(packageId);
                 }
 
                 // Package is already loaded, use the instance 
@@ -856,7 +855,7 @@ namespace SiliconStudio.Assets
                 // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
                 if (package.Meta.Version != null)
                 {
-                    session.constraintProvider.AddConstraint(package.Meta.Name, new PackageVersionRange(package.Meta.Version));
+                    constraintProvider.AddConstraint(package.Meta.Name, new PackageVersionRange(package.Meta.Version));
                 }
 
                 // Load package dependencies
@@ -864,10 +863,10 @@ namespace SiliconStudio.Assets
                 // TODO: We should probably split package loading in two recursive top-level passes (right now those two passes are mixed, making it more difficult to make proper checks)
                 //   - First, load raw packages with their dependencies recursively, then resolve dependencies and constraints (and print errors/warnings)
                 //   - Then, if everything is OK, load the actual references and assets for each packages
-                PreLoadPackageDependencies(session, log, package, loadedPackages, loadParameters);
+                PreLoadPackageDependencies(log, package, loadedPackages, loadParameters);
 
                 // Add the package to the session but don't freeze it yet
-                session.Packages.Add(package);
+                Packages.Add(package);
 
                 return package;
             }
@@ -1081,9 +1080,8 @@ namespace SiliconStudio.Assets
             return null;
         }
         
-        private static void PreLoadPackageDependencies(PackageSession session, ILogger log, Package package, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
+        private void PreLoadPackageDependencies(ILogger log, Package package, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
         {
-            if (session == null) throw new ArgumentNullException(nameof(session));
             if (log == null) throw new ArgumentNullException(nameof(log));
             if (package == null) throw new ArgumentNullException(nameof(package));
             if (loadParameters == null) throw new ArgumentNullException(nameof(loadParameters));
@@ -1097,10 +1095,10 @@ namespace SiliconStudio.Assets
             // 1. Load store package
             foreach (var packageDependency in package.Meta.Dependencies)
             {
-                var loadedPackage = session.Packages.Find(packageDependency);
+                var loadedPackage = Packages.Find(packageDependency);
                 if (loadedPackage == null)
                 {
-                    var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version, session.constraintProvider);
+                    var file = PackageStore.Instance.GetPackageFileName(packageDependency.Name, packageDependency.Version, constraintProvider);
 
                     if (file == null)
                     {
@@ -1112,7 +1110,7 @@ namespace SiliconStudio.Assets
                     }
 
                     // Recursive load of the system package
-                    loadedPackage = PreLoadPackage(session, log, file, true, loadedPackages, loadParameters);
+                    loadedPackage = PreLoadPackage(log, file, true, loadedPackages, loadParameters);
                 }
 
                 if (loadedPackage == null || loadedPackage.State < PackageState.DependenciesReady)
@@ -1123,18 +1121,18 @@ namespace SiliconStudio.Assets
             foreach (var packageReference in package.LocalDependencies)
             {
                 // Check that the package was not already loaded, otherwise return the same instance
-                if (session.Packages.ContainsById(packageReference.Id))
+                if (Packages.ContainsById(packageReference.Id))
                 {
                     continue;
                 }
 
                 // Expand the string of the location
-                var newLocation = (UFile)AssetRegistry.ExpandString(session, packageReference.Location);
+                var newLocation = (UFile)AssetRegistry.ExpandString(this, packageReference.Location);
 
                 var subPackageFilePath = package.RootDirectory != null ? UPath.Combine(package.RootDirectory, newLocation) : newLocation;
 
                 // Recursive load
-                var loadedPackage = PreLoadPackage(session, log, subPackageFilePath.FullPath, false, loadedPackages, loadParameters);
+                var loadedPackage = PreLoadPackage(log, subPackageFilePath.FullPath, false, loadedPackages, loadParameters);
 
                 if (loadedPackage == null || loadedPackage.State < PackageState.DependenciesReady)
                     packageDependencyErrors = true;
