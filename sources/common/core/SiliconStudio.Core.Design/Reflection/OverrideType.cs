@@ -4,16 +4,6 @@ using System;
 
 namespace SiliconStudio.Core.Reflection
 {
-    [Flags]
-    public enum MemberFlags
-    {
-        Default = 0,
-
-        Inherited = 1,
-
-        Sealed = 2,
-    }
-
     /// <summary>
     /// A Type of override used on a member value.
     /// </summary>

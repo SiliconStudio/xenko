@@ -154,7 +154,7 @@ namespace SiliconStudio.Core.Yaml
                 keyToIdMap[i] = keyToIdMap[i-1];
 
             }
-            keyToIdMap[index] = id;
+            keyToIdMap.Add(index, id);
         }
 
         public void Clear()
@@ -374,12 +374,6 @@ namespace SiliconStudio.Core.Yaml
 
         // TODO: do we really need to pass an object to this constructor?
         public static ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object());
-
-        public static void GenerateMissingItemIds(object rootObject)
-        {
-            var visitor = new CollectionIdGenerator();
-            visitor.Visit(rootObject);
-        }
 
         public static bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {

@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// attributeKey
         /// </exception>
-        public static bool TryGetDynamicProperty<T>(object instance, object memberKey, PropertyKey<T> attributeKey, out T value)
+        public static bool TryGetDynamicProperty<T>(this object instance, object memberKey, PropertyKey<T> attributeKey, out T value)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
             if (memberKey == null) throw new ArgumentNullException(nameof(memberKey));
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Reflection
         /// or
         /// attributeKey
         /// </exception>
-        public static void SetDynamicProperty<T>(object instance, object memberKey, PropertyKey<T> attributeKey, T value)
+        public static void SetDynamicProperty<T>(this object instance, object memberKey, PropertyKey<T> attributeKey, T value)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
             if (memberKey == null) throw new ArgumentNullException(nameof(memberKey));

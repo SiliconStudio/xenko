@@ -5,15 +5,15 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
 {
     public class AssetContentChangeEventArgs : GraphContentChangeEventArgs
     {
-        public AssetContentChangeEventArgs(ContentChangeEventArgs e, MemberFlags previousMemberFlags, MemberFlags newMemberFlags)
+        public AssetContentChangeEventArgs(ContentChangeEventArgs e, OverrideType previousOverride, OverrideType newOverride)
             : base(e.Content, e.Index, e.ChangeType, e.OldValue, e.NewValue)
         {
-            PreviousMemberFlags = previousMemberFlags;
-            NewMemberFlags = newMemberFlags;
+            PreviousOverride = previousOverride;
+            NewOverride = newOverride;
         }
 
-        public MemberFlags PreviousMemberFlags { get; }
+        public OverrideType PreviousOverride { get; }
 
-        public MemberFlags NewMemberFlags { get; }
+        public OverrideType NewOverride { get; }
     }
 }

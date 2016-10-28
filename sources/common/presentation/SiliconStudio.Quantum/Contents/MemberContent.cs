@@ -5,7 +5,6 @@ using System;
 using System.Reflection;
 
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Contents
@@ -69,11 +68,6 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
-
-                // TODO: this is specific to asset and should be done in inherited classes. But we don't inherit contents so far.
-                var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Value);
-                itemIds.Add(index.Value, ItemId.New());
-
                 NotifyContentChanged(args);
             }
             else
@@ -105,7 +99,6 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
-
                 NotifyContentChanged(args);
             }
             else if (dictionaryDescriptor != null)
@@ -120,11 +113,11 @@ namespace SiliconStudio.Quantum.Contents
                     Member.Set(containerValue, value);
                 }
                 UpdateReferences();
-
                 NotifyContentChanged(args);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
         }
 
         /// <inheritdoc/>

@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Quantum
         public static readonly int ResetFromBase;
         private bool contentUpdating;
         private Func<object, object> cloner;
-        private readonly Dictionary<ItemId, MemberFlags> memberFlags = new Dictionary<ItemId, MemberFlags>();
+        private readonly Dictionary<ItemId, OverrideType> overrides = new Dictionary<ItemId, OverrideType>();
 
         static AssetNode()
         {
@@ -33,63 +33,42 @@ namespace SiliconStudio.Assets.Quantum
 
         public Func<object, object> Cloner { get { return cloner; } set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
 
-        public event EventHandler<EventArgs> MemberFlagsChanging;
+        public event EventHandler<EventArgs> OverrideChanging;
 
-        public event EventHandler<EventArgs> MemberFlagsChanged;
+        public event EventHandler<EventArgs> OverrideChanged;
 
         public IContent BaseContent { get; private set; }
 
         internal bool ResettingOverride { get; private set; }
 
-        public void SetIsInherited(bool isInherited, Index index)
+        public void SetOverride(OverrideType overrideType, Index index)
         {
             var id = IndexToId(index);
-            memberFlags[id] = isInherited ? MemberFlags.Inherited : MemberFlags.Default;
+            SetOverride(overrideType, id);
         }
 
-        public void SetIsInherited(bool isInherited)
+        public void SetOverride(OverrideType overrideType, ItemId id)
         {
-            foreach (var flag in memberFlags)
+            if (overrideType == OverrideType.Base)
             {
-                memberFlags[flag.Key] |= MemberFlags.Inherited;
+                overrides.Remove(id);
+            }
+            else
+            {
+                overrides[id] = overrideType;
             }
         }
 
-        // TODO: we might want to turn this private and only expose IsInherited/IsOverridden etc.
-        public MemberFlags GetMemberFlags(Index index)
+        public OverrideType GetOverride(Index index)
         {
-            MemberFlags result;
+            OverrideType result;
             var id = IndexToId(index);
-            return memberFlags.TryGetValue(id, out result) ? result : MemberFlags.Default;
+            return overrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
-        public bool IsInherited(Index index)
+        internal Dictionary<ItemId, OverrideType> GetAllOverrides()
         {
-            return (GetMemberFlags(index) & MemberFlags.Inherited) == MemberFlags.Inherited;
-        }
-
-        public bool IsOverridden(Index index)
-        {
-            return BaseContent != null && !IsInherited(index);
-        }
-
-        internal IReadOnlyDictionary<ItemId, MemberFlags> GetAllMemberFlags()
-        {
-            return memberFlags;
-        }
-
-        public IEnumerable<Index> GetOverriddenIndices()
-        {
-            if (BaseContent == null)
-                yield break;
-
-            foreach (var flags in memberFlags)
-            {
-                if ((flags.Value & MemberFlags.Inherited) != MemberFlags.Inherited)
-                {
-                    yield return IdToIndex(flags.Key);
-                }
-            }
+            return overrides;
         }
 
         private object RetrieveBaseContent(Index index)
@@ -216,10 +195,10 @@ namespace SiliconStudio.Assets.Quantum
             {
                 if (!(baseNode?.contentUpdating ?? false))
                 {
-                    // TODO: pass the index to the event to avoid unuseful notifications
-                    MemberFlagsChanging?.Invoke(this, EventArgs.Empty);
-                    SetIsInherited(ResettingOverride, e.Index);
-                    MemberFlagsChanged?.Invoke(this, EventArgs.Empty);
+                    var overrideType = !ResettingOverride ? OverrideType.New : OverrideType.Base;
+                    OverrideChanging?.Invoke(this, EventArgs.Empty);
+                    SetOverride(overrideType, e.Index);
+                    OverrideChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
 
@@ -251,7 +230,7 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 if (!(baseNode?.contentUpdating ?? false))
                 {
-                    SetIsInherited(false, e.Index);
+                    SetOverride(OverrideType.New, itemId);
                 }
             }
 
@@ -271,7 +250,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
         {
-            if (BaseContent == null || (changeType == ContentChangeType.ValueChange && !IsOverridden(index)))
+            if (BaseContent == null || (changeType == ContentChangeType.ValueChange && !GetOverride(index).HasFlag(OverrideType.New)))
                 return;
 
             object baseValue;
