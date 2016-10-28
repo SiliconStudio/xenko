@@ -30,6 +30,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <summary>
+        /// Point lights don't have shadows yet.
+        /// </summary>
+        /// <value>The shadow.</value>
+        /// <userdoc>Point lights don't have shadows yet</userdoc>
+        [DataMemberIgnore]
+        public override LightShadowMap Shadow { get { return null; } protected set { } }
+
+        /// <summary>
         /// Gets or sets the radius of influence of this light.
         /// </summary>
         /// <value>The range.</value>
