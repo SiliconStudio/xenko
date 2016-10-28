@@ -40,13 +40,14 @@ SceneSettings:
 Hierarchy:
     ~Id: 98dbbab5-03a8-4f89-9541-7265202f5faa
     RootPartIds:
-        - 5700e7f9-4aed-4697-99bc-165c7fb5b549
         - 0aa895fb-6425-436b-b4ae-964210c3ada6
         - f9e60aeb-b946-4d42-b957-d421863da396
         - 79ed5cbf-60bb-4912-89f5-3c1862a01b98
         - 8e731909-f0c2-420e-9329-fe9a2890c477
         - f08d1282-a256-4c2c-aa94-048dd95eed88
         - 4855a6ef-94da-4170-abb8-e8c421efa246
+        - cc977217-0d7c-4e20-b6b9-7bf3de36c2a0
+        - ba38957d-0c0d-41ec-9c98-10c0f4e91a9a
     Parts:
         -   Entity:
                 Id: 0aa895fb-6425-436b-b4ae-964210c3ada6
@@ -61,9 +62,6 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: d8d38afa-0110-4116-a878-70e266cd78ea
                         Projection: Perspective
-                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        ~Id: 5765a033-6ff2-4840-8f51-f08f225c5e3b
-                        NextScene: Lasers
         -   Entity:
                 Id: 4855a6ef-94da-4170-abb8-e8c421efa246
                 Name: Background
@@ -78,28 +76,13 @@ Hierarchy:
                         ~Id: 97292521-5985-4508-95d4-47c3e580f16f
                         Texture: 29e81d18-809d-4074-b640-395a7b603d45/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
         -   Entity:
-                Id: 5700e7f9-4aed-4697-99bc-165c7fb5b549
-                Name: Ground
-                Components:
-                    - !TransformComponent
-                        ~Id: da421446-b53a-477c-a81c-be2f7c5b5101
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: 69199f66-4449-4d6a-9481-b4f674294b1a
-                        Model: 4668a137-c7fe-4030-a88a-f8e35dc69556/f5e260b3-ba79-4990-bf36-047af12becb9:Ground
-                        Materials:
-                            - null
-        -   Entity:
                 Id: 79ed5cbf-60bb-4912-89f5-3c1862a01b98
                 Name: ConeEmitter30
                 Components:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
                         Rotation: {X: -0.258819044, Y: 0.0, Z: 0.0, W: 0.9659258}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -128,7 +111,7 @@ Hierarchy:
                                         ~Id: 16931489-96bf-4c3f-b7a0-248c5049a3bb
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: a1ef67d2-5738-42e1-bb9b-56cc93ec39e8/ad3bc951-0f20-464d-a236-fb9c3727f4e7:XenkoLogoWhite
+                                            Texture: a1ef67d2-5738-42e1-bb9b-56cc93ec39e8/ad3bc951-0f20-464d-a236-fb9c3727f4e7:Textures/XenkoLogoWhite
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -198,7 +181,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
+                        Position: {X: -1.0, Y: 0.0, Z: -0.5}
                         Rotation: {X: -0.06540313, Y: 0.0, Z: 0.0, W: 0.997858942}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -227,7 +210,7 @@ Hierarchy:
                                         ~Id: 16931489-96bf-4c3f-b7a0-248c5049a3bb
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: ec2e83dc-26e3-44b5-95f6-fd934a98df45/2833fb49-fbe8-4d15-9200-1ee5630552af:XenkoLogoRed
+                                            Texture: ec2e83dc-26e3-44b5-95f6-fd934a98df45/2833fb49-fbe8-4d15-9200-1ee5630552af:Textures/XenkoLogoRed
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -291,13 +274,48 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             Curve: CosSin
         -   Entity:
+                Id: ba38957d-0c0d-41ec-9c98-10c0f4e91a9a
+                Name: GridBase10x10
+                Components:
+                    - !TransformComponent
+                        ~Id: af038cae-15ef-4d2d-a0fb-d7ba1fb43c50
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 742475e5-41df-4a38-af89-8a9dcdd07c07
+                        Model: 82f7cafe-fae6-41b1-ab0b-73eb1032df1c/0fb6c306-2953-47bc-86ff-3e79cfec1836:Models/GridBase10x10
+                        Materials:
+                            - null
+        -   Entity:
+                Id: cc977217-0d7c-4e20-b6b9-7bf3de36c2a0
+                Name: NextScene
+                Components:
+                    - !TransformComponent
+                        ~Id: 232d092b-8e64-48fd-bd61-72410f51acdf
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticlesSample.NextSceneScript,ParticlesSample.Game
+                        ~Id: 2dd62824-7955-4d54-93e2-0e0b5686bd65
+                        Next: 620c59d6-fd9b-4086-b84e-59fe317aafb0/8eb3fe28-2a08-441a-a015-a428d2e17bef:Lasers
+                        Previous: f9f95c85-db79-4606-abc4-23bbb1122b82/d18360d9-08c6-41e6-a8f0-dcc78e9a723d:CustomMaterials
+                        Font: bb9f276d-0c74-4f91-9c43-56267321b3d9/abe2b723-cac1-4cdc-9cbf-109a030873d3:Font
+                    - !UIComponent
+                        ~Id: 8b6b3461-4176-4039-b42f-6d9f6a123bb5
+                        Page: null
+                        Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+        -   Entity:
                 Id: f08d1282-a256-4c2c-aa94-048dd95eed88
                 Name: ConeEmitter45
                 Components:
                     - !TransformComponent
                         ~Id: 10c31666-84ab-40ae-8593-833e427b2fcf
                         Children: []
-                        Position: {X: 2.0, Y: 0.0, Z: -3.62694263E-05}
+                        Position: {X: 1.0, Y: -1.4987803E-08, Z: -0.5}
                         Rotation: {X: -0.555570245, Y: 0.0, Z: 0.0, W: 0.8314696}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
@@ -326,7 +344,7 @@ Hierarchy:
                                         ~Id: 16931489-96bf-4c3f-b7a0-248c5049a3bb
                                         ComputeColor: !ComputeTextureColor
                                             Swizzle: null
-                                            Texture: 2f45f106-215c-4578-8350-84a3ba5976eb/53d52841-b695-4d71-af85-4f665f0705bc:XenkoLogoGray
+                                            Texture: 2f45f106-215c-4578-8350-84a3ba5976eb/53d52841-b695-4d71-af85-4f665f0705bc:Textures/XenkoLogoGray
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
@@ -419,4 +437,4 @@ Hierarchy:
                                     ~Id: cd2423d8-9aed-41f1-959a-3efc529ed1b7
                                 BiasParameters:
                                     ~Id: ea85427b-3dfb-44a0-9f61-74c744539677
-                        Intensity: 0.8
+                        Intensity: 2.0
