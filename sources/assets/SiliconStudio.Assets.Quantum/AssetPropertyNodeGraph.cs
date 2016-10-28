@@ -12,15 +12,17 @@ namespace SiliconStudio.Assets.Quantum
     [AssetPropertyNodeGraphAttribute(typeof(Asset))]
     public class AssetPropertyNodeGraph : IDisposable
     {
-        private readonly AssetItem assetItem;
+        protected readonly AssetItem assetItem;
         public readonly AssetGraphNodeChangeListener NodeListener;
+        protected AssetPropertyNodeGraphContainer Container;
 
-        public AssetPropertyNodeGraph(INodeContainer container, AssetItem assetItem)
+        public AssetPropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
         {
             if (assetItem == null)
                 throw new ArgumentNullException(nameof(assetItem));
             this.assetItem = assetItem;
-            RootNode = (AssetNode)container.GetOrCreateNode(assetItem.Asset);
+            Container = container;
+            RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides();
 
             NodeListener = new AssetGraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
@@ -32,6 +34,11 @@ namespace SiliconStudio.Assets.Quantum
         public virtual bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
         {
             return true;
+        }
+
+        public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        {
+            return target;
         }
 
         public void UpdateOverridesForSerialization()

@@ -7,7 +7,7 @@ namespace SiliconStudio.Assets.Quantum
 {
     public static class AssetQuantumRegistry
     {
-        private static readonly Type[] AssetPropertyNodeGraphConstructorSignature = new Type[] { typeof(INodeContainer), typeof(AssetItem) };
+        private static readonly Type[] AssetPropertyNodeGraphConstructorSignature = { typeof(AssetPropertyNodeGraphContainer), typeof(AssetItem) };
         private static readonly Dictionary<Type, Type> NodeGraphTypes = new Dictionary<Type, Type>();
 
         public static void RegisterAssembly(Assembly assembly)
@@ -28,15 +28,16 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public static AssetPropertyNodeGraph ConstructPropertyGraph(INodeContainer nodeContainer, AssetItem assetItem)
+        public static AssetPropertyNodeGraph ConstructPropertyGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
         {
             var assetType = assetItem.Asset.GetType();
             while (assetType != null)
             {
                 Type propertyGraphType;
-                if (NodeGraphTypes.TryGetValue(assetType, out propertyGraphType))
+                var typeToTest = assetType.IsGenericType ? assetType.GetGenericTypeDefinition() : assetType;
+                if (NodeGraphTypes.TryGetValue(typeToTest, out propertyGraphType))
                 {
-                    return (AssetPropertyNodeGraph)Activator.CreateInstance(propertyGraphType, nodeContainer, assetItem);
+                    return (AssetPropertyNodeGraph)Activator.CreateInstance(propertyGraphType, container, assetItem);
                 }
                 assetType = assetType.BaseType;
             }

@@ -1,3 +1,4 @@
+using System.Linq;
 using SiliconStudio.Assets.Quantum;
 using SiliconStudio.Core;
 using SiliconStudio.Quantum;
@@ -10,7 +11,7 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
-        public AssetCompositePropertyNodeGraph(INodeContainer container, AssetItem assetItem)
+        public AssetCompositePropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
             : base(container, assetItem)
         {
         }
@@ -36,4 +37,50 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
             return false;
         }
     }
+
+    [AssetPropertyNodeGraphAttribute(typeof(AssetCompositeHierarchy<,>))]
+    public class AssetCompositeHierarchyPropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart>
+        where TAssetPart : class, IIdentifiable
+        where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
+    {
+        public AssetCompositeHierarchyPropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
+            : base(container, assetItem)
+        {
+        }
+
+        public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)assetItem.Asset;
+
+        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        {
+            // TODO: try to generalize what the overrides of this implementation are doing.
+            // Connect the entities to their base that can be entities from a prefab
+            var part = sourceNode.Content.Value as TAssetPart;
+            if (part != null && sourceNode.Content is ObjectContent)
+            {
+                TAssetPartDesign partDesign;
+                // The entity might be being moved and could possibly be currently not into the Parts collection.
+                if (AssetHierarchy.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.BaseId.HasValue && partDesign.BasePartInstanceId.HasValue)
+                {
+                    var baseAsset = AssetHierarchy.BaseParts?.Select(x => x.Asset).OfType<AssetComposite>().FirstOrDefault(x => x.ContainsPart(partDesign.BaseId.Value));
+                    if (baseAsset != null)
+                    {
+                        var basePrefab = Container.GetAssetById(baseAsset.Id);
+                        // Base prefab might have been deleted
+                        if (basePrefab == null)
+                            return base.FindTarget(sourceNode, target);
+
+                        // Entity might have been deleted in base prefab
+                        TAssetPartDesign basePart;
+                        ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)basePrefab.Asset).Hierarchy.Parts.TryGetValue(partDesign.BaseId.Value, out basePart);
+                        return basePart != null ? Container.NodeContainer.GetOrCreateNode(basePart.Part) : base.FindTarget(sourceNode, target);
+                    }
+                }
+            }
+
+            return base.FindTarget(sourceNode, target);
+        }
+
+    }
+
+
 }
