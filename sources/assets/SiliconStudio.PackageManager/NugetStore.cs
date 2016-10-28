@@ -475,7 +475,7 @@ namespace SiliconStudio.PackageManager
         /// </summary>
         /// <param name="packageId">Id of package we are looking for.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>A list of packages matching <paramref name="packageIds"/> or an empty list if none is found.</returns>
+        /// <returns>A list of packages matching <paramref name="packageId"/> or an empty list if none is found.</returns>
          public async Task<IEnumerable<NugetPackage>> FindSourcePackagesById(string packageId, CancellationToken cancellationToken)
         {
             return ToNugetPackages(manager.SourceRepository.FindPackagesById(packageId));
