@@ -97,9 +97,9 @@ namespace SiliconStudio.Assets.Tests
             throw new NotImplementedException();
         }
 
-        public override Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public override Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            var asset = (TestAssetWithParts)base.CreateChildAsset(baseLocation, idRemapping);
+            var asset = (TestAssetWithParts)base.CreateDerivedAsset(baseLocation, idRemapping);
 
             // Create asset with new base
             for (int i = 0; i < asset.Parts.Count; i++)

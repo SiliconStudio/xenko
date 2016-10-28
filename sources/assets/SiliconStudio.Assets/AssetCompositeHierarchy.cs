@@ -93,9 +93,9 @@ namespace SiliconStudio.Assets
             return Hierarchy.Parts.ContainsKey(id);
         }
 
-        public override Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public override Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateChildAsset(baseLocation);
+            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation);
 
             var remappingDictionary = idRemapping ?? new Dictionary<Guid, Guid>();
 

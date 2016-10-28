@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
         public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
         {
-            var instance = (PrefabAsset)CreateChildAsset(targetLocation);
+            var instance = (PrefabAsset)CreateDerivedAsset(targetLocation);
 
             targetContainer.AddBasePart(instance.Base);
             instanceId = Guid.NewGuid();

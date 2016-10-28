@@ -139,7 +139,7 @@ namespace SiliconStudio.Assets
         /// <param name="baseLocation">The location of this asset.</param>
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
-        public virtual Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 

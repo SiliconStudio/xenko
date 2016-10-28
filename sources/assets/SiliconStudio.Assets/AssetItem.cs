@@ -287,7 +287,7 @@ namespace SiliconStudio.Assets
         /// <returns>A new asset inheriting the values of this asset.</returns>
         public Asset CreateChildAsset()
         {
-            return Asset.CreateChildAsset(Location);
+            return Asset.CreateDerivedAsset(Location);
         }
 
         /// <summary>

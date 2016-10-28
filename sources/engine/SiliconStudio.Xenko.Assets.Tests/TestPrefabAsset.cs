@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var originAsset = CreateOriginAsset();
 
-            var derivedAsset = (PrefabAsset)originAsset.CreateChildAsset("base");
+            var derivedAsset = (PrefabAsset)originAsset.CreateDerivedAsset("base");
 
             var basePartAsset = new PrefabAsset();
             var entityPart1 = new Entity() { Name = "EPart1" };

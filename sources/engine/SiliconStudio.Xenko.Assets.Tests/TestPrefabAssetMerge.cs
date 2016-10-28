@@ -685,7 +685,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             a1.Hierarchy.Parts.Add(new EntityDesign(ec));
             a1.Hierarchy.RootPartIds.Add(ec.Id);
 
-            var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
+            var a3 = (PrefabAsset)a2.CreateDerivedAsset("a2");
 
             // Merge a2
             var result2 = a2.Merge(null, null, new List<AssetBase>()
@@ -765,7 +765,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             a1.Hierarchy.Parts.Add(new EntityDesign(ec));
             a1.Hierarchy.RootPartIds.Add(ec.Id);
 
-            var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
+            var a3 = (PrefabAsset)a2.CreateDerivedAsset("a2");
 
             assetItems.Add(new AssetItem("a3", a3));
 

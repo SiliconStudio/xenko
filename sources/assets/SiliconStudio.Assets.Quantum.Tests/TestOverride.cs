@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var nodeContainer = new AssetNodeContainer();
             var asset = new MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
-            var derivedAsset = asset.CreateChildAsset(assetItem.Location);
+            var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
             var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset1.MyString));
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var nodeContainer = new AssetNodeContainer();
             var asset = new MyAsset2 { MyStrings = { "String1", "String2" } };
             var assetItem = new AssetItem("MyAsset", asset);
-            var derivedAsset = asset.CreateChildAsset(assetItem.Location);
+            var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
             var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset2.MyStrings));
@@ -80,7 +80,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var nodeContainer = new AssetNodeContainer();
             var asset = new MyAsset3 { MyDictionary = { { "String1", new SomeObject { Value = "aaa" } }, { "String2", new SomeObject { Value = "bbb" } } } };
             var assetItem = new AssetItem("MyAsset", asset);
-            var derivedAsset = asset.CreateChildAsset(assetItem.Location);
+            var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
             var propertyNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset3.MyDictionary));
@@ -101,7 +101,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             asset.Struct.MyStrings.Add("String1");
             asset.Struct.MyStrings.Add("String2");        
             var assetItem = new AssetItem("MyAsset", asset);
-            var derivedAsset = asset.CreateChildAsset(assetItem.Location);
+            var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, derivedItem);
             var structNode = (AssetNode)graph.RootNode.GetChild(nameof(MyAsset2.Struct));

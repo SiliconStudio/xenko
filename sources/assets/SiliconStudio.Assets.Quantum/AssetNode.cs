@@ -317,7 +317,9 @@ namespace SiliconStudio.Assets.Quantum
                 return Index.Empty;
 
             var collection = Content.Retrieve();
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
+            CollectionItemIdentifiers ids;
+            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
             return new Index(ids.GetKey(id));
         }
 
@@ -327,7 +329,9 @@ namespace SiliconStudio.Assets.Quantum
                 return ItemId.Empty;
 
             var collection = Content.Retrieve();
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
+            CollectionItemIdentifiers ids;
+            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
             return ids.GetId(index.Value);
         }
 

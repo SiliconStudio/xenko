@@ -839,13 +839,13 @@ namespace SiliconStudio.Assets.Tests
             assetItems.Add(new AssetItem("a1", a1));
 
             var a2 = new TestAssetWithParts();
-            var aPartInstance1 = (TestAssetWithParts)a1.CreateChildAsset("a1");
-            var aPartInstance2 = (TestAssetWithParts)a1.CreateChildAsset("a1");
+            var aPartInstance1 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
+            var aPartInstance2 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
             a2.AddPart(aPartInstance1);
             a2.AddPart(aPartInstance2);
             assetItems.Add(new AssetItem("a2", a2));
 
-            var a3 = a2.CreateChildAsset("a2");
+            var a3 = a2.CreateDerivedAsset("a2");
             assetItems.Add(new AssetItem("a3", a3));
 
             // Create a session with this project
