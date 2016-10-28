@@ -30,5 +30,20 @@ namespace SiliconStudio.PackageManager
         {
             Constraints[packageId] = range;
         }
+
+        /// <summary>
+        /// Retrieve constraint associated with <paramref name="packageId"/> if any.
+        /// </summary>
+        /// <param name="packageId">Id of package being queried.</param>
+        /// <returns>Constraint if any, null otherwise.</returns>
+        internal PackageVersionRange GetConstraint(string packageId)
+        {
+            PackageVersionRange versionRange;
+            if (Constraints.TryGetValue(packageId, out versionRange))
+            {
+                return versionRange;
+            }
+            return null;
+        }
     }
 }
