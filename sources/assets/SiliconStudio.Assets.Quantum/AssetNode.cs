@@ -154,6 +154,51 @@ namespace SiliconStudio.Assets.Quantum
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
+            // Create new ids for collection items
+            switch (e.ChangeType)
+            {
+                case ContentChangeType.ValueChange:
+                    if (!e.Index.IsEmpty)
+                    {
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                        itemIds[e.Index.Value] = ItemId.New();
+                    }
+                    break;
+                case ContentChangeType.CollectionAdd:
+                    {
+                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
+                        if (collectionDescriptor != null)
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            itemIds.Insert(e.Index.Int, ItemId.New());
+                        }
+                        else
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            itemIds[e.Index.Value] = ItemId.New();
+                        }
+                    }
+                    break;
+                case ContentChangeType.CollectionRemove:
+                    {
+                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
+                        if (collectionDescriptor != null)
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            itemIds.DeleteAndShift(e.Index.Int);
+                        }
+                        else
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            itemIds.Delete(e.Index.Value);
+                        }
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+
             // TODO FIXME
             //if (SessionViewModel.Instance.IsInFixupAssetContext)
             //    return;
