@@ -1,0 +1,384 @@
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
+
+namespace SiliconStudio.Xenko.Input.Tests
+{
+    public class ActionMappingTest : GameTestBase
+    {
+        /// <summary>
+        /// Path to the file that will store the input gesture binding
+        /// </summary>
+        private const string ConfigPath = "input.yaml";
+
+        private const float TextSpaceY = 3;
+        private const float TextSubSectionOffsetX = 15;
+
+        private readonly Vector2 textLeftTopCorner = new Vector2(5, 5);
+        private readonly Color fontColor;
+
+        private SpriteBatch spriteBatch;
+        private float textHeight;
+        private SpriteFont spriteFont11;
+        private Texture roundTexture;
+        private int lineOffset = 0;
+
+        // Used for automatic config file reload 
+        private bool reloadConfig = false;
+        private FileSystemWatcher fileSystemWatcher;
+
+        // List of actions
+        List<InputAction> actions = new List<InputAction>();
+
+        private Queue<string> eventLog = new Queue<string>();
+        private Stopwatch checkNewDevicesStopwatch = new Stopwatch();
+
+        // State of action binder
+        private InputAction currentlyBindingAction;
+        private ActionBinder actionBinder;
+        private bool resetBindingsOnBind;
+
+        public ActionMappingTest()
+        {
+            CurrentVersion = 1;
+            //AutoLoadDefaultSettings = true;
+
+            // create and set the Graphic Device to the service register of the parent Game class
+            GraphicsDeviceManager.PreferredBackBufferWidth = 1400;
+            GraphicsDeviceManager.PreferredBackBufferHeight = 1000;
+            GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
+
+            fontColor = Color.White;
+            checkNewDevicesStopwatch.Start();
+        }
+
+        protected override void PrepareContext()
+        {
+            base.PrepareContext();
+            SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
+        }
+
+        protected override async Task LoadContent()
+        {
+            await base.LoadContent();
+
+            // Load the fonts
+            spriteFont11 = Content.Load<SpriteFont>("Arial");
+
+            // load the round texture 
+            roundTexture = Content.Load<Texture>("round");
+
+            // create the SpriteBatch used to render them
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // Measure typical text height
+            textHeight = spriteFont11.MeasureString("Dummy").Y;
+
+            SetupActions();
+            LoadConfig();
+
+            BuildUI();
+
+            // Monitor the config file to check if it changed
+            fileSystemWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory())
+            {
+                EnableRaisingEvents = true,
+                IncludeSubdirectories = false,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size
+            };
+            fileSystemWatcher.Changed += (sender, args) => { reloadConfig = true; };
+            fileSystemWatcher.Created += (sender, args) => { reloadConfig = true; };
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            // Detect new gamepads
+            if (checkNewDevicesStopwatch.Elapsed.TotalSeconds > 0.5f)
+            {
+                checkNewDevicesStopwatch.Restart();
+                Input.Scan();
+            }
+
+            // Log events
+            foreach (var evt in Input.InputEvents)
+            {
+                LogEvent(evt.ToString());
+            }
+
+            UpdateActionBinder();
+
+            if (Input.IsKeyReleased(Keys.Escape))
+                Exit();
+
+            if (reloadConfig)
+                LoadConfig();
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+            
+            // clear the screen
+            GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+
+            spriteBatch.Begin(GraphicsContext);
+            lineOffset = 0;
+
+            if (currentlyBindingAction != null)
+            {
+                List<string> accepts = new List<string>();
+                if (actionBinder.AcceptsButtons) accepts.AddRange(new[] { "Button", "Key" });
+                if (actionBinder.AcceptsAxes) accepts.Add("Axis");
+                if (actionBinder.AcceptsDirections) accepts.Add("Direction");
+                WriteLine($"Use any {string.Join("/", accepts)} to bind to {actionBinder.NextName} ({currentlyBindingAction.MappingName})...");
+                lineOffset += 1;
+            }
+
+            WriteLine("Actions:");
+            for (int i = 0; i < actions.Count; i++)
+            {
+                WriteLine($"[{i}] {actions[i]}", 1);
+
+                // Print out the tree of gestures, some gestures like TwoWay and FourWay have childrens so expand those using a stack with a gesture/indentation amount pair
+                Stack<Tuple<IInputGesture, int>> gestures = new Stack<Tuple<IInputGesture, int>>();
+                actions[i].Gestures.ForEach(x => gestures.Push(new Tuple<IInputGesture, int>(x, 2)));
+
+                while (gestures.Count > 0)
+                {
+                    var tuple = gestures.Pop();
+                    var gesture = tuple.Item1;
+                    if (gesture == null)
+                    {
+                        WriteLine("null", tuple.Item2);
+                    }
+                    else if (gesture.GetType() == typeof(TwoWayGesture))
+                    {
+                        var twoWayGesture = (TwoWayGesture)gesture;
+                        WriteLine($"Two Way Gesture (+/-): {twoWayGesture.Axis}", tuple.Item2);
+                        gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Negative, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Positive, tuple.Item2 + 1));
+                    }
+                    else if (gesture.GetType() == typeof(FourWayGesture))
+                    {
+                        var fourWayGesture = (FourWayGesture)gesture;
+                        WriteLine($"Four Way Gesture (X/Y): Direction: {fourWayGesture.Direction}", tuple.Item2);
+                        gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.Y, tuple.Item2 + 1));
+                        gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.X, tuple.Item2 + 1));
+                    }
+                    else if (gesture.GetType() == typeof(AxisButtonGesture))
+                    {
+                        var axisButton = (AxisButtonGesture)gesture;
+                        WriteLine($"Axis Button Gesture: {axisButton.Button}", tuple.Item2);
+                        gestures.Push(new Tuple<IInputGesture, int>(axisButton.Axis, tuple.Item2 + 1));
+                    }
+                    else
+                    {
+                        WriteLine($"{gesture.GetType().Name}: " + gesture, tuple.Item2);
+                    }
+                }
+            }
+
+            lineOffset += 1;
+            WriteLine("Input Events:");
+            foreach (var eventLogLine in eventLog.Reverse())
+                WriteLine(eventLogLine, 1);
+
+            spriteBatch.End();
+        }
+        
+        private void UpdateActionBinder()
+        {
+            if (actionBinder != null)
+            {
+                if (actionBinder.Done)
+                {
+                    if (resetBindingsOnBind) currentlyBindingAction.Gestures.Clear();
+                    currentlyBindingAction.Gestures.Add(actionBinder.TargetGesture);
+                    currentlyBindingAction = null;
+                    actionBinder.Dispose();
+                    actionBinder = null;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private void SetupActions()
+        {
+            Input.ActionMapping.ClearBindings();
+            actions.Clear();
+
+            AddAction<DirectionAction>("Move");
+            AddAction<DirectionAction>("Look");
+            AddAction<ButtonAction>("Jump");
+            AddAction<ButtonAction>("Fire");
+            AddAction<ButtonAction>("Zoom");
+            AddAction<ButtonAction>("Reset Camera");
+            AddAction<ButtonAction>("Menu");
+        }
+
+        private void AddAction<TType>(string name) where TType : InputAction, new()
+        {
+            var action = new TType();
+            Input.ActionMapping.AddBinding(name, action);
+            actions.Add(action);
+        }
+
+        private void StartBindingAction(InputAction action, bool reset)
+        {
+            // Cancel old operation
+            actionBinder?.Dispose();
+            actionBinder = null;
+
+            // Setup binding a button/axis or direction
+            if (action is ButtonAction)
+                actionBinder = new ButtonActionBinder(Input);
+            else if (action is AxisAction)
+                actionBinder = new AxisActionBinder(Input);
+            else if (action is DirectionAction)
+                actionBinder = new DirectionActionBinder(Input);
+            else
+                return;
+
+            resetBindingsOnBind = reset;
+            currentlyBindingAction = action;
+        }
+        
+        /// <summary>
+        /// Tries to load the input gesture binding configuration
+        /// </summary>
+        private void LoadConfig()
+        {
+            try
+            {
+                using (FileStream file = File.OpenRead(ConfigPath))
+                {
+                    if (!Input.ActionMapping.LoadBindings(file))
+                    {
+                        file.Dispose();
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                // Save new config
+                SaveConfig();
+            }
+            reloadConfig = false;
+        }
+
+        /// <summary>
+        /// Tries to save the input gesture binding configuration
+        /// </summary>
+        private void SaveConfig()
+        {
+            try
+            {
+                using (FileStream file = File.Open(ConfigPath, FileMode.Create, FileAccess.Write))
+                {
+                    Input.ActionMapping.SaveBindings(file);
+                }
+            }
+            catch (IOException)
+            {
+            }
+        }
+
+        private void BuildUI()
+        {
+            var width = 400;
+            var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
+            var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
+            SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
+
+            var stackPanel = new StackPanel();
+            for (int i = 0; i < actions.Count; i++)
+            {
+                var text = new TextBlock { Font = spriteFont11, Text = $"Action {actions[i].MappingName}", TextSize = 3.5f };
+                var add = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Add Binding", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+                var clear = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Clear", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+
+                var i1 = i;
+                add.Click += (sender, args) =>
+                {
+                    StartBindingAction(actions[i1], false);
+                };
+                clear.Click += (sender, args) =>
+                {
+                    actions[i1].Gestures.Clear();
+                };
+
+                stackPanel.Children.Add(new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    Children =
+                    {
+                        text,
+                        new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal,
+                            Children = {add, clear},
+                            Margin = new Thickness(0,0,0,4)
+                        }
+                    }
+                });
+            }
+            ui.Page = new UIPage
+            {
+                RootElement = new Canvas
+                {
+                    Children = { stackPanel }
+                }
+            };
+            stackPanel.SetCanvasPinOrigin(new Vector3(1.0f, 0, 0));
+            stackPanel.SetCanvasRelativePosition(new Vector3(1.0f, 0.0f, 0.0f));
+        }
+        
+        private void WriteLine(string str, int indent = 0)
+        {
+            spriteBatch.DrawString(spriteFont11, str,
+                textLeftTopCorner + new Vector2(TextSubSectionOffsetX * indent, lineOffset++ * (textHeight + TextSpaceY)), fontColor);
+        }
+
+        private void LogEvent(string s)
+        {
+            if (eventLog.Count >= 20)
+                eventLog.Dequeue();
+            eventLog.Enqueue(s);
+        }
+
+        [Test]
+        public void RunSampleInputTest()
+        {
+            RunGameTest(new ActionMappingTest());
+        }
+
+        public static void Main(string[] args)
+        {
+            using (var game = new ActionMappingTest())
+                game.Run();
+        }
+    }
+}

@@ -9,12 +9,12 @@ namespace SiliconStudio.Xenko.Input
     public enum ButtonState
     {
         /// <summary>
+        /// The button is not pressed
+        /// </summary>
+        Released = 0,
+        /// <summary>
         /// The button is pressed
         /// </summary>
         Pressed,
-        /// <summary>
-        /// The button is not pressed
-        /// </summary>
-        Released
     }
 }

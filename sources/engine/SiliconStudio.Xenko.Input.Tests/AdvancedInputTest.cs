@@ -12,17 +12,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
-using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Controls;
-using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -69,14 +61,8 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string compositeEvent;
         private string tapEvent;
 
-        private ButtonAction action1 = new ButtonAction();
-        private ButtonAction action2 = new ButtonAction();
-        private AxisAction action3 = new AxisAction();
-        private DirectionAction action4 = new DirectionAction();
-
         // Gamepads
         private List<string> gamePadLog = new List<string>();
-        private List<string> actionLog = new List<string>();
         private Queue<string> eventLog = new Queue<string>();
         private Stopwatch checkNewDevicesStopwatch = new Stopwatch();
 
@@ -85,9 +71,6 @@ namespace SiliconStudio.Xenko.Input.Tests
         private Tuple<GestureEvent, TimeSpan> lastTapEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
 
         private readonly TimeSpan displayGestureDuration;
-        private KeyGesture keyGesture;
-        private MouseButtonGesture buttonGesture;
-        private MouseMovementGesture mouseMovementGesture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Input"/> class.
@@ -102,7 +85,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
-            //GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
 
             fontColor = Color.Black;
             mouseColor = Color.Gray;
@@ -111,107 +94,11 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);
             displayGestureDuration = TimeSpan.FromSeconds(1f);
-
         }
-
-        [DataContract]
-        public class Settings
-        {
-            public Dictionary<string, List<InputGesture>> gestures = new Dictionary<string, List<InputGesture>>();
-        }
-
-        void LoadDefaultActionBindings()
-        {
-            action1.Gestures.Add(new KeyGesture() { Key = Keys.A });
-            Input.ActionMapping.AddBinding("Action1", action1);
-            action1.Gestures.Add(new KeyGesture() { Key = Keys.D });
-
-            action2.Gestures.Add(new MouseButtonGesture() { MouseButton = MouseButton.Right });
-            action2.Gestures.Add(new KeyCombinationGesture(Keys.LeftCtrl, Keys.S));
-            Input.ActionMapping.AddBinding("Action2", action2);
-
-            Input.ActionMapping.AddBinding("Action3", action3);
-            action3.Gestures.Add(new MouseMovementGesture() { MouseAxis = MouseAxis.X });
-            action3.Gestures.Add(new GamePadAxisGesture() { AxisIndex = 0 });
-            action3.Gestures.Add(new GamePadAxisGesture() { AxisIndex = 1 });
-
-            Input.ActionMapping.AddBinding("Action4", action4);
-            action4.Gestures.Add(new MouseMovementGesture());
-            action4.Gestures.Add(new GamePadPovGesture());
-        }
-
-        const string configPath = "input.yaml";
-        private bool reloadConfig = false;
-        private FileSystemWatcher fileSystemWatcher;
-
-        void LoadConfig()
-        {
-            try
-            {
-                using (FileStream file = File.OpenRead(configPath))
-                {
-                    if (!Input.ActionMapping.LoadBindings(file))
-                    {
-                        file.Dispose();
-                        // Save new config
-                        SaveConfig();
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                // Save new config
-                SaveConfig();
-            }
-            reloadConfig = false;
-        }
-
-        void SaveConfig()
-        {
-            try
-            {
-                using (FileStream file = File.OpenWrite(configPath))
-                {
-                    Input.ActionMapping.SaveBindings(file);
-                }
-            }
-            catch (IOException)
-            {
-            }
-        }
-
+        
         protected override Task LoadContent()
         {
             base.LoadContent();
-
-            LoadDefaultActionBindings();
-            LoadConfig();
-
-            fileSystemWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory());
-            fileSystemWatcher.EnableRaisingEvents = true;
-            fileSystemWatcher.IncludeSubdirectories = false;
-            fileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size;
-            fileSystemWatcher.Changed += (sender, args) => 
-            {
-                reloadConfig = true;
-            };
-            fileSystemWatcher.Created += (sender, args) =>
-            {
-                reloadConfig = true;
-            };
-
-            MemoryStream stream = new MemoryStream();
-            Settings settings = new Settings();
-            settings.gestures.Add("action1", action1.Gestures.ToList());
-            settings.gestures.Add("action2", action2.Gestures.ToList());
-            settings.gestures.Add("action3", action3.Gestures.ToList());
-            settings.gestures.Add("action4", action4.Gestures.ToList());
-            //ShadowObject.Enable = true;
-            YamlSerializer.GetSerializerSettings().PreferredIndent = 2;
-            YamlSerializer.Serialize(stream, settings, typeof(Settings), SerializerContextSettings.Default, false);
-
-            var buffer = stream.GetBuffer();
-            string str = Encoding.UTF8.GetString(buffer);
 
             // Load the fonts
             spriteFont11 = Content.Load<SpriteFont>("Arial");
@@ -259,7 +146,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             
             // render the mouse key states
             offset += 1;
-            spriteBatch.DrawString(spriteFont11, "Mouse :", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
+            spriteBatch.DrawString(spriteFont11, "Mouse: ", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "Mouse position: " + mousePosition, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "Mouse button down: " + mouseButtonDown, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
 
@@ -276,7 +163,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             // render the gesture states
             offset += 1;
-            spriteBatch.DrawString(spriteFont11, "Gestures :", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
+            spriteBatch.DrawString(spriteFont11, "Gestures: ", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "Drag: " + dragEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "Flick: " + flickEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "LongPress: " + longPressEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
@@ -285,20 +172,14 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             // render the input action states
             offset += 1;
-            spriteBatch.DrawString(spriteFont11, "Gestures :", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
-            for (int i = 0; i < actionLog.Count; i++)
-                spriteBatch.DrawString(spriteFont11, $"Action {i}: {actionLog[i]}", textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
-
-            // render the input action states
-            offset += 1;
-            spriteBatch.DrawString(spriteFont11, "Events :", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
+            spriteBatch.DrawString(spriteFont11, "Events: ", textLeftTopCorner + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
             foreach(var eventLogLine in eventLog)
                 spriteBatch.DrawString(spriteFont11, eventLogLine, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
 
             // render the gamepad states
             offset = 0;
             Vector2 textTopCenter = textLeftTopCorner + new Vector2(400, 0);
-            spriteBatch.DrawString(spriteFont11, "Gamepads :", textTopCenter + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
+            spriteBatch.DrawString(spriteFont11, "Gamepads: ", textTopCenter + new Vector2(0, offset++ * (textHeight + TextSpaceY)), fontColor);
             for (int i = 0; i < gamePadLog.Count; i++)
                 spriteBatch.DrawString(spriteFont11, gamePadLog[i], textTopCenter + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
 
@@ -331,7 +212,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                 var currentTime = DrawTime.Total;
 
                 gamePadLog.Clear();
-                actionLog.Clear();
                 keyDown = "";
                 mouseButtonDown = "";
                 dragEvent = "";
@@ -386,12 +266,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                     RemoveOldPointerEventInfo(pointerMoved);
                     RemoveOldPointerEventInfo(pointerReleased);
                 }
-
-                // Actions
-                actionLog.Add(action1.Value.ToString());
-                actionLog.Add(action2.Value.ToString());
-                actionLog.Add(action3.Value.ToString());
-                actionLog.Add(action4.Value.ToString());
 
                 // GamePads
                 foreach (var gamePad in Input.GamePads)
@@ -505,9 +379,6 @@ namespace SiliconStudio.Xenko.Input.Tests
                     vib?.SetVibration(state.LeftTrigger);
                 }
             }
-
-            if(reloadConfig)
-                LoadConfig();
         }
 
         [Test]

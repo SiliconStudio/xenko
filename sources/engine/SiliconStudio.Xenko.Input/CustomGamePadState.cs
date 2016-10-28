@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input
             fixed (int* axesPtr = value.Axes)
             {
                 for (int i = 0; i < Axes.Length; i++)
-                    Axes[i] = 2.0f*(axesPtr[i]/65535.0f - 0.5f);
+                    Axes[i] = axesPtr[i]/65535.0f;
             }
             fixed (byte* buttonsPtr = value.Buttons)
             {

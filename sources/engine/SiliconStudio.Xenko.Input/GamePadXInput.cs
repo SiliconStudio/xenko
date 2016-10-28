@@ -59,8 +59,8 @@ namespace SiliconStudio.Xenko.Input
                 HandleAxis(2, state.Gamepad.RightThumbX/32768.0f);
                 HandleAxis(3, state.Gamepad.RightThumbY/32768.0f);
 
-                HandleAxis(4, state.Gamepad.LeftTrigger/255.0f*2.0f - 1.0f);
-                HandleAxis(5, state.Gamepad.RightTrigger/255.0f*2.0f - 1.0f);
+                HandleAxis(4, state.Gamepad.LeftTrigger/255.0f);
+                HandleAxis(5, state.Gamepad.RightTrigger/255.0f);
             }
 
             if (!controller.IsConnected)
@@ -83,8 +83,8 @@ namespace SiliconStudio.Xenko.Input
             float deadzoneR = Gamepad.RightThumbDeadZone/32768.0f;
             state.LeftThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(0), deadzoneL), GamePadUtils.ClampDeadZone(GetAxis(1), deadzoneL));
             state.RightThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(2), deadzoneR), GamePadUtils.ClampDeadZone(GetAxis(3), deadzoneR));
-            state.LeftTrigger = this.GetTrigger(4);
-            state.RightTrigger = this.GetTrigger(5);
+            state.LeftTrigger = GetAxis(4);
+            state.RightTrigger = GetAxis(5);
 
             // Direct mapping to GamePadState
             return true;
@@ -144,8 +144,8 @@ namespace SiliconStudio.Xenko.Input
                 new GamePadAxisInfo { Name = "Left Stick Y" },
                 new GamePadAxisInfo { Name = "Right Stick X" },
                 new GamePadAxisInfo { Name = "Right Stick Y" },
-                new GamePadAxisInfo { Name = "Left Trigger" },
-                new GamePadAxisInfo { Name = "Right Trigger" },
+                new GamePadAxisInfo { Name = "Left Trigger", IsBiDirectional = false },
+                new GamePadAxisInfo { Name = "Right Trigger", IsBiDirectional = false },
             };
 
             public static readonly List<GamePadPovControllerInfo> PovControllers = new List<GamePadPovControllerInfo>

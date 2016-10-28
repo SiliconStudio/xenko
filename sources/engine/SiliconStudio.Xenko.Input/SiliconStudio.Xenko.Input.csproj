@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="ButtonEvent.cs" />
     <Compile Include="IInputAction.cs" />
+    <Compile Include="IInputEventListener.cs" />
     <Compile Include="InputGesture.cs" />
     <Compile Include="InputEvent.cs" />
     <Compile Include="InputActionMapping.cs" />

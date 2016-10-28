@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The gestures that are used for this action
         /// </summary>
-        public TrackingCollection<InputGesture> Gestures { get; } = new TrackingCollection<InputGesture>();
+        public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
 
         /// <summary>
         /// The name of the action, as registered in the action mapping
@@ -36,16 +36,20 @@ namespace SiliconStudio.Xenko.Input
         /// Updates the input action, raising events whenever something changed
         /// </summary>
         public abstract void Update();
-        
+
         private void GesturesOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
+            var gesture = e.Item as InputGesture;
+            if (gesture == null) throw new InvalidOperationException("New item does not inherit from InputGesture");
+            if (ActionMapping == null) return;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    ActionMapping?.AddInputGesture((InputGesture)e.Item);
+                    gesture.ActionMapping = ActionMapping;
+                    gesture.OnAdded();
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    ActionMapping?.RemoveInputGesture((InputGesture)e.Item);
+                    gesture.OnRemoved();
                     break;
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Reset:
@@ -87,6 +91,11 @@ namespace SiliconStudio.Xenko.Input
                 OnChanged?.Invoke(this, lastValue ? ButtonState.Pressed : ButtonState.Released);
                 lastValue = newValue;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"Button Action \"{MappingName}\", {nameof(Value)}: {Value}";
         }
     }
 
@@ -131,6 +140,11 @@ namespace SiliconStudio.Xenko.Input
                 OnNotZero?.Invoke(this, lastValue);
             }
         }
+
+        public override string ToString()
+        {
+            return $"Axis Action \"{MappingName}\", {nameof(Value)}: {Value}";
+        }
     }
 
     /// <summary>
@@ -157,24 +171,32 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update()
         {
-            Vector2 dirCombined = Vector2.Zero;
+            Vector2 target = Vector2.Zero;
+            float largest = 0.0f;
             foreach (var gesture in Gestures.OfType<IDirectionGesture>())
             {
-                dirCombined += gesture.Direction;
+                float length = gesture.Direction.Length();
+                if (length > largest)
+                {
+                    target = gesture.Direction;
+                    largest = length;
+                }
             }
-            float length = dirCombined.Length();
-            if (length > 0)
-                dirCombined /= length;
 
-            if (lastValue != dirCombined)
+            if (lastValue != target)
             {
-                lastValue = dirCombined;
+                lastValue = target;
                 OnChanged?.Invoke(this, lastValue);
             }
-            if (length > 0)
+            if (largest > 0)
             {
                 OnNotZero?.Invoke(this, lastValue);
             }
+        }
+
+        public override string ToString()
+        {
+            return $"Direction Action \"{MappingName}\", {nameof(Value)}: {Value}";
         }
     }
 }

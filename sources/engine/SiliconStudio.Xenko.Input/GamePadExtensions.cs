@@ -49,16 +49,5 @@ namespace SiliconStudio.Xenko.Input
             }
             return 0;
         }
-
-        /// <summary>
-        /// Returns the value of an axis as a trigger (going from 0 to 1)
-        /// </summary>
-        /// <param name="device">The gamepad</param>
-        /// <param name="index">the index of the axis</param>
-        /// <returns></returns>
-        public static float GetTrigger(this IGamePadDevice device, int index)
-        {
-            return device.GetAxis(index)*0.5f + 0.5f;
-        }
     }
 }

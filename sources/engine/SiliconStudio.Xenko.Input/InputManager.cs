@@ -64,13 +64,15 @@ namespace SiliconStudio.Xenko.Input
         private Dictionary<int, GamePadState> lastGamePadStates = new Dictionary<int, GamePadState>();
         private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
+        private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
+
         // Backing field of MousePosition
         private Vector2 mousePosition;
 
         /// <summary>
         /// Virtual button mapping, maps gestures to input actions
         /// </summary>
-        public InputActionMapping ActionMapping { get; } = new InputActionMapping();
+        public InputActionMapping ActionMapping { get; }
 
         /// <summary>
         /// List of the gestures to recognize.
@@ -238,6 +240,8 @@ namespace SiliconStudio.Xenko.Input
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
+
+            ActionMapping = new InputActionMapping(this);
         }
         
         public override void Initialize()
@@ -262,6 +266,15 @@ namespace SiliconStudio.Xenko.Input
                 source.OnInputDeviceAdded += OnInputDeviceAdded;
                 source.OnInputDeviceRemoved += OnInputDeviceRemoved;
                 source.Initialize(this);
+            }
+
+            // Generate mappings from input event type to a class to processes these and sends them to the correct gestures that accept those
+            TypeBasedRegistry<InputEvent> inputEventTypes = new TypeBasedRegistry<InputEvent>();
+            var registerEventRouterMethod = GetType().GetMethod("RegisterEventRouter", BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var type in inputEventTypes.GetAllTypes())
+            {
+                var genericMethod = registerEventRouterMethod.MakeGenericMethod(type);
+                genericMethod.Invoke(this, null);
             }
         }
         
@@ -516,9 +529,21 @@ namespace SiliconStudio.Xenko.Input
             {
                 pair.Key.Update(inputEvents);
             }
+
+            // Reset action mapping state
+            ActionMapping.Reset();
             
-            // Route input events to gesture mapping
-            ActionMapping.Update(gameTime.Elapsed, inputEvents);
+            // Send events to input listeners
+            foreach (var evt in inputEvents)
+            {
+                IInputEventRouter router;
+                if (!eventRouters.TryGetValue(evt.GetType(), out router))
+                    throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
+                router.RouteEvent(evt);
+            }
+            
+            // Update action mappings
+            ActionMapping.Update(gameTime.Elapsed);
 
             // Update gestures
             // TODO: Merge with input actions
@@ -533,7 +558,33 @@ namespace SiliconStudio.Xenko.Input
                 currentGamePadStates[gamepad.Index] = state;
             }
         }
-        
+
+        /// <summary>
+        /// Registers an object that listens for certain types of events using the specialized versions of <see cref="IInputEventListener&lt;"/>
+        /// </summary>
+        /// <param name="listener">The listener to register</param>
+        public void AddListener(IInputEventListener listener)
+        {
+            var eventInterfaces = listener.GetType().FindInterfaces((type, criteria) => type.IsGenericType && typeof(IInputEventListener<>) == type.GetGenericTypeDefinition(), listener);
+            var handledTypes = eventInterfaces.Select(x => x.GenericTypeArguments[0]);
+            foreach (var type in handledTypes)
+            {
+                eventRouters[type].Listeners.Add(listener);
+            }
+        }
+
+        /// <summary>
+        /// Removes a previously registered event listener
+        /// </summary>
+        /// <param name="listener">The listener to remove</param>
+        public void RemoveListener(IInputEventListener listener)
+        { 
+            foreach (var pair in eventRouters)
+            {
+                pair.Value.Listeners.Remove(listener);
+            }
+        }
+
         /// <summary>
         /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
         /// If not enabled only the events of one finger at a time are triggered.
@@ -575,6 +626,16 @@ namespace SiliconStudio.Xenko.Input
             OnApplicationPaused(this, EventArgs.Empty);
         }
         
+        /// <summary>
+        /// Registers an event type and adds an entry to the <see cref="eventRouters"/> map
+        /// </summary>
+        /// <typeparam name="TEventType">The event type that will get routed to the correct <see cref="InputGesture"/>s</typeparam>
+        protected void RegisterEventRouter<TEventType>() where TEventType : InputEvent
+        {
+            var type = typeof(TEventType);
+            eventRouters.Add(type, new InputEventRouter<TEventType>());
+        }
+
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
             switch (trackingCollectionChangedEventArgs.Action)
@@ -827,7 +888,7 @@ namespace SiliconStudio.Xenko.Input
             sensorDevices.Remove(sensorDevice);
             UpdateDefaultSensors();
         }
-        
+
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>
@@ -839,6 +900,25 @@ namespace SiliconStudio.Xenko.Input
         {
             return new Vector2((screenCoordinates.X*fromSize.Width - destinationRectangle.X)/destinationRectangle.Width,
                 (screenCoordinates.Y*fromSize.Height - destinationRectangle.Y)/destinationRectangle.Height);
+        }
+
+        protected interface IInputEventRouter
+        {
+            HashSet<IInputEventListener> Listeners { get; }
+            void RouteEvent(InputEvent evt);
+        }
+
+        protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent
+        {
+            public HashSet<IInputEventListener> Listeners { get; } = new HashSet<IInputEventListener>(ReferenceEqualityComparer<IInputEventListener>.Default);
+            public void RouteEvent(InputEvent evt)
+            {
+                var listeners = Listeners.ToArray();
+                foreach (var gesture in listeners)
+                {
+                    ((IInputEventListener<TEventType>)gesture).ProcessEvent((TEventType)evt);
+                }
+            }
         }
     }
 }

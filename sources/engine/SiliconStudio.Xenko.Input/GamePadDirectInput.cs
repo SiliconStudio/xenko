@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SharpDX;
 using SharpDX.DirectInput;
 using SiliconStudio.Core.Mathematics;
@@ -99,6 +100,27 @@ namespace SiliconStudio.Xenko.Input
             state.Axes = new float[axisInfos.Count];
             state.PovControllers = new int[povControllerInfos.Count];
             InitializeButtonStates();
+
+            // Query initial state to get some extra information about axes
+            try
+            {
+                // Read some data
+                for (int i = 0; i < 8; i++)
+                {
+                    gamepad.Acquire();
+                    gamepad.Poll();
+                    gamepad.GetCurrentState(ref state);
+                    Thread.Sleep(1);
+                }
+                for (int i = 0; i < axisInfos.Count; i++)
+                {
+                    // Axes that idle around 0.5 are marked as bidirectional
+                    axisInfos[i].IsBiDirectional = state.Axes[i] > 0.1f && state.Axes[i] < 0.9f;
+                }
+            }
+            catch (SharpDXException)
+            {
+            }
         }
 
         public override void Update(List<InputEvent> inputEvents)
@@ -114,7 +136,10 @@ namespace SiliconStudio.Xenko.Input
                 }
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
-                    HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GamePadAxisDeadZone));
+                    if(axisInfos[i].IsBiDirectional)
+                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GamePadAxisDeadZone));
+                    else
+                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GamePadAxisDeadZone));
                 }
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {
@@ -187,8 +212,8 @@ namespace SiliconStudio.Xenko.Input
                 // Convert axes while clamping deadzone
                 state.LeftThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[0]), InputManager.GamePadAxisDeadZone), GamePadUtils.ClampDeadZone(-GetAxis(ds4AxisMapping[1]), InputManager.GamePadAxisDeadZone));
                 state.RightThumb = new Vector2(GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[2]), InputManager.GamePadAxisDeadZone), GamePadUtils.ClampDeadZone(-GetAxis(ds4AxisMapping[3]), InputManager.GamePadAxisDeadZone));
-                state.LeftTrigger = GamePadUtils.ClampDeadZone(this.GetTrigger(ds4AxisMapping[4]), InputManager.GamePadAxisDeadZone);
-                state.RightTrigger = GamePadUtils.ClampDeadZone(this.GetTrigger(ds4AxisMapping[5]), InputManager.GamePadAxisDeadZone);
+                state.LeftTrigger = GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[4]), InputManager.GamePadAxisDeadZone);
+                state.RightTrigger = GamePadUtils.ClampDeadZone(GetAxis(ds4AxisMapping[5]), InputManager.GamePadAxisDeadZone);
 
                 return true;
             }
