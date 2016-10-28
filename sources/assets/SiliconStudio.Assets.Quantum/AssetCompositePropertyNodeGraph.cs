@@ -1,12 +1,11 @@
 using System.Linq;
-using SiliconStudio.Assets.Quantum;
 using SiliconStudio.Core;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
+namespace SiliconStudio.Assets.Quantum
 {
-    [AssetPropertyNodeGraphAttribute(typeof(AssetComposite))]
+    [AssetPropertyNodeGraph(typeof(AssetComposite))]
     public class AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetPropertyNodeGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
@@ -38,7 +37,7 @@ namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
         }
     }
 
-    [AssetPropertyNodeGraphAttribute(typeof(AssetCompositeHierarchy<,>))]
+    [AssetPropertyNodeGraph(typeof(AssetCompositeHierarchy<,>))]
     public class AssetCompositeHierarchyPropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart>
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>

@@ -1,7 +1,7 @@
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
+namespace SiliconStudio.Assets.Quantum
 {
     public class AssetContentChangeEventArgs : GraphContentChangeEventArgs
     {

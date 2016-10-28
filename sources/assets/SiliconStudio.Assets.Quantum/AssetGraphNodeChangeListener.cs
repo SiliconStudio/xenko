@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Assets.Quantum;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Assets.Editor.ViewModel.Quantum
+namespace SiliconStudio.Assets.Quantum
 {
     public class AssetGraphNodeChangeListener : GraphNodeChangeListener
     {

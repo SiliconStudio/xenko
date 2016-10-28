@@ -1,13 +1,12 @@
 using System;
 using System.Linq;
-using SiliconStudio.Assets.Quantum;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Assets.Editor.ViewModel
+namespace SiliconStudio.Assets.Quantum
 {
     /// <summary>
     /// A <see cref="GraphNodeLinker"/> that can link nodes of an asset to the corresponding nodes in their base.
