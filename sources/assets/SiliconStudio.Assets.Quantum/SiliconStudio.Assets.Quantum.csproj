@@ -52,6 +52,7 @@
     <Compile Include="AssetPropertyNodeGraphContainer.cs" />
     <Compile Include="AssetPropertyNodeGraph.cs" />
     <Compile Include="AssetQuantumRegistry.cs" />
+    <Compile Include="AssetToBaseNodeLinker.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MultiContentNode.cs" />
     <Compile Include="OverrideTypePathGenerator.cs" />
