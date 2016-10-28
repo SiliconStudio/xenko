@@ -47,6 +47,14 @@ namespace SiliconStudio.Assets.Quantum
             memberFlags[id] = isInherited ? MemberFlags.Inherited : MemberFlags.Default;
         }
 
+        public void SetIsInherited(bool isInherited)
+        {
+            foreach (var flag in memberFlags)
+            {
+                memberFlags[flag.Key] |= MemberFlags.Inherited;
+            }
+        }
+
         // TODO: we might want to turn this private and only expose IsInherited/IsOverridden etc.
         public MemberFlags GetMemberFlags(Index index)
         {

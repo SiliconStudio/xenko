@@ -6,7 +6,18 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class OverridePathVisitor : GraphVisitorBase
+    public class MarkAsInheritedVisitor : GraphVisitorBase
+    {
+        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+        {
+            var assetNode = (AssetNode)node;
+            assetNode.SetIsInherited(true);
+
+            base.VisitNode(node, currentPath);
+        }
+    }
+
+    public class OverrideTypePathGenerator : GraphVisitorBase
     {
         public Dictionary<ObjectPath, OverrideType> Result { get; } = new Dictionary<ObjectPath, OverrideType>();
 

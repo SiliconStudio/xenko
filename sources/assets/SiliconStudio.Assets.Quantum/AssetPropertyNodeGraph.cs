@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public void UpdateOverridesForSerialization()
         {
-            var visitor = new OverridePathVisitor();
+            var visitor = new OverrideTypePathGenerator();
             visitor.Visit(RootNode);
             assetItem.Overrides = visitor.Result;
         }
