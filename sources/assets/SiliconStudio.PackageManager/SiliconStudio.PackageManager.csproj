@@ -36,7 +36,7 @@
     <Compile Include="NugetPackageBuilder.cs" />
     <Compile Include="NugetPackageFile.cs" />
     <Compile Include="PackageName.cs" />
-    <Compile Include="NugetPackageOperationEventArgs.cs" />
+    <Compile Include="PackageOperationEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
     <Compile Include="NugetSemanticVersion.cs" />

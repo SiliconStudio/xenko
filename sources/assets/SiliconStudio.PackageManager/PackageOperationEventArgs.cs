@@ -5,15 +5,15 @@ using NuGet;
 
 namespace SiliconStudio.PackageManager
 {
-    public class NugetPackageOperationEventArgs
+    public class PackageOperationEventArgs
     {
-        private readonly PackageOperationEventArgs args;
+        private readonly NuGet.PackageOperationEventArgs args;
 
         /// <summary>
-        /// Initialize a new instance of <see cref="PackageOperationEventArgs"/> using the corresponding NuGet abstraction.
+        /// Initialize a new instance of <see cref="NuGet.PackageOperationEventArgs"/> using the corresponding NuGet abstraction.
         /// </summary>
         /// <param name="args">NuGet arguments to use to initialize new instance.</param>
-        internal NugetPackageOperationEventArgs(PackageOperationEventArgs args)
+        internal PackageOperationEventArgs(NuGet.PackageOperationEventArgs args)
         {
             this.args = args;
         }

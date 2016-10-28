@@ -116,10 +116,10 @@ namespace SiliconStudio.PackageManager
             SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
 
             manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem);
-            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new PackageOperationEventArgs(args));
+            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new PackageOperationEventArgs(args));
+            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new PackageOperationEventArgs(args));
+            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new PackageOperationEventArgs(args));
         }
 
         /// <summary>
@@ -182,10 +182,10 @@ namespace SiliconStudio.PackageManager
         /// </summary>
         private PackagePathResolver PathResolver { get; }
 
-        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalled;
-        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalling;
-        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalled;
-        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalling;
+        public event EventHandler<PackageOperationEventArgs> NugetPackageInstalled;
+        public event EventHandler<PackageOperationEventArgs> NugetPackageInstalling;
+        public event EventHandler<PackageOperationEventArgs> NugetPackageUninstalled;
+        public event EventHandler<PackageOperationEventArgs> NugetPackageUninstalling;
 
         /// <summary>
         /// Installation path of <paramref name="package"/>
