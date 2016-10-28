@@ -186,7 +186,7 @@ Hierarchy:
                         Texture: bb79e461-51fb-46a4-90f8-6e6bf22f8a6f/b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
-                Name: RenderToTexture (2)
+                Name: RenderToTextureTilted
                 Group: Group1
                 Components:
                     - !TransformComponent

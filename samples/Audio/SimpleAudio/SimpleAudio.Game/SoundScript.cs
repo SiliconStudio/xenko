@@ -5,6 +5,9 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
 
 namespace SimpleAudio
 {
@@ -14,15 +17,10 @@ namespace SimpleAudio
     public class SoundScript : AsyncScript
     {
         /// <summary>
-        /// The left wave entity.
+        /// The page containing the UI elements
         /// </summary>
-        public Entity LeftWave;
-
-        /// <summary>
-        /// The right wave entity.
-        /// </summary>
-        public Entity RightWave;
-
+        public UIPage Page {get; set; }
+        
         public Sound SoundMusic;
         private SoundInstance music;
         public Sound SoundEffect;
@@ -32,33 +30,42 @@ namespace SimpleAudio
         private float originalPositionX;
 
         [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
-        private Color fontColor;
+        private float fontColor;
 
         public override async Task Execute()
         {
+            var imgLeft  = Page?.RootElement.FindVisualChildOfType<ImageElement>("LeftWave");
+            var imgRight = Page?.RootElement.FindVisualChildOfType<ImageElement>("RightWave");
+            
             music = SoundMusic.CreateInstance();
             effect = SoundEffect.CreateInstance();
 
             if (!IsLiveReloading)
             {
                 // start ambient music
-                music.IsLooped = true;
+                music.IsLooping = true;
                 music.Play();
 
-                fontColor = Color.Transparent;
-                originalPositionX = RightWave.Transform.Position.X;
+                fontColor = 0;
+                originalPositionX = (imgRight != null) ? imgRight.GetCanvasRelativePosition().X : 0.65f;
             }
 
             while (Game.IsRunning)
             {
                 if (Input.PointerEvents.Any(item => item.State == PointerState.Down)) // New click
                 {
-                    // reset wave position
-                    LeftWave.Transform.Position.X = -originalPositionX;
-                    RightWave.Transform.Position.X = originalPositionX;
-
+                    if (imgLeft != null && imgRight != null)
+                    {
+                        // reset wave position
+                        imgLeft.SetCanvasRelativePosition(new Vector3(1 - originalPositionX, 0.5f, 0));
+                        imgLeft.Opacity = 0;
+                    
+                        imgRight.SetCanvasRelativePosition(new Vector3(originalPositionX, 0.5f, 0));
+                        imgRight.Opacity = 0;
+                    }
+                    
                     // reset transparency
-                    fontColor = Color.White;
+                    fontColor = 1;
 
                     // play the sound effect on each touch on the screen
                     effect.Stop();
@@ -66,14 +73,16 @@ namespace SimpleAudio
                 }
                 else
                 {
-                    // moving wave position
-                    LeftWave.Transform.Position.X -= 0.025f;
-                    RightWave.Transform.Position.X += 0.025f;
-
-                    // changing font transparency
-                    fontColor = 0.93f * fontColor;
-                    LeftWave.Get<SpriteComponent>().Color = fontColor;
-                    RightWave.Get<SpriteComponent>().Color = fontColor;
+                    if (imgLeft != null && imgRight != null)
+                    {
+                        imgLeft.SetCanvasRelativePosition(imgLeft.GetCanvasRelativePosition()   - new Vector3(0.0025f, 0, 0));
+                        imgRight.SetCanvasRelativePosition(imgRight.GetCanvasRelativePosition() + new Vector3(0.0025f, 0, 0));
+                        
+                        // changing font transparency
+                        fontColor = 0.93f * fontColor;
+                        imgLeft.Opacity = fontColor;
+                        imgRight.Opacity = fontColor;
+                    }
                 }
 
                 // wait for next frame
