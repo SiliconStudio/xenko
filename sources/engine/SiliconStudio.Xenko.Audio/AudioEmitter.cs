@@ -31,14 +31,14 @@ namespace SiliconStudio.Xenko.Audio
         private Vector3 up;
 
         /// <summary>
-        /// Gets or sets the Up orientation vector for this listener. This vector up of the world for the listener.
+        /// Gets or sets the Up orientation vector for this emitter. This vector up of the world for the emitter.
         /// </summary>
         /// <remarks>
         /// <para>By default, this value is (0,1,0).</para>
         /// <para>The value provided will be normalized if it is not already.</para>
         /// <para>The values of the Forward and Up vectors must be orthonormal (at right angles to one another). 
         /// Behavior is undefined if these vectors are not orthonormal.</para>
-        /// <para>Doppler and Matrix values between an <see name="AudioEmitter"/> and an <see cref="AudioListener"/> are effected by the listener orientation.</para>
+        /// <para>Doppler and Matrix values between an <see name="AudioEmitter"/> and an <see cref="AudioEmitter"/> are effected by the emitter orientation.</para>
         /// </remarks>
         /// <exception cref="InvalidOperationException">The value provided to the set accessor is (0,0,0).</exception>
         public Vector3 Up
@@ -59,14 +59,14 @@ namespace SiliconStudio.Xenko.Audio
         private Vector3 forward;
 
         /// <summary>
-        /// Gets or sets the forward orientation vector for this listener. This vector represents the orientation the listener is looking at.
+        /// Gets or sets the forward orientation vector for this emitter. This vector represents the orientation the emitter is looking at.
         /// </summary>
         /// <remarks>
         /// <para>By default, this value is (0,0,1).</para>
         /// <para>The value provided will be normalized if it is not already.</para>
         /// <para>The values of the Forward and Up vectors must be orthonormal (at right angles to one another). 
         /// Behavior is undefined if these vectors are not orthonormal.</para>
-        /// <para>Doppler and Matrix values between an <see name="AudioEmitter"/> and an <see cref="AudioListener"/> are effected by the listener orientation.</para>
+        /// <para>Doppler and Matrix values between an <see name="AudioEmitter"/> and an <see cref="AudioEmitter"/> are effected by the emitter orientation.</para>
         /// </remarks>
         /// <exception cref="InvalidOperationException">The value provided to the set accessor is (0,0,0) or <see cref="Up"/>.</exception>
         public Vector3 Forward
