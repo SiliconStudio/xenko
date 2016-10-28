@@ -143,6 +143,9 @@ namespace SiliconStudio.Assets
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
+            // Make sure we have identifiers for all items
+            CollectionItemIdHelper.GenerateMissingItemIds(this);
+
             // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
 

@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Assets.Editor.ViewModel.Quantum;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 

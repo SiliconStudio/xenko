@@ -41,13 +41,18 @@ namespace SiliconStudio.Assets.Quantum
 
         internal bool ResettingOverride { get; private set; }
 
-        public void SetOverride(OverrideType overrideType, Index index)
+        public void Override(bool isOverridden, Index index)
+        {
+            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+        }
+
+        internal void SetOverride(OverrideType overrideType, Index index)
         {
             var id = IndexToId(index);
             SetOverride(overrideType, id);
         }
 
-        public void SetOverride(OverrideType overrideType, ItemId id)
+        private void SetOverride(OverrideType overrideType, ItemId id)
         {
             if (overrideType == OverrideType.Base)
             {
@@ -64,6 +69,37 @@ namespace SiliconStudio.Assets.Quantum
             OverrideType result;
             var id = IndexToId(index);
             return overrides.TryGetValue(id, out result) ? result : OverrideType.Base;
+        }
+
+        public bool IsOverridden(Index index)
+        {
+            OverrideType result;
+            var id = IndexToId(index);
+            return overrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        public bool IsInherited(Index index)
+        {
+            if (BaseContent == null)
+                return false;
+
+            OverrideType result;
+            var id = IndexToId(index);
+            return !overrides.TryGetValue(id, out result) || (result & OverrideType.New) != OverrideType.New;
+        }
+
+        public IEnumerable<Index> GetOverriddenIndices()
+        {
+            if (BaseContent == null)
+                yield break;
+
+            foreach (var flags in overrides)
+            {
+                if ((flags.Value & OverrideType.New) == OverrideType.New)
+                {
+                    yield return IdToIndex(flags.Key);
+                }
+            }
         }
 
         internal Dictionary<ItemId, OverrideType> GetAllOverrides()
@@ -193,11 +229,10 @@ namespace SiliconStudio.Assets.Quantum
             var baseNode = (AssetNode)BaseContent?.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
-                if (!(baseNode?.contentUpdating ?? false))
+                if (baseNode != null && !baseNode.contentUpdating)
                 {
-                    var overrideType = !ResettingOverride ? OverrideType.New : OverrideType.Base;
                     OverrideChanging?.Invoke(this, EventArgs.Empty);
-                    SetOverride(overrideType, e.Index);
+                    Override(!ResettingOverride, e.Index);
                     OverrideChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
