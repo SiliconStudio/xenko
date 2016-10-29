@@ -41,14 +41,24 @@ namespace SiliconStudio.PackageManager
             return new PackageVersionRange(min, version.IsMinInclusive, max, version.IsMaxInclusive);
         }
 
+        public static PackageVersion ToPackageVersion(this NuGet.SemanticVersion version)
+        {
+            return new PackageVersion(version.Version, version.SpecialVersion);
+        }
+
+        public static NuGet.SemanticVersion ToSemanticVersion(this PackageVersion version)
+        {
+            return new NuGet.SemanticVersion(version.Version, version.SpecialVersion);
+        }
+
 
         public static NuGet.VersionSpec ToVersionSpec(this PackageVersionRange range)
         {
             return new NuGet.VersionSpec()
             {
-                MinVersion = range.MinVersion != null ? range.MinVersion.ToSemanticVersion().SemanticVersion : null,
+                MinVersion = range.MinVersion != null ? range.MinVersion.ToSemanticVersion() : null,
                 IsMinInclusive = range.IsMinInclusive,
-                MaxVersion = range.MaxVersion != null ? range.MaxVersion.ToSemanticVersion().SemanticVersion : null,
+                MaxVersion = range.MaxVersion != null ? range.MaxVersion.ToSemanticVersion() : null,
                 IsMaxInclusive = range.IsMaxInclusive
             };
         }

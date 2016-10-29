@@ -50,7 +50,7 @@ namespace SiliconStudio.PackageManager
         /// <summary>
         /// Semantic version of current package.
         /// </summary>
-        public NugetSemanticVersion Version => new NugetSemanticVersion(packageMetadata.Version);
+        public PackageVersion Version => packageMetadata.Version.ToPackageVersion();
 
         /// <summary>
         /// Nuget IPackage associated to current.

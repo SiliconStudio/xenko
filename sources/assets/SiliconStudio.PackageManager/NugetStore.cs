@@ -394,11 +394,11 @@ namespace SiliconStudio.PackageManager
         /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
         /// <param name="packageId">Name of package to install.</param>
         /// <param name="version">Version of package to install.</param>
-        public void InstallPackage(string packageId, NugetSemanticVersion version)
+        public void InstallPackage(string packageId, PackageVersion version)
         {
             using (GetLocalRepositoryLock())
             {
-                manager.InstallPackage(packageId, version.SemanticVersion, false, true);
+                manager.InstallPackage(packageId, version.ToSemanticVersion(), false, true);
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();

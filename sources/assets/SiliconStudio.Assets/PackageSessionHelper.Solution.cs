@@ -34,14 +34,14 @@ namespace SiliconStudio.Assets
                     yamlStream.Load(input);
                     dynamic yamlRootNode = new DynamicYamlMapping((YamlMappingNode)yamlStream.Documents[0].RootNode);
 
-                    NugetSemanticVersion dependencyVersion = null;
+                    PackageVersion dependencyVersion = null;
 
                     foreach (var dependency in yamlRootNode.Meta.Dependencies)
                     {
                         // Support paradox legacy projects
                         if ((string)dependency.Name == "Xenko" || (string)dependency.Name == "Paradox")
                         {
-                            dependencyVersion = new NugetSemanticVersion((string) dependency.Version);
+                            dependencyVersion = new PackageVersion((string) dependency.Version);
 
                             // Paradox 1.1 was having incorrect version set (1.0), read it from .props file
                             if (dependencyVersion.Version.Major == 1 && dependencyVersion.Version.Minor == 0)
@@ -56,7 +56,7 @@ namespace SiliconStudio.Assets
                                         {
                                             if (propsReader.Read())
                                             {
-                                                dependencyVersion = new NugetSemanticVersion(propsReader.Value);
+                                                dependencyVersion = new PackageVersion(propsReader.Value);
                                             }
                                         }
                                     }

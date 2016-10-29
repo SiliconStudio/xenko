@@ -370,20 +370,5 @@ namespace SiliconStudio.PackageManager
                 }
             }
         }
-
-        internal static PackageVersion FromSemanticVersion(NugetSemanticVersion semanticVersion)
-        {
-            if (semanticVersion == null)
-            {
-                return null;
-            }
-            return new PackageVersion(semanticVersion.ToString());
-        }
-
-        public NugetSemanticVersion ToSemanticVersion()
-        {
-            return new NugetSemanticVersion(ToString());
-        }
-
     }
 }

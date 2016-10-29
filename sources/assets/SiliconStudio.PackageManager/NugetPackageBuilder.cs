@@ -92,7 +92,7 @@ namespace SiliconStudio.PackageManager
 
         public string Title => Builder.Title;
 
-        public NugetSemanticVersion Version => new NugetSemanticVersion(Builder.Version);
+        public PackageVersion Version => Builder.Version.ToPackageVersion();
 
         public void Save(Stream stream)
         {
