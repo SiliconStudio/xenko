@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SiliconStudio.PackageManager
@@ -84,15 +85,18 @@ namespace SiliconStudio.PackageManager
         public bool Listed => IPackage?.Listed ?? false;
         public DateTimeOffset? Published => IPackage?.Published;
 
-        public IEnumerable<NugetPackageFile> GetFiles()
+        public IEnumerable<PackageFile> GetFiles(string root)
         {
-            var res = new List<NugetPackageFile>();
+            if (root == null) throw new ArgumentNullException(nameof(root));
+
+            var res = new List<PackageFile>();
             var files = IPackage?.GetFiles();
             if (files != null)
             {
                 foreach (var file in files)
                 {
-                    res.Add(new NugetPackageFile(file));
+                    // TODO: Verify when testing selfupdate that `root` + `file.Path` gives us the right path
+                    res.Add(new PackageFile(root, file.Path));
                 }
             }
             return res;

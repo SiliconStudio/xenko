@@ -35,7 +35,7 @@
     <Compile Include="ManifestFile.cs" />
     <Compile Include="MessageLevel.cs" />
     <Compile Include="NugetPackageBuilder.cs" />
-    <Compile Include="NugetPackageFile.cs" />
+    <Compile Include="PackageFile.cs" />
     <Compile Include="PackageName.cs" />
     <Compile Include="PackageOperationEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
