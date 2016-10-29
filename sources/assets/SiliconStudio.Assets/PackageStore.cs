@@ -297,7 +297,7 @@ namespace SiliconStudio.Assets
             return meta;
         }
 
-        public static void ToNugetManifest(PackageMeta meta, NugetManifestMetadata manifestMeta)
+        public static void ToNugetManifest(PackageMeta meta, ManifestMetadata manifestMeta)
         {
             manifestMeta.Id = meta.Name;
             manifestMeta.Version = meta.Version.ToString();

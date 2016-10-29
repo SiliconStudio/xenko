@@ -28,10 +28,11 @@
     </Compile>
     <Compile Include="IPackageManagerLogger.cs" />
     <Compile Include="ConstraintProvider.cs" />
+    <Compile Include="ManifestDependency.cs" />
     <Compile Include="NuGet2Extensions.cs" />
     <Compile Include="NugetLogger.cs" />
-    <Compile Include="NugetManifestMetadata.cs" />
-    <Compile Include="NugetManifestFile.cs" />
+    <Compile Include="ManifestMetadata.cs" />
+    <Compile Include="ManifestFile.cs" />
     <Compile Include="MessageLevel.cs" />
     <Compile Include="NugetPackageBuilder.cs" />
     <Compile Include="NugetPackageFile.cs" />

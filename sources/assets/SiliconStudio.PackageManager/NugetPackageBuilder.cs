@@ -99,22 +99,22 @@ namespace SiliconStudio.PackageManager
             Builder.Save(stream);
         }
 
-        public void Populate(NugetManifestMetadata meta)
+        public void Populate(ManifestMetadata meta)
         {
-            ((PackageBuilder)Builder).Populate(meta.Metadata);
+            ((PackageBuilder)Builder).Populate(meta.ToManifestMetadata());
         }
 
-        public void PopulateFiles(UDirectory rootDirectory, List<NugetManifestFile> files)
+        public void PopulateFiles(UDirectory rootDirectory, List<ManifestFile> files)
         {
             ((PackageBuilder)Builder).PopulateFiles(rootDirectory, ToManifsetFiles(files));
         }
 
-        public static IEnumerable<ManifestFile> ToManifsetFiles(IEnumerable<NugetManifestFile> list)
+        public static IEnumerable<NuGet.ManifestFile> ToManifsetFiles(IEnumerable<ManifestFile> list)
         {
-            var res = new List<ManifestFile>();
+            var res = new List<NuGet.ManifestFile>();
             foreach (var entry in list)
             {
-                res.Add(entry.File);
+                res.Add(entry.ToManifestFile());
             }
             return res;
         }

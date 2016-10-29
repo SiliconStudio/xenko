@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Assets.Tasks
     {
         public static void Build(Package package, string specialVersion = null, string outputDirectory = null)
         {
-            if (package == null) throw new ArgumentNullException("package");
+            if (package == null) throw new ArgumentNullException(nameof(package));
 
-            var meta = new NugetManifestMetadata();
+            var meta = new ManifestMetadata();
             PackageStore.ToNugetManifest(package.Meta, meta);
 
             // Override version with task SpecialVersion (if specified by user)
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 
             // TODO this is not working 
             // We are excluding everything that is in a folder that starts with a dot (ie. .shadow, .vs)
-            var files = new List<NugetManifestFile>()
+            var files = new List<ManifestFile>()
                 {
                     NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe"),
                     NewFile(@"Bin\**\*.vsix", "Bin", @"Bin\**\.*\**\*.vsix"),
@@ -160,9 +160,9 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             File.Delete(newPackage.FullPath);
         }
 
-        private static NugetManifestFile NewFile(string source, string target, string exclude = null)
+        private static ManifestFile NewFile(string source, string target, string exclude = null)
         {
-            return new NugetManifestFile()
+            return new ManifestFile()
                 {
                     Source = source.Replace('/', '\\'),
                     Target = target.Replace('/', '\\'),
