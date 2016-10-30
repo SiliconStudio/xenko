@@ -1,6 +1,6 @@
 !Package
 Id: 6d251236-da95-409a-8f4b-7d42ae1fd32c
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Input.Tests

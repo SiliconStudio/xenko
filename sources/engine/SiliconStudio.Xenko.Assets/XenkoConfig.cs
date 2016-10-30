@@ -86,51 +86,11 @@ namespace SiliconStudio.Xenko.Assets
             }
             solutionPlatforms.Add(windowsPlatform);
 
-            // Windows Store
-            var windowsStorePlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.WindowsStore.ToString(),
-                DisplayName = "Windows Store",
-                Type = PlatformType.WindowsStore,
-                IsAvailable = WindowsRuntimeBuild.Any(IsFileInProgramFilesx86Exist),
-                UseWithExecutables = false,
-                IncludeInSolution = false,
-            };
-
-            windowsStorePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
-            windowsStorePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
-            windowsStorePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_STORE");
-            windowsStorePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
-            windowsStorePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-            windowsStorePlatform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsStorePlatform.Configurations["Debug"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsStorePlatform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsStorePlatform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
-
-            foreach (var cpu in new[] { "x86", "x64", "ARM" })
-            {
-                var windowsStorePlatformCpu = new SolutionPlatformPart(windowsStorePlatform.Name + "-" + cpu)
-                {
-                    LibraryProjectName = windowsStorePlatform.Name,
-                    ExecutableProjectName = cpu,
-                    Cpu = cpu,
-                    InheritConfigurations = true,
-                    UseWithLibraries = false,
-                    UseWithExecutables = true,
-                };
-                windowsStorePlatformCpu.Configurations.Clear();
-                windowsStorePlatformCpu.Configurations.AddRange(windowsStorePlatform.Configurations);
-
-                windowsStorePlatform.PlatformsPart.Add(windowsStorePlatformCpu);
-            }
-
-            solutionPlatforms.Add(windowsStorePlatform);
-
             // Windows 10
             var windows10Platform = new SolutionPlatform()
             {
                 Name = PlatformType.Windows10.ToString(),
-                DisplayName = "Windows 10",
+                DisplayName = "Windows 10 (UWP)",
                 Type = PlatformType.Windows10,
                 IsAvailable = IsFileInProgramFilesx86Exist(Windows10UniversalRuntimeBuild),
                 UseWithExecutables = false,
@@ -169,47 +129,6 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             solutionPlatforms.Add(windows10Platform);
-
-            // Windows Phone
-            var windowsPhonePlatform = new SolutionPlatform()
-            {
-                Name = PlatformType.WindowsPhone.ToString(),
-                DisplayName = "Windows Phone",
-                Type = PlatformType.WindowsPhone,
-                IsAvailable = WindowsRuntimeBuild.Any(IsFileInProgramFilesx86Exist),
-                UseWithExecutables = false,
-                IncludeInSolution = false,
-            };
-
-            windowsPhonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
-            windowsPhonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
-            windowsPhonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_PHONE");
-            windowsPhonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));
-            windowsPhonePlatform.Configurations.Add(new SolutionConfiguration("AppStore"));
-
-            windowsPhonePlatform.Configurations["Release"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsPhonePlatform.Configurations["Debug"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsPhonePlatform.Configurations["Testing"].Properties.Add("<NoWarn>;2008</NoWarn>");
-            windowsPhonePlatform.Configurations["AppStore"].Properties.Add("<NoWarn>;2008</NoWarn>");
-
-            foreach (var cpu in new[] { "x86", "ARM" })
-            {
-                var windowsPhonePlatformCpu = new SolutionPlatformPart(windowsPhonePlatform.Name + "-" + cpu)
-                {
-                    LibraryProjectName = windowsPhonePlatform.Name,
-                    ExecutableProjectName = cpu,
-                    Cpu = cpu,
-                    InheritConfigurations = true,
-                    UseWithLibraries = false,
-                    UseWithExecutables = true
-                };
-                windowsPhonePlatformCpu.Configurations.Clear();
-                windowsPhonePlatformCpu.Configurations.AddRange(windowsPhonePlatform.Configurations);
-
-                windowsPhonePlatform.PlatformsPart.Add(windowsPhonePlatformCpu);
-            }
-
-            solutionPlatforms.Add(windowsPhonePlatform);
 
             // Linux
             var linuxPlatform = new SolutionPlatform()

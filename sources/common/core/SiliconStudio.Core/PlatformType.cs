@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -34,11 +37,13 @@ namespace SiliconStudio.Core
         /// <summary>
         /// The Windows Phone OS.
         /// </summary>
+        [Obsolete]
         WindowsPhone,
 
         /// <summary>
         /// The Windows Store OS.
         /// </summary>
+        [Obsolete]
         WindowsStore,
 
         /// <summary>
