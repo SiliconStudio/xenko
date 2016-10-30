@@ -19,10 +19,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleConstruction()
         {
-            var nodeContainer = new AssetNodeContainer();
+            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
-            var graph = AssetQuantumRegistry.ConstructPropertyGraph(nodeContainer, assetItem);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
         }
     }
