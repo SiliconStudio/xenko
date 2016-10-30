@@ -87,11 +87,14 @@ namespace SiliconStudio.Assets.Quantum
         // TODO: turn private
         public void LinkToBase(AssetNode sourceRootNode, AssetNode targetRootNode)
         {
-            if (baseLinker != null)
-            {
-                baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((AssetNode)node)) && ShouldListenToTargetNode(member, node);
-                baseLinker.LinkGraph(sourceRootNode, targetRootNode);
-            }
+            baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((AssetNode)node)) && ShouldListenToTargetNode(member, node);
+            baseLinker.LinkGraph(sourceRootNode, targetRootNode);
+        }
+
+        // TODO: turn protected
+        public virtual object CloneValueFromBase(object value, MultiContentNode node)
+        {
+            return AssetNode.CloneFromBase(value);
         }
     }
 }
