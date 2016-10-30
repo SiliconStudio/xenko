@@ -9,17 +9,17 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    [AssetPropertyNodeGraphAttribute(typeof(Asset))]
-    public class AssetPropertyNodeGraph : IDisposable
+    [AssetPropertyGraph(typeof(Asset))]
+    public class AssetPropertyGraph : IDisposable
     {
         protected readonly AssetItem assetItem;
         public readonly AssetGraphNodeChangeListener NodeListener;
-        protected AssetPropertyNodeGraphContainer Container;
+        protected AssetPropertyGraphContainer Container;
         // TODO: this should be turn private once all quantum code has been split from view model
         public readonly AssetToBaseNodeLinker baseLinker;
         public readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
 
-        public AssetPropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
+        public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
         {
             if (assetItem == null)
                 throw new ArgumentNullException(nameof(assetItem));

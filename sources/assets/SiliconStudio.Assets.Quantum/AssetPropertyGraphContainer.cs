@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class AssetPropertyNodeGraphContainer
+    public class AssetPropertyGraphContainer
     {
         private readonly PackageSession session;
-        private readonly Dictionary<Guid, AssetPropertyNodeGraph> registeredGraphs = new Dictionary<Guid, AssetPropertyNodeGraph>();
+        private readonly Dictionary<Guid, AssetPropertyGraph> registeredGraphs = new Dictionary<Guid, AssetPropertyGraph>();
 
-        public AssetPropertyNodeGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
+        public AssetPropertyGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
         {
             this.session = session;
             NodeContainer = nodeContainer;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public AssetPropertyNodeGraph InitializeAsset(AssetItem assetItem)
+        public AssetPropertyGraph InitializeAsset(AssetItem assetItem)
         {
             // SourceCodeAssets have no property
             if (assetItem.Asset is SourceCodeAsset)
@@ -36,14 +36,14 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        public AssetPropertyNodeGraph GetGraph(Guid assetId)
+        public AssetPropertyGraph GetGraph(Guid assetId)
         {
-            AssetPropertyNodeGraph graph;
+            AssetPropertyGraph graph;
             registeredGraphs.TryGetValue(assetId, out graph);
             return graph;
         }
 
-        public void RegisterGraph(Guid assetId, AssetPropertyNodeGraph graph)
+        public void RegisterGraph(Guid assetId, AssetPropertyGraph graph)
         {
             registeredGraphs.Add(assetId, graph);
         }

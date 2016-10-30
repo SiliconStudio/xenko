@@ -11,14 +11,14 @@ namespace SiliconStudio.Assets.Quantum
     /// <summary>
     /// A <see cref="GraphNodeLinker"/> that can link nodes of an asset to the corresponding nodes in their base.
     /// </summary>
-    /// <remarks>This method will invoke <see cref="AssetPropertyNodeGraph.FindTarget(IGraphNode, IGraphNode)"/> when linking, to allow custom links for cases such as <see cref="AssetComposite"/>.</remarks>
+    /// <remarks>This method will invoke <see cref="AssetPropertyGraph.FindTarget(IGraphNode, IGraphNode)"/> when linking, to allow custom links for cases such as <see cref="AssetComposite"/>.</remarks>
     public class AssetToBaseNodeLinker : GraphNodeLinker
     {
-        private readonly AssetPropertyNodeGraph propertyNodeGraph;
+        private readonly AssetPropertyGraph propertyGraph;
 
-        public AssetToBaseNodeLinker(AssetPropertyNodeGraph propertyNodeGraph)
+        public AssetToBaseNodeLinker(AssetPropertyGraph propertyGraph)
         {
-            this.propertyNodeGraph = propertyNodeGraph;
+            this.propertyGraph = propertyGraph;
         }
 
         public Func<MemberContent, IGraphNode, bool> ShouldVisit { get; set; }
@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Quantum
         protected override IGraphNode FindTarget(IGraphNode sourceNode)
         {
             var defaultTarget = base.FindTarget(sourceNode);
-            return propertyNodeGraph.FindTarget(sourceNode, defaultTarget);
+            return propertyGraph.FindTarget(sourceNode, defaultTarget);
         }
 
         protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)

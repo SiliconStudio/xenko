@@ -5,12 +5,12 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    [AssetPropertyNodeGraph(typeof(AssetComposite))]
-    public class AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetPropertyNodeGraph
+    [AssetPropertyGraph(typeof(AssetComposite))]
+    public class AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart> : AssetPropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
-        public AssetCompositePropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
+        public AssetCompositePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
             : base(container, assetItem)
         {
         }
@@ -37,12 +37,12 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    [AssetPropertyNodeGraph(typeof(AssetCompositeHierarchy<,>))]
-    public class AssetCompositeHierarchyPropertyNodeGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyNodeGraph<TAssetPartDesign, TAssetPart>
+    [AssetPropertyGraph(typeof(AssetCompositeHierarchy<,>))]
+    public class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart>
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
-        public AssetCompositeHierarchyPropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
+        public AssetCompositeHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
             : base(container, assetItem)
         {
         }

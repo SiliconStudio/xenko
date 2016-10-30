@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimplePropertyInArchetype()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
             var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimplePropertyInDerived()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
             var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
@@ -82,7 +82,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleCollection()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset2 { MyStrings = { "String1", "String2" } };
             var assetItem = new AssetItem("MyAsset", asset);
             var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
@@ -101,7 +101,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleDictionary()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset3 { MyDictionary = { { "String1", new SomeObject { Value = "aaa" } }, { "String2", new SomeObject { Value = "bbb" } } } };
             var assetItem = new AssetItem("MyAsset", asset);
             var derivedAsset = asset.CreateDerivedAsset(assetItem.Location);
@@ -120,7 +120,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestCollectionInStruct()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset2();
             asset.Struct.MyStrings.Add("String1");
             asset.Struct.MyStrings.Add("String2");        
@@ -142,7 +142,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [Test]
         public void TestSimpleCollectionAddInArchetype()
         {
-            var container = new AssetPropertyNodeGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new MyAsset2 { MyStrings = { "String1", "String2" } };
             var assetItem = new AssetItem("MyAsset", asset);
             var derivedAsset = (MyAsset2)asset.CreateDerivedAsset(assetItem.Location);
