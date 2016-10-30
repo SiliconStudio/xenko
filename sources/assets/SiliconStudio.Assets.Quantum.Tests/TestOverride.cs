@@ -52,6 +52,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(container, derivedItem);
             var basePropertyNode = (AssetNode)baseGraph.RootNode.GetChild(nameof(MyAsset1.MyString));
             var derivedPropertyNode = (AssetNode)derivedGraph.RootNode.GetChild(nameof(MyAsset1.MyString));
+            derivedGraph.RefreshBase(baseGraph);
+
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
             basePropertyNode.Content.Update("MyDerivedString");
@@ -70,6 +72,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
             var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
             var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(container, derivedItem);
+            derivedGraph.RefreshBase(baseGraph);
+
             var basePropertyNode = (AssetNode)baseGraph.RootNode.GetChild(nameof(MyAsset1.MyString));
             var derivedPropertyNode = (AssetNode)derivedGraph.RootNode.GetChild(nameof(MyAsset1.MyString));
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));

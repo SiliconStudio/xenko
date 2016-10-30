@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
@@ -38,6 +39,17 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         public AssetNode RootNode { get; }
+
+        public void RefreshBase(AssetPropertyGraph baseAssetGraph)
+        {
+            foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
+            {
+                linkedNode.Key.BaseContent.Changed -= linkedNode.Value;
+            }
+            baseLinkedNodes.Clear();
+
+            LinkToBase(RootNode, baseAssetGraph?.RootNode);
+        }
 
         // TODO: turn protected
         public virtual bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
