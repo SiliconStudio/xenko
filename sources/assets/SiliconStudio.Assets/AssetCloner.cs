@@ -10,6 +10,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -218,6 +219,13 @@ namespace SiliconStudio.Assets
                 //}
 
                 ShadowObject.Copy(previousObject, newObject);
+
+                CollectionItemIdentifiers ids;
+                if (CollectionItemIdHelper.TryGetCollectionItemIds(previousObject, out ids))
+                {
+                    // TODO: properly clone here!
+                    // TODO: how to handle non-value type key? -> store them in a local map here? (OnObjDes will be called for them too, hopefully items are before collection)
+                }
                 if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
                 {
                     Override.RemoveFrom(newObject);

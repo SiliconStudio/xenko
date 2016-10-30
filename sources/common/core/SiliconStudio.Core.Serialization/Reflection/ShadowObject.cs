@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Serialization;
@@ -178,7 +179,7 @@ namespace SiliconStudio.Core.Reflection
             copy.id = id;
             copy.isIdentifiable = isIdentifiable;
 
-            foreach (var keyValue in this)
+            foreach (var keyValue in this.Where(x => x.Value?.GetType().IsValueType ?? true))
             {
                 copy.Add(keyValue.Key, keyValue.Value);
             }

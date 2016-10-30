@@ -178,6 +178,7 @@ namespace SiliconStudio.Assets.Quantum
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
             // Create new ids for collection items
+            var baseNode = (AssetNode)BaseContent?.OwnerNode;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
@@ -190,15 +191,32 @@ namespace SiliconStudio.Assets.Quantum
                 case ContentChangeType.CollectionAdd:
                     {
                         var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
-                        if (collectionDescriptor != null)
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                        // Compute the id we will add for this item
+                        ItemId itemId;
+                        if (baseNode?.contentUpdating ?? false)
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            itemIds.Insert(e.Index.Int, ItemId.New());
+                            var baseCollection = baseNode?.Content.Retrieve();
+                            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
+                            itemId = itemIds.FindMissingId(baseIds);
                         }
                         else
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            itemIds[e.Index.Value] = ItemId.New();
+                            itemId = ItemId.New();
+                        }
+                        // Add the id to the proper location (insert or add)
+                        if (collectionDescriptor != null)
+                        {
+                            itemIds.Insert(e.Index.Int, itemId);
+                        }
+                        else
+                        {
+                            itemIds[e.Index.Value] = itemId;
+                        }
+                        // Mark it as New if it does not come from the base
+                        if (!(baseNode?.contentUpdating ?? false))
+                        {
+                            SetOverride(OverrideType.New, itemId);
                         }
                     }
                     break;
@@ -226,7 +244,6 @@ namespace SiliconStudio.Assets.Quantum
             //if (SessionViewModel.Instance.IsInFixupAssetContext)
             //    return;
 
-            var baseNode = (AssetNode)BaseContent?.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
                 if (baseNode != null && !baseNode.contentUpdating)
@@ -234,38 +251,6 @@ namespace SiliconStudio.Assets.Quantum
                     OverrideChanging?.Invoke(this, EventArgs.Empty);
                     Override(!ResettingOverride, e.Index);
                     OverrideChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-
-            if (e.ChangeType == ContentChangeType.CollectionAdd)
-            {
-                var collection = e.Content.Retrieve();
-                var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
-                ItemId itemId;
-
-                if (baseNode?.contentUpdating ?? false)
-                {
-                    var baseCollection = baseNode?.Content.Retrieve();
-                    var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
-                    itemId = ids.FindMissingId(baseIds);
-                }
-                else
-                {
-                    itemId = ItemId.New();
-                }
-
-                if (e.Content.Descriptor is CollectionDescriptor)
-                {
-                    var index = e.Index.Int;
-                    ids.Insert(index, itemId);
-                }
-                else
-                {
-                    ids.Add(e.Index.Value, itemId);
-                }
-                if (!(baseNode?.contentUpdating ?? false))
-                {
-                    SetOverride(OverrideType.New, itemId);
                 }
             }
 

@@ -41,8 +41,9 @@
   <ItemGroup>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestAssetPropertyNodeGraph.cs" />
+    <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestOverrideUpdates.cs" />
+    <Compile Include="Types.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
