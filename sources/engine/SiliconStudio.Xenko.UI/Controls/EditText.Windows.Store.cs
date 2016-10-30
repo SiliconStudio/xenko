@@ -40,11 +40,8 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void ActivateEditTextImpl()
         {
-            // Windows Store don't have this method, so let's always use TextBox
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             var pane = Windows.UI.ViewManagement.InputPane.GetForCurrentView();
             if (pane.TryShow())
-#endif
             {
                 var game = GetGame();
                 if (game == null)

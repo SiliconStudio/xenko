@@ -45,7 +45,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>

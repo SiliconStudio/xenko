@@ -34,12 +34,6 @@ namespace SiliconStudio.Xenko.Data
                 case PlatformType.Windows:
                     platform = ConfigPlatforms.Windows;
                     break;
-                case PlatformType.WindowsPhone:
-                    platform = ConfigPlatforms.WindowsPhone;
-                    break;
-                case PlatformType.WindowsStore:
-                    platform = ConfigPlatforms.WindowsStore;
-                    break;
                 case PlatformType.Android:
                     platform = ConfigPlatforms.Android;
                     break;

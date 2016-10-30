@@ -25,16 +25,6 @@ namespace SiliconStudio.Xenko.Assets.Tests2
             { Tuple.Create(PlatformType.Windows, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },
             { Tuple.Create(PlatformType.Windows, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm },
 
-            { Tuple.Create(PlatformType.WindowsPhone, AlphaFormat.None), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.WindowsPhone, AlphaFormat.Mask), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.WindowsPhone, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },
-            { Tuple.Create(PlatformType.WindowsPhone, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm },
-
-            { Tuple.Create(PlatformType.WindowsStore, AlphaFormat.None), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.WindowsStore, AlphaFormat.Mask), PixelFormat.BC1_UNorm },
-            { Tuple.Create(PlatformType.WindowsStore, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },
-            { Tuple.Create(PlatformType.WindowsStore, AlphaFormat.Interpolated), PixelFormat.BC3_UNorm },
-
             { Tuple.Create(PlatformType.Windows10, AlphaFormat.None), PixelFormat.BC1_UNorm },
             { Tuple.Create(PlatformType.Windows10, AlphaFormat.Mask), PixelFormat.BC1_UNorm },
             { Tuple.Create(PlatformType.Windows10, AlphaFormat.Explicit), PixelFormat.BC2_UNorm },

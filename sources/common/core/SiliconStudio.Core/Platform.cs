@@ -18,16 +18,6 @@ namespace SiliconStudio.Core
         /// The current running <see cref="PlatformType"/>.
         /// </summary>
         public static readonly PlatformType Type = PlatformType.Windows;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-        /// <summary>
-        /// The current running <see cref="PlatformType"/>.
-        /// </summary>
-        public static readonly PlatformType Type = PlatformType.WindowsPhone;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-        /// <summary>
-        /// The current running <see cref="PlatformType"/>.
-        /// </summary>
-        public static readonly PlatformType Type = PlatformType.WindowsStore;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_10
         /// <summary>
         /// The current running <see cref="PlatformType"/>.

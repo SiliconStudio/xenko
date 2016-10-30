@@ -35,18 +35,6 @@ namespace SiliconStudio.Core
         Windows,
 
         /// <summary>
-        /// The Windows Phone OS.
-        /// </summary>
-        [Obsolete]
-        WindowsPhone,
-
-        /// <summary>
-        /// The Windows Store OS.
-        /// </summary>
-        [Obsolete]
-        WindowsStore,
-
-        /// <summary>
         /// The android OS.
         /// </summary>
         Android,

@@ -45,12 +45,6 @@ namespace SiliconStudio.Xenko.Games.Testing
                 case PlatformType.Windows:
                     platformName = "Windows";
                     break;
-                case PlatformType.WindowsPhone:
-                    platformName = "WindowsPhone";
-                    break;
-                case PlatformType.WindowsStore:
-                    platformName = "WindowsStore";
-                    break;
                 case PlatformType.Android:
                     platformName = "Android";
                     break;

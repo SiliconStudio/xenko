@@ -231,9 +231,7 @@ namespace SiliconStudio.Xenko.Input
             HasKeyboard = true;
             HasPointer = true;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-            GamePadFactories.Add(new XInputGamePadFactory());
-#endif
+            //GamePadFactories.Add(new XInputGamePadFactory());
             HasMouse = new Windows.Devices.Input.MouseCapabilities().MousePresent > 0;
         }
 

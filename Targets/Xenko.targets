@@ -16,8 +16,6 @@
   <PropertyGroup>
     <!-- Defaults for CPU and GraphicsApi based on platform-->
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsStore'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsPhone'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>

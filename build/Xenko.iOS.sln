@@ -20,10 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
 		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
 		..\store.config = ..\store.config
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
@@ -55,8 +51,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.User", "00-Targe
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
-		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
-		..\Targets\Xenko.WindowsStore.targets = ..\Targets\Xenko.WindowsStore.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
@@ -189,8 +183,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 		Xenko.Vulkan.SDL.PreSettings.Local.targets = Xenko.Vulkan.SDL.PreSettings.Local.targets
 		Xenko.Windows10.GlobalSettings.Local.targets = Xenko.Windows10.GlobalSettings.Local.targets
 		Xenko.Windows10.PreSettings.Local.targets = Xenko.Windows10.PreSettings.Local.targets
-		Xenko.WindowsPhone.PreSettings.Local.targets = Xenko.WindowsPhone.PreSettings.Local.targets
-		Xenko.WindowsStore.PreSettings.Local.targets = Xenko.WindowsStore.PreSettings.Local.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.iOS.csproj", "{4F0E7E04-F067-4CE8-B8C8-1105F319D123}"

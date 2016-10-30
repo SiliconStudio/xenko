@@ -43,28 +43,6 @@
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
-    <TargetPlatformVersion>8.1</TargetPlatformVersion>
-    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE;NET45;NETFX_CORE</SiliconStudioPlatformDefines>
-    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
-    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
-    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
-    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winrt\</NUnitLiteBinDir>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
-    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
-    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
-    <TargetPlatformVersion>8.1</TargetPlatformVersion>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE;NET45;NETFX_CORE;SILVERLIGHT;WINDOWS_PHONE</SiliconStudioPlatformDefines>
-    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
-    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
-    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
-    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winphone\</NUnitLiteBinDir>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>

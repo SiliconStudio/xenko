@@ -6,8 +6,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
     {
         Android,
         iOS,
-        WindowsStore,
-        WindowsPhone,
         Windows10,
         Linux,
         macOS

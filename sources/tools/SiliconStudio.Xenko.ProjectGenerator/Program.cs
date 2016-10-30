@@ -597,8 +597,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 case PlatformType.Windows:
                         // Nothing to do here.
                     break;
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
                 case PlatformType.Android:
                     configurations.Add(platform, platform);
                     needDeploy = true;
