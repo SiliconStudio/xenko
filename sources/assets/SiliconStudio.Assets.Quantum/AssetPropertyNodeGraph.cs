@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
@@ -14,6 +15,9 @@ namespace SiliconStudio.Assets.Quantum
         protected readonly AssetItem assetItem;
         public readonly AssetGraphNodeChangeListener NodeListener;
         protected AssetPropertyNodeGraphContainer Container;
+        // TODO: this should be turn private once all quantum code has been split from view model
+        public readonly AssetToBaseNodeLinker baseLinker;
+        public readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
 
         public AssetPropertyNodeGraph(AssetPropertyNodeGraphContainer container, AssetItem assetItem)
         {
@@ -25,6 +29,12 @@ namespace SiliconStudio.Assets.Quantum
             ApplyOverrides();
 
             NodeListener = new AssetGraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
+            baseLinker = new AssetToBaseNodeLinker(this);
+        }
+
+        public void Dispose()
+        {
+            NodeListener.Dispose();
         }
 
         public AssetNode RootNode { get; }
@@ -62,9 +72,14 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public void Dispose()
+        // TODO: turn private
+        public void LinkToBase(AssetNode sourceRootNode, AssetNode targetRootNode)
         {
-            NodeListener.Dispose();
+            if (baseLinker != null)
+            {
+                baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((AssetNode)node)) && ShouldListenToTargetNode(member, node);
+                baseLinker.LinkGraph(sourceRootNode, targetRootNode);
+            }
         }
     }
 }
