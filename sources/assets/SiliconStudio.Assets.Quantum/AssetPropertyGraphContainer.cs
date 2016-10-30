@@ -17,6 +17,8 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetNodeContainer NodeContainer { get; }
 
+        public bool PropagateChangesFromBase { get; set; } = true;
+
         public void InitializeSession()
         {
             foreach (var asset in session.Packages.SelectMany(x => x.Assets).Where(x => !(x.Asset is SourceCodeAsset)))
