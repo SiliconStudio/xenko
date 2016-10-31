@@ -107,6 +107,20 @@ namespace SiliconStudio.Core.Design.Tests
             public List<ContainerCollection> NonIdentifiableObjects { get; set; } = new List<ContainerCollection>();
         }
 
+        public class ContainerNonIdentifiableDictionary
+        {
+            public ContainerNonIdentifiableDictionary() { }
+            public ContainerNonIdentifiableDictionary(string name)
+            {
+                Name = name;
+            }
+            public string Name { get; set; }
+            public Dictionary<string, ContainerCollection> Objects { get; set; } = new Dictionary<string, ContainerCollection>();
+
+            [NonIdentifiableCollectionItems]
+            public Dictionary<string, ContainerCollection> NonIdentifiableObjects { get; set; } = new Dictionary<string, ContainerCollection>();
+        }
+
 
         private const string YamlCollection = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerCollection,SiliconStudio.Core.Design.Tests
 Name: Root
@@ -165,6 +179,36 @@ Objects:
     04000000040000000400000004000000~key4:
         Name: obj2
         Strings: {}
+        Objects: {}
+";
+
+        private const string YamlDictionaryNonIdentifiable = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerNonIdentifiableDictionary,SiliconStudio.Core.Design.Tests
+Name: Root
+Objects:
+    02000000020000000200000002000000~AAA:
+        Name: aaa
+        Strings:
+            05000000050000000500000005000000: bbb
+            06000000060000000600000006000000: ccc
+        Objects: {}
+    01000000010000000100000001000000~BBB:
+        Name: ddd
+        Strings:
+            07000000070000000700000007000000: eee
+            08000000080000000800000008000000: fff
+        Objects: {}
+NonIdentifiableObjects:
+    CCC:
+        Name: ggg
+        Strings:
+            09000000090000000900000009000000: hhh
+            0a0000000a0000000a0000000a000000: iii
+        Objects: {}
+    DDD:
+        Name: jjj
+        Strings:
+            0b0000000b0000000b0000000b000000: kkk
+            0c0000000c0000000c0000000c000000: lll
         Objects: {}
 ";
 
@@ -603,6 +647,91 @@ Objects:
             Assert.AreEqual(IdentifierGenerator.Get(9), objectIds[0]);
             Assert.AreEqual(IdentifierGenerator.Get(10), objectIds[1]);
             objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects[1].Strings);
+            Assert.AreEqual(IdentifierGenerator.Get(11), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(12), objectIds[1]);
+        }
+
+        [Test]
+        public void TestDictionaryNonIdentifiableItemsSerialization()
+        {
+            ShadowObject.Enable = true;
+            var obj = new ContainerNonIdentifiableDictionary("Root")
+            {
+                Objects = { { "AAA", new ContainerCollection { Name = "aaa", Strings = { "bbb", "ccc" } } }, { "BBB", new ContainerCollection { Name = "ddd", Strings = { "eee", "fff" } } } },
+                NonIdentifiableObjects = { { "CCC", new ContainerCollection { Name = "ggg", Strings = { "hhh", "iii" } } }, { "DDD", new ContainerCollection { Name = "jjj", Strings = { "kkk", "lll" } } } },
+            };
+
+            var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            ids["AAA"] = IdentifierGenerator.Get(2);
+            ids["BBB"] = IdentifierGenerator.Get(1);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects["AAA"].Strings);
+            ids[0] = IdentifierGenerator.Get(5);
+            ids[1] = IdentifierGenerator.Get(6);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects["BBB"].Strings);
+            ids[0] = IdentifierGenerator.Get(7);
+            ids[1] = IdentifierGenerator.Get(8);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects);
+            ids["CCC"] = IdentifierGenerator.Get(3);
+            ids["DDD"] = IdentifierGenerator.Get(4);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["CCC"].Strings);
+            ids[0] = IdentifierGenerator.Get(9);
+            ids[1] = IdentifierGenerator.Get(10);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["DDD"].Strings);
+            ids[0] = IdentifierGenerator.Get(11);
+            ids[1] = IdentifierGenerator.Get(12);
+            var yaml = YamlSerializer.Serialize(obj);
+            Assert.AreEqual(YamlDictionaryNonIdentifiable, yaml);
+        }
+
+        [Test]
+        public void TestDictionaryNonIdentifiableItemsDeserialization()
+        {
+            ShadowObject.Enable = true;
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(YamlDictionaryNonIdentifiable);
+            writer.Flush();
+            stream.Position = 0;
+            var instance = YamlSerializer.Deserialize(stream);
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(ContainerNonIdentifiableDictionary), instance.GetType());
+            var obj = (ContainerNonIdentifiableDictionary)instance;
+            Assert.AreEqual("Root", obj.Name);
+            Assert.AreEqual(2, obj.Objects.Count);
+            Assert.AreEqual("aaa", obj.Objects["AAA"].Name);
+            Assert.AreEqual(2, obj.Objects["AAA"].Strings.Count);
+            Assert.AreEqual("bbb", obj.Objects["AAA"].Strings[0]);
+            Assert.AreEqual("ccc", obj.Objects["AAA"].Strings[1]);
+            Assert.AreEqual("ddd", obj.Objects["BBB"].Name);
+            Assert.AreEqual(2, obj.Objects["BBB"].Strings.Count);
+            Assert.AreEqual("eee", obj.Objects["BBB"].Strings[0]);
+            Assert.AreEqual("fff", obj.Objects["BBB"].Strings[1]);
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            Assert.AreEqual(IdentifierGenerator.Get(2), objectIds["AAA"]);
+            Assert.AreEqual(IdentifierGenerator.Get(1), objectIds["BBB"]);
+            objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects["AAA"].Strings);
+            Assert.AreEqual(IdentifierGenerator.Get(5), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(6), objectIds[1]);
+            objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects["BBB"].Strings);
+            Assert.AreEqual(IdentifierGenerator.Get(7), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(8), objectIds[1]);
+
+            Assert.AreEqual(2, obj.NonIdentifiableObjects.Count);
+            Assert.AreEqual("ggg", obj.NonIdentifiableObjects["CCC"].Name);
+            Assert.AreEqual(2, obj.NonIdentifiableObjects["CCC"].Strings.Count);
+            Assert.AreEqual("hhh", obj.NonIdentifiableObjects["CCC"].Strings[0]);
+            Assert.AreEqual("iii", obj.NonIdentifiableObjects["CCC"].Strings[1]);
+            Assert.AreEqual("jjj", obj.NonIdentifiableObjects["DDD"].Name);
+            Assert.AreEqual(2, obj.NonIdentifiableObjects["DDD"].Strings.Count);
+            Assert.AreEqual("kkk", obj.NonIdentifiableObjects["DDD"].Strings[0]);
+            Assert.AreEqual("lll", obj.NonIdentifiableObjects["DDD"].Strings[1]);
+            Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj.NonIdentifiableObjects, out objectIds));
+            objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects);
+            Assert.AreEqual(0, objectIds.Count);
+            objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["CCC"].Strings);
+            Assert.AreEqual(IdentifierGenerator.Get(9), objectIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(10), objectIds[1]);
+            objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["DDD"].Strings);
             Assert.AreEqual(IdentifierGenerator.Get(11), objectIds[0]);
             Assert.AreEqual(IdentifierGenerator.Get(12), objectIds[1]);
         }
