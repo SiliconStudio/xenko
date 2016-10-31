@@ -221,7 +221,8 @@ namespace SiliconStudio.Assets
 
                 ShadowObject.Copy(previousObject, newObject);
 
-                clonedObjectMapping.Add(previousObject, newObject);
+                // NOTE: we don't use Add because of strings that might be duplicated
+                clonedObjectMapping[previousObject] = newObject;
 
                 if ((flags & AssetClonerFlags.RemoveOverrides) == AssetClonerFlags.RemoveOverrides)
                 {
