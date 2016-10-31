@@ -1,5 +1,5 @@
 !SceneAsset
-Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
+Id: f561ab7b-af7c-406e-b322-b70ff0d04693
 SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
@@ -17,7 +17,7 @@ SceneSettings:
             -   ~Id: 230ac439-6a7a-467b-8126-b0a05aa620b8
                 Name: SceneGraphicsLayer
                 Output: !SharedRenderFrameProvider
-                    RenderFrame: 31570598-8f43-446d-a3fd-caa17910b43d/2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
+                    RenderFrame: 31570598-8f43-446d-a3fd-caa17910b43d/e993c612-9d3f-4991-bdd1-d4d25f0cb4ca:RenderFrame
                 Renderers:
                     - !ClearRenderFrameRenderer
                         ~Id: 16c90dcc-6be0-41bf-bcda-8a8a7ae607d6
@@ -99,7 +99,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !RenderSceneToTexture.SetSpriteSource,RenderSceneToTexture.Game
                         ~Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: a252210e-eb38-48d0-a6af-95f8776cd903/2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
+                        RenderFrame: a252210e-eb38-48d0-a6af-95f8776cd903/e993c612-9d3f-4991-bdd1-d4d25f0cb4ca:RenderFrame
                     - !SpriteComponent
                         ~Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
                         SpriteProvider: !SpriteFromTexture
@@ -181,7 +181,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: bd36fd77-5b09-4a58-92ce-82be90aa012f
-                        Texture: bb79e461-51fb-46a4-90f8-6e6bf22f8a6f/b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
+                        Texture: bb79e461-51fb-46a4-90f8-6e6bf22f8a6f/97d4ffd4-2305-42dc-ab5a-934bdb015204:XenkoBackground
         -   Entity:
                 Id: dbc67230-cb46-4563-8193-084016acd341
                 Name: Directional light back
@@ -225,13 +225,13 @@ Hierarchy:
                         PlayingAnimations:
                             -   ~Id: 70a8e172-d19b-43f6-b651-0c4ce8d231d6
                                 Name: null
-                                Clip: b5cab62b-1503-4534-98eb-e1ce1092b134/448ca260-c8b7-4f63-9bf6-e58a5970a830:Animations/Run
+                                Clip: b5cab62b-1503-4534-98eb-e1ce1092b134/0a2c868c-7f3a-4970-b21d-41dbca293e29:Animations/Run
                                 RepeatMode: LoopInfinite
                                 BlendOperation: LinearBlend
                                 CurrentTime: 0:00:00:00.0000000
                     - !ModelComponent
                         ~Id: 036205d7-8a24-4194-a484-27af5acff6e0
-                        Model: 55844728-14aa-47c6-a0b1-265525c3d81f/cfb9a357-ac8d-4b98-b49b-923308cf386d:Models/mannequinModel
+                        Model: 55844728-14aa-47c6-a0b1-265525c3d81f/a2d76ee6-91c5-4b19-8236-5f6a9e1fcc28:Models/mannequinModel
                         Materials:
                             - null
                             - null

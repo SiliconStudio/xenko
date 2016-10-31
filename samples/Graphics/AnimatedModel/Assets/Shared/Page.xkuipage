@@ -12,7 +12,7 @@ Hierarchy:
         -   UIElement: !Button
                 DependencyProperties: {}
                 Id: 4d7ce063-d6a2-4069-8e6d-d23f1064c283
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundColor: {R: 40, G: 40, B: 40, A: 40}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
                 Margin: {Bottom: 10.0}
@@ -23,7 +23,7 @@ Hierarchy:
                 DependencyProperties: {}
                 Id: 5b412922-4e5e-4292-9f16-7af3df8b4252
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                HorizontalAlignment: Right
+                HorizontalAlignment: Left
                 Margin: {}
                 Children:
                     - !Button bc1ab804-84a9-461e-83a9-8a6f7f3077ee
@@ -53,7 +53,7 @@ Hierarchy:
         -   UIElement: !Button
                 DependencyProperties: {}
                 Id: bc1ab804-84a9-461e-83a9-8a6f7f3077ee
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundColor: {R: 40, G: 40, B: 40, A: 40}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
                 Margin: {Bottom: 10.0}
