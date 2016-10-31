@@ -29,42 +29,42 @@ namespace SiliconStudio.Xenko.Engine
         {
             return MeshVertices?.ComputeHash() ?? 0;
         }
-    }
 
-    /// <summary>
-    /// Serializes individually build tiles inside navigation meshes
-    /// </summary>
-    internal class NavigationMeshTileSerializer : DataSerializer<NavigationMeshTile>, IDataSerializerInitializer
-    {
-        private DataSerializer<Vector3> pointSerializer;
-
-        public void Initialize(SerializerSelector serializerSelector)
+        /// <summary>
+        /// Serializes individually build tiles inside navigation meshes
+        /// </summary>
+        internal class NavigationMeshTileSerializer : DataSerializer<NavigationMeshTile>, IDataSerializerInitializer
         {
-            pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
-        }
+            private DataSerializer<Vector3> pointSerializer;
 
-        public override void Serialize(ref NavigationMeshTile tile, ArchiveMode mode, SerializationStream stream)
-        {
-            if (mode == ArchiveMode.Deserialize)
-                tile = new NavigationMeshTile();
-
-            int numMeshVertices = tile.MeshVertices?.Length ?? 0;
-            stream.Serialize(ref numMeshVertices);
-            if (mode == ArchiveMode.Deserialize)
-                tile.MeshVertices = new Vector3[numMeshVertices];
-
-            for (int i = 0; i < numMeshVertices; i++)
+            public void Initialize(SerializerSelector serializerSelector)
             {
-                pointSerializer.Serialize(ref tile.MeshVertices[i], mode, stream);
+                pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
             }
 
-            int dataLength = tile.Data?.Length ?? 0;
-            stream.Serialize(ref dataLength);
-            if (mode == ArchiveMode.Deserialize)
-                tile.Data = new byte[dataLength];
+            public override void Serialize(ref NavigationMeshTile tile, ArchiveMode mode, SerializationStream stream)
+            {
+                if (mode == ArchiveMode.Deserialize)
+                    tile = new NavigationMeshTile();
 
-            if (dataLength > 0)
-                stream.Serialize(tile.Data, 0, tile.Data.Length);
+                int numMeshVertices = tile.MeshVertices?.Length ?? 0;
+                stream.Serialize(ref numMeshVertices);
+                if (mode == ArchiveMode.Deserialize)
+                    tile.MeshVertices = new Vector3[numMeshVertices];
+
+                for (int i = 0; i < numMeshVertices; i++)
+                {
+                    pointSerializer.Serialize(ref tile.MeshVertices[i], mode, stream);
+                }
+
+                int dataLength = tile.Data?.Length ?? 0;
+                stream.Serialize(ref dataLength);
+                if (mode == ArchiveMode.Deserialize)
+                    tile.Data = new byte[dataLength];
+
+                if (dataLength > 0)
+                    stream.Serialize(tile.Data, 0, tile.Data.Length);
+            }
         }
     }
 }

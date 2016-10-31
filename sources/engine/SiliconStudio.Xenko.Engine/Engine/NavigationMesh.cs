@@ -20,16 +20,6 @@ namespace SiliconStudio.Xenko.Engine
     public class NavigationMesh
     {
         /// <summary>
-        /// Multiple layers corresponding to multiple agent settings
-        /// </summary>
-        public IReadOnlyList<NavigationMeshLayer> Layers => LayersInternal;
-
-        /// <summary>
-        /// Number of layers
-        /// </summary>
-        public int NumLayers => LayersInternal.Count;
-
-        /// <summary>
         /// Bounding box used when building
         /// </summary>
         public BoundingBox BoundingBox;
@@ -42,7 +32,17 @@ namespace SiliconStudio.Xenko.Engine
 
         // Used internally to detect tile changes
         internal int TileHash;
+        
+        /// <summary>
+        /// Multiple layers corresponding to multiple agent settings
+        /// </summary>
+        public IReadOnlyList<NavigationMeshLayer> Layers => LayersInternal;
 
+        /// <summary>
+        /// Number of layers
+        /// </summary>
+        public int NumLayers => LayersInternal.Count;
+        
         /// <summary>
         /// Used to initialize the navigation mesh so it will allow building tiles
         /// This will store the build settings and create the amount of layers corresponding to the number of NavigationAgentSettings
@@ -119,60 +119,60 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
         }
-    }
 
-    internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
-    {
-        private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
-        private DataSerializer<BoundingBox> boundingBoxSerializer;
-
-        public void Initialize(SerializerSelector serializerSelector)
+        internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
         {
-            boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
-            tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
-            tilesSerializer.Initialize(serializerSelector);
-        }
+            private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
+            private DataSerializer<BoundingBox> boundingBoxSerializer;
 
-        public override void PreSerialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
-        {
-            base.PreSerialize(ref obj, mode, stream);
-            if (mode == ArchiveMode.Deserialize)
+            public void Initialize(SerializerSelector serializerSelector)
             {
-                if (obj == null)
-                    obj = new NavigationMesh();
+                boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
+                tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
+                tilesSerializer.Initialize(serializerSelector);
             }
-        }
 
-        public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
-        {
-            // Serialize tile size because it is needed
-            stream.Serialize(ref obj.BuildSettings.TileSize);
-            stream.Serialize(ref obj.BuildSettings.CellSize);
-
-            boundingBoxSerializer.Serialize(ref obj.BoundingBox, mode, stream);
-
-            int numLayers = obj.Layers.Count;
-            stream.Serialize(ref numLayers);
-            if (mode == ArchiveMode.Deserialize)
-                obj.LayersInternal.Clear();
-
-            for (int l = 0; l < numLayers; l++)
+            public override void PreSerialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
             {
-                NavigationMeshLayer layer;
+                base.PreSerialize(ref obj, mode, stream);
                 if (mode == ArchiveMode.Deserialize)
                 {
-                    // Create a new layer
-                    layer = new NavigationMeshLayer();
-                    obj.LayersInternal.Add(layer);
+                    if (obj == null)
+                        obj = new NavigationMesh();
                 }
-                else
-                    layer = obj.LayersInternal[l];
-
-                tilesSerializer.Serialize(ref layer.TilesInternal, mode, stream);
             }
 
-            if (mode == ArchiveMode.Deserialize)
-                obj.UpdateTileHash();
+            public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
+            {
+                // Serialize tile size because it is needed
+                stream.Serialize(ref obj.BuildSettings.TileSize);
+                stream.Serialize(ref obj.BuildSettings.CellSize);
+
+                boundingBoxSerializer.Serialize(ref obj.BoundingBox, mode, stream);
+
+                int numLayers = obj.Layers.Count;
+                stream.Serialize(ref numLayers);
+                if (mode == ArchiveMode.Deserialize)
+                    obj.LayersInternal.Clear();
+
+                for (int l = 0; l < numLayers; l++)
+                {
+                    NavigationMeshLayer layer;
+                    if (mode == ArchiveMode.Deserialize)
+                    {
+                        // Create a new layer
+                        layer = new NavigationMeshLayer();
+                        obj.LayersInternal.Add(layer);
+                    }
+                    else
+                        layer = obj.LayersInternal[l];
+
+                    tilesSerializer.Serialize(ref layer.TilesInternal, mode, stream);
+                }
+
+                if (mode == ArchiveMode.Deserialize)
+                    obj.UpdateTileHash();
+            }
         }
     }
 }

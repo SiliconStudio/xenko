@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(NavigationProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public class NavigationComponent : EntityComponent
     {
+        [DataMemberIgnore] internal IntPtr NavigationMeshInternal;
+        
         /// <summary>
         /// The navigation mesh which is being used
         /// </summary>
@@ -31,8 +33,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMember(20)]
         public int NavigationMeshLayer { get; set; }
-
-        [DataMemberIgnore] internal IntPtr NavigationMeshInternal;
 
         /// <summary>
         /// Finds a path from the entity's current location to <see cref="end"/>

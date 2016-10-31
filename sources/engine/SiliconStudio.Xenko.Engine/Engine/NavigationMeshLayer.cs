@@ -15,11 +15,6 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class NavigationMeshLayer
     {
-        /// <summary>
-        /// Contains all the built tiles mapped to their tile coordinates
-        /// </summary>
-        public IReadOnlyDictionary<Point, NavigationMeshTile> Tiles => TilesInternal;
-
         // Agent settings for generating this layer, only used at build time
         internal NavigationAgentSettings AgentSettings;
 
@@ -28,6 +23,11 @@ namespace SiliconStudio.Xenko.Engine
 
         // Backing field of Tiles
         internal Dictionary<Point, NavigationMeshTile> TilesInternal = new Dictionary<Point, NavigationMeshTile>();
+
+        /// <summary>
+        /// Contains all the built tiles mapped to their tile coordinates
+        /// </summary>
+        public IReadOnlyDictionary<Point, NavigationMeshTile> Tiles => TilesInternal;
 
         /// <summary>
         /// Tries to find a built tile inside this layer

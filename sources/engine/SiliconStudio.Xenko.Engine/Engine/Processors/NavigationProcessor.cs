@@ -14,87 +14,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
     public class NavigationProcessor : EntityProcessor<NavigationComponent, NavigationProcessor.AssociatedData>
     {
         /// <summary>
-        /// Associated data for navigation mesh components
-        /// </summary>
-        public class AssociatedData
-        {
-            public NavigationMesh LoadedNavigationMesh;
-            public NavigationComponent Component;
-            internal NavigationMeshInternal NavigationMeshInternal;
-            internal int SelectedLayer;
-        }
-
-        internal class NavigationMeshInternal : IDisposable
-        {
-            private readonly float cellTileSize;
-            private readonly HashSet<object> references = new HashSet<object>();
-
-            public IntPtr[] Layers;
-
-            public NavigationMeshInternal(NavigationMesh navigationMesh)
-            {
-                cellTileSize = navigationMesh.BuildSettings.TileSize*navigationMesh.BuildSettings.CellSize;
-                Layers = new IntPtr[navigationMesh.NumLayers];
-                for (int i = 0; i < navigationMesh.NumLayers; i++)
-                {
-                    Layers[i] = LoadLayer(navigationMesh.Layers[i]);
-                }
-            }
-
-            public void Dispose()
-            {
-                if (Layers == null)
-                    return;
-                for (int i = 0; i < Layers.Length; i++)
-                {
-                    if (Layers[i] != IntPtr.Zero)
-                        Navigation.DestroyNavmesh(Layers[i]);
-                }
-                Layers = null;
-            }
-
-            /// <summary>
-            /// Adds a reference to this object
-            /// </summary>
-            /// <param name="reference"></param>
-            public void AddReference(object reference)
-            {
-                references.Add(reference);
-            }
-
-            /// <summary>
-            ///  Removes a reference to this object
-            /// </summary>
-            /// <param name="reference"></param>
-            /// <returns>true if the object is no longer referenced</returns>
-            public bool RemoveReference(object reference)
-            {
-                references.Remove(reference);
-                return references.Count == 0;
-            }
-
-            private unsafe IntPtr LoadLayer(NavigationMeshLayer navigationMeshLayer)
-            {
-                IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
-                if (layer == IntPtr.Zero)
-                    return layer;
-
-                // Add all the tiles to the navigation mesh
-                foreach (var tile in navigationMeshLayer.Tiles)
-                {
-                    if (tile.Value.Data == null)
-                        continue; // Just skip empty tiles
-                    fixed (byte* inputData = tile.Value.Data)
-                    {
-                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.Data.Length);
-                    }
-                }
-
-                return layer;
-            }
-        }
-
-        /// <summary>
         /// Maps navigation meshed to their natively loaded counterparts
         /// </summary>
         private readonly Dictionary<NavigationMesh, NavigationMeshInternal> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshInternal>();
@@ -194,6 +113,87 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 ? data.NavigationMeshInternal.Layers[component.NavigationMeshLayer]
                 : IntPtr.Zero;
             data.SelectedLayer = component.NavigationMeshLayer;
+        }
+        
+        /// <summary>
+        /// Associated data for navigation mesh components
+        /// </summary>
+        public class AssociatedData
+        {
+            public NavigationMesh LoadedNavigationMesh;
+            public NavigationComponent Component;
+            internal NavigationMeshInternal NavigationMeshInternal;
+            internal int SelectedLayer;
+        }
+
+        internal class NavigationMeshInternal : IDisposable
+        {
+            private readonly float cellTileSize;
+            private readonly HashSet<object> references = new HashSet<object>();
+
+            public IntPtr[] Layers;
+
+            public NavigationMeshInternal(NavigationMesh navigationMesh)
+            {
+                cellTileSize = navigationMesh.BuildSettings.TileSize * navigationMesh.BuildSettings.CellSize;
+                Layers = new IntPtr[navigationMesh.NumLayers];
+                for (int i = 0; i < navigationMesh.NumLayers; i++)
+                {
+                    Layers[i] = LoadLayer(navigationMesh.Layers[i]);
+                }
+            }
+
+            public void Dispose()
+            {
+                if (Layers == null)
+                    return;
+                for (int i = 0; i < Layers.Length; i++)
+                {
+                    if (Layers[i] != IntPtr.Zero)
+                        Navigation.DestroyNavmesh(Layers[i]);
+                }
+                Layers = null;
+            }
+
+            /// <summary>
+            /// Adds a reference to this object
+            /// </summary>
+            /// <param name="reference"></param>
+            public void AddReference(object reference)
+            {
+                references.Add(reference);
+            }
+
+            /// <summary>
+            ///  Removes a reference to this object
+            /// </summary>
+            /// <param name="reference"></param>
+            /// <returns>true if the object is no longer referenced</returns>
+            public bool RemoveReference(object reference)
+            {
+                references.Remove(reference);
+                return references.Count == 0;
+            }
+
+            private unsafe IntPtr LoadLayer(NavigationMeshLayer navigationMeshLayer)
+            {
+                IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
+                if (layer == IntPtr.Zero)
+                    return layer;
+
+                // Add all the tiles to the navigation mesh
+                foreach (var tile in navigationMeshLayer.Tiles)
+                {
+                    if (tile.Value.Data == null)
+                        continue; // Just skip empty tiles
+                    fixed (byte* inputData = tile.Value.Data)
+                    {
+                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.Data.Length);
+                    }
+                }
+
+                return layer;
+            }
         }
     }
 }
