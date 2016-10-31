@@ -1,15 +1,53 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.6.0-beta}
 Tags: []
+Hierarchy:
+    ~Id: 7afd618a-836d-42e4-bc49-9732f055d4f5
+    RootEntities:
+        - 6d2b02df-329f-4e05-b299-69f96d39c763
+        - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+    Entities:
+        -   Entity:
+                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
+                Name: Camera
+                Components:
+                    - !TransformComponent
+                        ~Id: 1052ccb0-0fb3-4ff3-8fd7-68ac8f92a050
+                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
+                        Rotation: {W: 0.707106769, X: -0.707106769, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CameraComponent
+                        ~Id: 995c77b7-9e89-4025-8af5-2ed3914b0e21
+                        Projection: Perspective
+            Design: {}
+        -   Entity:
+                Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+                Name: Ambient light
+                Components:
+                    - !TransformComponent
+                        ~Id: ec825abd-2fd5-4de8-be9d-06574d97516b
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: bb6e3f81-e808-4c2b-86b3-c807f89fb511
+                        Type: !LightAmbient
+                            ~Id: 4d83786e-6958-470d-867c-46d89913dd2b
+                            Color: !ColorRgbProvider
+                                ~Id: cc6d3f05-0f92-43a4-b8b4-3a8e7b6fff7a
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+            Design: {}
 SceneSettings:
-    Id: 145e1439-d556-4843-bf73-c35d0d602822
+    ~Id: 145e1439-d556-4843-bf73-c35d0d602822
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 6ada4f85-802a-4cc9-93ce-fc5e9cbb1933
         Cameras:
             -   ~Id: 26354480-3331-40fb-bbb8-e15628878ace
                 Name: null
-                Camera: 6d2b02df-329f-4e05-b299-69f96d39c763/995c77b7-9e89-4025-8af5-2ed3914b0e21
+                Camera: null
         Layers: []
         Master:
             ~Id: 74e281c9-c015-45b3-9086-f4b29b5fe86d
@@ -25,11 +63,9 @@ SceneSettings:
                     Mode: !CameraRendererModeForward
                         ~Id: 2a2da6a7-f4d3-4daf-9f1e-1407abc286b0
                     Camera:
-                        ~Id: 64149f1a-c8b1-42a3-b523-c36b4350c4dc
                         Index: 0
                     Output: !CurrentRenderFrameProvider {}
                     Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
     EditorSettings:
         ~Id: d11535a0-428c-4640-8780-661c96090630
         GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
@@ -37,56 +73,3 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: 74797e16-bf68-4a4d-9ee4-98f58d7b0dda
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
-Hierarchy:
-    ~Id: 7afd618a-836d-42e4-bc49-9732f055d4f5
-    RootPartIds:
-        - 6d2b02df-329f-4e05-b299-69f96d39c763
-        - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
-        - 00d5f05a-637a-47f5-9132-2bda7e9a8e56
-    Parts:
-        -   Entity:
-                Id: 00d5f05a-637a-47f5-9132-2bda7e9a8e56
-                Name: SpriteSheet
-                Components:
-                    - !TransformComponent
-                        ~Id: 1792526f-ba3d-44b7-af60-63eaee6e8258
-                        Children: []
-                        Position: {X: 0.0, Y: -0.6, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SpriteComponent
-                        ~Id: 3786f9ed-cd2b-4059-911a-39e85ff39525
-                        SpriteProvider: !SpriteFromSheet
-                            ~Id: ad629575-4b3c-4da2-b596-d16f681f7057
-                            Sheet: a0eb6467-1bdb-43e0-b8aa-67a4bba11b57/d311c28e-39fc-44ff-a4bc-f4a9d8c5fc53:SpriteSheet
-                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
-        -   Entity:
-                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
-                Name: Camera
-                Components:
-                    - !TransformComponent
-                        ~Id: 1052ccb0-0fb3-4ff3-8fd7-68ac8f92a050
-                        Children: []
-                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
-                        Rotation: {X: -0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 995c77b7-9e89-4025-8af5-2ed3914b0e21
-                        Projection: Perspective
-        -   Entity:
-                Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
-                Name: Ambient light
-                Components:
-                    - !TransformComponent
-                        ~Id: ec825abd-2fd5-4de8-be9d-06574d97516b
-                        Children: []
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: bb6e3f81-e808-4c2b-86b3-c807f89fb511
-                        Type: !LightAmbient
-                            ~Id: 4d83786e-6958-470d-867c-46d89913dd2b
-                            Color: !ColorRgbProvider
-                                ~Id: cc6d3f05-0f92-43a4-b8b4-3a8e7b6fff7a
-                                Value: {R: 1.0, G: 1.0, B: 1.0}
