@@ -5,7 +5,7 @@ Scope: Session
 Description: Creates a sample project which shows how to use Touch and Gesture events
 FullDescription: |
    This sample shows you how to analyse raw touch pointer events, activate advanced gesture recognition, and determine mouse and keyboard state. 
-   It displays all the touch event received on the screen.
+   It displays all the touch events received on the screen.
 Group: Samples/Input
 Icon: ../.xktpl/NewInput.png
 DefaultOutputName: TouchInputs

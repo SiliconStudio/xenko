@@ -3643,7 +3643,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 5a93fbc5-3ffd-4600-b45d-05fdc2409d10
-                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
+                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/d0a8736e-23e3-4463-b0bb-66efd2b9ff1c:Models/BoxE
                         Materials:
                             - null
                             - null
@@ -4160,7 +4160,7 @@ Hierarchy:
                         Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
                         ~Id: 5a93fbc5-3ffd-4600-b45d-05fdc2409d10
-                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
+                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/d0a8736e-23e3-4463-b0bb-66efd2b9ff1c:Models/BoxE
                         Materials:
                             - null
                             - null
@@ -5352,7 +5352,7 @@ Hierarchy:
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !ModelComponent
                         ~Id: 5a93fbc5-3ffd-4600-b45d-05fdc2409d10
-                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
+                        Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/d0a8736e-23e3-4463-b0bb-66efd2b9ff1c:Models/BoxE
                         Materials:
                             - null
                             - null
@@ -5894,7 +5894,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 83c8a7a2-8317-4a43-9a49-e615d0aa9897
-                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -6713,7 +6713,7 @@ Hierarchy:
                         Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
                         ~Id: 83c8a7a2-8317-4a43-9a49-e615d0aa9897
-                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -7371,7 +7371,7 @@ Hierarchy:
                         Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !ModelComponent
                         ~Id: 83c8a7a2-8317-4a43-9a49-e615d0aa9897
-                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
