@@ -1,6 +1,6 @@
 !Texture
-Id: d732f388-e3d7-46c4-a178-8414d65ddf4d
+Id: 0454adf4-63d8-4f0d-9305-91f8ec79194f
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../Resources/pisa_texture.dds
+Source: ../../Resources/sky.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

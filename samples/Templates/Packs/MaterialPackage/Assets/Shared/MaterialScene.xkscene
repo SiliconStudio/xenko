@@ -199,7 +199,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SkyboxComponent
                         ~Id: f19ee178-5e43-4899-b917-03424e9fe8fe
-                        Skybox: e9ea22bb-9b6c-4876-9eb0-c9673ed069df/39265df4-d32a-418d-baa2-ba073d499ee1:Pisa
+                        Skybox: e9ea22bb-9b6c-4876-9eb0-c9673ed069df/39265df4-d32a-418d-baa2-ba073d499ee1:BlueSky
                         Intensity: 3.0
                     - !LightComponent
                         ~Id: 38a65b27-91bd-44f6-bec1-a6f6bbc756c6
