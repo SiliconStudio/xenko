@@ -5,13 +5,17 @@ namespace SiliconStudio.Assets.Quantum.Tests
 {
     public static class Types
     {
+        public const string FileExtension = ".xktest";
+
         [DataContract]
+        [AssetDescription(FileExtension)]
         public class MyAsset1 : Asset
         {
             public string MyString { get; set; }
         }
 
         [DataContract]
+        [AssetDescription(FileExtension)]
         public class MyAsset2 : Asset
         {
             public List<string> MyStrings { get; set; } = new List<string>();
@@ -19,18 +23,21 @@ namespace SiliconStudio.Assets.Quantum.Tests
         }
 
         [DataContract]
+        [AssetDescription(FileExtension)]
         public class MyAsset3 : Asset
         {
             public Dictionary<string, string> MyDictionary { get; set; } = new Dictionary<string, string>();
         }
 
         [DataContract]
+        [AssetDescription(FileExtension)]
         public class MyAsset4 : Asset
         {
             public List<SomeObject> MyObjects { get; set; } = new List<SomeObject>();
         }
 
         [DataContract]
+        [AssetDescription(FileExtension)]
         public class MyAsset5 : Asset
         {
             public List<IMyInterface> MyInterfaces { get; set; } = new List<IMyInterface>();
