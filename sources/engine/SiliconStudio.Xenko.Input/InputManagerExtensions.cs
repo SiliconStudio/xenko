@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyDown(this InputManager inputManager, Keys key)
         {
-            SimulatedInputSource.Instance.Keyboard.SimulateDown(key);
+            InputSourceSimulated.Instance.Keyboard.SimulateDown(key);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="key">the key you want to simulate</param>
         public static void SimulateKeyUp(this InputManager inputManager, Keys key)
         {
-            SimulatedInputSource.Instance.Keyboard.SimulateUp(key);
+            InputSourceSimulated.Instance.Keyboard.SimulateUp(key);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="button">the mouse button</param>
         public static void SimulateMouseDown(this InputManager inputManager, MouseButton button)
         {
-            SimulatedInputSource.Instance.Mouse.SimulateMouseDown(button);
+            InputSourceSimulated.Instance.Mouse.SimulateMouseDown(button);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="button">the mouse button</param>
         public static void SimulateMouseUp(this InputManager inputManager, MouseButton button)
         {
-            SimulatedInputSource.Instance.Mouse.SimulateMouseUp(button);
+            InputSourceSimulated.Instance.Mouse.SimulateMouseUp(button);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
         public static void SimulatePointerDown(this InputManager inputManager, Vector2 coords)
         {
-            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Down, coords);
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerState.Down, coords);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
         public static void SimulatePointerMove(this InputManager inputManager, Vector2 coords)
         {
-            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Move, coords);
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerState.Move, coords);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Input.Extensions
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
         public static void SimulatePointerUp(this InputManager inputManager, Vector2 coords)
         {
-            SimulatedInputSource.Instance.Mouse.SimulatePointer(PointerState.Up, coords);
+            InputSourceSimulated.Instance.Mouse.SimulatePointer(PointerState.Up, coords);
         }
     }
 }

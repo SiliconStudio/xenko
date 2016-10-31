@@ -14,19 +14,19 @@ namespace SiliconStudio.Xenko.Input
     public interface IInputSource : IDisposable
     {
         /// <summary>
+        /// All the input devices currently proviced by this source
+        /// </summary>
+        IReadOnlyList<IInputDevice> InputDevices { get; }
+
+        /// <summary>
         /// Raised when an input device is added by this source
         /// </summary>
-        EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
+        event EventHandler<IInputDevice> InputDeviceAdded;
 
         /// <summary>
         /// Raised when an input device is removed by this source
         /// </summary>
-        EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
-
-        /// <summary>
-        /// All the input devices currently proviced by this source
-        /// </summary>
-        IReadOnlyList<IInputDevice> InputDevices { get; }
+        event EventHandler<IInputDevice> InputDeviceRemoved;
 
         /// <summary>
         /// Initializes the input source
@@ -42,12 +42,12 @@ namespace SiliconStudio.Xenko.Input
         bool IsEnabled(GameContext gameContext);
 
         /// <summary>
-        /// Allows the source to take it's time to search for new devices, the source may call <see cref="OnInputDeviceAdded"/> or <see cref="OnInputDeviceRemoved"/> during this
+        /// Allows the source to take it's time to search for new devices, the source may call <see cref="InputDeviceAdded"/> or <see cref="InputDeviceRemoved"/> during this
         /// </summary>
         void Scan();
 
         /// <summary>
-        /// Update the input source and possible input devices, the source may call <see cref="OnInputDeviceAdded"/> or <see cref="OnInputDeviceRemoved"/> during this
+        /// Update the input source and possible input devices, the source may call <see cref="InputDeviceAdded"/> or <see cref="InputDeviceRemoved"/> during this
         /// </summary>
         void Update();
 

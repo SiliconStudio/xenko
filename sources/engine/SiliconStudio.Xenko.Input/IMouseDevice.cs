@@ -12,16 +12,6 @@ namespace SiliconStudio.Xenko.Input
     public interface IMouseDevice : IPointerDevice
     {
         /// <summary>
-        /// Raised when a mouse/pen button is pressed/released
-        /// </summary>
-        EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
-
-        /// <summary>
-        /// Raised when a scroll wheel is used
-        /// </summary>
-        EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
-
-        /// <summary>
         /// Gets or sets if the mouse is locked to the screen
         /// </summary>
         bool IsMousePositionLocked { get; }

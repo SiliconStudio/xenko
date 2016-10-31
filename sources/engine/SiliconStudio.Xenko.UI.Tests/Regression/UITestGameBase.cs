@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// </summary>
         public UITestGameBase()
         {
-            SimulatedInputSource.Enabled = true;
+            InputSourceSimulated.Enabled = true;
             StopOnFrameCount = -1;
 
             graphicsCompositor = new SceneGraphicsCompositorLayers

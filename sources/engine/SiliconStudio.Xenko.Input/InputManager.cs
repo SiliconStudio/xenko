@@ -12,6 +12,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -20,18 +21,22 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class InputManager : GameSystemBase
     {
+        //this is used in some mobile platform for accelerometer stuff
+        internal const float G = 9.81f;
+        internal const float DesiredSensorUpdateRate = 60;
+
         /// <summary>
         /// Does InputManager support raw input? By default true.
         /// </summary>
         public static bool UseRawInput = true;
 
-        public static Logger Logger = GlobalLogger.GetLogger("Input");
+        /// <summary>
+        /// The deadzone amount applied to all gamepad axes
+        /// </summary>
+        public static float GamePadAxisDeadZone = 0.05f;
 
-        //this is used in some mobile platform for accelerometer stuff
-        internal const float G = 9.81f;
-        internal const float DesiredSensorUpdateRate = 60;
-        internal const float GamePadAxisDeadZone = 0.05f;
-
+        internal static Logger Logger = GlobalLogger.GetLogger("Input");
+        
         private readonly InstantiatableTypeBasedRegistry<IInputSource> inputSourceRegistry = new InstantiatableTypeBasedRegistry<IInputSource>();
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
@@ -41,17 +46,7 @@ namespace SiliconStudio.Xenko.Input
 
         // List mapping GamePad index to the guid of the device
         private readonly List<Guid> gamepadIds = new List<Guid>();
-
-        private readonly HashSet<Keys> downKeysSet = new HashSet<Keys>();
-        private readonly HashSet<Keys> pressedKeysSet = new HashSet<Keys>();
-        private readonly HashSet<Keys> releasedKeysSet = new HashSet<Keys>();
-
-        private readonly HashSet<MouseButton> downButtonSet = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> pressedButtonsSet = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> releasedButtonsSet = new HashSet<MouseButton>();
-
-        private readonly List<PointerEvent> pointerEvents = new List<PointerEvent>();
-        private readonly List<KeyEvent> keyEvents = new List<KeyEvent>();
+        
         private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
@@ -59,15 +54,15 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
         private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
-        
+
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
         private Dictionary<int, GamePadState> lastGamePadStates = new Dictionary<int, GamePadState>();
         private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
-        // Backing field of MousePosition
-        private Vector2 mousePosition;
+        // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
+        private GlobalInputState globalInputState = new GlobalInputState();
 
         /// <summary>
         /// Virtual button mapping, maps gestures to input actions
@@ -83,12 +78,7 @@ namespace SiliconStudio.Xenko.Input
         /// Note that once added to the list the <see cref="GestureConfig"/>s are frozen by the system and cannot be modified anymore.</remarks>
         /// <seealso cref="GestureConfig"/>
         public GestureConfigCollection ActivatedGestures { get; private set; }
-
-        /// <summary>
-        /// Gets the delta value of the mouse wheel button since last frame.
-        /// </summary>
-        public float MouseWheelDelta { get; private set; }
-
+        
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
         /// </summary>
@@ -133,12 +123,12 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Pointer events that happened since the last frame
         /// </summary>
-        public IReadOnlyList<PointerEvent> PointerEvents => pointerEvents;
+        public IReadOnlyList<PointerEvent> PointerEvents => globalInputState.PointerEvents;
 
         /// <summary>
         /// Keyboard events that happened since the last frame
         /// </summary>
-        public IReadOnlyList<KeyEvent> KeyEvents => keyEvents;
+        public IReadOnlyList<KeyEvent> KeyEvents => globalInputState.KeyEvents;
 
         /// <summary>
         /// All input events that happened since the last frame
@@ -204,7 +194,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of connected keyboard inputs
         /// </summary>
         public IReadOnlyCollection<IKeyboardDevice> Keyboards => keyboardDevices;
-        
+
         /// <summary>
         /// Gets the collection of connected sensor devices
         /// </summary>
@@ -214,7 +204,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets a list of keys being pressed down.
         /// </summary>
         /// <value>A list of keys that are pressed</value>
-        public List<Keys> KeyDown => downKeysSet.ToList();
+        public List<Keys> KeyDown => globalInputState.DownKeysSet.ToList();
 
         /// <summary>
         /// Gets the mouse position.
@@ -222,7 +212,7 @@ namespace SiliconStudio.Xenko.Input
         /// <value>The mouse position.</value>
         public Vector2 MousePosition
         {
-            get { return mousePosition; }
+            get { return globalInputState.MousePosition; }
             set { SetMousePosition(value); }
         }
 
@@ -230,7 +220,12 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the mouse delta.
         /// </summary>
         /// <value>The mouse position.</value>
-        public Vector2 MouseDelta { get; private set; }
+        public Vector2 MouseDelta => globalInputState.MouseDelta;
+        
+        /// <summary>
+        /// Gets the delta value of the mouse wheel button since last frame.
+        /// </summary>
+        public float MouseWheelDelta => globalInputState.MouseWheelDelta;
 
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
@@ -243,11 +238,14 @@ namespace SiliconStudio.Xenko.Input
 
             ActionMapping = new InputActionMapping(this);
         }
-        
+
         public override void Initialize()
         {
             base.Initialize();
             
+            // Scan for gamepad layouts and user-defined layouts that may be contained in other assemblies
+            GamePadLayoutRegistry.Update();
+
             Game.Activated += OnApplicationResumed;
             Game.Deactivated += OnApplicationPaused;
 
@@ -263,8 +261,8 @@ namespace SiliconStudio.Xenko.Input
             // Initialize sources
             foreach (var source in inputSources)
             {
-                source.OnInputDeviceAdded += OnInputDeviceAdded;
-                source.OnInputDeviceRemoved += OnInputDeviceRemoved;
+                source.InputDeviceAdded += OnInputDeviceAdded;
+                source.InputDeviceRemoved += OnInputDeviceRemoved;
                 source.Initialize(this);
             }
 
@@ -276,8 +274,11 @@ namespace SiliconStudio.Xenko.Input
                 var genericMethod = registerEventRouterMethod.MakeGenericMethod(type);
                 genericMethod.Invoke(this, null);
             }
+
+            // Add global input state to listen for input events
+            AddListener(globalInputState);
         }
-        
+
         /// <summary>
         /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
         /// </summary>
@@ -305,93 +306,6 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Determines whether the specified key is being pressed down.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsKeyDown(Keys key)
-        {
-            return downKeysSet.Contains(key);
-        }
-
-        /// <summary>
-        /// Determines whether the specified key is pressed since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
-        public bool IsKeyPressed(Keys key)
-        {
-            return pressedKeysSet.Contains(key);
-        }
-
-        /// <summary>
-        /// Determines whether the specified key is released since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
-        public bool IsKeyReleased(Keys key)
-        {
-            return releasedKeysSet.Contains(key);
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are down
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownMouseButtons()
-        {
-            return downButtonSet.Count > 0;
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are released
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedMouseButtons()
-        {
-            return releasedButtonsSet.Count > 0;
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are pressed
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedMouseButtons()
-        {
-            return pressedButtonsSet.Count > 0;
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is being pressed down.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonDown(MouseButton mouseButton)
-        {
-            return downButtonSet.Contains(mouseButton);
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is pressed since the previous update.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonPressed(MouseButton mouseButton)
-        {
-            return pressedButtonsSet.Contains(mouseButton);
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is released.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonReleased(MouseButton mouseButton)
-        {
-            return releasedButtonsSet.Contains(mouseButton);
-        }
-
-        /// <summary>
         /// Gets the gamepad with a specific index.
         /// </summary>
         /// <param name="gamePadIndex">The index of the gamepad. -1 to return the first connected gamepad</param>
@@ -411,6 +325,95 @@ namespace SiliconStudio.Xenko.Input
                 padId = gamepadIds[gamePadIndex];
 
             return inputDevicesById[padId] as IGamePadDevice;
+        }
+
+        #region Convenience Functions
+
+        /// <summary>
+        /// Determines whether the specified key is being pressed down.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
+        public bool IsKeyDown(Keys key)
+        {
+            return globalInputState.IsKeyDown(key);
+        }
+
+        /// <summary>
+        /// Determines whether the specified key is pressed since the previous update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
+        public bool IsKeyPressed(Keys key)
+        {
+            return globalInputState.IsKeyPressed(key);
+        }
+
+        /// <summary>
+        /// Determines whether the specified key is released since the previous update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
+        public bool IsKeyReleased(Keys key)
+        {
+            return globalInputState.IsKeyReleased(key);
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are down
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
+        public bool HasDownMouseButtons()
+        {
+            return globalInputState.HasDownMouseButtons();
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are released
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
+        public bool HasReleasedMouseButtons()
+        {
+            return globalInputState.HasReleasedMouseButtons();
+        }
+
+        /// <summary>
+        /// Determines whether one or more of the mouse buttons are pressed
+        /// </summary>
+        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
+        public bool HasPressedMouseButtons()
+        {
+            return globalInputState.HasPressedMouseButtons();
+        }
+
+        /// <summary>
+        /// Determines whether the specified mouse button is being pressed down.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
+        public bool IsMouseButtonDown(MouseButton mouseButton)
+        {
+            return globalInputState.IsMouseButtonDown(mouseButton);
+        }
+
+        /// <summary>
+        /// Determines whether the specified mouse button is pressed since the previous update.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
+        public bool IsMouseButtonPressed(MouseButton mouseButton)
+        {
+            return globalInputState.IsMouseButtonPressed(mouseButton);
+        }
+
+        /// <summary>
+        /// Determines whether the specified mouse button is released.
+        /// </summary>
+        /// <param name="mouseButton">The mouse button.</param>
+        /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
+        public bool IsMouseButtonReleased(MouseButton mouseButton)
+        {
+            return globalInputState.IsMouseButtonReleased(mouseButton);
         }
 
         /// <summary>
@@ -441,21 +444,6 @@ namespace SiliconStudio.Xenko.Input
             GamePadState state;
             lastGamePadStates.TryGetValue(gamePadIndex, out state);
             return state;
-        }
-
-        /// <summary>
-        /// Sets the vibration state of the gamepad
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
-        /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
-        public void SetGamePadVibration(int gamePadIndex, float leftMotor, float rightMotor)
-        {
-            var pad = GetGamePad(gamePadIndex);
-            if (pad == null)
-                return;
-            var padVibration = pad as IGamePadVibration;
-            padVibration?.SetVibration(leftMotor, rightMotor);
         }
 
         /// <summary>
@@ -491,6 +479,23 @@ namespace SiliconStudio.Xenko.Input
             return (GetGamePadState(gamePadIndex).Buttons & button) == 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) != 0;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Sets the vibration state of the gamepad
+        /// </summary>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
+        /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
+        /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
+        public void SetGamePadVibration(int gamePadIndex, float leftMotor, float rightMotor)
+        {
+            var pad = GetGamePad(gamePadIndex);
+            if (pad == null)
+                return;
+            var padVibration = pad as IGamePadVibration;
+            padVibration?.SetVibration(leftMotor, rightMotor);
+        }
+
         /// <summary>
         /// Rescans all input devices in order to query new device connected. See remarks.
         /// </summary>
@@ -507,23 +512,15 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(GameTime gameTime)
         {
-            // Reset convenience states
-            pressedKeysSet.Clear();
-            releasedKeysSet.Clear();
-            pressedButtonsSet.Clear();
-            releasedButtonsSet.Clear();
-            pointerEvents.Clear();
-            keyEvents.Clear();
+            globalInputState.Reset();
             inputEvents.Clear();
-            MouseWheelDelta = 0;
-            MouseDelta = Vector2.Zero;
 
             // Update all input sources so they can route events to input devices and possible register new devices
             foreach (var source in inputSources)
             {
                 source.Update();
             }
-            
+
             // Update all input sources so they can send events and update their state
             foreach (var pair in inputDevices)
             {
@@ -532,7 +529,7 @@ namespace SiliconStudio.Xenko.Input
 
             // Reset action mapping state
             ActionMapping.Reset();
-            
+
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
@@ -541,7 +538,7 @@ namespace SiliconStudio.Xenko.Input
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
                 router.RouteEvent(evt);
             }
-            
+
             // Update action mappings
             ActionMapping.Update(gameTime.Elapsed);
 
@@ -578,7 +575,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="listener">The listener to remove</param>
         public void RemoveListener(IInputEventListener listener)
-        { 
+        {
             foreach (var pair in eventRouters)
             {
                 pair.Value.Listeners.Remove(listener);
@@ -625,7 +622,7 @@ namespace SiliconStudio.Xenko.Input
             // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
             OnApplicationPaused(this, EventArgs.Empty);
         }
-        
+
         /// <summary>
         /// Registers an event type and adds an entry to the <see cref="eventRouters"/> map
         /// </summary>
@@ -685,7 +682,7 @@ namespace SiliconStudio.Xenko.Input
             gestureEvents.Clear();
 
             // Only pick out events that lie between Up/Down or are Up/Down events
-            var filteredPointerEvents = pointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
+            var filteredPointerEvents = globalInputState.PointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
 
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
             {
@@ -700,22 +697,22 @@ namespace SiliconStudio.Xenko.Input
 
             if (device is IKeyboardDevice)
             {
-                RegisterKeyboard(device as IKeyboardDevice);
+                RegisterKeyboard((IKeyboardDevice)device);
                 keyboardDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is IPointerDevice)
             {
-                RegisterPointer(device as IPointerDevice);
+                RegisterPointer((IPointerDevice)device);
                 pointerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is IGamePadDevice)
             {
-                RegisterGamePad(device as IGamePadDevice);
+                RegisterGamePad((IGamePadDevice)device);
                 gamePadDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is ISensorDevice)
             {
-                RegisterSensor(device as ISensorDevice);
+                RegisterSensor((ISensorDevice)device);
             }
         }
 
@@ -726,100 +723,40 @@ namespace SiliconStudio.Xenko.Input
 
             if (device is IKeyboardDevice)
             {
-                UnregisterKeyboard(device as IKeyboardDevice);
+                UnregisterKeyboard((IKeyboardDevice)device);
             }
             else if (device is IPointerDevice)
             {
-                UnregisterPointer(device as IPointerDevice);
+                UnregisterPointer((IPointerDevice)device);
             }
             else if (device is IGamePadDevice)
             {
-                UnregisterGamePad(device as IGamePadDevice);
+                UnregisterGamePad((IGamePadDevice)device);
             }
             else if (device is ISensorDevice)
             {
-                UnregisterSensor(device as ISensorDevice);
+                UnregisterSensor((ISensorDevice)device);
             }
         }
 
         private void RegisterPointer(IPointerDevice pointer)
         {
             pointerDevices.Add(pointer);
-
-            // Handle pointer events
-            pointer.OnPointer += (sender, evt) =>
-            {
-                var dev = sender as IPointerDevice;
-                pointerEvents.Add(evt);
-
-                // Update position and delta from whatever device sends position updates
-                mousePosition = evt.Position;
-                MouseDelta = evt.DeltaPosition;
-            };
-
-            var mouse = pointer as IMouseDevice;
-            if (mouse != null)
-            {
-                // Handle button events for all mice
-                mouse.OnMouseButton += (sender, evt) =>
-                {
-                    if (evt.State == ButtonState.Pressed)
-                    {
-                        downButtonSet.Add(evt.Button);
-                        pressedButtonsSet.Add(evt.Button);
-                    }
-                    else
-                    {
-                        downButtonSet.Remove(evt.Button);
-                        releasedButtonsSet.Add(evt.Button);
-                    }
-                };
-
-                mouse.OnMouseWheel += (sender, evt) =>
-                {
-                    if (Math.Abs(evt.WheelDelta) > Math.Abs(MouseWheelDelta))
-                        MouseWheelDelta = evt.WheelDelta;
-                };
-            }
         }
 
         private void UnregisterPointer(IPointerDevice pointer)
         {
             pointerDevices.Remove(pointer);
-            pointer.OnPointer = null;
-            var mouse = pointer as IMouseDevice;
-            if (mouse != null)
-            {
-                mouse.OnMouseButton = null;
-                mouse.OnMouseWheel = null;
-            }
         }
 
         private void RegisterKeyboard(IKeyboardDevice keyboard)
         {
             keyboardDevices.Add(keyboard);
-
-            // Handle key events for all keyboards
-            keyboard.OnKey += (sender, evt) =>
-            {
-                if (evt.State == ButtonState.Pressed)
-                {
-                    downKeysSet.Add(evt.Key);
-                    pressedKeysSet.Add(evt.Key);
-                }
-                else
-                {
-                    downKeysSet.Remove(evt.Key);
-                    releasedKeysSet.Add(evt.Key);
-                }
-                keyEvents.Add(evt);
-            };
         }
 
         private void UnregisterKeyboard(IKeyboardDevice keyboard)
         {
             keyboardDevices.Remove(keyboard);
-            keyboard.OnKey = null;
         }
 
         private void RegisterGamePad(IGamePadDevice gamePad)
@@ -862,9 +799,6 @@ namespace SiliconStudio.Xenko.Input
             gamepadIds[gamePad.Index] = Guid.Empty;
 
             gamePadDevices.Remove(gamePad);
-            gamePad.OnButton = null;
-            gamePad.OnAxisChanged = null;
-            gamePad.OnPovControllerChanged = null;
         }
 
         private void UpdateDefaultSensors()
@@ -911,6 +845,7 @@ namespace SiliconStudio.Xenko.Input
         protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent
         {
             public HashSet<IInputEventListener> Listeners { get; } = new HashSet<IInputEventListener>(ReferenceEqualityComparer<IInputEventListener>.Default);
+
             public void RouteEvent(InputEvent evt)
             {
                 var listeners = Listeners.ToArray();

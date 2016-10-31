@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Input.Mapping;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
@@ -55,6 +56,8 @@ namespace SiliconStudio.Xenko.Input.Tests
         private InputAction currentlyBindingAction;
         private ActionBinder actionBinder;
         private bool resetBindingsOnBind;
+        private static readonly string[] directionNames = new[] {"Right", "Left", "Up", "Down"};
+        private static readonly string[] axisNames = new[] { "Positive", "Negative" };
 
         public ActionMappingTest()
         {
@@ -153,7 +156,14 @@ namespace SiliconStudio.Xenko.Input.Tests
                 if (actionBinder.AcceptsButtons) accepts.AddRange(new[] { "Button", "Key" });
                 if (actionBinder.AcceptsAxes) accepts.Add("Axis");
                 if (actionBinder.AcceptsDirections) accepts.Add("Direction");
-                WriteLine($"Use any {string.Join("/", accepts)} to bind to {actionBinder.NextName} ({currentlyBindingAction.MappingName})...");
+
+                string buttonName = "Pressed";
+                if (actionBinder is DirectionActionBinder)
+                    buttonName = directionNames[actionBinder.Index];
+                else if (actionBinder is AxisActionBinder)
+                    buttonName = axisNames[actionBinder.Index];
+
+                WriteLine($"Use any {string.Join("/", accepts)} to bind to {buttonName} ({currentlyBindingAction.MappingName})...");
                 lineOffset += 1;
             }
 

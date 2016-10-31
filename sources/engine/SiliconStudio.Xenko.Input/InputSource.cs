@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class InputSourceBase : IInputSource
     {
-        protected List<IInputDevice> registeredInputDevices = new List<IInputDevice>();
+        protected List<IInputDevice> RegisteredInputDevices = new List<IInputDevice>();
 
         /// <summary>
         /// Unregisters all devices registered with <see cref="RegisterDevice"/> which have not been unregistered yet
@@ -20,74 +20,62 @@ namespace SiliconStudio.Xenko.Input
         public virtual void Dispose()
         {
             // Unregister all devices
-            foreach (var device in registeredInputDevices)
+            foreach (var device in RegisteredInputDevices)
             {
-                OnInputDeviceRemoved?.Invoke(this, device);
+                InputDeviceRemoved?.Invoke(this, device);
             }
-            registeredInputDevices.Clear();
+            RegisteredInputDevices.Clear();
         }
-
-        /// <inheritdoc />
-        public EventHandler<IInputDevice> OnInputDeviceAdded { get; set; }
-
-        /// <inheritdoc />
-        public EventHandler<IInputDevice> OnInputDeviceRemoved { get; set; }
-
-        /// <inheritdoc />
-        public IReadOnlyList<IInputDevice> InputDevices => registeredInputDevices;
-
-        /// <inheritdoc />
+        
+        public IReadOnlyList<IInputDevice> InputDevices => RegisteredInputDevices;
+        
+        public event EventHandler<IInputDevice> InputDeviceAdded;
+        public event EventHandler<IInputDevice> InputDeviceRemoved;
+        
         public abstract void Initialize(InputManager inputManager);
-
-        /// <inheritdoc />
+        
         public abstract bool IsEnabled(GameContext gameContext);
-
-        /// <inheritdoc />
+        
         public virtual void Update()
         {
-            // Does nothing by default
         }
-
-        /// <inheritdoc />
+        
         public virtual void Pause()
         {
         }
-
-        /// <inheritdoc />
+        
         public virtual void Resume()
         {
         }
-
-        /// <inheritdoc />
+        
         public virtual void Scan()
         {
-            // Does nothing by default
         }
 
         /// <summary>
-        /// Calls <see cref="OnInputDeviceAdded"/> and adds the device to the list <see cref="InputDevices"/>
+        /// Calls <see cref="InputDeviceAdded"/> and adds the device to the list <see cref="InputDevices"/>
         /// </summary>
         /// <param name="device">The device</param>
         protected void RegisterDevice(IInputDevice device)
         {
-            if (registeredInputDevices.Contains(device))
+            if (RegisteredInputDevices.Contains(device))
                 throw new InvalidOperationException("Tried to use RegisterDevice on an input device twice");
 
-            OnInputDeviceAdded?.Invoke(this, device);
-            registeredInputDevices.Add(device);
+            InputDeviceAdded?.Invoke(this, device);
+            RegisteredInputDevices.Add(device);
         }
 
         /// <summary>
-        /// Calls <see cref="OnInputDeviceRemoved"/> and removes the device from the list <see cref="InputDevices"/>
+        /// Calls <see cref="InputDeviceRemoved"/> and removes the device from the list <see cref="InputDevices"/>
         /// </summary>
         /// <param name="device">The device</param>
         protected void UnregisterDevice(IInputDevice device)
         {
-            if (!registeredInputDevices.Contains(device))
+            if (!RegisteredInputDevices.Contains(device))
                 throw new InvalidOperationException("Tried to use UnregisterDevice on an unregistered input device");
 
-            OnInputDeviceRemoved?.Invoke(this, device);
-            registeredInputDevices.Remove(device);
+            InputDeviceRemoved?.Invoke(this, device);
+            RegisteredInputDevices.Remove(device);
         }
     }
 }

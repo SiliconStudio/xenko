@@ -11,11 +11,6 @@ namespace SiliconStudio.Xenko.Input
     public interface IKeyboardDevice : IInputDevice
     {
         /// <summary>
-        /// Raised when a key is pressed/released on this keyboard
-        /// </summary>
-        EventHandler<KeyEvent> OnKey { get; set; }
-
-        /// <summary>
         /// Determines whether the specified key is being pressed down
         /// </summary>
         /// <param name="key">The key</param>

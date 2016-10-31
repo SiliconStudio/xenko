@@ -42,6 +42,8 @@ namespace SiliconStudio.Xenko.Input
             AssemblyRegistry.AssemblyUnregistered += AssemblyUnregistered;
         }
 
+        public event EventHandler Updated;
+
         public IEnumerable<Type> GetAllTypes()
         {
             EnsureTypes();
@@ -119,12 +121,16 @@ namespace SiliconStudio.Xenko.Input
             // Handle delay-loading assemblies
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 RegisterAssembly(e.Assembly);
+
+            Updated?.Invoke(this, null);
         }
 
         private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
         {
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 UnregisterAssembly(e.Assembly);
+
+            Updated?.Invoke(this, null);
         }
     }
 

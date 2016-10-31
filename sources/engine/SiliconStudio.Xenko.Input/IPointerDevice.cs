@@ -13,14 +13,9 @@ namespace SiliconStudio.Xenko.Input
     public interface IPointerDevice : IInputDevice
     {
         /// <summary>
-        /// Raised when a pointer pointer event is triggered
-        /// </summary>
-        EventHandler<PointerEvent> OnPointer { get; set; }
-
-        /// <summary>
         /// Raised when the sureface size of this pointer changed
         /// </summary>
-        EventHandler OnSurfaceSizeChanged { get; set; }
+        event EventHandler SurfaceSizeChanged;
 
         /// <summary>
         /// List of pointer events since the last update

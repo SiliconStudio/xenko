@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Input
         /// The button is not pressed
         /// </summary>
         Released = 0,
+
         /// <summary>
         /// The button is pressed
         /// </summary>

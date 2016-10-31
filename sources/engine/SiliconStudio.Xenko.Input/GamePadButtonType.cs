@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Input
         /// A regular button
         /// </summary>
         PushButton,
+
         /// <summary>
         /// A button that is physically toggled when pressed
         /// </summary>

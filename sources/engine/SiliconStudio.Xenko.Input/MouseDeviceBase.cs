@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -16,27 +13,22 @@ namespace SiliconStudio.Xenko.Input
     public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
     {
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
-        protected readonly List<MouseInputEvent> mouseInputEvents = new List<MouseInputEvent>();
-
-        /// <inheritdoc />
+        protected readonly List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
+        
         public EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
-
-        /// <inheritdoc />
+        
         public EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
-
-        /// <inheritdoc />
+        
         public abstract bool IsMousePositionLocked { get; }
-
-        /// <inheritdoc />
+        
         public override PointerType Type => PointerType.Mouse;
-
-        /// <inheritdoc />
+        
         public override void Update(List<InputEvent> inputEvents)
         {
             base.Update(inputEvents);
 
             // Fire events
-            foreach (var evt in mouseInputEvents)
+            foreach (var evt in MouseInputEvents)
             {
                 if (evt.Type == MouseInputEventType.Down)
                 {
@@ -57,28 +49,24 @@ namespace SiliconStudio.Xenko.Input
                     inputEvents.Add(wheelEvent);
                 }
             }
-            mouseInputEvents.Clear();
+            MouseInputEvents.Clear();
         }
-
-        /// <inheritdoc />
+        
         public virtual bool IsMouseButtonDown(MouseButton button)
         {
             return DownButtons.Contains(button);
         }
-
-        /// <inheritdoc />
+        
         public abstract void SetMousePosition(Vector2 normalizedPosition);
-
-        /// <inheritdoc />
+        
         public abstract void LockMousePosition(bool forceCenter = false);
-
-        /// <inheritdoc />
+        
         public abstract void UnlockMousePosition();
 
         public void HandleButtonDown(MouseButton button)
         {
             DownButtons.Add(button);
-            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Down });
+            MouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Down });
 
             // Simulate tap on primary mouse button
             if (button == MouseButton.Left)
@@ -88,23 +76,23 @@ namespace SiliconStudio.Xenko.Input
         public void HandleButtonUp(MouseButton button)
         {
             DownButtons.Remove(button);
-            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Up });
+            MouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Up });
 
             // Simulate tap on primary mouse button
             if (button == MouseButton.Left)
                 HandlePointerUp();
         }
 
-        public void HandleMouseWheel(int wheelDelta)
+        public void HandleMouseWheel(float wheelDelta)
         {
-            mouseInputEvents.Add(new MouseInputEvent { Type = MouseInputEventType.Scroll, WheelDelta = wheelDelta });
+            MouseInputEvents.Add(new MouseInputEvent { Type = MouseInputEventType.Scroll, WheelDelta = wheelDelta });
         }
 
         protected struct MouseInputEvent
         {
             public MouseButton Button;
             public MouseInputEventType Type;
-            public int WheelDelta;
+            public float WheelDelta;
         }
 
         protected enum MouseInputEventType

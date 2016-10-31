@@ -13,101 +13,102 @@ namespace SiliconStudio.Xenko.Input
     public abstract class GamePadDeviceBase : IGamePadDevice
     {
         internal int IndexInternal;
-        protected bool[] buttonStates;
-        protected float[] axisStates;
-        protected float[] povStates;
-        protected bool[] povEnabledStates;
+        protected bool[] ButtonStates;
+        protected float[] AxisStates;
+        protected float[] PovStates;
+        protected bool[] PovEnabledStates;
         private bool disposed;
         private readonly List<GamePadInputEvent> gamePadInputEvents = new List<GamePadInputEvent>();
+        private GamePadLayout layout;
 
         /// <summary>
         /// Marks the device as disconnected
         /// </summary>
         public virtual void Dispose()
         {
-            disposed = true;
+            if (!disposed)
+            {
+                disposed = true;
+                Disconnected?.Invoke(this, null);
+            }
         }
-        
-        /// <inheritdoc />
+
         public abstract string DeviceName { get; }
 
-        /// <inheritdoc />
         public abstract Guid Id { get; }
 
-        /// <inheritdoc />
         public int Priority { get; set; }
 
-        /// <inheritdoc />
         public bool Connected => !disposed;
 
-        /// <inheritdoc />
         public int Index => IndexInternal;
 
-        /// <inheritdoc />
         public abstract IReadOnlyList<GamePadButtonInfo> ButtonInfos { get; }
 
-        /// <inheritdoc />
         public abstract IReadOnlyList<GamePadAxisInfo> AxisInfos { get; }
 
-        /// <inheritdoc />
         public abstract IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos { get; }
         
-        /// <inheritdoc />
-        public EventHandler OnDisconnect { get; set; }
+        public event EventHandler Disconnected;
 
-        /// <inheritdoc />
-        public EventHandler<GamePadButtonEvent> OnButton { get; set; }
-
-        /// <inheritdoc />
-        public EventHandler<GamePadAxisEvent> OnAxisChanged { get; set; }
-
-        /// <inheritdoc />
-        public EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
-
-        public void InitializeButtonStates()
+        /// <summary>
+        /// Creates the correct amount of states based on the amount of object infos that are set
+        /// </summary>
+        protected void InitializeButtonStates()
         {
-            buttonStates = new bool[ButtonInfos.Count];
-            axisStates = new float[AxisInfos.Count];
-            povStates = new float[PovControllerInfos.Count];
-            povEnabledStates = new bool[PovControllerInfos.Count];
+            ButtonStates = new bool[ButtonInfos.Count];
+            AxisStates = new float[AxisInfos.Count];
+            PovStates = new float[PovControllerInfos.Count];
+            PovEnabledStates = new bool[PovControllerInfos.Count];
+        }
+
+        /// <summary>
+        /// Initializes the gamepad layout
+        /// </summary>
+        protected void InitializeLayout()
+        {
+            layout = GamePadLayoutRegistry.FindLayout(this);
         }
 
         /// <inheritdoc />
         public virtual bool GetButton(int index)
         {
-            if (index < 0 || index > buttonStates.Length)
+            if (index < 0 || index > ButtonStates.Length)
                 return false;
-            return buttonStates[index];
+            return ButtonStates[index];
         }
 
         /// <inheritdoc />
         public virtual float GetAxis(int index)
         {
-            if (index < 0 || index > axisStates.Length)
+            if (index < 0 || index > AxisStates.Length)
                 return 0.0f;
-            return axisStates[index];
+            return AxisStates[index];
         }
 
         /// <inheritdoc />
         public virtual float GetPovController(int index)
         {
-            if (index < 0 || index > povStates.Length)
+            if (index < 0 || index > PovStates.Length)
                 return 0.0f;
-            return povStates[index];
+            return PovStates[index];
         }
 
         /// <inheritdoc />
         public virtual bool GetPovControllerEnabled(int index)
         {
-            if (index < 0 || index > povStates.Length)
+            if (index < 0 || index > PovStates.Length)
                 return false;
-            return povEnabledStates[index];
+            return PovEnabledStates[index];
         }
 
         /// <inheritdoc />
         public virtual bool GetGamePadState(ref GamePadState state)
         {
-            return false;
+            if (layout == null)
+                return false;
+            layout.GetState(this, ref state);
+            return true;
         }
 
         /// <summary>
@@ -120,35 +121,32 @@ namespace SiliconStudio.Xenko.Input
             {
                 if (evt.Type == InputEventType.Button)
                 {
-                    buttonStates[evt.Index] = evt.State == ButtonState.Pressed;
-                    var buttonEvent = new GamePadButtonEvent(this) { State = evt.State, Index = evt.Index};
-                    OnButton?.Invoke(this, buttonEvent);
+                    ButtonStates[evt.Index] = evt.State == ButtonState.Pressed;
+                    var buttonEvent = new GamePadButtonEvent(this) { State = evt.State, Index = evt.Index };
                     inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == InputEventType.Axis)
                 {
-                    axisStates[evt.Index] = evt.Float;
-                    var axisEvent = new GamePadAxisEvent(this) { Index = evt.Index, Value = evt.Float};
-                    OnAxisChanged?.Invoke(this, axisEvent);
+                    AxisStates[evt.Index] = evt.Float;
+                    var axisEvent = new GamePadAxisEvent(this) { Index = evt.Index, Value = evt.Float };
                     inputEvents.Add(axisEvent);
                 }
                 else if (evt.Type == InputEventType.PovController)
                 {
-                    povStates[evt.Index] = evt.Float;
-                    povEnabledStates[evt.Index] = evt.Enabled;
-                    var povEvent = new GamePadPovControllerEvent (this) { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled };
-                    OnPovControllerChanged?.Invoke(this, povEvent);
+                    PovStates[evt.Index] = evt.Float;
+                    PovEnabledStates[evt.Index] = evt.Enabled;
+                    var povEvent = new GamePadPovControllerEvent(this) { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled };
                     inputEvents.Add(povEvent);
                 }
             }
             gamePadInputEvents.Clear();
         }
-        
+
         protected void HandleButton(int index, bool state)
         {
-            if (index < 0 || index > buttonStates.Length)
+            if (index < 0 || index > ButtonStates.Length)
                 throw new IndexOutOfRangeException();
-            if (buttonStates[index] != state)
+            if (ButtonStates[index] != state)
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {
                     Index = index,
@@ -159,9 +157,9 @@ namespace SiliconStudio.Xenko.Input
 
         protected void HandleAxis(int index, float state)
         {
-            if (index < 0 || index > axisStates.Length)
+            if (index < 0 || index > AxisStates.Length)
                 throw new IndexOutOfRangeException();
-            if (axisStates[index] != state)
+            if (AxisStates[index] != state)
             {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {
@@ -174,9 +172,9 @@ namespace SiliconStudio.Xenko.Input
 
         protected void HandlePovController(int index, float state, bool enabled)
         {
-            if (index < 0 || index > povStates.Length)
+            if (index < 0 || index > PovStates.Length)
                 throw new IndexOutOfRangeException();
-            if (enabled && povStates[index] != state || povEnabledStates[index] != enabled)
+            if (enabled && PovStates[index] != state || PovEnabledStates[index] != enabled)
             {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {

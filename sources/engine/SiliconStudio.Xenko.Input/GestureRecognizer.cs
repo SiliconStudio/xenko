@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         protected TimeSpan ElapsedSinceBeginning;
         protected TimeSpan ElapsedSinceLast;
 
-        private readonly static List<int> FingerIdsCache = new List<int>();
+        private static readonly List<int> FingerIdsCache = new List<int>();
 
         protected bool HasGestureStarted
         {

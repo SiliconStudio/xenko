@@ -40,22 +40,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Raised when this gamepad gets disconnected
         /// </summary>
-        EventHandler OnDisconnect { get; set; }
-
-        /// <summary>
-        /// Raised when a button on the GamePad changes state
-        /// </summary>
-        EventHandler<GamePadButtonEvent> OnButton { get; set; }
-
-        /// <summary>
-        /// Raised when an axis on the GamePad changes state
-        /// </summary>
-        EventHandler<GamePadAxisEvent> OnAxisChanged { get; set; }
-
-        /// <summary>
-        /// Raised when a point of view controller on the GamePad changes state
-        /// </summary>
-        EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
+        event EventHandler Disconnected;
 
         /// <summary>
         /// Retrieves the button state of a single button

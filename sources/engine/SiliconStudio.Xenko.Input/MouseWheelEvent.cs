@@ -18,9 +18,8 @@ namespace SiliconStudio.Xenko.Input
 
         /// <summary>
         /// The amount the mouse wheel scrolled
-        /// TODO: Normalize this for all platforms, SDL generates -120/120 and winforms generates -1/1 for a single unit
         /// </summary>
-        public int WheelDelta;
+        public float WheelDelta;
 
         /// <summary>
         /// The mouse that sent this event
