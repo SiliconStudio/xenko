@@ -18,7 +18,6 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ISymWrapper" />
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -144,10 +143,6 @@
       <Name>SiliconStudio.Xenko.Games</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
-      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Xenko.Input</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
@@ -245,9 +240,6 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
-    <Compile Include="Input\InputMappingAsset.cs" />
-    <Compile Include="Input\InputMappingAssetCompiler.cs" />
-    <Compile Include="Input\InputMappingFactory.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />

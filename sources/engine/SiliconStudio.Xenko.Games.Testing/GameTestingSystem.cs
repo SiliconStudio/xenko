@@ -62,15 +62,15 @@ namespace SiliconStudio.Xenko.Games.Testing
                 switch (request.State)
                 {
                     case PointerState.Down:
-                        game.Input.SimulatePointerDown(request.Coords);
+                        game.Input.SimulateTapDown(request.Coords);
                         break;
 
                     case PointerState.Up:
-                        game.Input.SimulatePointerUp(request.Coords, request.CoordsDelta, request.Delta);
+                        game.Input.SimulateTapUp(request.Coords, request.CoordsDelta, request.Delta);
                         break;
 
                     case PointerState.Move:
-                        game.Input.SimulatePointerMove(request.Coords, request.CoordsDelta, request.Delta);
+                        game.Input.SimulateTapMove(request.Coords, request.CoordsDelta, request.Delta);
                         break;
                 }
             });

@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using NUnit.Framework;
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -83,17 +84,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (Input.IsKeyPressed(Keys.Down))
                 localMatrix.M43 += depthIncrement;
             if (Input.IsKeyPressed(Keys.NumPad4))
-                localMatrix = localMatrix*Matrix.RotationY(-rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationY(-rotationIncrement);
             if (Input.IsKeyPressed(Keys.NumPad6))
-                localMatrix = localMatrix*Matrix.RotationY(+rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationY(+rotationIncrement);
             if (Input.IsKeyPressed(Keys.NumPad2))
-                localMatrix = localMatrix*Matrix.RotationX(+rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationX(+rotationIncrement);
             if (Input.IsKeyPressed(Keys.NumPad8))
-                localMatrix = localMatrix*Matrix.RotationX(-rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationX(-rotationIncrement);
             if (Input.IsKeyPressed(Keys.NumPad1))
-                localMatrix = localMatrix*Matrix.RotationZ(-rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationZ(-rotationIncrement);
             if (Input.IsKeyPressed(Keys.NumPad9))
-                localMatrix = localMatrix*Matrix.RotationZ(+rotationIncrement);
+                localMatrix = localMatrix * Matrix.RotationZ(+rotationIncrement);
 
             if (Input.KeyEvents.Any())
             {
@@ -137,43 +138,43 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw1()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
         }
 
         public void Draw2()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.4f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.4f)));
         }
 
         public void Draw3()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.4f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.4f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
         }
 
         public void Draw4()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.4f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.4f)));
         }
 
         public void Draw5()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.27625f, 0.5667f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.27625f, 0.5667f)));
         }
 
         public void Draw6()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.348f, 0.231f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.441f, 0.418f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.348f, 0.231f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.441f, 0.418f)));
         }
 
         [Test]
@@ -192,5 +193,5 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 game.Run();
             }
         }
-    }
+    } 
 }

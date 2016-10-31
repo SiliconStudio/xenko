@@ -244,6 +244,7 @@
       <LastGenOutput>AmbientOcclusionRawAOShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
+
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientOcclusionBlurEffect1.cs</LastGenOutput>
     </None>

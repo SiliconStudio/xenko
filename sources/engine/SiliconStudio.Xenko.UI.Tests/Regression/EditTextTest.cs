@@ -9,7 +9,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Extensions;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Events;
 using SiliconStudio.Xenko.UI.Panels;
@@ -250,9 +249,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit4.TextAlignment = TextAlignment.Center;
             edit4.IsSelectionActive = false;
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.49625f, 0.8f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.49625f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.49625f, 0.8f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.49625f, 0.8f)));
         }
 
         public void SelectionTest2()
@@ -264,8 +263,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit4.TextAlignment = TextAlignment.Center;
             edit4.IsSelectionActive = false;
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
         }
 
         public void SelectionTest3()
@@ -274,8 +273,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(0, edit4.SelectionLength);
             Assert.AreEqual(6, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.525f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.525f, 0.8f)));
         }
 
         public void SelectionTest4()
@@ -284,8 +283,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(3, edit4.SelectionLength);
             Assert.AreEqual(9, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
         }
 
         public void SelectionTest5()
@@ -294,8 +293,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(6, edit4.SelectionLength);
             Assert.AreEqual(12, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.55f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.55f, 0.8f)));
         }
 
         public void SelectionTest6()
@@ -304,8 +303,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(5, edit4.SelectionLength);
             Assert.AreEqual(11, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.49f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.49f, 0.8f)));
         }
 
         public void SelectionTest7()
@@ -314,8 +313,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(1, edit4.SelectionLength);
             Assert.AreEqual(5, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
         }
 
         public void SelectionTest8()
@@ -324,8 +323,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(6, edit4.SelectionLength);
             Assert.AreEqual(0, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.47f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.47f, 0.8f)));
         }
 
         public void SelectionTest9()
@@ -334,9 +333,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Assert.AreEqual(3, edit4.SelectionLength);
             Assert.AreEqual(3, edit4.CaretPosition);
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.50f, 0.8f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.50f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.50f, 0.8f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.50f, 0.8f)));
         }
 
         public void SelectionGraphicTest1()
@@ -348,21 +347,21 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit4.TextAlignment = TextAlignment.Center;
             edit4.IsSelectionActive = false;
 
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.8f)));
         }
 
         public void SelectionGraphicTest2()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.57f, 0.8f)));
         }
 
         public void SelectionGraphicTest3()
         {
-            Input.ClearPointerEvents();
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
-            Input.InjectPointerEvent(CreatePointerEvent(PointerState.Up, new Vector2(0.42f, 0.8f)));
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.42f, 0.8f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.42f, 0.8f)));
         }
 
         [Test]
