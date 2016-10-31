@@ -81,10 +81,8 @@ namespace SiliconStudio.Core.Yaml
     /// A Yaml serializer for <see cref="ItemId"/>
     /// </summary>
     [YamlSerializerFactory]
-    internal class ItemIdSerializer : AssetScalarSerializerBase
+    internal class ItemIdSerializer : ItemIdSerializerBase
     {
-        public static PropertyKey<string> OverrideInfoKey = new PropertyKey<string>("OverrideInfo", typeof(ItemIdSerializer));
-
         public override bool CanVisit(Type type)
         {
             return type == typeof(ItemId);
@@ -100,17 +98,6 @@ namespace SiliconStudio.Core.Yaml
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             return ((ItemId)objectContext.Instance).ToString();
-        }
-
-        protected override void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
-        {
-            string overrideInfo;
-            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideInfoKey, out overrideInfo))
-            {
-                scalar.RenderedValue += overrideInfo;
-            }
-
-            base.WriteScalar(ref objectContext, scalar);
         }
     }
 
@@ -328,7 +315,24 @@ namespace SiliconStudio.Core.Yaml
         Type IKeyWithId.KeyType => typeof(TKey);
     }
 
-    public class KeyWithIdSerializer : ScalarSerializerBase, IYamlSerializableFactory
+    public abstract class ItemIdSerializerBase : AssetScalarSerializerBase
+    {
+        public static PropertyKey<string> OverrideInfoKey = new PropertyKey<string>("OverrideInfo", typeof(ItemIdSerializer));
+
+        protected override void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
+        {
+            string overrideInfo;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideInfoKey, out overrideInfo))
+            {
+                scalar.RenderedValue += overrideInfo;
+                objectContext.SerializerContext.Properties.Remove(OverrideInfoKey);
+            }
+
+            base.WriteScalar(ref objectContext, scalar);
+        }
+    }
+
+    public class KeyWithIdSerializer : ItemIdSerializerBase, IYamlSerializableFactory
     {
         public override object ConvertFrom(ref ObjectContext objectContext, Scalar fromScalar)
         {
@@ -379,14 +383,14 @@ namespace SiliconStudio.Core.Yaml
             return $"{key.Id}~{keyString}";
         }
 
-        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override bool CanVisit(Type type)
         {
-            if (typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(KeyWithId<>))
-                return this;
-            if (typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(DeletedKeyWithId<>))
-                return this;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyWithId<>))
+                return true;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(DeletedKeyWithId<>))
+                return true;
 
-            return null;
+            return false;
         }
     }
 

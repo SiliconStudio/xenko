@@ -215,11 +215,11 @@ namespace SiliconStudio.Core.Yaml
                 {
                     if ((overrideType & OverrideType.New) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializer.OverrideInfoKey, Override.PostFixNew.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, Override.PostFixNew.ToString());
                     }
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializer.OverrideInfoKey, Override.PostFixSealed.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, Override.PostFixSealed.ToString());
                     }
                 }
             }
