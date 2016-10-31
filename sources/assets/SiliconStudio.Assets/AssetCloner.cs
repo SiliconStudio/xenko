@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets
 
         private readonly List<object> invariantObjects;
         private readonly object[] objectReferences;
-
+        private Dictionary<object, object> clonedObjectMapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
 
@@ -43,6 +43,7 @@ namespace SiliconStudio.Assets
             this.flags = flags;
             invariantObjects = null;
             objectReferences = null;
+            clonedObjectMapping = new Dictionary<object, object>();
 
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
@@ -220,15 +221,21 @@ namespace SiliconStudio.Assets
 
                 ShadowObject.Copy(previousObject, newObject);
 
-                CollectionItemIdentifiers ids;
-                if (CollectionItemIdHelper.TryGetCollectionItemIds(previousObject, out ids))
-                {
-                    // TODO: properly clone here!
-                    // TODO: how to handle non-value type key? -> store them in a local map here? (OnObjDes will be called for them too, hopefully items are before collection)
-                }
-                if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
+                clonedObjectMapping.Add(previousObject, newObject);
+
+                if ((flags & AssetClonerFlags.RemoveOverrides) == AssetClonerFlags.RemoveOverrides)
                 {
                     Override.RemoveFrom(newObject);
+                }
+
+                if ((flags & AssetClonerFlags.RemoveItemIds) != AssetClonerFlags.RemoveItemIds)
+                {
+                    CollectionItemIdentifiers sourceIds;
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(previousObject, out sourceIds))
+                    {
+                        var newIds = CollectionItemIdHelper.GetCollectionItemIds(newObject);
+                        sourceIds.CloneInto(newIds, clonedObjectMapping);
+                    }
                 }
             }
         }

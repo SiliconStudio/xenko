@@ -267,6 +267,28 @@ namespace SiliconStudio.Core.Yaml
         {
             return keyToIdMap.FirstOrDefault(x => Equals(x.Key, key)).Value;
         }
+
+        public void CloneInto(CollectionItemIdentifiers target, IReadOnlyDictionary<object, object> referenceTypeClonedKeys)
+        {
+            target.keyToIdMap.Clear();
+            target.deletedItems.Clear();
+            foreach (var key in keyToIdMap)
+            {
+                object clonedKey;
+                if (key.Key.GetType().IsValueType)
+                {
+                    target.Add(key.Key, key.Value);
+                }
+                else if (referenceTypeClonedKeys != null && referenceTypeClonedKeys.TryGetValue(key.Key, out clonedKey))
+                {
+                    target.Add(clonedKey, key.Value);
+                }
+                else
+                {
+                    throw new KeyNotFoundException("Unable to find the non-value type key in the dictionary of cloned keys.");
+                }
+            }
+        }
     }
 
     public interface IKeyWithId
@@ -392,7 +414,7 @@ namespace SiliconStudio.Core.Yaml
 
             object result;
             itemIds = shadow.TryGetValue(CollectionItemIdKey, out result) ? (CollectionItemIdentifiers)result : null;
-            return true;
+            return result != null;
         }
 
         public static CollectionItemIdentifiers GetCollectionItemIds(object instance)
