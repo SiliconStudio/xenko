@@ -528,10 +528,6 @@ namespace SiliconStudio.Xenko.Games
                 }
 
                 // Update the timer
-                if (updateTime.FrameCount < 2) //-> delay timer reset after first draw to avoid important gap in game time space
-                {
-                    timer.Reset();
-                }
                 timer.Tick();
 
                 // Update the playTimer timer
