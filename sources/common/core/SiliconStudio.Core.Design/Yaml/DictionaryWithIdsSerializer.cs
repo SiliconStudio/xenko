@@ -18,6 +18,10 @@ namespace SiliconStudio.Core.Yaml
         {
             if (typeDescriptor is DictionaryDescriptor)
             {
+                var identifiable = typeDescriptor.Type.GetCustomAttribute<NonIdentifiableCollectionItemsAttribute>();
+                if (identifiable != null)
+                    return null;
+
                 var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
                 if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
                     return this;
