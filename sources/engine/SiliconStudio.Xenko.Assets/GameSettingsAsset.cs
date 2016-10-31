@@ -123,8 +123,8 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.iOS:
                     configPlatform = ConfigPlatforms.iOS;
                     break;
-                case PlatformType.Windows10:
-                    configPlatform = ConfigPlatforms.Windows10;
+                case PlatformType.UWP:
+                    configPlatform = ConfigPlatforms.UWP;
                     break;
                 case PlatformType.Linux:
                     configPlatform = ConfigPlatforms.Linux;

@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets
             switch (platformType)
             {
                 case PlatformType.Windows:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:

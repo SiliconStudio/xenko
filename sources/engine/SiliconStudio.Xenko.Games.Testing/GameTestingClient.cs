@@ -51,8 +51,8 @@ namespace SiliconStudio.Xenko.Games.Testing
                 case PlatformType.iOS:
                     platformName = "iOS";
                     break;
-                case PlatformType.Windows10:
-                    platformName = "Windows10";
+                case PlatformType.UWP:
+                    platformName = "UWP";
                     break;
                 default:
                     platformName = "";

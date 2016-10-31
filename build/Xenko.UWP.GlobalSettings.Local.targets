@@ -3,6 +3,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Use custom project lock file (only if platform is not overriden to Windows like for Assembly processor) -->
-    <ProjectLockFile Condition="'$(ProjectLockFile)' == '' And '$(SiliconStudioPlatform)' == 'Windows10'">$(MSBuildThisFileDirectory)project.lock.json</ProjectLockFile>
+    <ProjectLockFile Condition="'$(ProjectLockFile)' == '' And '$(SiliconStudioPlatform)' == 'UWP'">$(MSBuildThisFileDirectory)project.lock.json</ProjectLockFile>
   </PropertyGroup>
 </Project>

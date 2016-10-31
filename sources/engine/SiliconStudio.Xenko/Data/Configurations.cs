@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Data
     {
         None = 0,
         Windows = 1 << PlatformType.Windows,
-        Windows10 = 1 << PlatformType.Windows10,
+        UWP = 1 << PlatformType.UWP,
         [Obsolete("WindowsStore platform doesn't exist anymore, please use Windows 10 (UWP).")] WindowsStore = 1 << 30,
         [Obsolete("WindowsPhone platform doesn't exist anymore, please use Windows 10 (UWP).")] WindowsPhone = 1 << 31,
         iOS = 1 << PlatformType.iOS,

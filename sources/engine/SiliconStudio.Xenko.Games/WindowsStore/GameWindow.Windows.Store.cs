@@ -199,14 +199,12 @@ namespace SiliconStudio.Xenko.Games
             swapChainPanel = windowContext.Control;
             windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel, IntPtr.Zero);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10
             applicationView = ApplicationView.GetForCurrentView();            
             if (applicationView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
             {
                 applicationView.SetPreferredMinSize(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
                 canResize = applicationView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
             }
-#endif
 
             requiredRatio = windowContext.RequestedWidth/(double)windowContext.RequestedHeight;
 

@@ -1427,6 +1427,10 @@ namespace SiliconStudio.Assets
                             profiles.RemoveAt(i--);
                             context.Log.Warning($"Platform [{profile.Platform}] is not supported anymore, it will be removed from your package (but kept in solution as a backup). Please use Windows 10 (UWP) instead.");
                         }
+                        else if (profile.Platform == nameof(PlatformType.Windows10))
+                        {
+                            profile.Platform = nameof(PlatformType.UWP);
+                        }
                     }
                 }
             }

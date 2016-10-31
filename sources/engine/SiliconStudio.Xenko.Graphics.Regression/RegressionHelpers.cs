@@ -67,8 +67,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             result.Platform = "iOS";
             result.DeviceName = iOSDeviceType.Version.ToString();
             result.Serial = UIKit.UIDevice.CurrentDevice.Name;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_10
-            result.Platform = "Windows10";
+#elif SILICONSTUDIO_PLATFORM_UWP
+            result.Platform = "UWP";
             var deviceInfo = new EasClientDeviceInformation();
             result.DeviceName = deviceInfo.SystemManufacturer + " " + deviceInfo.SystemProductName;
             try
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
             catch (Exception)
             {
-                // Ignored on Windows 10
+                // Ignored on UWP
             }
 #endif
 

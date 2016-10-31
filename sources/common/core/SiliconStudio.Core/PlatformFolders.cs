@@ -131,7 +131,7 @@ namespace SiliconStudio.Core
             var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "cache");
             Directory.CreateDirectory(directory);
             return directory;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_10
+#elif SILICONSTUDIO_PLATFORM_UWP
             var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
             IO.NativeFile.DirectoryCreate(directory);
             return directory;

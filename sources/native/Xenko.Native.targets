@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <Choose>
-    <When Condition="('$(SiliconStudioPlatform)' == 'Windows10')">
+    <When Condition="('$(SiliconStudioPlatform)' == 'UWP')">
       <PropertyGroup>
         <XenkoNativeClang Condition="'$(Configuration)' == 'Debug'">$(XenkoNativeClang) -O2</XenkoNativeClang>
         <XenkoNativeClang Condition="'$(Configuration)' == 'Release'">$(XenkoNativeClang) -O2</XenkoNativeClang>
@@ -39,7 +39,7 @@
 
   <!-- Define NEED_DLL_EXPORT for platforms that requires it. -->
   <PropertyGroup>
-    <XenkoNativeClang Condition="$(SiliconStudioPlatform.Contains('Windows'))">$(XenkoNativeClang) -DNEED_DLL_EXPORT</XenkoNativeClang>
+    <XenkoNativeClang Condition=" '$(SiliconStudioPlatform)' == 'Windows' OR '$(SiliconStudioPlatform)' == 'UWP' ">$(XenkoNativeClang) -DNEED_DLL_EXPORT</XenkoNativeClang>
   </PropertyGroup>
 
   <Target Name="CompileNativeClang_Windows" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Build">    
@@ -52,15 +52,15 @@
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
   </Target>
 
-  <Target Name="CompileNativeClang_Windows10" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).dll;$(SiliconStudioXenkoSdkBinDir)\ARM\$(XenkoNativeOutputName).dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Build">
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DWINDOWS_UWP -m32" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
+  <Target Name="CompileNativeClang_UWP" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).dll;$(SiliconStudioXenkoSdkBinDir)\ARM\$(XenkoNativeOutputName).dll"  Condition="'$(SiliconStudioPlatform)' == 'UWP'" BeforeTargets="Build">
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DUWP -m32" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\UWP\UWP.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
 
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DWINDOWS_UWP -m64" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DUWP -m64" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\UWP\UWP.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
 
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DWINDOWS_UWP -m32 --target=thumbv7-windows-msvc" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).obj&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -WX -EHsc -GS- -MD -DUWP -m32 --target=thumbv7-windows-msvc" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\UWP\UWP.sln" Targets="Build" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);XenkoNativeProjectObjFolder=$(OutputObjectPath);Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
 
   <!-- The following condition $(SiliconStudioPackageBuild) should be removed but for now it prevents teamcity package build -->
@@ -69,7 +69,7 @@
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
 
-  <Target Name="CompileNativeClang_Windows10_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Clean">
+  <Target Name="CompileNativeClang_UWP_Clean" Condition="'$(SiliconStudioPlatform)' == 'UWP'" BeforeTargets="Clean">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\ARM\$(XenkoNativeOutputName).*" />
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
@@ -188,7 +188,7 @@
     <AFiles Include="$(OutputObjectPath)\*.a" />
   </ItemGroup>
 
-  <Target Name="CompileNativeClang_Clean" Condition="'$(SiliconStudioPackageBuild)' != 'true'" BeforeTargets="Clean;CompileNativeClang_Windows;CompileNativeClang_Windows10;CompileNativeClang_iOS;CompileNativeClang_Android;CompileNativeClang_Linux;CompileNativeClang_macOS">
+  <Target Name="CompileNativeClang_Clean" Condition="'$(SiliconStudioPackageBuild)' != 'true'" BeforeTargets="Clean;CompileNativeClang_Windows;CompileNativeClang_UWP;CompileNativeClang_iOS;CompileNativeClang_Android;CompileNativeClang_Linux;CompileNativeClang_macOS">
     <Delete Files="@(ObjFiles)" />
     <Delete Files="@(OFiles)" />
     <Delete Files="@(AFiles)" />

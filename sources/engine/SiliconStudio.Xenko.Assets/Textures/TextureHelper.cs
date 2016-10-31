@@ -269,7 +269,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                             }
                             break;
                         case PlatformType.Windows:
-                        case PlatformType.Windows10:
+                        case PlatformType.UWP:
                         case PlatformType.Linux:
                         case PlatformType.macOS:
                             switch (parameters.GraphicsPlatform)

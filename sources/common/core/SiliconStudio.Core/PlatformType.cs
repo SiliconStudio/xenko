@@ -45,9 +45,9 @@ namespace SiliconStudio.Core
         iOS,
 
         /// <summary>
-        /// The Windows 10 OS.
+        /// The Universal Windows Platform (UWP).
         /// </summary>
-        Windows10,
+        UWP,
 
         /// <summary>
         /// The Linux OS.
@@ -57,6 +57,12 @@ namespace SiliconStudio.Core
         /// <summary>
         /// macOS
         /// </summary>
-        macOS
+        macOS,
+
+        /// <summary>
+        /// The Universal Windows Platform (UWP). Please use <see cref="UniversalWindowsPlatform"/> intead.
+        /// </summary>
+        [Obsolete]
+        Windows10 = UWP,
     }
 }

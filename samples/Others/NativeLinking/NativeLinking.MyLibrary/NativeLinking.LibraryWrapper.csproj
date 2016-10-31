@@ -67,53 +67,53 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Windows10' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|UWP' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
-    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
-    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows10\Debug\</OutputPath>
-    <IntermediateOutputPath>obj\Windows10\Debug\</IntermediateOutputPath>
+    <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\UWP\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\UWP\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Windows10' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|UWP' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
-    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
-    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows10\Release\</OutputPath>
-    <IntermediateOutputPath>obj\Windows10\Release\</IntermediateOutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>;2008</NoWarn>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|Windows10' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
-    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
-    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows10\Testing\</OutputPath>
-    <IntermediateOutputPath>obj\Windows10\Testing\</IntermediateOutputPath>
+    <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\UWP\Release\</OutputPath>
+    <IntermediateOutputPath>obj\UWP\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>;2008</NoWarn>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|Windows10' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|UWP' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
-    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
-    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
-    <OutputPath>..\Bin\Windows10\AppStore\</OutputPath>
-    <IntermediateOutputPath>obj\Windows10\AppStore\</IntermediateOutputPath>
+    <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\UWP\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\UWP\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|UWP' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\UWP\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\UWP\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>;2008</NoWarn>

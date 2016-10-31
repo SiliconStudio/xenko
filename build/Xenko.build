@@ -139,7 +139,7 @@ Example of use:
     <Exec Command="RMDIR /Q /S $(XenkoRoot)\Bin"/>
   </Target>
   
-  <Target Name="TeamCityBuild" DependsOnTargets="BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindows10;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
+  <Target Name="TeamCityBuild" DependsOnTargets="BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
   <Target Name="TeamCityBuildPackage" DependsOnTargets="PrerequisitesInstaller;Package;PackageLauncher;PackageInstaller;WritePackageVersionToFile"/>
   
   <Target Name="CopyXenkoKey">
@@ -183,8 +183,10 @@ Example of use:
     <Warning Text="Windows Store doesn't exist anymore"/>
   </Target>
 
-  <Target Name="BuildWindows10" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Windows10.sln" Properties="$(BuildProperties);Platform=Windows10"/>
+  <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
+
+  <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   
   <Target Name="BuildWindowsPhone" DependsOnTargets="CopyXenkoKey">

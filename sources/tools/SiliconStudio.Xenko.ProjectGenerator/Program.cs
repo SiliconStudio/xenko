@@ -604,7 +604,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 case PlatformType.Linux:
                 case PlatformType.macOS:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     configurations.Add(platform, "Any CPU");
                     needDeploy = true;
                     break;

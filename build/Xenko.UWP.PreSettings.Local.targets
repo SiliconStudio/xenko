@@ -3,7 +3,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioCommonPreSettingsName>Xenko</SiliconStudioCommonPreSettingsName>
-    <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == ''">Windows10</SiliconStudioPlatform>
+    <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == ''">UWP</SiliconStudioPlatform>
     <XenkoGraphicsApi Condition="'$(XenkoGraphicsApi)' == ''">Direct3D11</XenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
   </PropertyGroup>

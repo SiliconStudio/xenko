@@ -32,8 +32,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{78ebf962-3d4e-4b23-80e8-7c1f72d72e67}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <ProjectName>NativeLibrary.Windows10</ProjectName>
-    <RootNamespace>NativeLibrary_Windows10</RootNamespace>
+    <ProjectName>NativeLibrary.UWP</ProjectName>
+    <RootNamespace>NativeLibrary_UWP</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -105,42 +105,42 @@
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\x86\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\x86\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\x86\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\x86\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\ARM\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\ARM\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\ARM\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\ARM\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\x64\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\x64\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
-    <OutDir>$(SolutionDir)..\NativeLibs\Windows10\x64\</OutDir>
+    <OutDir>$(SolutionDir)..\NativeLibs\UWP\x64\</OutDir>
     <TargetName>NativeLibrary</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

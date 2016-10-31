@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeLibrary.Windows", "NativeLibrary.Windows.vcxproj", "{7F1868C2-DCC7-4406-9C4F-398C34949E5D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeLibrary.Windows10", "NativeLibrary.Windows10.vcxproj", "{78EBF962-3D4E-4B23-80E8-7C1F72D72E67}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeLibrary.UWP", "NativeLibrary.UWP.vcxproj", "{78EBF962-3D4E-4B23-80E8-7C1F72D72E67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
