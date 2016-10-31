@@ -103,7 +103,6 @@ TemplateFolders:
         - samples\Games\SpaceEscape\SpaceEscape.xktpl
         - samples\Graphics\AnimatedModel\AnimatedModel.xktpl
         - samples\Graphics\CustomEffect\CustomEffect.xktpl
-        - samples\Graphics\MaterialSample\MaterialSample.xktpl
         - samples\Graphics\MaterialShader\MaterialShader.xktpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.xktpl
         - samples\Graphics\SpriteFonts\SpriteFonts.xktpl

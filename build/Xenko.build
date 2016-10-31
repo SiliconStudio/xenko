@@ -105,7 +105,7 @@ Example of use:
     <CallTarget Targets="Package"/>
     <CallTarget Targets="PackageInstaller"/>
     <CallTarget Targets="PrerequisitesInstaller"/>
-	<CallTarget Targets="VSIXPlugin"/>
+	  <CallTarget Targets="VSIXPlugin"/>
   </Target>
   
   <!--
@@ -139,7 +139,8 @@ Example of use:
     <Exec Command="RMDIR /Q /S $(XenkoRoot)\Bin"/>
   </Target>
   
-  <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
+  <Target Name="TeamCityBuild" DependsOnTargets="BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone;BuildWindows10;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
+  <Target Name="TeamCityBuildPackage" DependsOnTargets="PrerequisitesInstaller;Package;PackageLauncher;PackageInstaller;WritePackageVersionToFile"/>
   
   <Target Name="CopyXenkoKey">
     <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
