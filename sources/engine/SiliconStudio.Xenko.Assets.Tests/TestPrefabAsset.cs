@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = AssetSerializer.Load<PrefabAsset>(stream).Asset;
+                var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
 
                 CheckAsset(originAsset, newAsset);
             }

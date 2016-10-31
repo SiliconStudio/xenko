@@ -103,7 +103,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static AssetLoadResult<T> Load<T>(Stream stream, UFile filePath, ILogger log)
+        public static AssetLoadResult<T> Load<T>(Stream stream, UFile filePath, ILogger log = null)
         {
             if (filePath == null) throw new ArgumentNullException("filePath");
             var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
