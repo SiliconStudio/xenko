@@ -3,8 +3,6 @@
 
 using System;
 
-using SiliconStudio.Core;
-
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>

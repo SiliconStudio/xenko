@@ -15,9 +15,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class InputSourceSDL : InputSourceBase
     {
-        private Dictionary<Guid, GamePadSDL> registeredDevices = new Dictionary<Guid, GamePadSDL>();
-        private HashSet<Guid> devicesToRemove = new HashSet<Guid>();
-
+        private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
         private GameContext<Window> context;
         private Window uiControl;
         private MouseSDL mouse;
@@ -25,14 +23,13 @@ namespace SiliconStudio.Xenko.Input
         
         public override void Dispose()
         {
-            base.Dispose();
-
             // Dispose all the gamepads
-            foreach (var pair in registeredDevices)
+            foreach (var pair in InputDevices)
             {
                 pair.Value.Dispose();
             }
-            registeredDevices.Clear();
+
+            base.Dispose();
         }
 
         public override void Initialize(InputManager inputManager)
@@ -62,9 +59,8 @@ namespace SiliconStudio.Xenko.Input
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = registeredDevices[deviceIdToRemove];
+                var gamePad = InputDevices[deviceIdToRemove] as GamePadSDL;
                 UnregisterDevice(gamePad);
-                registeredDevices.Remove(deviceIdToRemove);
 
                 if (gamePad.Connected)
                     gamePad.Dispose();
@@ -77,7 +73,7 @@ namespace SiliconStudio.Xenko.Input
             for (int i = 0; i < SDL.SDL_NumJoysticks(); i++)
             {
                 var joystickId = SDL.SDL_JoystickGetDeviceGUID(i);
-                if (!registeredDevices.ContainsKey(joystickId))
+                if (!InputDevices.ContainsKey(joystickId))
                 {
                     OpenDevice(i);
                 }
@@ -87,7 +83,7 @@ namespace SiliconStudio.Xenko.Input
         public void OpenDevice(int deviceIndex)
         {
             var joystickId = SDL.SDL_JoystickGetDeviceGUID(deviceIndex);
-            if (registeredDevices.ContainsKey(joystickId))
+            if (InputDevices.ContainsKey(joystickId))
                 throw new InvalidOperationException($"SDL GamePad already opened {deviceIndex}/{joystickId}");
 
             var newGamepad = new GamePadSDL(deviceIndex);
@@ -96,7 +92,6 @@ namespace SiliconStudio.Xenko.Input
                 // Queue device for removal
                 devicesToRemove.Add(newGamepad.Id);
             };
-            registeredDevices.Add(newGamepad.Id, newGamepad);
             RegisterDevice(newGamepad);
         }
     }

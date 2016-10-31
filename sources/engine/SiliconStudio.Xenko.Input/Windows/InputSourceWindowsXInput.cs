@@ -23,6 +23,17 @@ namespace SiliconStudio.Xenko.Input
         private GamePadXInput[] devices;
 
         private readonly List<int> devicesToRemove = new List<int>();
+        
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            // Dispose all the gamepads
+            foreach (var gamePad in devices)
+            {
+                gamePad?.Dispose();
+            }
+        }
 
         public override void Initialize(InputManager inputManager)
         {
@@ -108,17 +119,6 @@ namespace SiliconStudio.Xenko.Input
             };
             devices[index] = newGamepad;
             RegisterDevice(newGamepad);
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            // Dispose all the gamepads
-            foreach (var gamePad in devices)
-            {
-                gamePad?.Dispose();
-            }
         }
     }
 }

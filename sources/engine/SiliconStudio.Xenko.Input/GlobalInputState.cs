@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Class that keeps track of the the global input state of all devices
     /// </summary>
-    public class GlobalInputState : IInputEventListener<KeyEvent>, IInputEventListener<PointerEvent>, IInputEventListener<MouseButtonEvent>, IInputEventListener<MouseWheelEvent>
+    internal class GlobalInputState : IInputEventListener<KeyEvent>, IInputEventListener<PointerEvent>, IInputEventListener<MouseButtonEvent>, IInputEventListener<MouseWheelEvent>
     {
         public readonly HashSet<Keys> DownKeysSet = new HashSet<Keys>();
         public readonly HashSet<Keys> PressedKeysSet = new HashSet<Keys>();

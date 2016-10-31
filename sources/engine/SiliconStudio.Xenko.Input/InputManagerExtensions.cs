@@ -1,7 +1,6 @@
 using SiliconStudio.Core.Mathematics;
-using System;
 
-namespace SiliconStudio.Xenko.Input.Extensions
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// InputManager extra utility methods

@@ -199,6 +199,24 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         if (currentTouchedElement != lastTouchedElement)
                             ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
                         break;
+
+                    case PointerState.Out:
+                    case PointerState.Cancel:
+                        touchEvent.Action = TouchAction.Move;
+
+                        // generate enter/leave events if we passed from an element to another without move events
+                        if (currentTouchedElement != lastTouchedElement)
+                            ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
+
+                        // then raise leave event to all the hierarchy of the previously selected element.
+                        var element = currentTouchedElement;
+                        while (element != null)
+                        {
+                            if (element.IsTouched)
+                                element.RaiseTouchLeaveEvent(touchEvent);
+                            element = element.VisualParent;
+                        }
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

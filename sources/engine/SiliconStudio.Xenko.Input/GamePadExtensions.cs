@@ -49,5 +49,16 @@ namespace SiliconStudio.Xenko.Input
             }
             return 0;
         }
+
+        /// <summary>
+        /// Returns the gamepad layout, mapping the gamepad to generic <see cref="GamePadState"/>, or null if there is no mapping
+        /// </summary>
+        /// <param name="device">The gamepad</param>
+        /// <returns>A gamepad layout or null</returns>
+        public static GamePadLayout GetLayout(this IGamePadDevice device)
+        {
+            var pad = device as GamePadDeviceBase;
+            return pad?.Layout;
+        }
     }
 }

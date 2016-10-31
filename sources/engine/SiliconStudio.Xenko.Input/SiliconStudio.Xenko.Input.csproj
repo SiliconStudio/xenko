@@ -121,7 +121,7 @@
     <Compile Include="NamedGravitySensor.cs" />
     <Compile Include="NamedGyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
-    <Compile Include="DeviceObjectIdExtensions.cs" />
+    <Compile Include="Windows\DeviceObjectIdExtensions.cs" />
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
     <Compile Include="GamePadExtensions.cs" />

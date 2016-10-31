@@ -142,17 +142,23 @@ namespace SiliconStudio.Xenko.Input
                 // Update position
                 data.Position = evt.Position;
 
-                if (evt.Type == InputEventType.Down)
+                switch (evt.Type)
                 {
-                    pointerState = PointerState.Down;
-                }
-                else if (evt.Type == InputEventType.Up)
-                {
-                    pointerState = PointerState.Up;
-                }
-                else
-                {
-                    pointerState = PointerState.Move;
+                    case InputEventType.Cancel:
+                        pointerState = PointerState.Cancel;
+                        break;
+                    case InputEventType.Out:
+                        pointerState = PointerState.Out;
+                        break;
+                    case InputEventType.Down:
+                        pointerState = PointerState.Down;
+                        break;
+                    case InputEventType.Up:
+                        pointerState = PointerState.Up;
+                        break;
+                    default:
+                        pointerState = PointerState.Move;
+                        break;
                 }
             }
 
@@ -161,7 +167,7 @@ namespace SiliconStudio.Xenko.Input
                 data.PointerClock.Restart();
                 data.Down = true;
             }
-            else if (pointerState == PointerState.Up)
+            else if (pointerState == PointerState.Up || pointerState == PointerState.Cancel)
             {
                 data.Down = false;
             }
@@ -225,6 +231,8 @@ namespace SiliconStudio.Xenko.Input
             Up,
             Down,
             Move,
+            Out,
+            Cancel,
             MoveDelta,
         }
     }

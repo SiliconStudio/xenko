@@ -75,8 +75,10 @@ namespace SiliconStudio.Xenko.Input
                             pointerEvent.Type = InputEventType.Move;
                             break;
                         case UITouchPhase.Ended:
-                        case UITouchPhase.Cancelled:
                             pointerEvent.Type = InputEventType.Up;
+                            break;
+                        case UITouchPhase.Cancelled:
+                            pointerEvent.Type = InputEventType.Canceled;
                             break;
                         default:
                             throw new ArgumentException("Got an invalid Touch event in GetState");

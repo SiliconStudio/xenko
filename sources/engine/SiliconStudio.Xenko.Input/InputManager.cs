@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input
         public static float GamePadAxisDeadZone = 0.05f;
 
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
-        
+
         private readonly InstantiatableTypeBasedRegistry<IInputSource> inputSourceRegistry = new InstantiatableTypeBasedRegistry<IInputSource>();
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Input
 
         // List mapping GamePad index to the guid of the device
         private readonly List<Guid> gamepadIds = new List<Guid>();
-        
+
         private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
@@ -63,6 +63,18 @@ namespace SiliconStudio.Xenko.Input
 
         // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
         private GlobalInputState globalInputState = new GlobalInputState();
+        
+        internal InputManager(IServiceRegistry registry) : base(registry)
+        {
+            Enabled = true;
+
+            ActivatedGestures = new GestureConfigCollection();
+            ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
+
+            Services.AddService(typeof(InputManager), this);
+
+            ActionMapping = new InputActionMapping(this);
+        }
 
         /// <summary>
         /// Virtual button mapping, maps gestures to input actions
@@ -78,7 +90,7 @@ namespace SiliconStudio.Xenko.Input
         /// Note that once added to the list the <see cref="GestureConfig"/>s are frozen by the system and cannot be modified anymore.</remarks>
         /// <seealso cref="GestureConfig"/>
         public GestureConfigCollection ActivatedGestures { get; private set; }
-        
+
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
         /// </summary>
@@ -221,28 +233,29 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MouseDelta => globalInputState.MouseDelta;
-        
+
         /// <summary>
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
         public float MouseWheelDelta => globalInputState.MouseWheelDelta;
-
-        internal InputManager(IServiceRegistry registry) : base(registry)
+        
+        /// <summary>
+        /// Helper method to transform mouse and pointer event positions to sub rectangles
+        /// </summary>
+        /// <param name="fromSize">the size of the source rectangle</param>
+        /// <param name="destinationRectangle">The destination viewport rectangle</param>
+        /// <param name="screenCoordinates">The normalized screen coordinates</param>
+        /// <returns></returns>
+        public static Vector2 TransformPosition(Size2F fromSize, RectangleF destinationRectangle, Vector2 screenCoordinates)
         {
-            Enabled = true;
-
-            ActivatedGestures = new GestureConfigCollection();
-            ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
-
-            Services.AddService(typeof(InputManager), this);
-
-            ActionMapping = new InputActionMapping(this);
+            return new Vector2((screenCoordinates.X * fromSize.Width - destinationRectangle.X) / destinationRectangle.Width,
+                (screenCoordinates.Y * fromSize.Height - destinationRectangle.Y) / destinationRectangle.Height);
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            
+
             // Scan for gamepad layouts and user-defined layouts that may be contained in other assemblies
             GamePadLayoutRegistry.Update();
 
@@ -261,8 +274,7 @@ namespace SiliconStudio.Xenko.Input
             // Initialize sources
             foreach (var source in inputSources)
             {
-                source.InputDeviceAdded += OnInputDeviceAdded;
-                source.InputDeviceRemoved += OnInputDeviceRemoved;
+                source.InputDevices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
                 source.Initialize(this);
             }
 
@@ -690,9 +702,26 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void OnInputDeviceAdded(object sender, IInputDevice device)
+        private void InputDevicesOnCollectionChanged(IInputSource source, TrackingCollectionChangedEventArgs e)
         {
-            inputDevices.Add(device, (IInputSource)sender);
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    OnInputDeviceAdded(source, (IInputDevice)e.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    OnInputDeviceRemoved((IInputDevice)e.Item);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unsupported collection operation");
+            }
+        }
+
+        private void OnInputDeviceAdded(IInputSource source, IInputDevice device)
+        {
+            inputDevices.Add(device, source);
+            if (inputDevicesById.ContainsKey(device.Id))
+                throw new InvalidOperationException($"Device with Id {device.Id}({device.DeviceName}) already registered to {inputDevicesById[device.Id].DeviceName}");
             inputDevicesById.Add(device.Id, device);
 
             if (device is IKeyboardDevice)
@@ -716,8 +745,10 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void OnInputDeviceRemoved(object sender, IInputDevice device)
+        private void OnInputDeviceRemoved(IInputDevice device)
         {
+            if(!inputDevices.ContainsKey(device))
+                throw new InvalidOperationException("Input device was not registered");
             inputDevices.Remove(device);
             inputDevicesById.Remove(device.Id);
 
@@ -822,20 +853,7 @@ namespace SiliconStudio.Xenko.Input
             sensorDevices.Remove(sensorDevice);
             UpdateDefaultSensors();
         }
-
-        /// <summary>
-        /// Helper method to transform mouse and pointer event positions to sub rectangles
-        /// </summary>
-        /// <param name="fromSize">the size of the source rectangle</param>
-        /// <param name="destinationRectangle">The destination viewport rectangle</param>
-        /// <param name="screenCoordinates">The normalized screen coordinates</param>
-        /// <returns></returns>
-        public static Vector2 TransformPosition(Size2F fromSize, RectangleF destinationRectangle, Vector2 screenCoordinates)
-        {
-            return new Vector2((screenCoordinates.X*fromSize.Width - destinationRectangle.X)/destinationRectangle.Width,
-                (screenCoordinates.Y*fromSize.Height - destinationRectangle.Y)/destinationRectangle.Height);
-        }
-
+        
         protected interface IInputEventRouter
         {
             HashSet<IInputEventListener> Listeners { get; }

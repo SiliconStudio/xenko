@@ -57,7 +57,12 @@ namespace SiliconStudio.Xenko.Input
                     case MotionEventActions.Pointer1Down:
                         actionType = InputEventType.Down;
                         break;
+                    case MotionEventActions.Outside:
+                        actionType = InputEventType.Out;
+                        break;
                     case MotionEventActions.Cancel:
+                        actionType = InputEventType.Cancel;
+                        break;
                     case MotionEventActions.Up:
                     case MotionEventActions.Pointer1Up:
                         actionType = InputEventType.Up;
@@ -75,7 +80,7 @@ namespace SiliconStudio.Xenko.Input
                     evt.Id = e.GetPointerId(i);
                     evt.Position = new Vector2(e.GetX(i), e.GetY(i)) * pointer.InverseSurfaceSize; // Normalize
                     evt.Type = actionType;
-                    pointer.pointerInputEvents.Add(evt);
+                    pointer.PointerInputEvents.Add(evt);
                 }
                 
                 return true;

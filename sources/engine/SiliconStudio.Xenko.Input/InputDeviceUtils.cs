@@ -14,18 +14,18 @@ namespace SiliconStudio.Xenko.Input
     public static class InputDeviceUtils
     {
         /// <summary>
-        /// Generates a Guid unique to this sensor type
+        /// Generates a Guid unique to thie name
         /// </summary>
-        /// <param name="sensorName">the name of the sensor</param>
-        /// <returns>A unique Guid for the given sensor type</returns>
-        public static Guid DeviceNameToGuid(string sensorName)
+        /// <param name="name">the name to turn into a Guid</param>
+        /// <returns>A unique Guid for the given name</returns>
+        public static Guid DeviceNameToGuid(string name)
         {
             MemoryStream stream = new MemoryStream();
             DigestStream writer = new DigestStream(stream);
             {
                 BinarySerializationWriter serializer = new HashSerializationWriter(writer);
                 serializer.Write(typeof(IInputDevice).GetHashCode());
-                serializer.Write(sensorName);
+                serializer.Write(name);
             }
             return writer.CurrentHash.ToGuid();
         }

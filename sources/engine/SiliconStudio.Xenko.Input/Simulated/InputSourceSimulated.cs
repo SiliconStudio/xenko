@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Windows.Input;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 
@@ -110,12 +109,10 @@ namespace SiliconStudio.Xenko.Input
 
             public override void LockMousePosition(bool forceCenter = false)
             {
-                throw new NotImplementedException();
             }
 
             public override void UnlockMousePosition()
             {
-                throw new NotImplementedException();
             }
         }
     }

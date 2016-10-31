@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -13,13 +12,13 @@ namespace SiliconStudio.Xenko.Input
     public abstract class GamePadDeviceBase : IGamePadDevice
     {
         internal int IndexInternal;
+        internal GamePadLayout Layout;
         protected bool[] ButtonStates;
         protected float[] AxisStates;
         protected float[] PovStates;
         protected bool[] PovEnabledStates;
         private bool disposed;
         private readonly List<GamePadInputEvent> gamePadInputEvents = new List<GamePadInputEvent>();
-        private GamePadLayout layout;
 
         /// <summary>
         /// Marks the device as disconnected
@@ -67,47 +66,42 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         protected void InitializeLayout()
         {
-            layout = GamePadLayoutRegistry.FindLayout(this);
+            Layout = GamePadLayoutRegistry.FindLayout(this);
         }
-
-        /// <inheritdoc />
+        
         public virtual bool GetButton(int index)
         {
             if (index < 0 || index > ButtonStates.Length)
                 return false;
             return ButtonStates[index];
         }
-
-        /// <inheritdoc />
+        
         public virtual float GetAxis(int index)
         {
             if (index < 0 || index > AxisStates.Length)
                 return 0.0f;
             return AxisStates[index];
         }
-
-        /// <inheritdoc />
+        
         public virtual float GetPovController(int index)
         {
             if (index < 0 || index > PovStates.Length)
                 return 0.0f;
             return PovStates[index];
         }
-
-        /// <inheritdoc />
+        
         public virtual bool GetPovControllerEnabled(int index)
         {
             if (index < 0 || index > PovStates.Length)
                 return false;
             return PovEnabledStates[index];
         }
-
-        /// <inheritdoc />
+        
         public virtual bool GetGamePadState(ref GamePadState state)
         {
-            if (layout == null)
+            if (Layout == null)
                 return false;
-            layout.GetState(this, ref state);
+            Layout.GetState(this, ref state);
             return true;
         }
 

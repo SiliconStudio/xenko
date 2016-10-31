@@ -1,6 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
@@ -22,5 +21,15 @@ namespace SiliconStudio.Xenko.Input
         /// The pointer just released pressure to the digitizer.
         /// </summary>
         Up,
+
+        /// <summary>
+        /// The pointer is out of the digitizer.
+        /// </summary>
+        Out,
+
+        /// <summary>
+        /// The pointer has been canceled.
+        /// </summary>
+        Cancel,
     }
 }

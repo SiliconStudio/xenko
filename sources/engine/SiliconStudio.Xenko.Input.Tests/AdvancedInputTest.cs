@@ -200,13 +200,13 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // Keyboard
                 if (Input.HasKeyboard)
                 {
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Pressed))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Pressed))
                         keyPressed += key + ", ";
 
                     foreach (var key in Input.KeyDown)
                         keyDown += key + ", ";
 
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Released))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Released))
                         keyReleased += key + ", ";
                 }
 

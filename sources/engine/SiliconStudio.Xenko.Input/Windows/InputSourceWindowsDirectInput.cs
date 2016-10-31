@@ -15,22 +15,19 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class InputSourceWindowsDirectInput : InputSourceBase
     {
-        private DirectInput directInput;
-
-        // TODO: Merge with InputSourceBase maybe
-        private readonly Dictionary<Guid, GamePadDirectInput> registeredDevices = new Dictionary<Guid, GamePadDirectInput>();
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
+        private DirectInput directInput;
 
         public override void Dispose()
         {
-            base.Dispose();
-
             // Dispose all the gamepads
-            foreach (var pair in registeredDevices)
+            foreach (var pair in InputDevices)
             {
                 pair.Value.Dispose();
             }
-            registeredDevices.Clear();
+            
+            // Unregisters all devices
+            base.Dispose();
 
             // Dispose DirectInput
             directInput.Dispose();
@@ -49,12 +46,11 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update()
         {
-            // Notify event listeners of device removals
+            // Process device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = registeredDevices[deviceIdToRemove];
+                var gamePad = InputDevices[deviceIdToRemove] as GamePadDirectInput;
                 UnregisterDevice(gamePad);
-                registeredDevices.Remove(deviceIdToRemove);
 
                 if (gamePad.Connected)
                     gamePad.Dispose();
@@ -70,7 +66,7 @@ namespace SiliconStudio.Xenko.Input
             var connectedDevices = directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly);
             foreach (var device in connectedDevices)
             {
-                if (!registeredDevices.ContainsKey(device.InstanceGuid))
+                if (!InputDevices.ContainsKey(device.InstanceGuid))
                 {
                     OpenDevice(device);
                 }
@@ -87,7 +83,7 @@ namespace SiliconStudio.Xenko.Input
             if (XInputChecker.IsXInputDevice(ref instance.ProductGuid))
                 return;
 
-            if (registeredDevices.ContainsKey(instance.InstanceGuid))
+            if (InputDevices.ContainsKey(instance.InstanceGuid))
                 throw new InvalidOperationException($"DirectInput GamePad already opened {instance.InstanceGuid}/{instance.InstanceName}");
 
             var newGamepad = new GamePadDirectInput(directInput, instance);
@@ -96,7 +92,6 @@ namespace SiliconStudio.Xenko.Input
                 // Queue device for removal
                 devicesToRemove.Add(newGamepad.Id);
             };
-            registeredDevices.Add(newGamepad.Id, newGamepad);
             RegisterDevice(newGamepad);
         }
     }
