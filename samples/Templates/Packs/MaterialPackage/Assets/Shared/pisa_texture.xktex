@@ -1,0 +1,6 @@
+!Texture
+Id: d732f388-e3d7-46c4-a178-8414d65ddf4d
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/pisa_texture.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
