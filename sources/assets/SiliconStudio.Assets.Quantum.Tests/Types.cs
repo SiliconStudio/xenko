@@ -27,7 +27,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [DataContract]
         public class MyAsset4 : Asset
         {
-            public List<string> MyStrings { get; set; } = new List<string>();
+            public List<SomeObject> MyObjects { get; set; } = new List<SomeObject>();
+        }
+
+        [DataContract]
+        public class MyAsset5 : Asset
+        {
+            public List<IMyInterface> MyInterfaces { get; set; } = new List<IMyInterface>();
         }
 
         [DataContract]
@@ -36,10 +42,22 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public List<string> MyStrings { get; set; }
         }
 
+        public interface IMyInterface
+        {
+            string Value { get; set; }
+        }
+
         [DataContract]
-        public class SomeObject
+        public class SomeObject : IMyInterface
         {
             public string Value { get; set; }
+        }
+
+        [DataContract]
+        public class SomeObject2 : IMyInterface
+        {
+            public string Value { get; set; }
+            public int Number { get; set; }
         }
     }
 }

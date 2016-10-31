@@ -334,6 +334,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update base with propagation and check
             basePropertyNode.Content.Add("String4");
+            Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(4, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("String4", basePropertyNode.Content.Retrieve(new Index(2)));
@@ -439,6 +441,226 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual(4, context.DerivedAsset.MyDictionary.Count);
+        }
+
+        [Test]
+        public void TestObjectCollectionUpdate()
+        {
+            var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
+            var assetItem = new AssetItem("MyAsset", asset);
+            var context = new DeriveAssetTest<Types.MyAsset4>(assetItem);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
+            var basePropertyNode = (AssetNode)context.BaseGraph.RootNode.GetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset4.MyObjects));
+
+            var objB0 = asset.MyObjects[0];
+            var objB1 = asset.MyObjects[1];
+            var objD0 = context.DerivedAsset.MyObjects[0];
+            var objD1 = context.DerivedAsset.MyObjects[1];
+
+            // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String1", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+
+            // Update base with propagation and check;
+            var newObjB = new Types.SomeObject { Value = "MyBaseString" };
+            basePropertyNode.Content.Update(newObjB, new Index(1));
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(newObjB, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreNotEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String1", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+
+            // Update derived and check
+            var newObjD = new Types.SomeObject { Value = "MyDerivedString" };
+            derivedPropertyNode.Content.Update(newObjD, new Index(0));
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(newObjB, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(newObjD, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreNotEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("MyDerivedString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+        }
+
+        [Test]
+        public void TestObjectCollectionAdd()
+        {
+            var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
+            var assetItem = new AssetItem("MyAsset", asset);
+            var context = new DeriveAssetTest<Types.MyAsset4>(assetItem);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
+            var basePropertyNode = (AssetNode)context.BaseGraph.RootNode.GetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset4.MyObjects));
+
+            var objB0 = asset.MyObjects[0];
+            var objB1 = asset.MyObjects[1];
+            var objD0 = context.DerivedAsset.MyObjects[0];
+            var objD1 = context.DerivedAsset.MyObjects[1];
+
+            // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String1", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+
+            // Update derived and check
+            var newObjD = new Types.SomeObject { Value = "String3" };
+            derivedPropertyNode.Content.Add(newObjD);
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(3, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(newObjD, derivedPropertyNode.Content.Retrieve(new Index(2)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String1", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String3", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(2))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(3, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+
+            // Update base with propagation and check
+            var newObjB = new Types.SomeObject { Value = "String4" };
+            basePropertyNode.Content.Add(newObjB);
+            Assert.AreEqual(3, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(4, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreEqual(newObjB, basePropertyNode.Content.Retrieve(new Index(2)));
+            Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+            Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+            Assert.AreNotEqual(newObjB, derivedPropertyNode.Content.Retrieve(new Index(2)));
+            Assert.AreEqual(newObjD, derivedPropertyNode.Content.Retrieve(new Index(3)));
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String4", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(2))).Value);
+            Assert.AreEqual("String1", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("String2", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("String4", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(2))).Value);
+            Assert.AreEqual("String3", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(3))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index(3)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(3)].TargetNode.GetChild(nameof(Types.SomeObject.Value))).GetOverride(Index.Empty));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(3, baseIds.Count);
+            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+            Assert.AreEqual(baseIds[2], derivedIds[2]);
         }
     }
 }
