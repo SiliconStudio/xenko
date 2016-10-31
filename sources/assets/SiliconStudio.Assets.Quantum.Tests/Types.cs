@@ -25,6 +25,12 @@ namespace SiliconStudio.Assets.Quantum.Tests
         }
 
         [DataContract]
+        public class MyAsset4 : Asset
+        {
+            public List<string> MyStrings { get; set; } = new List<string>();
+        }
+
+        [DataContract]
         public struct StructWithList
         {
             public List<string> MyStrings { get; set; }

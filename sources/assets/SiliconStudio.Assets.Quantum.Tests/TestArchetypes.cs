@@ -23,8 +23,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public T DerivedAsset => (T)DerivedAssetItem.Asset;
         public AssetItem BaseAssetItem { get; }
         public AssetItem DerivedAssetItem { get; }
-        public AssetPropertyGraph BaseGraph { get; private set; }
-        public AssetPropertyGraph DerivedGraph { get; private set; }
+        public AssetPropertyGraph BaseGraph { get; }
+        public AssetPropertyGraph DerivedGraph { get; }
     }
 
     [TestFixture]
@@ -78,6 +78,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset2.MyStrings));
 
             // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -88,7 +90,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
-            Assert.AreNotEqual(baseIds, derivedIds);
+            Assert.AreNotSame(baseIds, derivedIds);
             Assert.AreEqual(2, baseIds.Count);
             Assert.AreEqual(2, derivedIds.Count);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
@@ -96,6 +98,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update base with propagation and check
             basePropertyNode.Content.Update("MyBaseString", new Index(1));
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -106,7 +110,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
-            Assert.AreNotEqual(baseIds, derivedIds);
+            Assert.AreNotSame(baseIds, derivedIds);
             Assert.AreEqual(2, baseIds.Count);
             Assert.AreEqual(2, derivedIds.Count);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
@@ -114,6 +118,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update derived and check
             derivedPropertyNode.Content.Update("MyDerivedString", new Index(0));
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -124,7 +130,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
-            Assert.AreNotEqual(baseIds, derivedIds);
+            Assert.AreNotSame(baseIds, derivedIds);
             Assert.AreEqual(2, baseIds.Count);
             Assert.AreEqual(2, derivedIds.Count);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
@@ -143,6 +149,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset3.MyDictionary));
 
             // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
             Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
@@ -161,6 +169,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update base with propagation and check
             basePropertyNode.Content.Update("MyBaseString", new Index("Key2"));
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index("Key2")));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
@@ -179,6 +189,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update derived and check
             derivedPropertyNode.Content.Update("MyDerivedString", new Index("Key1"));
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index("Key2")));
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
@@ -210,6 +222,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset2.Struct)).GetChild(nameof(Types.MyAsset2.MyStrings));
 
             // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -228,6 +242,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update base with propagation and check
             basePropertyNode.Content.Update("MyBaseString", new Index(1));
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -246,6 +262,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
             // Update derived and check
             derivedPropertyNode.Content.Update("MyDerivedString", new Index(0));
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index(0)));
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve(new Index(1)));
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve(new Index(0)));
@@ -326,7 +344,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(1)));
-            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(3)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index(2)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
@@ -336,35 +354,91 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(4, derivedIds.Count);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
-            Assert.AreEqual(baseIds[2], derivedIds[3]);
+            Assert.AreEqual(baseIds[2], derivedIds[2]);
         }
-    }
 
-    [TestFixture]
-    public class TestOverrideUpdates
-    {
         [Test]
-        public void TestSimpleCollectionAddInArchetype()
+        public void TestSimpleDictionaryAdd()
         {
-            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
-            var asset = new Types.MyAsset2 { MyStrings = { "String1", "String2" } };
+            var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" } } };
             var assetItem = new AssetItem("MyAsset", asset);
-            var derivedAsset = (Types.MyAsset2)asset.CreateDerivedAsset(assetItem.Location);
-            var derivedItem = new AssetItem("MyDerivedAsset", derivedAsset);
-            var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
-            var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(container, derivedItem);
-            derivedGraph.RefreshBase(baseGraph);
+            var context = new DeriveAssetTest<Types.MyAsset3>(assetItem);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
+            var basePropertyNode = (AssetNode)context.BaseGraph.RootNode.GetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetNode)context.DerivedGraph.RootNode.GetChild(nameof(Types.MyAsset3.MyDictionary));
 
-            var basePropertyNode = (AssetNode)baseGraph.RootNode.GetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetNode)derivedGraph.RootNode.GetChild(nameof(Types.MyAsset2.MyStrings));
-            basePropertyNode.Content.Add("String3");
-            Assert.AreEqual(3, derivedAsset.MyStrings.Count);
-            Assert.AreEqual("String3", derivedAsset.MyStrings[2]);
-            Assert.AreEqual("String3", derivedPropertyNode.Content.Retrieve(new Index(2)));
+            // Initial checks
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key2")));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
-            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(0)));
-            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(1)));
-            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index(2)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key2")));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+
+            // Update derived and check
+            derivedPropertyNode.Content.Add("String3", new Index("Key3"));
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(3, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", derivedPropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index("Key3")));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(3, derivedIds.Count);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(3, context.DerivedAsset.MyDictionary.Count);
+
+            // Update base with propagation and check
+            basePropertyNode.Content.Add("String4", new Index("Key4"));
+            Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(4, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String4", basePropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", derivedPropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual("String4", derivedPropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetOverride(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(Index.Empty));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetOverride(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetOverride(new Index("Key4")));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(3, baseIds.Count);
+            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+            Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
+            Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(4, context.DerivedAsset.MyDictionary.Count);
         }
     }
 }

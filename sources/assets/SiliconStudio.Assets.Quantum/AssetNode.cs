@@ -182,11 +182,7 @@ namespace SiliconStudio.Assets.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
-                    if (!e.Index.IsEmpty)
-                    {
-                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                        itemIds[e.Index.Value] = ItemId.New();
-                    }
+                    // Nothing to do if it's a simple value change
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
@@ -194,7 +190,7 @@ namespace SiliconStudio.Assets.Quantum
                         var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
                         // Compute the id we will add for this item
                         ItemId itemId;
-                        if (baseNode?.contentUpdating ?? false)
+                        if (baseNode?.contentUpdating == true)
                         {
                             var baseCollection = baseNode?.Content.Retrieve();
                             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
@@ -214,7 +210,7 @@ namespace SiliconStudio.Assets.Quantum
                             itemIds[e.Index.Value] = itemId;
                         }
                         // Mark it as New if it does not come from the base
-                        if (!(baseNode?.contentUpdating ?? false))
+                        if (!baseNode?.contentUpdating == true)
                         {
                             SetOverride(OverrideType.New, itemId);
                         }
