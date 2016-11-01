@@ -21,13 +21,6 @@ namespace SiliconStudio.Presentation.Quantum
         IGraphNode GetRootNode();
 
         /// <summary>
-        /// Retrieves the absolute path from the original provider to the root node use to generate properties.
-        /// </summary>
-        /// <remarks>Can be empty.</remarks>
-        // FIXME: maybe rename
-        GraphNodePath GetAbsolutePathToRootNode();
-
-        /// <summary>
         /// Indicates whether the members of the given reference should be constructed for the view model.
         /// </summary>
         /// <param name="member">The member content containing the reference.</param>
