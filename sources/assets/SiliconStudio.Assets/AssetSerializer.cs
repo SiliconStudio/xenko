@@ -154,7 +154,7 @@ namespace SiliconStudio.Assets
 
             var asset = (Asset)serializer.Load(stream, filePath, log, out aliasOccurred);
             // Let's fixup references after deserialization
-            asset.FixupReferences();
+            asset.FixupPartReferences();
             return asset;
         }
 

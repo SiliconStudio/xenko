@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             // set to null reference outside of the sub-tree
             var tempAsset = new UILibraryAsset { Hierarchy = clonedHierarchy };
-            tempAsset.FixupReferences();
+            tempAsset.FixupPartReferences();
         }
     }
 }
