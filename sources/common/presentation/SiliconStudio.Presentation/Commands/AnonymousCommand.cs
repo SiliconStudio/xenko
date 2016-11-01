@@ -116,7 +116,9 @@ namespace SiliconStudio.Presentation.Commands
         /// <seealso cref="AnonymousCommand"/>
         public override void Execute(object parameter)
         {
+            // allow to make the parameter optional: if not set it will fall back to the default value of the type (work for both class and value type)
             parameter = parameter ?? default(T);
+            // check the type
             if ((typeof(T).IsValueType || parameter != null) && !(parameter is T))
                 throw new ArgumentException(@"Unexpected parameter type in the command.", nameof(parameter));
 
