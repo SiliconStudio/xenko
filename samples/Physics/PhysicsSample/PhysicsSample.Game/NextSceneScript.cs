@@ -14,10 +14,8 @@ namespace PhysicsSample
             if (NextScene.IsNullOrEmpty())
                 return;
 
-            if (!Input.KeyDown.Contains(Keys.Right))
+            if (!Input.IsKeyPressed(Keys.Right))
                 return;
-
-            Input.KeyDown.RemoveAll(x => x == Keys.Right);
 
             // Next scene
             SceneSystem.SceneInstance.Scene = Content.Load<Scene>(NextScene);

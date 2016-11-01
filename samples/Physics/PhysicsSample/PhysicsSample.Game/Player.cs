@@ -37,29 +37,25 @@ namespace PhysicsSample
                 move = Vector3.UnitX;
             }
 
-            if (Input.PointerEvents.Any())
-            {
-                var last = Input.PointerEvents.Last();
-                if (last != null)
+            foreach(var evt in Input.PointerEvents)
+            { 
+                switch (evt.State)
                 {
-                    switch (last.State)
-                    {
-                        case PointerState.Down:
-                            if (last.Position.X < 0.5)
-                            {
-                                pointerVector = -Vector3.UnitX;
-                            }
-                            else
-                            {
-                                pointerVector = Vector3.UnitX;
-                            }
-                            break;
-                        case PointerState.Up:
-                        case PointerState.Out:
-                        case PointerState.Cancel:
-                            pointerVector = Vector3.Zero;
-                            break;
-                    }
+                    case PointerState.Down:
+                        if (evt.Position.X < 0.5)
+                        {
+                            pointerVector = -Vector3.UnitX;
+                        }
+                        else
+                        {
+                            pointerVector = Vector3.UnitX;
+                        }
+                        break;
+                    case PointerState.Up:
+                    case PointerState.Out:
+                    case PointerState.Cancel:
+                        pointerVector = Vector3.Zero;
+                        break;
                 }
             }
 

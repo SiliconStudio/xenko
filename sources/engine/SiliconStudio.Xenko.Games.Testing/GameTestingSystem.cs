@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -32,6 +33,11 @@ namespace SiliconStudio.Xenko.Games.Testing
             DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
+
+            InputManager input = (InputManager)registry.GetService(typeof(InputManager));
+            // Add simulated input source
+            if (InputSourceSimulated.Instance == null)
+                input.AddInputSource(new InputSourceSimulated());
         }
 
         public override async void Initialize()

@@ -208,7 +208,7 @@ namespace TouchInputs
             {
                 for (int i = 0; i < Input.GamePadCount; i++)
                 {
-                    var gamePadState = Input.GetGamePad(i);
+                    var gamePadState = Input.GetGamePadState(i);
                     gamePadText += "\n[" + i + "] " + gamePadState;
                 }
             }
