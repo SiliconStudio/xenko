@@ -175,11 +175,6 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal Guid ModelGuid => SourceNode.Guid;
 
-        public new void AddCommand(INodeCommandWrapper command)
-        {
-            base.AddCommand(command);
-        }
-
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>

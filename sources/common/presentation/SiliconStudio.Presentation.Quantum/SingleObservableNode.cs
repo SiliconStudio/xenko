@@ -42,6 +42,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
+        public new void AddCommand(INodeCommandWrapper command)
+        {
+            base.AddCommand(command);
+        }
+
         /// <summary>
         /// Registers a function that can compute the display name of this node. If the function uses some children of this node to compute
         /// the display name, the name of these children can be passed so the function is re-evaluated each time one of these children value changes.
