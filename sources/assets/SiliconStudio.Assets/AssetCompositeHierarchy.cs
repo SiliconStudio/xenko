@@ -174,7 +174,7 @@ namespace SiliconStudio.Assets
             }
             if (cleanReference)
             {
-                ClearReferences(clonedHierarchy);
+                ClearPartReferences(clonedHierarchy);
             }
             // Generate part mapping
             idRemapping = new Dictionary<Guid, Guid>();
@@ -194,10 +194,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Clears the references on the cloned hierarchy. Called by <see cref="CloneSubHierarchies"/> when parameter <i>cleanReference</i> is <c>true</c>.
+        /// Clears the part references on the cloned hierarchy. Called by <see cref="CloneSubHierarchies"/> when parameter <i>cleanReference</i> is <c>true</c>.
         /// </summary>
         /// <param name="clonedHierarchy">The cloned hierarchy.</param>
-        protected virtual void ClearReferences(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> clonedHierarchy)
+        protected virtual void ClearPartReferences(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> clonedHierarchy)
         {
             // default implementation does nothing
         }

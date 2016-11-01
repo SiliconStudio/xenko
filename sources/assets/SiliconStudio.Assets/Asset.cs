@@ -161,9 +161,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// 
+        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
+        /// missing references will be cleared, or left as-is.
         /// </summary>
-        /// <param name="clearMissingReferences"></param>
+        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
         public virtual void FixupReferences(bool clearMissingReferences = true)
         {
             // Fixup base

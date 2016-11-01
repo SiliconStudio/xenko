@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         }
 
         /// <inheritdoc/>
-        protected override void ClearReferences(AssetCompositeHierarchyData<UIElementDesign, UIElement> clonedHierarchy)
+        protected override void ClearPartReferences(AssetCompositeHierarchyData<UIElementDesign, UIElement> clonedHierarchy)
         {
             // set to null reference outside of the sub-tree
             var tempAsset = new UILibraryAsset { Hierarchy = clonedHierarchy };
