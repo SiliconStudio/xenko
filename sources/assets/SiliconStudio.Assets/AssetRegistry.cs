@@ -445,7 +445,7 @@ namespace SiliconStudio.Assets
                     object instance = null;
                     // Register serializer factories
                     if (!type.IsAbstract && typeof(IYamlSerializableFactory).IsAssignableFrom(type) &&
-                        type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null && type.GetConstructor(new Type[0]) != null)
+                        type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         try
                         {
@@ -460,7 +460,7 @@ namespace SiliconStudio.Assets
                     }
                     
                     // Custom visitors
-                    if (!type.IsAbstract && typeof(IDataCustomVisitor).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (!type.IsAbstract && typeof(IDataCustomVisitor).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         try
                         {
@@ -482,7 +482,7 @@ namespace SiliconStudio.Assets
                     }
 
                     // Asset importer
-                    if (!type.IsAbstract && typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (!type.IsAbstract && typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         try
                         {
@@ -506,7 +506,7 @@ namespace SiliconStudio.Assets
                         RegisteredAssetFactories.Add(type.Name, (IAssetFactory<Asset>)instance);
                     }
 
-                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         RegisteredPackageSessionAnalysisTypes.Add(type);
                     }
