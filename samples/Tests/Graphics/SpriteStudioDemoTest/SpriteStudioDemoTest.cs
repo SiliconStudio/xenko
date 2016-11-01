@@ -10,7 +10,7 @@ namespace SpriteStudioDemoTest
     [TestFixture]
     public class SpriteStudioDemoTest
     {
-        private const string Path = "samples\\Graphics\\SpriteStudioDemo\\Bin\\Windows\\Debug\\SpriteStudioDemo.exe";
+        private const string Path = "samplesGenerated\\SpriteStudioDemo\\Bin\\Windows\\Debug\\SpriteStudioDemo.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

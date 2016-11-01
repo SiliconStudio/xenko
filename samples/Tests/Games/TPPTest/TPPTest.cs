@@ -10,7 +10,7 @@ namespace TPPTest
     [TestFixture]
     public class TPPTest
     {
-        private const string Path = "samples\\Templates\\ThirdPersonPlatformer\\ThirdPersonPlatformer\\Bin\\Windows\\Debug\\ThirdPersonPlatformer.exe";
+        private const string Path = "samplesGenerated\\ThirdPersonPlatformer\\Bin\\Windows\\Debug\\ThirdPersonPlatformer.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;
