@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets
@@ -31,10 +32,10 @@ namespace SiliconStudio.Assets
         /// Registers the specified serializer factory.
         /// </summary>
         /// <param name="serializerFactory">The serializer factory.</param>
-        /// <exception cref="ArgumentNullException">serializerFactory</exception>
+        /// <exception cref="System.ArgumentNullException">serializerFactory</exception>
         public static void Register(IAssetSerializerFactory serializerFactory)
         {
-            if (serializerFactory == null) throw new ArgumentNullException(nameof(serializerFactory));
+            if (serializerFactory == null) throw new ArgumentNullException("serializerFactory");
             if (!RegisteredSerializerFactories.Contains(serializerFactory))
                 RegisteredSerializerFactories.Add(serializerFactory);
         }
@@ -46,9 +47,9 @@ namespace SiliconStudio.Assets
         /// <returns>IAssetSerializerFactory.</returns>
         public static IAssetSerializer FindSerializer(string assetFileExtension)
         {
-            if (assetFileExtension == null) throw new ArgumentNullException(nameof(assetFileExtension));
+            if (assetFileExtension == null) throw new ArgumentNullException("assetFileExtension");
             assetFileExtension = assetFileExtension.ToLowerInvariant();
-            for (var i = RegisteredSerializerFactories.Count - 1; i >= 0; i--)
+            for (int i = RegisteredSerializerFactories.Count - 1; i >= 0; i--)
             {
                 var assetSerializerFactory = RegisteredSerializerFactories[i];
                 var factory = assetSerializerFactory.TryCreate(assetFileExtension);
@@ -61,7 +62,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Deserializes an <see cref="Asset" /> from the specified file path.
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
         /// </summary>
         /// <typeparam name="T">Type of the asset</typeparam>
         /// <param name="filePath">The file path.</param>
@@ -74,7 +75,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Deserializes an <see cref="Asset" /> from the specified file path.
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
         /// </summary>
         /// <typeparam name="T">Type of the asset</typeparam>
         /// <param name="filePath">The file path.</param>
@@ -84,6 +85,45 @@ namespace SiliconStudio.Assets
         public static T Load<T>(string filePath, ILogger log, out bool aliasOccurred)
         {
             return (T)Load(filePath, log, out aliasOccurred);
+        }
+
+        /// <summary>
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="log">The logger.</param>
+        /// <returns>An instance of Asset not a valid asset asset object file.</returns>
+        public static object Load(string filePath, ILogger log = null)
+        {
+            bool aliasOccurred;
+            return Load(filePath, log, out aliasOccurred);
+        }
+
+        /// <summary>
+        /// Deserializes an <see cref="Asset" /> from the specified file path.
+        /// </summary>
+        /// <param name="filePath">The asset file path loading the asset (used to find a <see cref="IAssetSerializer" /> with <see cref="IAssetSerializerFactory" />).</param>
+        /// <param name="log">The logger.</param>
+        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
+        /// <returns>An instance of Asset not a valid asset asset object file.</returns>
+        public static object Load(string filePath, ILogger log, out bool aliasOccurred)
+        {
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                return Load(stream, filePath, log, out aliasOccurred);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes an <see cref="Asset" /> from the specified stream.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="log">The logger.</param>
+        public static object Load(Stream stream, string filePath, ILogger log = null)
+        {
+            bool aliasOccurred;
+            return Load(stream, filePath, log, out aliasOccurred);
         }
 
         /// <summary>
@@ -115,25 +155,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Deserializes an <see cref="Asset" /> from the specified file path.
-        /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="log">The logger.</param>
-        /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
-        /// <returns>An instance of Asset not a valid asset asset object file.</returns>
-        public static object Load(string filePath, ILogger log, out bool aliasOccurred)
-        {
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return Load(stream, filePath, log, out aliasOccurred);
-            }
-        }
-
-        /// <summary>
         /// Deserializes an <see cref="Asset" /> from the specified stream.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        /// <param name="filePath">The file path.</param>
+        /// <param name="filePath">The asset file path loading the asset (used to find a <see cref="IAssetSerializer" /> with <see cref="IAssetSerializerFactory" />).</param>
         /// <param name="log">The logger.</param>
         /// <param name="aliasOccurred">if set to <c>true</c> an alias on a class/field/property/enum name occurred (rename/remap).</param>
         /// <returns>An instance of Asset not a valid asset asset object file.</returns>
@@ -160,10 +185,10 @@ namespace SiliconStudio.Assets
         /// <param name="filePath">The file path.</param>
         /// <param name="asset">The asset object.</param>
         /// <param name="log">The logger.</param>
-        /// <exception cref="ArgumentNullException">filePath</exception>
+        /// <exception cref="System.ArgumentNullException">filePath</exception>
         public static void Save(string filePath, object asset, ILogger log = null)
         {
-            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            if (filePath == null) throw new ArgumentNullException("filePath");
 
             // Creates automatically the directory when saving an asset.
             filePath = FileUtility.GetAbsolutePath(filePath);
@@ -186,14 +211,14 @@ namespace SiliconStudio.Assets
         /// <param name="stream">The stream.</param>
         /// <param name="asset">The asset object.</param>
         /// <param name="log">The logger.</param>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// stream
         /// or
         /// assetFileExtension
         /// </exception>
         public static void Save(Stream stream, object asset, ILogger log = null)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
             if (asset == null) return;
 
             var assetFileExtension = AssetRegistry.GetDefaultExtension(asset.GetType());
