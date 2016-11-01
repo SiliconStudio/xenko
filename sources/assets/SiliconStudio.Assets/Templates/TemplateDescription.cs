@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,14 +14,20 @@ namespace SiliconStudio.Assets.Templates
     /// Description of a template generator that can be displayed in the GameStudio.
     /// </summary>
     [DataContract("Template")]
-    [AssetDescription(FileExtension, AllowArchetype = false)]
     [DebuggerDisplay("Id: {Id}, Name: {Name}")]
-    public class TemplateDescription : Asset, IFileSynchronizable
+    public class TemplateDescription : IFileSynchronizable
     {
         /// <summary>
         /// The file extension used when loading/saving this template description.
         /// </summary>
         public const string FileExtension = ".xktpl";
+
+        /// <summary>
+        /// Gets or sets the unique identifier.
+        /// </summary>
+        /// <value>The identifier.</value>
+        [DataMember(0)]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the short name of this template 

@@ -1077,8 +1077,8 @@ namespace SiliconStudio.Assets
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
-                ? AssetSerializer.Load(new MemoryStream(assetContent), assetFullPath, log, out assetDirty)
-                : AssetSerializer.Load(assetFullPath, log, out assetDirty);
+                ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log, out assetDirty)
+                : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
