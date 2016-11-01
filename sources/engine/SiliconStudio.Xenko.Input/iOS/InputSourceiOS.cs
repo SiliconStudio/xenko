@@ -77,11 +77,6 @@ namespace SiliconStudio.Xenko.Input
             sensors.AddRange(registeredInputDevices.OfType<NamedSensor>());
         }
 
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext.ContextType == AppContextType.iOS;
-        }
-
         public override void Update()
         {
             base.Update();

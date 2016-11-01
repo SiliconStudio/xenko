@@ -40,7 +40,6 @@ namespace SiliconStudio.Xenko.Input
         // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
         internal GlobalInputState GlobalInputState = new GlobalInputState();
 
-        private readonly InstantiatableTypeBasedRegistry<IInputSource> inputSourceRegistry = new InstantiatableTypeBasedRegistry<IInputSource>();
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
 
@@ -63,7 +62,7 @@ namespace SiliconStudio.Xenko.Input
         private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
-        
+
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
@@ -238,7 +237,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
         public float MouseWheelDelta => GlobalInputState.MouseWheelDelta;
-        
+
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
         /// </summary>
@@ -248,44 +247,60 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public static Vector2 TransformPosition(Size2F fromSize, RectangleF destinationRectangle, Vector2 screenCoordinates)
         {
-            return new Vector2((screenCoordinates.X * fromSize.Width - destinationRectangle.X) / destinationRectangle.Width,
-                (screenCoordinates.Y * fromSize.Height - destinationRectangle.Y) / destinationRectangle.Height);
+            return new Vector2((screenCoordinates.X*fromSize.Width - destinationRectangle.X)/destinationRectangle.Width,
+                (screenCoordinates.Y*fromSize.Height - destinationRectangle.Y)/destinationRectangle.Height);
         }
 
         public override void Initialize()
         {
             base.Initialize();
 
-            // Scan for gamepad layouts and user-defined layouts that may be contained in other assemblies
-            GamePadLayoutRegistry.Update();
-
             Game.Activated += OnApplicationResumed;
             Game.Deactivated += OnApplicationPaused;
 
-            // Find all classes that inherit from IInputSource and are enabled for the current game context
-            foreach (var inputSource in inputSourceRegistry.CreateAllInstances())
+            // Create input sources
+            switch (Game.Context.ContextType)
             {
-                if (inputSource.IsEnabled(Game.Context))
-                {
-                    inputSources.Add(inputSource);
-                }
+                case AppContextType.DesktopSDL:
+                    AddInputSource(new InputSourceSDL());
+                    break;
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                case AppContextType.Android:
+                    AddInputSource(new InputSourceAndroid());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_IOS
+                case AppContextType.iOS:
+                    AddInputSource(new InputSourceiOS());
+                    break;
+#endif
+#if SILICONSTUDIO_UI_OPENTK
+                case AppContextType.DesktopOpenTK:
+                    AddInputSource(new InputSourceOpenTK());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+                case AppContextType.Desktop:
+                    AddInputSource(new InputSourceWindows());
+                    AddInputSource(new InputSourceWindowsDirectInput());
+                    AddInputSource(new InputSourceWindowsXInput());
+                    if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
+                    break;
+#endif
             }
 
-            // Initialize sources
-            foreach (var source in inputSources)
-            {
-                source.InputDevices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
-                source.Initialize(this);
-            }
+            // Simulated input, if enabled
+            if (InputSourceSimulated.Enabled)
+                AddInputSource(new InputSourceSimulated());
 
-            // Generate mappings from input event type to a class to processes these and sends them to the correct gestures that accept those
-            TypeBasedRegistry<InputEvent> inputEventTypes = new TypeBasedRegistry<InputEvent>();
-            var registerEventRouterMethod = GetType().GetMethod("RegisterEventRouter", BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var type in inputEventTypes.GetAllTypes())
-            {
-                var genericMethod = registerEventRouterMethod.MakeGenericMethod(type);
-                genericMethod.Invoke(this, null);
-            }
+            // Register event types
+            RegisterEventType<KeyEvent>();
+            RegisterEventType<MouseButtonEvent>();
+            RegisterEventType<MouseWheelEvent>();
+            RegisterEventType<PointerEvent>();
+            RegisterEventType<GamePadButtonEvent>();
+            RegisterEventType<GamePadAxisEvent>();
+            RegisterEventType<GamePadPovControllerEvent>();
 
             // Add global input state to listen for input events
             AddListener(GlobalInputState);
@@ -339,7 +354,7 @@ namespace SiliconStudio.Xenko.Input
             return inputDevicesById[padId] as IGamePadDevice;
         }
 
-        #region Convenience Functions
+#region Convenience Functions
 
         /// <summary>
         /// Determines whether the specified key is being pressed down.
@@ -491,7 +506,7 @@ namespace SiliconStudio.Xenko.Input
             return (GetGamePadState(gamePadIndex).Buttons & button) == 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) != 0;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Sets the vibration state of the gamepad
@@ -545,11 +560,6 @@ namespace SiliconStudio.Xenko.Input
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
-                if (!(evt is PointerEvent))// || ((PointerEvent)evt).State != PointerState.Move)
-                {
-                    Debug.WriteLine(evt);
-                }
-
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
@@ -623,6 +633,29 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
+        /// <summary>
+        /// Adds a new input source to be used by the input manager
+        /// </summary>
+        /// <param name="source">The input source to add</param>
+        public void AddInputSource(IInputSource source)
+        {
+            if (inputSources.Contains(source)) throw new InvalidOperationException("Input Source already added");
+
+            inputSources.Add(source);
+            source.InputDevices.CollectionChanged += (sender, args) => InputDevicesOnCollectionChanged(source, args);
+            source.Initialize(this);
+        }
+
+        /// <summary>
+        /// Registers an input event type to process
+        /// </summary>
+        /// <typeparam name="TEventType">The event type to process</typeparam>
+        public void RegisterEventType<TEventType>() where TEventType : InputEvent
+        {
+            var type = typeof(TEventType);
+            eventRouters.Add(type, new InputEventRouter<TEventType>());
+        }
+
         protected override void Destroy()
         {
             base.Destroy();
@@ -638,16 +671,6 @@ namespace SiliconStudio.Xenko.Input
 
             // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
             OnApplicationPaused(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Registers an event type and adds an entry to the <see cref="eventRouters"/> map
-        /// </summary>
-        /// <typeparam name="TEventType">The event type that will get routed to the correct <see cref="InputGesture"/>s</typeparam>
-        protected void RegisterEventRouter<TEventType>() where TEventType : InputEvent
-        {
-            var type = typeof(TEventType);
-            eventRouters.Add(type, new InputEventRouter<TEventType>());
         }
 
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
@@ -752,7 +775,7 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnInputDeviceRemoved(IInputDevice device)
         {
-            if(!inputDevices.ContainsKey(device))
+            if (!inputDevices.ContainsKey(device))
                 throw new InvalidOperationException("Input device was not registered");
             inputDevices.Remove(device);
             inputDevicesById.Remove(device.Id);
@@ -858,7 +881,7 @@ namespace SiliconStudio.Xenko.Input
             sensorDevices.Remove(sensorDevice);
             UpdateDefaultSensors();
         }
-        
+
         protected interface IInputEventRouter
         {
             HashSet<IInputEventListener> Listeners { get; }

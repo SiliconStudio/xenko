@@ -183,11 +183,6 @@ namespace SiliconStudio.Xenko.Input
             listener.Disable();
             return listener;
         }
-
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext.ContextType == AppContextType.Android;
-        }
     }
 }
 

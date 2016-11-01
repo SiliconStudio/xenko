@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using SharpDX.DirectInput;
-using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Native.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
@@ -37,11 +36,6 @@ namespace SiliconStudio.Xenko.Input
         {
             directInput = new DirectInput();
             Scan();
-        }
-
-        public override bool IsEnabled(GameContext gameContext)
-        { 
-            return gameContext is GameContext<System.Windows.Forms.Control>;
         }
 
         public override void Update()

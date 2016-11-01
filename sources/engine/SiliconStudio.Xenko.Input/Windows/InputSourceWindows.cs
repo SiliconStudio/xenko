@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
         private GameBase game;
         private Control uiControl;
         private InputManager input;
-        
+
         public override void Dispose()
         {
             // Unregisters devices
@@ -70,11 +70,6 @@ namespace SiliconStudio.Xenko.Input
 
             mouse = new MouseWinforms(game, uiControl);
             RegisterDevice(mouse);
-        }
-
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext is GameContext<Control>;
         }
 
         public override void Update()

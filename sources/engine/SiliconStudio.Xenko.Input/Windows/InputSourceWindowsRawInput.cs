@@ -28,11 +28,6 @@ namespace SiliconStudio.Xenko.Input
             BindRawInputKeyboard(uiControl);
         }
 
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext is GameContext<Control> && InputManager.UseRawInput;
-        }
-
         public override void Update()
         {
         }

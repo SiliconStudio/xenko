@@ -49,11 +49,6 @@ namespace SiliconStudio.Xenko.Input
             Scan();
         }
 
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext is GameContext<Window>;
-        }
-
         public override void Update()
         {
             // Notify event listeners of device removals

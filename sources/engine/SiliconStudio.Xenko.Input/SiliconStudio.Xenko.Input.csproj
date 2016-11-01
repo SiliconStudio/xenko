@@ -75,7 +75,7 @@
     <Compile Include="ButtonEvent.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutDS4.cs" />
-    <Compile Include="GamePadLayouts\GamePadLayoutRegistry.cs" />
+    <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="GlobalInputState.cs" />
     <Compile Include="iOS\InputSourceiOS.cs" />
@@ -173,7 +173,6 @@
     <Compile Include="SDL\KeyboardSDL.cs" />
     <Compile Include="SDL\MouseSDL.cs" />
     <Compile Include="Simulated\InputSourceSimulated.cs" />
-    <Compile Include="TypeBasedRegistry.cs" />
     <Compile Include="KeyEvent.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="GestureConfigLongPress.cs" />

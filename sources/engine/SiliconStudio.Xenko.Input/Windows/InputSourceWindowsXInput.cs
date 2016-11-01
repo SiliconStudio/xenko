@@ -4,9 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using SharpDX.XInput;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -58,12 +56,6 @@ namespace SiliconStudio.Xenko.Input
                 InputManager.Logger.Warning("XInput dll was not found on the computer. GamePad detection will not fully work for the current game instance. " +
                                      "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
             }
-        }
-
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext is GameContext<Control> || 
-                gameContext.ContextType == AppContextType.DesktopOpenTK;
         }
 
         public override void Update()

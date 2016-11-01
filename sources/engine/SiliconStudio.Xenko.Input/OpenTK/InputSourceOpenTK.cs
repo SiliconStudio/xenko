@@ -37,11 +37,6 @@ namespace SiliconStudio.Xenko.Input
             RegisterDevice(keyboard);
             RegisterDevice(mouse);
         }
-
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return gameContext is GameContext<OpenTK.GameWindow>;
-        }
     }
 }
 

@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         protected void InitializeLayout()
         {
-            Layout = GamePadLayoutRegistry.FindLayout(this);
+            Layout = GamePadLayouts.FindLayout(this);
         }
         
         public virtual bool GetButton(int index)

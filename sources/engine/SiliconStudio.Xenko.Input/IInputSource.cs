@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -24,13 +23,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> initializing this source</param>
         void Initialize(InputManager inputManager);
-
-        /// <summary>
-        /// Used to check if this input manager should be used for the current GameContext state
-        /// </summary>
-        /// <param name="gameContext">The game context</param>
-        /// <returns><c>true</c> if this input source can be used with the current GameContext</returns>
-        bool IsEnabled(GameContext gameContext);
 
         /// <summary>
         /// Allows the source to take it's time to search for new devices

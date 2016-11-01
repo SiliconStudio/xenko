@@ -2,31 +2,33 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Keeps track of <see cref="GamePadLayout"/>s defined in all assemblies
+    /// Keeps track of <see cref="GamePadLayout"/>s
     /// </summary>
-    public static class GamePadLayoutRegistry
+    public static class GamePadLayouts
     {
-        public static IReadOnlyList<GamePadLayout> Layouts => layouts;
         private static List<GamePadLayout> layouts = new List<GamePadLayout>();
-        private static readonly InstantiatableTypeBasedRegistry<GamePadLayout> typeRegistry = new InstantiatableTypeBasedRegistry<GamePadLayout>();
 
-        static GamePadLayoutRegistry()
+        static GamePadLayouts()
         {
-            typeRegistry.Updated += (sender, args) => Update();
+            // Add default layouts
+            AddLayout(new GamePadLayoutDS4());
+            AddLayout(new GamePadLayoutXInput());
         }
 
         /// <summary>
-        /// Update the registry with all found type
+        /// Adds a new layout that cane be used for mapping gamepads to <see cref="GamePadState"/>s
         /// </summary>
-        public static void Update()
+        /// <param name="layout">The layout to add</param>
+        public static void AddLayout(GamePadLayout layout)
         {
-            layouts.Clear();
-            layouts = typeRegistry.CreateAllInstances().ToList();
+            if (!layouts.Contains(layout))
+            {
+                layouts.Add(layout);
+            }
         }
 
         /// <summary>

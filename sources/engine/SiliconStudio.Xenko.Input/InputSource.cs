@@ -3,7 +3,6 @@
 
 using System;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -24,9 +23,7 @@ namespace SiliconStudio.Xenko.Input
         public TrackingDictionary<Guid, IInputDevice> InputDevices { get; } = new TrackingDictionary<Guid, IInputDevice>();
 
         public abstract void Initialize(InputManager inputManager);
-        
-        public abstract bool IsEnabled(GameContext gameContext);
-        
+
         public virtual void Update()
         {
         }

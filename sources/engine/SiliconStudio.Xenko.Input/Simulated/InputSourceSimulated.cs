@@ -2,8 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     public class InputSourceSimulated : InputSourceBase
     {
         /// <summary>
-        /// Should simulated input be enabled
+        /// Should simulated input added to the input manager by default
         /// </summary>
         public static bool Enabled = false;
 
@@ -32,11 +33,6 @@ namespace SiliconStudio.Xenko.Input
             RegisterDevice(Keyboard);
             RegisterDevice(Mouse);
             Instance = this;
-        }
-
-        public override bool IsEnabled(GameContext gameContext)
-        {
-            return Enabled;
         }
 
         public class KeyboardSimulated : KeyboardDeviceBase
@@ -62,6 +58,8 @@ namespace SiliconStudio.Xenko.Input
 
         public class MouseSimulated : MouseDeviceBase
         {
+            private readonly List<PointerEvent> injectedPointerEvents = new List<PointerEvent>();
+
             public MouseSimulated()
             {
                 Priority = -1000;
@@ -71,6 +69,13 @@ namespace SiliconStudio.Xenko.Input
             public override string DeviceName => "Simulated Mouse";
             public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
             public override bool IsMousePositionLocked => false;
+            
+            public override void Update(List<InputEvent> inputEvents)
+            {
+                base.Update(inputEvents);
+                inputEvents.AddRange(injectedPointerEvents);
+                injectedPointerEvents.Clear();
+            }
 
             public void SimulateMouseDown(MouseButton button)
             {
@@ -109,7 +114,7 @@ namespace SiliconStudio.Xenko.Input
 
             public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerState state, int id = 0, PointerType type = PointerType.Mouse)
             {
-                CurrentPointerEvents.Add(new PointerEvent(this)
+                injectedPointerEvents.Add(new PointerEvent(this)
                 {
                     Position = position, 
                     DeltaPosition = deltaPosition,
