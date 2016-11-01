@@ -182,7 +182,6 @@ namespace SiliconStudio.Assets.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
-                    // Nothing to do if it's a simple value change
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
@@ -209,25 +208,21 @@ namespace SiliconStudio.Assets.Quantum
                         {
                             itemIds[e.Index.Value] = itemId;
                         }
-                        // Mark it as New if it does not come from the base
-                        if (!baseNode?.contentUpdating == true)
-                        {
-                            SetOverride(OverrideType.New, itemId);
-                        }
                     }
                     break;
                 case ContentChangeType.CollectionRemove:
                     {
                         var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
+                        bool markAsDelete = baseNode != null && !baseNode.contentUpdating;
                         if (collectionDescriptor != null)
                         {
                             var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            itemIds.DeleteAndShift(e.Index.Int);
+                            itemIds.DeleteAndShift(e.Index.Int, markAsDelete);
                         }
                         else
                         {
                             var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            itemIds.Delete(e.Index.Value);
+                            itemIds.Delete(e.Index.Value, markAsDelete);
                         }
                     }
                     break;
@@ -240,27 +235,10 @@ namespace SiliconStudio.Assets.Quantum
             //if (SessionViewModel.Instance.IsInFixupAssetContext)
             //    return;
 
-            if (e.ChangeType == ContentChangeType.ValueChange)
+            // Mark it as New if it does not come from the base
+            if (!baseNode?.contentUpdating == true)
             {
-                if (baseNode != null && !baseNode.contentUpdating)
-                {
-                    OverrideChanging?.Invoke(this, EventArgs.Empty);
-                    Override(!ResettingOverride, e.Index);
-                    OverrideChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-
-            if (e.ChangeType == ContentChangeType.CollectionRemove)
-            {
-                if (baseNode != null)
-                {
-                    var collection = e.Content.Retrieve();
-                    var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
-                    if (e.Content.Descriptor is CollectionDescriptor)
-                        ids.DeleteAndShift(e.Index.Int);
-                    else
-                        ids.Delete(e.Index.Value);
-                }
+                Override(!ResettingOverride, e.Index);
             }
         }
 
@@ -355,6 +333,15 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             return currentNode;
+        }
+
+        public bool IsItemDeleted(ItemId itemId)
+        {
+            var collection = Content.Retrieve();
+            CollectionItemIdentifiers ids;
+            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return ids.IsDeleted(itemId);
         }
     }
 }

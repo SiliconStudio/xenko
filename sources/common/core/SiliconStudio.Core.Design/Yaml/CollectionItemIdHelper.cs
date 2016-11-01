@@ -173,12 +173,12 @@ namespace SiliconStudio.Core.Yaml
         public void DeleteAndShift(int index, bool markAsDeleted = true)
         {
             var id = keyToIdMap[index];
-            keyToIdMap.Remove(index);
             for (var i = index + 1; i < keyToIdMap.Count; ++i)
             {
                 keyToIdMap[i - 1] = keyToIdMap[i];
-                keyToIdMap.Remove(i);
             }
+            keyToIdMap.Remove(keyToIdMap.Count - 1);
+
             if (markAsDeleted)
             {
                 MarkAsDeleted(id);
@@ -275,6 +275,11 @@ namespace SiliconStudio.Core.Yaml
                     throw new KeyNotFoundException("Unable to find the non-value type key in the dictionary of cloned keys.");
                 }
             }
+        }
+
+        public bool IsDeleted(ItemId itemId)
+        {
+            return DeletedItems.Contains(itemId);
         }
     }
 

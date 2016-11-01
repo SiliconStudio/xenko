@@ -58,6 +58,15 @@ namespace SiliconStudio.Assets.Quantum
             LinkToBase(RootNode, baseAssetGraph?.RootNode);
         }
 
+        public void ReconcileWithBase()
+        {
+            if (assetItem.Asset.Base == null)
+                return;
+
+            var visitor = new ReconcileWithBaseVisitor();
+            visitor.Visit(RootNode);
+        }
+
         // TODO: turn protected
         public virtual bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
         {

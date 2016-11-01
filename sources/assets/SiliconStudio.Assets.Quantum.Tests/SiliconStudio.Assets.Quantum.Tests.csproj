@@ -45,6 +45,7 @@
     <Compile Include="TestArchetypes.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestOverrideSerialization.cs" />
+    <Compile Include="TestReconcileWithBase.cs" />
     <Compile Include="Types.cs" />
   </ItemGroup>
   <ItemGroup>
