@@ -8,4 +8,4 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 9a082c56-02aa-4585-9def-843bf3666f54
-    Size: 26.66666
+    Size: 24.0

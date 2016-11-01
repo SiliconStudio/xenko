@@ -1,9 +1,9 @@
 !SceneAsset
 Id: 9294c606-6173-4215-a8dc-0d5043d68333
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 1d1dff26-e925-415a-9895-add9f612b42d
+    Id: 1d1dff26-e925-415a-9895-add9f612b42d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 89ae28bf-7fdf-4392-a13a-56aa42d48fbb
         Cameras: []

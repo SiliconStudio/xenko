@@ -1,17 +1,15 @@
 !SceneAsset
 Id: d23da80d-8ef3-4400-9f16-190a9c6bd3b3
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: f3526002-9bc4-4ab4-819f-af3429bca2b6
+    Id: f3526002-9bc4-4ab4-819f-af3429bca2b6
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 72d58eb3-79c3-4dd0-9035-5abc3979366f
         Cameras:
             -   ~Id: cac01c54-fb79-4378-9083-b407b8bfd861
                 Name: null
-                Camera:
-                    Entity: {Id: 0b04edaf-f330-4ae1-9d93-517d967fbe95}
-                    Id: 9be240a7-a303-4cc1-9aa1-0eb9365669ec
+                Camera: 0b04edaf-f330-4ae1-9d93-517d967fbe95/9be240a7-a303-4cc1-9aa1-0eb9365669ec
         Layers: []
         Master:
             ~Id: ab3c2b60-408a-423c-be52-b3fc6d9f2ef3
@@ -57,10 +55,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: c07d4880-733b-4686-b54d-816aef3d3357
-                        Position: {X: 0.0, Y: 2.0, Z: 2.0}
-                        Rotation: {W: 0.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 2.0, Z: 2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 9be240a7-a303-4cc1-9aa1-0eb9365669ec
                         Projection: Orthographic
@@ -71,10 +69,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6df53acd-0ad5-4f01-bc45-dd38893fa828
-                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 4eaeffe8-d225-4327-89df-6813f39119d2
                         Texture: 7d966d17-e360-4285-a791-8ea6b9d7f93e/4b0f48d8-839e-4c71-8ca5-fc72e88cb68a:Bkg
@@ -84,10 +82,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 52f49cbb-cc19-4629-b093-9b766a5cd10b
-                        Position: {X: 8.0, Y: 8.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: 8.0, Y: 8.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !AnimationComponent
                         ~Id: 61d7e562-b1e2-4f07-b6cf-f5ef728d282a
                         Animations:
@@ -129,10 +127,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 3234e418-6f30-4776-b7f2-af6f9e73d225
-                        Position: {X: -1.25711727, Y: -1.0, Z: 7.02876854}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.25711727, Y: -1.0, Z: 7.02876854}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !StaticColliderComponent
                         ~Id: 4a1368df-990a-4d63-ab49-3a444fd68fab
                         CanCollideWith: CustomFilter1
@@ -154,10 +152,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 04f74371-5ad6-41d0-be8a-984db178ce5e
-                        Position: {X: -6.616724, Y: -1.06623185, Z: 0.0}
-                        Rotation: {W: -4.371139E-08, X: 0.0, Y: -1.0, Z: 0.0}
-                        Scale: {X: 0.450682253, Y: 0.450682253, Z: 0.450682253}
                         Children: []
+                        Position: {X: -6.616724, Y: -1.06623185, Z: 0.0}
+                        Rotation: {X: 0.0, Y: -1.0, Z: 0.0, W: -4.371139E-08}
+                        Scale: {X: 0.450682253, Y: 0.450682253, Z: 0.450682253}
                     - !AnimationComponent
                         ~Id: e5054314-d214-40c7-9a08-890d5ba014f9
                         Animations:
@@ -167,8 +165,8 @@ Hierarchy:
                         PlayingAnimations: []
                     - !SpriteStudioDemo.PlayerScript,SpriteStudioDemo.Game
                         ~Id: 018ca6a8-c34d-4b93-9901-3c685336a2f0
-                        BulletColliderShape: 352445bc-b50a-48f2-948f-9908a706f87a/7946c040-eeda-424d-a2f5-3ede14470c1a:Bullet_CS
                         BulletSheet: 705369d1-1890-4cd1-8f86-228796e5c877/fba79776-e90e-42eb-ac60-a137b2e7378d:SpriteSheet
+                        BulletColliderShape: 352445bc-b50a-48f2-948f-9908a706f87a/7946c040-eeda-424d-a2f5-3ede14470c1a:Bullet_CS
                     - !SpriteStudioComponent
                         ~Id: a7c40e4a-4f39-4723-bd72-990ea2aadc40
                         Sheet: 65afdb23-b9b8-48e5-907b-aba90a148d42/ed4d6771-9481-4867-b85a-9d04280baba5:character_template_3head
@@ -178,15 +176,16 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: db13a295-f1f7-4bbf-a0b0-c17fa73967b3
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpriteStudioDemo.GuiScript,SpriteStudioDemo.Game
                         ~Id: c21d3a58-43c4-4b22-99a1-d932a8b9c338
                         Font: 276142dd-3e99-47b1-a49f-fec092e33483/58cd9ec1-ff48-4b50-aa88-43e0351fcb95:Font
                     - !UIComponent
                         ~Id: c0d2276e-0d39-43f9-9df8-cee475719561
+                        Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
@@ -195,10 +194,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f7cc8118-5dd3-4c25-9dc3-288826278f52
-                        Position: {X: -8.0, Y: 8.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: -8.0, Y: 8.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !AnimationComponent
                         ~Id: ac8bfd48-9918-40f2-b3c6-124cc93870df
                         Animations:
@@ -240,10 +239,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 40b67b78-7528-4b2d-ba67-632d439aaad6
-                        Position: {X: 0.0, Y: 8.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: 0.0, Y: 8.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !AnimationComponent
                         ~Id: 4a9121b4-7fe4-4a1c-80dc-c5bd05c02c7b
                         Animations:

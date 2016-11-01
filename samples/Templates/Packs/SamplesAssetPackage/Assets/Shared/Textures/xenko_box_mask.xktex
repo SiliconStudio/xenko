@@ -1,8 +1,8 @@
 !Texture
-Id: a7bd711e-aca6-4035-a9e1-dbc34fd90cce
+Id: aebdd268-c404-4639-ba4b-0aaab560fbd6
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../Resources/VRbox/Textures/xenko_box_mask_mark.tga
+Source: ../../../Resources/Textures/xenko_box_mask_mark.tga
 ColorKeyEnabled: true
 ColorKeyColor: {R: 0, G: 0, B: 0, A: 255}
 Format: Color16Bits

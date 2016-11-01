@@ -1,18 +1,16 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 35bdf1bb-0eaa-4c45-8b95-7e55108786aa
+    Id: 35bdf1bb-0eaa-4c45-8b95-7e55108786aa
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 5e0fcdcd-1298-452c-972e-3d6b1035167a
+        ModelEffect: SpaceEscapeEffectMain
         Cameras:
             -   ~Id: 9bffa69f-ddcb-4198-a717-9dd73430f2d7
                 Name: null
-                Camera:
-                    Entity: {Id: f0bb69db-f15c-4a39-b3cd-d2941fdb99ce}
-                    Id: 021212a7-5b24-41de-8e59-9e1e066ac0ed
-        ModelEffect: SpaceEscapeEffectMain
+                Camera: f0bb69db-f15c-4a39-b3cd-d2941fdb99ce/021212a7-5b24-41de-8e59-9e1e066ac0ed
         Layers: []
         Master:
             ~Id: fa88774d-9008-4a78-b853-2fd93c24a8ea
@@ -57,12 +55,11 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 0cbb7a6d-9bc4-40cc-bb47-fb4c3e7e6097
-                        Position: {X: 0.0, Y: 1.5, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            -   Entity: {Id: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab}
-                                Id: 6d3d8210-82a7-4831-8506-771952cf3d01
+                            - 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/6d3d8210-82a7-4831-8506-771952cf3d01
+                        Position: {X: 0.0, Y: 1.5, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: d08a4541-3476-47a6-a7b8-0f9eb9ad1b22
                         Animations:
@@ -74,9 +71,7 @@ Hierarchy:
                         PlayingAnimations: []
                     - !SpaceEscape.CharacterScript,SpaceEscape.Game
                         ~Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
-                        CharacterShadow:
-                            Entity: {Id: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab}
-                            Id: dd821d2d-0ed7-4ac2-8e23-6fe88911056b
+                        CharacterShadow: 8e708cb6-dd94-4ca1-89f5-17d15dfda2ab/dd821d2d-0ed7-4ac2-8e23-6fe88911056b
                     - !ModelComponent
                         ~Id: 8182a6b5-3db5-4bfc-8735-831133e03931
                         Model: 73ff1d53-eb9e-45fa-bf83-9455306d12b0/920f4445-c00d-474f-b8c0-33b385d58b8f:character_00
@@ -90,10 +85,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 4dfc37a1-5263-4bef-b26c-6a830f3561b8
-                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 3460bb6b-7b18-4134-8e75-3d08dcc1f098
                         Type: !LightAmbient
@@ -108,38 +103,33 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 7d5f2e82-88ab-458c-8bfd-3d49c0489c40
-                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.GameScript,SpaceEscape.Game
                         ~Id: ac2e228b-4d39-4e91-a172-de967e133b12
+                        CharacterScript: 23d023ae-08a0-4a2b-883b-c3a784e25e78/d16da46d-e886-4870-a8a2-7ac30c0034ea
+                        BackgroundScript: 9a768522-351d-40ab-ad6b-9ecc90f3c111/96a90126-5b00-48ef-b725-ff6116d66cf5
+                        UIScript: 68cbade9-8efc-4123-8c6c-81bf6c38059b/df4146ae-23ba-40f7-8258-46b1fe1ae97d
                         Priority: 10
-                        BackgroundScript:
-                            Entity: {Id: 9a768522-351d-40ab-ad6b-9ecc90f3c111}
-                            Id: 96a90126-5b00-48ef-b725-ff6116d66cf5
-                        CharacterScript:
-                            Entity: {Id: 23d023ae-08a0-4a2b-883b-c3a784e25e78}
-                            Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
-                        UIScript:
-                            Entity: {Id: 68cbade9-8efc-4123-8c6c-81bf6c38059b}
-                            Id: df4146ae-23ba-40f7-8258-46b1fe1ae97d
         -   Entity:
                 Id: 68cbade9-8efc-4123-8c6c-81bf6c38059b
                 Name: UI
                 Components:
                     - !TransformComponent
                         ~Id: 01e6d689-2d2a-4821-895d-ff85d8a55070
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.UIScript,SpaceEscape.Game
                         ~Id: df4146ae-23ba-40f7-8258-46b1fe1ae97d
                         Font: 15229364-98ce-4dc3-a6e9-8a1eb07e7ae8/aa317d9b-bbd3-4240-9ad6-11efad9c4d4d:Font
                         UIImages: f8d50c0f-a882-4f0c-87e0-d70ec1d211c8/2bb544ec-3316-404c-a73f-ec9302f7aa1c:UIImages
                     - !UIComponent
                         ~Id: d1ebf474-a344-4bf6-9390-5666794a3db1
+                        Page: null
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
@@ -149,10 +139,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6d3d8210-82a7-4831-8506-771952cf3d01
-                        Position: {X: 0.0, Y: -1.2, Z: 0.0}
-                        Rotation: {W: 0.707106769, X: 0.707106769, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: -1.2, Z: 0.0}
+                        Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpriteComponent
                         ~Id: dd821d2d-0ed7-4ac2-8e23-6fe88911056b
                         SpriteProvider: !SpriteFromTexture
@@ -167,10 +157,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 51847f85-1760-4118-9f2a-3730e6385b35
-                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SpaceEscape.Background.BackgroundScript,SpaceEscape.Game
                         ~Id: 96a90126-5b00-48ef-b725-ff6116d66cf5
                         LevelBlocks: 4d09da87-242f-41af-96e5-f6154e2a167d/d5969c6e-1456-4aac-a656-598bf1e16c2d:LevelBlocks
@@ -181,10 +171,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 9ea895be-e2e7-44c9-b3d1-25a51b19d3f7
-                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
-                        Rotation: {W: 0.79383105, X: -0.429669142, Y: 0.37299636, Z: -0.214686662}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
+                        Rotation: {X: -0.429669142, Y: 0.37299636, Z: -0.214686662, W: 0.79383105}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: d891c74f-0456-4576-bdf3-9554de7d475a
                         Type: !LightDirectional
@@ -208,10 +198,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f5b846dc-01a6-4664-b5b9-ce729fe74ecc
-                        Position: {X: 0.0, Y: 12.0, Z: -12.0}
-                        Rotation: {W: -7.52105933E-10, X: 7.875609E-08, Y: 0.9612617, Z: 0.2756374}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 12.0, Z: -12.0}
+                        Rotation: {X: 7.875609E-08, Y: 0.9612617, Z: 0.2756374, W: -7.52105933E-10}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 021212a7-5b24-41de-8e59-9e1e066ac0ed
                         Projection: Perspective

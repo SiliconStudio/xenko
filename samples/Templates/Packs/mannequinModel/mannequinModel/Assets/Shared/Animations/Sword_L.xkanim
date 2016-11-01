@@ -1,0 +1,10 @@
+!Animation
+Id: 7650de68-b9f2-4ab1-a593-bd470dbb4e3d
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../Resources/Animation/Sword_L.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
+RepeatMode: LoopInfinite
+Skeleton: a6a5d799-e23c-49e4-907b-3d52c4854d71/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
+RootMotion: false
+PreviewModel: ad66bdc2-d1d6-4178-99c4-f5cccbbf7fcc/f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel

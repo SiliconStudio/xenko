@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// </summary>
         public const string FileExtension = ".xkfx;.pdxfx";
 
-        public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
+        public override string Generator => "XenkoShaderKeyGenerator";
 
-        public override void SaveGeneratedAsset()
+        public override void SaveGeneratedAsset(AssetItem assetItem)
         {
             // TODO: Implement this?
         }
