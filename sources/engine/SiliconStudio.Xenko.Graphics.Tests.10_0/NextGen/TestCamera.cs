@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
             if (Input.HasGamePad)
             {
-                var state = Input.GetGamePad(-1);
+                var state = Input.GetGamePadState(-1);
 
                 if (state.LeftThumb.LengthSquared() > 0)
                 {

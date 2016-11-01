@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Diagnostics;
@@ -27,12 +28,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
+        // The list that the inputmanager uses for pointer events
+        protected List<PointerEvent> PointerEvents;
+
         protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
 
         protected Scene Scene;
         protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
         protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
-
+        
         private readonly SceneGraphicsCompositorLayers graphicsCompositor;
 
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
@@ -170,6 +174,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Window.IsMouseVisible = true;
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+
+            PointerEvents = Input.GlobalInputState.PointerEvents;
         }
 
         #region Temporary Fix (Style)
@@ -273,7 +279,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (state == PointerState.Down)
                 lastTouchPosition = position;
 
-            var pointerEvent = new PointerEvent(0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
+            var pointerEvent = new PointerEvent(InputSourceSimulated.Instance.Mouse, 0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
 
             lastTouchPosition = position;
 

@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 HandleMove(position);
             }
-
+            
             public void SimulatePointer(PointerState state, Vector2 position)
             {
                 InputEventType eventType;
@@ -105,6 +105,20 @@ namespace SiliconStudio.Xenko.Input
                         throw new ArgumentOutOfRangeException();
                 }
                 PointerInputEvents.Add(new PointerInputEvent { Id = 0, Position = position, Type = eventType });
+            }
+
+            public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerState state, int id = 0, PointerType type = PointerType.Mouse)
+            {
+                CurrentPointerEvents.Add(new PointerEvent(this)
+                {
+                    Position = position, 
+                    DeltaPosition = deltaPosition,
+                    DeltaTime = delta,
+                    IsDown = state != PointerState.Up,
+                    PointerId = id,
+                    PointerType = type,
+                    State = state
+                });
             }
 
             public override void LockMousePosition(bool forceCenter = false)

@@ -13,6 +13,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
 
@@ -47,6 +48,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected GameTestBase()
         {
+            // Enabled simulated input
+            InputSourceSimulated.Enabled = true;
+
             // Override the default graphic device manager
             GraphicsDeviceManager.Dispose();
             GraphicsDeviceManager = new TestGraphicsDeviceManager(this)
