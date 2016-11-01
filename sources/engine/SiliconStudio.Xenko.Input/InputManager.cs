@@ -37,6 +37,9 @@ namespace SiliconStudio.Xenko.Input
 
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
+        // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
+        internal GlobalInputState GlobalInputState = new GlobalInputState();
+
         private readonly InstantiatableTypeBasedRegistry<IInputSource> inputSourceRegistry = new InstantiatableTypeBasedRegistry<IInputSource>();
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
@@ -60,9 +63,6 @@ namespace SiliconStudio.Xenko.Input
         private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
-
-        // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
-        private GlobalInputState globalInputState = new GlobalInputState();
         
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
@@ -135,12 +135,12 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Pointer events that happened since the last frame
         /// </summary>
-        public IReadOnlyList<PointerEvent> PointerEvents => globalInputState.PointerEvents;
+        public IReadOnlyList<PointerEvent> PointerEvents => GlobalInputState.PointerEvents;
 
         /// <summary>
         /// Keyboard events that happened since the last frame
         /// </summary>
-        public IReadOnlyList<KeyEvent> KeyEvents => globalInputState.KeyEvents;
+        public IReadOnlyList<KeyEvent> KeyEvents => GlobalInputState.KeyEvents;
 
         /// <summary>
         /// All input events that happened since the last frame
@@ -216,15 +216,15 @@ namespace SiliconStudio.Xenko.Input
         /// Gets a list of keys being pressed down.
         /// </summary>
         /// <value>A list of keys that are pressed</value>
-        public List<Keys> KeyDown => globalInputState.DownKeysSet.ToList();
+        public List<Keys> KeyDown => GlobalInputState.DownKeysSet.ToList();
 
         /// <summary>
-        /// Gets the mouse position.
+        /// Gets or sets the mouse position.
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MousePosition
         {
-            get { return globalInputState.MousePosition; }
+            get { return GlobalInputState.MousePosition; }
             set { SetMousePosition(value); }
         }
 
@@ -232,12 +232,12 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the mouse delta.
         /// </summary>
         /// <value>The mouse position.</value>
-        public Vector2 MouseDelta => globalInputState.MouseDelta;
+        public Vector2 MouseDelta => GlobalInputState.MouseDelta;
 
         /// <summary>
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
-        public float MouseWheelDelta => globalInputState.MouseWheelDelta;
+        public float MouseWheelDelta => GlobalInputState.MouseWheelDelta;
         
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Add global input state to listen for input events
-            AddListener(globalInputState);
+            AddListener(GlobalInputState);
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsKeyDown(Keys key)
         {
-            return globalInputState.IsKeyDown(key);
+            return GlobalInputState.IsKeyDown(key);
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
         public bool IsKeyPressed(Keys key)
         {
-            return globalInputState.IsKeyPressed(key);
+            return GlobalInputState.IsKeyPressed(key);
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
         public bool IsKeyReleased(Keys key)
         {
-            return globalInputState.IsKeyReleased(key);
+            return GlobalInputState.IsKeyReleased(key);
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
         public bool HasDownMouseButtons()
         {
-            return globalInputState.HasDownMouseButtons();
+            return GlobalInputState.HasDownMouseButtons();
         }
 
         /// <summary>
@@ -386,7 +386,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
         public bool HasReleasedMouseButtons()
         {
-            return globalInputState.HasReleasedMouseButtons();
+            return GlobalInputState.HasReleasedMouseButtons();
         }
 
         /// <summary>
@@ -395,7 +395,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
         public bool HasPressedMouseButtons()
         {
-            return globalInputState.HasPressedMouseButtons();
+            return GlobalInputState.HasPressedMouseButtons();
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonDown(MouseButton mouseButton)
         {
-            return globalInputState.IsMouseButtonDown(mouseButton);
+            return GlobalInputState.IsMouseButtonDown(mouseButton);
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonPressed(MouseButton mouseButton)
         {
-            return globalInputState.IsMouseButtonPressed(mouseButton);
+            return GlobalInputState.IsMouseButtonPressed(mouseButton);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
         public bool IsMouseButtonReleased(MouseButton mouseButton)
         {
-            return globalInputState.IsMouseButtonReleased(mouseButton);
+            return GlobalInputState.IsMouseButtonReleased(mouseButton);
         }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(GameTime gameTime)
         {
-            globalInputState.Reset();
+            GlobalInputState.Reset();
             inputEvents.Clear();
 
             // Update all input sources so they can route events to input devices and possible register new devices
@@ -545,6 +545,11 @@ namespace SiliconStudio.Xenko.Input
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
+                if (!(evt is PointerEvent))// || ((PointerEvent)evt).State != PointerState.Move)
+                {
+                    Debug.WriteLine(evt);
+                }
+
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
@@ -694,7 +699,7 @@ namespace SiliconStudio.Xenko.Input
             gestureEvents.Clear();
 
             // Only pick out events that lie between Up/Down or are Up/Down events
-            var filteredPointerEvents = globalInputState.PointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
+            var filteredPointerEvents = GlobalInputState.PointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
 
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
             {

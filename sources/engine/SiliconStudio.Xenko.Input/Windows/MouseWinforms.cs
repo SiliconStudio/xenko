@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -27,14 +28,12 @@ namespace SiliconStudio.Xenko.Input
         {
             this.game = game;
             this.uiControl = uiControl;
-
-            uiControl.GotFocus += OnGotFocus;
-            uiControl.LostFocus += OnLostFocus;
+            
             uiControl.MouseMove += OnMouseMove;
             uiControl.MouseDown += OnMouseDown;
             uiControl.MouseUp += OnMouseUp;
             uiControl.MouseWheel += OnMouseWheelEvent;
-            uiControl.MouseCaptureChanged += OnLostMouseCaptureWinForms;
+            uiControl.MouseCaptureChanged += OnLostMouseCapture;
             uiControl.SizeChanged += OnSizeChanged;
 
             OnSizeChanged(this, null);
@@ -43,13 +42,12 @@ namespace SiliconStudio.Xenko.Input
         public override void Dispose()
         {
             base.Dispose();
-            uiControl.GotFocus -= OnGotFocus;
-            uiControl.LostFocus -= OnLostFocus;
+
             uiControl.MouseMove -= OnMouseMove;
             uiControl.MouseDown -= OnMouseDown;
             uiControl.MouseUp -= OnMouseUp;
             uiControl.MouseWheel -= OnMouseWheelEvent;
-            uiControl.MouseCaptureChanged -= OnLostMouseCaptureWinForms;
+            uiControl.MouseCaptureChanged -= OnLostMouseCapture;
             uiControl.SizeChanged -= OnSizeChanged;
         }
 
@@ -127,6 +125,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnMouseWheelEvent(object sender, MouseEventArgs mouseEventArgs)
         {
+            // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
+            if (!uiControl.ClientRectangle.Contains(uiControl.PointToClient(Control.MousePosition)))
+                return;
+
             HandleMouseWheel((float)mouseEventArgs.Delta / (float)SystemInformation.MouseWheelScrollDelta);
         }
 
@@ -140,29 +142,20 @@ namespace SiliconStudio.Xenko.Input
             uiControl.Focus();
             HandleButtonDown(ConvertMouseButton(mouseEventArgs.Button));
         }
-        private void OnLostMouseCaptureWinForms(object sender, EventArgs args)
+        private void OnLostMouseCapture(object sender, EventArgs args)
         {
-            // TODO: Replace original functionality this had
             // On windows forms, the controls capture of the mouse button events at the first button pressed and release them at the first button released.
             // This has for consequence that all up-events of button simultaneously pressed are lost after the release of first button (if outside of the window).
-            // This function fix the problem by forcing the mouse event capture if any mouse buttons are still down at the first button release.
-
-            //            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
-            //            {
-            //                var buttonId = (int)button;
-            //                if (MouseButtonCurrentlyDown[buttonId])
-            //                    UiControl.Capture = true;
-            //            }
-        }
-
-        private void OnGotFocus(object sender, EventArgs args)
-        {
-            //LostFocus = false;
-        }
-
-        private void OnLostFocus(object sender, EventArgs args)
-        {
-            //LostFocus = true;
+            // This function fixes the problem by forcing the mouse event capture if any mouse buttons are still down at the first button release.
+            //if(DownButtons.Count > 0)
+            //{
+            //    uiControl.Capture = true;
+            //}
+            var buttonsToRelease = DownButtons.ToArray();
+            foreach (var button in buttonsToRelease)
+            {
+                HandleButtonUp(button);
+            }
         }
 
         private static MouseButton ConvertMouseButton(MouseButtons mouseButton)

@@ -39,12 +39,20 @@ namespace SiliconStudio.Xenko.Input
 
         public void HandleKeyDown(Keys key)
         {
+            // Prevent duplicate events
+            if (DownKeys.Contains(key))
+                return;
+
             DownKeys.Add(key);
             KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Pressed, Key = key });
         }
 
         public void HandleKeyUp(Keys key)
         {
+            // Prevent duplicate events
+            if (!DownKeys.Contains(key))
+                return;
+
             DownKeys.Remove(key);
             KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Released, Key = key });
         }

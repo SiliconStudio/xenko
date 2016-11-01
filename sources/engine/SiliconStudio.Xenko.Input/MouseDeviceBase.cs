@@ -65,6 +65,10 @@ namespace SiliconStudio.Xenko.Input
 
         public void HandleButtonDown(MouseButton button)
         {
+            // Prevent duplicate events
+            if (DownButtons.Contains(button))
+                return;
+
             DownButtons.Add(button);
             MouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Down });
 
@@ -75,6 +79,10 @@ namespace SiliconStudio.Xenko.Input
 
         public void HandleButtonUp(MouseButton button)
         {
+            // Prevent duplicate events
+            if (!DownButtons.Contains(button))
+                return;
+
             DownButtons.Remove(button);
             MouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Up });
 

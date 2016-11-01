@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Input
             gameContext = inputManager.Game.Context as GameContext<Control>;
             game = inputManager.Game;
             uiControl = gameContext.Control;
+            uiControl.LostFocus += UIControlOnLostFocus;
 
             // Hook window proc
             defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
@@ -78,18 +79,23 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update()
         {
+        }
+        
+        private void UIControlOnLostFocus(object sender, EventArgs eventArgs)
+        {
+            // Release keys/buttons when control focus is lost (this prevents some keys getting stuck when a focus loss happens when moving the camera)
             if (keyboard != null)
             {
-                // Manually force releasing keys if their up event never gets fired
-                WinFormsKeys[] keysToCheck = heldKeys.ToArray();
-                foreach (WinFormsKeys key in keysToCheck)
+                foreach(var key in keyboard.DownKeys.ToArray())
                 {
-                    short keyState = Win32Native.GetKeyState((int)key);
-                    if ((keyState & 0x8000) == 0)
-                    {
-                        keyboard.HandleKeyUp(key);
-                        heldKeys.Remove(key);
-                    }
+                    keyboard.HandleKeyUp(key);
+                }
+            }
+            if (mouse != null)
+            {
+                foreach (var button in mouse.DownButtons.ToArray())
+                {
+                    mouse.HandleButtonUp(button);
                 }
             }
         }
