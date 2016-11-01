@@ -68,9 +68,11 @@ namespace SiliconStudio.Core.Yaml
         {
             var objectType = objectContext.Instance.GetType();
 
-            OverrideType overrideType;
-            var realMemberName = TrimAndParseOverride(memberName, out overrideType);
+            OverrideType[] overrideTypes;
+            var realMemberName = TrimAndParseOverride(memberName, out overrideTypes);
 
+            // For member names, we have a single override, so we always take the last one of the array (In case of legacy property serialized with ~Name)
+            var overrideType = overrideTypes[overrideTypes.Length - 1];
             if (overrideType != OverrideType.Base)
             {
                 if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
@@ -164,13 +166,13 @@ namespace SiliconStudio.Core.Yaml
         public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
         {
             var key = objectContext.Reader.Peek<Scalar>();
-            OverrideType overrideType;
-            var keyName = TrimAndParseOverride(key.Value, out overrideType);
+            OverrideType[] overrideTypes;
+            var keyName = TrimAndParseOverride(key.Value, out overrideTypes);
             key.Value = keyName;
 
             var keyValue = base.ReadDictionaryKey(ref objectContext, keyType);
 
-            if (overrideType != OverrideType.Base)
+            if (overrideTypes[0] != OverrideType.Base)
             {
                 Dictionary<ObjectPath, OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
@@ -189,7 +191,25 @@ namespace SiliconStudio.Core.Yaml
                 {
                     path.PushIndex(keyValue);
                 }
-                overrides.Add(path, overrideType);
+                overrides.Add(path, overrideTypes[0]);
+            }
+
+            if (overrideTypes.Length > 1 && overrideTypes[1] != OverrideType.Base)
+            {
+                ItemId id;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
+                {
+                    Dictionary<ObjectPath, OverrideType> overrides;
+                    if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
+                    {
+                        overrides = new Dictionary<ObjectPath, OverrideType>();
+                        objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, overrides);
+                    }
+
+                    var path = GetCurrentPath(ref objectContext, true);
+                    path.PushIndex(keyValue);
+                    overrides.Add(path, overrideTypes[0]);
+                }
             }
 
             return keyValue;
@@ -200,18 +220,21 @@ namespace SiliconStudio.Core.Yaml
             Dictionary<ObjectPath, OverrideType> overrides;
             if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
             {
-                var path = GetCurrentPath(ref objectContext, true);
+                var itemPath = GetCurrentPath(ref objectContext, true);
+                ObjectPath keyPath = null;
                 ItemId id;
                 if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
                 {
-                    path.PushItemId(id);
+                    keyPath = itemPath.Clone();
+                    keyPath.PushIndex(key);
+                    itemPath.PushItemId(id);
                 }
                 else
                 {
-                    path.PushIndex(key);
+                    itemPath.PushIndex(key);
                 }
                 OverrideType overrideType;
-                if (overrides.TryGetValue(path, out overrideType))
+                if (overrides.TryGetValue(itemPath, out overrideType))
                 {
                     if ((overrideType & OverrideType.New) != 0)
                     {
@@ -220,6 +243,17 @@ namespace SiliconStudio.Core.Yaml
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
                         objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, Override.PostFixSealed.ToString());
+                    }
+                }
+                if (keyPath != null && overrides.TryGetValue(keyPath, out overrideType))
+                {
+                    if ((overrideType & OverrideType.New) != 0)
+                    {
+                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, Override.PostFixNew.ToString());
+                    }
+                    if ((overrideType & OverrideType.Sealed) != 0)
+                    {
+                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, Override.PostFixSealed.ToString());
                     }
                 }
             }
@@ -276,27 +310,40 @@ namespace SiliconStudio.Core.Yaml
             objectContext.Properties.Set(MemberPathKey, path);
         }
 
-        private static string TrimAndParseOverride(string name, out OverrideType overrideType)
+        internal static string TrimAndParseOverride(string name, out OverrideType[] overrideTypes)
         {
-            var realName = name.Trim(Override.PostFixSealed, Override.PostFixNew);
+            var split = name.Split('~');
 
-            overrideType = OverrideType.Base;
-            if (realName.Length != name.Length)
+            overrideTypes = new OverrideType[split.Length];
+            int i = 0;
+            var trimmedName = string.Empty;
+            foreach (var namePart in split)
             {
-                if (name.Contains(Override.PostFixNewSealed) || name.EndsWith(Override.PostFixNewSealedAlt))
+                var realName = namePart.Trim(Override.PostFixSealed, Override.PostFixNew);
+
+                var overrideType = OverrideType.Base;
+                if (realName.Length != namePart.Length)
                 {
-                    overrideType = OverrideType.New | OverrideType.Sealed;
+                    if (namePart.Contains(Override.PostFixNewSealed) || namePart.EndsWith(Override.PostFixNewSealedAlt))
+                    {
+                        overrideType = OverrideType.New | OverrideType.Sealed;
+                    }
+                    else if (namePart.EndsWith(Override.PostFixNew))
+                    {
+                        overrideType = OverrideType.New;
+                    }
+                    else if (namePart.EndsWith(Override.PostFixSealed))
+                    {
+                        overrideType = OverrideType.Sealed;
+                    }
                 }
-                else if (name.EndsWith(Override.PostFixNew))
-                {
-                    overrideType = OverrideType.New;
-                }
-                else if (name.EndsWith(Override.PostFixSealed))
-                {
-                    overrideType = OverrideType.Sealed;
-                }
+                overrideTypes[i] = overrideType;
+                if (i > 0)
+                    trimmedName += '~';
+                trimmedName += realName;
+                ++i;
             }
-            return realName;
+            return trimmedName;
         }
     }
 }

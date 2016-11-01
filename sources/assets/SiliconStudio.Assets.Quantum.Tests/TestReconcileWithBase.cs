@@ -275,7 +275,7 @@ MyDictionary:
 Id: 20000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
-    0a0000000a0000000a0000000a000000~Key1*: MyDerivedString
+    0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
 ~Base:
     Location: MyAsset
@@ -460,7 +460,7 @@ Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     24000000240000002400000024000000~Key2: String2
-    14000000140000001400000014000000~Key3*: MyDerivedString
+    14000000140000001400000014000000*~Key3: MyDerivedString
 ~Base:
     Location: MyAsset
     Asset: !SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests

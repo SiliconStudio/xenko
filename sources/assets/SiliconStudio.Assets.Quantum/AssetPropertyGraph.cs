@@ -94,8 +94,9 @@ namespace SiliconStudio.Assets.Quantum
                 foreach (var overrideInfo in assetItem.Overrides)
                 {
                     Index index;
-                    var node = RootNode.ResolveObjectPath(overrideInfo.Key, out index);
-                    node.SetOverride(overrideInfo.Value, index);
+                    bool overrideOnKey;
+                    var node = RootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
+                    node.SetOverride(overrideInfo.Value, index, overrideOnKey);
                 }
             }
         }

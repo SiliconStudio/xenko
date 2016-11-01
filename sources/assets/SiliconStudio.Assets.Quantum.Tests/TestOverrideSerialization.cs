@@ -117,7 +117,7 @@ MyDictionary:
 Id: 00000000-0000-0000-0000-000000000000
 Tags: []
 MyDictionary:
-    0a0000000a0000000a0000000a000000~Key1*: MyDerivedString
+    0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
 ~Base:
     Location: MyAsset
@@ -201,7 +201,7 @@ Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
-    {1}~Key3*: String3
+    {1}*~Key3: String3
     {0}~Key4: String4
 ~Base:
     Location: MyAsset

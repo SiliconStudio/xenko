@@ -14,16 +14,17 @@ namespace SiliconStudio.Core.Yaml
         public static PropertyKey<string> OverrideInfoKey = new PropertyKey<string>("OverrideInfo", typeof(ItemIdSerializer));
 
         /// <inheritdoc/>
-        protected override void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
+        public override string ConvertTo(ref ObjectContext objectContext)
         {
+            var result = ((ItemId)objectContext.Instance).ToString();
             string overrideInfo;
             if (objectContext.SerializerContext.Properties.TryGetValue(OverrideInfoKey, out overrideInfo))
             {
-                scalar.RenderedValue += overrideInfo;
+                result += overrideInfo;
                 objectContext.SerializerContext.Properties.Remove(OverrideInfoKey);
             }
-
-            base.WriteScalar(ref objectContext, scalar);
+            return result;
         }
+
     }
 }

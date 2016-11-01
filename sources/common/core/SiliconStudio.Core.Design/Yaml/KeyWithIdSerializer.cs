@@ -12,6 +12,11 @@ namespace SiliconStudio.Core.Yaml
     [YamlSerializerFactory]
     public class KeyWithIdSerializer : ItemIdSerializerBase
     {
+        /// <summary>
+        /// A key used in properties of serialization contexts to notify whether an override flag should be appened when serializing the key of the related <see cref="ItemId"/>.
+        /// </summary>
+        public static PropertyKey<string> OverrideKeyInfoKey = new PropertyKey<string>("OverrideKeyInfo", typeof(KeyWithIdSerializer));
+
         /// <inheritdoc/>
         public override object ConvertFrom(ref ObjectContext objectContext, Scalar fromScalar)
         {
@@ -56,11 +61,21 @@ namespace SiliconStudio.Core.Yaml
 
             var context = new ObjectContext(objectContext.SerializerContext, key.Key, keyDescriptor);
 
+            objectContext.Instance = key.Id;
+            var itemIdPart = base.ConvertTo(ref objectContext);
+            objectContext.Instance = key;
+
             if (key.IsDeleted)
-                return $"{key.Id}~";
+                return $"{itemIdPart}~";
 
             var keyString = scalarKeySerializer.ConvertTo(ref context);
-            return $"{key.Id}~{keyString}";
+            string overrideInfo;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideKeyInfoKey, out overrideInfo))
+            {
+                keyString += overrideInfo;
+                objectContext.SerializerContext.Properties.Remove(OverrideKeyInfoKey);
+            }
+            return $"{itemIdPart}~{keyString}";
         }
 
         /// <inheritdoc/>

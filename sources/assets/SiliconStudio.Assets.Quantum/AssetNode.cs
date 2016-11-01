@@ -14,6 +14,7 @@ namespace SiliconStudio.Assets.Quantum
         private bool contentUpdating;
         private Func<object, object> cloner;
         private readonly Dictionary<ItemId, OverrideType> overrides = new Dictionary<ItemId, OverrideType>();
+        private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
 
         static AssetNode()
         {
@@ -41,26 +42,37 @@ namespace SiliconStudio.Assets.Quantum
 
         internal bool ResettingOverride { get; private set; }
 
-        public void Override(bool isOverridden, Index index)
+        public void OverrideContent(bool isOverridden)
         {
-            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, Index.Empty, false);
         }
 
-        internal void SetOverride(OverrideType overrideType, Index index)
+        public void OverrideItem(bool isOverridden, Index index)
+        {
+            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index, false);
+        }
+
+        public void OverrideKey(bool isOverridden, Index index)
+        {
+            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index, true);
+        }
+
+        internal void SetOverride(OverrideType overrideType, Index index, bool overrideOnKey)
         {
             var id = IndexToId(index);
-            SetOverride(overrideType, id);
+            SetOverride(overrideType, id, overrideOnKey);
         }
 
-        private void SetOverride(OverrideType overrideType, ItemId id)
+        private void SetOverride(OverrideType overrideType, ItemId id, bool overrideOnKey)
         {
+            var dictionary = overrideOnKey ? keyOverrides : overrides;
             if (overrideType == OverrideType.Base)
             {
-                overrides.Remove(id);
+                dictionary.Remove(id);
             }
             else
             {
-                overrides[id] = overrideType;
+                dictionary[id] = overrideType;
             }
         }
 
@@ -86,6 +98,34 @@ namespace SiliconStudio.Assets.Quantum
             OverrideType result;
             var id = IndexToId(index);
             return !overrides.TryGetValue(id, out result) || (result & OverrideType.New) != OverrideType.New;
+        }
+
+        public IEnumerable<Index> GetOverriddenItemIndices()
+        {
+            if (BaseContent == null)
+                yield break;
+
+            foreach (var flags in overrides)
+            {
+                if ((flags.Value & OverrideType.New) == OverrideType.New)
+                {
+                    yield return IdToIndex(flags.Key);
+                }
+            }
+        }
+
+        public IEnumerable<Index> GetOverriddenKeyIndices()
+        {
+            if (BaseContent == null)
+                yield break;
+
+            foreach (var flags in keyOverrides)
+            {
+                if ((flags.Value & OverrideType.New) == OverrideType.New)
+                {
+                    yield return IdToIndex(flags.Key);
+                }
+            }
         }
 
         public IEnumerable<Index> GetOverriddenIndices()
@@ -191,7 +231,7 @@ namespace SiliconStudio.Assets.Quantum
                         ItemId itemId;
                         if (baseNode?.contentUpdating == true)
                         {
-                            var baseCollection = baseNode?.Content.Retrieve();
+                            var baseCollection = baseNode.Content.Retrieve();
                             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
                             itemId = itemIds.FindMissingId(baseIds);
                         }
@@ -238,8 +278,18 @@ namespace SiliconStudio.Assets.Quantum
             // Mark it as New if it does not come from the base
             if (!baseNode?.contentUpdating == true)
             {
-                Override(!ResettingOverride, e.Index);
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
+                if (e.Index == Index.Empty)
+                {
+                    OverrideContent(!ResettingOverride);
+                }
+                else
+                {
+                    OverrideItem(!ResettingOverride, e.Index);                
+                }
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
+
         }
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
@@ -294,10 +344,11 @@ namespace SiliconStudio.Assets.Quantum
             return ids.GetId(index.Value);
         }
 
-        public AssetNode ResolveObjectPath(ObjectPath path, out Index index)
+        public AssetNode ResolveObjectPath(ObjectPath path, out Index index, out bool overrideOnKey)
         {
             var currentNode = this;
             index = Index.Empty;
+            overrideOnKey = false;
             for (var i = 0; i < path.Items.Count; i++)
             {
                 var item = path.Items[i];
@@ -305,6 +356,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     case ObjectPath.ItemType.Member:
                         index = Index.Empty;
+                        overrideOnKey = false;
                         if (currentNode.Content.IsReference)
                         {
                             currentNode = (AssetNode)currentNode.GetTarget();
@@ -313,6 +365,7 @@ namespace SiliconStudio.Assets.Quantum
                         break;
                     case ObjectPath.ItemType.Index:
                         index = new Index(item.Value);
+                        overrideOnKey = true;
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
                             currentNode = (AssetNode)currentNode.GetTarget(new Index(item.Value));
@@ -322,6 +375,7 @@ namespace SiliconStudio.Assets.Quantum
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
                         index = new Index(key);
+                        overrideOnKey = false;
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
                             currentNode = (AssetNode)currentNode.GetTarget(new Index(key));

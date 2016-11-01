@@ -25,11 +25,5 @@ namespace SiliconStudio.Core.Yaml
             ObjectId.TryParse(fromScalar.Value, out id);
             return new ItemId(id);
         }
-
-        /// <inheritdoc/>
-        public override string ConvertTo(ref ObjectContext objectContext)
-        {
-            return ((ItemId)objectContext.Instance).ToString();
-        }
     }
 }
