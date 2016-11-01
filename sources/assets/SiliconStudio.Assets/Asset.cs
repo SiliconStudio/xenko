@@ -7,6 +7,7 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
