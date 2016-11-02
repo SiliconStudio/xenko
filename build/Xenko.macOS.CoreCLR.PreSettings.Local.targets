@@ -7,7 +7,7 @@
     <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == '' ">OpenGL</XenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
 
-    <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
+    <!-- Defines the platform used by Xenko - Values are Windows/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">macOS</SiliconStudioPlatform>
     <SiliconStudioRuntime Condition=" '$(SiliconStudioRuntime)' == '' ">CoreCLR</SiliconStudioRuntime>
     <SiliconStudioBuildDirExtension Condition=" '$(SiliconStudioBuildDirExtension)' == '' ">CoreCLR</SiliconStudioBuildDirExtension>

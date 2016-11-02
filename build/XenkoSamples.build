@@ -4,6 +4,13 @@
 	<PropertyGroup>
 		<XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
 		<XenkoRootBin>$(XenkoRoot)Bin\Windows-Direct3D11\</XenkoRootBin>
+		<XenkoPlatform></XenkoPlatform>
+		<XenkoPlatform Condition="'$(PlatformToBuild)' == 'iOS'">Platform=iPhone</XenkoPlatform>
+		<XenkoPlatform Condition="'$(PlatformToBuild)' == 'Android'">Platform=Android</XenkoPlatform>
+		<XenkoBuildOptions></XenkoBuildOptions>
+		<XenkoBuildOptions Condition="'$(PlatformToBuild)' == 'iOS'">ServerAddress=pc13095;ServerUser=virgile;BuildIpa=true;MtouchUseLlvm=true</XenkoBuildOptions>
+		<XenkoBuildTargets></XenkoBuildTargets>
+		<XenkoBuildTargets Condition="'$(PlatformToBuild)' == 'Android'">SignAndroidPackage</XenkoBuildTargets>
 	</PropertyGroup>
   
 	<Target Name="GenerateSamples">
@@ -29,23 +36,33 @@
 	</Target>
 	
 	<Target Name="BuildSamples">
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\JumpyJet\JumpyJet.$(PlatformToBuild)\JumpyJet.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpaceEscape\SpaceEscape.$(PlatformToBuild)\SpaceEscape.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\AnimatedModel\AnimatedModel.$(PlatformToBuild)\AnimatedModel.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\CustomEffect\CustomEffect.$(PlatformToBuild)\CustomEffect.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\MaterialShader\MaterialShader.$(PlatformToBuild)\MaterialShader.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SimpleDynamicTexture\SimpleDynamicTexture.$(PlatformToBuild)\SimpleDynamicTexture.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteFonts\SpriteFonts.$(PlatformToBuild)\SpriteFonts.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteStudioDemo\SpriteStudioDemo.$(PlatformToBuild)\SpriteStudioDemo.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GravitySensor\GravitySensor.$(PlatformToBuild)\GravitySensor.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TouchInputs\TouchInputs.$(PlatformToBuild)\TouchInputs.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\NativeLinking\NativeLinking.$(PlatformToBuild)\NativeLinking.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\PhysicsSample\PhysicsSample.$(PlatformToBuild)\PhysicsSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GameMenu\GameMenu.$(PlatformToBuild)\GameMenu.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ParticlesSample\ParticlesSample.$(PlatformToBuild)\ParticlesSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\UIParticles\UIParticles.$(PlatformToBuild)\UIParticles.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\FirstPersonShooter\FirstPersonShooter.$(PlatformToBuild)\FirstPersonShooter.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ThirdPersonPlatformer\ThirdPersonPlatformer.$(PlatformToBuild)\ThirdPersonPlatformer.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TopDownRPG\TopDownRPG.$(PlatformToBuild)\TopDownRPG.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\JumpyJet\JumpyJet.$(PlatformToBuild)\JumpyJet.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpaceEscape\SpaceEscape.$(PlatformToBuild)\SpaceEscape.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\AnimatedModel\AnimatedModel.$(PlatformToBuild)\AnimatedModel.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\CustomEffect\CustomEffect.$(PlatformToBuild)\CustomEffect.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\MaterialShader\MaterialShader.$(PlatformToBuild)\MaterialShader.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SimpleDynamicTexture\SimpleDynamicTexture.$(PlatformToBuild)\SimpleDynamicTexture.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteFonts\SpriteFonts.$(PlatformToBuild)\SpriteFonts.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteStudioDemo\SpriteStudioDemo.$(PlatformToBuild)\SpriteStudioDemo.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GravitySensor\GravitySensor.$(PlatformToBuild)\GravitySensor.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TouchInputs\TouchInputs.$(PlatformToBuild)\TouchInputs.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\NativeLinking\NativeLinking.$(PlatformToBuild)\NativeLinking.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\PhysicsSample\PhysicsSample.$(PlatformToBuild)\PhysicsSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GameMenu\GameMenu.$(PlatformToBuild)\GameMenu.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ParticlesSample\ParticlesSample.$(PlatformToBuild)\ParticlesSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\UIParticles\UIParticles.$(PlatformToBuild)\UIParticles.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\FirstPersonShooter\FirstPersonShooter.$(PlatformToBuild)\FirstPersonShooter.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ThirdPersonPlatformer\ThirdPersonPlatformer.$(PlatformToBuild)\ThirdPersonPlatformer.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TopDownRPG\TopDownRPG.$(PlatformToBuild)\TopDownRPG.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=Release;$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
+	</Target>
+	
+	<Target Name="BuildTests">
+		<MSBuild Condition="'$(PlatformToBuild)' == 'Windows'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE" Targets="Rebuild" />
+		<MSBuild Condition="'$(PlatformToBuild)' == 'Android'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE;TEST_ANDROID" Targets="Rebuild" />	
+		<MSBuild Condition="'$(PlatformToBuild)' == 'iOS'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE;TEST_IOS" Targets="Rebuild" />
+	</Target>
+	
+	<Target Name="NugetExtractFix">
+		<Exec Command="cd $(XenkoRoot) &amp;&amp; powershell -ExecutionPolicy Unrestricted -File $(MSBuildThisFileDirectory)NugetExtractFix.ps1" />
 	</Target>
 </Project>

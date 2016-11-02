@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 using (var stream = new MemoryStream())
                 {
                     BinarySerialization.Write(stream, shaderBytecodes);
-#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_UWP
                     rawData = stream.GetBuffer();
 #else
 // FIXME: Manu: The call to "ToArray()" might be slower than "GetBuffer()"
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
                 }
             }
-#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_UWP
             else if (effectParameters.Platform == GraphicsPlatform.Vulkan)
             {
                 string inputFileExtension;

@@ -1,4 +1,4 @@
-﻿#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+﻿#if !SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.IO;
 using System.Net;

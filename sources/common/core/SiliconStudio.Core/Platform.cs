@@ -18,21 +18,11 @@ namespace SiliconStudio.Core
         /// The current running <see cref="PlatformType"/>.
         /// </summary>
         public static readonly PlatformType Type = PlatformType.Windows;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#elif SILICONSTUDIO_PLATFORM_UWP
         /// <summary>
         /// The current running <see cref="PlatformType"/>.
         /// </summary>
-        public static readonly PlatformType Type = PlatformType.WindowsPhone;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-        /// <summary>
-        /// The current running <see cref="PlatformType"/>.
-        /// </summary>
-        public static readonly PlatformType Type = PlatformType.WindowsStore;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_10
-        /// <summary>
-        /// The current running <see cref="PlatformType"/>.
-        /// </summary>
-        public static readonly PlatformType Type = PlatformType.Windows10;
+        public static readonly PlatformType Type = PlatformType.UWP;
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         /// <summary>
         /// The current running <see cref="PlatformType"/>.
@@ -72,7 +62,7 @@ namespace SiliconStudio.Core
         /// </summary>
         private static bool GetIsRunningDebugAssembly()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             return false;
 #else
             var entryAssembly = Assembly.GetEntryAssembly();

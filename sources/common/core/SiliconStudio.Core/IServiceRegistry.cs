@@ -27,7 +27,7 @@ namespace SiliconStudio.Core
     /// <summary>
     /// A service registry is a <see cref="IServiceProvider"/> that provides methods to register and unregister services.
     /// </summary>
-    public interface IServiceRegistry : IServiceProvider
+    public interface IServiceRegistry
     {
         /// <summary>
         /// Occurs when a new service is added.
@@ -38,6 +38,13 @@ namespace SiliconStudio.Core
         /// Occurs when when a service is removed.
         /// </summary>
         event EventHandler<ServiceEventArgs> ServiceRemoved;
+
+        /// <summary>
+        /// Gets the service object of the specified type.
+        /// </summary>
+        /// <param name="serviceType">The type of the service to get.</param>
+        /// <returns>A service of the requested type, or [null] if not found.</returns>
+        object GetService(Type serviceType);
 
         /// <summary>
         /// Adds a service to this service provider.
