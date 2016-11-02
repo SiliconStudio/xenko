@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -28,7 +27,7 @@ namespace SiliconStudio.Assets.Quantum
                 var baseValue = assetNode.BaseContent.Retrieve();
 
                 // Reconcile occurs only when the node is not overridden.
-                if ((assetNode.GetOverride(Index.Empty) & OverrideType.New) != OverrideType.New)
+                if (!assetNode.IsContentOverridden())
                 {
                     // Handle null cases first
                     if (localValue == null || baseValue == null)
@@ -38,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum
                             var clonedValue = assetNode.Cloner(baseValue);
                             assetNode.Content.Update(clonedValue);
                         }
-                        else if (localValue != null && baseValue == null)
+                        else if (localValue != null /*&& baseValue == null*/)
                         {
                             assetNode.Content.Update(null);
                         }
@@ -52,7 +51,7 @@ namespace SiliconStudio.Assets.Quantum
                         foreach (var index in assetNode.Content.Indices)
                         {
                             // Skip overridden items
-                            if ((assetNode.GetOverride(index) & OverrideType.New) == OverrideType.New)
+                            if (assetNode.IsItemOverridden(index))
                                 continue;
 
                             var itemId = assetNode.IndexToId(index);
@@ -86,14 +85,28 @@ namespace SiliconStudio.Assets.Quantum
                                 {
                                     itemsToAdd.Add(index.Value, itemId);
                                 }
-                                else if ((assetNode.GetOverride(localIndex) & OverrideType.New) != OverrideType.New)
+                                else
                                 {
-                                    var localItemValue = assetNode.Content.Retrieve(localIndex);
-                                    var baseItemValue = baseNode.Content.Retrieve(index);
-                                    if (ShouldReconcileItem(localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
+                                    if (!assetNode.IsItemOverridden(localIndex))
                                     {
-                                        var clonedValue = assetNode.Cloner(baseItemValue);
-                                        assetNode.Content.Update(clonedValue, localIndex);
+                                        var localItemValue = assetNode.Content.Retrieve(localIndex);
+                                        var baseItemValue = baseNode.Content.Retrieve(index);
+                                        if (ShouldReconcileItem(localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
+                                        {
+                                            var clonedValue = assetNode.Cloner(baseItemValue);
+                                            assetNode.Content.Update(clonedValue, localIndex);
+                                        }
+                                    }
+                                    if (assetNode.Content.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
+                                    {
+                                        if (ShouldReconcileItem(localIndex.Value, index.Value, false))
+                                        {
+                                            var clonedIndex = new Index(assetNode.Cloner(index.Value));
+                                            var localItemValue = assetNode.Content.Retrieve(localIndex);
+                                            assetNode.Content.Remove(localItemValue, localIndex);
+                                            assetNode.Content.Add(localItemValue, clonedIndex);
+                                            ids[clonedIndex.Value] = itemId;
+                                        }
                                     }
                                 }
                             }

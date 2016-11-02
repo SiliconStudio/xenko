@@ -183,13 +183,14 @@ namespace SiliconStudio.Core.Yaml
 
                 var path = GetCurrentPath(ref objectContext, true);
                 ItemId id;
-                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
+                object actualKey;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id, out actualKey))
                 {
                     path.PushItemId(id);
                 }
                 else
                 {
-                    path.PushIndex(keyValue);
+                    path.PushIndex(key);
                 }
                 overrides.Add(path, overrideTypes[0]);
             }
@@ -197,7 +198,8 @@ namespace SiliconStudio.Core.Yaml
             if (overrideTypes.Length > 1 && overrideTypes[1] != OverrideType.Base)
             {
                 ItemId id;
-                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id))
+                object actualKey;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, keyValue, out id, out actualKey))
                 {
                     Dictionary<ObjectPath, OverrideType> overrides;
                     if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
@@ -207,8 +209,8 @@ namespace SiliconStudio.Core.Yaml
                     }
 
                     var path = GetCurrentPath(ref objectContext, true);
-                    path.PushIndex(keyValue);
-                    overrides.Add(path, overrideTypes[0]);
+                    path.PushIndex(actualKey);
+                    overrides.Add(path, overrideTypes[1]);
                 }
             }
 
@@ -223,10 +225,11 @@ namespace SiliconStudio.Core.Yaml
                 var itemPath = GetCurrentPath(ref objectContext, true);
                 ObjectPath keyPath = null;
                 ItemId id;
-                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id))
+                object actualKey;
+                if (ObjectPath.IsCollectionWithIdType(objectContext.Descriptor.Type, key, out id, out actualKey))
                 {
                     keyPath = itemPath.Clone();
-                    keyPath.PushIndex(key);
+                    keyPath.PushIndex(actualKey);
                     itemPath.PushItemId(id);
                 }
                 else

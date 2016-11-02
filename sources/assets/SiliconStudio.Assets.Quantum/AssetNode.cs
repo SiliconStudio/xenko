@@ -13,7 +13,8 @@ namespace SiliconStudio.Assets.Quantum
         public static readonly int ResetFromBase;
         private bool contentUpdating;
         private Func<object, object> cloner;
-        private readonly Dictionary<ItemId, OverrideType> overrides = new Dictionary<ItemId, OverrideType>();
+        private OverrideType contentOverride;
+        private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
 
         static AssetNode()
@@ -44,28 +45,38 @@ namespace SiliconStudio.Assets.Quantum
 
         public void OverrideContent(bool isOverridden)
         {
-            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, Index.Empty, false);
+            contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
         }
 
         public void OverrideItem(bool isOverridden, Index index)
         {
-            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index, false);
+            SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
         }
 
         public void OverrideKey(bool isOverridden, Index index)
         {
-            SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, index, true);
+            SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
         }
 
-        internal void SetOverride(OverrideType overrideType, Index index, bool overrideOnKey)
+        internal void SetContentOverride(OverrideType overrideType)
+        {
+            contentOverride = overrideType;
+        }
+
+        internal void SetItemOverride(OverrideType overrideType, Index index)
         {
             var id = IndexToId(index);
-            SetOverride(overrideType, id, overrideOnKey);
+            SetOverride(overrideType, id, itemOverrides);
         }
 
-        private void SetOverride(OverrideType overrideType, ItemId id, bool overrideOnKey)
+        internal void SetKeyOverride(OverrideType overrideType, Index index)
         {
-            var dictionary = overrideOnKey ? keyOverrides : overrides;
+            var id = IndexToId(index);
+            SetOverride(overrideType, id, keyOverrides);
+        }
+
+        private static void SetOverride(OverrideType overrideType, ItemId id, Dictionary<ItemId, OverrideType> dictionary)
+        {
             if (overrideType == OverrideType.Base)
             {
                 dictionary.Remove(id);
@@ -76,20 +87,45 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public OverrideType GetOverride(Index index)
+        public OverrideType GetContentOverride()
+        {
+            return contentOverride;
+        }
+
+        public OverrideType GetItemOverride(Index index)
         {
             OverrideType result;
             var id = IndexToId(index);
-            return overrides.TryGetValue(id, out result) ? result : OverrideType.Base;
+            return itemOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
-        public bool IsOverridden(Index index)
+        public OverrideType GetKeyOverride(Index index)
         {
             OverrideType result;
             var id = IndexToId(index);
-            return overrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+            return keyOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
+        public bool IsContentOverridden()
+        {
+            return (contentOverride & OverrideType.New) == OverrideType.New;
+        }
+
+        public bool IsItemOverridden(Index index)
+        {
+            OverrideType result;
+            var id = IndexToId(index);
+            return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        public bool IsKeyOverridden(Index index)
+        {
+            OverrideType result;
+            var id = IndexToId(index);
+            return keyOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        // TODO: implement Is[Content/Item/Key]Inherited instead
         public bool IsInherited(Index index)
         {
             if (BaseContent == null)
@@ -97,7 +133,7 @@ namespace SiliconStudio.Assets.Quantum
 
             OverrideType result;
             var id = IndexToId(index);
-            return !overrides.TryGetValue(id, out result) || (result & OverrideType.New) != OverrideType.New;
+            return !itemOverrides.TryGetValue(id, out result) || (result & OverrideType.New) != OverrideType.New;
         }
 
         public IEnumerable<Index> GetOverriddenItemIndices()
@@ -105,7 +141,7 @@ namespace SiliconStudio.Assets.Quantum
             if (BaseContent == null)
                 yield break;
 
-            foreach (var flags in overrides)
+            foreach (var flags in itemOverrides)
             {
                 if ((flags.Value & OverrideType.New) == OverrideType.New)
                 {
@@ -128,23 +164,9 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public IEnumerable<Index> GetOverriddenIndices()
-        {
-            if (BaseContent == null)
-                yield break;
-
-            foreach (var flags in overrides)
-            {
-                if ((flags.Value & OverrideType.New) == OverrideType.New)
-                {
-                    yield return IdToIndex(flags.Key);
-                }
-            }
-        }
-
         internal Dictionary<ItemId, OverrideType> GetAllOverrides()
         {
-            return overrides;
+            return itemOverrides;
         }
 
         private object RetrieveBaseContent(Index index)
@@ -294,7 +316,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
         {
-            if (BaseContent == null || (changeType == ContentChangeType.ValueChange && !GetOverride(index).HasFlag(OverrideType.New)))
+            if (BaseContent == null || (changeType == ContentChangeType.ValueChange && !IsItemOverridden(index)))
                 return;
 
             object baseValue;

@@ -63,7 +63,8 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
-                var overrideValue = ((AssetNode)e.Content.OwnerNode).GetOverride(e.Index);
+                var node = (AssetNode)e.Content.OwnerNode;
+                var overrideValue = e.Index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(e.Index);
                 previousOverrides[e.Content.OwnerNode] = overrideValue;
             }
             if (e.ChangeType == ContentChangeType.CollectionAdd)
@@ -80,7 +81,8 @@ namespace SiliconStudio.Assets.Quantum
             var overrideValue = OverrideType.Base;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
-                overrideValue = ((AssetNode)e.Content.OwnerNode).GetOverride(e.Index);
+                var node = (AssetNode)e.Content.OwnerNode;
+                overrideValue = e.Index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(e.Index);
             }
             ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue));
         }

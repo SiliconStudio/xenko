@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Reflection
         private readonly SortedList<object, ItemId> keyToIdMap = new SortedList<object, ItemId>(new DefaultKeyComparer());
         private readonly HashSet<ItemId> deletedItems = new HashSet<ItemId>();
 
-        public ItemId this[object key] { get { return keyToIdMap[key]; } set { keyToIdMap[key] = value; } }
+        public ItemId this[object key] { get { return keyToIdMap[key]; } set { Set(key, value); } }
 
         public IEnumerable<ItemId> DeletedItems => deletedItems;
 
@@ -27,7 +27,17 @@ namespace SiliconStudio.Core.Reflection
         public void Add(object key, ItemId id)
         {
             keyToIdMap.Add(key, id);
+            if (deletedItems.Contains(id))
+                UnmarkAsDeleted(id);
         }
+
+        public void Set(object key, ItemId id)
+        {
+            keyToIdMap[key] = id;
+            if (deletedItems.Contains(id))
+                UnmarkAsDeleted(id);
+        }
+
 
         public void Insert(int index, ItemId id)
         {
@@ -37,6 +47,8 @@ namespace SiliconStudio.Core.Reflection
 
             }
             keyToIdMap[index] = id;
+            if (deletedItems.Contains(id))
+                UnmarkAsDeleted(id);
         }
 
         public void Clear()

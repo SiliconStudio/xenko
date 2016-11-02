@@ -96,7 +96,18 @@ namespace SiliconStudio.Assets.Quantum
                     Index index;
                     bool overrideOnKey;
                     var node = RootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
-                    node.SetOverride(overrideInfo.Value, index, overrideOnKey);
+                    if (index == Index.Empty)
+                    {
+                        node.SetContentOverride(overrideInfo.Value);
+                    }
+                    else if (!overrideOnKey)
+                    {
+                        node.SetItemOverride(overrideInfo.Value, index);
+                    }
+                    else
+                    {
+                        node.SetKeyOverride(overrideInfo.Value, index);
+                    }
                 }
             }
         }
@@ -147,7 +158,7 @@ namespace SiliconStudio.Assets.Quantum
 
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
-                overrideType = node.GetOverride(index);
+                overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
             }
 
             if (assetContent is MemberContent && !overrideType.HasFlag(OverrideType.New))

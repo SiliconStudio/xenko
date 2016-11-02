@@ -144,24 +144,34 @@ namespace SiliconStudio.Core.Yaml
             return sb.ToString();
         }
 
-        public static bool IsCollectionWithIdType(Type type, object key, out ItemId id)
+        public static bool IsCollectionWithIdType(Type type, object key, out ItemId id, out object actualKey)
         {
             if (type.IsGenericType)
             {
                 if (type.GetGenericTypeDefinition() == typeof(CollectionWithItemIds<>))
                 {
                     id = (ItemId)key;
+                    actualKey = key;
                     return true;
                 }
                 if (type.GetGenericTypeDefinition() == typeof(DictionaryWithItemIds<,>))
                 {
-                    id = ((IKeyWithId)key).Id;
+                    var keyWithId = (IKeyWithId)key;
+                    id = keyWithId.Id;
+                    actualKey = keyWithId.Key;
                     return true;
                 }
             }
 
             id = ItemId.Empty;
+            actualKey = key;
             return false;
+        }
+
+        public static bool IsCollectionWithIdType(Type type, object key, out ItemId id)
+        {
+            object actualKey;
+            return IsCollectionWithIdType(type, key, out id, out actualKey);
         }
     }
 }
