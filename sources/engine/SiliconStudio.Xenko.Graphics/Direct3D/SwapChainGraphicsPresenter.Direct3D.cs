@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
                 return false;
 #else
                 return swapChain.IsFullScreen;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
                 if (swapChain == null)
                     return;
 
@@ -210,7 +210,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Manually update all children textures
             var fastList = DestroyChildrenTextures(backBuffer);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as Windows.UI.Xaml.Controls.SwapChainPanel;
             if (swapChainPanel != null)
             {
@@ -292,14 +292,14 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new ArgumentException("DeviceWindowHandle cannot be null");
             }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             return CreateSwapChainForWindowsRuntime();
 #else
             return CreateSwapChainForWindows();
 #endif
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
         private SwapChain CreateSwapChainForWindowsRuntime()
         {
             bufferCount = 2;

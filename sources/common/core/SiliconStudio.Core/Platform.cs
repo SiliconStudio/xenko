@@ -62,7 +62,7 @@ namespace SiliconStudio.Core
         /// </summary>
         private static bool GetIsRunningDebugAssembly()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             return false;
 #else
             var entryAssembly = Assembly.GetEntryAssembly();

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SiliconStudio.Core.LZ4;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.System.Profile;

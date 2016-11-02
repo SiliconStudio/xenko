@@ -11,7 +11,7 @@ namespace SiliconStudio.Core.IO
     /// </summary>
     public partial class FileSystemProvider : VirtualFileProviderBase
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
         public static readonly char VolumeSeparatorChar = ':';
         public static readonly char DirectorySeparatorChar = '\\';
 #else

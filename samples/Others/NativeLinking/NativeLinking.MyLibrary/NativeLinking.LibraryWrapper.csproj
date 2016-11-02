@@ -71,7 +71,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_UWP</DefineConstants>
     <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
     <OutputPath>..\Bin\UWP\Debug\</OutputPath>
@@ -83,7 +83,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|UWP' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_UWP</DefineConstants>
     <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
     <OutputPath>..\Bin\UWP\Release\</OutputPath>
@@ -96,7 +96,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|UWP' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_UWP</DefineConstants>
     <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
     <OutputPath>..\Bin\UWP\Testing\</OutputPath>
@@ -109,7 +109,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|UWP' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_UWP</DefineConstants>
     <SiliconStudioPlatform>UWP</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>UWP</SiliconStudioBuildProfile>
     <OutputPath>..\Bin\UWP\AppStore\</OutputPath>

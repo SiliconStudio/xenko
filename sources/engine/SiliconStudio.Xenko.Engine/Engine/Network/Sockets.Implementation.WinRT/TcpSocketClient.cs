@@ -1,4 +1,4 @@
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace Sockets.Plugin
         private SocketProtectionLevel _secureSocketProtectionLevel = SocketProtectionLevel.Ssl;
 #else
         private SocketProtectionLevel _secureSocketProtectionLevel = SocketProtectionLevel.Tls10;
-#endif               
+#endif
         private readonly StreamSocket _backingStreamSocket;
         private readonly int _bufferSize;
 

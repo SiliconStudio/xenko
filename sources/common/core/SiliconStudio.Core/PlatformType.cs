@@ -60,7 +60,7 @@ namespace SiliconStudio.Core
         macOS,
 
         /// <summary>
-        /// The Universal Windows Platform (UWP). Please use <see cref="UniversalWindowsPlatform"/> intead.
+        /// The Universal Windows Platform (UWP). Please use <see cref="UWP"/> intead.
         /// </summary>
         [Obsolete]
         Windows10 = UWP,

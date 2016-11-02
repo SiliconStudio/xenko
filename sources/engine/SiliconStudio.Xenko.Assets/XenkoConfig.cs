@@ -97,7 +97,6 @@ namespace SiliconStudio.Xenko.Assets
             };
 
             uwpPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS");
-            uwpPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME");
             uwpPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_UWP");
             uwpPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
             uwpPlatform.Configurations.Add(new SolutionConfiguration("AppStore"));

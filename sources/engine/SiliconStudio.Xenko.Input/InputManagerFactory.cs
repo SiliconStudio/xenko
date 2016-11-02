@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerWindowsRuntime(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             return new InputManagerWindowsRuntime(registry);
 #else
             return null;
