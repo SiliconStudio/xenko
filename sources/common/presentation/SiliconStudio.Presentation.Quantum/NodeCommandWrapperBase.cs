@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
@@ -13,8 +12,6 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class NodeCommandWrapperBase : CommandBase, INodeCommandWrapper
     {
-        private readonly IViewModelServiceProvider serviceProvider;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NodeCommandWrapperBase"/> class.
         /// </summary>
@@ -22,7 +19,6 @@ namespace SiliconStudio.Presentation.Quantum
         protected NodeCommandWrapperBase(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -43,7 +39,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        protected IUndoRedoService ActionService => serviceProvider.TryGet<IUndoRedoService>();
+        protected IUndoRedoService ActionService => ServiceProvider.TryGet<IUndoRedoService>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)

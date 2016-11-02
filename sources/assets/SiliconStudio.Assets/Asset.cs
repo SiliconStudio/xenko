@@ -148,10 +148,10 @@ namespace SiliconStudio.Assets
             CollectionItemIdHelper.GenerateMissingItemIds(this);
 
             // Clone this asset to make the base
-            var assetBase = (Asset)AssetCloner.Clone(this);
+            var assetBase = AssetCloner.Clone(this);
 
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
-            var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
+            var newAsset = AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
 
             // Create a new identifier for this asset
             var newId = Guid.NewGuid();
@@ -165,6 +165,25 @@ namespace SiliconStudio.Assets
             // Create the base of this asset
             newAsset.Base = new AssetBase(baseLocation, assetBase);
             return newAsset;
+        }
+
+        /// <summary>
+        /// Resolves the actual target of references to a part or base part of this asset. Depending on whether <paramref name="clearMissingReferences"/> is <c>true</c>,
+        /// missing references will be cleared, or left as-is.
+        /// </summary>
+        /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
+        public virtual void FixupPartReferences(bool clearMissingReferences = true)
+        {
+            // Fixup base
+            Base?.Asset.FixupPartReferences(clearMissingReferences);
+            // Fixup base parts
+            if (BaseParts != null)
+            {
+                foreach (var basePart in BaseParts)
+                {
+                    basePart.Asset.FixupPartReferences(clearMissingReferences);
+                }
+            }
         }
 
         /// <summary>

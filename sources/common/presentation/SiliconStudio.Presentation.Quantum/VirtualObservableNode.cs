@@ -44,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override int? Order { get; }
 
-        public override bool HasList => typeof(ICollection).IsAssignableFrom(Type);
+        public override bool HasCollection => typeof(ICollection).IsAssignableFrom(Type);
 
         public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
 
@@ -75,11 +75,6 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent = content;
             associatedContent.Changing += ContentChanging;
             associatedContent.Changed += ContentChanged;
-        }
-
-        public new void AddCommand(INodeCommandWrapper command)
-        {
-            base.AddCommand(command);
         }
 
         protected virtual void SetTypedValue(object value)

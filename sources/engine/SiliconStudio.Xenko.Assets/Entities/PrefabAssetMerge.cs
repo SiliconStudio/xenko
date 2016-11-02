@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // The new entity added by the newbase
                     // Because we are cloning the entity, we need to restore children temporarely in order to clone them as well
                     entityFromNewBase.Value.PopChildren();
-                    var newEntityDesign = ((AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(tempHiearchy)).Parts[0];
+                    var newEntityDesign = AssetCloner.Clone(tempHiearchy).Parts[0];
                     entityFromNewBase.Value.PushChildren();
 
                     var newId = Guid.NewGuid();
@@ -495,7 +495,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             {
                                 var entityComponentId = IdentifiableHelper.GetId(entityComponent);
                                 // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
-                                var newEntityComponent = (EntityComponent)linkedEntity.Components.FirstOrDefault(t => IdentifiableHelper.GetId(t) == entityComponentId);
+                                var newEntityComponent = linkedEntity.Components.FirstOrDefault(t => IdentifiableHelper.GetId(t) == entityComponentId);
                                 node.SetValue(newEntityComponent);
                             }
                             else
@@ -681,7 +681,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // and associate correctly the instancePartId with each entities that it is composed of.
             if (instancePartIdArg.HasValue)
             {
-                hierarchyData = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(hierarchyData);
+                hierarchyData = AssetCloner.Clone(hierarchyData);
             }
 
 

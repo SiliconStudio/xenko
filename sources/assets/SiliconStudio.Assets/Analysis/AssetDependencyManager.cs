@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -102,6 +101,32 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
             return dependencies;
+        }
+
+        /// <summary>
+        /// Finds the assets the specified asset id inherits from (this is a direct inheritance, not indirect)..
+        /// </summary>
+        /// <param name="assetId">The asset identifier.</param>
+        /// <param name="searchOptions">The types of inheritance to search for</param>
+        /// <returns>A list of asset the specified asset id is inheriting from.</returns>
+        public List<AssetItem> FindAssetInheritances(Guid assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
+        {
+            var list = new List<AssetItem>();
+            lock (Initialize())
+            {
+                ContentLinkType searchType = 0;
+                if ((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
+                    searchType |= ContentLinkType.Inheritance;
+                if ((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
+                    searchType |= ContentLinkType.CompositionInheritance;
+
+                AssetDependencies dependencies;
+                if (Dependencies.TryGetValue(assetId, out dependencies))
+                {
+                    list.AddRange(dependencies.LinksOut.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
+                }
+            }
+            return list;
         }
 
         /// <summary>
@@ -480,7 +505,7 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
+                    : new AssetItem(assetItem.Location, AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
                             SourceProject = assetItem.SourceProject
@@ -670,7 +695,7 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed

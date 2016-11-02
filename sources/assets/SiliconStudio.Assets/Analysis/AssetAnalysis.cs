@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,6 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Analysis
     /// <summary>
     /// Analysis for <see cref="AssetItem"/>.
     /// </summary>
-    public sealed class AssetAnalysis
+    public static class AssetAnalysis
     {
         public static LoggerResult Run(IEnumerable<AssetItem> items, AssetAnalysisParameters parameters)
         {
@@ -113,7 +113,8 @@ namespace SiliconStudio.Assets.Analysis
             {
                 var contentReference = (IReference)assetReferenceLink.Reference;
                 // If the content reference is an asset base that is in fact a root import, just skip it
-                if ((contentReference is AssetBase) && ((AssetBase)contentReference).IsRootImport)
+                var assetBase = contentReference as AssetBase;
+                if (assetBase != null && assetBase.IsRootImport)
                 {
                     continue;
                 }

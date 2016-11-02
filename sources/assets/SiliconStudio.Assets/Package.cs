@@ -157,7 +157,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
-        public AssetItemCollection TemporaryAssets { get; } = new AssetItemCollection();
+        public List<AssetItem> TemporaryAssets { get; } = new List<AssetItem>();
 
         /// <summary>
         /// Gets the path to the package file. May be null if the package was not loaded or saved.
@@ -327,7 +327,7 @@ namespace SiliconStudio.Assets
         {
             // Use a new ShadowRegistry to copy override parameters
             // Clone this asset
-            var package = (Package)AssetCloner.Clone(this); 
+            var package = AssetCloner.Clone(this); 
             package.FullPath = FullPath;
             foreach (var asset in Assets)
             {
@@ -637,7 +637,7 @@ namespace SiliconStudio.Assets
             var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
             if (assetBaseItem != null)
             {
-                var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
+                var newBase = AssetCloner.Clone(assetBaseItem.Asset);
                 return new AssetBase(assetBase.Location, newBase);
             }
             // TODO: If we don't find it, should we log an error instead?
@@ -849,7 +849,7 @@ namespace SiliconStudio.Assets
                 Assets.Clear();
 
                 // Get generated output items
-                var outputItems = new AssetItemCollection();
+                var outputItems = new List<AssetItem>();
 
                 // Create a resolver from the package
                 var resolver = AssetResolver.FromPackage(this);

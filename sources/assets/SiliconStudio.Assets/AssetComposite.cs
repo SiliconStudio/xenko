@@ -42,8 +42,11 @@ namespace SiliconStudio.Assets
 
         public abstract bool ContainsPart(Guid id);
 
-        public void FixupPartReferences()
+        /// <inheritdoc />
+        public override void FixupPartReferences(bool clearMissingReferences = true)
         {
+            base.FixupPartReferences(clearMissingReferences);
+
             var visitor = new AssetCompositePartReferenceCollector();
             visitor.VisitAsset(this);
             var references = visitor.Result;
@@ -58,7 +61,10 @@ namespace SiliconStudio.Assets
                 var realPart = ResolvePartReference(reference.AssetPart);
                 if (realPart != reference.AssetPart)
                 {
-                    reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    if (realPart != null || clearMissingReferences)
+                    {
+                        reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    }
                 }
             }
         }
@@ -68,6 +74,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="referencedObject">The object currently referenced by the part.</param>
         /// <returns></returns>
+        /// <seealso cref="FixupPartReferences"/>
         /// <remarks>
         /// The <paramref name="referencedObject"/> can already be the actual target of the reference, but it can also be a proxy object,
         /// a temporary object, or an old version of the actual object. Implementations of this methods are supposed to identify this given object

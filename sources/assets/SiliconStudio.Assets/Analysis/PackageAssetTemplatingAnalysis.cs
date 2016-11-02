@@ -245,7 +245,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
 
                     // Replicate the group with the list of ids
-                    var newBasePart =new AssetBase(existingAssetBasePart.Location, (Asset)AssetCloner.Clone(existingAssetBasePart.Asset));
+                    var newBasePart = new AssetBase(existingAssetBasePart.Location, AssetCloner.Clone(existingAssetBasePart.Asset));
                      
                     existingBaseParts.Add(newBasePart);
                 }
@@ -318,8 +318,8 @@ namespace SiliconStudio.Assets.Analysis
         private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetBase> existingBaseParts)
         {
             // No need to clone existingBaseParts as they are already cloned
-            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
-            var newBaseCopy = (Asset)AssetCloner.Clone(existingBase?.Asset);
+            var baseCopy = AssetCloner.Clone(item.Asset.Base?.Asset);
+            var newBaseCopy = AssetCloner.Clone(existingBase?.Asset);
 
             // Check base parts
             bool basePartsAreEqual = true;

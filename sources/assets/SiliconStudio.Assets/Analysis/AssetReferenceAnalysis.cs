@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,15 +9,14 @@ using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
     /// This analysis provides a method for visiting asset and file references 
-    /// (<see cref="IReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
+    /// (<see cref="Core.Serialization.Contents.IReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
     /// </summary>
-    public class AssetReferenceAnalysis
+    public static class AssetReferenceAnalysis
     {
         private static readonly object CachingLock = new object();
 
@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets all references (subclass of <see cref="IReference" /> and <see cref="UFile" />) from the specified asset
+        /// Gets all references (subclass of <see cref="Core.Serialization.Contents.IReference" /> and <see cref="UFile" />) from the specified asset
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>A list of references.</returns>

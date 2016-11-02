@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 using NUnit.Framework;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Tests
@@ -91,18 +91,48 @@ namespace SiliconStudio.Assets.Tests
         {
             // Test serialization of asset items.
 
-            var inputs = new AssetItemCollection();
+            var inputs = new List<AssetItem>();
             for (int i = 0; i < 10; i++)
             {
                 var newAsset = new AssetObjectTest() { Name = "Test" + i };
                 inputs.Add(new AssetItem("" + i, newAsset));
             }
 
-            var asText = inputs.ToText();
-            var outputs = AssetItemCollection.FromText(asText);
+            var asText = ToText(inputs);
+            var outputs = FromText(asText);
 
             Assert.AreEqual(inputs.Select(item => item.Location), outputs.Select(item => item.Location));
             Assert.AreEqual(inputs.Select(item => item.Asset), outputs.Select(item => item.Asset));
+        }
+
+        private static string ToText(List<AssetItem> assetCollection)
+        {
+            var stream = new MemoryStream();
+            AssetSerializer.Default.Save(stream, assetCollection);
+            stream.Position = 0;
+            return new StreamReader(stream).ReadToEnd();
+        }
+
+        private static List<AssetItem> FromText(string text)
+        {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(text);
+            writer.Flush();
+            stream.Position = 0;
+
+            bool aliasOccurred;
+            var assetItems = (List<AssetItem>)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred);
+            if (aliasOccurred)
+            {
+                foreach (var assetItem in assetItems)
+                {
+                    assetItem.IsDirty = true;
+                }
+            }
+            return assetItems;
         }
 
         static void Main()

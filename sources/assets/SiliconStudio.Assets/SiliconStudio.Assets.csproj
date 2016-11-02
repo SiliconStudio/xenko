@@ -73,6 +73,7 @@
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
+    <Compile Include="Serializers\KeyValuePairSerializer.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="AssetHash.cs" />
     <Compile Include="AssetWithSource.cs" />
     <Compile Include="AssetImporterParameters.cs" />
-    <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPart.cs" />
@@ -206,6 +206,7 @@
     <Compile Include="RawAssetCompiler.cs" />
     <Compile Include="RawAssetImporter.cs" />
     <Compile Include="UPathAttribute.cs" />
+    <Compile Include="Visitors\AssetMemberVisitorBase.cs" />
     <Compile Include="VSProjectHelper.cs" />
     <Compile Include="RawImport.cs" />
     <Compile Include="ProjectReference.cs" />

@@ -10,7 +10,7 @@ namespace UIParticlesTest
     [TestFixture]
     public class UIParticlesTest
     {
-        private const string Path = "samples\\UI\\UIParticles\\Bin\\Windows\\Debug\\UIParticles.exe";
+        private const string Path = "samplesGenerated\\UIParticles\\Bin\\Windows\\Debug\\UIParticles.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

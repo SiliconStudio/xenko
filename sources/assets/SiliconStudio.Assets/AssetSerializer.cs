@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Main entry point for serializing/deserializing <see cref="Asset"/>.
     /// </summary>
-    public class AssetSerializer
+    public static class AssetSerializer
     {
         private static readonly List<IAssetSerializerFactory> RegisteredSerializerFactories = new List<IAssetSerializerFactory>();
 
@@ -43,10 +44,6 @@ namespace SiliconStudio.Assets
         /// The default serializer.
         /// </summary>
         public static readonly IAssetSerializer Default = new AssetYamlSerializer();
-
-        private AssetSerializer()
-        {
-        }
 
         static AssetSerializer()
         {
@@ -105,7 +102,7 @@ namespace SiliconStudio.Assets
 
         public static AssetLoadResult<T> Load<T>(Stream stream, UFile filePath, ILogger log = null)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
             var assetFileExtension = Path.GetExtension(filePath).ToLowerInvariant();
 
             var serializer = FindSerializer(assetFileExtension);
@@ -124,7 +121,6 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="asset">The asset object.</param>
-        /// <param name="assetItem"></param>
         /// <param name="log">The logger.</param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
         public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
@@ -171,7 +167,7 @@ namespace SiliconStudio.Assets
             var serializer = FindSerializer(assetFileExtension);
             if (serializer == null)
             {
-                throw new InvalidOperationException("Unable to find a serializer for [{0}]".ToFormat(assetFileExtension));
+                throw new InvalidOperationException($"Unable to find a serializer for [{assetFileExtension}]");
             }
             serializer.Save(stream, asset, log, overrides);
         }
