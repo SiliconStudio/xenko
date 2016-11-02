@@ -15,13 +15,7 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlScalarNode node;
 
-        public YamlScalarNode Node
-        {
-            get
-            {
-                return node;
-            }
-        }
+        public YamlScalarNode Node => node;
 
         YamlNode IDynamicYamlNode.Node => Node;
 
@@ -57,6 +51,11 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
             return base.TryBinaryOperation(binder, arg, out result);
+        }
+
+        public override string ToString()
+        {
+            return node.Value;
         }
     }
 }

@@ -133,13 +133,13 @@ Example of use:
   </Target>
   
   <!--
-  Build Xenko: Windows, Android, iOS, Windows Store, Windows Phone
+  Build Xenko: Windows, Android, iOS, Windows 10 (UWP)
   -->
   <Target Name="Clean">
     <Exec Command="RMDIR /Q /S $(XenkoRoot)\Bin"/>
   </Target>
   
-  <Target Name="TeamCityBuild" DependsOnTargets="BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone;BuildWindows10;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
+  <Target Name="TeamCityBuild" DependsOnTargets="BuildWindows;BuildWindowsDirect3D12;BuildWindowsOpenGL;BuildWindowsOpenGLES;BuildEditorShaders;BuildAndroid;BuildiOS;BuildUWP;BuildWindowsVulkan;BuildLinux;BuildLinuxVulkan;BuildLinuxCoreCLR;BuildLinuxCoreCLRVulkan;VSIXPlugin"/>
   <Target Name="TeamCityBuildPackage" DependsOnTargets="PrerequisitesInstaller;Package;PackageLauncher;PackageInstaller;WritePackageVersionToFile"/>
   
   <Target Name="CopyXenkoKey">
@@ -179,15 +179,19 @@ Example of use:
   </Target>
   
   <Target Name="BuildWindowsStore" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
+    <!-- Only a warning since build servers might still call this target for old branches -->
+    <Warning Text="Windows Store doesn't exist anymore"/>
   </Target>
 
-  <Target Name="BuildWindows10" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Windows10.sln" Properties="$(BuildProperties);Platform=Windows10"/>
+  <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
+
+  <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   
   <Target Name="BuildWindowsPhone" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
+    <!-- Only a warning since build servers might still call this target for old branches -->
+    <Warning Text="Windows Phone doesn't exist anymore"/>
   </Target>
   
   <Target Name="BuildWindowsVulkan" DependsOnTargets="CopyXenkoKey">

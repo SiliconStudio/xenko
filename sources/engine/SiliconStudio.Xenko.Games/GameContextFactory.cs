@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Games
     #else
             type = AppContextType.Desktop;
     #endif
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             type = AppContextType.WindowsRuntime;
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             type = AppContextType.Android;
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Games
 
         public static GameContext NewGameContextWindowsRuntime()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             return new GameContextWindowsRuntime(null);
 #else
             return null;

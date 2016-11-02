@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// </summary>
         private readonly AutoResetEvent bitmapBuildSignal = new AutoResetEvent(false);
 
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
         /// <summary>
         /// The thread in charge of building the characters bitmaps
         /// </summary>
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // create a freetype library used to generate the bitmaps
             freetypeLibrary = new Library();
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             Windows.System.Threading.ThreadPool.RunAsync(operation => SafeAction.Wrap(BuildBitmapThread)());
 #else
             // launch the thumbnail builder thread
@@ -235,7 +235,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // terminate the build thread
             bitmapShouldEndThread = true;
             bitmapBuildSignal.Set();
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
             bitmapBuilderThread.Join();
 #endif
 

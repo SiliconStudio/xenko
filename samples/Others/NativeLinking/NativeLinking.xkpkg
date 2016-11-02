@@ -1,6 +1,6 @@
 !Package
 Id: c47b99cd-4798-4d85-b9b7-e720d9a229b7
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: NativeLinking

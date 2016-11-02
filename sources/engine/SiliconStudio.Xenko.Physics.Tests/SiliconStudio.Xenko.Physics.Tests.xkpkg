@@ -1,6 +1,6 @@
 !Package
 Id: ccfa0e90-2531-4443-91fc-392b794c92b8
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Physics.Tests

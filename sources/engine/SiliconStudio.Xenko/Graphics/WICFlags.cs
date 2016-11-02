@@ -72,7 +72,7 @@
 // cannot change. To the extent permitted under your local laws, the 
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
 using System;
 
 namespace SiliconStudio.Xenko.Graphics

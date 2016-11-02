@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
                 return "Xenko Game";
 #else
                 var assembly = Assembly.GetEntryAssembly();
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
                 return string.Empty;
 #else
                 var assembly = Assembly.GetEntryAssembly();
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Games
         }
 #endif
 #endif
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
         /// <summary>
         /// Performs an implicit conversion from <see cref="Windows.UI.Xaml.Controls.SwapChainPanel"/> to <see cref="GameContextWindowsRuntime"/>.
         /// </summary>
