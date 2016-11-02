@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;

@@ -403,43 +403,6 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Get the nodes of the path of <paramref name="rootObject"/>
-        /// </summary>
-        /// <param name="rootObject">The root of the object to visit</param>
-        /// <returns>the path nodes</returns>
-        public IEnumerable<MemberPathNode> GetNodes(object rootObject)
-        {
-            if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
-            if (items.Count == 0) throw new InvalidOperationException("No items pushed via Push methods");
-
-                var node = new MemberPathNode
-                {
-                    Object = rootObject,
-                };
-
-                for (var i = 0; i < items.Count; i++)
-                {
-                    var item = items[i];
-
-                    node.Descriptor = item.MemberDescriptor;
-                    yield return node;
-
-                    try
-                    {
-                        node.Object = item.GetValue(node.Object);
-                    }
-                    catch (Exception)
-                    {
-                        yield break;
-                    }
-                }
-
-            // return the last object (leaf) with null descriptor
-            node.Descriptor = null;
-            yield return node;
-        }
-
-        /// <summary>
         /// Find all the member path in the <paramref name="dual"/> object corresponding to this path in <paramref name="reference"/> object.
         /// </summary>
         /// <param name="reference">The reference root element</param>
