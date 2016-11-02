@@ -37,6 +37,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <summary>
+        /// Gets or sets the shadow.
+        /// </summary>
+        /// <value>The shadow.</value>
+        /// <userdoc>The settings of the light shadow</userdoc>
+        [DataMember(200)]
+        public override LightShadowMap Shadow { get; protected set; }
+
+        /// <summary>
         /// Gets or sets the range distance the light is affecting.
         /// </summary>
         /// <value>The range.</value>
@@ -128,6 +136,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             var d = Math.Abs(projectedTarget.W) + 0.00001f;
             var r = Range * Math.Sin(MathUtil.DegreesToRadians(AngleOuter/2.0f));
+
+            // Handle correctly the case where the eye is inside the sphere
+            if (d < r)
+                return Math.Max(renderView.ViewSize.X, renderView.ViewSize.Y);
+
             var coTanFovBy2 = renderView.Projection.M22;
             var pr = r * coTanFovBy2 / (Math.Sqrt(d * d - r * r) + 0.00001f);
 

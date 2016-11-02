@@ -7,10 +7,6 @@
     {
         string Generator { get; }
 
-        string GeneratedAbsolutePath { get; set; }
-
-        string GeneratedInclude { get; set; }
-
-        void SaveGeneratedAsset();
+        void SaveGeneratedAsset(AssetItem assetItem);
     }
 }

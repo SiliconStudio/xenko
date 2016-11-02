@@ -1,10 +1,10 @@
 ﻿using System;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
+using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Assets.Serializers
 {

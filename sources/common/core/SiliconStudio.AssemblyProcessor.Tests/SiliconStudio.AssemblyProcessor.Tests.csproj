@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -60,6 +60,9 @@
       <Name>SiliconStudio.AssemblyProcessor</Name>
       <Private>True</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

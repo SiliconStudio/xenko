@@ -508,6 +508,7 @@ namespace SiliconStudio.Assets
             //var clock = Stopwatch.StartNew();
             using (var profile = Profiler.Begin(PackageSessionProfilingKeys.Saving))
             {
+                var packagesDirty = false;
                 try
                 {
                     saveParameters = saveParameters ?? PackageSaveParameters.Default();
@@ -560,37 +561,34 @@ namespace SiliconStudio.Assets
                                     var projectAsset = assetItem.Asset as IProjectAsset;
                                     if (projectAsset != null)
                                     {
-                                        Project project;
-                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
-                                        {
-                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
-                                            vsProjs.Add(assetItem.SourceProject, project);
-                                        }
-                                        var include = (new UFile(projectAsset.ProjectInclude)).ToWindowsPath();
-                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
-                                        if (item != null)
-                                        {
-                                            project.RemoveItem(item);
-                                        }
-                                    }
-                                    //delete any generated file as well
-                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
-                                    if (generatorAsset?.GeneratedAbsolutePath != null)
-                                    {
-                                        File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
+                                        var projectInclude = assetItem.GetProjectInclude();
 
-                                        //and remove from project as well
                                         Project project;
                                         if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
                                         {
                                             project = VSProjectHelper.LoadProject(assetItem.SourceProject);
                                             vsProjs.Add(assetItem.SourceProject, project);
                                         }
-                                        var include = new UFile(new UFile(projectAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs").ToWindowsPath();
-                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
-                                        if (item != null)
+                                        var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
+                                        if (projectItem != null)
                                         {
-                                            project.RemoveItem(item);
+                                            project.RemoveItem(projectItem);
+                                        }
+
+                                        //delete any generated file as well
+                                        var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
+                                        if (generatorAsset != null)
+                                        {
+                                            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
+
+                                            File.Delete(generatedAbsolutePath);
+
+                                            var generatedInclude = assetItem.GetGeneratedInclude();
+                                            var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
+                                            if (generatedItem != null)
+                                            {
+                                                project.RemoveItem(generatedItem);
+                                            }
                                         }
                                     }
                                 }
@@ -627,7 +625,11 @@ namespace SiliconStudio.Assets
                     foreach (var package in LocalPackages)
                     {
                         // Save the package to disk and all its assets
-                        package.Save(log);
+                        package.Save(log, saveParameters);
+
+                        // Check if everything was saved (might not be the case if things are filtered out)
+                        if (package.IsDirty || package.Assets.IsDirty)
+                            packagesDirty = true;
 
                         // Clone the package (but not all assets inside, just the structure)
                         var packageClone = package.Clone();
@@ -650,7 +652,7 @@ namespace SiliconStudio.Assets
                 }
 
                 //System.Diagnostics.Trace.WriteLine("Elapsed saved: " + clock.ElapsedMilliseconds);
-                IsDirty = false;
+                IsDirty = packagesDirty;
             }
         }
 
@@ -821,6 +823,12 @@ namespace SiliconStudio.Assets
                 // Load the package without loading any assets
                 var package = Package.LoadRaw(log, filePath);
                 package.IsSystem = isSystemPackage;
+
+                // Remove all missing dependencies if they are not required
+                if (!loadParameters.LoadMissingDependencies)
+                {
+                    package.LocalDependencies.Clear();
+                }
 
                 // Convert UPath to absolute (Package only)
                 // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)

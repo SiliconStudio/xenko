@@ -15,7 +15,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -25,7 +24,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.4-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -323,6 +322,31 @@ namespace SiliconStudio.Xenko.Assets
                     {
                         assetFile.Deleted = true;
                     }
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.8.4-beta"))
+            {
+                // Add new generic parameter of MaterialSurfaceNormalMap to effect logs
+                var regex = new Regex(@"(?<=ClassName:\s+MaterialSurfaceNormalMap\s+GenericArguments:\s+\[[^\]]*)(?=\])");
+                foreach (var assetFile in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkeffectlog"))
+                {
+                    var filePath = assetFile.FilePath;
+
+                    // Load asset data, so the renamed file will have it's AssetContent set
+                    if (assetFile.AssetContent == null)
+                        assetFile.AssetContent = File.ReadAllBytes(filePath);
+
+                    var sourceText = System.Text.Encoding.UTF8.GetString(assetFile.AssetContent);
+                    var newSourceText = regex.Replace(sourceText, ", true");
+                    var newAssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
+
+                    if (newSourceText != sourceText)
+                    {
+                        assetFile.AssetContent = newAssetContent;
+                    }
+
+                    //File.WriteAllBytes(newFileName, newAssetContent);
                 }
             }
 

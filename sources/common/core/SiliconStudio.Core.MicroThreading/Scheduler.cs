@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// </summary>
         public void Run()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             int managedThreadId = 0;
 #else
             int managedThreadId = Thread.CurrentThread.ManagedThreadId;

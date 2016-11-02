@@ -1,6 +1,6 @@
 !Package
 Id: 637e7e88-bc09-4ddd-95eb-00114fd32e5e
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Audio.Tests

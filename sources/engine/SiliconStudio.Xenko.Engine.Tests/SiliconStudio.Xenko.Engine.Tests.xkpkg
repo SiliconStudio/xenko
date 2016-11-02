@@ -1,6 +1,6 @@
 !Package
 Id: c6c57562-42df-42ad-be2d-8d5889211366
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Engine.Tests

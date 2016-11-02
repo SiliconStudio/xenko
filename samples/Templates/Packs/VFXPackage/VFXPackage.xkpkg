@@ -1,0 +1,27 @@
+!Package
+Id: 575b8dc7-3fad-497d-acf7-fbdfabcece80
+SerializedVersion: {Assets: 0.0.3}
+Tags: []
+Meta:
+    Name: VFXPackage
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.8.4-beta
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences: []
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

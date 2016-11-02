@@ -1,6 +1,6 @@
 !Package
 Id: 48195305-1f56-44a9-be69-7fa0597a50dc
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SpriteStudioDemo
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.0-beta
+            Version: 1.9.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

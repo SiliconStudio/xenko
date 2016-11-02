@@ -376,8 +376,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(55)]
         [Display("Spawners")]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public readonly FastTrackingCollection<ParticleSpawner> Spawners;
 
         /// <summary>
@@ -388,8 +387,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(200)]
         [Display("Initializers")]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public readonly FastTrackingCollection<ParticleInitializer> Initializers;
 
         /// <summary>
@@ -400,8 +398,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(300)]
         [Display("Updaters")]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public readonly FastTrackingCollection<ParticleUpdater> Updaters;
 
         public void Dispose()

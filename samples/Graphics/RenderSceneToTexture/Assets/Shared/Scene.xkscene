@@ -1,27 +1,23 @@
 !SceneAsset
-Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
-SerializedVersion: {Xenko: 1.7.0-beta04}
+Id: f561ab7b-af7c-406e-b322-b70ff0d04693
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 8d53bdc7-e8e9-4787-b777-58a26278b79a
+    Id: 8d53bdc7-e8e9-4787-b777-58a26278b79a
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 8e1aa547-3658-437a-b022-25ad3a9adb0d
         Cameras:
             -   ~Id: 0f3c941e-1d20-43a4-8a9a-ec90fce3acbf
                 Name: null
-                Camera:
-                    Entity: {Id: 94061a3c-bbe5-4ad6-b55c-5905873264e1}
-                    Id: 726ee955-8359-4410-8a78-03690aca1931
+                Camera: 94061a3c-bbe5-4ad6-b55c-5905873264e1/726ee955-8359-4410-8a78-03690aca1931
             -   ~Id: f16e0736-1845-4613-bf3d-83899ed0d181
                 Name: null
-                Camera:
-                    Entity: {Id: 14088c66-6d9b-4e26-a601-9784ff3ae859}
-                    Id: 07c9ff4c-26fb-4945-9fd1-899f98a86e77
+                Camera: 14088c66-6d9b-4e26-a601-9784ff3ae859/07c9ff4c-26fb-4945-9fd1-899f98a86e77
         Layers:
             -   ~Id: 230ac439-6a7a-467b-8126-b0a05aa620b8
                 Name: SceneGraphicsLayer
                 Output: !SharedRenderFrameProvider
-                    RenderFrame: 31570598-8f43-446d-a3fd-caa17910b43d/2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
+                    RenderFrame: 31570598-8f43-446d-a3fd-caa17910b43d/e993c612-9d3f-4991-bdd1-d4d25f0cb4ca:RenderFrame
                 Renderers:
                     - !ClearRenderFrameRenderer
                         ~Id: 16c90dcc-6be0-41bf-bcda-8a8a7ae607d6
@@ -82,28 +78,28 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d3604cfc-0c23-4cac-9f38-2af551a981de
-                        Position: {X: 0.0, Y: 0.879, Z: -3.69}
-                        Rotation: {W: -4.371139E-08, X: 0.0, Y: 1.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.879, Z: -3.69}
+                        Rotation: {X: 0.0, Y: 1.0, Z: 0.0, W: -4.371139E-08}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 07c9ff4c-26fb-4945-9fd1-899f98a86e77
                         Projection: Perspective
                         AspectRatio: 0.56
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
-                Name: knightBack
+                Name: RenderToTexture
                 Group: Group1
                 Components:
                     - !TransformComponent
                         ~Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
-                        Position: {X: 0.25, Y: 2.85, Z: -1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.25, Y: 2.85, Z: -1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !RenderSceneToTexture.SetSpriteSource,RenderSceneToTexture.Game
                         ~Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: a252210e-eb38-48d0-a6af-95f8776cd903/2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
+                        RenderFrame: a252210e-eb38-48d0-a6af-95f8776cd903/e993c612-9d3f-4991-bdd1-d4d25f0cb4ca:RenderFrame
                     - !SpriteComponent
                         ~Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
                         SpriteProvider: !SpriteFromTexture
@@ -120,10 +116,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: c8c68bf6-ba43-4cd5-8fbd-50fcb2cb3121
-                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 5.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 945f5c4a-6120-4fe2-9986-a5f77b5de9e9
                         Type: !LightAmbient
@@ -131,17 +127,17 @@ Hierarchy:
                             Color: !ColorRgbProvider
                                 ~Id: a5716019-6f80-476f-8429-e23fdfc45ba8
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-                        Intensity: 0.5
+                        Intensity: 0.3
         -   Entity:
                 Id: 94061a3c-bbe5-4ad6-b55c-5905873264e1
                 Name: Camera front
                 Components:
                     - !TransformComponent
                         ~Id: e3dc0fca-370b-4f94-88d5-5b23fc487deb
-                        Position: {X: 0.0, Y: 1.15, Z: 3.08}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 1.15, Z: 3.08}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 726ee955-8359-4410-8a78-03690aca1931
                         Projection: Perspective
@@ -152,10 +148,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: ea2d87dc-548d-4c14-b67f-9c278f089a32
-                        Position: {X: 0.0, Y: 0.0, Z: 5.0}
-                        Rotation: {W: 0.963630438, X: 0.267238379, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.267238379, Y: 0.0, Z: 0.0, W: 0.963630438}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 6c61adc8-514c-48e0-9a8b-4f26f679ddf9
                         Type: !LightDirectional
@@ -172,30 +168,30 @@ Hierarchy:
                                     ~Id: 1ffbd487-10d6-4e54-8077-c09c1bbed651
                                 BiasParameters:
                                     ~Id: 178a6b4b-5474-45aa-9a2c-85253b54dac7
-                        Intensity: 0.8
+                        Intensity: 0.6
         -   Entity:
                 Id: bb7065d2-498a-45d7-b4b1-0bb1a573cc69
                 Name: Background
                 Components:
                     - !TransformComponent
                         ~Id: fdf5d194-2ac5-4657-a4be-af0b407bfebe
-                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: bd36fd77-5b09-4a58-92ce-82be90aa012f
-                        Texture: bb79e461-51fb-46a4-90f8-6e6bf22f8a6f/b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
+                        Texture: bb79e461-51fb-46a4-90f8-6e6bf22f8a6f/97d4ffd4-2305-42dc-ab5a-934bdb015204:XenkoBackground
         -   Entity:
                 Id: dbc67230-cb46-4563-8193-084016acd341
                 Name: Directional light back
                 Components:
                     - !TransformComponent
                         ~Id: efd26dcd-29d0-46bb-bf09-55c9bcb724c0
-                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
-                        Rotation: {W: -0.178963482, X: -0.9838557, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -5.0}
+                        Rotation: {X: -0.9838557, Y: 0.0, Z: 0.0, W: -0.178963482}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 144e961f-96bb-455f-b983-b29d708fe4ed
                         Type: !LightDirectional
@@ -212,28 +208,34 @@ Hierarchy:
                                     ~Id: 065d45b1-f7b8-4193-9dc7-7e4fda982d06
                                 BiasParameters:
                                     ~Id: 581de9dc-a33a-482c-b592-670f83750786
-                        Intensity: 0.8
+                        Intensity: 0.6
         -   Entity:
                 Id: f63efa01-c45a-4b81-ad59-e49391a813e4
-                Name: knight
+                Name: CharacterModel
                 Components:
                     - !TransformComponent
                         ~Id: 4c23b4c4-21a3-4e6c-a8ff-08659627e818
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.21643962, Z: 0.0, W: 0.976296}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 6b597dd4-f0b3-488a-a450-01177661fc4d
-                        Animations:
-                            Idle: 86d94d1b-12c8-44ff-aea0-fd8d309a0f8f/144a63cd-8847-447e-8b00-4c33204abfb9:he00_normal_idle
-                        PlayingAnimations: []
-                    - !RenderSceneToTexture.PlayAnimation,RenderSceneToTexture.Game
-                        ~Id: e67ed2c3-6fab-4b93-bfea-3fceab01a27c
+                        Animations: {}
+                        PlayingAnimations:
+                            -   ~Id: 70a8e172-d19b-43f6-b651-0c4ce8d231d6
+                                Name: null
+                                Clip: b5cab62b-1503-4534-98eb-e1ce1092b134/0a2c868c-7f3a-4970-b21d-41dbca293e29:Animations/Run
+                                RepeatMode: LoopInfinite
+                                BlendOperation: LinearBlend
+                                CurrentTime: 0:00:00:00.0000000
                     - !ModelComponent
                         ~Id: 036205d7-8a24-4194-a484-27af5acff6e0
-                        Model: 9fa49480-df48-4f5d-8333-411140c81021/9e7f08db-ca99-4171-b503-6ea0f8e5114d:knight
+                        Model: 55844728-14aa-47c6-a0b1-265525c3d81f/a2d76ee6-91c5-4b19-8236-5f6a9e1fcc28:Models/mannequinModel
                         Materials:
+                            - null
+                            - null
+                            - null
                             - null
                             - null
                             - null

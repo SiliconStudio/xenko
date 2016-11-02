@@ -190,6 +190,12 @@ namespace SiliconStudio.Assets
                     }
                 }
 
+                // Write invariant objects
+                foreach (var invarialtObject in invariantObjects)
+                {
+                    writer.SerializeExtended(invarialtObject, ArchiveMode.Serialize);
+                }
+
                 writer.Flush();
                 stream.Position = 0;
 

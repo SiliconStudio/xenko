@@ -1,4 +1,4 @@
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +60,7 @@ namespace Sockets.Plugin
                     ConnectionReceived(this, eventArgs);
             };
 
-#if !WP80    
+#if !WP80
             if (listenOn != null)
             {
                 var adapter = ((CommsInterface) listenOn).NativeNetworkAdapter;

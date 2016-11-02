@@ -30,6 +30,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <summary>
+        /// Point lights don't have shadows yet.
+        /// </summary>
+        /// <value>The shadow.</value>
+        /// <userdoc>Point lights don't have shadows yet</userdoc>
+        [DataMemberIgnore]
+        public override LightShadowMap Shadow { get { return null; } protected set { } }
+
+        /// <summary>
         /// Gets or sets the radius of influence of this light.
         /// </summary>
         /// <value>The range.</value>
@@ -70,6 +78,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             var d = Math.Abs(projectedTarget.W) + 0.00001f;
             var r = Radius;
+
+            // Handle correctly the case where the eye is inside the sphere
+            if (d < r)
+                return Math.Max(renderView.ViewSize.X, renderView.ViewSize.Y);
+
             var coTanFovBy2 = renderView.Projection.M22;
             var pr = r * coTanFovBy2 / (Math.Sqrt(d * d - r * r) + 0.00001f);
 

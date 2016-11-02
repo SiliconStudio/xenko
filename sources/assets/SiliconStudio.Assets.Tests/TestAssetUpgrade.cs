@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 
 using NUnit.Framework;
-
-using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Tests
 {
@@ -135,7 +134,7 @@ namespace SiliconStudio.Assets.Tests
         {
             var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), "");
             var outputFilePath = loadingFilePath.FilePath.FullPath;
-            AssetSerializer.Save(outputFilePath, asset);
+            AssetSerializer.Save(outputFilePath, asset, null);
 
             var logger = new LoggerResult();
             var context = new AssetMigrationContext(null, logger);

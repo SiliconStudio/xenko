@@ -87,7 +87,7 @@
     <Compile Include="RuntimeIdHelper.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IO\NativeFile.cs" />
-    <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
+    <Compile Include="IO\NativeFile.UWP.cs" />
     <Compile Include="PlatformFolders.cs" />
     <Compile Include="Reflection\IObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactory.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Serialization\NullSerializer.cs" />
     <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
-    <Compile Include="ThreadHelper.WindowsRuntime.cs" />
+    <Compile Include="ThreadHelper.UWP.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
     <Compile Include="DataMemberCustomSerializerAttribute.cs" />
     <Compile Include="Diagnostics\ConsoleLogMode.cs" />
