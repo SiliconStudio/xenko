@@ -2,8 +2,6 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -43,6 +41,14 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DirectInput.dll</HintPath>
         </Reference>
+        <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+          <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+          <Name>SiliconStudio.Core.Design</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+          <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+          <Name>SiliconStudio.Core.Yaml</Name>
+        </ProjectReference>
       </ItemGroup>
     </When>
   </Choose>
@@ -121,6 +127,11 @@
     <Compile Include="NamedGravitySensor.cs" />
     <Compile Include="NamedGyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
+    <Compile Include="UWP\GamePadUWP.cs" />
+    <Compile Include="UWP\InputSourceUWP.cs" />
+    <Compile Include="UWP\KeyboardUWP.cs" />
+    <Compile Include="UWP\PointerUWP.cs" />
+    <Compile Include="UWP\WinFormsKeys.cs" />
     <Compile Include="Windows\DeviceObjectIdExtensions.cs" />
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
@@ -209,10 +220,6 @@
     <Compile Include="Windows\WinKeys.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
-      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
-      <Name>SiliconStudio.Core.Design</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
@@ -221,10 +228,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
-      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
-      <Name>SiliconStudio.Core.Yaml</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -246,7 +249,9 @@
       <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="UI\" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -15,8 +15,12 @@ namespace SiliconStudio.Xenko.Input
         static GamePadLayouts()
         {
             // Add default layouts
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             AddLayout(new GamePadLayoutDS4());
+#endif
             AddLayout(new GamePadLayoutXInput());
+#endif
         }
 
         /// <summary>

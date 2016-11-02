@@ -261,9 +261,11 @@ namespace SiliconStudio.Xenko.Input
             // Create input sources
             switch (Game.Context.ContextType)
             {
+#if SILICONSTUDIO_XENKO_UI_SDL
                 case AppContextType.DesktopSDL:
                     AddInputSource(new InputSourceSDL());
                     break;
+#endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
                 case AppContextType.Android:
                     AddInputSource(new InputSourceAndroid());
@@ -279,7 +281,12 @@ namespace SiliconStudio.Xenko.Input
                     AddInputSource(new InputSourceOpenTK());
                     break;
 #endif
-#if SILICONSTUDIO_PLATFORM_WINDOWS
+#if SILICONSTUDIO_PLATFORM_UWP
+                case  AppContextType.WindowsRuntime:
+                    AddInputSource(new InputSourceUWP());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
                 case AppContextType.Desktop:
                     AddInputSource(new InputSourceWindows());
                     AddInputSource(new InputSourceWindowsDirectInput());
@@ -287,6 +294,8 @@ namespace SiliconStudio.Xenko.Input
                     if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
                     break;
 #endif
+                default:
+                    throw new InvalidOperationException("Unsupported InputManager-GameContext combination");
             }
 
             // Simulated input, if enabled
@@ -589,12 +598,13 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="listener">The listener to register</param>
         public void AddListener(IInputEventListener listener)
         {
-            var eventInterfaces = listener.GetType().FindInterfaces((type, criteria) => type.IsGenericType && typeof(IInputEventListener<>) == type.GetGenericTypeDefinition(), listener);
-            var handledTypes = eventInterfaces.Select(x => x.GenericTypeArguments[0]);
-            foreach (var type in handledTypes)
-            {
-                eventRouters[type].Listeners.Add(listener);
-            }
+            // TODO: Remove FindInterfaces
+            //var eventInterfaces = listener.GetType().FindInterfaces((type, criteria) => type.IsGenericType && typeof(IInputEventListener<>) == type.GetGenericTypeDefinition(), listener);
+            //var handledTypes = eventInterfaces.Select(x => x.GenericTypeArguments[0]);
+            //foreach (var type in handledTypes)
+            //{
+            //    eventRouters[type].Listeners.Add(listener);
+            //}
         }
 
         /// <summary>

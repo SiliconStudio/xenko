@@ -2,12 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Core;
+#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_PLATFORM_UWP
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
+#endif
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -111,9 +114,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 settings.Add(pair.Key, pair.Value.Gestures.OfType<InputGesture>().ToList());
             }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_PLATFORM_UWP
             // Save the bindings
             YamlSerializer.GetSerializerSettings().PreferredIndent = 2;
             YamlSerializer.Serialize(stream, settings, settings.GetType(), SerializerContextSettings.Default, false);
+#endif
         }
 
         /// <summary>
@@ -122,7 +127,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <param name="stream">A stream that provides the YAML configuration</param>
         public bool LoadBindings(Stream stream)
         {
-            Dictionary<string, List<InputGesture>> settings;
+            Dictionary<string, List<InputGesture>> settings = new Dictionary<string, List<InputGesture>>();
+#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_PLATFORM_UWP
             try
             {
                 settings = (Dictionary<string, List<InputGesture>>)YamlSerializer.Deserialize(stream, typeof(Dictionary<string, List<InputGesture>>), SerializerContextSettings.Default);
@@ -131,6 +137,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 return false;
             }
+#endif
 
             // Load the new gesture bindings
             foreach (var pair in settings)
