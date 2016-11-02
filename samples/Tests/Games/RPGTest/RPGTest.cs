@@ -10,7 +10,7 @@ namespace RPGTest
     [TestFixture]
     public class RPGTest
     {
-        private const string Path = "samples\\Templates\\TopDownRPG\\TopDownRPG\\Bin\\Windows\\Debug\\TopDownRPG.exe";
+        private const string Path = "samplesGenerated\\TopDownRPG\\Bin\\Windows\\Debug\\TopDownRPG.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

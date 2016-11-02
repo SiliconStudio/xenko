@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private static EditText activeEditText;
         private Windows.UI.Xaml.Controls.TextBox editText;
-        private GameContextWindowsRuntime gameContext;
+        private GameContextUWP gameContext;
 
         private static void InitializeStaticImpl()
         {
@@ -47,9 +47,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (game == null)
                     throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
 
-                Debug.Assert(game.Context is GameContextWindowsRuntime, "There is only one possible descendant of GameContext for Windows Store.");
+                Debug.Assert(game.Context is GameContextUWP, "There is only one possible descendant of GameContext for Windows Store.");
 
-                gameContext = (GameContextWindowsRuntime)game.Context;
+                gameContext = (GameContextUWP)game.Context;
                 var swapChainPanel = gameContext.Control;
 
                 // Detach previous EditText (if any)

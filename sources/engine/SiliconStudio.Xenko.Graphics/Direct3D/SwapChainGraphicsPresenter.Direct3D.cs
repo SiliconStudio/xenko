@@ -293,14 +293,14 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
 #if SILICONSTUDIO_PLATFORM_UWP
-            return CreateSwapChainForWindowsRuntime();
+            return CreateSwapChainForUWP();
 #else
             return CreateSwapChainForWindows();
 #endif
         }
 
 #if SILICONSTUDIO_PLATFORM_UWP
-        private SwapChain CreateSwapChainForWindowsRuntime()
+        private SwapChain CreateSwapChainForUWP()
         {
             bufferCount = 2;
             var description = new SwapChainDescription1
@@ -321,7 +321,7 @@ namespace SiliconStudio.Xenko.Graphics
             SwapChain swapChain = null;
             switch (Description.DeviceWindowHandle.Context)
             {
-                case Games.AppContextType.WindowsRuntime:
+                case Games.AppContextType.UWP:
                 {
                     var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeWindow);
                     // Creates the swap chain for XAML composition

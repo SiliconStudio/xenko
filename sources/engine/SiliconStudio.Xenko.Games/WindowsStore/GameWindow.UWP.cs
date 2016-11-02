@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowWindowsRuntimeSwapChainPanel : GameWindow<SwapChainPanel>
+    internal class GameWindowUWPSwapChainPanel : GameWindow<SwapChainPanel>
     {
 #region Fields
         private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Games
 
 #region Public Properties
 
-        public GameWindowWindowsRuntimeSwapChainPanel()
+        public GameWindowUWPSwapChainPanel()
         {
             coreWindow = CoreWindow.GetForCurrentThread();
             resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
@@ -195,9 +195,9 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Initialize(GameContext<SwapChainPanel> windowContext)
         {
-            Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");
+            Debug.Assert(windowContext is GameContextUWP, "By design only one descendant of GameContext<SwapChainPanel>");
             swapChainPanel = windowContext.Control;
-            windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel, IntPtr.Zero);
+            windowHandle = new WindowHandle(AppContextType.UWP, swapChainPanel, IntPtr.Zero);
 
             applicationView = ApplicationView.GetForCurrentView();            
             if (applicationView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)

@@ -29,16 +29,25 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContextWindowsRuntime : GameContextWindows<SwapChainPanel>
+    public partial class GameContextUWP : GameContextWindows<SwapChainPanel>
     {
         // Used internally by systems such as UI to capture input in a TextBox
         internal TextBox EditTextBox = new TextBox();
 
         /// <inheritDoc/>
-        public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextUWP(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
             : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
-            ContextType = AppContextType.WindowsRuntime;
+            ContextType = AppContextType.UWP;
+        }
+    }
+
+    [Obsolete("Use GameContextUWP instead")]
+    public class GameContextWindowsRuntime : GameContextUWP
+    {
+        public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control, requestedWidth, requestedHeight)
+        {
         }
     }
 }
