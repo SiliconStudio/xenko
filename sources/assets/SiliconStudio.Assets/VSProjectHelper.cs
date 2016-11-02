@@ -84,8 +84,7 @@ namespace SiliconStudio.Assets
                         // NuGet restore
                         // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
                         // Probably not worth bothering since it might be part of MSBuild with VS15
-                        // TODO: Detect project.json if no solution path is set?
-                        var restoreNugetTask = (solutionFullPath != null) ? RestoreNugetPackages(logger, solutionFullPath) : Task.CompletedTask;
+                        var restoreNugetTask = RestoreNugetPackages(logger, fullProjectLocation, solutionFullPath);
 
                         var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
                         asyncBuild.Build(restoreNugetTask, project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
@@ -116,8 +115,7 @@ namespace SiliconStudio.Assets
                     // NuGet restore
                     // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
                     // Probably not worth bothering since it might be part of MSBuild with VS15
-                    // TODO: Detect project.json if no solution path is set?
-                    var restoreNugetTask = (solutionFullPath != null) ? RestoreNugetPackages(logger, solutionFullPath) : Task.CompletedTask;
+                    var restoreNugetTask = RestoreNugetPackages(logger, fullProjectLocation, solutionFullPath);
 
                     var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
                     asyncBuild.Build(restoreNugetTask, project, targets, flags, new LoggerRedirect(logger));
@@ -134,10 +132,28 @@ namespace SiliconStudio.Assets
             return null;
         }
 
-        public static Task RestoreNugetPackages(ILogger logger, string path)
+        public static Task RestoreNugetPackages(ILogger logger, string projectFullPath, string solutionFullPath)
         {
-            // Run NuGet.exe restore
-            return ShellHelper.RunProcessAndGetOutputAsync(NugetPath, $"restore \"{path}\"", logger);
+            // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
+            // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
+            // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
+            var projectJson = Path.Combine(Path.GetDirectoryName(projectFullPath), "project.json");
+            if (File.Exists(projectJson))
+            {
+                // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
+                var projectLockJson = Path.ChangeExtension(projectJson, ".lock.json");
+                if (File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
+                {
+                    // Check if it needs to be regenerated
+                    // Run NuGet.exe restore
+                    var parameters = $"restore \"{projectJson}\"";
+                    if (solutionFullPath != null)
+                        parameters += $" -solutiondirectory \"{Path.GetDirectoryName(solutionFullPath)}\"";
+                    return ShellHelper.RunProcessAndGetOutputAsync(NugetPath, parameters, logger);
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         public static Microsoft.Build.Evaluation.Project LoadProject(string fullProjectLocation, string configuration = "Debug", string platform = "AnyCPU", Dictionary<string, string> extraProperties = null)
