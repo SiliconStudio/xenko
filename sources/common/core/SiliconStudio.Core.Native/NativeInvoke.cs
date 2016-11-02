@@ -29,9 +29,7 @@ namespace SiliconStudio.Core.Native
         /// Suspends current thread for <paramref name="ms"/> milliseconds.
         /// </summary>
         /// <param name="ms">Number of milliseconds to sleep.</param>
-#if !SILICONSTUDIO_PLATFORM_UWP
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(Library, EntryPoint = "cnSleep", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Sleep(int ms);
     }
