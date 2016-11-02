@@ -270,9 +270,9 @@ namespace SiliconStudio.Assets.Diff
             var asset2Path = Path.GetTempFileName();
             try
             {
-                AssetSerializer.Save(assetBasePath, assetBase);
-                AssetSerializer.Save(asset1Path, asset1);
-                AssetSerializer.Save(asset2Path, asset2);
+                AssetSerializer.Save(assetBasePath, assetBase, null);
+                AssetSerializer.Save(asset1Path, asset1, null);
+                AssetSerializer.Save(asset2Path, asset2, null);
             }
             catch (Exception exception)
             {

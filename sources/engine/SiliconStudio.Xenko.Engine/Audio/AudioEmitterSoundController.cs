@@ -39,11 +39,6 @@ namespace SiliconStudio.Xenko.Audio
         private readonly Sound sound;
 
         /// <summary>
-        /// The parent <see cref="AudioEmitterComponent"/> to which to controller is associated.
-        /// </summary>
-        private readonly AudioEmitterComponent parent;
-
-        /// <summary>
         /// The instances of <see cref="sound"/> currently created by this controller (one for each listener).
         /// </summary>
         [DataMemberIgnore]
@@ -61,7 +56,6 @@ namespace SiliconStudio.Xenko.Audio
                 throw new ArgumentNullException(nameof(sound));
 
             this.sound = sound;
-            this.parent = parent;
 
             Volume = 1;
         }
@@ -270,6 +264,19 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     instance.Key.Volume = volume;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets the range of the sound to play.
+        /// </summary>
+        /// <param name="range">a PlayRange structure that describes the starting offset and ending point of the sound to play in seconds.</param>
+        /// <remarks>This will not be valid if the sound is played with PlayAndForget</remarks>
+        public void SetRange(PlayRange range)
+        {
+            foreach (var instance in InstanceToListener)
+            {
+                instance.Key.SetRange(range);
             }
         }
     }

@@ -36,31 +36,31 @@ namespace ParticlesSampleTest
             {
                 game.Wait(TimeSpan.FromMilliseconds(2000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(500));
             }

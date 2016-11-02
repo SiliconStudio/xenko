@@ -1,6 +1,6 @@
 !Package
 Id: 2ca471d1-0216-4bc8-a03a-3ccec16b7f85
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: FirstPersonShooter
@@ -10,7 +10,7 @@ Meta:
     RootNamespace: FirstPersonShooter
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.2-beta
+            Version: 1.8.4-beta
             RootAssets: []
 LocalDependencies:
     - 575b8dc7-3fad-497d-acf7-fbdfabcece80:../../Packs/VFXPackage/VFXPackage.xkpkg

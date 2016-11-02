@@ -5,7 +5,7 @@ Scope: Session
 Description: A simple 2D game with a vessel jumping in the air at each screen touch
 FullDescription: |
    A simple 2D game in which you have to guide the hero vessel through messy pipes using screen taps.
-   This sample shows you how to load assets, use the scrit system, activate simple gesture recognition, create a simple custom rendering pipeline, use the SpriteBatch class and the Xenko sprite system.
+   This sample shows you how to load assets, use the script system, activate simple gesture recognition, create a simple custom rendering pipeline, use the SpriteBatch class and the Xenko sprite system.
 Group: Samples/Games
 Icon: .xktpl/icon.png
 DefaultOutputName: JumpyJet

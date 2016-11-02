@@ -161,9 +161,6 @@ Hierarchy:
     RootPartIds:
         - 27a91eaf-7622-42b4-89a2-3495a753b8d9
         - e1d761e6-634d-4773-8d81-75dfc8e8b1c4
-        - f144fefb-a599-45ff-bcc8-18e78729c4c8
-        - 649d6b05-166c-4086-b894-bef973274c7d
-        - bbb582d5-7c88-4059-bb92-2df19cf7bd4d
         - 5fc52dcf-f9f8-4c6d-b32d-3fc989aea8ad
         - 39790120-ebaf-43d5-8b06-e1aaa22d2f51
         - 605ce261-0f03-4563-b2d4-4ed4a7d4cd89
@@ -3224,31 +3221,6 @@ Hierarchy:
                                 Size: {X: 0.1, Y: 2.0, Z: 1.45}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   Folder: Platform
-            Entity:
-                Id: 649d6b05-166c-4086-b894-bef973274c7d
-                Name: Point light (2)
-                Components:
-                    - !TransformComponent
-                        ~Id: c286c783-69c6-4bc7-9bfd-cb02d5c3a49c
-                        Children: []
-                        Position: {X: 2.1116116, Y: 1.48333764, Z: 0.0502119064}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: bd02a2b1-ef2e-457c-987f-a5dc6cf0e735
-                        Type: !LightPoint
-                            ~Id: e57bb142-1c76-493c-b7f6-7c4f1fb9112e
-                            Color: !ColorRgbProvider
-                                ~Id: d06cc371-3c3d-4448-86bb-c5c31af41724
-                                Value: {R: 0.5280392, G: 1.0, B: 0.349019647}
-                            Radius: 3.0
-                            Shadow:
-                                ~Id: e51c3173-b0c1-4aef-a238-d91f8e9bd548
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: 3c77d89a-9d26-4906-ac48-15a09e531073
-                        Intensity: 10.0
         -   Entity:
                 Id: 6503c1a0-1861-442d-b637-f4f5d7f0ef93
                 Name: Wall0x2x5 (2)
@@ -6121,31 +6093,6 @@ Hierarchy:
                         Position: {X: 0.0, Y: 0.0, Z: 15.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Folder: Platform
-            Entity:
-                Id: bbb582d5-7c88-4059-bb92-2df19cf7bd4d
-                Name: Point light (3)
-                Components:
-                    - !TransformComponent
-                        ~Id: c286c783-69c6-4bc7-9bfd-cb02d5c3a49c
-                        Children: []
-                        Position: {X: 0.09019351, Y: 1.48333764, Z: -2.092054}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: bd02a2b1-ef2e-457c-987f-a5dc6cf0e735
-                        Type: !LightPoint
-                            ~Id: e57bb142-1c76-493c-b7f6-7c4f1fb9112e
-                            Color: !ColorRgbProvider
-                                ~Id: d06cc371-3c3d-4448-86bb-c5c31af41724
-                                Value: {R: 0.349019647, G: 0.609411836, B: 1.0}
-                            Radius: 3.0
-                            Shadow:
-                                ~Id: e51c3173-b0c1-4aef-a238-d91f8e9bd548
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: 3c77d89a-9d26-4906-ac48-15a09e531073
-                        Intensity: 10.0
         -   BaseId: fbdff817-df62-4a56-83f8-19a9d12589b8
             BasePartInstanceId: 2912ff3a-1cac-4e19-81ea-6e6ad79998a5
             Entity:
@@ -7241,31 +7188,6 @@ Hierarchy:
                         Position: {X: 9.999999, Y: -9.536743E-07, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   Folder: Platform
-            Entity:
-                Id: f144fefb-a599-45ff-bcc8-18e78729c4c8
-                Name: Point light
-                Components:
-                    - !TransformComponent
-                        ~Id: c286c783-69c6-4bc7-9bfd-cb02d5c3a49c
-                        Children: []
-                        Position: {X: -0.796315253, Y: 1.48333764, Z: 0.91362226}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: bd02a2b1-ef2e-457c-987f-a5dc6cf0e735
-                        Type: !LightPoint
-                            ~Id: e57bb142-1c76-493c-b7f6-7c4f1fb9112e
-                            Color: !ColorRgbProvider
-                                ~Id: d06cc371-3c3d-4448-86bb-c5c31af41724
-                                Value: {R: 1.0, G: 0.350000024, B: 0.350000024}
-                            Radius: 3.0
-                            Shadow:
-                                ~Id: e51c3173-b0c1-4aef-a238-d91f8e9bd548
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: 3c77d89a-9d26-4906-ac48-15a09e531073
-                        Intensity: 10.0
         -   BaseId: fbdff817-df62-4a56-83f8-19a9d12589b8
             BasePartInstanceId: 4833319b-0c5d-48b8-aa64-a6c55ac30595
             Entity:

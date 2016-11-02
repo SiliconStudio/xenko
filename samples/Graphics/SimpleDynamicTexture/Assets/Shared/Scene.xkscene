@@ -1,9 +1,9 @@
 !SceneAsset
 Id: c90e49d7-b3d8-4b19-b771-71cf4460a83b
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: c4f80303-7169-4991-89ed-ca66c5f8333d
+    Id: c4f80303-7169-4991-89ed-ca66c5f8333d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 3e89e7e9-c286-4f5e-9543-3231420ab048
         Cameras:
@@ -52,15 +52,16 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 60733af3-e0c3-4c24-9b5c-3bc81d9d57d4
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SimpleDynamicTexture.UIScript,SimpleDynamicTexture.Game
                         ~Id: 1d983363-de80-406c-8058-fa5c0bed6ce0
                         Font: 9eb69756-ea58-414c-8249-9ee8e983cb8c/742bb234-8f43-4702-b9bb-396b663b4a2c:Font
                     - !UIComponent
                         ~Id: d039ac15-8363-43e7-9f34-d891cb850857
+                        Page: null
                         Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
@@ -70,10 +71,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6c3519de-0e76-4291-aa17-740b3b065d42
-                        Position: {X: -1.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SimpleDynamicTexture.TextureUpdateScript,SimpleDynamicTexture.Game
                         ~Id: 50e271e0-83f5-4d14-a10a-d7a603ad9fca
         -   Entity:
@@ -82,10 +83,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: e8e937c3-def0-410e-adf5-4710d5e89d21
-                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: c10c24b7-e307-4742-afc3-9cd25fba85dc
                         Texture: 98e71beb-d78f-4a3c-a870-8ecbc0191bb5/d83b8b93-533b-4ed9-b064-9308965a6745:XenkoBackground

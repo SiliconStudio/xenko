@@ -253,10 +253,11 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             try
             {
-                using (var stream = new FileStream(Path.Combine(outputDirectory, name), FileMode.Open, FileAccess.Read))
+                var filePath = Path.Combine(outputDirectory, name);
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    var asset = AssetSerializer.Default.Load(stream, null, null, out b) as Asset;
+                    var asset = AssetSerializer.Default.Load(stream, filePath, null, out b) as Asset;
                     if (asset != null)
                     {
                         guid = asset.Id;
@@ -596,8 +597,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 case PlatformType.Windows:
                         // Nothing to do here.
                     break;
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
                 case PlatformType.Android:
                     configurations.Add(platform, platform);
                     needDeploy = true;
@@ -605,7 +604,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 case PlatformType.Linux:
                 case PlatformType.macOS:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     configurations.Add(platform, "Any CPU");
                     needDeploy = true;
                     break;

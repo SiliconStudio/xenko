@@ -2,7 +2,7 @@
 Id: 10601f56-3dd5-4728-a371-063121f8373b
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
-Source: ../../../Resources/VRcoin/Models/zenko_coin.fbx
+Source: ../../../Resources/Models/XenkoCoin.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
     -   ~Id: be7c0b58-8282-e807-8282-07e8828207e8
@@ -12,4 +12,4 @@ Materials:
             Material: dfdaac34-6609-4016-a4c6-6d825e23d4ed/3a68d952-b795-4ef1-b3b3-7df9f7275e8a:Materials/coinC
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/VRcoin/Models/zenko_coin.fbx: f00d518ee22cd1edef712f91c53faceb
+    ../../../Resources/Models/XenkoCoin.fbx: f00d518ee22cd1edef712f91c53faceb

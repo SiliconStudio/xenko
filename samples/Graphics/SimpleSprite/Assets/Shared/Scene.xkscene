@@ -1,9 +1,9 @@
 !SceneAsset
 Id: 2871eb8a-27ef-40c9-a40a-9026b53ab794
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 2a70d72f-0788-4e3c-821b-cf97e96ea140
+    Id: 2a70d72f-0788-4e3c-821b-cf97e96ea140
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: be433e8b-7ade-4674-9c01-8638c876c7e1
         Cameras: []
@@ -46,10 +46,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5562ca80-edfe-4545-a347-5f33ecd47fea
-                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 33a3b73b-938e-463b-a0d3-b18b110d68a0
                         Texture: 96e31fc0-90fa-48fb-8b98-9d236f56d3cd/175006e8-6351-4365-9778-73d54aa5ea9f:XenkoBackground
@@ -59,10 +59,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f6c378d9-1136-4077-88ac-626d6b1eeb9d
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SimpleSprite.BallScript,SimpleSprite.Game
                         ~Id: 0d68d8c0-1856-496f-a985-c52da27b163a
                         Sphere: 4305804c-ac8f-475e-ad38-7b48bc8d40a8/ceda18e2-1df7-4694-bac1-fdecc81bc570:sphere

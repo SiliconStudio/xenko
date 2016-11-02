@@ -28,27 +28,26 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// </summary>
         public const string FileExtension = ".xksl;.pdxsl";
 
-        public static Regex Regex = new Regex("shader\\s+\\w+");
+        public static Regex Regex = new Regex(@"(^|\s)(class)($|\s)");
 
-        public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
+        public override string Generator => "XenkoShaderKeyGenerator";
 
         public override void Save(Stream stream)
         {
             //regex the shader name if it has changed
-            var className = new UFile(AbsoluteSourceLocation).GetFileName();
-            Text = Regex.Replace(Text, $"shader {className}");
+            Text = Regex.Replace(Text, "$1shader$3");
 
             base.Save(stream);
         }
 
-        public override void SaveGeneratedAsset()
+        public override void SaveGeneratedAsset(AssetItem assetItem)
         {
             //generate the .cs files
             // Always output a result into the file
             string result;
             try
             {
-                var parsingResult = XenkoShaderParser.TryPreProcessAndParse(Text, AbsoluteSourceLocation);
+                var parsingResult = XenkoShaderParser.TryPreProcessAndParse(Text, assetItem.FullPath);
 
                 if (parsingResult.HasErrors)
                 {
@@ -71,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
             // We force the UTF8 to include the BOM to match VS default
             var data = Encoding.UTF8.GetBytes(result);
            
-            File.WriteAllBytes(GeneratedAbsolutePath, data);
+            File.WriteAllBytes(assetItem.GetGeneratedAbsolutePath(), data);
         }
     }
 }
