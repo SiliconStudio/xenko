@@ -48,4 +48,14 @@
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ThirdPersonPlatformer\ThirdPersonPlatformer.$(PlatformToBuild)\ThirdPersonPlatformer.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TopDownRPG\TopDownRPG.$(PlatformToBuild)\TopDownRPG.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true" Targets="Rebuild" />
 	</Target>
+	
+	<Target Name="BuildTests">
+		<MSBuild Condition="'$(PlatformToBuild)' == 'Windows'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE" Targets="Rebuild" />
+		<MSBuild Condition="'$(PlatformToBuild)' == 'Android'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE;TEST_ANDROID" Targets="Rebuild" />	
+		<MSBuild Condition="'$(PlatformToBuild)' == 'iOS'" Projects="$(XenkoRoot)samples\Tests\Tests.sln" Properties="DefineConstants=TRACE;TEST_IOS" Targets="Rebuild" />
+	</Target>
+	
+	<Target Name="NugetExtractFix">
+		<Exec Command="cd $(XenkoRoot) && powershell -File $(MSBuildThisFileDirectory)NugetExtractFix.ps1" />
+	</Target>
 </Project>
