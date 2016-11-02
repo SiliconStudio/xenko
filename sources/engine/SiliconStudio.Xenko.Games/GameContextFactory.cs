@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Games
             type = AppContextType.Desktop;
     #endif
 #elif SILICONSTUDIO_PLATFORM_UWP
-            type = AppContextType.WindowsRuntime;
+            type = AppContextType.UWP;
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             type = AppContextType.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -64,8 +64,8 @@ namespace SiliconStudio.Xenko.Games
                 case AppContextType.DesktopWpf:
                     res = NewGameContextWpf();
                     break;
-                case AppContextType.WindowsRuntime:
-                    res = NewGameContextWindowsRuntime();
+                case AppContextType.UWP:
+                    res = NewGameContextUWP();
                     break;
                 case AppContextType.iOS:
                     res = NewGameContextiOS();
@@ -117,10 +117,10 @@ namespace SiliconStudio.Xenko.Games
 #endif
         }
 
-        public static GameContext NewGameContextWindowsRuntime()
+        public static GameContext NewGameContextUWP()
         {
 #if SILICONSTUDIO_PLATFORM_UWP
-            return new GameContextWindowsRuntime(null);
+            return new GameContextUWP(null);
 #else
             return null;
 #endif

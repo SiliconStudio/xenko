@@ -27,7 +27,7 @@ using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal partial class InputManagerWindowsRuntime : InputManager
+    internal partial class InputManagerUWP : InputManager
     {
 
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f/DesiredSensorUpdateRate*1000f);
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
 
-        static InputManagerWindowsRuntime()
+        static InputManagerUWP()
         {
             mapKeys = new Dictionary<VirtualKey, Keys>();
             // this dictionary was built from Desktop version (VirtualKey are compatible with WinForms keys)
@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Input
             AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
         }
 
-        public InputManagerWindowsRuntime(IServiceRegistry registry) : base(registry)
+        public InputManagerUWP(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasPointer = true;
@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.Input
             var windowHandle = Game.Window.NativeWindow;
             switch (windowHandle.Context)
             {
-                case AppContextType.WindowsRuntime:
+                case AppContextType.UWP:
                     InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
                 default:
@@ -506,7 +506,7 @@ namespace SiliconStudio.Xenko.Input
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (Game.Context is GameContextWindowsRuntime && ((GameContextWindowsRuntime)Game.Context).EditTextBox.Parent != null)
+            if (Game.Context is GameContextUWP && ((GameContextUWP)Game.Context).EditTextBox.Parent != null)
             {
                 return false;
             }

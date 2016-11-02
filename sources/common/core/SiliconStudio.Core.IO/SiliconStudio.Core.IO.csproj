@@ -63,7 +63,7 @@
     <Compile Include="FileSystemProvider.MonoMobile.cs" />
     <Compile Include="FileSystemProvider.cs" />
     <Compile Include="FileSystemProvider.Windows.cs" />
-    <Compile Include="FileSystemProvider.WindowsRuntime.cs" />
+    <Compile Include="FileSystemProvider.UWP.cs" />
     <Compile Include="IVirtualFileProvider.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

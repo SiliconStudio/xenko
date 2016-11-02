@@ -30,9 +30,9 @@ using Windows.UI.Xaml;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformWindowsRuntime : GamePlatform
+    internal class GamePlatformUWP : GamePlatform
     {
-        public GamePlatformWindowsRuntime(GameBase game) : base(game)
+        public GamePlatformUWP(GameBase game) : base(game)
         {
             Application.Current.Suspending += CurrentOnSuspending;
             Application.Current.Resuming += CurrentOnResuming;
@@ -68,9 +68,9 @@ namespace SiliconStudio.Xenko.Games
 
         internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            if (type == AppContextType.WindowsRuntime)
+            if (type == AppContextType.UWP)
             {
-                return new GameWindowWindowsRuntimeSwapChainPanel();
+                return new GameWindowUWPSwapChainPanel();
             }
             else
             {

@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_UWP
 namespace SiliconStudio.Xenko.Input
 {
-    internal partial class InputManagerWindowsRuntime
+    internal partial class InputManagerUWP
     {
         enum WinFormsKeys
         {
