@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Input
         void HandleKey(ButtonState state, KeyRoutedEventArgs args)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (game.Context is GameContextWindowsRuntime && ((GameContextWindowsRuntime)game.Context).EditTextBox.Parent != null)
+            if (((GameContextWindowsRuntime)game.Context).EditTextBox.Parent != null)
             {
                 return;
             }
