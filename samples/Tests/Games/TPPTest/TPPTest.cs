@@ -5,12 +5,12 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Games.Testing;
 
-namespace GravitySensorTest
+namespace TPPTest
 {
     [TestFixture]
-    public class GravitySensorTest
+    public class TPPTest
     {
-        private const string Path = "samplesGenerated\\GravitySensor\\Bin\\Windows-Direct3D11\\Debug\\GravitySensor.exe";
+        private const string Path = "samplesGenerated\\ThirdPersonPlatformer\\Bin\\Windows\\Debug\\ThirdPersonPlatformer.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;
@@ -35,19 +35,10 @@ namespace GravitySensorTest
             using (var game = new GameTestingClient(Path, TestPlatform))
             {
                 game.Wait(TimeSpan.FromMilliseconds(2000));
-
-                game.KeyPress(Keys.Down, TimeSpan.FromMilliseconds(500));
-                game.Wait(TimeSpan.FromMilliseconds(2000));
-                game.TakeScreenshot();
+                game.Tap(new Vector2(0.5f, 0.7f), TimeSpan.FromMilliseconds(500));
                 game.Wait(TimeSpan.FromMilliseconds(500));
-
-                game.KeyPress(Keys.Up, TimeSpan.FromMilliseconds(1000));
-                game.Wait(TimeSpan.FromMilliseconds(2000));
-                game.TakeScreenshot();
+                game.KeyPress(Keys.Space, TimeSpan.FromMilliseconds(500));
                 game.Wait(TimeSpan.FromMilliseconds(500));
-
-                game.KeyPress(Keys.Left, TimeSpan.FromMilliseconds(500));
-                game.Wait(TimeSpan.FromMilliseconds(2000));
                 game.TakeScreenshot();
                 game.Wait(TimeSpan.FromMilliseconds(500));
             }
