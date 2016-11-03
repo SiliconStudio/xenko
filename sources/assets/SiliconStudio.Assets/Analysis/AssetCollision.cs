@@ -168,7 +168,7 @@ namespace SiliconStudio.Assets.Analysis
 
                 if (idRemap.TryGetValue(id, out remap) && IsNewReference(remap, rootAsset))
                 {
-                    var newRootAsset = new AssetReference<Asset>(remap.Item1, remap.Item2);
+                    var newRootAsset = new AssetReference(remap.Item1, remap.Item2);
                     rootAssetCollection.Remove(rootAsset.Id);
                     rootAssetCollection.Add(newRootAsset);
                 }

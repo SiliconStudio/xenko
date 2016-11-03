@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         /// <userdoc>The sprite font asset that has been used to generate this precompiled font.</userdoc>
         [DataMember(0)]
-        public AssetReference<SpriteFontAsset> OriginalFont;
+        public AssetReference OriginalFont;
 
         /// <summary>
         /// The file containing the font data.

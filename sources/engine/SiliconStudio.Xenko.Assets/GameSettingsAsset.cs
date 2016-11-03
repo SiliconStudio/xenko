@@ -16,7 +16,6 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
@@ -158,7 +157,7 @@ namespace SiliconStudio.Xenko.Assets
 
             public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Xenko.TextureQuality", PackageProfile.SettingsContainer);
 
-            public static readonly SettingsKey<AssetReference<SceneAsset>> DefaultScene = new SettingsKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
+            public static readonly SettingsKey<AssetReference> DefaultScene = new SettingsKey<AssetReference>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
 
             public static readonly SettingsKey<int> BackBufferWidth = new SettingsKey<int>("GameSettingsAsset.BackBufferWidth", PackageProfile.SettingsContainer, 1280);
 

@@ -1046,7 +1046,7 @@ namespace SiliconStudio.Assets
 
                 var module = context.Log.Module;
 
-                var assetReference = new AssetReference<Asset>(Guid.Empty, fileUPath.FullPath);
+                var assetReference = new AssetReference(Guid.Empty, fileUPath.FullPath);
 
                 // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
                 if (loggerResult != null)

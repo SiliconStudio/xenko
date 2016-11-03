@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         [DataMember]
-        public AssetReference<PrefabAsset> Prefab { get; set; }
+        public AssetReference Prefab { get; set; }
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {

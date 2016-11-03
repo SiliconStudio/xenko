@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Tests
         {
             public MyAsset()
             {
-                CustomReferences = new List<AssetReference<Asset>>();
+                CustomReferences = new List<AssetReference>();
                 SeqItemsEmpty = new List<string>();
                 SeqItems1 = new List<string>();
                 SeqItems2 = new MyCollection();
@@ -35,9 +35,9 @@ namespace SiliconStudio.Assets.Tests
 
             public object AssetUrl { get; set; }
 
-            public AssetReference<Asset> CustomReference2 { get; set; }
+            public AssetReference CustomReference2 { get; set; }
 
-            public List<AssetReference<Asset>> CustomReferences { get; set; }
+            public List<AssetReference> CustomReferences { get; set; }
 
             public List<string> SeqItemsEmpty { get; set; }
 

@@ -109,7 +109,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(item,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ElementType, guid ?? assetReference.Id, location);
+                            var newValue = AssetReference.New(guid ?? assetReference.Id, location);
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -175,7 +175,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     AddLink(assetReference, (guid, location) =>
                     {
-                        var link = AssetReference.New(descriptor.ElementType, guid ?? assetReference.Id, location);
+                        var link = AssetReference.New(guid ?? assetReference.Id, location);
                         descriptor.SetValue(collection, index, link);
                         return link;
                     });
@@ -233,7 +233,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ValueType, guid ?? assetReference.Id, location);
+                            var newValue = AssetReference.New(guid ?? assetReference.Id, location);
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -295,7 +295,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(member.Type, guid ?? assetReference.Id, location);
+                            var newValue = AssetReference.New(guid ?? assetReference.Id, location);
                             member.Set(container, newValue);
                             return newValue;
                         });

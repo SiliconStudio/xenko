@@ -152,12 +152,12 @@ namespace SiliconStudio.Xenko.Assets
                         var model = components["ModelComponent.Key"]?.Model;
                         if (animationComponent != null && model != null)
                         {
-                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(model);
+                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
                             var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
 
                             foreach (var animation in animationComponent.Animations)
                             {
-                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(animation.Value);
+                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
                                 var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
 
                                 if (modelAsset != null && animationAsset != null)
@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -223,8 +223,8 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference<Asset>(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
                 }
 
                 // Remove Nodes from models
@@ -438,7 +438,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var assetItem in dependentPackage.Assets)
                 {
                     if (!AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
-                        dependentPackage.RootAssets.Add(new AssetReference<Asset>(assetItem.Id, assetItem.Location));
+                        dependentPackage.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
                 }
             }
 
