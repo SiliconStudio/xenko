@@ -10,6 +10,7 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -38,7 +39,7 @@ namespace SiliconStudio.Assets
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
         private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
-
+        private static readonly Dictionary<Type, Type> RegisteredContentReferenceTypes = new Dictionary<Type, Type>();
         private static Func<object, string, string> stringExpander;
 
         // Global lock used to secure the registry with threads
@@ -412,6 +413,22 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static bool IsContentReferenceType(Type type)
+        {
+            lock (RegistryLock)
+            {
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredContentReferenceTypes.ContainsKey(type))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
+            }
+        }
+
         /// <summary>
         /// Registers the asset assembly. This assembly should provide <see cref="Asset"/> objects, associated with
         /// <see cref="Compiler.IAssetCompiler"/> and optionaly a <see cref="IAssetImporter"/>.
@@ -609,6 +626,16 @@ namespace SiliconStudio.Assets
                                 RegisteredAssetCompositePartTypes.Add(attribute.ReferenceableType, relatedPartTypes);
                             }
                             attributes.ForEach(x => relatedPartTypes.Add(x));
+                        }
+                    }
+
+                    var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
+                    if (serializer != null)
+                    {
+                        var serializerType = serializer.GetType();
+                        if (serializerType.IsGenericType && serializerType.GetGenericTypeDefinition().Name == "ReferenceSerializer`1")
+                        {
+                            RegisteredContentReferenceTypes.Add(type, null);
                         }
                     }
                 }
