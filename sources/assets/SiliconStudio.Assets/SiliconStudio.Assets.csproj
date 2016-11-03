@@ -66,7 +66,6 @@
     <Compile Include="IProjectFileGeneratorAsset.cs" />
     <Compile Include="Package.Constants.cs" />
     <Compile Include="Package.cs" />
-    <Compile Include="PackageArchive.cs" />
     <Compile Include="PackageAssetCollection.cs" />
     <Compile Include="PackageBuildConfiguration.cs" />
     <Compile Include="PackageCollection.cs" />
