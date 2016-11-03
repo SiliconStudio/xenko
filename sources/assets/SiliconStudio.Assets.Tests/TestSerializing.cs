@@ -8,6 +8,7 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Tests
 {
@@ -124,7 +125,8 @@ namespace SiliconStudio.Assets.Tests
             stream.Position = 0;
 
             bool aliasOccurred;
-            var assetItems = (List<AssetItem>)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred);
+            Dictionary<ObjectPath, OverrideType> overrides;
+            var assetItems = (List<AssetItem>)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
             if (aliasOccurred)
             {
                 foreach (var assetItem in assetItems)
