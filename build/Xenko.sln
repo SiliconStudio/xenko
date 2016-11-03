@@ -409,6 +409,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{3a3cb33c-64d9-4948-86c1-0d86320d23c3}*SharedItemsImports = 13
