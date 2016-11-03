@@ -193,5 +193,23 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        protected class IdentifiableComponentUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic entityDesign in entities)
+                {
+                    var entity = entityDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        component.Id = component["~Id"];
+                        component["~Id"] = DynamicYamlEmpty.Default;
+                    }
+                }
+            }
+        }
     }
 }

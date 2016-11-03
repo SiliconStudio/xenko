@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     [DataSerializerGlobal(typeof(NullSerializer), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializer<MaterialNull>))]
     [DataContract("MaterialNull")]
+    [Obsolete("This class is not needed anymore")]
     public sealed class MaterialNull : Material
     {
         // TODO: This concept might be generalized for other kind of types, it would require to plug a bit more deeply into binary serialization

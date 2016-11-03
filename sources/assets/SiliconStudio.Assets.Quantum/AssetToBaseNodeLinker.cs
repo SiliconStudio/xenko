@@ -59,34 +59,5 @@ namespace SiliconStudio.Assets.Quantum
             // Not identifiable - default applies
             return base.FindTargetReference(sourceNode, targetNode, sourceReference);
         }
-
-        protected ObjectReference FindTargetReference2(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
-        {
-            if (sourceReference.Index.IsEmpty)
-                return targetNode.Content.Reference as ObjectReference;
-
-            // Special case for objects that are identifiable: the object must be linked to the base only if it has the same id
-            if (sourceReference.ObjectValue != null && IdentifiableHelper.IsIdentifiable(sourceReference.ObjectValue.GetType()))
-            {
-                var sourceId = IdentifiableHelper.GetId(sourceReference.ObjectValue);
-                if (sourceReference.Index.IsEmpty)
-                {
-                    // Object reference: we check if the object reference of the target has the same id.
-                    var targetReference = targetNode.Content.Reference.AsObject;
-                    if (targetReference?.ObjectValue != null && IdentifiableHelper.GetId(targetReference.ObjectValue) == sourceId)
-                        return targetReference;
-                }
-                else
-                {
-                    // Enumerable reference: we look for an object with the same id
-                    var targetReference = targetNode.Content.Reference.AsEnumerable;
-                    return targetReference.FirstOrDefault(x => x?.ObjectValue != null && IdentifiableHelper.GetId(x.ObjectValue) == sourceId);
-                }
-                return null;
-            }
-
-            // Not identifiable - default applies
-            return base.FindTargetReference(sourceNode, targetNode, sourceReference);
-        }
     }
 }
