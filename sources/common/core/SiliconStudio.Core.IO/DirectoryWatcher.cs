@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.IO
     public partial class DirectoryWatcher : IDisposable
     {
         private const int SleepBetweenWatcherCheck = 200;
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
         private Thread watcherCheckThread;
 #endif
         private bool exitThread;
@@ -44,7 +44,7 @@ namespace SiliconStudio.Core.IO
         public virtual void Dispose()
         {
             exitThread = true;
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
             if (watcherCheckThread != null)
             {
                 watcherCheckThread.Join();

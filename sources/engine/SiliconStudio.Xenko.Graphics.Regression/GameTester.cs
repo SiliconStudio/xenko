@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 game.Run();
             }
 
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
 
             throw new NotImplementedException();
 

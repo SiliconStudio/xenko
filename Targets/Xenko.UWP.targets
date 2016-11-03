@@ -1,0 +1,71 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project InitialTargets="SiliconStudioRemapPlatforms" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="SiliconStudioRemapPlatforms">
+    <!-- Remap real platform for UWP -->
+    <CreateProperty Condition=" '$(Platform)' == 'UWP'" Value="AnyCPU">
+      <Output TaskParameter="Value" PropertyName="Platform" />
+    </CreateProperty>
+  </Target>
+
+  <PropertyGroup>
+    <!-- Rewrite platform so that ProjectReference libraries get built properly -->
+    <Platform>UWP</Platform>
+    
+    <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'AppContainerExe'">true</SiliconStudioIsExecutable>
+    <SiliconStudioNETFrameworkVersion>v4.5.1</SiliconStudioNETFrameworkVersion>
+
+    <SiliconStudioCPU Condition="'$(Platform)' == 'x86'">x86</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'x64'">x64</SiliconStudioCPU>
+    <SiliconStudioCPU Condition="'$(Platform)' == 'ARM'">ARM</SiliconStudioCPU>
+    
+    <!-- Use OutputPath to define AppxPackage directory -->
+    <AppxPackageDir>$(OutputPath)\$(AppxPackageDirName)\</AppxPackageDir>
+    <AppxPackageTestDir>$(AppxPackageDir)Test\</AppxPackageTestDir>
+    <AppxPackageName>$(AssemblyName)</AppxPackageName>
+  </PropertyGroup>
+  
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
+
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenko.dll"/>
+    
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <Choose>
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+      <ItemGroup>
+        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>False</Visible>
+        </Content>
+      </ItemGroup>
+	  </When>
+  </Choose>
+
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      DeployAssetsWinRT;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
+
+  <!-- UWP: Transform Assets into Content -->
+  <Target Name="DeployAssetsWinRT" DependsOnTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioIsExecutable)' == 'true'">
+    <ItemGroup>
+      <!-- Define the Assets to deploy -->
+      <AssetsToDeploy Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*"/>
+
+      <Content Include="@(AssetsToDeploy)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

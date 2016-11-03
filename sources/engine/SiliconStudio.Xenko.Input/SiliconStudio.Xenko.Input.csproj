@@ -25,7 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
@@ -45,7 +45,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>
@@ -88,8 +88,8 @@
     <Compile Include="InputManager.Windows.DirectInput.cs" />
     <Compile Include="InputManager.Windows.OpenTK.cs" />
     <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />
-    <Compile Include="InputManager.Windows.Store.cs" />
-    <Compile Include="InputManager.Windows.Store.Keys.cs" />
+    <Compile Include="InputManager.UWP.cs" />
+    <Compile Include="InputManager.UWP.Keys.cs" />
     <Compile Include="InputManager.Windows.WPF.cs" />
     <Compile Include="InputManager.SDL.SDLInput.cs" />
     <Compile Include="InputManager.Windows.XInput.cs" />

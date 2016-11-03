@@ -1,6 +1,6 @@
 !Package
 Id: b18707e8-1d26-49fc-9911-3834506d8149
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.UI.Tests

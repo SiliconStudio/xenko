@@ -1,6 +1,6 @@
 !Package
 Id: 23f2fc76-c8e1-42f8-9857-c6f4f3f34f68
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SimpleDynamicTexture

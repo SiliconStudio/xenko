@@ -54,9 +54,9 @@ namespace SiliconStudio.Xenko.Games
         Android,
 
         /// <summary>
-        /// Game running on Windows Runtime in a SwapChainPanel.
+        /// Game running on UWP in a SwapChainPanel.
         /// </summary>
-        WindowsRuntime,
+        UWP,
 
         /// <summary>
         /// Game running on iOS in a iPhoneOSGameView.

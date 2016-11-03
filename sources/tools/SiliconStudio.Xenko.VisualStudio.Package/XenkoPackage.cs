@@ -278,8 +278,8 @@ namespace SiliconStudio.Xenko.VisualStudio
 
         private static bool IsPreferredPlatform(string projectPlatform, string platformName)
         {
-            // Prefer ARM on WindowsPhone and non-ARM otherwise
-            return (projectPlatform == "WindowsPhone") == (platformName == "ARM");
+            // Prefer non-ARM
+            return (platformName != "ARM");
         }
 
         private void UpdateStartupProjectFromConfiguration()
