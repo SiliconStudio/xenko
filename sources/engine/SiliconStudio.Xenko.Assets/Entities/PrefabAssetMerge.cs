@@ -98,33 +98,33 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Process BaseAsset
             MapEntities(baseAsset?.Hierarchy, baseEntities);
-            if (newAsset.BaseParts != null)
-            {
-                foreach (var partItem in newAsset.GetBasePartInstanceIds())
-                {
-                    foreach (var groupPartId in partItem.Value)
-                    {
-                        // Because we have a groupPartId, it will clone the hierarchy so that
-                        // we can safely merge instances later with NewEntity
-                        MapEntities(partItem.Key.Hierarchy, baseEntities, groupPartId);
-                    }
-                }
-            }
+            //if (newAsset.BaseParts != null)
+            //{
+            //    foreach (var partItem in newAsset.GetBasePartInstanceIds())
+            //    {
+            //        foreach (var groupPartId in partItem.Value)
+            //        {
+            //            // Because we have a groupPartId, it will clone the hierarchy so that
+            //            // we can safely merge instances later with NewEntity
+            //            MapEntities(partItem.Key.Hierarchy, baseEntities, groupPartId);
+            //        }
+            //    }
+            //}
 
             // Process NewBaseAsset
             MapEntities(newBaseAsset?.Hierarchy, newBaseEntities);
-            if (newBaseParts != null)
-            {
-                foreach (var partItem in newAsset.GetBasePartInstanceIds(newBaseParts))
-                {
-                    foreach (var groupPartId in partItem.Value)
-                    {
-                        // Because we have a groupPartId, it will clone the hierarchy so that
-                        // we can safely merge instances later with NewEntity
-                        MapEntities(partItem.Key.Hierarchy, newBaseEntities, groupPartId);
-                    }
-                }
-            }
+            //if (newBaseParts != null)
+            //{
+            //    foreach (var partItem in newAsset.GetBasePartInstanceIds(newBaseParts))
+            //    {
+            //        foreach (var groupPartId in partItem.Value)
+            //        {
+            //            // Because we have a groupPartId, it will clone the hierarchy so that
+            //            // we can safely merge instances later with NewEntity
+            //            MapEntities(partItem.Key.Hierarchy, newBaseEntities, groupPartId);
+            //        }
+            //    }
+            //}
 
             // Compute Entities Added by newbase (not present in base)
             foreach (var entityFromNewBase in newBaseEntities)

@@ -124,15 +124,15 @@ namespace SiliconStudio.Assets.Analysis
                 }
 
                 // Fix base parts if there are any remap for them as well
-                if (item.Asset.BaseParts != null)
+                var assetComposite = item.Asset as IAssetComposite;
+                if (assetComposite != null)
                 {
-                    for (int i = 0; i < item.Asset.BaseParts.Count; i++)
+                    foreach (var basePart in assetComposite.CollectParts())
                     {
-                        var basePart = item.Asset.BaseParts[i];
-                        if (idRemap.TryGetValue(basePart.Id, out remap) && IsNewReference(remap, basePart))
+                        if (basePart.Base != null && idRemap.TryGetValue(basePart.Base.BasePartAsset.Id, out remap) && IsNewReference(remap, basePart.Base.BasePartAsset))
                         {
-                            basePart.Asset.Id = remap.Item1;
-                            item.Asset.BaseParts[i] = new AssetBase(remap.Item2, basePart.Asset);
+                            var newAssetReference = new AssetReference(remap.Item1, remap.Item2);
+                            basePart.UpdateBase(new BasePart(newAssetReference, basePart.Base.BasePartId, basePart.Base.InstanceId));
                             item.IsDirty = true;
                         }
                     }

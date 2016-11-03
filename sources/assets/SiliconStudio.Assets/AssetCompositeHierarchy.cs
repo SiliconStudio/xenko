@@ -75,7 +75,7 @@ namespace SiliconStudio.Assets
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base));
+            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base, newBase => x.Base = newBase));
         }
 
         public override IIdentifiable FindPart(Guid partId)

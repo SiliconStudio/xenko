@@ -596,17 +596,6 @@ namespace SiliconStudio.Assets
                     asset.Asset.Base = UpdateAssetBase(assetBase);
                 }
 
-                // Update base for BaseParts
-                if (asset.Asset.BaseParts != null)
-                {
-                    var baseParts = asset.Asset.BaseParts;
-                    for (int i = 0; i < baseParts.Count; i++)
-                    {
-                        var basePart = baseParts[i];
-                        baseParts[i] = UpdateAssetBase(basePart);
-                    }
-                }
-
                 AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)

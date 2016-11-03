@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -24,7 +26,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </remarks>
         protected sealed class SpriteComponentUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = hierarchy.Entities;
@@ -58,7 +61,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </remarks>
         protected sealed class UIComponentRenamingResolutionUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = hierarchy.Entities;
@@ -92,7 +96,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </remarks>
         protected sealed class ParticleColorAnimationUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 // Replace ComputeCurveSamplerVector4 with ComputeCurveSamplerColor4.
                 // Replace ComputeAnimationCurveVector4 with ComputeAnimationCurveColor4.
@@ -154,7 +159,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected sealed class EntityDesignUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 asset.Hierarchy.RootPartIds = asset.Hierarchy.RootEntities;
                 asset.Hierarchy.Parts = asset.Hierarchy.Entities;
@@ -172,7 +178,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected class CharacterSlopeUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Parts;
@@ -196,7 +203,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected class IdentifiableComponentUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Parts;
@@ -207,6 +215,70 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         component.Id = component["~Id"];
                         component["~Id"] = DynamicYamlEmpty.Default;
+                    }
+                }
+            }
+        }
+
+        protected class BasePartsRemovalComponentUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                var basePartMapping = new Dictionary<string, string>();
+                if (asset["~BaseParts"] != null)
+                {
+                    foreach (dynamic basePart in asset["~BaseParts"])
+                    {
+                        try
+                        {
+                            var location = ((YamlScalarNode)basePart.Location.Node).Value;
+                            var id = ((YamlScalarNode)basePart.Asset.Id.Node).Value;
+                            var assetUrl = $"{id}:{location}";
+
+                            foreach (dynamic part in basePart.Asset.Hierarchy.Parts)
+                            {
+                                try
+                                {
+                                    var partId = ((YamlScalarNode)part.Entity.Id.Node).Value;
+                                    basePartMapping[partId] = assetUrl;
+                                }
+                                catch (Exception e)
+                                {
+                                    e.Ignore();
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
+                    asset["~BaseParts"] = DynamicYamlEmpty.Default;
+                }
+                var entities = (DynamicYamlArray)asset.Hierarchy.Parts;
+                foreach (dynamic entityDesign in entities)
+                {
+                    if (entityDesign.BaseId != null)
+                    {
+                        try
+                        {
+                            var baseId = ((YamlScalarNode)entityDesign.BaseId.Node).Value;
+                            var baseInstanceId = ((YamlScalarNode)entityDesign.BasePartInstanceId.Node).Value;
+                            string assetUrl;
+                            if (basePartMapping.TryGetValue(baseId, out assetUrl))
+                            {
+                                var baseNode = (dynamic)(new DynamicYamlMapping(new YamlMappingNode()));
+                                baseNode.BasePartAsset = assetUrl;
+                                baseNode.BasePartId = baseId;
+                                baseNode.InstanceId = baseInstanceId;
+                                entityDesign.Base = baseNode;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.Ignore();
+                        }
                     }
                 }
             }

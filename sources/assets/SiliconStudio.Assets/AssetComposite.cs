@@ -15,27 +15,6 @@ namespace SiliconStudio.Assets
     /// </summary>
     public abstract class AssetComposite : Asset, IAssetComposite
     {
-        /// <summary>
-        /// Adds the given <see cref="AssetBase"/> to the <see cref="Asset.BaseParts"/> collection of this asset.
-        /// </summary>
-        /// <remarks>If the <see cref="Asset.BaseParts"/> collection already contains the argument. this method does nothing.</remarks>
-        /// <param name="newBasePart">The base to add to the <see cref="Asset.BaseParts"/> collection.</param>
-        [Obsolete("This method will be removed soon")]
-        public void AddBasePart(AssetBase newBasePart)
-        {
-            if (newBasePart == null) throw new ArgumentNullException(nameof(newBasePart));
-
-            if (BaseParts == null)
-            {
-                BaseParts = new List<AssetBase>();
-            }
-
-            if (BaseParts.All(x => x.Id != newBasePart.Id))
-            {
-                BaseParts.Add(newBasePart);
-            }
-        }
-
         public abstract IEnumerable<AssetPart> CollectParts();
 
         public abstract IIdentifiable FindPart(Guid partId);

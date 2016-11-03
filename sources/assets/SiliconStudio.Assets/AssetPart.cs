@@ -12,25 +12,35 @@ namespace SiliconStudio.Assets
     [Obsolete("This struct might be removed soon")]
     public struct AssetPart : IEquatable<AssetPart>
     {
-        public AssetPart(Guid id, BasePart basePart = null)
+        public AssetPart(Guid partId, BasePart basePart, Action<BasePart> baseUpdater)
         {
-            Id = id;
+            if (baseUpdater == null) throw new ArgumentNullException(nameof(baseUpdater));
+            if (partId == Guid.Empty) throw new ArgumentException(@"A part Id cannot be empty.", nameof(partId));
+            PartId = partId;
             Base = basePart;
+            this.baseUpdater = baseUpdater;
         }
 
         /// <summary>
         /// Asset identifier.
         /// </summary>
-        public readonly Guid Id;
+        public readonly Guid PartId;
 
         /// <summary>
         /// Base asset identifier.
         /// </summary>
         public readonly BasePart Base;
 
+        private readonly Action<BasePart> baseUpdater;
+
+        public void UpdateBase(BasePart newBase)
+        {
+            baseUpdater(newBase);
+        }
+
         public bool Equals(AssetPart other)
         {
-            return Id.Equals(other.Id) && Equals(Base?.BasePartAsset.Id, other.Base?.BasePartAsset.Id) && Equals(Base?.BasePartId, other.Base?.BasePartId) && Equals(Base?.InstanceId, other.Base?.InstanceId);
+            return PartId.Equals(other.PartId) && Equals(Base?.BasePartAsset.Id, other.Base?.BasePartAsset.Id) && Equals(Base?.BasePartId, other.Base?.BasePartId) && Equals(Base?.InstanceId, other.Base?.InstanceId);
         }
 
         public override bool Equals(object obj)
@@ -43,7 +53,7 @@ namespace SiliconStudio.Assets
         {
             unchecked
             {
-                var hashCode = Id.GetHashCode();
+                var hashCode = PartId.GetHashCode();
                 if (Base != null)
                 {
                     hashCode = (hashCode*397) ^ Base.BasePartAsset.Id.GetHashCode();

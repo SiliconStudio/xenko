@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -588,7 +589,7 @@ namespace SiliconStudio.Assets.Analysis
                 // Remove previous part assets registered
                 foreach (var part in dependencies.Parts)
                 {
-                    Dependencies.Remove(part.Id);
+                    Dependencies.Remove(part.PartId);
                 }
 
                 // Remove previous missing dependencies
@@ -607,7 +608,7 @@ namespace SiliconStudio.Assets.Analysis
                 // Add part assets
                 foreach (var part in dependencies.Parts)
                 {
-                    Dependencies[part.Id] = dependencies;
+                    Dependencies[part.PartId] = dependencies;
                 }
 
                 // Add [In] dependencies to new children
@@ -862,10 +863,11 @@ namespace SiliconStudio.Assets.Analysis
                 Visit(item.Asset);
 
                 // composition inheritances
-                if (item.Asset.BaseParts != null)
+                var assetComposite = item.Asset as IAssetComposite;
+                if (assetComposite != null)
                 {
-                    foreach (var compositionBase in item.Asset.BaseParts)
-                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
+                    foreach (var compositionBase in assetComposite.CollectParts().Select(x => x.Base).NotNull())
+                        dependencies.AddBrokenLinkOut(compositionBase.BasePartAsset, ContentLinkType.CompositionInheritance);
                 }
 
                 return dependencies.BrokenLinksOut;

@@ -11,7 +11,6 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -85,79 +84,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             var enumerator = isRecursive ? entity.Transform.Children.DepthFirst(t => t.Children) : entity.Transform.Children;
             return enumerator.Select(t => t.Entity);
-        }
-
-        /// <summary>
-        /// Gets a mapping between a base and the list of instance actually used
-        /// </summary>
-        /// <param name="baseParts">The list of baseParts to use. If null, use the parts from this instance directly.</param>
-        /// <returns>A mapping between a base asset and the list of instance actually used for inherited parts by composition</returns>
-        public Dictionary<EntityHierarchyAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
-        {
-            if (baseParts == null)
-            {
-                baseParts = BaseParts;
-            }
-
-            var mapBaseToInstanceIds = new Dictionary<EntityHierarchyAssetBase, List<Guid>>();
-            if (baseParts == null)
-            {
-                return mapBaseToInstanceIds;
-            }
-
-            // This method is recovering links between a derived entity from a base part.
-            // This is done in 2 steps:
-
-
-            // Step 1) build the map <mapBasePartInstanceIdToBasePart>: <basePartInstanceId> => <base part asset>  
-            //
-            // - for each entity in the hierarchy of this instance
-            //   - Check if the entity has a <baseId> and a <basePartInstanceId>
-            //   - If yes, the entity is coming from a base part
-            //       - Find which AssetBase (actually EntityHierarchyAssetBase), is containing the <basePartInstanceId>
-            //       - We can then associate 
-            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityHierarchyAssetBase>();
-            foreach (var entityIt in Hierarchy.Parts)
-            {
-                if (entityIt.Base != null)
-                {
-                    var basePartInstanceId = entityIt.Base.InstanceId;
-                    EntityHierarchyAssetBase existingAssetBase;
-                    if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
-                    {
-                        var baseId = entityIt.Base.BasePartId;
-                        foreach (var basePart in baseParts)
-                        {
-                            var assetBase = (EntityHierarchyAssetBase)basePart.Asset;
-                            if (assetBase.ContainsPart(baseId))
-                            {
-                                existingAssetBase = assetBase;
-                                break;
-                            }
-                        }
-
-                        if (existingAssetBase != null)
-                        {
-                            mapBasePartInstanceIdToBasePart.Add(basePartInstanceId, existingAssetBase);
-                        }
-                    }
-                }
-            }
-
-            // Step 2) build the resulting reverse map <mapBaseToInstanceIds>: <base part asset> => list of <basePartInstanceId>
-            //
-            // - We simply build this map by using the mapBasePartInstanceIdToBasePart
-            foreach (var it in mapBasePartInstanceIdToBasePart)
-            {
-                List<Guid> ids;
-                if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
-                {
-                    ids = new List<Guid>();
-                    mapBaseToInstanceIds.Add(it.Value, ids);
-                }
-                ids.Add(it.Key);
-            }
-            return mapBaseToInstanceIds;
         }
 
         /// <inheritdoc/>

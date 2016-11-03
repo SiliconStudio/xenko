@@ -20,10 +20,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(EntityDesignUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "1.9.0-beta01", typeof(CharacterSlopeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(IdentifiableComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(BasePartsRemovalComponentUpgrader))]
     [Display(195, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta02";
+        private const string CurrentVersion = "1.9.0-beta03";
 
         /// <summary>
         /// The default file extension used by the <see cref="PrefabAsset"/>.
@@ -54,8 +55,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
         {
             var instance = (PrefabAsset)CreateDerivedAsset(targetLocation);
-
-            targetContainer.AddBasePart(instance.Base);
             instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }

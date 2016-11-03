@@ -85,16 +85,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "test.xkentity").Asset;
 
                 Assert.NotNull(newAsset.Base);
-                Assert.NotNull(newAsset.BaseParts);
-
-                // We should have only 1 base part, as we created parts from the same base
-                Assert.AreEqual(1, newAsset.BaseParts.Count);
 
                 CheckAsset(derivedAsset, newAsset);
 
                 CheckAsset(originAsset, (PrefabAsset)newAsset.Base.Asset);
-
-                CheckGenericAsset(basePartAsset, (PrefabAsset)newAsset.BaseParts[0].Asset);
             }
         }
 

@@ -255,7 +255,6 @@ namespace SiliconStudio.Assets
                 if (newAsset != null)
                 {
                     newAsset.Base = null;
-                    newAsset.BaseParts = null;
                 }
             }
             return newObject;

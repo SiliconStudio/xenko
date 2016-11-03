@@ -194,7 +194,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 parts = new Dictionary<Guid, AssetPart>();
             }
-            parts[part.Id] = part;
+            parts[part.PartId] = part;
         }
 
         /// <summary>

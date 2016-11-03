@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Tests
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts.Select(it => new AssetPart(it.Id, null));
+            return Parts.Select(it => new AssetPart(it.Id, null, x => { }));
         }
 
         public override IIdentifiable FindPart(Guid partId)
@@ -119,15 +119,12 @@ namespace SiliconStudio.Assets.Tests
 
             // The assetPartBase must be a plain child asset
             if (assetBaseWithParts.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
-            if (assetBaseWithParts.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetBaseWithParts)}");
 
             // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
             if (assetBaseWithParts.CollectParts().Any(it => it.Base == null))
             {
                 throw new InvalidOperationException("An asset part base must contain only base assets");
             }
-
-            AddBasePart(assetBaseWithParts.Base);
 
             for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
             {

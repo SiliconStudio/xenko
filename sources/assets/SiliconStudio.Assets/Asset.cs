@@ -7,7 +7,6 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
@@ -93,19 +92,9 @@ namespace SiliconStudio.Assets
         public const string BaseProperty = "~" + nameof(Base);
 
         /// <summary>
-        /// Gets or sets the base for part assets.
+        /// The YAML serialized name of the removed BaseParts property.
         /// </summary>
-        /// <value>The part assets.</value>
-        [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
-        [Display(Browsable = false)]
-        [MemberCollection(NotNullItems = true)]
-        [Obsolete]
-        public List<AssetBase> BaseParts { get; set; }
-
-        /// <summary>
-        /// The YAML serialized name of the <see cref="BaseParts"/> property.
-        /// </summary>
-        public const string BasePartsProperty = "~" + nameof(BaseParts);
+        public const string BasePartsProperty = "~BaseParts";
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -177,14 +166,6 @@ namespace SiliconStudio.Assets
         {
             // Fixup base
             Base?.Asset.FixupPartReferences(clearMissingReferences);
-            // Fixup base parts
-            if (BaseParts != null)
-            {
-                foreach (var basePart in BaseParts)
-                {
-                    basePart.Asset.FixupPartReferences(clearMissingReferences);
-                }
-            }
         }
 
         /// <summary>
