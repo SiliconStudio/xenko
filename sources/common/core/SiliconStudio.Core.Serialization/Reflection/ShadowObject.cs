@@ -3,9 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -17,19 +15,9 @@ namespace SiliconStudio.Core.Reflection
         // Use a conditional weak table in order to attach properties and to 
         private static readonly ConditionalWeakTable<object, ShadowObject> Shadows = new ConditionalWeakTable<object, ShadowObject>();
 
-        private Guid? id;
-        private bool isIdentifiable;
-
-        internal ShadowObject()
+        private ShadowObject()
         {
         }
-
-        private ShadowObject(Type type)
-        {
-            isIdentifiable = IdentifiableHelper.IsIdentifiable(type);
-        }
-
-        public bool IsIdentifiable => isIdentifiable;
 
         /// <summary>
         /// Gets or sets a boolean to enable or disable shadow object. 
@@ -78,7 +66,7 @@ namespace SiliconStudio.Core.Reflection
             }
 
             if (instance == null) return null;
-            var shadow = Shadows.GetValue(instance, callback => new ShadowObject(instance.GetType()));
+            var shadow = Shadows.GetValue(instance, callback => new ShadowObject());
             return shadow;
         }
 
@@ -93,95 +81,16 @@ namespace SiliconStudio.Core.Reflection
             if (fromInstance == null) throw new ArgumentNullException(nameof(fromInstance));
             if (toInstance == null) throw new ArgumentNullException(nameof(toInstance));
 
-            var type = fromInstance.GetType();
-
-            // If the type is identifiable, we need to force the creation of a ShadowObject in order to
-            // generate an id
-            bool forceShadowCreation = IdentifiableHelper.IsIdentifiable(type);
-
             ShadowObject shadow;
-            if (forceShadowCreation)
-            {
-                shadow = Shadows.GetValue(fromInstance, callback => new ShadowObject(fromInstance.GetType()));
-            }
-            else
-            {
-                Shadows.TryGetValue(fromInstance, out shadow);
-            }
+            Shadows.TryGetValue(fromInstance, out shadow);
 
-            if (shadow != null)
-            {
-                var newShadow = Shadows.GetValue(toInstance, key => new ShadowObject());
-                shadow.CopyTo(newShadow);
-
-                // Copy the id of the attached reference to the destination
-                if (shadow.IsIdentifiable)
-                {
-                    newShadow.SetId(toInstance, shadow.GetId(fromInstance));
-                }
-            }
-        }
-
-        public Guid GetId(object instance)
-        {
-            // If the object is not identifiable, early exit
-            if (!isIdentifiable)
-            {
-                return Guid.Empty;
-            }
-
-            // Don't use  local id if the object is already identifiable
-
-            // If an object has an attached reference, we cannot use the id of the instance
-            // So we need to use an auto-generated Id
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
-            if (attachedReference == null)
-            {
-                var @component = instance as IIdentifiable;
-                if (@component != null)
-                {
-                    return @component.Id;
-                }
-            }
-
-            // If we don't have yet an id, create one.
-            if (!id.HasValue)
-            {
-                id = Guid.NewGuid();
-            }
-
-            return id.Value;
-        }
-
-        public void SetId(object instance, Guid id)
-        {
-            // If the object is not identifiable, early exit
-            if (!isIdentifiable)
-            {
+            if (shadow == null)
                 return;
-            }
 
-            // If the object instance is already identifiable, store id into it directly
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(instance);
-            var @component = instance as IIdentifiable;
-            if (attachedReference == null && @component != null)
+            var newShadow = Shadows.GetValue(toInstance, key => new ShadowObject());
+            foreach (var keyValue in shadow.Where(x => x.Value?.GetType().IsValueType ?? true))
             {
-                @component.Id = id;
-            }
-            else
-            {
-                this.id = id;
-            }
-        }
-
-        public void CopyTo(ShadowObject copy)
-        {
-            copy.id = id;
-            copy.isIdentifiable = isIdentifiable;
-
-            foreach (var keyValue in this.Where(x => x.Value?.GetType().IsValueType ?? true))
-            {
-                copy.Add(keyValue.Key, keyValue.Value);
+                newShadow.Add(keyValue.Key, keyValue.Value);
             }
         }
     }

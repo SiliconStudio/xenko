@@ -367,19 +367,9 @@ namespace SiliconStudio.Assets.Diff
                 }
             }
 
-            var instanceType = asset1NodeDesc.Instance?.GetType() ?? asset2NodeDesc.Instance?.GetType();
-
             object baseInstance = baseNodeDesc.Instance;
             object asset1Instance = asset1NodeDesc.Instance;
             object asset2Instance = asset2NodeDesc.Instance;
-
-            // If this is an identifiable type (but we are for example not visiting its member), compare only the Ids instead
-            if (UseOverrideMode && instanceType != null && IdentifiableHelper.IsIdentifiable(instanceType))
-            {
-                baseInstance = IdentifiableHelper.GetId(baseInstance);
-                asset1Instance = IdentifiableHelper.GetId(asset1Instance);
-                asset2Instance = IdentifiableHelper.GetId(asset2Instance);
-            }
 
             var baseAsset1Equals = Equals(baseInstance, asset1Instance);
             var baseAsset2Equals = Equals(baseInstance, asset2Instance);
@@ -461,19 +451,20 @@ namespace SiliconStudio.Assets.Diff
             var firstItem = baseItems.FirstOrDefault(item => item.Instance != null) ?? asset1Items.FirstOrDefault(item => item.Instance != null) ?? asset2Items.FirstOrDefault(item => item.Instance != null);
 
             // For now, in the context of UseOverrideMode and we have identifiers per item, use DiffCollectionByIds instead
-            if (UseOverrideMode && firstItem != null)
-            {
-                if (IdentifiableHelper.IsIdentifiable(firstItem.Instance.GetType()))
-                {
-                    DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
-                    return;
-                }
-                else if (firstItem.Instance is Guid)
-                {
-                    DiffCollectionByGuids(diff3, baseNode, asset1Node, asset2Node);
-                    return;
-                }
-            }
+            // TODO: Fix diff collection using item ids!
+            //if (UseOverrideMode && firstItem != null)
+            //{
+            //    if (IdentifiableHelper.IsIdentifiable(firstItem.Instance.GetType()))
+            //    {
+            //        DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
+            //        return;
+            //    }
+            //    else if (firstItem.Instance is Guid)
+            //    {
+            //        DiffCollectionByGuids(diff3, baseNode, asset1Node, asset2Node);
+            //        return;
+            //    }
+            //}
 
             // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
             var dataVisitMember = node as DataVisitMember;
@@ -604,10 +595,10 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        private void DiffCollectionByIds(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
-        {
-            DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, IdentifiableHelper.GetId, DiffNode);
-        }
+        //private void DiffCollectionByIds(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        //{
+        //    DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, IdentifiableHelper.GetId, DiffNode);
+        //}
 
         private Guid GetSafeGuidForCollectionItem(object instance, int index, Func<object, Guid> idGetter)
         {

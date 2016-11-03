@@ -37,14 +37,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             var component = (EntityComponent)assetPart;
             Entity = new EntityReference { Id = component.Entity.Id };
-            Id = IdentifiableHelper.GetId(component);
+            Id = component.Id;
         }
 
         public object GenerateProxyPart(Type partType)
         {
             var component = (EntityComponent)Activator.CreateInstance(partType);
             component.Entity = new Entity { Id = Entity.Id };
-            IdentifiableHelper.SetId(component, Id);
+            component.Id = Id;
             return component;
         }
     }

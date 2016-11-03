@@ -24,7 +24,7 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="ItemId"/> structure from an <see cref="ObjectId"/>.
         /// </summary>
         /// <param name="id">The <see cref="ObjectId"/> from which to create this <see cref="ItemId"/>.</param>
-        internal ItemId(ObjectId id)
+        public ItemId(ObjectId id)
         {
             value = id;
         }

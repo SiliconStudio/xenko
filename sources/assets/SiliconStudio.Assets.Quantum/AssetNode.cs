@@ -192,7 +192,7 @@ namespace SiliconStudio.Assets.Quantum
             return baseContent;
         }
 
-        public Index RetrieveDerivedIndex(Index baseIndex, object baseValue)
+        public Index RetrieveDerivedIndex(Index baseIndex)
         {
             var memberContent = BaseContent as MemberContent;
             if (memberContent == null || BaseContent == null)
@@ -201,20 +201,13 @@ namespace SiliconStudio.Assets.Quantum
             if (baseIndex.IsEmpty)
                 return baseIndex;
 
-            var id = baseValue != null ? IdentifiableHelper.GetId(baseValue) : Guid.Empty;
-
-            if (id != Guid.Empty)
-            {
-                foreach (var index in Content.Indices)
-                {
-                    var value = Content.Retrieve(index);
-                    if (value != null && IdentifiableHelper.GetId(value) == id)
-                        return index;
-                }
+            var baseNode = (AssetNode)BaseContent.OwnerNode;
+            ItemId baseId;
+            if (!baseNode.TryIndexToId(baseIndex, out baseId))
                 return Index.Empty;
-            }
 
-            return Content.Indices.Any(x => Equals(x, baseIndex)) ? baseIndex : Index.Empty;
+            Index index;
+            return TryIdToIndex(baseId, out index) ? index : Index.Empty;
         }
 
         /// <summary>
@@ -230,13 +223,12 @@ namespace SiliconStudio.Assets.Quantum
                 return null;
 
             // TODO: check if the cloner is aware of the content type (attached reference) and does not already avoid cloning them.
+
             // TODO FIXME
             //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
             //    return value;
 
-            var id = IdentifiableHelper.GetId(value);
             var result = AssetCloner.Clone(value, AssetClonerFlags.RemoveOverrides);
-            IdentifiableHelper.SetId(result, id);
             return result;
         }
 
@@ -370,14 +362,29 @@ namespace SiliconStudio.Assets.Quantum
 
         internal Index IdToIndex(ItemId id)
         {
+            Index index;
+            if (!TryIdToIndex(id, out index)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return index;
+        }
+
+        private bool TryIdToIndex(ItemId id, out Index index)
+        {
             if (id == ItemId.Empty)
-                return Index.Empty;
+            {
+                index = Index.Empty;
+                return true;
+            }
 
             var collection = Content.Retrieve();
             CollectionItemIdentifiers ids;
-            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
-                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
-            return new Index(ids.GetKey(id));
+            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+            {
+                index = new Index(ids.GetKey(id));
+                return true;
+            }
+            index = Index.Empty;
+            return false;
+
         }
 
         internal ItemId IndexToId(Index index)

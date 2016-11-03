@@ -494,9 +494,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             var entityComponent = node.Instance as EntityComponent;
                             if (entityComponent != null)
                             {
-                                var entityComponentId = IdentifiableHelper.GetId(entityComponent);
                                 // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
-                                var newEntityComponent = linkedEntity.Components.FirstOrDefault(t => IdentifiableHelper.GetId(t) == entityComponentId);
+                                var newEntityComponent = linkedEntity.Components.FirstOrDefault(t => t.Id == entityComponent.Id);
                                 node.SetValue(newEntityComponent);
                             }
                             else

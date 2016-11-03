@@ -150,7 +150,7 @@ namespace SiliconStudio.Assets.Quantum
 
             var node = (AssetNode)assetContent.OwnerNode;
             var overrideType = OverrideType.Base;
-            var index = node.RetrieveDerivedIndex(e.Index, e.OldValue);
+            var index = node.RetrieveDerivedIndex(e.Index);
 
             // This item does not exist anymore
             if (index.IsEmpty && !e.Index.IsEmpty && e.ChangeType != ContentChangeType.CollectionAdd)

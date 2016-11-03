@@ -116,11 +116,10 @@ namespace SiliconStudio.Assets
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        public static bool TryParse(string assetReferenceText, out Guid referenceId, out Guid guid, out UFile location)
+        public static bool TryParse(string assetReferenceText, out Guid guid, out UFile location)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
-            referenceId = Guid.Empty;
             guid = Guid.Empty;
             location = null;
             int indexFirstSlash = assetReferenceText.IndexOf('/');
@@ -132,6 +131,7 @@ namespace SiliconStudio.Assets
             int startNextGuid = 0;
             if (indexFirstSlash > 0 && indexFirstSlash < indexBeforelocation)
             {
+                Guid referenceId;
                 if (!Guid.TryParse(assetReferenceText.Substring(0, indexFirstSlash), out referenceId))
                 {
                     return false;
@@ -162,16 +162,11 @@ namespace SiliconStudio.Assets
             assetReference = null;
             Guid guid;
             UFile location;
-            Guid referenceId;
-            if (!TryParse(assetReferenceText, out referenceId, out guid, out location))
+            if (!TryParse(assetReferenceText, out guid, out location))
             {
                 return false;
             }
             assetReference = New(guid, location);
-            if (referenceId != Guid.Empty)
-            {
-                IdentifiableHelper.SetId(assetReference, referenceId);
-            }
             return true;
         }
     }

@@ -191,8 +191,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (realEntity == null)
                     return null;
 
-                var componentId = IdentifiableHelper.GetId(entityComponentReference);
-                var realComponent = realEntity.Components.FirstOrDefault(c => IdentifiableHelper.GetId(c) == componentId);
+                var componentId = entityComponentReference.Id;
+                var realComponent = realEntity.Components.FirstOrDefault(c => c.Id == componentId);
                 return realComponent;
             }
 

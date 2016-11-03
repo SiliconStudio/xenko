@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -64,17 +63,9 @@ namespace SiliconStudio.Assets
             Guid id;
             UFile location;
             packageReference = null;
-            Guid referenceId;
-            if (AssetReference.TryParse(packageReferenceAsText, out referenceId, out id, out location))
-            {
-                packageReference = new PackageReference(id, location);
-                if (referenceId != Guid.Empty)
-                {
-                    IdentifiableHelper.SetId(packageReference, referenceId);
-                }
-                return true;
-            }
-            return false;
+            if (!AssetReference.TryParse(packageReferenceAsText, out id, out location)) return false;
+            packageReference = new PackageReference(id, location);
+            return true;
         }
 
         /// <summary>

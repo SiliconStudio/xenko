@@ -138,13 +138,6 @@ namespace SiliconStudio.Assets
 
                     // Else gets the id if there are any (including shadows that are not part of the standard serialization)
                     var shadowObject = ShadowObject.GetOrCreate(objectRef);
-                    if (shadowObject.IsIdentifiable)
-                    {
-                        // Get the shadow id (may be a non-shadow, so we may duplicate it in the stream (e.g Entity)
-                        // but it should not be a big deal
-                        var id = shadowObject.GetId(objectRef);
-                        writer.Write(id);
-                    }
 
                     // Dump all members with overrides informations
                     foreach (var item in shadowObject)

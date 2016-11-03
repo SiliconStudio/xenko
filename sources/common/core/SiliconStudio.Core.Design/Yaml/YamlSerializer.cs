@@ -323,7 +323,7 @@ namespace SiliconStudio.Core.Yaml
         {
             var type = objDesc.Type;
 
-            if (IdentifiableHelper.IsIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
+            if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
             {
                 memberDescriptors.Add(CustomDynamicMemberDescriptor);
             }
@@ -334,9 +334,10 @@ namespace SiliconStudio.Core.Yaml
 
         private static readonly CustomDynamicMember CustomDynamicMemberDescriptor = new CustomDynamicMember();
 
+        // This class exists only for backward compatibility with previous ~Id. It can be removed once we drop backward support
         private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
-            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid), typeof(object))
+            public CustomDynamicMember() : base(ShadowId.YamlSpecialId, typeof(Guid), typeof(object))
             {
                 Order = -int.MaxValue;
             }

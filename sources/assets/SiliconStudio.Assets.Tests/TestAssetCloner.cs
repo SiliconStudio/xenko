@@ -99,10 +99,6 @@ namespace SiliconStudio.Assets.Tests
             attachedReference.Url = "just_for_test";
             attachedReference.Id = Guid.NewGuid();
 
-            // Setup some proper id on objects so serialization is stable
-            IdentifiableHelper.SetId(obj1, new Guid("EC86143E-896F-45C5-9A4D-627317D22955"));
-            IdentifiableHelper.SetId(obj1.SubObject, new Guid("34E160CD-1D94-468E-8BFD-F82FF96013FC"));
-
             var obj2 = AssetCloner.Clone(obj1);
 
             var hash1 = AssetHash.Compute(obj1);
