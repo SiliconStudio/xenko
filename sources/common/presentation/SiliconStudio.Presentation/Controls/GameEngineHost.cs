@@ -3,13 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
@@ -88,11 +88,18 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (!attached)
             {
-                var hwndParent = GetParentHwnd();
+                var hwndSource = GetHwndSource();
+                if (hwndSource == null)
+                    return;
+                
+                var hwndParent = hwndSource.Handle;
                 if (hwndParent == IntPtr.Zero)
                     return;
 
-                int style = NativeHelper.GetWindowLong(Handle, NativeHelper.GWL_STYLE);
+                // Register DPI change
+                hwndSource.DpiChanged += HwndSourceOnDpiChanged;
+
+                var style = NativeHelper.GetWindowLong(Handle, NativeHelper.GWL_STYLE);
                 // Removes Caption bar and the sizing border
                 // Must be a child window to be hosted
                 style |= NativeHelper.WS_CHILD;
@@ -104,19 +111,27 @@ namespace SiliconStudio.Presentation.Controls
                 NativeHelper.SetParent(Handle, hwndParent);
 
                 // Register keyboard sink to make shortcuts work
-                var source = PresentationSource.FromVisual(this) as IKeyboardInputSink;
-                if (source != null)
-                {
-                    ((IKeyboardInputSink)this).KeyboardInputSite = source.RegisterKeyboardInputSink(this);
-                }
+                ((IKeyboardInputSink)this).KeyboardInputSite = ((IKeyboardInputSink)hwndSource).RegisterKeyboardInputSink(this);
                 attached = true;
             }
         }
+
+        private void HwndSourceOnDpiChanged(object sender, HwndDpiChangedEventArgs e)
+        {
+            dpi = e.NewDpi;
+        }
+
+        private DpiScale dpi = new DpiScale(1, 1);
 
         private void Detach()
         {
             if (attached)
             {
+                // Unregister DPI change
+                var hwndSource = GetHwndSource();
+                if (hwndSource != null)
+                    hwndSource.DpiChanged -= HwndSourceOnDpiChanged;
+
                 // Hide window, clear parent
                 NativeHelper.ShowWindow(Handle, NativeHelper.SW_HIDE);
                 NativeHelper.SetParent(Handle, IntPtr.Zero);
@@ -143,7 +158,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 updateRequested = false;
                 Visual root = null;
-                bool shouldShow = true;
+                var shouldShow = true;
                 var parent = (Visual)VisualTreeHelper.GetParent(this);
                 while (parent != null)
                 {
@@ -164,7 +179,7 @@ namespace SiliconStudio.Presentation.Controls
                 // Find proper position for the game
                 var positionTransform = TransformToAncestor(root);
                 var areaPosition = positionTransform.Transform(new Point(0, 0));
-                var boundingBox = new Int4((int)areaPosition.X, (int)areaPosition.Y, (int)ActualWidth, (int)ActualHeight);
+                var boundingBox = new Int4((int)(areaPosition.X*dpi.DpiScaleX), (int)(areaPosition.Y*dpi.DpiScaleY), (int)(ActualWidth*dpi.DpiScaleX), (int)(ActualHeight*dpi.DpiScaleY));
                 if (boundingBox == lastBoundingBox)
                     return;
 
@@ -302,10 +317,10 @@ namespace SiliconStudio.Presentation.Controls
             return IntPtr.Zero;
         }
 
-        private IntPtr GetParentHwnd()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private HwndSource GetHwndSource()
         {
-            var panelHwnd = (HwndSource)PresentationSource.FromVisual(this);
-            return panelHwnd?.Handle ?? IntPtr.Zero;
+            return (HwndSource)PresentationSource.FromVisual(this);
         }
 
         IKeyboardInputSite IKeyboardInputSink.RegisterKeyboardInputSink(IKeyboardInputSink sink)
