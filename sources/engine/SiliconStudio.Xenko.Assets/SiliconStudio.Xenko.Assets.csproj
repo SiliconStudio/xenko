@@ -342,7 +342,6 @@
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />
     <Compile Include="SceneRenderer.cs" />
-    <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontWriter.cs" />
