@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Serialization;
@@ -21,6 +22,33 @@ namespace SiliconStudio.Core.Reflection
         private readonly bool isIdentifiable;
         private Guid? id;
 
+        // Do not rename any string from this array, it is used for migration purpose only!
+        private static readonly string[] PreviouslyNonIdentifiableTypes =
+        {
+            "AssetBase",
+            "AssetBaseMutable",
+            "AssetFolder",
+            "ComputeNode",
+            "EntityComponentReference",
+            "EntityDesign",
+            "IdentifiableAssetPartReference",
+            "MaterialFeature",
+            "MaterialOverrides",
+            "MostRecentlyUsedFile",
+            "MRUAdditionalData",
+            "PackageDependency",
+            "PackageMeta",
+            "PackageProfile",
+            "PackageVersion",
+            "PrimitiveProceduralModelBase",
+            "RenderFrameProviderBase",
+            "SceneSettingsData",
+            "SettingsFile",
+            "SettingsProfile",
+            "UIDesign",
+            "UIElementDesign",
+        };
+
         internal ShadowId()
         {
         }
@@ -36,20 +64,32 @@ namespace SiliconStudio.Core.Reflection
             bool result;
             lock (IdentifiableTypes)
             {
-                if (!IdentifiableTypes.TryGetValue(type, out result))
+                if (IdentifiableTypes.TryGetValue(type, out result))
+                    return result;
+
+                var currentType = type;
+                var nonIdentifiable = false;
+                while (currentType != null)
                 {
-                    var nonIdentifiable = type.GetTypeInfo().GetCustomAttribute<NonIdentifiableAttribute>();
+                    if (PreviouslyNonIdentifiableTypes.Contains(currentType.Name))
+                    {
+                        nonIdentifiable = true;
+                        break;
+                    }
 
-                    // Early exit if we don't need to add a unique identifier to a type
-                    result = !(type == typeof(string)
-                               || type.GetTypeInfo().IsValueType
-                               || type.GetTypeInfo().IsArray
-                               || type.IsCollection()
-                               || type.IsDictionary()
-                               || nonIdentifiable != null);
-
-                    IdentifiableTypes.Add(type, result);
+                    currentType = currentType.BaseType;
                 }
+
+
+                // Early exit if we don't need to add a unique identifier to a type
+                result = !(type == typeof(string)
+                           || type.GetTypeInfo().IsValueType
+                           || type.GetTypeInfo().IsArray
+                           || type.IsCollection()
+                           || type.IsDictionary()
+                           || nonIdentifiable);
+
+                IdentifiableTypes.Add(type, result);
             }
             return result;
         }

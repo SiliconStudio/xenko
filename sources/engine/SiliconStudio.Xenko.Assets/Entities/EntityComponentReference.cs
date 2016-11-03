@@ -11,7 +11,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [NonIdentifiable]
     public sealed class EntityComponentReference : IAssetPartReference
     {
         // TODO: we keep this type here internally to not break existing reference - but it's not used anywhere else. Remove it when writing a dedicated serialized for entity component reference

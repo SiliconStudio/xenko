@@ -45,7 +45,6 @@ namespace SiliconStudio.Assets
     /// Describes buld parameters used when building assets.
     /// </summary>
     [DataContract("PackageProfile")]
-    [NonIdentifiable]
     public sealed class PackageProfile
     {
         public static SettingsContainer SettingsContainer = new SettingsContainer();

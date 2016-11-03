@@ -63,7 +63,6 @@ namespace SiliconStudio.Assets.Tests
         }
 
         [DataContract("CustomObject")]
-        [NonIdentifiable]
         public class CustomObject
         {
             public string Name { get; set; }

@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     public abstract class UIAssetBase : AssetCompositeHierarchy<UIElementDesign, UIElement>
     {
         [DataContract("UIDesign")]
-        [NonIdentifiable]
         public sealed class UIDesign
         {
             [DataMember]

@@ -15,7 +15,6 @@ namespace SiliconStudio.Core.Settings
     /// are not currently registered, if they exist in the file from which the profile was loaded.
     /// </summary>
     [DataSerializer(typeof(Serializer))]
-    [NonIdentifiable]
     public class SettingsProfile : IDisposable
     {
         internal ITransactionStack TransactionStack = TransactionStackFactory.Create(int.MaxValue);
