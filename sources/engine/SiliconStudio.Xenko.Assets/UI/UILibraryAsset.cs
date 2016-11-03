@@ -17,9 +17,10 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Library")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]    
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "0.0.0";
+        private const string CurrentVersion = "1.9.0-beta01";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.

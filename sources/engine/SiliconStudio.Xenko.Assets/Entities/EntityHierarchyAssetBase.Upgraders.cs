@@ -274,6 +274,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                                 baseNode.InstanceId = baseInstanceId;
                                 entityDesign.Base = baseNode;
                             }
+                            entityDesign.BaseId = DynamicYamlEmpty.Default;
+                            entityDesign.BasePartInstanceId = DynamicYamlEmpty.Default;
                         }
                         catch (Exception e)
                         {

@@ -10,6 +10,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
@@ -76,6 +78,72 @@ namespace SiliconStudio.Xenko.Assets.UI
             // set to null reference outside of the sub-tree
             var tempAsset = new UILibraryAsset { Hierarchy = clonedHierarchy };
             tempAsset.FixupPartReferences();
+        }
+
+        protected class BasePartsRemovalComponentUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                var basePartMapping = new Dictionary<string, string>();
+                if (asset["~BaseParts"] != null)
+                {
+                    foreach (dynamic basePart in asset["~BaseParts"])
+                    {
+                        try
+                        {
+                            var location = ((YamlScalarNode)basePart.Location.Node).Value;
+                            var id = ((YamlScalarNode)basePart.Asset.Id.Node).Value;
+                            var assetUrl = $"{id}:{location}";
+
+                            foreach (dynamic part in basePart.Asset.Hierarchy.Parts)
+                            {
+                                try
+                                {
+                                    var partId = ((YamlScalarNode)part.UIElement.Id.Node).Value;
+                                    basePartMapping[partId] = assetUrl;
+                                }
+                                catch (Exception e)
+                                {
+                                    e.Ignore();
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
+                    asset["~BaseParts"] = DynamicYamlEmpty.Default;
+                }
+                var uiElements = (DynamicYamlArray)asset.Hierarchy.Parts;
+                foreach (dynamic uiDesign in uiElements)
+                {
+                    if (uiDesign.BaseId != null)
+                    {
+                        try
+                        {
+                            var baseId = ((YamlScalarNode)uiDesign.BaseId.Node).Value;
+                            var baseInstanceId = ((YamlScalarNode)uiDesign.BasePartInstanceId.Node).Value;
+                            string assetUrl;
+                            if (basePartMapping.TryGetValue(baseId, out assetUrl))
+                            {
+                                var baseNode = (dynamic)(new DynamicYamlMapping(new YamlMappingNode()));
+                                baseNode.BasePartAsset = assetUrl;
+                                baseNode.BasePartId = baseId;
+                                baseNode.InstanceId = baseInstanceId;
+                                uiDesign.Base = baseNode;
+                            }
+                            uiDesign.BaseId = DynamicYamlEmpty.Default;
+                            uiDesign.BasePartInstanceId = DynamicYamlEmpty.Default;
+                        }
+                        catch (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
+                }
+            }
         }
     }
 }
