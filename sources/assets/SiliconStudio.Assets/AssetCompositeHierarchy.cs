@@ -75,18 +75,12 @@ namespace SiliconStudio.Assets
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.BaseId, x.BasePartInstanceId));
+            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base));
         }
 
-        [Obsolete("This method will be removed soon")]
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        public override IIdentifiable FindPart(Guid partId)
         {
-            TAssetPartDesign partEntry;
-            if (Hierarchy.Parts.TryGetValue(id, out partEntry))
-            {
-                partEntry.BaseId = baseId;
-                partEntry.BasePartInstanceId = basePartInstanceId;
-            }
+            return Hierarchy.Parts.FirstOrDefault(x => x.Part.Id == partId)?.Part;
         }
 
         public override bool ContainsPart(Guid id)
@@ -96,16 +90,14 @@ namespace SiliconStudio.Assets
 
         public override Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation);
+            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, idRemapping);
 
             var remappingDictionary = idRemapping ?? new Dictionary<Guid, Guid>();
 
+            var instanceId = Guid.NewGuid();
             foreach (var part in newAsset.Hierarchy.Parts)
             {
-                // Store the baseid of the new version
-                part.BaseId = part.Part.Id;
-                // Make sure that we don't replicate the base part InstanceId
-                part.BasePartInstanceId = null;
+                part.Base = new BasePart(new AssetReference(Id, baseLocation), part.Part.Id, instanceId);
                 // Create and register a new id for this part
                 var newId = Guid.NewGuid();
                 remappingDictionary.Add(part.Part.Id, newId);

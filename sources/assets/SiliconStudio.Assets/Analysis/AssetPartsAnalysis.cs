@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Analysis
@@ -42,7 +43,6 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Assigns new unique identifiers for part groups in the given <paramref name="hierarchy"/>.
         /// </summary>
-        /// <seealso cref="IAssetPartDesign{T}.BasePartInstanceId"/>.
         /// <typeparam name="TAssetPartDesign"></typeparam>
         /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
         /// <param name="hierarchy">The hierarchy which part groups should have new identifiers.</param>
@@ -51,18 +51,15 @@ namespace SiliconStudio.Assets.Analysis
             where TAssetPart : IIdentifiable
         {
             var baseInstanceMapping = new Dictionary<Guid, Guid>();
-            foreach (var part in hierarchy.Parts)
+            foreach (var part in hierarchy.Parts.Where(x => x.Base != null))
             {
-                if (!part.BasePartInstanceId.HasValue)
-                    continue;
-
                 Guid newInstanceId;
-                if (!baseInstanceMapping.TryGetValue(part.BasePartInstanceId.Value, out newInstanceId))
+                if (!baseInstanceMapping.TryGetValue(part.Base.InstanceId, out newInstanceId))
                 {
                     newInstanceId = Guid.NewGuid();
-                    baseInstanceMapping.Add(part.BasePartInstanceId.Value, newInstanceId);
+                    baseInstanceMapping.Add(part.Base.InstanceId, newInstanceId);
                 }
-                part.BasePartInstanceId = newInstanceId;
+                part.Base = new BasePart(part.Base.BasePartAsset, part.Base.BasePartId, newInstanceId);
             }
         }
     }

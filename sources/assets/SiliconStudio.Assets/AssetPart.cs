@@ -9,19 +9,13 @@ namespace SiliconStudio.Assets
     /// A part asset contained by an asset that is <see cref="IAssetComposite"/>.
     /// </summary>
     [DataContract("AssetPart")]
+    [Obsolete("This struct might be removed soon")]
     public struct AssetPart : IEquatable<AssetPart>
     {
-        /// <summary>
-        /// Initializes a new instance of <see cref="AssetPart"/> with a base.
-        /// </summary>
-        /// <param name="id">The asset identifier</param>
-        /// <param name="baseId">The base asset identifier</param>
-        /// <param name="basePartInstanceId">The identifier of the instance group used in a base composition</param>
-        public AssetPart(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
+        public AssetPart(Guid id, BasePart basePart = null)
         {
             Id = id;
-            BaseId = baseId;
-            BasePartInstanceId = basePartInstanceId;
+            Base = basePart;
         }
 
         /// <summary>
@@ -32,16 +26,11 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Base asset identifier.
         /// </summary>
-        public readonly Guid? BaseId;
-
-        /// <summary>
-        /// Identifier used for a base part group.
-        /// </summary>
-        public readonly Guid? BasePartInstanceId;
+        public readonly BasePart Base;
 
         public bool Equals(AssetPart other)
         {
-            return Id.Equals(other.Id) && BaseId.Equals(other.BaseId) && BasePartInstanceId.Equals(other.BasePartInstanceId);
+            return Id.Equals(other.Id) && Equals(Base?.BasePartAsset.Id, other.Base?.BasePartAsset.Id) && Equals(Base?.BasePartId, other.Base?.BasePartId) && Equals(Base?.InstanceId, other.Base?.InstanceId);
         }
 
         public override bool Equals(object obj)
@@ -55,8 +44,12 @@ namespace SiliconStudio.Assets
             unchecked
             {
                 var hashCode = Id.GetHashCode();
-                hashCode = (hashCode*397) ^ BaseId.GetHashCode();
-                hashCode = (hashCode*397) ^ BasePartInstanceId.GetHashCode();
+                if (Base != null)
+                {
+                    hashCode = (hashCode*397) ^ Base.BasePartAsset.Id.GetHashCode();
+                    hashCode = (hashCode*397) ^ Base.BasePartId.GetHashCode();
+                    hashCode = (hashCode*397) ^ Base.InstanceId.GetHashCode();
+                }
                 return hashCode;
             }
         }

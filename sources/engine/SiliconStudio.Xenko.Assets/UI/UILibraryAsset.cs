@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -66,11 +67,7 @@ namespace SiliconStudio.Xenko.Assets.UI
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
             targetContainer.AddBasePart(instance.Base);
-            instanceId = Guid.NewGuid();
-            foreach (var elementEntry in instance.Hierarchy.Parts)
-            {
-                elementEntry.BasePartInstanceId = instanceId;
-            }
+            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
             result.RootPartIds.Add(rootElementId);

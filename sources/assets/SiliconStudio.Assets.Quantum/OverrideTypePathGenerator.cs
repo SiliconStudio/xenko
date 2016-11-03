@@ -45,7 +45,9 @@ namespace SiliconStudio.Assets.Quantum
         private static ObjectPath ConvertPath(GraphNodePath path)
         {
             var currentPath = new GraphNodePath(path.RootNode);
+            var currentNode = (AssetNode)path.RootNode;
             var result = new ObjectPath();
+            var i = 0;
             foreach (var item in path.Path)
             {
                 switch (item.Type)
@@ -54,24 +56,46 @@ namespace SiliconStudio.Assets.Quantum
                         var member = (string)item.Value;
                         result.PushMember(member);
                         currentPath = currentPath.PushMember(member);
+                        currentNode = (AssetNode)currentNode.GetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
                         currentPath = currentPath.PushTarget();
+                        if (i < path.Path.Count - 1)
+                        {
+                            currentNode = (AssetNode)currentNode.GetTarget();
+                        }
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        var node = (AssetNode)currentPath.GetNode();
-                        var id = node.IndexToId(index);
-                        // Create a new id if we don't have any so far
-                        if (id == ItemId.Empty)
-                            id = ItemId.New();
-                        result.PushItemId(id);
-                        // TODO: support non-identifiable items collections.
+                        if (AssetNode.IsNonIdentifiableCollectionContent(currentNode.Content))
+                        {
+                            result.PushIndex(index);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var id = currentNode.IndexToId(index);
+                                // Create a new id if we don't have any so far
+                                if (id == ItemId.Empty)
+                                    id = ItemId.New();
+                                result.PushItemId(id);
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+                        }
                         currentPath = currentPath.PushIndex(index);
+                        if (i < path.Path.Count - 1)
+                        {
+                            currentNode = (AssetNode)currentNode.GetTarget(index);
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+                ++i;
             }
             return result;
         }

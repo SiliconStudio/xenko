@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
@@ -37,8 +38,7 @@ namespace SiliconStudio.Assets
 
         public abstract IEnumerable<AssetPart> CollectParts();
 
-        [Obsolete("This method will be removed soon")]
-        public abstract void SetPart(Guid id, Guid baseId, Guid basePartInstanceId);
+        public abstract IIdentifiable FindPart(Guid partId);
 
         public abstract bool ContainsPart(Guid id);
 

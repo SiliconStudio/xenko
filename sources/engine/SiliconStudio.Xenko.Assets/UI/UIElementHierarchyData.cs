@@ -47,8 +47,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <summary>
         /// Gets or sets the entity
         /// </summary>
-        [DataMember(40)]
+        [DataMember(10)]
         public UIElement UIElement { get; set; }
+
+        /// <inheritdoc/>
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public BasePart Base { get; set; }
 
         /// <inheritdoc/>
         UIElement IAssetPartDesign<UIElement>.Part => UIElement;

@@ -94,15 +94,19 @@ namespace SiliconStudio.Assets.Quantum
 
         public OverrideType GetItemOverride(Index index)
         {
-            OverrideType result;
-            var id = IndexToId(index);
+            var result = OverrideType.Base;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return result;
             return itemOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
         public OverrideType GetKeyOverride(Index index)
         {
-            OverrideType result;
-            var id = IndexToId(index);
+            var result = OverrideType.Base;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return result;
             return keyOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
@@ -114,14 +118,18 @@ namespace SiliconStudio.Assets.Quantum
         public bool IsItemOverridden(Index index)
         {
             OverrideType result;
-            var id = IndexToId(index);
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return false;
             return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
         }
 
         public bool IsKeyOverridden(Index index)
         {
             OverrideType result;
-            var id = IndexToId(index);
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return false;
             return keyOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
         }
 
@@ -244,6 +252,12 @@ namespace SiliconStudio.Assets.Quantum
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
+            // Make sure that we have item ids everywhere we're supposed to.
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
+
+            if (IsNonIdentifiableCollectionContent(e.Content))
+                return;
+
             // Create new ids for collection items
             var baseNode = (AssetNode)BaseContent?.OwnerNode;
             switch (e.ChangeType)
@@ -269,7 +283,14 @@ namespace SiliconStudio.Assets.Quantum
                         // Add the id to the proper location (insert or add)
                         if (collectionDescriptor != null)
                         {
-                            itemIds.Insert(e.Index.Int, itemId);
+                            if (e.Index != Index.Empty)
+                            {
+                                itemIds.Insert(e.Index.Int, itemId);
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("An item has been added to a collection that does not have a predictable Add. Consider using NonIdentifiableCollectionItemsAttribute on this collection.");
+                            }
                         }
                         else
                         {
@@ -361,14 +382,28 @@ namespace SiliconStudio.Assets.Quantum
 
         internal ItemId IndexToId(Index index)
         {
+            ItemId id;
+            if (!TryIndexToId(index, out id)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return id;
+        }
+
+        private bool TryIndexToId(Index index, out ItemId id)
+        {
             if (index == Index.Empty)
-                return ItemId.Empty;
+            {
+                id = ItemId.Empty;
+                return true;
+            }
 
             var collection = Content.Retrieve();
             CollectionItemIdentifiers ids;
-            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
-                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
-            return ids.GetId(index.Value);
+            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+            {
+                id = ids.GetId(index.Value);
+                return true;
+            }
+            id = ItemId.Empty;
+            return false;
         }
 
         public AssetNode ResolveObjectPath(ObjectPath path, out Index index, out bool overrideOnKey)

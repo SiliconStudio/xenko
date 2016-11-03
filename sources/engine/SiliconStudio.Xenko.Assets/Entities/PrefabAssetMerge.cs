@@ -147,8 +147,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     var newId = Guid.NewGuid();
                     newEntityDesign.Entity.Id = newId;
-                    newEntityDesign.BaseId = entityId;
-                    newEntityDesign.BasePartInstanceId = basePartInstanceId;
+                    // TODO
+                    //newEntityDesign.BaseId = entityId;
+                    //newEntityDesign.BasePartInstanceId = basePartInstanceId;
 
                     // Because we are going to modify the NewBase we need to clone it
                     // We tag this entry as special, as we will have to process its children differently later in the merge hierarchy
@@ -206,15 +207,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 // Skip entities that don't have a base, as we don't have to do anything in the merge
                 var entityDesign = newEntityEntry.Value.EntityDesign;
-                if (!entityDesign.BaseId.HasValue)
+                if (entityDesign.Base == null)
                 {
                     continue;
                 }
 
                 // Else we will associate entries
                 var newEntity = entityDesign.Entity;
-                var baseId = entityDesign.BaseId.Value;
-                var baseKey = new GroupPartKey(entityDesign.BasePartInstanceId, baseId);
+                var baseId = entityDesign.Base.BasePartId;
+                var baseKey = new GroupPartKey(entityDesign.Base.InstanceId, baseId);
 
                 BaseEntityEntry baseRemap;
                 BaseEntityEntry newBaseRemap;
@@ -405,10 +406,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var finalMapBaseIdToNewId = new Dictionary<GroupPartKey, Guid>();
             foreach (var entityEntry in newAsset.Hierarchy.Parts)
             {
-                if (entityEntry.BaseId.HasValue)
+                if (entityEntry.Base != null)
                 {
-                    var baseId = entityEntry.BaseId.Value;
-                    var groupKey = new GroupPartKey(entityEntry.BasePartInstanceId, baseId);
+                    var baseId = entityEntry.Base.BasePartId;
+                    var groupKey = new GroupPartKey(entityEntry.Base.InstanceId, baseId);
                     finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
@@ -481,7 +482,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
                 if (!newAsset.Hierarchy.Parts.ContainsKey(id))
                 {
-                    var groupKey = new GroupPartKey(newEntityDesign.BasePartInstanceId, id);
+                    var groupKey = new GroupPartKey(newEntityDesign.Base.InstanceId, id);
 
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
@@ -533,7 +534,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // Build a list of Entities Ids for the BaseEntity.Transform.Children remapped to the new entities (using the BasePartInstanceId of the entity being processed)
                     var baseChildrenId = new List<Guid>();
 
-                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.Base.InstanceId;
 
                     if (remap.Base.Children != null)
                     {
@@ -608,7 +609,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var children = new List<TransformComponent>(remap.Children);
                     remap.Children.Clear();
 
-                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.Base.InstanceId;
 
                     foreach (var transformComponent in children)
                     {
@@ -689,7 +690,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 if (instancePartIdArg.HasValue)
                 {
-                    entityDesign.BasePartInstanceId = instancePartIdArg;
+                    entityDesign.Base = new BasePart(entityDesign.Base.BasePartAsset, entityDesign.Base.BasePartId, instancePartIdArg.Value);
                 }
 
                 var key = new GroupPartKey(instancePartIdArg, entityDesign.Entity.Id);

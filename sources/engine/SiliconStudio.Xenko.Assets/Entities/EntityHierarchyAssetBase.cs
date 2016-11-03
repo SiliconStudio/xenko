@@ -119,13 +119,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityHierarchyAssetBase>();
             foreach (var entityIt in Hierarchy.Parts)
             {
-                if (entityIt.BaseId.HasValue && entityIt.BasePartInstanceId.HasValue)
+                if (entityIt.Base != null)
                 {
-                    var basePartInstanceId = entityIt.BasePartInstanceId.Value;
+                    var basePartInstanceId = entityIt.Base.InstanceId;
                     EntityHierarchyAssetBase existingAssetBase;
                     if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
                     {
-                        var baseId = entityIt.BaseId.Value;
+                        var baseId = entityIt.Base.BasePartId;
                         foreach (var basePart in baseParts)
                         {
                             var assetBase = (EntityHierarchyAssetBase)basePart.Asset;

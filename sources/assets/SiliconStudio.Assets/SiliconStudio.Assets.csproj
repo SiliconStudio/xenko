@@ -65,6 +65,7 @@
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Analysis\ContentLinkType.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
-    <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
     <Compile Include="Tracking\SourceFileChangeType.cs" />
     <Compile Include="Tracking\SourceFilesCollector.cs" />

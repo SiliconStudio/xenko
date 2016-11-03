@@ -79,12 +79,12 @@ namespace SiliconStudio.Assets.Tests
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts.Select(it => new AssetPart(it.Id, it.BaseId, it.BasePartInstanceId));
+            return Parts.Select(it => new AssetPart(it.Id, null));
         }
 
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        public override IIdentifiable FindPart(Guid partId)
         {
-            throw new NotImplementedException();
+            return Parts.FirstOrDefault(x => x.Id == partId);
         }
 
         public override bool ContainsPart(Guid id)
@@ -122,7 +122,7 @@ namespace SiliconStudio.Assets.Tests
             if (assetBaseWithParts.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetBaseWithParts)}");
 
             // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetBaseWithParts.CollectParts().Any(it => !it.BaseId.HasValue))
+            if (assetBaseWithParts.CollectParts().Any(it => it.Base == null))
             {
                 throw new InvalidOperationException("An asset part base must contain only base assets");
             }
@@ -138,7 +138,7 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("AssetPartTestItem")]
-    public class AssetPartTestItem
+    public class AssetPartTestItem : IIdentifiable
     {
         public AssetPartTestItem()
         {
@@ -151,7 +151,8 @@ namespace SiliconStudio.Assets.Tests
             BasePartInstanceId = basePartInstanceId;
         }
 
-        public Guid Id;
+        // TODO: this should be rewritten to use BasePart!
+        public Guid Id { get; set; }
 
         public Guid? BaseId;
 

@@ -58,7 +58,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">serializerFactory</exception>
         public static void Register(IAssetSerializerFactory serializerFactory)
         {
-            if (serializerFactory == null) throw new ArgumentNullException("serializerFactory");
+            if (serializerFactory == null) throw new ArgumentNullException(nameof(serializerFactory));
             if (!RegisteredSerializerFactories.Contains(serializerFactory))
                 RegisteredSerializerFactories.Add(serializerFactory);
         }
@@ -70,7 +70,7 @@ namespace SiliconStudio.Assets
         /// <returns>IAssetSerializerFactory.</returns>
         public static IAssetSerializer FindSerializer(string assetFileExtension)
         {
-            if (assetFileExtension == null) throw new ArgumentNullException("assetFileExtension");
+            if (assetFileExtension == null) throw new ArgumentNullException(nameof(assetFileExtension));
             assetFileExtension = assetFileExtension.ToLowerInvariant();
             for (int i = RegisteredSerializerFactories.Count - 1; i >= 0; i--)
             {
@@ -113,6 +113,8 @@ namespace SiliconStudio.Assets
             bool aliasOccurred;
             Dictionary<ObjectPath, OverrideType> overrides;
             var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out overrides);
+            // Let's fixup references after deserialization
+            (asset as Asset)?.FixupPartReferences();
             return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<ObjectPath, OverrideType>());
         }
 
@@ -125,7 +127,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">filePath</exception>
         public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
             // Creates automatically the directory when saving an asset.
             filePath = FileUtility.GetAbsolutePath(filePath);

@@ -99,6 +99,7 @@ namespace SiliconStudio.Assets
         [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         [MemberCollection(NotNullItems = true)]
+        [Obsolete]
         public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>

@@ -54,8 +54,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// Gets or sets the entity
         /// </summary>
-        [DataMember(40)]
+        [DataMember(10)]
         public Entity Entity { get; set; }
+
+        /// <inheritdoc/>
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public BasePart Base { get; set; }
 
         /// <inheritdoc/>
         Entity IAssetPartDesign<Entity>.Part => Entity;
