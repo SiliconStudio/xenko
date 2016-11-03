@@ -186,6 +186,7 @@ Example of use:
   <Target Name="BuildWindows10" DependsOnTargets="BuildUWP" />
 
   <Target Name="BuildUWP" DependsOnTargets="CopyXenkoKey">
+    <Exec Command='"$(NuGetPath)" restore "$(MSBuildThisDirectory)project.json"' />
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).UWP.sln" Properties="$(BuildProperties);Platform=UWP"/>
   </Target>
   
