@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The unique identifier of this component.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
