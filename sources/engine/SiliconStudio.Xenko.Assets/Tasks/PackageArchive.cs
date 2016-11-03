@@ -11,7 +11,7 @@ using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
 {
-    public static class PackageArchive
+    internal static class PackageArchive
     {
         public static void Build(Package package, string specialVersion = null, string outputDirectory = null)
         {
