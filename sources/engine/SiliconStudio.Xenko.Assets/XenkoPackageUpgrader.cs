@@ -231,7 +231,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var modelAsset in modelAssets)
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode[Asset.BaseProperty].Asset.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
                 }
 
                 // Save back
@@ -349,6 +349,38 @@ namespace SiliconStudio.Xenko.Assets
                     }
 
                     //File.WriteAllBytes(newFileName, newAssetContent);
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                foreach (var assetFile in assetFiles)
+                {
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        try
+                        {
+                            if (assetYaml.DynamicRootNode["~Base"] != null)
+                            {
+                                var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
+                                if (location != "--import--")
+                                {
+                                    var id = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Asset.Id.Node).Value;
+                                    var assetUrl = $"{id}:{location}";
+                                    assetYaml.DynamicRootNode["Archetype"] = assetUrl;
+                                }
+                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
+                            }
+                        }
+                        catch
+                            (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
                 }
             }
 

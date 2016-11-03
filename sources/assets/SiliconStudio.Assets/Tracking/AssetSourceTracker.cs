@@ -263,7 +263,7 @@ namespace SiliconStudio.Assets.Tracking
                 // TODO: This is not handling shadow registry
 
                 // No need to clone assets from readonly package 
-                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases);
+                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : AssetCloner.Clone(assetItem.Asset);
                 var trackedAsset = new TrackedAsset(this, assetItem.Asset, clonedAsset);
 
                 // Adds to global list

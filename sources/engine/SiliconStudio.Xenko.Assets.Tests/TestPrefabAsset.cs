@@ -43,55 +43,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             CheckAsset(originAsset, newAsset);
         }
 
-        [Test]
-        public void TestSerializationWithBaseAndParts()
-        {
-            // Create an entity as in TestSerialization
-            // Then create a derivedAsset from it 
-            // Then create a partAsset and add this partAsset as a composition to derivedAsset
-            // Serialize and deserialize derivedAsset
-            // Check that deserialized derivedAsset has all base/baseParts correctly serialized
-
-            var originAsset = CreateOriginAsset();
-
-            var derivedAsset = (PrefabAsset)originAsset.CreateDerivedAsset("base");
-
-            var basePartAsset = new PrefabAsset();
-            var entityPart1 = new Entity() { Name = "EPart1" };
-            var entityPart2 = new Entity() { Name = "EPart2" };
-            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart1));
-            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart2));
-            basePartAsset.Hierarchy.RootPartIds.Add(entityPart1.Id);
-            basePartAsset.Hierarchy.RootPartIds.Add(entityPart2.Id);
-
-            // Add 2 asset parts from the same base
-            var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Parts.AddRange(instance.Parts);
-            derivedAsset.Hierarchy.RootPartIds.AddRange(instance.RootPartIds);
-
-            var instance2 = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Parts.AddRange(instance2.Parts);
-            derivedAsset.Hierarchy.RootPartIds.AddRange(instance2.RootPartIds);
-
-            using (var stream = new MemoryStream())
-            {
-                AssetSerializer.Save(stream, derivedAsset);
-
-                stream.Position = 0;
-                var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
-                Console.WriteLine(serializedVersion);
-
-                stream.Position = 0;
-                var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "test.xkentity").Asset;
-
-                Assert.NotNull(newAsset.Base);
-
-                CheckAsset(derivedAsset, newAsset);
-
-                CheckAsset(originAsset, (PrefabAsset)newAsset.Base.Asset);
-            }
-        }
-
         private static PrefabAsset CreateOriginAsset()
         {
             // Basic test of entity serialization with links between entities (entity-entity, entity-component)

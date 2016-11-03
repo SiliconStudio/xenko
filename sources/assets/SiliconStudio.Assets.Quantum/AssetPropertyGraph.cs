@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ReconcileWithBase()
         {
-            if (assetItem.Asset.Base == null)
+            if (assetItem.Asset.Archetype == null)
                 return;
 
             var visitor = new ReconcileWithBaseVisitor();

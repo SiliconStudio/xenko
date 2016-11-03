@@ -506,7 +506,7 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
+                    : new AssetItem(assetItem.Location, AssetCloner.Clone(assetItem.Asset), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
                             SourceProject = assetItem.SourceProject
@@ -696,7 +696,7 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset);
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed
@@ -886,13 +886,7 @@ namespace SiliconStudio.Assets.Analysis
 
                 if (reference != null)
                 {
-                    var isBase = reference is AssetBase;
-
-                    // Don't record base import
-                    if (isBase && ((AssetBase)reference).IsRootImport)
-                        return;
-
-                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance : 0) | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut(reference, ContentLinkType.Reference);
                 }
                 else
                 {
@@ -902,9 +896,9 @@ namespace SiliconStudio.Assets.Analysis
 
             public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
             {
-                // Don't visit base parts as they are visited at the top level.
-                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && member.Name == nameof(Asset.Archetype) && value != null)
                 {
+                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Inheritance | ContentLinkType.Reference);
                     return;
                 }
 

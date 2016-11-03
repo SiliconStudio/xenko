@@ -49,10 +49,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
         private static void SerializeAndCompare(AssetItem assetItem, AssetPropertyGraph graph, string expectedYaml)
         {
             assetItem.Asset.Id = Guid.Empty;
-            if (assetItem.Asset.Base != null)
-            {
-                assetItem.Asset.Base.Asset.Id = Guid.Empty;
-            }
             graph.UpdateOverridesForSerialization();
             var stream = new MemoryStream();
             AssetSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);

@@ -78,23 +78,15 @@ namespace SiliconStudio.Assets
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
-        /// <summary>
-        /// Gets or sets the base.
-        /// </summary>
-        /// <value>The base.</value>
-        [DataMember(int.MaxValue - 2000, BaseProperty), DefaultValue(null)]
+        [DataMember(-900)]
         [Display(Browsable = false)]
-        public AssetBase Base { get; set; }
+        [DefaultValue(null)]
+        public AssetReference Archetype { get; set; }
 
         /// <summary>
         /// The YAML serialized name of the <see cref="Base"/> property.
         /// </summary>
-        public const string BaseProperty = "~" + nameof(Base);
-
-        /// <summary>
-        /// The YAML serialized name of the removed BaseParts property.
-        /// </summary>
-        public const string BasePartsProperty = "~BaseParts";
+        public const string BaseProperty = "~Base";
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -153,7 +145,7 @@ namespace SiliconStudio.Assets
             newAsset.Id = newId;
 
             // Create the base of this asset
-            newAsset.Base = new AssetBase(baseLocation, assetBase);
+            newAsset.Archetype = new AssetReference(Id, baseLocation);
             return newAsset;
         }
 
@@ -164,27 +156,6 @@ namespace SiliconStudio.Assets
         /// <param name="clearMissingReferences"><c>true</c> to clear missing references to parts or base parts; otherwise, <c>false</c>.</param>
         public virtual void FixupPartReferences(bool clearMissingReferences = true)
         {
-            // Fixup base
-            Base?.Asset.FixupPartReferences(clearMissingReferences);
-        }
-
-        /// <summary>
-        /// Merge an asset with its base, and new base and parts into this instance.
-        /// </summary>
-        /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
-        /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
-        /// <param name="newBaseParts">A copy of the new base parts</param>
-        /// <param name="debugLocation">The location of the asset being merged, used only for debug/log purpose</param>
-        /// <returns>The result of the merge</returns>
-        /// <remarks>The this instance is not used by this method.</remarks>
-        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
-        {
-            var diff = new AssetDiff(baseAsset, this, newBase)
-            {
-                UseOverrideMode = true
-            };
-
-            return AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
         }
 
         public override string ToString()

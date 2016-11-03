@@ -183,8 +183,6 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="AssetBaseChangedEvent.cs" />
-    <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
     <Compile Include="ProjectFileGeneratorAsset.cs" />
@@ -263,7 +261,6 @@
     <Compile Include="Visitors\DataVisitMember.cs" />
     <Compile Include="Visitors\DataVisitObject.cs" />
     <Compile Include="Visitors\IDataVisitNode.cs" />
-    <Compile Include="Serializers\AssetBaseSerializer.cs" />
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
     <Compile Include="AssetItem.cs" />

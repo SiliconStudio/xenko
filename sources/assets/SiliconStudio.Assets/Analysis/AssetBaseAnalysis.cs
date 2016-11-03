@@ -127,7 +127,7 @@ namespace SiliconStudio.Assets.Analysis
 
             // 2) Iterate on each base and perform validation
             var currentAsset = assetItem;
-            while (currentAsset.Asset.Base != null)
+            while (currentAsset.Asset.Archetype != null)
             {
                 // 2.1) Check that asset has not been already processed
                 if (baseItems.Contains(currentAsset.Asset))
@@ -141,18 +141,18 @@ namespace SiliconStudio.Assets.Analysis
                 // 
 
                 // 2.2) Check that base asset is existing
-                var baseAssetItem = Session.FindAsset(currentAsset.Asset.Base.Id);
+                var baseAssetItem = Session.FindAsset(currentAsset.Asset.Archetype.Id);
                 if (baseAssetItem == null)
                 {
                     AssetLogMessage error;
 
                     // If an asset with the same location is registered
                     // Add this asset as a reference in the error message
-                    var newBaseAsset = Session.FindAsset(currentAsset.Asset.Base.Location);
+                    var newBaseAsset = Session.FindAsset(currentAsset.Asset.Archetype.Location);
                     if (newBaseAsset != null)
                     {
                         // If asset location exist, log a message with the new location, but don't perform any automatic fix
-                        error = new AssetLogMessage(currentAsset.Package, currentAsset.ToReference(), LogMessageType.Error, AssetMessageCode.BaseChanged, currentAsset.Asset.Base.Location);
+                        error = new AssetLogMessage(currentAsset.Package, currentAsset.ToReference(), LogMessageType.Error, AssetMessageCode.BaseChanged, currentAsset.Asset.Archetype.Location);
                         error.Related.Add(newBaseAsset.ToReference());
                     }
                     else

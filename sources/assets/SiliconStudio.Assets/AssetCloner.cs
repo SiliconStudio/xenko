@@ -247,16 +247,6 @@ namespace SiliconStudio.Assets
             }
             var cloner = new AssetCloner(asset, flags);
             var newObject = cloner.Clone();
-
-            // By default, a clone doesn't copy the base/baseParts for Asset
-            if ((flags & AssetClonerFlags.KeepBases) == 0)
-            {
-                var newAsset = newObject as Asset;
-                if (newAsset != null)
-                {
-                    newAsset.Base = null;
-                }
-            }
             return newObject;
         }
 

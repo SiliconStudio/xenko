@@ -58,8 +58,8 @@ namespace SiliconStudio.Assets.Tests
                 }
 
                 // Remove the inheritance
-                var copyBase = asset3.Base;
-                asset3.Base = null;
+                var copyBase = asset3.Archetype;
+                asset3.Archetype = null;
                 assetItem3.IsDirty = true;
                 {
                     var assets = dependencyManager.FindAssetsInheritingFrom(asset1.Id);
@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Tests
                 }
 
                 // Add back the inheritance
-                asset3.Base = copyBase;
+                asset3.Archetype = copyBase;
                 assetItem3.IsDirty = true;
                 {
                     var assets = dependencyManager.FindAssetsInheritingFrom(asset1.Id);
@@ -520,8 +520,8 @@ namespace SiliconStudio.Assets.Tests
                 project.Assets.Add(assetItems[i]);
             }
 
-            assets[1].Base = new AssetBase(assets[0]);
-            assets[2].Base = new AssetBase(assets[1]);
+            assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
+            assets[2].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -621,7 +621,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].Base = new AssetBase(assets[0]);
+                assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -629,8 +629,8 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
-                
-                assets[2].Base = new AssetBase(assets[1]);
+
+                assets[2].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -685,7 +685,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[2].Base = null;
+                assets[2].Archetype = null;
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -694,7 +694,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].Base = null;
+                assets[1].Archetype = null;
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -777,10 +777,10 @@ namespace SiliconStudio.Assets.Tests
                 project.Assets.Add(assetItems[i]);
             }
 
-            assets[1].Base = new AssetBase(assets[0]);
-            assets[2].Base = new AssetBase(assets[1]);
-            assets[3].Base = new AssetBase(assets[2]);
-            assets[8].Base = new AssetBase(assets[1]);
+            assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
+            assets[2].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
+            assets[3].Archetype = new AssetReference(assetItems[2].Id, assetItems[2].Location);
+            assets[8].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
 
@@ -889,7 +889,7 @@ namespace SiliconStudio.Assets.Tests
                 project.Assets.Add(assetItems[i]);
             }
 
-            assets[1].Base = new AssetBase(assets[0]);
+            assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
 
             using (var session = new PackageSession(project))
             {

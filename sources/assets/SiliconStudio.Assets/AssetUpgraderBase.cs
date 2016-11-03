@@ -14,8 +14,8 @@ namespace SiliconStudio.Assets
             dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
             // upgrade the asset
-            var baseBranch = asset[Asset.BaseProperty];
-            var basePartsBranch = asset[Asset.BasePartsProperty] as DynamicYamlArray;
+            var baseBranch = asset["~Base"];
+            var basePartsBranch = asset["~BaseParts"] as DynamicYamlArray;
 
             // Detect in what kind of override context we are
             var overrideHint = (baseBranch != null || (basePartsBranch != null && basePartsBranch.Node.Children.Count > 0))
@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets
 
         private void UpgradeBase(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, dynamic assetBase, PackageLoadingAssetFile assetFile)
         {
-            var baseAsset = assetBase[nameof(AssetBase.Asset)];
+            var baseAsset = assetBase["Asset"];
             if (baseAsset != null)
             {
                 UpgradeAsset(context, currentVersion, targetVersion, baseAsset, assetFile, OverrideUpgraderHint.Base);

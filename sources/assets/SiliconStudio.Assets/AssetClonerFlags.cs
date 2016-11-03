@@ -26,12 +26,6 @@ namespace SiliconStudio.Assets
         ReferenceAsNull = 2,
 
         /// <summary>
-        /// Keep cloned bases.
-        /// </summary>
-        [Obsolete]
-        KeepBases = 4,
-
-        /// <summary>
         /// Remove ids attached to item of collections when cloning
         /// </summary>
         RemoveItemIds = 8,

@@ -118,7 +118,7 @@ namespace SiliconStudio.Assets.Tests
             if (assetBaseWithParts == null) throw new ArgumentNullException(nameof(assetBaseWithParts));
 
             // The assetPartBase must be a plain child asset
-            if (assetBaseWithParts.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
+            if (assetBaseWithParts.Archetype == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
 
             // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
             if (assetBaseWithParts.CollectParts().Any(it => it.Base == null))

@@ -418,7 +418,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             baseValue.Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitX });
 
             var asset1Value = new TestDiffAsset { Name = "base", Value = 1 };
-            asset1Value.Base = new AssetBase("/tata", baseValue);
+            asset1Value.Archetype = new AssetReference(baseValue.Id, "/tata");
             asset1Value.Parameters.Set(StringKey, "string");
             asset1Value.Parameters.Set(ComponentKey, new DiffComponent() { Name = "comp1", Position = Vector4.UnitX });
 

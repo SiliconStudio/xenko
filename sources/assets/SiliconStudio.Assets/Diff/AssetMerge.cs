@@ -250,21 +250,6 @@ namespace SiliconStudio.Assets.Diff
             var asset1 = AssetCloner.Clone(assetFrom1);
             var asset2 = AssetCloner.Clone(assetFrom2);
 
-            // Clears base as we are not expecting to work with them directly
-            // The real base must be passed by the assetBase0 parameter
-            if (assetBase != null)
-            {
-                assetBase.Base = null;
-            }
-            if (asset1 != null)
-            {
-                asset1.Base = null;
-            }
-            if (asset2 != null)
-            {
-                asset2.Base = null;
-            }
-
             var assetBasePath = Path.GetTempFileName();
             var asset1Path = Path.GetTempFileName();
             var asset2Path = Path.GetTempFileName();
@@ -310,18 +295,6 @@ namespace SiliconStudio.Assets.Diff
                 try
                 {
                     var mergedAsset = AssetSerializer.Load<Asset>(outputPath).Asset;
-
-                    if (mergedAsset != null)
-                    {
-                        if (assetFrom1 == null)
-                        {
-                            mergedAsset.Base = assetFrom2 == null ? assetBase0.Base : assetFrom2.Base;
-                        }
-                        else
-                        {
-                            mergedAsset.Base = assetFrom1.Base;
-                        }
-                    }
                     result.Asset = mergedAsset;
                 }
                 catch (Exception ex)

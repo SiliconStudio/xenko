@@ -13,41 +13,6 @@ namespace SiliconStudio.Assets.Tests
     public class TestAssetInheritance
     {
         [Test]
-        public void TestWithOverrides()
-        {
-            // Create a derivative asset and check overrides
-            var assets = new List<TestAssetWithParts>();
-            var assetItems = new List<AssetItem>();
-
-            var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetWithParts));
-            var memberDesc = (IMemberDescriptor)objDesc.Members.First(t => t.Name == "Name");
-
-            assets.Add(new TestAssetWithParts()
-            {
-                Parts =
-                {
-                        new AssetPartTestItem(Guid.NewGuid()),
-                        new AssetPartTestItem(Guid.NewGuid())
-                }
-            });
-            assetItems.Add(new AssetItem("asset-0", assets[0]));
-
-            // Set a sealed on Name property
-            assets[0].SetOverride(memberDesc, OverrideType.Sealed);
-
-            var childAsset = (TestAssetWithParts)assetItems[0].CreateChildAsset();
-
-            // Check that child asset has a base
-            Assert.NotNull(childAsset.Base);
-
-            // Check that derived asset is using base
-            Assert.AreEqual(OverrideType.Base, childAsset.GetOverride(memberDesc));
-
-            // Check that property Name on base asset is sealed
-            Assert.AreEqual(OverrideType.Sealed, childAsset.Base.Asset.GetOverride(memberDesc));
-        }
-
-        [Test]
         public void TestWithParts()
         {
             // Create a derivative asset with asset parts
@@ -69,10 +34,10 @@ namespace SiliconStudio.Assets.Tests
             var childAsset = (TestAssetWithParts)assetItems[0].CreateChildAsset();
 
             // Check that child asset has a base
-            Assert.NotNull(childAsset.Base);
+            Assert.NotNull(childAsset.Archetype);
 
             // Check base asset
-            Assert.AreEqual(assets[0].Id, childAsset.Base.Id);
+            Assert.AreEqual(assets[0].Id, childAsset.Archetype.Id);
 
             // Check that base is correctly setup for the part
             Assert.AreEqual(assets[0].Parts[0].Id, childAsset.Parts[0].BaseId);

@@ -590,12 +590,6 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                var assetBase = asset.Asset.Base;
-                if (assetBase != null && !assetBase.IsRootImport)
-                {
-                    asset.Asset.Base = UpdateAssetBase(assetBase);
-                }
-
                 AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
@@ -613,23 +607,6 @@ namespace SiliconStudio.Assets
                 return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Finds the most recent asset base and return a new version of it.
-        /// </summary>
-        /// <param name="assetBase">The original asset base</param>
-        /// <returns>A copy of the asset base updated with the latest base</returns>
-        private AssetBase UpdateAssetBase(AssetBase assetBase)
-        {
-            var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
-            if (assetBaseItem != null)
-            {
-                var newBase = AssetCloner.Clone(assetBaseItem.Asset);
-                return new AssetBase(assetBase.Location, newBase);
-            }
-            // TODO: If we don't find it, should we log an error instead?
-            return assetBase;
         }
 
         /// <summary>

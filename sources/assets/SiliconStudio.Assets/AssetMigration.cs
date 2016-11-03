@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets
                                 yamlAsset.DynamicRootNode.RemoveChild(nameof(Asset.SerializedVersion));
                                 AssetUpgraderBase.SetSerializableVersion(yamlAsset.DynamicRootNode, dependencyName, serializedVersion);
 
-                                var baseBranch = yamlAsset.DynamicRootNode[Asset.BaseProperty];
+                                var baseBranch = yamlAsset.DynamicRootNode["~Base"];
                                 if (baseBranch != null)
                                 {
                                     var baseAsset = baseBranch["Asset"];

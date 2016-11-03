@@ -102,7 +102,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitArrayItem(array, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
-                var assetBase = item as AssetBase;
                 var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
                 if (assetReference != null)
                 {
@@ -110,16 +109,6 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             var newValue = AssetReference.New(guid ?? assetReference.Id, location);
-                            array.SetValue(newValue, index);
-                            return newValue;
-                        });
-                }
-                else if (assetBase != null)
-                {
-                    AddLink(item,
-                        (guid, location) =>
-                        {
-                            var newValue = new AssetBase(location, assetBase.Asset);
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -160,7 +149,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitCollectionItem(collection, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
-                var assetBase = item as AssetBase;
                 var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
 
                 // We cannot set links if we do not have indexer accessor
@@ -172,15 +160,6 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference, (guid, location) =>
                     {
                         var link = AssetReference.New(guid ?? assetReference.Id, location);
-                        descriptor.SetValue(collection, index, link);
-                        return link;
-                    });
-                }
-                else if (assetBase != null)
-                {
-                    AddLink(assetBase, (guid, location) =>
-                    {
-                        var link = new AssetBase(location, assetBase.Asset);
                         descriptor.SetValue(collection, index, link);
                         return link;
                     });
@@ -218,7 +197,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitDictionaryKeyValue(dictionaryObj, descriptor, key, keyDescriptor, value, valueDescriptor);
                 var assetReference = value as AssetReference;
-                var assetBase = value as AssetBase;
                 var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
@@ -226,16 +204,6 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             var newValue = AssetReference.New(guid ?? assetReference.Id, location);
-                            descriptor.SetValue(dictionaryObj, key, newValue);
-                            return newValue;
-                        });
-                }
-                else if (assetBase != null)
-                {
-                    AddLink(assetBase,
-                        (guid, location) =>
-                        {
-                            var newValue = new AssetBase(location, assetBase.Asset);
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -276,7 +244,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitObjectMember(container, containerDescriptor, member, value);
                 var assetReference = value as AssetReference;
-                var assetBase = value as AssetBase;
                 var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
@@ -284,16 +251,6 @@ namespace SiliconStudio.Assets.Analysis
                         (guid, location) =>
                         {
                             var newValue = AssetReference.New(guid ?? assetReference.Id, location);
-                            member.Set(container, newValue);
-                            return newValue;
-                        });
-                }
-                else if (assetBase != null)
-                {
-                    AddLink(assetBase,
-                        (guid, location) =>
-                        {
-                            var newValue = new AssetBase(location, assetBase.Asset);
                             member.Set(container, newValue);
                             return newValue;
                         });

@@ -112,13 +112,6 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var assetReferenceLink in assetReferences.Where(link => link.Reference is IReference))
             {
                 var contentReference = (IReference)assetReferenceLink.Reference;
-                // If the content reference is an asset base that is in fact a root import, just skip it
-                var assetBase = contentReference as AssetBase;
-                if (assetBase != null && assetBase.IsRootImport)
-                {
-                    continue;
-                }
-
                 // Update Asset references (AssetReference, AssetBase, reference)
                 var id = contentReference.Id;
                 var newItemReference = package.FindAsset(id);

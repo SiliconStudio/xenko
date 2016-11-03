@@ -176,7 +176,7 @@ namespace SiliconStudio.Assets
         {
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
-            var item = new AssetItem(newLocation ?? location, newAsset ?? AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), copyPackage ? Package : null)
+            var item = new AssetItem(newLocation ?? location, newAsset ?? AssetCloner.Clone(Asset), copyPackage ? Package : null)
             {
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
@@ -296,12 +296,12 @@ namespace SiliconStudio.Assets
         /// <returns>The base item or null if not found.</returns>
         public AssetItem FindBase()
         {
-            if (Package == null || Package.Session == null || Asset.Base == null || Asset.Base.IsRootImport)
+            if (Package == null || Package.Session == null || Asset.Archetype == null)
             {
                 return null;
             }
             var session = Package.Session;
-            return session.FindAsset(Asset.Base.Id);
+            return session.FindAsset(Asset.Archetype.Id);
         }
 
         /// <summary>

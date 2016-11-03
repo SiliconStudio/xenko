@@ -115,14 +115,6 @@ namespace SiliconStudio.Assets.Analysis
                     }
                 }
 
-                // Fix base if there are any
-                if (item.Asset.Base != null && idRemap.TryGetValue(item.Asset.Base.Id, out remap) && IsNewReference(remap, item.Asset.Base))
-                {
-                    item.Asset.Base.Asset.Id = remap.Item1;
-                    item.Asset.Base = new AssetBase(remap.Item2, item.Asset.Base.Asset);
-                    item.IsDirty = true;
-                }
-
                 // Fix base parts if there are any remap for them as well
                 var assetComposite = item.Asset as IAssetComposite;
                 if (assetComposite != null)

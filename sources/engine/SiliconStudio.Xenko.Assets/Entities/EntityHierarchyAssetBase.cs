@@ -41,13 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
-        {
-            var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts, debugLocation);
-            return entityMerge.Merge();
-        }
-
-        /// <inheritdoc/>
         public override Entity GetParent(Entity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));

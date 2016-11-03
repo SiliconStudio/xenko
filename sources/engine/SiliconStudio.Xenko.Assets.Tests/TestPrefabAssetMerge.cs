@@ -113,10 +113,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge(AssetCloner.Clone(baseAsset), AssetCloner.Clone(newBaseAsset), null);
-            Assert.False(result.HasErrors);
-
             // Both root and entities must be the same
             Assert.AreEqual(4, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count);
@@ -186,10 +182,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()].Entity.Transform.Children.Add(eA4.Transform);
 
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge(AssetCloner.Clone(baseAsset), AssetCloner.Clone(newBaseAsset), null);
-            Assert.False(result.HasErrors);
-
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA3', EA4'
 
@@ -258,10 +250,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
-
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge(AssetCloner.Clone(baseAsset), AssetCloner.Clone(newBaseAsset), null);
-            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
@@ -343,10 +331,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             rootInNew.Entity.Transform.Children.Add(eA4.Transform);
 
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge(AssetCloner.Clone(baseAsset), AssetCloner.Clone(newBaseAsset), null);
-            Assert.False(result.HasErrors);
-
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA3', EA4'
 
@@ -417,10 +401,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
-
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge(AssetCloner.Clone(baseAsset), AssetCloner.Clone(newBaseAsset), null);
-            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
@@ -493,10 +473,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             asset.Hierarchy.Parts.AddRange(part12.Parts);
             asset.Hierarchy.RootPartIds.AddRange(part1.RootPartIds);
             asset.Hierarchy.RootPartIds.AddRange(part12.RootPartIds);
-
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", AssetCloner.Clone(basePart)) } );
-            Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
             Assert.AreEqual(8, asset.Hierarchy.RootPartIds.Count);
@@ -600,10 +576,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eRoot2.Entity.Transform.Children.Remove(entityToRemove);
             asset.Hierarchy.Parts.Remove(entityToRemove.Entity.Id);
 
-            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", part2) } );
-            Assert.False(entityMerge.HasErrors);
-
             // EntityD must be now part of the new asset
             Assert.AreEqual(2, asset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(9, asset.Hierarchy.Parts.Count);
@@ -632,75 +604,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(null, testComponentD2.EntityLink);
-        }
-
-        [Test]
-        public void TestCascadedInheritance()
-        {
-            // Test with:
-            // a1: an asset with 2 entities
-            // a2: an asset using a1 by composition with 2 instances
-            // a3: an asset based on a2
-            //
-            // Add one entity to a1. Check that a2 and a3 will get correctly the entities replicated
-
-            // Before Merge
-            // a1:      a2: (baseParts: a1, 2 instances)     a3: (base: a2)
-            //  | ea     | ea1 (base: ea)                     | ea1' (base: ea1)
-            //  | eb     | eb1 (base: eb)                     | eb1' (base: eb1)
-            //           | ea2 (base: ea)                     | ea2' (base: ea2)
-            //           | eb2 (base: eb)                     | eb2' (base: eb2)
-
-
-            // After Merge
-            // We add one entity to the base a1 
-            // a1:      a2: (baseParts: a1, 2 instances)     a3: (base: a2)
-            //  | ea     | ea1 (base: ea)                     | ea1' (base: ea1)
-            //  | eb     | eb1 (base: eb)                     | eb1' (base: eb1)
-            //  | ec     | ec1 (base: ec)                     | ec1' (base: ec1)
-            //           | ea2 (base: ea)                     | ea2' (base: ea2)
-            //           | eb2 (base: eb)                     | eb2' (base: eb2)
-            //           | ec2 (base: ec)                     | ec2' (base: ec2)
-
-            var a1 = new PrefabAsset();
-            var ea = new Entity("ea");
-            var eb = new Entity("eb");
-            a1.Hierarchy.Parts.Add(new EntityDesign(ea));
-            a1.Hierarchy.Parts.Add(new EntityDesign(eb));
-            a1.Hierarchy.RootPartIds.Add(ea.Id);
-            a1.Hierarchy.RootPartIds.Add(eb.Id);
-
-            var a2 = new PrefabAsset();
-            var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
-            var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
-            a2.Hierarchy.Parts.AddRange(aPartInstance1.Parts);
-            a2.Hierarchy.Parts.AddRange(aPartInstance2.Parts);
-            a2.Hierarchy.RootPartIds.AddRange(aPartInstance1.RootPartIds);
-            a2.Hierarchy.RootPartIds.AddRange(aPartInstance2.RootPartIds);
-
-            // Modify a1 to add entity ec
-            var ec = new Entity("ec");
-            a1.Hierarchy.Parts.Add(new EntityDesign(ec));
-            a1.Hierarchy.RootPartIds.Add(ec.Id);
-
-            var a3 = (PrefabAsset)a2.CreateDerivedAsset("a2");
-
-            // Merge a2
-            var result2 = a2.Merge(null, null, new List<AssetBase>()
-            {
-                new AssetBase("a1", AssetCloner.Clone(a1))
-            });
-
-            Assert.False(result2.HasErrors);
-            Assert.AreEqual(6, a2.Hierarchy.RootPartIds.Count);
-            Assert.True(a2.Hierarchy.Parts.All(it => it.Base != null));
-
-            // Merge a3
-            var result3 = a3.Merge(AssetCloner.Clone(a3.Base.Asset), AssetCloner.Clone(a2), null);
-
-            Assert.False(result3.HasErrors);
-            Assert.AreEqual(6, a3.Hierarchy.RootPartIds.Count);
-            Assert.True(a3.Hierarchy.Parts.All(it => it.Base != null && a2.Hierarchy.Parts.ContainsKey(it.Base.BasePartId)));
         }
 
         [Test]
