@@ -61,7 +61,6 @@
     <Compile Include="ObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\AssemblyContainer.cs" />
-    <Compile Include="Reflection\CollectionIdGenerator.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />

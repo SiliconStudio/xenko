@@ -61,6 +61,9 @@ namespace SiliconStudio.Assets.Quantum
 
         private void AssetContentChanging(object sender, ContentChangeEventArgs e)
         {
+            if (AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                return;
+
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
                 var node = (AssetNode)e.Content.OwnerNode;
@@ -76,6 +79,9 @@ namespace SiliconStudio.Assets.Quantum
 
         private void AssetContentChanged(object sender, ContentChangeEventArgs e)
         {
+            if (AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                return;
+
             var previousOverride = previousOverrides[e.Content.OwnerNode];
             previousOverrides.Remove(e.Content.OwnerNode);
             var overrideValue = OverrideType.Base;

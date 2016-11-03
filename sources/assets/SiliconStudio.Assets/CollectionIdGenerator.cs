@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Core.Reflection
+namespace SiliconStudio.Assets
 {
     /// <summary>
     /// A visitor that will generate a <see cref="CollectionItemIdentifiers"/> collection for each collection or dictionary of the visited object,
@@ -10,6 +10,11 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class CollectionIdGenerator : DataVisitorBase
     {
+        protected override bool CanVisit(object obj)
+        {
+            return AssetRegistry.IsContentReferenceType(obj?.GetType()) && base.CanVisit(obj);
+        }
+
         public override void VisitArray(Array array, ArrayDescriptor descriptor)
         {
             CollectionItemIdentifiers itemIds;

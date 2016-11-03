@@ -237,6 +237,11 @@ namespace SiliconStudio.Assets.Quantum
             BaseContent = baseContent;
         }
 
+        public static bool IsNonIdentifiableCollectionContent(IContent content)
+        {
+            return (content as MemberContent)?.Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+        }
+
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
             // Create new ids for collection items
