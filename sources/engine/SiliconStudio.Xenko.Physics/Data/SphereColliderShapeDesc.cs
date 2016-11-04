@@ -40,5 +40,16 @@ namespace SiliconStudio.Xenko.Physics
             if (other.Is2D == Is2D && Math.Abs(other.Radius - Radius) < float.Epsilon && other.LocalOffset == LocalOffset) return 0;
             return 1;
         }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Is2D.GetHashCode();
+                hashCode = (hashCode*397) ^ Radius.GetHashCode();
+                hashCode = (hashCode*397) ^ LocalOffset.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

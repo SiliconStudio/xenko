@@ -322,6 +322,12 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Navigation\NavigationMeshAsset.cs" />
+    <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
+    <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
+    <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
+    <Compile Include="Navigation\NavigationMeshFactory.cs" />
+    <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />
@@ -448,6 +454,7 @@
     <Content Include="..\..\..\deps\msdfgen\msdfgen.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Navigation\NavigationMeshAssetCompiler.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
