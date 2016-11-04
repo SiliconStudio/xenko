@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-alpha01", typeof(SourceMembersUpgrader))]
-    [Display(105, "Sprite Font (Precompiled)")]
+    [Display(1050, "Sprite Font (Precompiled)")]
     [CategoryOrder(10, "Font Data")]
     [CategoryOrder(20, "Font Properties")]
     [CategoryOrder(30, "Font Characters")]

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     [DataContract("Sound")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [Display(120, "Sound")]
+    [Display(1200, "Sound")]
     public class SoundAsset : AssetWithSource
     {
         /// <summary>
