@@ -16,10 +16,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\..\..\..\Xenko1\sources\common\deps\NUnit\nunit.core.interfaces.dll</HintPath>
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\..\..\..\Xenko1\sources\common\deps\NUnit\nunit.framework.dll</HintPath>
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
