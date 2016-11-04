@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             var keyResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
-            var valueResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyResult.PropertyType);
+            var valueResult = objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyResult.PropertyType, keyResult);
 
             return new KeyValuePair<object, object>(keyResult, valueResult);
         }
