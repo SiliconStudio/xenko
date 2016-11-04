@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+#if SILICONSTUDIO_XENKO_UI_WINFORMS
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for mouse and keyboard input on windows forms
     /// </summary>
-    public class InputSourceWindows : InputSourceBase
+    public class InputSourceWinforms : InputSourceBase
     {
         private KeyboardWinforms keyboard;
         private MouseWinforms mouse;
@@ -62,11 +62,9 @@ namespace SiliconStudio.Xenko.Input
             Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
 
             // Do not register keyboard devices when using raw input instead
-            if (!InputManager.UseRawInput)
-            {
-                keyboard = new KeyboardWinforms();
-                RegisterDevice(keyboard);
-            }
+            keyboard = new KeyboardWinforms();
+            keyboard.Priority = InputManager.UseRawInput ? -1 : 0; // Don't take priority over raw input
+            RegisterDevice(keyboard);
 
             mouse = new MouseWinforms(game, uiControl);
             RegisterDevice(mouse);
@@ -81,7 +79,7 @@ namespace SiliconStudio.Xenko.Input
             // Release keys/buttons when control focus is lost (this prevents some keys getting stuck when a focus loss happens when moving the camera)
             if (keyboard != null)
             {
-                foreach(var key in keyboard.DownKeys.ToArray())
+                foreach(var key in keyboard.KeyRepeats.Keys.ToArray())
                 {
                     keyboard.HandleKeyUp(key);
                 }
@@ -104,7 +102,8 @@ namespace SiliconStudio.Xenko.Input
                 case Win32Native.WM_SYSKEYDOWN:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    keyboard?.HandleKeyDown(virtualKey);
+                    if (!InputManager.UseRawInput)
+                        keyboard?.HandleKeyDown(virtualKey);
                     heldKeys.Add(virtualKey);
                     break;
                 case Win32Native.WM_KEYUP:
@@ -112,10 +111,11 @@ namespace SiliconStudio.Xenko.Input
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     heldKeys.Remove(virtualKey);
-                    keyboard?.HandleKeyUp(virtualKey);
+                    if (!InputManager.UseRawInput)
+                        keyboard?.HandleKeyUp(virtualKey);
                     break;
                 case Win32Native.WM_CHAR:
-                    // TODO: Handle text
+                    keyboard?.HandleChar((char)wParam);
                     break;
                 case Win32Native.WM_DEVICECHANGE:
                     // Trigger scan on device changed

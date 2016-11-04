@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
-        public readonly HashSet<Keys> DownKeys = new HashSet<Keys>();
+        public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
         protected List<KeyEvent> KeyboardInputEvents = new List<KeyEvent>();
         
         public virtual void Dispose()
@@ -34,26 +34,28 @@ namespace SiliconStudio.Xenko.Input
         
         public virtual bool IsKeyDown(Keys key)
         {
-            return DownKeys.Contains(key);
+            return KeyRepeats.ContainsKey(key);
         }
 
         public void HandleKeyDown(Keys key)
         {
-            // Prevent duplicate events
-            if (DownKeys.Contains(key))
-                return;
+            // Increment repeat count on subsequent down events
+            int repeatCount = 0;
+            if (KeyRepeats.TryGetValue(key, out repeatCount))
+                KeyRepeats[key] = ++repeatCount;
+            else
+                KeyRepeats.Add(key, repeatCount);
 
-            DownKeys.Add(key);
-            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Pressed, Key = key });
+            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Pressed, RepeatCount = repeatCount, Key = key });
         }
 
         public void HandleKeyUp(Keys key)
         {
-            // Prevent duplicate events
-            if (!DownKeys.Contains(key))
+            // Prevent duplicate up events
+            if (!KeyRepeats.ContainsKey(key))
                 return;
 
-            DownKeys.Remove(key);
+            KeyRepeats.Remove(key);
             KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Released, Key = key });
         }
     }

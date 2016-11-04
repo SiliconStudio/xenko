@@ -22,13 +22,18 @@ namespace SiliconStudio.Xenko.Input
         public Keys Key;
 
         /// <summary>
+        /// The repeat count for this key. If it is 0 this is the initial press of the key
+        /// </summary>
+        public int RepeatCount;
+
+        /// <summary>
         /// The keyboard that sent this event
         /// </summary>
         public IKeyboardDevice Keyboard => Device as IKeyboardDevice;
 
         public override string ToString()
         {
-            return $"{nameof(Key)}: {Key}, {nameof(State)}: {State}, {nameof(Keyboard)}: {Keyboard.DeviceName}";
+            return $"{nameof(Key)}: {Key}, {nameof(RepeatCount)}: {RepeatCount}, {nameof(Keyboard)}: {Keyboard}";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#if SILICONSTUDIO_PLATFORM_UWP
 namespace SiliconStudio.Xenko.Input
 {
     internal enum WinFormsKeys
@@ -201,3 +202,4 @@ namespace SiliconStudio.Xenko.Input
         Alt = 262144,
     }
 }
+#endif

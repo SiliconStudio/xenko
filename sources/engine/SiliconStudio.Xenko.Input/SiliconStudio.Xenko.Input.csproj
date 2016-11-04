@@ -127,6 +127,7 @@
     <Compile Include="NamedGravitySensor.cs" />
     <Compile Include="NamedGyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
+    <Compile Include="TextInputEvent.cs" />
     <Compile Include="UWP\GamePadUWP.cs" />
     <Compile Include="UWP\InputSourceUWP.cs" />
     <Compile Include="UWP\KeyboardUWP.cs" />
@@ -210,7 +211,7 @@
     <Compile Include="Windows\CustomGamePadState.cs" />
     <Compile Include="Windows\GamePadDirectInput.cs" />
     <Compile Include="Windows\GamePadXInput.cs" />
-    <Compile Include="Windows\InputSourceWindows.cs" />
+    <Compile Include="Windows\InputSourceWinforms.cs" />
     <Compile Include="Windows\InputSourceWindowsDirectInput.cs" />
     <Compile Include="Windows\InputSourceWindowsRawInput.cs" />
     <Compile Include="Windows\InputSourceWindowsXInput.cs" />

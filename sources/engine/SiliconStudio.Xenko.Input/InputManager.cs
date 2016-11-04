@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Input
 #endif
 #if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
                 case AppContextType.Desktop:
-                    AddInputSource(new InputSourceWindows());
+                    AddInputSource(new InputSourceWinforms());
                     AddInputSource(new InputSourceWindowsDirectInput());
                     AddInputSource(new InputSourceWindowsXInput());
                     if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
@@ -304,6 +304,7 @@ namespace SiliconStudio.Xenko.Input
 
             // Register event types
             RegisterEventType<KeyEvent>();
+            RegisterEventType<TextInputEvent>();
             RegisterEventType<MouseButtonEvent>();
             RegisterEventType<MouseWheelEvent>();
             RegisterEventType<PointerEvent>();
@@ -598,13 +599,10 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="listener">The listener to register</param>
         public void AddListener(IInputEventListener listener)
         {
-            // TODO: Remove FindInterfaces
-            //var eventInterfaces = listener.GetType().FindInterfaces((type, criteria) => type.IsGenericType && typeof(IInputEventListener<>) == type.GetGenericTypeDefinition(), listener);
-            //var handledTypes = eventInterfaces.Select(x => x.GenericTypeArguments[0]);
-            //foreach (var type in handledTypes)
-            //{
-            //    eventRouters[type].Listeners.Add(listener);
-            //}
+            foreach (var router in eventRouters)
+            {
+                router.Value.TryAddListener(listener);
+            }
         }
 
         /// <summary>
@@ -896,6 +894,7 @@ namespace SiliconStudio.Xenko.Input
         {
             HashSet<IInputEventListener> Listeners { get; }
             void RouteEvent(InputEvent evt);
+            void TryAddListener(IInputEventListener listener);
         }
 
         protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent
@@ -908,6 +907,14 @@ namespace SiliconStudio.Xenko.Input
                 foreach (var gesture in listeners)
                 {
                     ((IInputEventListener<TEventType>)gesture).ProcessEvent((TEventType)evt);
+                }
+            }
+            public void TryAddListener(IInputEventListener listener)
+            {
+                var specific = listener as IInputEventListener<TEventType>;
+                if (specific != null)
+                {
+                    Listeners.Add(specific);
                 }
             }
         }
