@@ -14,7 +14,7 @@ void* operator new(size_t sz) {
 }
 void operator delete(void* ptr) noexcept
 {
-    free(ptr);
+	free(ptr);
 }
 
 #endif

@@ -13,7 +13,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     [DataContract()]
     public abstract class DirectLightBase : ColorLightBase, IDirectLight
     {
-        public abstract LightShadowMap Shadow { get; protected set; }
+        /// <summary>
+        /// Gets or sets the shadow.
+        /// </summary>
+        /// <value>The shadow.</value>
+        /// <userdoc>The settings of the light shadow</userdoc>
+        [DataMember(200)]
+        public LightShadowMap Shadow { get; protected set; }
 
         public abstract bool HasBoundingBox { get; }
 
