@@ -4,21 +4,11 @@ using System.Windows.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
 {
-    public class ClipboardTextChangedEventArgs : EventArgs
-    {
-        public ClipboardTextChangedEventArgs(string text)
-        {
-            Text = text;
-        }
-
-        public string Text { get; }
-    }
-
     public static class ClipboardMonitor
     {
         private static IntPtr hWndNextViewer;
 
-        public static event EventHandler<ClipboardTextChangedEventArgs> ClipboardTextChanged;
+        public static event EventHandler<EventArgs> ClipboardTextChanged;
 
         public static void RegisterListener(Window window)
         {
@@ -64,7 +54,7 @@ namespace SiliconStudio.Presentation.Extensions
         {
             if (Clipboard.ContainsText())
             {
-                ClipboardTextChanged?.Invoke(null, new ClipboardTextChangedEventArgs(Clipboard.GetText()));
+                ClipboardTextChanged?.Invoke(null, EventArgs.Empty);
             }
         }
 
