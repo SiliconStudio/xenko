@@ -16,13 +16,9 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlSequenceNode node;
 
-        public YamlSequenceNode Node
-        {
-            get
-            {
-                return node;
-            }
-        }
+        public YamlSequenceNode Node => node;
+
+        public int Count => node.Children.Count;
 
         YamlNode IDynamicYamlNode.Node => Node;
 

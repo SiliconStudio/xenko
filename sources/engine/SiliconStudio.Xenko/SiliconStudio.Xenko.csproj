@@ -32,10 +32,10 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
     <!-- SharpDX is needed for WIC -->
-    <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'UWP' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -90,7 +90,7 @@
     <Compile Include="Graphics\SamplerStateDescription.cs" />
     <Compile Include="Graphics\StandardImageHelper.Android.cs" />
     <Compile Include="Graphics\StandardImageHelper.cs" />
-    <Compile Include="Graphics\StandardImageHelper.Windows.Store.cs" />
+    <Compile Include="Graphics\StandardImageHelper.UWP.cs" />
     <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
     <Compile Include="Graphics\TextureAddressMode.cs" />
     <Compile Include="Graphics\TextureDimension.cs" />

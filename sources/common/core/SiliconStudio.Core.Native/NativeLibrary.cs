@@ -19,13 +19,6 @@ namespace SiliconStudio.Core
 
         [DllImport("kernel32", EntryPoint = "FreeLibrary", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern int FreeLibrary(IntPtr libraryHandle);
-
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-        [DllImport("PhoneAppModelHost", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr LoadPackagedLibrary(string libraryName, uint reserved);
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-        [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr LoadPackagedLibrary(string libraryName, uint reserved);
 #endif
 
         /// <summary>

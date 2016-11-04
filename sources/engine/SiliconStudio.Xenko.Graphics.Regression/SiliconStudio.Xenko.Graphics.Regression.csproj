@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
-    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux;macOS;Windows10</XenkoBuildTags>
+    <XenkoBuildTags>Windows;Android;iOS;Linux;macOS;UWP</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
@@ -30,7 +30,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone' OR '$(SiliconStudioPlatform)' == 'Windows10')">
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'UWP')">
       <ItemGroup>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>

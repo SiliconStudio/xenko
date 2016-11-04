@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -32,16 +35,6 @@ namespace SiliconStudio.Core
         Windows,
 
         /// <summary>
-        /// The Windows Phone OS.
-        /// </summary>
-        WindowsPhone,
-
-        /// <summary>
-        /// The Windows Store OS.
-        /// </summary>
-        WindowsStore,
-
-        /// <summary>
         /// The android OS.
         /// </summary>
         Android,
@@ -52,9 +45,9 @@ namespace SiliconStudio.Core
         iOS,
 
         /// <summary>
-        /// The Windows 10 OS.
+        /// The Universal Windows Platform (UWP).
         /// </summary>
-        Windows10,
+        UWP,
 
         /// <summary>
         /// The Linux OS.
@@ -64,6 +57,12 @@ namespace SiliconStudio.Core
         /// <summary>
         /// macOS
         /// </summary>
-        macOS
+        macOS,
+
+        /// <summary>
+        /// The Universal Windows Platform (UWP). Please use <see cref="UWP"/> intead.
+        /// </summary>
+        [Obsolete]
+        Windows10 = UWP,
     }
 }

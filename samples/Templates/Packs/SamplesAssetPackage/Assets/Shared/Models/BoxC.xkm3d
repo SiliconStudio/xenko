@@ -14,7 +14,7 @@ Materials:
         Name: Fame
         MaterialInstance:
             ~Id: 966f904c-b725-4274-981d-bfd2565c1236
-            Material: cfc52b94-84aa-4cdb-9cdf-271c6dc2d514/7b5d0f68-4dac-40d3-abde-6d88b410c452:Materials/FrameA
+            Material: cfc52b94-84aa-4cdb-9cdf-271c6dc2d514/b4997bcf-6d3e-4715-ac60-319461df7fca:Materials/FrameA
 Skeleton: null
 ~SourceHashes:
     ../../../Resources/Models/XenkoCrate.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0

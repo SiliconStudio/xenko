@@ -26,6 +26,14 @@ namespace SiliconStudio.Assets.Serializers
             {
                 // Don't load the file if we have the file path
                 textAccessor.FilePath = filePath;
+
+                // Set the assets text if it loaded from an in-memory version
+                // TODO: Propagate dirtiness?
+                if (stream is MemoryStream)
+                {
+                    var reader = new StreamReader(stream, Encoding.UTF8);
+                    textAccessor.Set(reader.ReadToEnd());
+                }
             }
 
             return asset;

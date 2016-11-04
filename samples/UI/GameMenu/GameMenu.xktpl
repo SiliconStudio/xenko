@@ -2,11 +2,11 @@
 Id: 7ac2c705-6240-4ddc-af63-fc438d10f4de
 Name: Game Menu UI Sample
 Scope: Session
-Description: GameMenu shows in detail of how to create UI in a game.
+Description: GameMenu shows in detail how to create UI in a game.
 FullDescription: |
     There are four screens: Splash screen, Welcome screen, Main screen, and Ship selection screen. 
-    Each of which has different layout, and is composed of several different UIElements. 
-    It shows how to put various UIElements in nice layout which is responsive in various resolution.
+    Each of which has a different layout, and is composed of several different UIElements. 
+    It shows how to put various UIElements into a nice layout which is responsive in various resolutions.
 Group: Samples/UI
 Icon: ../.xktpl/NewUI.png
 DefaultOutputName: GameMenu

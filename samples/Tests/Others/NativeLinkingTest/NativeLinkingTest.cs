@@ -10,7 +10,7 @@ namespace NativeLinkingTest
     [TestFixture]
     public class NativeLinkingTest
     {
-        private const string Path = "samples\\Others\\NativeLinking\\Bin\\Windows\\Debug\\NativeLinking.exe";
+        private const string Path = "samplesGenerated\\NativeLinking\\Bin\\Windows\\Debug\\NativeLinking.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

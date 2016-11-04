@@ -10,7 +10,7 @@ namespace PhysicsSampleTest
     [TestFixture]
     public class PhysicsSampleTest
     {
-        private const string Path = "samples\\Physics\\PhysicsSample\\Bin\\Windows-Direct3D11\\Debug\\PhysicsSample.exe";
+        private const string Path = "samplesGenerated\\PhysicsSample\\Bin\\Windows\\Debug\\PhysicsSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;
@@ -62,20 +62,12 @@ namespace PhysicsSampleTest
                 game.TakeScreenshot();
 
                 // VolumeTrigger
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
                 game.Wait(TimeSpan.FromMilliseconds(1000));
-                game.TakeScreenshot();
-
-                // CharacterController
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
-                game.Wait(TimeSpan.FromMilliseconds(1000));
-                game.TakeScreenshot();
-
-                game.KeyPress(Keys.Space, TimeSpan.FromMilliseconds(200));
                 game.TakeScreenshot();
 
                 // Raycasting
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
 

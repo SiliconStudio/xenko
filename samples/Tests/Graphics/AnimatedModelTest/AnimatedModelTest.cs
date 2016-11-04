@@ -9,7 +9,7 @@ namespace AnimatedModelTest
     [TestFixture]
     public class AnimatedModelTest
     {
-        private const string Path = "samples\\Graphics\\AnimatedModel\\Bin\\Windows-Direct3D11\\Debug\\AnimatedModel.exe";
+        private const string Path = "samplesGenerated\\AnimatedModel\\Bin\\Windows\\Debug\\AnimatedModel.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

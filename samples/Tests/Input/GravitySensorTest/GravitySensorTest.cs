@@ -10,7 +10,7 @@ namespace GravitySensorTest
     [TestFixture]
     public class GravitySensorTest
     {
-        private const string Path = "samples\\Input\\GravitySensor\\Bin\\Windows-Direct3D11\\Debug\\GravitySensor.exe";
+        private const string Path = "samplesGenerated\\GravitySensor\\Bin\\Windows\\Debug\\GravitySensor.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

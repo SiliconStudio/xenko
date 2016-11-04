@@ -7,4 +7,4 @@ FontSource: !FileFontProvider
     Source: ../../Resources/Fonts/SourceHanSans-Light.otf
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 8fbf63ea-8ff4-4f8c-b272-4958ecdcc042
-    Size: 26.66666
+    Size: 24.0

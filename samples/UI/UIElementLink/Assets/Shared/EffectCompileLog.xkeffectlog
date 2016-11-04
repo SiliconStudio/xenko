@@ -1,4 +1,4 @@
----
+﻿---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
@@ -66,7 +66,7 @@ UsedParameters:
                     - !ShaderMixinSource
                         Mixins:
                             -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true]
+                                GenericArguments: [false, true, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler

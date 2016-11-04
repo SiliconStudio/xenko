@@ -9,7 +9,7 @@ namespace SimpleDynamicTextureTest
     [TestFixture]
     public class SimpleDynamicTextureTest
     {
-        private const string Path = "samples\\Graphics\\SimpleDynamicTexture\\Bin\\Windows-Direct3D11\\Debug\\SimpleDynamicTexture.exe";
+        private const string Path = "samplesGenerated\\SimpleDynamicTexture\\Bin\\Windows\\Debug\\SimpleDynamicTexture.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

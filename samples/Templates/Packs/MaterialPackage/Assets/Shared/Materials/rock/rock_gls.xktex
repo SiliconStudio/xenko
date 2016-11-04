@@ -1,0 +1,6 @@
+!Texture
+Id: 345c877f-f6fe-473b-807b-19f4fbdd8e27
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../Resources/Textures/rock/rock_gls.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

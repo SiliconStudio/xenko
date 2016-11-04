@@ -1,5 +1,5 @@
 !SceneAsset
-Id: 98760599-6f0e-4c6b-9ba2-613e9d68d2e3
+Id: 961e35a8-ba9a-47b4-82c6-2a2450282c00
 SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
@@ -823,7 +823,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -1113,7 +1113,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -1392,11 +1392,6 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
-                            Shadow:
-                                ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                         Intensity: 10.0
         -   Folder: Platform/Walls
             Entity:
@@ -1531,11 +1526,6 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
-                            Shadow:
-                                ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                         Intensity: 10.0
         -   BaseId: cfc05c6f-da7c-4ba4-8e09-1a659e64ff2a
             BasePartInstanceId: 12db9abd-a162-4997-8818-a1bf3d2058cb
@@ -2367,7 +2357,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -3785,7 +3775,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -4596,11 +4586,6 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
-                            Shadow:
-                                ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                         Intensity: 10.0
         -   BaseId: b86036f4-0ce3-4794-9947-a61378390d41
             BasePartInstanceId: ecd3c316-8263-4fbb-b2e5-140bc057f98f
@@ -4718,11 +4703,6 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
-                            Shadow:
-                                ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                         Intensity: 10.0
         -   Folder: Platform/Walls
             Entity:
@@ -5282,7 +5262,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -6616,7 +6596,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !SkyboxComponent
                         ~Id: 108152f3-0fa4-4ca0-919f-2305da2d77e2
-                        Skybox: b5c6d09e-534d-404a-adbb-fa4a031d5e52/656cbce8-be27-4f52-9a99-e224fc062772:Skybox
+                        Skybox: b5c6d09e-534d-404a-adbb-fa4a031d5e52/b63b5ab8-3600-4675-8b3f-8b5636350572:Skybox
                         Intensity: 3.0
                     - !LightComponent
                         ~Id: a99b7b19-d2a8-4748-a1b8-d7261d35f329
@@ -6728,7 +6708,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -7463,11 +7443,6 @@ Hierarchy:
                                             ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                             Value: {R: 1.0, G: 0.960625, B: 0.60625}
                                         Radius: 3.0
-                                        Shadow:
-                                            ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
-                                            Size: Small
-                                            BiasParameters:
-                                                ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                                     Intensity: 10.0
     -   Location: LootBox
         Asset: !PrefabAsset
@@ -7492,7 +7467,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                                    Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
+                                    Model: 589be271-1f23-4918-a6b9-983855f0771a/e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
                                     Materials:
                                         - null
                                         - null

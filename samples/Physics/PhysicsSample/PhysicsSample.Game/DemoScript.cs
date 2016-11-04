@@ -46,7 +46,7 @@ namespace PhysicsSample
                 TextColor = Color.White,
             };
             constraintNameBlock.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 0));
-            constraintNameBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.93f, 0));
+            constraintNameBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.83f, 0));
 
             Entity.Get<UIComponent>().Page = new UIPage
             {
@@ -55,8 +55,8 @@ namespace PhysicsSample
                     Children = 
                     { 
                         constraintNameBlock, 
-                        CreateButton("Next Constraint", Font, 1), 
-                        CreateButton("Last Constraint", Font, -1) 
+                        CreateButton("Next", Font, 1), 
+                        CreateButton("Previous", Font, -1) 
                     }
                 }
             };
@@ -231,10 +231,11 @@ namespace PhysicsSample
                 Padding = Thickness.UniformRectangle(15),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Content = new TextBlock { Text = text, Font = font, TextSize = 35, TextColor = new Color(200, 200, 200, 255) },
+                BackgroundColor = new Color(new Vector4(0.2f, 0.2f, 0.2f, 0.2f)),
             };
             button.Click += (sender, args) => ChangeConstraint(offset);
             button.SetCanvasPinOrigin(new Vector3(offset > 0 ? 1 : 0, 0.5f, 0));
-            button.SetCanvasRelativePosition(new Vector3(offset > 0 ? 0.97f : 0.03f, 0.93f, 0));
+            button.SetCanvasRelativePosition(new Vector3(offset > 0 ? 0.87f : 0.13f, 0.93f, 0));
 
             return button;
         }
