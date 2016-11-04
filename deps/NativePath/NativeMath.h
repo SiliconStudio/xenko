@@ -168,6 +168,9 @@ static float npLengthF4(float4 vec)
     return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
 }
 
+#undef sqrtf
+#define sqrtf sqrt
+
 #ifdef __cplusplus
 }
 #endif
