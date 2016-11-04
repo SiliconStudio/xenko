@@ -61,37 +61,47 @@ namespace SiliconStudio.Assets.Quantum
 
         private void AssetContentChanging(object sender, ContentChangeEventArgs e)
         {
-            if (AssetNode.IsNonIdentifiableCollectionContent(e.Content))
-                return;
-
+            var overrideValue = OverrideType.Base;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
                 var node = (AssetNode)e.Content.OwnerNode;
-                var overrideValue = e.Index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(e.Index);
-                previousOverrides[e.Content.OwnerNode] = overrideValue;
+                if (e.Index == Index.Empty)
+                {
+                    overrideValue = node.GetContentOverride();
+                }
+                else if (!AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                {
+                    overrideValue = node.GetItemOverride(e.Index);
+                }
             }
-            if (e.ChangeType == ContentChangeType.CollectionAdd)
+            if (e.ChangeType == ContentChangeType.CollectionAdd && !AssetNode.IsNonIdentifiableCollectionContent(e.Content))
             {
                 // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
                 previousOverrides[e.Content.OwnerNode] = OverrideType.New;
             }
+            previousOverrides[e.Content.OwnerNode] = overrideValue;
         }
 
         private void AssetContentChanged(object sender, ContentChangeEventArgs e)
         {
-            if (AssetNode.IsNonIdentifiableCollectionContent(e.Content))
-                return;
-
             var previousOverride = previousOverrides[e.Content.OwnerNode];
             previousOverrides.Remove(e.Content.OwnerNode);
+
             var overrideValue = OverrideType.Base;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
                 var node = (AssetNode)e.Content.OwnerNode;
-                overrideValue = e.Index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(e.Index);
+                if (e.Index == Index.Empty)
+                {
+                    overrideValue = node.GetContentOverride();
+                }
+                else if (!AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                {
+                    overrideValue = node.GetItemOverride(e.Index);
+                }
             }
+
             ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue));
         }
-
     }
 }
