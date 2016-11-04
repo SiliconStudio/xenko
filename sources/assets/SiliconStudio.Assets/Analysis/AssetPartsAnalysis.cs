@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -41,12 +41,12 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Assigns new unique identifiers for part groups in the given <paramref name="hierarchy"/>.
+        /// Assigns new unique identifiers for base part <see cref="BasePart.InstanceId"/> in the given <paramref name="hierarchy"/>.
         /// </summary>
         /// <typeparam name="TAssetPartDesign"></typeparam>
         /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
         /// <param name="hierarchy">The hierarchy which part groups should have new identifiers.</param>
-        public static void FixPartGroups<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy)
+        public static void GenerateNewBaseInstanceIds<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
             where TAssetPart : IIdentifiable
         {
