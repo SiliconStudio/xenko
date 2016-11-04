@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI
@@ -46,6 +47,9 @@ namespace SiliconStudio.Xenko.UI
         private static readonly RoutedEvent<KeyEventArgs> KeyReleasedEvent =
             EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble,typeof(UIElement));
 
+        private static readonly RoutedEvent<TextEventArgs> TextInputEvent =
+            EventManager.RegisterRoutedEvent<TextEventArgs>("TextInput", RoutingStrategy.Bubble, typeof(UIElement));
+
         #endregion
 
         private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
@@ -64,6 +68,8 @@ namespace SiliconStudio.Xenko.UI
             EventManager.RegisterClassHandler(typeof(UIElement), KeyPressedEvent, KeyPressedClassHandler);
             EventManager.RegisterClassHandler(typeof(UIElement), KeyDownEvent, KeyDownClassHandler);
             EventManager.RegisterClassHandler(typeof(UIElement), KeyReleasedEvent, KeyReleasedClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), KeyReleasedEvent, KeyReleasedClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TextInputEvent, TextInputClassHandler);
         }
 
         /// <summary>
@@ -389,6 +395,12 @@ namespace SiliconStudio.Xenko.UI
             RaiseEvent(keyEventArgs);
         }
 
+        internal void RaiseTextInputEvent(TextEventArgs textInputEventArgs)
+        {
+            textInputEventArgs.RoutedEvent = TextInputEvent;
+            RaiseEvent(textInputEventArgs);
+        }
+
         #endregion
 
         #region Class Event Handlers
@@ -546,6 +558,19 @@ namespace SiliconStudio.Xenko.UI
             var uiElementSender = (UIElement)sender;
             if (uiElementSender.IsHierarchyEnabled)
                 uiElementSender.OnKeyDown(args);
+        }
+        
+        // TODO: Cleanup
+        internal virtual void OnTextInput(TextEventArgs args)
+        {
+            
+        }
+
+        private static void TextInputClassHandler(object sender, TextEventArgs args)
+        {
+            var uiElementSender = (UIElement)sender;
+            if (uiElementSender.IsHierarchyEnabled)
+                uiElementSender.OnTextInput(args);
         }
 
         /// <summary>

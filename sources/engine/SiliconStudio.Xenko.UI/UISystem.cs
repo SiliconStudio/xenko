@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -186,24 +186,30 @@ namespace SiliconStudio.Xenko.UI
             if (input == null)
                 return;
 
+            if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
+
+            foreach (var textEvent in input.InputEvents.OfType<TextInputEvent>())
+            {
+                UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs { Character = textEvent.Character });
+            }
+
             foreach (var keyEvent in input.KeyEvents)
             {
-                if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
                 var key = keyEvent.Key;
+                var evt = new KeyEventArgs { Key = key, Input = input };
                 if (keyEvent.State == ButtonState.Pressed)
                 {
-                    UIElement.FocusedElement.RaiseKeyPressedEvent(new KeyEventArgs { Key = key, Input = input });
+                    UIElement.FocusedElement?.RaiseKeyPressedEvent(evt);
                 }
                 else
                 {
-                    UIElement.FocusedElement.RaiseKeyReleasedEvent(new KeyEventArgs { Key = key, Input = input });
+                    UIElement.FocusedElement?.RaiseKeyReleasedEvent(evt);
                 }
             }
 
             foreach (var key in input.KeyDown)
             {
-                if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
-                UIElement.FocusedElement.RaiseKeyDownEvent(new KeyEventArgs { Key = key, Input = input });
+                UIElement.FocusedElement?.RaiseKeyDownEvent(new KeyEventArgs { Key = key, Input = input });
             }
         }
     }
