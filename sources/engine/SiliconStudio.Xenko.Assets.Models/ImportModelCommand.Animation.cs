@@ -8,7 +8,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Updater;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine;
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                                     }
 
                                     Matrix localMatrix;
-                                    TransformComponent.CreateMatrixTRS(ref modelNodeDefinition.Transform.Position, ref modelNodeDefinition.Transform.Rotation, ref modelNodeDefinition.Transform.Scale,
+                                    Matrix.Transformation(ref modelNodeDefinition.Transform.Scale, ref modelNodeDefinition.Transform.Rotation, ref modelNodeDefinition.Transform.Position,
                                         out localMatrix);
                                     matrix = Matrix.Multiply(localMatrix, matrix);
                                 }

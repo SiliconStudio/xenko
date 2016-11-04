@@ -7,6 +7,7 @@ using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {

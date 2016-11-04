@@ -3,7 +3,7 @@
 
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
         /// </summary>
         /// <param name="registry">The registry.</param>
-        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="IAssetManager" />.</remarks>
+        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="IContentManager" />.</remarks>
         public SceneSystem(IServiceRegistry registry)
             : base(registry)
         {
@@ -111,6 +111,9 @@ namespace SiliconStudio.Xenko.Engine
             {
                 return;
             }
+
+            // Reset the context
+            renderContext.Reset();
 
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.

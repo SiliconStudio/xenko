@@ -18,8 +18,6 @@ Files:
   - {Source: MainPage.xaml.t4, Target: MainPage.xaml, IsTemplate: true}
   - {Source: App.xaml.cs.t4, Target: App.xaml.cs, IsTemplate: true}
   - {Source: App.xaml.t4, Target: App.xaml, IsTemplate: true}
-  - {Source: PackageWindowsPhone.appxmanifest.t4, Target: PackageWindowsPhone.appxmanifest, IsTemplate: true}
-  - {Source: PackageWindowsStore.appxmanifest.t4, Target: PackageWindowsStore.appxmanifest, IsTemplate: true}
   - {Source: Resources\XenkoIcon150x150.png, Target: Resources\WindowsPhone\Logo.png}
   - {Source: Resources\XenkoIcon150x150.png, Target: Resources\WindowsStore\Logo.png}
   - {Source: Resources\XenkoIcon54x54.png, Target: Resources\WindowsStore\SmallLogo.png}

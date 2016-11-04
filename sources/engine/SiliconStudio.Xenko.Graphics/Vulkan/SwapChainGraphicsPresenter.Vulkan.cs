@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-//#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+//#if !SILICONSTUDIO_PLATFORM_UWP
 //                if (swapChain == null)
 //                    return;
 

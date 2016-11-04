@@ -13,6 +13,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Color Vertex Stream")]
     public class ColorVertexStreamDefinition : IndexedVertexStreamDefinition
     {
+        private const string semanticName = "COLOR";
+
+        private static readonly int hashCode = semanticName.GetHashCode();
+
+        public override int GetHashCode() => hashCode;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorVertexStreamDefinition"/> class.
         /// </summary>
@@ -31,7 +37,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 
         protected override string GetSemanticPrefixName()
         {
-            return "COLOR";
+            return semanticName;
+        }
+
+        public override int GetSemanticNameHash()
+        {
+            return hashCode;
         }
     }
 }

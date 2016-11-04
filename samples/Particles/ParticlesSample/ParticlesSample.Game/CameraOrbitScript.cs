@@ -12,7 +12,7 @@ namespace ParticlesSample
     /// </summary>
     public class CameraOrbitScript : AsyncScript
     {
-        private Vector3 lookAtPosition = new Vector3(0, 0, 0);
+        private readonly Vector3 lookAtPosition = new Vector3(0, 0, 0);
         private float lookAtAngle = 90f;
         private float lookAtAngleY = 10f;
         private const float lookFromDistance = 8f;

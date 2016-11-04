@@ -17,40 +17,17 @@ namespace AnimatedModel
         {
             base.Start();
 
-            // Setup the UI
-            Entity.Get<UIComponent>().Page = new UIPage
-            {
-                RootElement = new StackPanel
-                {
-                    Orientation = Orientation.Vertical,
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    Margin = new Thickness(0, 10, 20, 0),
-                    Children = { CreateButton("Idle"), CreateButton("Run") }
-                }
-            };
+            // Bind the buttons
+            var page = Entity.Get<UIComponent>().Page;
+
+            var btnIdle = page.RootElement.FindVisualChildOfType<Button>("ButtonIdle");
+            btnIdle.Click += (s, e) => Knight.Get<AnimationComponent>().Crossfade("Idle", TimeSpan.FromSeconds(0.25));
+
+            var btnRun = page.RootElement.FindVisualChildOfType<Button>("ButtonRun");
+            btnRun.Click += (s, e) => Knight.Get<AnimationComponent>().Crossfade("Run", TimeSpan.FromSeconds(0.25));
 
             // Set the default animation
             Knight.Get<AnimationComponent>().Play("Run");
-        }
-
-        /// <summary>
-        /// Create a button and link the click action to the corresponding animation.
-        /// </summary>
-        private Button CreateButton(string animationName)
-        {
-            var idleButton = new Button
-            {
-                Content = new TextBlock
-                {
-                    Text = "Play " + animationName,
-                    Font = Font,
-                },
-                Padding = new Thickness(10, 10, 10, 10),
-                Margin = new Thickness(0, 0, 0, 10),
-            };
-            idleButton.Click += (s, e) => Knight.Get<AnimationComponent>().Crossfade(animationName, TimeSpan.FromSeconds(0.1));
-
-            return idleButton;
-        }
+        }        
     }
 }

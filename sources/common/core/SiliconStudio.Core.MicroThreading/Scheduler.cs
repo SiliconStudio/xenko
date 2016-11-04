@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// </remarks>
     public class Scheduler
     {
-        internal readonly static Logger Log = GlobalLogger.GetLogger("Scheduler");
+        internal static readonly Logger Log = GlobalLogger.GetLogger("Scheduler");
 
         // An ever-increasing counter that will be used to have a "stable" microthread scheduling (first added is first scheduled)
         internal long SchedulerCounter;
@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.MicroThreading
         internal LinkedList<MicroThread> allMicroThreads = new LinkedList<MicroThread>();
         internal List<MicroThreadCallbackNode> callbackNodePool = new List<MicroThreadCallbackNode>();
 
-        private ThreadLocal<MicroThread> runningMicroThread = new ThreadLocal<MicroThread>();
+        private readonly ThreadLocal<MicroThread> runningMicroThread = new ThreadLocal<MicroThread>();
 
         public event EventHandler<SchedulerThreadEventArgs> MicroThreadStarted;
         public event EventHandler<SchedulerThreadEventArgs> MicroThreadEnded;
@@ -61,47 +61,27 @@ namespace SiliconStudio.Core.MicroThreading
         /// Gets the current running micro thread in this scheduler through <see cref="Run"/>.
         /// </summary>
         /// <value>The current running micro thread in this scheduler.</value>
-        public MicroThread RunningMicroThread
-        {
-            get { return runningMicroThread.Value; }
-        }
+        public MicroThread RunningMicroThread => runningMicroThread.Value;
 
         /// <summary>
         /// Gets the scheduler associated with current micro thread.
         /// </summary>
         /// <value>The scheduler associated with current micro thread.</value>
-        public static Scheduler Current
-        {
-            get
-            {
-                var currentThread = CurrentMicroThread;
-                return (currentThread != null) ? currentThread.Scheduler : null;
-            }
-        }
+        public static Scheduler Current => CurrentMicroThread?.Scheduler;
 
         /// <summary>
         /// Gets the list of every non-stopped micro threads.
         /// </summary>
         /// <value>The list of every non-stopped micro threads.</value>
-        public ICollection<MicroThread> MicroThreads
-        {
-            get { return allMicroThreads; }
-        }
+        public ICollection<MicroThread> MicroThreads => allMicroThreads;
 
-        protected Channel<int> FrameChannel { get; private set; }
+        protected Channel<int> FrameChannel { get; }
 
         /// <summary>
         /// Gets the current micro thread (self).
         /// </summary>
         /// <value>The current micro thread (self).</value>
-        public static MicroThread CurrentMicroThread
-        {
-            get
-            {
-                var microThreadSyncContext = SynchronizationContext.Current as MicroThreadSynchronizationContext;
-                return (microThreadSyncContext != null) ? microThreadSyncContext.MicroThread : null;
-            }
-        }
+        public static MicroThread CurrentMicroThread => (SynchronizationContext.Current as IMicroThreadSynchronizationContext)?.MicroThread;
 
 
         /// <summary>
@@ -132,7 +112,7 @@ namespace SiliconStudio.Core.MicroThreading
         /// </summary>
         public void Run()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
             int managedThreadId = 0;
 #else
             int managedThreadId = Thread.CurrentThread.ManagedThreadId;
@@ -182,8 +162,8 @@ namespace SiliconStudio.Core.MicroThreading
                     // TODO: Do we still need to try/catch here? Everything should be caught in the continuation wrapper and put into MicroThread.Exception
                     try
                     {
-                        if (microThread.State == MicroThreadState.Starting && MicroThreadStarted != null)
-                            MicroThreadStarted(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
+                        if (microThread.State == MicroThreadState.Starting)
+                            MicroThreadStarted?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
                         MicroThreadCallbackStart?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 

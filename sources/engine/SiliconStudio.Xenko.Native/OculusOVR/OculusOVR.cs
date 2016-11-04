@@ -41,11 +41,11 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateQuadLayerTexturesDx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height, bool headLocked);
+        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrSetQuadLayerParams", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetQuadLayerParams(IntPtr layer, ref Vector3 position, ref Quaternion rotation, ref Vector2 size);
+        public static extern void SetQuadLayerParams(IntPtr layer, ref Vector3 position, ref Quaternion rotation, ref Vector2 size, bool headLocked);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
@@ -166,5 +166,12 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetAudioDeviceID", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern void GetAudioDeviceID(StringBuilder deviceName);
+
+        public static string GetAudioDeviceFullName()
+        {
+            var deviceName = new StringBuilder(128);
+            GetAudioDeviceID(deviceName);
+            return $"\\\\?\\SWD#MMDEVAPI#{deviceName}#{{e6327cad-dcec-4949-ae8a-991e976a79d2}}"; //this should not change the guid is related to audio device type
+        }
     }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -16,6 +15,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Data;
@@ -60,8 +60,7 @@ namespace SiliconStudio.Xenko.Assets
         public Scene DefaultScene { get; set; }
 
         [DataMember(2000)]
-        [NotNullItems]
-        [MemberCollection(ReadOnly = true)]
+        [MemberCollection(ReadOnly = true, NotNullItems = true)]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
         [DataMember(3000)]
@@ -118,20 +117,14 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Windows:
                     configPlatform = ConfigPlatforms.Windows;
                     break;
-                case PlatformType.WindowsPhone:
-                    configPlatform = ConfigPlatforms.WindowsPhone;
-                    break;
-                case PlatformType.WindowsStore:
-                    configPlatform = ConfigPlatforms.WindowsStore;
-                    break;
                 case PlatformType.Android:
                     configPlatform = ConfigPlatforms.Android;
                     break;
                 case PlatformType.iOS:
                     configPlatform = ConfigPlatforms.iOS;
                     break;
-                case PlatformType.Windows10:
-                    configPlatform = ConfigPlatforms.Windows10;
+                case PlatformType.UWP:
+                    configPlatform = ConfigPlatforms.UWP;
                     break;
                 case PlatformType.Linux:
                     configPlatform = ConfigPlatforms.Linux;

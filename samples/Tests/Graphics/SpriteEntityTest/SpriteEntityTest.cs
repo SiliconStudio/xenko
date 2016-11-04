@@ -10,7 +10,7 @@ namespace SpriteEntityTest
     [TestFixture]
     public class SpriteEntityTest
     {
-        private const string Path = "samples\\Graphics\\SpriteEntity\\Bin\\Windows-Direct3D11\\Debug\\SpriteEntity.exe";
+        private const string Path = "samplesGenerated\\SpriteEntity\\Bin\\Windows\\Debug\\SpriteEntity.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Graphics;

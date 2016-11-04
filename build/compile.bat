@@ -42,7 +42,7 @@ echo.
 goto exit
 
 :ArgsDone
-set XXMSBUILD="\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+set XXMSBUILD="C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
 set _platform_target=Mixed Platforms
 
 rem Compiling the various solutions
@@ -127,18 +127,8 @@ set _platform_target=iPhone
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
-set Project=Xenko.WindowsPhone.sln
-set _platform_target=WindowsPhone
-call :compile
-if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
-
-set Project=Xenko.WindowsStore.sln
-set _platform_target=WindowsStore
-call :compile
-if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
-
-set Project=Xenko.Windows10.sln
-set _platform_target=Windows10
+set Project=Xenko.UWP.sln
+set _platform_target=UWP
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 

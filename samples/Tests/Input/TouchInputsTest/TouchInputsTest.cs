@@ -10,7 +10,7 @@ namespace TouchInputsTest
     [TestFixture]
     public class TouchInputsTest
     {
-        private const string Path = "samples\\Input\\TouchInputs\\Bin\\Windows-Direct3D11\\Debug\\TouchInputs.exe";
+        private const string Path = "samplesGenerated\\TouchInputs\\Bin\\Windows\\Debug\\TouchInputs.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

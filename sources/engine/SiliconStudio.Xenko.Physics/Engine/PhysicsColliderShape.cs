@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -90,6 +91,11 @@ namespace SiliconStudio.Xenko.Physics
             {
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
                 shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Radius, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
+            }
+            else if (type == typeof(ConeColliderShapeDesc))
+            {
+                var coneDesc = (ConeColliderShapeDesc)desc;
+                shape = new ConeColliderShape(coneDesc.Height, coneDesc.Radius, coneDesc.Orientation) { LocalOffset = coneDesc.LocalOffset, LocalRotation = coneDesc.LocalRotation };
             }
             else if (type == typeof(SphereColliderShapeDesc))
             {
@@ -220,7 +226,7 @@ namespace SiliconStudio.Xenko.Physics
 
             return shape;
         }
-
+        
         public void Dispose()
         {
             if (Shape == null) return;
@@ -230,6 +236,11 @@ namespace SiliconStudio.Xenko.Physics
 
             Shape.Dispose();
             Shape = null;
+        }
+
+        public override int GetHashCode()
+        {
+            return Descriptions?.ComputeHash() ?? 0;
         }
     }
 }

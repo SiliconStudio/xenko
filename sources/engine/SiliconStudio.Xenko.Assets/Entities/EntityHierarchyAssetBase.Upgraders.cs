@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -166,6 +166,30 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     entityDesign.BaseId = entityDesign.Design.BaseId;
                     entityDesign.BasePartInstanceId = entityDesign.Design.BasePartInstanceId;
                     entityDesign.Design = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+
+        protected class CharacterSlopeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic entityDesign in entities)
+                {
+                    var entity = entityDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!CharacterComponent")
+                        {
+                            var rads = component.MaxSlope;
+                            var angle = new DynamicYamlMapping(new YamlMappingNode());
+                            angle.AddChild("Radians", rads);
+                            component.MaxSlope = angle;
+                        }
+                    }
                 }
             }
         }

@@ -23,28 +23,8 @@ namespace SiliconStudio.Core.Design.Tests
             shadowObject = ShadowObject.GetOrCreate(obj);
             Assert.NotNull(shadowObject);
 
-            shadowObject.IsSelected = true;
-
             var shadowObject2 = ShadowObject.GetOrCreate(obj);
             Assert.AreEqual(shadowObject, shadowObject2);
-        }
-
-        [Test]
-        public void TestCopy()
-        {
-            ShadowObject.Enable = true;
-            var obj = new object();
-            var obj1 = new object();
-
-            var shadowObject = ShadowObject.GetOrCreate(obj);
-            shadowObject.IsSelected = true;
-
-            ShadowObject.Copy(obj, obj1);
-
-            var shadowObject1 = ShadowObject.Get(obj1);
-            Assert.NotNull(shadowObject1);
-
-            Assert.True(shadowObject1.IsSelected);
         }
 
         [Test]

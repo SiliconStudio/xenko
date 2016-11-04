@@ -269,13 +269,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             commandList.UnmapSubresource(mappedVertices);
         }
 
-        protected override void InvalidateEffectPermutation(RenderObject renderObject, RenderEffect renderEffect)
-        {
-            var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-            var materialInfo = renderParticleEmitter.ParticleMaterialInfo;
-            materialInfo.PerMaterialLayout = null;
-        }
-
         /// <inheritdoc/>
         protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {

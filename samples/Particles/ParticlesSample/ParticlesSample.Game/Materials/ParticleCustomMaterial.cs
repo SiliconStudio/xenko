@@ -24,7 +24,12 @@ namespace ParticlesSample.Materials
         private ShaderSource shaderBaseScalar;
 
         [DataMemberIgnore]
-        public override string EffectName { get; protected set; } = "ParticleCustomEffect";
+        public override string EffectName
+        {
+            get { return effectName; }
+            protected set { effectName = value; }
+        }
+        private string effectName = "ParticleCustomEffect";
 
         /// <summary>
         /// <see cref="IComputeColor"/> allows several channels to be blended together, including textures, vertex streams and fixed values.
@@ -34,7 +39,12 @@ namespace ParticlesSample.Materials
         /// </userdoc>
         [DataMember(100)]
         [Display("Emissive")]
-        public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
+        public IComputeColor ComputeColor
+        {
+            get { return computeColor; }
+            set { computeColor = value; }
+        }
+        private IComputeColor computeColor = new ComputeTextureColor();
 
         /// <summary>
         /// <see cref="UVBuilder"/> defines how the base coordinates of the particle shape should be modified for texture scrolling, animation, etc.
@@ -45,7 +55,7 @@ namespace ParticlesSample.Materials
         [DataMember(200)]
         [Display("TexCoord0")]
         public UVBuilder UVBuilder0;
-        private AttributeDescription texCoord0 = new AttributeDescription("TEXCOORD");
+        private readonly AttributeDescription texCoord0 = new AttributeDescription("TEXCOORD");
 
         /// <summary>
         /// <see cref="IComputeColor"/> allows several channels to be blended together, including textures, vertex streams and fixed values.
@@ -55,7 +65,12 @@ namespace ParticlesSample.Materials
         /// </userdoc>
         [DataMember(300)]
         [Display("Alpha")]
-        public IComputeScalar ComputeScalar { get; set; } = new ComputeTextureScalar();
+        public IComputeScalar ComputeScalar
+        {
+            get { return computeScalar; }
+            set { computeScalar = value; }
+        }
+        private IComputeScalar computeScalar = new ComputeTextureScalar();
 
         /// <summary>
         /// <see cref="UVBuilder"/> defines how the base coordinates of the particle shape should be modified for texture scrolling, animation, etc.
@@ -66,7 +81,7 @@ namespace ParticlesSample.Materials
         [DataMember(400)]
         [Display("TexCoord1")]
         public UVBuilder UVBuilder1;
-        private AttributeDescription texCoord1 = new AttributeDescription("TEXCOORD1");
+        private readonly AttributeDescription texCoord1 = new AttributeDescription("TEXCOORD1");
 
         protected override void InitializeCore(RenderContext context)
         {
@@ -124,9 +139,9 @@ namespace ParticlesSample.Materials
         {
             base.UpdateVertexBuilder(vertexBuilder);
 
-            var code = shaderBaseColor?.ToString();
+            var code = shaderBaseColor != null ? shaderBaseColor.ToString() : null;
 
-            if (code?.Contains("COLOR0") ?? false)
+            if (code != null && code.Contains("COLOR0"))
             {
                 vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
             }
@@ -138,16 +153,16 @@ namespace ParticlesSample.Materials
             vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[1]);
         }
 
-        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
+        public override unsafe void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             // Update the non-default coordinates first, because they update off the default ones
-            UVBuilder1?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord1);
+            if (UVBuilder1 != null) UVBuilder1.BuildUVCoordinates(ref bufferState, ref sorter, texCoord1);
 
             // Update the default coordinates last
-            UVBuilder0?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord0);
+            if (UVBuilder0 != null) UVBuilder0.BuildUVCoordinates(ref bufferState, ref sorter, texCoord0);
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)

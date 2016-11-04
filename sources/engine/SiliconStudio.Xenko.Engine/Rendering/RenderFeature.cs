@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering

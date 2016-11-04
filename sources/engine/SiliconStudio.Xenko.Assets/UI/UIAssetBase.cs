@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         public override UIElement GetParent(UIElement part)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
-            return part.Parent;
+            return part.VisualParent;
         }
 
         /// <inheritdoc/>

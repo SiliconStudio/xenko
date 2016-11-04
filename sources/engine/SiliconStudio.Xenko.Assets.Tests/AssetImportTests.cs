@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.True(File.Exists(projectDir + "/texture/logo.xktex"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/texture/logo.xktex");
+                var textureAsset = ContentSerializer.Load<TextureAsset>(projectDir + "/texture/logo.xktex");
 
                 Assert.AreEqual("../../Logo.png", textureAsset.Source.FullPath);
 
@@ -68,11 +68,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.True(File.Exists(projectDir + "/model/factory_entity.xkentity"));
 
-                var modelAsset = AssetSerializer.Load<PrefabAsset>(projectDir + "/model/factory_entity.xkentity");
+                var modelAsset = ContentSerializer.Load<PrefabAsset>(projectDir + "/model/factory_entity.xkentity");
 
                 Assert.AreEqual("factory_model", modelAsset.Data.Name);
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
+                var textureAsset = ContentSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
@@ -99,25 +99,25 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.xkmat"));
                 Assert.True(File.Exists(projectDir + "/model/factory.xkm3d"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
+                var textureAsset = ContentSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
-                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
+                var materialBlinn1 = ContentSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
                 var textureVisitor = new MaterialTextureVisitor(materialBlinn1.Material);
                 var allTexturesBlinn1 = textureVisitor.GetAllTextureValues();
                 Assert.AreEqual(1, allTexturesBlinn1.Count);
                 foreach (var texture in allTexturesBlinn1)
                     Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
-                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
+                var materialBlinn2 = ContentSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
                 textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
                 var allTexturesBlinn2 = textureVisitor.GetAllTextureValues();
                 Assert.AreEqual(1, allTexturesBlinn2.Count);
                 foreach (var texture in allTexturesBlinn2)
                     Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
-                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
+                var model = ContentSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
 
 
                 // Cleanup before exit
@@ -153,21 +153,21 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.xkmat"));
                 Assert.True(File.Exists(projectDir + "/model/factory.xkm3d"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
+                var textureAsset = ContentSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
-                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
+                var materialBlinn1 = ContentSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
                 var textureVisitor = new MaterialTextureVisitor(materialBlinn1.Material);
                 foreach (var texture in textureVisitor.GetAllTextureValues())
                     Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
-                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
+                var materialBlinn2 = ContentSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
                 textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
                 foreach (var texture in textureVisitor.GetAllTextureValues())
                     Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
-                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
+                var model = ContentSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
 
 
                 // Cleanup before exit

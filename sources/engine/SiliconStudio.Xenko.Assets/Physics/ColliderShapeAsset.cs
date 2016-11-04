@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
@@ -37,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
         /// </userdoc>
         [DataMember(10)]
         [Category]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<IAssetColliderShapeDesc> ColliderShapes { get; set; } = new List<IAssetColliderShapeDesc>();
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase

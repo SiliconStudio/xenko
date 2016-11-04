@@ -5,11 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpYaml.Events;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Settings
 {

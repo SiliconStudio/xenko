@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering.Materials;
 
@@ -65,8 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         [DataMember(20)]
         [NotNull]
         [Category]
-        [MemberCollection(CanReorderItems = true)]
-        [NotNullItems]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public MaterialBlendLayers Layers { get; set; }
 
         public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
@@ -90,6 +90,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
+            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettings != null)
+            {
+                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+            }
             foreach (var materialReference in FindMaterialReferences())
             {
                 yield return materialReference;

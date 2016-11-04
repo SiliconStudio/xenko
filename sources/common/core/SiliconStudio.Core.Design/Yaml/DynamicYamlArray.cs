@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -16,13 +16,9 @@ namespace SiliconStudio.Core.Yaml
     {
         internal YamlSequenceNode node;
 
-        public YamlSequenceNode Node
-        {
-            get
-            {
-                return node;
-            }
-        }
+        public YamlSequenceNode Node => node;
+
+        public int Count => node.Children.Count;
 
         YamlNode IDynamicYamlNode.Node => Node;
 

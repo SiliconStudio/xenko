@@ -10,7 +10,7 @@ namespace SpaceEscapeTest
     [TestFixture]
     public class SpaceEscapeTest
     {
-        private const string Path = "samples\\Games\\SpaceEscape\\Bin\\Windows-Direct3D11\\Debug\\SpaceEscape.exe";
+        private const string Path = "samplesGenerated\\SpaceEscape\\Bin\\Windows\\Debug\\SpaceEscape.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     Shadow =
                     {
                         Enabled = true,
-                        Size = LightShadowMapSize.XLarge,
+                        Size = LightShadowMapSize.Large,
                         Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter5x5 },
                     }
                 }

@@ -10,7 +10,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.LZ4;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Storage
@@ -43,7 +43,7 @@ namespace SiliconStudio.Core.Storage
 
         private readonly List<LoadedBundle> loadedBundles = new List<LoadedBundle>(); 
 
-        private readonly ObjectDatabaseAssetIndexMap assetIndexMap = new ObjectDatabaseAssetIndexMap();
+        private readonly ObjectDatabaseContentIndexMap contentIndexMap = new ObjectDatabaseContentIndexMap();
 
         public delegate Task<string> BundleResolveDelegate(string bundleName);
 
@@ -53,9 +53,9 @@ namespace SiliconStudio.Core.Storage
         public BundleResolveDelegate BundleResolve { get; set; }
 
         /// <inheritdoc/>
-        public IAssetIndexMap AssetIndexMap
+        public IContentIndexMap ContentIndexMap
         {
-            get { return assetIndexMap; }
+            get { return contentIndexMap; }
         }
 
         public string BundleDirectory { get { return vfsBundleDirectory; } }
@@ -151,9 +151,9 @@ namespace SiliconStudio.Core.Storage
         /// Loads the specified bundle.
         /// </summary>
         /// <param name="bundleName">Name of the bundle.</param>
-        /// <param name="objectDatabaseAssetIndexMap">The object database asset index map, where newly loaded assets will be merged (ignored if null).</param>
+        /// <param name="objectDatabaseContentIndexMap">The object database asset index map, where newly loaded assets will be merged (ignored if null).</param>
         /// <returns></returns>
-        public async Task LoadBundle(string bundleName, ObjectDatabaseAssetIndexMap objectDatabaseAssetIndexMap)
+        public async Task LoadBundle(string bundleName, ObjectDatabaseContentIndexMap objectDatabaseContentIndexMap)
         {
             if (bundleName == null) throw new ArgumentNullException("bundleName");
 
@@ -173,10 +173,10 @@ namespace SiliconStudio.Core.Storage
             // Resolve package
             var vfsUrl = await ResolveBundle(bundleName, true);
 
-            await LoadBundleFromUrl(bundleName, objectDatabaseAssetIndexMap, vfsUrl);
+            await LoadBundleFromUrl(bundleName, objectDatabaseContentIndexMap, vfsUrl);
         }
 
-        public async Task LoadBundleFromUrl(string bundleName, ObjectDatabaseAssetIndexMap objectDatabaseAssetIndexMap, string bundleUrl, bool ignoreDependencies = false)
+        public async Task LoadBundleFromUrl(string bundleName, ObjectDatabaseContentIndexMap objectDatabaseContentIndexMap, string bundleUrl, bool ignoreDependencies = false)
         {
             BundleDescription bundle;
 
@@ -190,7 +190,7 @@ namespace SiliconStudio.Core.Storage
             {
                 foreach (var dependency in bundle.Dependencies)
                 {
-                    await LoadBundle(dependency, objectDatabaseAssetIndexMap);
+                    await LoadBundle(dependency, objectDatabaseContentIndexMap);
                 }
             }
 
@@ -235,25 +235,25 @@ namespace SiliconStudio.Core.Storage
             }
 
             // Merge with local (asset bundles) index map
-            assetIndexMap.Merge(bundle.Assets);
+            contentIndexMap.Merge(bundle.Assets);
 
             // Merge with global object database map
-            objectDatabaseAssetIndexMap.Merge(bundle.Assets);
+            objectDatabaseContentIndexMap.Merge(bundle.Assets);
         }
 
         /// <summary>
         /// Unload the specified bundle.
         /// </summary>
         /// <param name="bundleName">Name of the bundle.</param>
-        /// <param name="objectDatabaseAssetIndexMap">The object database asset index map, where newly loaded assets will be merged (ignored if null).</param>
+        /// <param name="objectDatabaseContentIndexMap">The object database asset index map, where newly loaded assets will be merged (ignored if null).</param>
         /// <returns></returns>
-        public void UnloadBundle(string bundleName, ObjectDatabaseAssetIndexMap objectDatabaseAssetIndexMap)
+        public void UnloadBundle(string bundleName, ObjectDatabaseContentIndexMap objectDatabaseContentIndexMap)
         {
             lock (loadedBundles)
             lock (objects)
             {
                 // Unload package
-                UnloadBundleRecursive(bundleName, objectDatabaseAssetIndexMap);
+                UnloadBundleRecursive(bundleName, objectDatabaseContentIndexMap);
 
                 // Remerge previously loaded packages
                 foreach (var otherLoadedBundle in loadedBundles)
@@ -266,13 +266,13 @@ namespace SiliconStudio.Core.Storage
                         objects[objectEntry.Key] = new ObjectLocation { Info = objectEntry.Value, BundleUrl = otherLoadedBundle.BundleUrl };
                     }
 
-                    assetIndexMap.Merge(bundle.Assets);
-                    objectDatabaseAssetIndexMap.Merge(bundle.Assets);
+                    contentIndexMap.Merge(bundle.Assets);
+                    objectDatabaseContentIndexMap.Merge(bundle.Assets);
                 }
             }
         }
 
-        private void UnloadBundleRecursive(string bundleName, ObjectDatabaseAssetIndexMap objectDatabaseAssetIndexMap)
+        private void UnloadBundleRecursive(string bundleName, ObjectDatabaseContentIndexMap objectDatabaseContentIndexMap)
         {
             if (bundleName == null) throw new ArgumentNullException("bundleName");
 
@@ -320,15 +320,15 @@ namespace SiliconStudio.Core.Storage
                     }
 
                     // Unmerge with local (asset bundles) index map
-                    assetIndexMap.Unmerge(bundle.Assets);
+                    contentIndexMap.Unmerge(bundle.Assets);
 
                     // Unmerge with global object database map
-                    objectDatabaseAssetIndexMap.Unmerge(bundle.Assets);
+                    objectDatabaseContentIndexMap.Unmerge(bundle.Assets);
 
                     // Remove dependencies too
                     foreach (var dependency in bundle.Dependencies)
                     {
-                        UnloadBundleRecursive(dependency, objectDatabaseAssetIndexMap);
+                        UnloadBundleRecursive(dependency, objectDatabaseContentIndexMap);
                     }
                 }
             }

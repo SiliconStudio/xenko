@@ -106,6 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var staticObjectNode = renderObject.StaticObjectNode;
 
                 var renderMesh = (RenderMesh)renderObject;
+                bool resetPipelineState = false;
 
                 var material = renderMesh.Material;
                 var materialInfo = renderMesh.MaterialInfo;
@@ -151,14 +152,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         tessellationStates[staticObjectNode] = tessellationState;
 
                         // Reset pipeline states
-                        for (int i = 0; i < effectSlotCount; ++i)
-                        {
-                            var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
-                            var renderEffect = renderEffects[staticEffectObjectNode];
-
-                            if (renderEffect != null)
-                                renderEffect.PipelineState = null;
-                        }
+                        resetPipelineState = true;
                     }
 
                     renderMesh.ActiveMeshDraw = tessellationState.MeshDraw;
@@ -169,13 +163,29 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
                 }
 
+                // Rebuild rasterizer state if culling mode changed
+                // TODO GRAPHICS REFACTOR: Negative scaling belongs into TransformationRenderFeature
+                if (materialInfo != null && (materialInfo.CullMode != material.CullMode || renderMesh.IsScalingNegative != renderMesh.IsPreviousScalingNegative))
+                {
+                    materialInfo.CullMode = material.CullMode;
+                    renderMesh.IsPreviousScalingNegative = renderMesh.IsScalingNegative;
+                    resetPipelineState = true;
+                }
+
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
+                    if (renderEffect == null)
+                        continue;
+
+                    // If any pipeline state changed, rebuild it for all effect slots
+                    if (resetPipelineState)
+                        renderEffect.PipelineState = null;
+
                     // Skip effects not used during this frame
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                    if (!renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
                     if (materialInfo == null || materialInfo.Material != material)
@@ -190,12 +200,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             }
                         }
                         renderMesh.MaterialInfo = materialInfo;
-                    }
-
-                    if (materialInfo.CullMode != material.CullMode)
-                    {
-                        materialInfo.CullMode = material.CullMode;
-                        renderEffect.PipelineState = null;
                     }
 
                     if (materialInfo.MaterialParameters != material.Parameters || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
@@ -311,48 +315,38 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderDrawContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
-            // Check if encountered first time this frame
-            if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
+            var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
+            if (resourceGroupDescription.DescriptorSetLayout == null)
+                return false;
+
+            // Check if this material was encountered for the first time this frame and mark it as used
+            if (Interlocked.Exchange(ref materialInfo.LastFrameUsed, renderSystem.FrameCounter) == renderSystem.FrameCounter)
                 return true;
 
-            // TODO: spinlock?
-            lock (materialInfo)
+            // First time we use the material with a valid effect, let's update layouts
+            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
             {
-                if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
-                    return true;
+                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
 
-                // First time we use the material with a valid effect, let's update layouts
-                if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
+                var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
+                parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
+                materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
+
+                // Process material cbuffer (if any)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
-                    if (resourceGroupDescription.DescriptorSetLayout == null)
-                        return false;
-
-                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-
-                    var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
-                    materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
-
-                    // Process material cbuffer (if any)
-                    if (resourceGroupDescription.ConstantBufferReflection != null)
-                    {
-                        materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
-                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
-                    }
-                    materialInfo.ParametersChanged = true;
+                    materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                    parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
+                materialInfo.ParametersChanged = true;
+            }
 
-                // If the parameters collection instance changed, we need to update it
-                if (materialInfo.ParametersChanged)
-                {
-                    materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
-                    materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
-                    materialInfo.ParametersChanged = false;
-                }
-
-                // Mark this material as used during this frame
-                materialInfo.LastFrameUsed = renderSystem.FrameCounter;
+            // If the parameters collection instance changed, we need to update it
+            if (materialInfo.ParametersChanged)
+            {
+                materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
+                materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
+                materialInfo.ParametersChanged = false;
             }
 
             // Copy back to ParameterCollection

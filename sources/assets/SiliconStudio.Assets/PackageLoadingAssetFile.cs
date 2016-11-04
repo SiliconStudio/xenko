@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SharpYaml;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 
@@ -66,6 +65,10 @@ namespace SiliconStudio.Assets
 
         public YamlAsset AsYamlAsset()
         {
+            // The asset file might have been been marked as deleted during the run of asset upgrader. In this case let's just return null.
+            if (Deleted)
+                return null;
+
             try
             {
                 return new YamlAsset(this);

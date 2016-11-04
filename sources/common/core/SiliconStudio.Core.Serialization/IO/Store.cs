@@ -289,7 +289,7 @@ namespace SiliconStudio.Core.IO
 
         private void LockFile(long offset, long count, bool exclusive)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;
@@ -340,7 +340,7 @@ namespace SiliconStudio.Core.IO
 
         private void UnlockFile(long offset, long count)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;

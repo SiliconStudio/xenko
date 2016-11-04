@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         /// <summary>
         /// Test that even if broadcast happens in another thread we receive events in the game schedluer thread
         /// </summary>
-        [Test]
+        [Test, Ignore("Hanging")]
         public void DifferentThreadBroadcast()
         {
             var game = new EventSystemTest();
@@ -265,7 +265,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 try
                 {
                     //wait until both threads have broadcasted 200 times each
-                    WaitHandle.WaitAll(waitHandles);
+                    if (!WaitHandle.WaitAll(waitHandles, TimeSpan.FromMinutes(2)))
+                    {
+                        throw new Exception("DifferentThreadBroadcast test timedout.");
+                    }
 
                     Thread.Sleep(2000);
 

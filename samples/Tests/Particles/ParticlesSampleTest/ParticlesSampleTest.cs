@@ -10,7 +10,7 @@ namespace ParticlesSampleTest
     [TestFixture]
     public class ParticlesSampleTest
     {
-        private const string Path = "samples\\Particles\\ParticlesSample\\Bin\\Windows\\Debug\\ParticlesSample.exe";
+        private const string Path = "samplesGenerated\\ParticlesSample\\Bin\\Windows\\Debug\\ParticlesSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;
@@ -36,31 +36,31 @@ namespace ParticlesSampleTest
             {
                 game.Wait(TimeSpan.FromMilliseconds(2000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
-                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Tap(new Vector2(0.95f, 0.5f), TimeSpan.FromMilliseconds(200)); // Transition to the next scene
 
                 game.Wait(TimeSpan.FromMilliseconds(500));
             }

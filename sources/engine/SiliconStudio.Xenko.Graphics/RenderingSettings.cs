@@ -133,9 +133,7 @@ namespace SiliconStudio.Xenko.Graphics
             switch (platformType)
             {
                 case PlatformType.Windows:
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:
@@ -154,9 +152,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 case PlatformType.Shared:
                     return false;
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11;
                 case PlatformType.Windows:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11

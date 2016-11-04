@@ -11,6 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Physics.Engine;
 
 namespace SiliconStudio.Xenko.Engine
@@ -52,7 +53,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [DataMember(200)]
         [Category]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; }
 
         /// <summary>
@@ -137,6 +138,8 @@ namespace SiliconStudio.Xenko.Engine
                     //prevent simulation
                     NativeCollisionObject.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
+
+                DebugEntity?.EnableAll(value, true);
             }
         }
 
@@ -454,6 +457,12 @@ namespace SiliconStudio.Xenko.Engine
             {
                 derivedTransformation = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, derivedTransformation);
             }
+
+            if (DebugEntity == null) return;
+
+            derivedTransformation.Decompose(out scale, out rotation, out translation);
+            DebugEntity.Transform.Position = translation;
+            DebugEntity.Transform.Rotation = Quaternion.RotationMatrix(rotation);
         }
 
         /// <summary>
@@ -484,6 +493,12 @@ namespace SiliconStudio.Xenko.Engine
             {
                 derivedTransformation = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, derivedTransformation);
             }
+
+            if (DebugEntity == null) return;
+
+            derivedTransformation.Decompose(out scale, out rotation, out translation);
+            DebugEntity.Transform.Position = translation;
+            DebugEntity.Transform.Rotation = Quaternion.RotationMatrix(rotation);
         }
 
         /// <summary>
@@ -523,6 +538,17 @@ namespace SiliconStudio.Xenko.Engine
             entity.Transform.LocalMatrix.Decompose(out scale, out rotQuat, out translation);
             entity.Transform.Position = translation;
             entity.Transform.Rotation = rotQuat;
+
+            if (DebugEntity == null) return;
+
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
+            {
+                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
+            }
+
+            physicsTransform.Decompose(out scale, out rotation, out translation);
+            DebugEntity.Transform.Position = translation;
+            DebugEntity.Transform.Rotation = Quaternion.RotationMatrix(rotation);
         }
 
         /// <summary>
@@ -545,6 +571,17 @@ namespace SiliconStudio.Xenko.Engine
             Matrix.Multiply(ref scaling, ref physicsTransform, out BoneWorldMatrixOut);
 
             //todo propagate to other bones? need to review this.
+
+            if (DebugEntity == null) return;
+
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
+            {
+                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
+            }
+
+            physicsTransform.Decompose(out scale, out rotation, out translation);
+            DebugEntity.Transform.Position = translation;
+            DebugEntity.Transform.Rotation = Quaternion.RotationMatrix(rotation);
         }
 
         /// <summary>
@@ -698,6 +735,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (NativeCollisionObject == null) return;
 
+            NativeCollisionObject.UserObject = null;
             NativeCollisionObject.Dispose();
             NativeCollisionObject = null;
         }

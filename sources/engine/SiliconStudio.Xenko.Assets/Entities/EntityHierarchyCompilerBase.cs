@@ -1,21 +1,19 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
+    public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase where T : EntityHierarchyAssetBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (T)assetItem.Asset;
             foreach (var entityData in asset.Hierarchy.Parts)
             {
                 // TODO: How to make this code pluggable?
@@ -27,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     if (modelComponent.Model == null)
                     {
-                        result.Warning($"The entity [{urlInStorage}:{entityData.Entity.Name}] has a model component that does not reference any model.");
+                        result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a model component that does not reference any model.");
                         continue;
                     }
 
@@ -35,43 +33,38 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var modelId = modelAttachedReference.Id;
 
                     // compute the full path to the source asset.
-                    var assetItem = AssetItem.Package.Session.FindAsset(modelId);
-                    if (assetItem == null)
+                    var modelAssetItem = assetItem.Package.Session.FindAsset(modelId);
+                    if (modelAssetItem == null)
                     {
-                        result.Error($"The entity [{urlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
+                        result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         continue;
                     }
                 }
                 if (spriteComponent != null && spriteComponent.SpriteProvider == null)
                 {
-                    result.Warning($"The entity [{urlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
+                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { Create(urlInStorage, AssetItem.Package, context, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
         }
 
-        protected abstract EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, T assetParameters);
+        protected abstract EntityHierarchyCommandBase Create(string url, T assetParameters);
 
         protected abstract class EntityHierarchyCommandBase : AssetCommand<T>
         {
-            private readonly Package package;
-            private readonly AssetCompilerContext context;
-
-            public EntityHierarchyCommandBase(string url, Package package, AssetCompilerContext context, T assetParameters) : base(url, assetParameters)
+            protected EntityHierarchyCommandBase(string url, T parameters) : base(url, parameters)
             {
-                this.package = package;
-                this.context = context;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
 
-                var prefab = Create(AssetParameters);
-                foreach (var rootEntity in AssetParameters.Hierarchy.RootPartIds)
+                var prefab = Create(Parameters);
+                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
                 {
-                    prefab.Entities.Add(AssetParameters.Hierarchy.Parts[rootEntity].Entity);
+                    prefab.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
                 }
                 assetManager.Save(Url, prefab);
 

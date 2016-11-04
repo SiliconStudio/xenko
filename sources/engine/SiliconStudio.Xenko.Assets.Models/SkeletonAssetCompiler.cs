@@ -1,22 +1,19 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class SkeletonAssetCompiler : AssetCompilerBase<SkeletonAsset>
+    public class SkeletonAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkeletonAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var asset = (SkeletonAsset)assetItem.Asset;
+            var assetSource = GetAbsolutePath(assetItem, asset.Source);
             var extension = assetSource.GetFileExtension();
-            var buildStep = new AssetBuildStep(AssetItem);
+            var buildStep = new AssetBuildStep(assetItem);
 
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
@@ -26,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
 
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = urlInStorage;
+            importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Mode = ImportModelCommand.ExportMode.Skeleton;
             importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.PivotPosition = asset.PivotPosition;

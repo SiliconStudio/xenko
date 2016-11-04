@@ -1,9 +1,9 @@
 !Package
 Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Meta:
     Name: Xenko
-    Version: 1.8.1-beta
+    Version: 1.9.0-beta
     Owners:
       - Silicon Studio
     Authors: 
@@ -66,6 +66,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapePlane.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeSphere.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Prefabs/DefaultPrefab.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Navigation/DefaultNavigationMesh.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultScene.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneHDR.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneLDR.xktpl
@@ -103,13 +104,8 @@ TemplateFolders:
         - samples\Games\SpaceEscape\SpaceEscape.xktpl
         - samples\Graphics\AnimatedModel\AnimatedModel.xktpl
         - samples\Graphics\CustomEffect\CustomEffect.xktpl
-        - samples\Graphics\GeometricPrimitives\GeometricPrimitives.xktpl
-        - samples\Graphics\MaterialSample\MaterialSample.xktpl
         - samples\Graphics\MaterialShader\MaterialShader.xktpl
-        - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.xktpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.xktpl
-        - samples\Graphics\SimpleSprite\SimpleSprite.xktpl
-        - samples\Graphics\SpriteEntity\SpriteEntity.xktpl
         - samples\Graphics\SpriteFonts\SpriteFonts.xktpl
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
@@ -120,6 +116,8 @@ TemplateFolders:
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
-        - samples\Others\CustomAnimation\CustomAnimation.xktpl
+        - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
+        - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
+        - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont

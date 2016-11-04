@@ -27,7 +27,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -528,10 +528,6 @@ namespace SiliconStudio.Xenko.Games
                 }
 
                 // Update the timer
-                if (updateTime.FrameCount < 2) //-> delay timer reset after first draw to avoid important gap in game time space
-                {
-                    timer.Reset();
-                }
                 timer.Tick();
 
                 // Update the playTimer timer

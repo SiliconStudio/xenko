@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -310,9 +310,6 @@ namespace SiliconStudio.Xenko.Engine
             // changes in the same frame they will be applied
             GameSystems.Add(Script);
 
-            // Add the Audio System
-            GameSystems.Add(Audio);
-
             // Add the Font system
             GameSystems.Add(gameFontSystem);
 
@@ -333,6 +330,9 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(EffectSystem);
 
             GameSystems.Add(SceneSystem);
+
+            // Add the Audio System
+            GameSystems.Add(Audio);
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());

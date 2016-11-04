@@ -151,8 +151,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// Active animations. Use this to customize startup animations.
         /// </userdoc>
-        [MemberCollection(CanReorderItems = true)]
-        [NotNullItems]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
 
         [DataMemberIgnore]

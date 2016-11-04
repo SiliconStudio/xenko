@@ -86,24 +86,25 @@ namespace SiliconStudio.Xenko.Animations
                     // Advance time for all playing animations with AutoPlay set to on
                     foreach (var playingAnimation in animationComponent.PlayingAnimations)
                     {
-                        if (playingAnimation.Enabled)
+                        if (!playingAnimation.Enabled || playingAnimation.Clip == null)
+                            continue;
+
+                        switch (playingAnimation.RepeatMode)
                         {
-                            switch (playingAnimation.RepeatMode)
-                            {
-                                case AnimationRepeatMode.PlayOnce:
-                                    playingAnimation.CurrentTime = TimeSpan.FromTicks(playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks*(double)playingAnimation.TimeFactor));
-                                    if (playingAnimation.CurrentTime > playingAnimation.Clip.Duration)
-                                        playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
-                                    break;
-                                case AnimationRepeatMode.LoopInfinite:
-                                    playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero
-                                        ? TimeSpan.Zero
-                                        : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks*(double)playingAnimation.TimeFactor))%playingAnimation.Clip.Duration.Ticks);
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
+                            case AnimationRepeatMode.PlayOnce:
+                                playingAnimation.CurrentTime = TimeSpan.FromTicks(playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor));
+                                if (playingAnimation.CurrentTime > playingAnimation.Clip.Duration)
+                                    playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
+                                break;
+                            case AnimationRepeatMode.LoopInfinite:
+                                playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero
+                                    ? TimeSpan.Zero
+                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
                         }
+
                     }
 
                     // Regenerate animation operations
@@ -115,7 +116,7 @@ namespace SiliconStudio.Xenko.Animations
                         var animationWeight = playingAnimation.Weight;
 
                         // Skip animation with 0.0f weight
-                        if (animationWeight == 0.0f)
+                        if (animationWeight == 0.0f || playingAnimation.Clip == null)
                             continue;
 
                         // Default behavior for linea blending (it will properly accumulate multiple blending with their cumulative weight)

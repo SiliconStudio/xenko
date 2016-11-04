@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Profiling
 
             if (Font == null)
             {
-                Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                Font = Content.Load<SpriteFont>("XenkoDefaultFont");
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?

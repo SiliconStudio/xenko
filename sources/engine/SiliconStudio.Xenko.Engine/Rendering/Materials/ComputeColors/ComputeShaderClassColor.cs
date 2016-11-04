@@ -10,8 +10,21 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     /// </summary>
     [DataContract("ComputeShaderClassColor")]
     [Display("Shader")]
-    // TODO: This class has been made abstract to be removed from the editor - unabstract it to re-enable it!
-    public class ComputeShaderClassColor : ComputeShaderClassBase<IComputeColor>, IComputeColor 
+    public class ComputeShaderClassColor : ComputeShaderClassBase<IComputeColor>, IComputeColor
     {
+        private int hashCode = 0;
+
+        /// <inheritdoc/>
+        public bool HasChanged
+        {
+            get
+            {
+                if (hashCode != 0 && hashCode == (MixinReference?.GetHashCode() ?? 0))
+                    return false;
+
+                hashCode = (MixinReference?.GetHashCode() ?? 0);
+                return true;
+            }
+        }
     }
 }

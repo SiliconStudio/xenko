@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Engine;
 
-
 namespace ParticlesSample
 {
     /// <summary>
@@ -15,9 +14,6 @@ namespace ParticlesSample
     /// </summary>
     public class PrefabInstance : AsyncScript
     {
-
-        private float timeIntervalCountdown = 0f;
-
         /// <summary>
         /// Source to the prefab, selectable by the user
         /// </summary>
@@ -30,7 +26,12 @@ namespace ParticlesSample
         /// </summary>
         [DataMember(20)]
         [Display("Following")]
-        public bool Following { get; set; } = true;
+        public bool Following
+        {
+            get { return following; }
+            set { following = value; }
+        }
+        private bool following = true;
 
         /// <summary>
         /// How long before the prefab instance is deleted, selectable by the user
@@ -39,28 +40,19 @@ namespace ParticlesSample
         [Display("Timeout")]
         public float InstanceTimeout = 3f;
 
-        /// <summary>
-        /// What event triggers the script. Currently it listens for a key press.
-        /// </summary>
         [DataMember(40)]
-        [Display("Trigger")]
-        public Keys Key = Keys.Space;
+        [Display("Trigger Time")]
+        public float TimeDelay { get; set; }
 
-        /// <summary>
-        /// Set the time interval (in seconds) at which to spawn new instances. Set it to 0 to deactivate.
-        /// </summary>
         [DataMember(50)]
-        [Display("Interval")]
-        public float TimeInterval { get; set; } = 0f;
+        [Display("Animation")]
+        public AnimationComponent Animation { get; set; }
 
-        [DataMember(60)]
-        [Display("Delay")]
-        public float TimeDelay { get; set; } = 0f;
+        private bool canTrigger = true;
+        private double lastTime = 0;
 
         public override async Task Execute()
         {
-            timeIntervalCountdown = TimeDelay;
-
             while (Game.IsRunning)
             {
                 await Script.NextFrame();
@@ -74,17 +66,16 @@ namespace ParticlesSample
 
         protected bool IsTriggered()
         {
-            var isTriggered = Input.IsKeyPressed(Key);
+            var time = Animation?.PlayingAnimations[0].CurrentTime.TotalSeconds ?? 0;
 
-            if (TimeInterval > 0)
-            {
-                timeIntervalCountdown -= (float)Game.UpdateTime.Elapsed.TotalSeconds;
-                if (timeIntervalCountdown <= 0f)
-                {
-                    timeIntervalCountdown = TimeInterval;
-                    isTriggered = true;
-                }
-            }
+            if (time < lastTime)
+                canTrigger = true;
+
+            var isTriggered = (canTrigger && TimeDelay <= time);
+
+            lastTime = time;
+            if (isTriggered)
+                canTrigger = false;
 
             return isTriggered;
         }

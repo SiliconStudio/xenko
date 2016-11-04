@@ -10,7 +10,7 @@ namespace SpriteFontsTest
     [TestFixture]
     public class SpriteFontsTest
     {
-        private const string Path = "samples\\Graphics\\SpriteFonts\\Bin\\Windows-Direct3D11\\Debug\\SpriteFonts.exe";
+        private const string Path = "samplesGenerated\\SpriteFonts\\Bin\\Windows\\Debug\\SpriteFonts.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

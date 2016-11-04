@@ -1,6 +1,6 @@
 !Package
 Id: 2b920979-d010-44fa-a415-e52d97e51df3
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: ParticlesSample
@@ -10,7 +10,7 @@ Meta:
     RootNamespace: ParticlesSample
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.0-beta
+            Version: 1.9.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -40,10 +40,4 @@ Profiles:
 ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
-RootAssets:
-    - 2195e36c-46ec-496b-8072-098c114f4a7f:AnimatedParticles
-    - 4b722b46-48b5-4585-9f5e-f9a590faf4eb:CustomParticles
-    - 6736d805-6194-40bf-8056-7c52758e2e4b:RibbonParticles
-    - 71292a97-5a05-4865-9ac8-e113ffad9561:ChildParticles
-    - 8eb3fe28-2a08-441a-a015-a428d2e17bef:Lasers
-    - d18360d9-08c6-41e6-a8f0-dcc78e9a723d:CustomMaterials
+RootAssets: []

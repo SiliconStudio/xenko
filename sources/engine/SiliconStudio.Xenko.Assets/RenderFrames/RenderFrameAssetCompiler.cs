@@ -2,33 +2,34 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
-    public class RenderFrameAssetCompiler : AssetCompilerBase<RenderFrameAsset>
+    public class RenderFrameAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, RenderFrameAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(urlInStorage, asset) };
+            var asset = (RenderFrameAsset)assetItem.Asset;
+            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(targetUrlInStorage, asset) };
         }
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>
         {
-            public RenderFrameCompileCommand(string url, RenderFrameAsset assetParameters)
-                : base(url, assetParameters)
+            public RenderFrameCompileCommand(string url, RenderFrameAsset parameters)
+                : base(url, parameters)
             {
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
-                assetManager.Save(Url, RenderFrame.NewFake(AssetParameters.Descriptor));
+                assetManager.Save(Url, RenderFrame.NewFake(Parameters.Descriptor));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

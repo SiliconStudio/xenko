@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -9,7 +10,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -20,12 +21,13 @@ using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    internal class PrefabModelAssetCompiler : AssetCompilerBase<PrefabModelAsset>
+    internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, PrefabModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(urlInStorage, asset, AssetItem, renderingSettings) };
+            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }
 
@@ -34,8 +36,8 @@ namespace SiliconStudio.Xenko.Assets.Models
             private readonly Package package;
             private readonly RenderingSettings renderingSettings;
 
-            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset assetParameters, AssetItem assetItem, RenderingSettings renderingSettings) 
-                : base(url, assetParameters)
+            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings) 
+                : base(url, parameters)
             {
                 package = assetItem.Package;
                 this.renderingSettings = renderingSettings;
@@ -61,15 +63,15 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 base.ComputeParameterHash(writer);
 
-                if (AssetParameters.Prefab == null) return;
+                if (Parameters.Prefab == null) return;
 
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
-            private static void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
+            private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
             {
                 //we need to futher group by VertexDeclaration
                 var meshes = new Dictionary<VertexDeclaration, MeshData>();
@@ -109,12 +111,16 @@ namespace SiliconStudio.Xenko.Assets.Models
                             //transform the vertexes according to the entity
                             var vertexDataCopy = vertexData.ToArray();
                             chunk.Entity.Transform.UpdateWorldMatrix(); //make sure matrix is computed
-                            modelMesh.Draw.VertexBuffers[0].TransformBuffer(vertexDataCopy, ref chunk.Entity.Transform.WorldMatrix);
-                            
+                            var worldMatrix = chunk.Entity.Transform.WorldMatrix;
+                            var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);
+                            bool isScalingNegative = Vector3.Dot(worldMatrix.Up, up) < 0.0f;
+
+                            modelMesh.Draw.VertexBuffers[0].TransformBuffer(vertexDataCopy, ref worldMatrix);
+
                             //add to the big single array
                             var vertexes = vertexDataCopy
                                 .Skip(modelMesh.Draw.VertexBuffers[0].Offset)
-                                .Take(modelMesh.Draw.VertexBuffers[0].Count*modelMesh.Draw.VertexBuffers[0].Stride)
+                                .Take(modelMesh.Draw.VertexBuffers[0].Count * modelMesh.Draw.VertexBuffers[0].Stride)
                                 .ToArray();
 
                             mesh.VertexData.AddRange(vertexes);
@@ -137,39 +143,55 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
 
                             var indexSize = modelMesh.Draw.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort);
-
-                            var indices = indexData
-                                .Skip(modelMesh.Draw.IndexBuffer.Offset)
+                            
+                            byte[] indices;
+                            if(isScalingNegative)
+                            {
+                                // Get reversed winding order
+                                modelMesh.Draw.GetReversedWindingOrder(out indices);
+                                indices = indices.Skip(modelMesh.Draw.IndexBuffer.Offset)
                                 .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
                                 .ToArray();
-
-                            //todo this code is not optimal, use unsafe
-
-                            //must convert to 32bits
-                            if (indexSize == sizeof(ushort))
+                            }
+                            else
                             {
-                                var uintIndex = new List<byte>();
-                                for (var i = 0; i < indices.Length; i += sizeof(ushort))
-                                {
-                                    var index = BitConverter.ToUInt16(indices, i);
-                                    var bi = BitConverter.GetBytes((uint)index);
-                                    uintIndex.Add(bi[0]);
-                                    uintIndex.Add(bi[1]);
-                                    uintIndex.Add(bi[2]);
-                                    uintIndex.Add(bi[3]);
-                                }
-                                indices = uintIndex.ToArray();
+                                // Get indices normally
+                                indices = indexData
+                                    .Skip(modelMesh.Draw.IndexBuffer.Offset)
+                                    .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
+                                    .ToArray();
                             }
 
-                            //need to offset the indices
-                            for (var i = 0; i < indices.Length; i += sizeof(uint))
+                            // Convert indices to 32 bits
+                            if(indexSize == sizeof(ushort))
                             {
-                                var index = BitConverter.ToUInt32(indices, i) + mesh.IndexOffset;
-                                var bi = BitConverter.GetBytes(index);
-                                indices[i + 0] = bi[0];
-                                indices[i + 1] = bi[1];
-                                indices[i + 2] = bi[2];
-                                indices[i + 3] = bi[3];
+                                var uintIndices = new byte[indices.Length*2];
+                                fixed (byte* psrc = indices)
+                                fixed (byte* pdst = uintIndices)
+                                {
+                                    var src = (ushort*)psrc;
+                                    var dst = (uint*)pdst;
+
+                                    int numIndices = indices.Length / sizeof(ushort);
+                                    for (var i = 0; i < numIndices; i++)
+                                    {
+                                        dst[i] = src[i];
+                                    }
+                                }
+                                indices = uintIndices;
+                            }
+
+                            // Offset indices by mesh.IndexOffset
+                            fixed (byte* pdst = indices)
+                            {
+                                var dst = (uint*)pdst;
+
+                                int numIndices = indices.Length / sizeof(uint);
+                                for (var i = 0; i < numIndices; i++)
+                                {
+                                    // Offset indices
+                                    dst[i] += (uint)mesh.IndexOffset;
+                                }
                             }
 
                             mesh.IndexOffset += modelMesh.Draw.VertexBuffers[0].Count;
@@ -260,19 +282,19 @@ namespace SiliconStudio.Xenko.Assets.Models
                     }
                 });
 
-                var loadSettings = new AssetManagerLoaderSettings
+                var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
                 };
 
                 Prefab prefab;
-                if (AssetParameters.Prefab == null)
+                if (Parameters.Prefab == null)
                 {
                     prefab = new Prefab();
                 }
                 else
                 {
-                    prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
+                    prefab = contentManager.Load<Prefab>(Parameters.Prefab.Location, loadSettings);
                     if (prefab == null) throw new Exception("Failed to load prefab.");
                 }
 

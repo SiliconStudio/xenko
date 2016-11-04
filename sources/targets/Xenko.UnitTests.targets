@@ -67,7 +67,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone')">
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR')">
       <ItemGroup>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>

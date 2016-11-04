@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -104,6 +105,7 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
+            var packageName = package.FullPath?.GetFileName() ?? "(Undefined path)";
             bool shouldSetDirtyFlag = false;
 
             // Update reference
@@ -136,11 +138,17 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     if (parameters.IsLoggingAssetNotFoundAsError)
                     {
-                        log.Error(package, contentReference, AssetMessageCode.AssetNotFound, contentReference);
+                        log.Error(package, contentReference, AssetMessageCode.AssetForPackageNotFound, contentReference, packageName);
+
+                        var packageFound = package.Session.Packages.FirstOrDefault(x => x.FindAsset(contentReference.Location) != null);
+                        if (packageFound != null)
+                        {
+                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileName());
+                        }
                     }
                     else
                     {
-                        log.Warning(package, contentReference, AssetMessageCode.AssetNotFound, contentReference);
+                        log.Warning(package, contentReference, AssetMessageCode.AssetForPackageNotFound, contentReference, packageName);
                     }
                     continue;
                 }

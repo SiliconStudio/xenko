@@ -1,6 +1,7 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -20,9 +21,28 @@ namespace SiliconStudio.Xenko.Physics
         /// <summary>
         /// Jumps this instance.
         /// </summary>
+        public void Jump(Vector3 jumpDirection)
+        {
+            if (KinematicCharacter == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            KinematicCharacter.Jump(ref jumpDirection);
+        }
+
+        /// <summary>
+        /// Jumps this instance.
+        /// </summary>
         public void Jump()
         {
-            KinematicCharacter?.Jump();
+            if (KinematicCharacter == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            var zeroV = Vector3.Zero; //passing zero will jump on Up Axis
+            KinematicCharacter.Jump(ref zeroV);
         }
 
         /// <summary>
@@ -64,7 +84,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float maxSlope;
+        private AngleSingle maxSlope = new AngleSingle(45, AngleType.Degree);
 
         /// <summary>
         /// Gets or sets if this character element max slope
@@ -76,7 +96,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The max slope this character can climb
         /// </userdoc>
         [DataMember(85)]
-        public float MaxSlope
+        public AngleSingle MaxSlope
         {
             get
             {
@@ -88,7 +108,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (KinematicCharacter != null)
                 {
-                    KinematicCharacter.MaxSlope = value;
+                    KinematicCharacter.MaxSlope = value.Radians;
                 }
             }
         }
@@ -96,13 +116,13 @@ namespace SiliconStudio.Xenko.Physics
         private float jumpSpeed = 5.0f;
 
         /// <summary>
-        /// Gets or sets if this character element max slope
+        /// Gets or sets if this character jump speed
         /// </summary>
         /// <value>
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The max slope this character can climb
+        /// The speed of the jump
         /// </userdoc>
         [DataMember(90)]
         public float JumpSpeed
@@ -162,7 +182,10 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="targetPosition">The target position.</param>
         public void Teleport(Vector3 targetPosition)
         {
-            if (KinematicCharacter == null) return;
+            if (KinematicCharacter == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
 
             //we assume that the user wants to teleport in world/entity space
             var entityPos = Entity.Transform.Position;
@@ -173,12 +196,34 @@ namespace SiliconStudio.Xenko.Physics
 
         /// <summary>
         /// Moves the character towards the specified movement vector.
-        /// Motion will stay in place unless modified or canceled passing Vector3.Zero
+        /// Motion will stay in place unless modified or canceled passing Vector3.Zero.
         /// </summary>
-        /// <param name="movement">The absolute movement vector, typically direction * delta time `var dt = this.GetSimulation().FixedTimeStep;` * speed.</param>
+        /// <param name="movement">The velocity vector, typically direction * delta time `var dt = this.GetSimulation().FixedTimeStep;` * speed.</param>
+        [Obsolete("Please use SetVelocity instead. SetVelocity internally applies this.GetSimulation().FixedTimeStep")]
         public void Move(Vector3 movement)
         {
-            KinematicCharacter?.SetWalkDirection(movement);
+            if (KinematicCharacter == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            KinematicCharacter.SetWalkDirection(movement);
+        }
+
+        /// <summary>
+        /// Sets the character velocity.
+        /// Velocity will be applied every frame unless modified or canceled passing Vector3.Zero.
+        /// </summary>
+        /// <remarks>The engine internally will multiply velocity with the simulation fixed time step.</remarks>
+        /// <param name="velocity">The velocity vector, typically direction * speed.</param>
+        public void SetVelocity(Vector3 velocity)
+        {
+            if (KinematicCharacter == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            KinematicCharacter.SetWalkDirection(velocity * Simulation.FixedTimeStep);
         }
 
         /// <summary>

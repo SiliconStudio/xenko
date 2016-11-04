@@ -1,10 +1,12 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -40,7 +42,6 @@ namespace SiliconStudio.Xenko.Physics
         public RigidbodyComponent()
         {
             LinkedConstraints = new List<Constraint>();
-            MotionState = new XenkoMotionState(this);
         }
 
         private bool isKinematic;
@@ -302,6 +303,8 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            MotionState = new XenkoMotionState(this);
+
             SetupBoneLink();
 
             GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
@@ -345,6 +348,9 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            MotionState.Dispose();
+            MotionState.Clear();
+
             if (NativeCollisionObject == null) return;
 
             //Remove constraints safely
@@ -371,11 +377,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             base.OnUpdateDraw();
 
-            if (type == RigidBodyTypes.Dynamic && BoneIndex == -1)
+            if (type == RigidBodyTypes.Dynamic && BoneIndex != -1)
             {
                 //write to ModelViewHierarchy
                 var model = Data.ModelComponent;
-                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+                model.Skeleton.NodeTransformations[BoneIndex].Flags = !IsKinematic ? ModelNodeFlags.EnableRender | ModelNodeFlags.OverrideWorldMatrix : ModelNodeFlags.Default;
+                if(!IsKinematic) model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
             }
         }
     
@@ -393,19 +400,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 UpdateBoneTransformation(ref physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
-            {
-                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
-            }
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         //This is valid for Dynamic rigidbodies (called once at initialization)
@@ -423,14 +417,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 DeriveBonePhysicsTransformation(out physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         /// <summary>
@@ -447,7 +433,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="impulse">The impulse.</param>
         public void ApplyImpulse(Vector3 impulse)
         {
-            InternalRigidBody?.ApplyCentralImpulse(impulse);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyCentralImpulse(impulse);
         }
 
         /// <summary>
@@ -457,7 +448,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="localOffset">The local offset.</param>
         public void ApplyImpulse(Vector3 impulse, Vector3 localOffset)
         {
-            InternalRigidBody?.ApplyImpulse(impulse, localOffset);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyImpulse(impulse, localOffset);
         }
 
         /// <summary>
@@ -466,7 +462,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="force">The force.</param>
         public void ApplyForce(Vector3 force)
         {
-            InternalRigidBody?.ApplyCentralForce(force);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyCentralForce(force);
         }
 
         /// <summary>
@@ -476,7 +477,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="localOffset">The local offset.</param>
         public void ApplyForce(Vector3 force, Vector3 localOffset)
         {
-            InternalRigidBody?.ApplyForce(force, localOffset);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyForce(force, localOffset);
         }
 
         /// <summary>
@@ -485,7 +491,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="torque">The torque.</param>
         public void ApplyTorque(Vector3 torque)
         {
-            InternalRigidBody?.ApplyTorque(torque);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyTorque(torque);
         }
 
         /// <summary>
@@ -494,7 +505,12 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="torque">The torque.</param>
         public void ApplyTorqueImpulse(Vector3 torque)
         {
-            InternalRigidBody?.ApplyTorqueImpulse(torque);
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+
+            InternalRigidBody.ApplyTorqueImpulse(torque);
         }
 
         /// <summary>
@@ -502,7 +518,11 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void ClearForces()
         {
-            if (InternalRigidBody == null) return;
+            if (InternalRigidBody == null)
+            {
+                throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+            }
+            
             InternalRigidBody?.ClearForces();
             InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
             InternalRigidBody.LinearVelocity = Vector3.Zero;
@@ -519,8 +539,19 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 AngularVelocity
         {
-            get { return InternalRigidBody?.AngularVelocity ?? Vector3.Zero; }
-            set { if(InternalRigidBody != null) InternalRigidBody.AngularVelocity = value; }
+            get
+            {
+                return InternalRigidBody?.AngularVelocity ?? Vector3.Zero;
+            }
+            set
+            {
+                if (InternalRigidBody == null)
+                {
+                    throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+                }
+
+                InternalRigidBody.AngularVelocity = value;
+            }
         }
 
         /// <summary>
@@ -532,8 +563,19 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 LinearVelocity
         {
-            get { return InternalRigidBody?.LinearVelocity ?? Vector3.Zero; }
-            set { if(InternalRigidBody != null) InternalRigidBody.LinearVelocity = value; }
+            get
+            {
+                return InternalRigidBody?.LinearVelocity ?? Vector3.Zero;
+            }
+            set
+            {
+                if (InternalRigidBody == null)
+                {
+                    throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+                }
+
+                InternalRigidBody.LinearVelocity = value;
+            }
         }
 
         /// <summary>
@@ -553,8 +595,19 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 AngularFactor
         {
-            get { return InternalRigidBody?.AngularFactor ?? Vector3.Zero; }
-            set { if(InternalRigidBody != null) InternalRigidBody.AngularFactor = value; }
+            get
+            {
+                return InternalRigidBody?.AngularFactor ?? Vector3.Zero;
+            }
+            set
+            {
+                if (InternalRigidBody == null)
+                {
+                    throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+                }
+
+                InternalRigidBody.AngularFactor = value;
+            }
         }
 
         /// <summary>
@@ -566,8 +619,19 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public Vector3 LinearFactor
         {
-            get { return InternalRigidBody?.LinearFactor ?? Vector3.Zero; }
-            set { if(InternalRigidBody != null) InternalRigidBody.LinearFactor = value; }
+            get
+            {
+                return InternalRigidBody?.LinearFactor ?? Vector3.Zero;
+            }
+            set
+            {
+                if (InternalRigidBody == null)
+                {
+                    throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
+                }
+
+                InternalRigidBody.LinearFactor = value;
+            }
         }
     }
 }

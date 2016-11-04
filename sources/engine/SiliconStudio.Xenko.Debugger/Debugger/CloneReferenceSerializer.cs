@@ -3,14 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
-using SerializerContext = SharpYaml.Serialization.SerializerContext;
+using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Xenko.Debugger.Target
 {

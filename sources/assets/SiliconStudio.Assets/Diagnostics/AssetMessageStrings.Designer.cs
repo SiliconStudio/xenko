@@ -79,20 +79,29 @@ namespace SiliconStudio.Assets.Diagnostics {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Asset [{0}] not found. Required for package [{1}].
+        /// </summary>
+        internal static string AssetForPackageNotFound {
+            get {
+                return ResourceManager.GetString("AssetForPackageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Asset [{0}] was found in package [{1}]. Perhaps a package dependency is missing?.
+        /// </summary>
+        internal static string AssetFoundInDifferentPackage {
+            get {
+                return ResourceManager.GetString("AssetFoundInDifferentPackage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load asset from path [{0}]. Reason: {1}.
         /// </summary>
         internal static string AssetLoadingFailed {
             get {
                 return ResourceManager.GetString("AssetLoadingFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Asset [{0}] not found.
-        /// </summary>
-        internal static string AssetNotFound {
-            get {
-                return ResourceManager.GetString("AssetNotFound", resourceCulture);
             }
         }
         

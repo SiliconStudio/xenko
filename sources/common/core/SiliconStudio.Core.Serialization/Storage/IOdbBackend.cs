@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Storage
 {
@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Storage
         /// <value>
         /// The asset index map.
         /// </value>
-        IAssetIndexMap AssetIndexMap { get; }
+        IContentIndexMap ContentIndexMap { get; }
 
         /// <summary>
         /// Opens a <see cref="NativeStream" /> of the object with the specified <see cref="ObjectId" />.
