@@ -163,10 +163,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public const string StartSlotName = "Start";
 
-        public override string Title => $"{FunctionName} Start";
-
-        [RegenerateTitle]
-        public string FunctionName { get; set; }
+        public override string Title => "Start";
 
         [DataMemberIgnore]
         public override Slot OutputExecution => FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);

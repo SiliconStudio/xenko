@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -25,17 +25,29 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(10)]
         [DefaultValue(false)]
         public bool IsStatic { get; set; }
-        
+
+        [DataMember(20)]
+        public string BaseType { get; set; }
+
+        [DataMember(30)]
+        public string Namespace { get; set; }
+
+        /// <summary>
+        /// The list of using directives.
+        /// </summary>
+        [DataMember(40)]
+        public TrackingCollection<string> UsingDirectives { get; set; } = new TrackingCollection<string>();
+
         /// <summary>
         /// The list of member variables (properties and fields).
         /// </summary>
-        [DataMember(20)]
+        [DataMember(50)]
         public TrackingCollection<Property> Properties { get; } = new TrackingCollection<Property>();
 
         /// <summary>
         /// The list of functions.
         /// </summary>
-        [DataMember(30)]
+        [DataMember(60)]
         public TrackingCollection<Method> Methods { get; } = new TrackingCollection<Method>();
 
         #region IProjectFileGeneratorAsset implementation
@@ -254,14 +266,38 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             var compilerOptions = new VisualScriptCompilerOptions
             {
-                Namespace = "Namespace",
                 Class = Path.GetFileNameWithoutExtension(generatedAbsolutePath),
-                BaseClass = "AsyncScript",
-                UsingDirectives =
-                {
-                    typeof(SiliconStudio.Xenko.Engine.Entity).Namespace,
-                },
             };
+
+            // Try to get root namespace from containing project
+            // Since ProjectReference.Location is sometimes absolute sometimes not, we have to handle both case
+            // TODO: ideally we should stop converting those and handle this automatically in a custom Yaml serializer?
+            var sourceProjectAbsolute = assetItem.SourceProject;
+            var sourceProjectRelative = sourceProjectAbsolute?.MakeRelative(assetItem.Package.FullPath.GetFullDirectory());
+            var projectReference = assetItem.Package.Profiles.SelectMany(x => x.ProjectReferences).FirstOrDefault(x => x.Location == (x.Location.IsAbsolute ? sourceProjectAbsolute : sourceProjectRelative));
+
+            if (projectReference != null)
+            {
+                // Find root namespace from project
+                var rootNamespace = projectReference?.RootNamespace ?? projectReference.Location.GetFileName();
+                if (rootNamespace != null)
+                {
+                    compilerOptions.DefaultNamespace = rootNamespace;
+
+                    // Complete namespace with "Include" folder (if not empty)
+                    var projectInclude = assetItem.GetProjectInclude();
+                    if (projectInclude != null)
+                    {
+                        var lastDirectorySeparator = projectInclude.LastIndexOf('\\');
+                        if (lastDirectorySeparator != -1)
+                        {
+                            var projectIncludeFolder = projectInclude.Substring(0, lastDirectorySeparator);
+                            compilerOptions.DefaultNamespace += '.' + projectIncludeFolder.Replace('\\', '.');
+                        }
+                    }
+                }
+            }
+
             var compilerResult = VisualScriptCompiler.Generate(this, compilerOptions);
             return compilerResult;
         }

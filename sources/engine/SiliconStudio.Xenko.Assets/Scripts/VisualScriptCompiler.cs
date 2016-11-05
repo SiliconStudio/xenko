@@ -478,13 +478,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public class VisualScriptCompilerOptions
     {
-        public string Namespace { get; set; }
+        public string DefaultNamespace { get; set; }
 
         public string Class { get; set; }
-
-        public List<string> UsingDirectives { get; set; } = new List<string>();
-
-        public string BaseClass { get; set; }
     }
 
     public class VisualScriptCompiler
@@ -522,30 +518,44 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // Process each function
-            foreach (var function in visualScriptAsset.Methods)
+            foreach (var method in visualScriptAsset.Methods)
             {
-                var functionStartBlock = function.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
+                var functionStartBlock = method.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
                 if (functionStartBlock == null)
                     continue;
 
-                var context = new VisualScriptCompilerContext(visualScriptAsset, function, result);
+                var context = new VisualScriptCompilerContext(visualScriptAsset, method, result);
 
                 context.ProcessEntryBlock(functionStartBlock);
 
-                var methodAccessibility = ConvertAccessibility(function.Accessibility);
-                if (function.IsStatic)
+                var methodAccessibility = ConvertAccessibility(method.Accessibility);
+                if (method.IsStatic)
                     methodAccessibility = methodAccessibility.Add(Token(SyntaxKind.StaticKeyword));
 
+                var parameters = new List<SyntaxNodeOrToken>();
+                foreach (var parameter in method.Parameters)
+                {
+                    if (parameters.Count > 0)
+                        parameters.Add(Token(SyntaxKind.CommaToken));
+
+                    parameters.Add(
+                        Parameter(Identifier(parameter.Name))
+                        .WithModifiers(ConvertRefKind(parameter.RefKind))
+                        .WithType(IdentifierName(parameter.Type)));
+                }
+
                 // Generate method
-                var method =
+                var methodDeclaration =
                     MethodDeclaration(
-                        ParseTypeName(function.ReturnType),
-                        Identifier(functionStartBlock.FunctionName))
+                        ParseTypeName(method.ReturnType),
+                        Identifier(method.Name))
                     .WithModifiers(methodAccessibility)
+                    .WithParameterList(ParameterList(
+                        SeparatedList<ParameterSyntax>(parameters)))
                     .WithBody(
                         Block(context.Blocks.SelectMany(x => x.Statements)));
 
-                members.Add(method);
+                members.Add(methodDeclaration);
             }
 
             // Generate class
@@ -558,16 +568,17 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 .WithMembers(List(members))
                 .WithModifiers(classAccessibility);
 
-            if (options.BaseClass != null)
-                @class = @class.WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(options.BaseClass)))));
+            if (visualScriptAsset.BaseType != null)
+                @class = @class.WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(visualScriptAsset.BaseType)))));
 
             // Generate namespace around class (if any)
             MemberDeclarationSyntax namespaceOrClass = @class;
-            if (options.Namespace != null)
+            var @namespace = !string.IsNullOrEmpty(visualScriptAsset.Namespace) ? visualScriptAsset.Namespace : options.DefaultNamespace;
+            if (@namespace != null)
             {
                 namespaceOrClass =
                     NamespaceDeclaration(
-                        IdentifierName(options.Namespace))
+                        IdentifierName(@namespace))
                     .WithMembers(
                         SingletonList<MemberDeclarationSyntax>(@class));
             }
@@ -576,7 +587,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var compilationUnit =
                 CompilationUnit()
                 .WithUsings(
-                    List(options.UsingDirectives.Select(x => 
+                    List(visualScriptAsset.UsingDirectives.Select(x => 
                         UsingDirective(
                             IdentifierName(x)))))
                 .WithMembers(
@@ -606,6 +617,21 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     return TokenList(Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.InternalKeyword));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(accessibity), accessibity, null);
+            }
+        }
+
+        private static SyntaxTokenList ConvertRefKind(ParameterRefKind refKind)
+        {
+            switch (refKind)
+            {
+                case ParameterRefKind.None:
+                    return TokenList();
+                case ParameterRefKind.Ref:
+                    return TokenList(Token(SyntaxKind.RefKeyword));
+                case ParameterRefKind.Out:
+                    return TokenList(Token(SyntaxKind.OutKeyword));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(refKind), refKind, null);
             }
         }
     }
