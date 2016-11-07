@@ -901,9 +901,9 @@ Value: 0
         [Test]
         public void TestClassWithSpecialChars()
         {
-            var settings = new SerializerSettings() {EmitShortTypeName = true};
             for (int i = 0; i < 32; i++)
             {
+                var settings = new SerializerSettings() { EmitShortTypeName = true };
                 SerialRoundTrip(settings, new ClassWithChars()
                 {
                     Start = (char) i,
@@ -1246,6 +1246,8 @@ Enum: OldValue2
             var text = serializer.Serialize(value);
             Assert.True(text.Contains("~Base"));
 
+            settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(TestWithMemberRenamed).Assembly);
             SerialRoundTrip(settings, value);
         }
 
@@ -1396,6 +1398,8 @@ Enum: OldValue2
             Assert.AreEqual(newItem.Int2, 0);
             Assert.AreEqual(newItem.Int3, 0);
 
+            settings = new SerializerSettings();
+            settings.RegisterTagMapping("ObjectWithMask", typeof(ObjectWithMask));
             serializer = new Serializer(settings);
             text = serializer.Serialize(item, null, new SerializerContextSettings {MemberMask = 4});
 
@@ -1406,6 +1410,8 @@ Enum: OldValue2
             Assert.AreEqual(newItem.Int2, item.Int2);
             Assert.AreEqual(newItem.Int3, item.Int3);
 
+            settings = new SerializerSettings();
+            settings.RegisterTagMapping("ObjectWithMask", typeof(ObjectWithMask));
             serializer = new Serializer(settings);
             text = serializer.Serialize(item, null, new SerializerContextSettings {MemberMask = 1 | 4});
 

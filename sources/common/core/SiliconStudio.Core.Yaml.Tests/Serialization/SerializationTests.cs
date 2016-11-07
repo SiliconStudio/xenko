@@ -337,8 +337,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var buffer = new StringWriter();
             var x = new SomeCustomType("Yo");
             var settings = new SerializerSettings();
-            var factories = (List<IYamlSerializableFactory>)settings.AssemblyRegistry.SerializerFactoryProfiles[ProfileSerializerFactorySelector.Default];
-            factories.Add(new CustomTypeConverter());
+            settings.SerializerFactorySelector.TryAddFactory(new CustomTypeConverter());
             var serializer = new Serializer(settings);
             serializer.Serialize(buffer, x);
 
