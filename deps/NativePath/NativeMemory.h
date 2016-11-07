@@ -49,12 +49,8 @@ extern void* npRealloc(void* ptr, size_t size);
 extern size_t npMallocSize(void* ptr);
 #define malloc_size npMallocSize
 
-inline void* calloc(size_t num, size_t size)
-{
-    void* buf = malloc(num*size);
-    memset(buf, 0x0, num*size);
-    return buf;
-}
+extern void* npCalloc(size_t num, size_t size);
+#define calloc npCalloc
 
 #ifdef __cplusplus
 }

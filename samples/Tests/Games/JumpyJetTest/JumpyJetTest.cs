@@ -10,7 +10,7 @@ namespace JumpyJetTest
     [TestFixture]
     public class JumpyJetTest
     {
-        private const string Path = "samples\\Games\\JumpyJet\\Bin\\Windows-Direct3D11\\Debug\\JumpyJet.exe";
+        private const string Path = "samplesGenerated\\JumpyJet\\Bin\\Windows\\Debug\\JumpyJet.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

@@ -79,7 +79,7 @@
     <Compile Include="GameContext.Windows.cs" />
     <Compile Include="GameContext.Windows.Desktop.cs" />
     <Compile Include="GameContext.Windows.OpenTK.cs" />
-    <Compile Include="GameContext.Windows.Store.cs" />
+    <Compile Include="GameContext.UWP.cs" />
     <Compile Include="GameContext.cs" />
     <Compile Include="GameContext.iOS.cs" />
     <Compile Include="GameContextFactory.cs" />
@@ -118,8 +118,8 @@
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />
     <Compile Include="Time\TimerTick.cs" />
-    <Compile Include="WindowsStore\GamePlatform.Windows.Store.cs" />
-    <Compile Include="WindowsStore\GameWindow.Windows.Store.cs" />
+    <Compile Include="WindowsStore\GamePlatform.UWP.cs" />
+    <Compile Include="WindowsStore\GameWindow.UWP.cs" />
     <Compile Include="XenkoGameController.iOS.cs" />
     <Compile Include="iOS\GamePlatform.iOS.cs" />
     <Compile Include="iOS\GameWindow.iOS.cs" />

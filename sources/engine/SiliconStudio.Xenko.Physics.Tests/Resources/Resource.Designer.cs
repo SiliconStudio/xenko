@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Xenko.Particles.Tests.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Xenko.Physics.Tests.Resource", IsApplication=true)]
 
-namespace SiliconStudio.Xenko.Particles.Tests
+namespace SiliconStudio.Xenko.Physics.Tests
 {
 	
 	
@@ -26,32 +26,32 @@ namespace SiliconStudio.Xenko.Particles.Tests
 		
 		public static void UpdateIdValues()
 		{
-			global::SiliconStudio.Xenko.Resource.Id.EditTextLayout = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.EditTextLayout;
-			global::SiliconStudio.Xenko.Resource.Id.GameMainLayout = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.GameMainLayout;
-			global::SiliconStudio.Xenko.Resource.Id.GameViewLayout = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.GameViewLayout;
-			global::SiliconStudio.Xenko.Resource.Layout.Game = global::SiliconStudio.Xenko.Particles.Tests.Resource.Layout.Game;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.OptionHostName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.OptionPort;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.OptionRemoteServer;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.OptionsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultFullName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultResultState;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultRunSingleMethodTest;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultStackTrace;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsFailed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsId;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsIgnored;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsInconclusive;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsPassed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.ResultsResult;
-			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.RunTestsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::SiliconStudio.Xenko.Particles.Tests.Resource.Id.TestSuiteListView;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::SiliconStudio.Xenko.Particles.Tests.Resource.Layout.options;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::SiliconStudio.Xenko.Particles.Tests.Resource.Layout.results;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::SiliconStudio.Xenko.Particles.Tests.Resource.Layout.test_result;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::SiliconStudio.Xenko.Particles.Tests.Resource.Layout.test_suite;
+			global::SiliconStudio.Xenko.Resource.Id.EditTextLayout = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.EditTextLayout;
+			global::SiliconStudio.Xenko.Resource.Id.GameMainLayout = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.GameMainLayout;
+			global::SiliconStudio.Xenko.Resource.Id.GameViewLayout = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.GameViewLayout;
+			global::SiliconStudio.Xenko.Resource.Layout.Game = global::SiliconStudio.Xenko.Physics.Tests.Resource.Layout.Game;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.OptionHostName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.OptionPort;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.OptionRemoteServer;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.OptionsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultFullName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultResultState;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultRunSingleMethodTest;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultStackTrace;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsFailed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsId;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsIgnored;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsInconclusive;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsPassed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.ResultsResult;
+			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.RunTestsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::SiliconStudio.Xenko.Physics.Tests.Resource.Id.TestSuiteListView;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::SiliconStudio.Xenko.Physics.Tests.Resource.Layout.options;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::SiliconStudio.Xenko.Physics.Tests.Resource.Layout.results;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::SiliconStudio.Xenko.Physics.Tests.Resource.Layout.test_result;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::SiliconStudio.Xenko.Physics.Tests.Resource.Layout.test_suite;
 		}
 		
 		public partial class Attribute

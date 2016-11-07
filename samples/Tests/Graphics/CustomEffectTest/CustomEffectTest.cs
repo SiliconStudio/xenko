@@ -9,7 +9,7 @@ namespace CustomEffectTest
     [TestFixture]
     public class CustomEffectTest
     {
-        private const string Path = "samples\\Graphics\\CustomEffect\\Bin\\Windows-Direct3D11\\Debug\\CustomEffect.exe";
+        private const string Path = "samplesGenerated\\CustomEffect\\Bin\\Windows\\Debug\\CustomEffect.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

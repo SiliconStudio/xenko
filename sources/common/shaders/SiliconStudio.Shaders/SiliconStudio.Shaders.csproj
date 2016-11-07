@@ -17,7 +17,7 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <Choose>
-    <When Condition="('$(SiliconStudioPlatform)' == 'Windows10') OR ('$(SiliconStudioPlatform)' == 'WindowsPhone') OR ('$(SiliconStudioPlatform)' == 'WindowsStore')">
+    <When Condition="('$(SiliconStudioPlatform)' == 'UWP')">
       <ItemGroup>
         <Reference Include="CppNet">
           <HintPath>..\..\deps\CppNet\Store\CppNet.dll</HintPath>

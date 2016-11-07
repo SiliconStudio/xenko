@@ -528,7 +528,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     renderViewLightData.VisibleLights.Add(light);
 
                     // Add light to a special list if it has shadows
-                    if ((directLight?.Shadow?.Enabled ?? false) && ShadowMapRenderer != null)
+                    if (directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null)
                     {
                         // A visible light with shadows
                         renderViewLightData.VisibleLightsWithShadows.Add(light);

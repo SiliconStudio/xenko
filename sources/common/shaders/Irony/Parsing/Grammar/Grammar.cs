@@ -470,7 +470,7 @@ namespace Irony.Parsing {
       //create new term
       if (!CaseSensitive)
         text = text.ToLower();
-#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_UWP
       text = string.Intern(text); 
 #endif
       term = new KeyTerm(text, name);

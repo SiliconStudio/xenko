@@ -29,6 +29,13 @@ typedef struct Vector2
 	float Y;
 } Vector2;
 
+typedef struct Vector3
+{
+	float X;
+	float Y;
+	float Z;
+} Vector3;
+
 typedef struct Vector4
 {
 	float X;
@@ -52,6 +59,12 @@ typedef struct RectangleF
 	float width;
 	float height;
 } RectangleF;
+
+typedef struct BoundingBox
+{
+	Vector3 minimum;
+	Vector3 maximum;
+} BoundingBox;
 
 typedef struct VertexPositionColorTextureSwizzle
 {

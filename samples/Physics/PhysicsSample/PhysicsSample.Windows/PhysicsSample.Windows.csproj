@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PhysicsSample</RootNamespace>
     <AssemblyName>PhysicsSample</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPackageGuid>{5c3ace5d-f60d-4138-8ec8-eb8bc7d9f5bd}</SiliconStudioPackageGuid>

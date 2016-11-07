@@ -85,7 +85,8 @@ namespace SiliconStudio.Core
             if (existingNameFunc == null)
                 existingNameFunc = x => x.ToString();
 
-            return ComputeNewName(baseName, url => existingItems.Select(existingNameFunc).Any(x => string.Equals(x, url, StringComparison.InvariantCultureIgnoreCase)), namePattern);
+            var existingNames = new HashSet<string>(existingItems.Select(existingNameFunc).Select(x => x.ToUpperInvariant()));
+            return ComputeNewName(baseName, url => existingNames.Contains(url.ToString().ToUpperInvariant()), namePattern);
         }
 
         /// <summary>

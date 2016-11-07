@@ -9,7 +9,7 @@ namespace MaterialShaderTest
     [TestFixture]
     public class MaterialShaderTest
     {
-        private const string Path = "samples\\Graphics\\MaterialShader\\Bin\\Windows-Direct3D11\\Debug\\MaterialShader.exe";
+        private const string Path = "samplesGenerated\\MaterialShader\\Bin\\Windows\\Debug\\MaterialShader.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

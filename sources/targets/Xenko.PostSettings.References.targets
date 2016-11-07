@@ -81,15 +81,6 @@
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <!--<Reference Include="AsyncBridge">
-      <HintPath>$(XenkoSdkDir)deps\AsyncBridge\AsyncBridge.Android.dll</HintPath>
-    </Reference>-->
-  </ItemGroup>
-  
-  <!-- On Windows platform automatically add the following references -->
   <ItemGroup Condition="$(SiliconStudioPlatform) == 'Windows'">
     <Reference Include="System" />
     <Reference Include="System.Core" />

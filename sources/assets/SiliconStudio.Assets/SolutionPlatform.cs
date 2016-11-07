@@ -93,6 +93,11 @@ namespace SiliconStudio.Assets
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"SolutionPlatform {Type}";
+        }
     }
 
     /// <summary>
@@ -213,6 +218,11 @@ namespace SiliconStudio.Assets
                 default:
                     throw new ArgumentOutOfRangeException("projectType");
             }
+        }
+
+        public override string ToString()
+        {
+            return $"SolutionPlatformPart {Name} ({Configurations.Count} configs)";
         }
     }
 

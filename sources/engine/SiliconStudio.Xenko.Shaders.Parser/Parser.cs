@@ -57,7 +57,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             return PrepareShader(ShaderParser.GetParser<XenkoGrammar>().PreProcessAndParse(source, sourceFileName, macros, includeDirectories));
         }
 
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_PHONE && !SILICONSTUDIO_PLATFORM_WINDOWS_STORE
         /// <summary>
         /// Preprocesses and parses the specified source.
         /// </summary>
@@ -82,7 +81,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         {
             return PreProcessAndParse(File.ReadAllText(sourceFileName), sourceFileName, macros, includeDirectories);
         }
-#endif
 
         /// <summary>
         /// Parses the specified source code.
