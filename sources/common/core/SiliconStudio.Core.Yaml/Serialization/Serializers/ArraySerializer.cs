@@ -51,7 +51,7 @@ using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class ArraySerializer : IYamlSerializable, IYamlSerializableFactory
     {
         public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

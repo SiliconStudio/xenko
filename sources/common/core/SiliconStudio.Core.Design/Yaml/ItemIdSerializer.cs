@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// A Yaml serializer for <see cref="ItemId"/> without associated data.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory("Assets")] // TODO: use YamlAssetProfile.Name
     internal class ItemIdSerializer : ItemIdSerializerBase
     {
         /// <inheritdoc/>

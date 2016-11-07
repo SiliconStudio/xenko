@@ -47,10 +47,12 @@
     <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
     <Compile Include="Serialization\FlatNamingConvention.cs" />
     <Compile Include="Serialization\IOrderedDictionary.cs" />
+    <Compile Include="Serialization\ISerializerFactorySelector.cs" />
     <Compile Include="Serialization\ITagTypeResolver.cs" />
     <Compile Include="Serialization\ObjectContext.cs" />
     <Compile Include="Serialization\OrderedDictionary.cs" />
     <Compile Include="Serialization\SerializerContextSettings.cs" />
+    <Compile Include="Serialization\SerializerFactorySelector.cs" />
     <Compile Include="Serialization\Serializers\DefaultObjectSerializerBackend.cs" />
     <Compile Include="Serialization\IObjectSerializerBackend.cs" />
     <Compile Include="Events\StreamEnd.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\SerializerSettings.cs" />
     <Compile Include="Serialization\YamlSerializerFactoryAttribute.cs" />
+    <Compile Include="Serialization\ProfileSerializerFactorySelector.cs" />
     <Compile Include="Serialization\YamlStream.cs" />
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />

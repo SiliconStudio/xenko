@@ -2,12 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Text;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml.Serialization;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Core.Yaml
 {
-    public static class AssetPropertyKeyNameResolver
+    public static class PropertyKeyNameResolver
     {
         public static string ComputePropertyKeyName(ITagTypeResolver tagResolver, PropertyKey propertyKey)
         {

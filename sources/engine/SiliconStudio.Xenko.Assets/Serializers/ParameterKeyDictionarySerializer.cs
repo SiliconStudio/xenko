@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -11,7 +12,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class ParameterKeyDictionarySerializer : DictionarySerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

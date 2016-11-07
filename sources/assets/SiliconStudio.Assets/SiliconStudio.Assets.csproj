@@ -101,7 +101,6 @@
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPart.cs" />
-    <Compile Include="AssetPropertyKeyNameResolver.cs" />
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
@@ -257,6 +256,7 @@
     <Compile Include="PropertyCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
+    <Compile Include="Serializers\YamlAssetProfile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">

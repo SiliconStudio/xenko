@@ -5,29 +5,37 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
-    public class YamlSerializerSelector
+    /// <summary>
+    /// Base class that implements <see cref="ISerializerFactorySelector"/>.
+    /// </summary>
+    public abstract class SerializerFactorySelector : ISerializerFactorySelector
     {
         private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
         private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
         private readonly ReaderWriterLockSlim serializerLock = new ReaderWriterLockSlim();
+        private bool isSealed;
 
-        public YamlSerializerSelector()
+        /// <inheritdoc/>
+        public void TryAddFactory(IYamlSerializableFactory factory)
         {
-
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
+            if (isSealed) throw new InvalidOperationException("Cannot add a factory to a serializer factory selector once it is sealed.");
+            if (CanAddSerializerFactory(factory))
+            {
+                factories.Add(factory);
+            }
         }
 
-        public void AddSerializer(Type type, IYamlSerializable serializer)
+        /// <inheritdoc/>
+        public void Seal()
         {
-            serializers[type] = serializer;
+            isSealed = true;
         }
 
-        public void AddSerializerFactory(IYamlSerializableFactory factory)
+        /// <inheritdoc/>
+        public IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            factories.Add(factory);
-        }
-
-        internal IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
+            if (!isSealed) throw new InvalidOperationException("A serializer factory selector must be sealed before being used.");
             IYamlSerializable serializer;
 
             // First try, with just a read lock
@@ -61,5 +69,12 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
             return serializer;
         }
+
+        /// <summary>
+        /// Indicates whether the given factory is supported by this selector.
+        /// </summary>
+        /// <param name="factory">The factory to evaluate.</param>
+        /// <returns>True if the factory can be added to this selector, False otherwise.</returns>
+        protected abstract bool CanAddSerializerFactory(IYamlSerializableFactory factory);
     }
 }

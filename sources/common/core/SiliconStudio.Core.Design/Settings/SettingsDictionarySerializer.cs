@@ -11,7 +11,7 @@ using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Settings
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(SettingsProfileSerializer.YamlProfile)]
     internal class SettingsDictionarySerializer : DictionarySerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

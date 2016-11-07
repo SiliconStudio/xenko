@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -13,13 +14,37 @@ namespace SiliconStudio.Core.Yaml.Serialization
     [AttributeUsage(AttributeTargets.Class)]
     public class YamlSerializerFactoryAttribute : Attribute
     {
-        private static readonly string[] EmptyList = new string[0];
+        private readonly string[] profiles;
+        /// <summary>
+        /// The name of the default profile. Any serializer factory that lacks this attribute will be considered to be part of the default profile.
+        /// </summary>
+        public const string Default = "Default";
 
         public YamlSerializerFactoryAttribute(params string[] profiles)
         {
-            Profiles = profiles ?? EmptyList;
+            if (profiles == null || profiles.Length == 0)
+            {
+                throw new ArgumentException("At least one profile must be specified.");
+            }
+            this.profiles = profiles;
         }
 
-        public IReadOnlyCollection<string> Profiles { get; }
+        public IReadOnlyList<string> Profiles => profiles;
+
+        public bool ContainsProfile(string profile)
+        {
+            return profiles.Any(x => string.Equals(x, profile, StringComparison.Ordinal));
+        }
+
+        /// <summary>
+        /// Identifies if two profiles are equal.
+        /// </summary>
+        /// <param name="profile1">The first profile to compare.</param>
+        /// <param name="profile2">The second profile to compare.</param>
+        /// <returns>True if profiles are equal, false otherwise.</returns>
+        public static bool AreProfilesEqual(string profile1, string profile2)
+        {
+            return string.Equals(profile1, profile2, StringComparison.Ordinal);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -63,7 +64,7 @@ namespace SiliconStudio.Assets
         }
     }
 
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class BasePartYamlSerializer : ObjectSerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(Core.Yaml.Serialization.SerializerContext context, ITypeDescriptor typeDescriptor)

@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Reflection;
-using System.Text;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 
-namespace SiliconStudio.Assets.Serializers
+namespace SiliconStudio.Core.Yaml
 {
     [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class PropertyKeyYamlSerializer : AssetScalarSerializerBase

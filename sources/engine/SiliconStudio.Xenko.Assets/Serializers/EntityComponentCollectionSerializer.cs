@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -18,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     /// Error resistant Script loading. It should work even if there is missing properties, members or types.
     /// If main script type is missing (usually due to broken assemblies), it will keep the Yaml representation so that it can be properly saved alter.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class EntityComponentCollectionSerializer : CollectionSerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

@@ -98,6 +98,7 @@
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
     <Compile Include="Yaml\CollectionWithItemIds.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Reflection\ItemId.cs" />
     <Compile Include="Yaml\ItemIdSerializer.cs" />
     <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
     <Compile Include="Yaml\NonIdentifiableCollectionItemsAttribute.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="Yaml\GuidSerializer.cs" />
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
     <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\PropertyKeyYamlSerializer.cs" />
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />

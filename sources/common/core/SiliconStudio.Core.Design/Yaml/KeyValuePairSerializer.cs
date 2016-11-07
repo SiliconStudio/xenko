@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SiliconStudio.Assets.Serializers
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// A Yaml Serializer for <see cref="KeyValuePair{TKey,TValue}"/>.
     /// Because this type is immutable we need to implement a special serializer.
     /// </summary>
-    [YamlSerializerFactory(YamlAssetProfile.Name)]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class KeyValuePairSerializer : ObjectSerializer
     {
         private struct MutableKeyValuePair<TKey, TValue>
