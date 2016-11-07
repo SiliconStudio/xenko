@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.Yaml
         public void WriteTo(TextWriter writer)
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
-            var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
+            var preferredIndent = YamlSerializer.Default.GetSerializerSettings().PreferredIndent;
             yamlStream.Save(writer, true, preferredIndent);
             writer.Flush();
         }

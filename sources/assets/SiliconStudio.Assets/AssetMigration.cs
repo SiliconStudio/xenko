@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets
                 yamlEventReader.Expect<DocumentStart>();
                 var mappingStart = yamlEventReader.Expect<MappingStart>();
 
-                var yamlSerializerSettings = YamlSerializer.GetSerializerSettings();
+                var yamlSerializerSettings = YamlSerializer.Default.GetSerializerSettings();
                 var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
                 bool typeAliased;
                 assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);

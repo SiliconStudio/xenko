@@ -874,7 +874,7 @@ Compositions:
         private void AssertShaderSourceEqual(string expected, ShaderSource shaderSource)
         {
             expected = expected.Replace("\r\n", "\n").Trim();
-            var textResult = YamlSerializer.Serialize(shaderSource, false).Replace("\r\n", "\n").Trim();
+            var textResult = YamlSerializer.Default.Serialize(shaderSource, false).Replace("\r\n", "\n").Trim();
             Console.WriteLine("************************************");
             Console.WriteLine("Result");
             Console.WriteLine("====================================");

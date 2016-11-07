@@ -140,7 +140,7 @@ namespace SiliconStudio.ProjectTemplating
                     Files.Clear();
                     using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(newTemplateAsString)))
                     {
-                        var newTemplate = (ProjectTemplate)YamlSerializer.Deserialize(stream);
+                        var newTemplate = (ProjectTemplate)YamlSerializer.Default.Deserialize(stream);
                         Files.AddRange(newTemplate.Files);
                     }
                 }
@@ -306,7 +306,7 @@ namespace SiliconStudio.ProjectTemplating
             {
                 using (var stream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    template = (ProjectTemplate)YamlSerializer.Deserialize(stream);
+                    template = (ProjectTemplate)YamlSerializer.Default.Deserialize(stream);
                 }
             }
 

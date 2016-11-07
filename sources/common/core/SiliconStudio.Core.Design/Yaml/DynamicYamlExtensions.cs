@@ -16,13 +16,13 @@ namespace SiliconStudio.Core.Yaml
                 using (var streamWriter = new StreamWriter(memoryStream))
                 {
                     var yamlStream = new YamlStream { new YamlDocument(yamObject.Node) };
-                    yamlStream.Save(streamWriter, true, YamlSerializer.GetSerializerSettings().PreferredIndent);
+                    yamlStream.Save(streamWriter, true, YamlSerializer.Default.GetSerializerSettings().PreferredIndent);
 
                     streamWriter.Flush();
                     memoryStream.Position = 0;
 
                     // convert string to object
-                    return (T)YamlSerializer.Deserialize(memoryStream, typeof(T), null);
+                    return (T)YamlSerializer.Default.Deserialize(memoryStream, typeof(T), null);
                 }
             }
         }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Yaml
             using (var stream = new MemoryStream())
             {
                 // convert data to string
-                YamlSerializer.Serialize(stream, dataObject);
+                YamlSerializer.Default.Serialize(stream, dataObject);
 
                 stream.Position = 0;
 

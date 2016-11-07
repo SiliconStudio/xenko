@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Serializers
         public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
         {
             PropertyContainer properties;
-            var result = YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
+            var result = YamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
             properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out overrides);
             return result;
         }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Serializers
             {
                 settings.Properties.Add(CustomObjectSerializerBackend.OverrideDictionaryKey, overrides);
             }
-            YamlSerializer.Serialize(stream, asset, null, settings);
+            YamlSerializer.Default.Serialize(stream, asset, null, settings);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)
