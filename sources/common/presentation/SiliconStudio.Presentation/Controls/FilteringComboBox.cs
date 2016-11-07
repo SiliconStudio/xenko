@@ -541,7 +541,7 @@ namespace SiliconStudio.Presentation.Controls
             var value = obj;
             try
             {
-                SetBinding(InternalValuePathProperty, new Binding(SortMemberPath) { Source = obj });
+                SetBinding(InternalValuePathProperty, new Binding(DisplayMemberPath) { Source = obj });
                 value = GetValue(InternalValuePathProperty);
             }
             catch (Exception e)

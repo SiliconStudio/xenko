@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,22 +9,22 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    public class PropertyGet : ExpressionBlock
+    public class VariableGet : ExpressionBlock
     {
-        [RegenerateTitle, BlockDropTarget]
-        public Property Property { get; set; }
+        [DefaultValue(""), RegenerateTitle, BlockDropTarget, ScriptVariableReference]
+        public string Name { get; set; } = string.Empty;
 
-        public override string Title => Property != null ? $"Get {Property.Name}" : "Get";
+        public override string Title => Name != null ? $"Get {Name}" : "Get";
 
         [DataMemberIgnore]
         public Slot ValueSlot => FindSlot(SlotDirection.Output, SlotKind.Value, null);
 
         public override ExpressionSyntax GenerateExpression(VisualScriptCompilerContext context)
         {
-            if (Property == null)
+            if (Name == null)
                 return IdentifierName("variable_not_set");
 
-            return IdentifierName(Property.Name);
+            return IdentifierName(Name);
         }
 
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)

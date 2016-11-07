@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,12 +9,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    public class PropertySet : ExecutionBlock
+    public class VariableSet : ExecutionBlock
     {
-        [RegenerateTitle, RegenerateSlots, BlockDropTarget]
-        public Property Property { get; set; }
+        [DefaultValue(""), RegenerateTitle, BlockDropTarget, ScriptVariableReference]
+        public string Name { get; set; } = string.Empty;
 
-        public override string Title => Property != null ? $"Set {Property.Name}" : "Set";
+        public override string Title => Name != null ? $"Set {Name}" : "Set";
 
         [DataMemberIgnore]
         public Slot InputSlot => FindSlot(SlotDirection.Input, SlotKind.Value, null);
@@ -23,14 +24,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
-            if (Property == null)
+            if (Name == null)
                 return;
 
             // Evaluate value
             var newValue = context.GenerateExpression(InputSlot);
 
             // Generate assignment statement
-            context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Property.Name), newValue)));
+            context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Name), newValue)));
         }
 
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
@@ -38,7 +39,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);
 
-            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value, type: Property?.Type));
+            // TODO: Guess type (from context.Compilation)?
+            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value));
         }
     }
 }

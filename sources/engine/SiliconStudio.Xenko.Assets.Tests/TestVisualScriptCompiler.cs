@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
             var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new PropertyGet { Symbol = condition };
+            var conditionGet = new VariableGet { Symbol = condition };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
@@ -127,8 +127,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
             var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new PropertyGet { Symbol = condition };
-            var conditionSet = new PropertySet { Property = condition };
+            var conditionGet = new VariableGet { Symbol = condition };
+            var conditionSet = new VariableSet { Property = condition };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };

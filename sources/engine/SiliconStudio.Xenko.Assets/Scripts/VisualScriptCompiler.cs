@@ -289,12 +289,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             outputSlotLocals.Add(slot, localVariableName);
         }
 
-        private SyntaxAnnotation GenerateAnnotation(Block block)
+        private static SyntaxAnnotation GenerateAnnotation(Block block)
         {
             return new SyntaxAnnotation("Block", block.Id.ToString());
         }
 
-        private SyntaxAnnotation GenerateAnnotation(Link link)
+        private static SyntaxAnnotation GenerateAnnotation(Link link)
         {
             return new SyntaxAnnotation("Link", link.Id.ToString());
         }
@@ -553,7 +553,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     .WithParameterList(ParameterList(
                         SeparatedList<ParameterSyntax>(parameters)))
                     .WithBody(
-                        Block(context.Blocks.SelectMany(x => x.Statements)));
+                        Block(context.Blocks.SelectMany(x => x.Statements)))
+                    .WithAdditionalAnnotations(GenerateAnnotation(method));
 
                 members.Add(methodDeclaration);
             }
@@ -633,6 +634,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 default:
                     throw new ArgumentOutOfRangeException(nameof(refKind), refKind, null);
             }
+        }
+
+        private static SyntaxAnnotation GenerateAnnotation(Method method)
+        {
+            return new SyntaxAnnotation("Method", method.Id.ToString());
         }
     }
 }

@@ -340,6 +340,7 @@
     <Compile Include="Scripts\RegenerateTitleAttribute.cs" />
     <Compile Include="Scripts\RoslynHelper.cs" />
     <Compile Include="Scripts\ScriptCodeAttribute.cs" />
+    <Compile Include="Scripts\ScriptVariableReferenceAttribute.cs" />
     <Compile Include="Scripts\SlotGeneratorContext.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />
@@ -367,8 +368,8 @@
     <Compile Include="Scripts\Slot.cs" />
     <Compile Include="Scripts\SlotDefinition.cs" />
     <Compile Include="Scripts\Symbol.cs" />
-    <Compile Include="Scripts\PropertyGet.cs" />
-    <Compile Include="Scripts\PropertySet.cs" />
+    <Compile Include="Scripts\VariableGet.cs" />
+    <Compile Include="Scripts\VariableSet.cs" />
     <Compile Include="Scripts\VisualScriptAsset.cs" />
     <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />
