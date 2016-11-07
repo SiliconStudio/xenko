@@ -134,7 +134,7 @@ namespace SiliconStudio.Assets
 
         public static async Task RestoreNugetPackages(ILogger logger, string solutionFullPath, Project project)
         {
-            var addedProjs = new List<string>(); //should not be necessary but anyway to avoid worst case circular dependencies.
+            var addedProjs = new HashSet<string>(); //to avoid worst case circular dependencies.
             var allProjs = Utilities.IterateTree(project, project1 =>
             {
                 var projs = new List<Project>();
@@ -143,10 +143,10 @@ namespace SiliconStudio.Assets
                     var path = Path.Combine(project.DirectoryPath, item.EvaluatedInclude);
                     if (!File.Exists(path)) continue;
 
-                    if (addedProjs.Contains(path)) continue;
-
-                    projs.Add(project.ProjectCollection.LoadProject(path));
-                    addedProjs.Add(path);
+                    if (addedProjs.Add(path))
+                    {
+                        projs.Add(project.ProjectCollection.LoadProject(path));
+                    }
                 }
                 return projs;
             });
