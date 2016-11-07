@@ -116,20 +116,27 @@ namespace SiliconStudio.Xenko.Input
                 if (evt.Type == InputEventType.Button)
                 {
                     ButtonStates[evt.Index] = evt.State == ButtonState.Pressed;
-                    var buttonEvent = new GamePadButtonEvent(this) { State = evt.State, Index = evt.Index };
+                    var buttonEvent = InputEventPool<GamePadButtonEvent>.GetOrCreate(this);
+                    buttonEvent.State = evt.State;
+                    buttonEvent.Index = evt.Index;
                     inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == InputEventType.Axis)
                 {
                     AxisStates[evt.Index] = evt.Float;
-                    var axisEvent = new GamePadAxisEvent(this) { Index = evt.Index, Value = evt.Float };
+                    var axisEvent = InputEventPool<GamePadAxisEvent>.GetOrCreate(this);
+                    axisEvent.Index = evt.Index;
+                    axisEvent.Value = evt.Float;
                     inputEvents.Add(axisEvent);
                 }
                 else if (evt.Type == InputEventType.PovController)
                 {
                     PovStates[evt.Index] = evt.Float;
                     PovEnabledStates[evt.Index] = evt.Enabled;
-                    var povEvent = new GamePadPovControllerEvent(this) { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled };
+                    var povEvent = InputEventPool<GamePadPovControllerEvent>.GetOrCreate(this);
+                    povEvent.Index = evt.Index;
+                    povEvent.Value = evt.Float;
+                    povEvent.Enabled = evt.Enabled;
                     inputEvents.Add(povEvent);
                 }
             }

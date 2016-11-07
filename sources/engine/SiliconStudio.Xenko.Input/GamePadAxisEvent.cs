@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class GamePadAxisEvent : InputEvent
     {
         /// <summary>
-        /// Creates a new axis event
-        /// </summary>
-        /// <param name="device">The device that produces this event</param>
-        public GamePadAxisEvent(IGamePadDevice device) : base(device)
-        {
-        }
-
-        /// <summary>
         /// Index of the axis
         /// </summary>
         public int Index;

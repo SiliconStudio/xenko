@@ -46,7 +46,10 @@ namespace SiliconStudio.Xenko.Input
             else
                 KeyRepeats.Add(key, repeatCount);
 
-            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Pressed, RepeatCount = repeatCount, Key = key });
+            var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
+            keyEvent.State = ButtonState.Pressed;
+            keyEvent.Key = key;
+            KeyboardInputEvents.Add(keyEvent);
         }
 
         public void HandleKeyUp(Keys key)
@@ -56,7 +59,10 @@ namespace SiliconStudio.Xenko.Input
                 return;
 
             KeyRepeats.Remove(key);
-            KeyboardInputEvents.Add(new KeyEvent(this) { State = ButtonState.Released, Key = key });
+            var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
+            keyEvent.State = ButtonState.Released;
+            keyEvent.Key = key;
+            KeyboardInputEvents.Add(keyEvent);
         }
     }
 }

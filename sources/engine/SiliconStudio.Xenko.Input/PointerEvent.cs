@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
@@ -11,35 +12,6 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class PointerEvent : InputEvent
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointerEvent" /> class.
-        /// </summary>
-        /// <param name="pointer">The device that produces this event</param>
-        internal PointerEvent(IPointerDevice pointer) : base(pointer)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointerEvent" /> class.
-        /// </summary>
-        /// <param name="pointer">The device that produces this event</param>
-        /// <param name="pointerId">The pointer id.</param>
-        /// <param name="position">The position.</param>
-        /// <param name="deltaPosition">The delta position.</param>
-        /// <param name="deltaTime">The delta time.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="pointerType">Type of the pointer.</param>
-        internal PointerEvent(IPointerDevice pointer, int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType, bool isDown) : base(pointer)
-        {
-            PointerId = pointerId;
-            Position = position;
-            DeltaPosition = deltaPosition;
-            DeltaTime = deltaTime;
-            State = state;
-            PointerType = pointerType;
-            IsDown = isDown;
-        }
-
         /// <summary>
         /// Gets a unique identifier of the pointer. See remarks.
         /// </summary>
@@ -89,12 +61,27 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"Pointer {PointerId} {State}, {Position}, Delta: {DeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
+            return
+                $"Pointer {PointerId} {State}, {Position}, Delta: {DeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
         }
 
+        /// <summary>
+        /// Clones the pointer event, this is usefull if you intend to use it after this frame, since otherwise it would be recycled by the input manager the next frame
+        /// </summary>
+        /// <returns>The cloned event</returns>
         public PointerEvent Clone()
         {
-            return new PointerEvent(Pointer, PointerId, Position, DeltaPosition, DeltaTime, State, PointerType, IsDown);
+            return new PointerEvent
+            {
+                Device = Device,
+                PointerId = PointerId,
+                Position = Position,
+                DeltaPosition = DeltaPosition,
+                DeltaTime = DeltaTime,
+                State = State,
+                PointerType = PointerType,
+                IsDown = IsDown
+            };
         }
     }
 }

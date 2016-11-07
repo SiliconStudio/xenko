@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public abstract class ButtonEvent : InputEvent
     {
         /// <summary>
-        /// Creates a new button event
-        /// </summary>
-        /// <param name="device">The device that produces this event</param>
-        protected ButtonEvent(IInputDevice device) : base(device)
-        {
-        }
-
-        /// <summary>
         /// The state of the button
         /// </summary>
         public ButtonState State;

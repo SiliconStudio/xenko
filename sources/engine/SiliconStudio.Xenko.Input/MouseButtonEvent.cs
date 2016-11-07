@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class MouseButtonEvent : ButtonEvent
     {
         /// <summary>
-        /// Creates a new mouse button event
-        /// </summary>
-        /// <param name="device">The mouse</param>
-        public MouseButtonEvent(IMouseDevice device) : base(device)
-        {
-        }
-
-        /// <summary>
         /// The button that changed state
         /// </summary>
         public MouseButton Button;

@@ -43,7 +43,9 @@ namespace SiliconStudio.Xenko.Input
 
         internal void HandleChar(char character)
         {
-            textEvents.Add(new TextInputEvent(this) { Character = character });
+            var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
+            textInputEvent.Text = new string(character, 1);
+            textEvents.Add(textInputEvent);
         }
     }
 }

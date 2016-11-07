@@ -114,16 +114,16 @@ namespace SiliconStudio.Xenko.Input
 
             public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerState state, int id = 0, PointerType type = PointerType.Mouse)
             {
-                injectedPointerEvents.Add(new PointerEvent(this)
-                {
-                    Position = position, 
-                    DeltaPosition = deltaPosition,
-                    DeltaTime = delta,
-                    IsDown = state != PointerState.Up,
-                    PointerId = id,
-                    PointerType = type,
-                    State = state
-                });
+                var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
+                pointerEvent.Position = position;
+                pointerEvent.DeltaPosition = deltaPosition;
+                pointerEvent.DeltaTime = delta;
+                pointerEvent.IsDown = state != PointerState.Up;
+                pointerEvent.PointerId = id;
+                pointerEvent.PointerType = type;
+                pointerEvent.State = state;
+
+                injectedPointerEvents.Add(pointerEvent);
             }
 
             public override void LockMousePosition(bool forceCenter = false)

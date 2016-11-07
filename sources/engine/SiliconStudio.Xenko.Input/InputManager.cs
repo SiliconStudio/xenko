@@ -550,6 +550,13 @@ namespace SiliconStudio.Xenko.Input
         public override void Update(GameTime gameTime)
         {
             GlobalInputState.Reset();
+
+            // Recycle input event to reduce garbage generation
+            foreach (var evt in inputEvents)
+            {
+                // The router takes care of putting the event back in its respective InputEventPool since it already has the type information
+                eventRouters[evt.GetType()].PoolEvent(evt);
+            }
             inputEvents.Clear();
 
             // Update all input sources so they can route events to input devices and possible register new devices
@@ -658,7 +665,7 @@ namespace SiliconStudio.Xenko.Input
         /// Registers an input event type to process
         /// </summary>
         /// <typeparam name="TEventType">The event type to process</typeparam>
-        public void RegisterEventType<TEventType>() where TEventType : InputEvent
+        public void RegisterEventType<TEventType>() where TEventType : InputEvent, new()
         {
             var type = typeof(TEventType);
             eventRouters.Add(type, new InputEventRouter<TEventType>());
@@ -893,11 +900,12 @@ namespace SiliconStudio.Xenko.Input
         protected interface IInputEventRouter
         {
             HashSet<IInputEventListener> Listeners { get; }
+            void PoolEvent(InputEvent evt);
             void RouteEvent(InputEvent evt);
             void TryAddListener(IInputEventListener listener);
         }
 
-        protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent
+        protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent, new()
         {
             public HashSet<IInputEventListener> Listeners { get; } = new HashSet<IInputEventListener>(ReferenceEqualityComparer<IInputEventListener>.Default);
 
@@ -916,6 +924,10 @@ namespace SiliconStudio.Xenko.Input
                 {
                     Listeners.Add(specific);
                 }
+            }
+            public void PoolEvent(InputEvent evt)
+            {
+                InputEventPool<TEventType>.Enqueue((TEventType)evt);
             }
         }
     }
