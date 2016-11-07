@@ -1,54 +1,76 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
 {
+    /// <summary>
+    /// Enables to register listener to the native clipboard changed event (also called clipboard viewers)
+    /// </summary>
     public static class ClipboardMonitor
     {
-        private static IntPtr hWndNextViewer;
+        private static IntPtr hwndNextViewer;
         private static readonly ConditionalWeakTable<Window, HwndSource> Listeners = new ConditionalWeakTable<Window, HwndSource>();
 
+        /// <summary>
+        /// Raised when the clipboard has changed and contains text.
+        /// </summary>
+        /// <remarks>The sender of this event a window that was previously registered as a clipboard viewer with <see cref="RegisterListener"/>.</remarks>
         public static event EventHandler<EventArgs> ClipboardTextChanged;
 
+        /// <summary>
+        /// Registers the given <paramref name="window"/> as a clipboard viewer.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
+        /// <exception cref="InvalidOperationException">window is already registered.</exception>
         public static void RegisterListener(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
-            HwndSource hWndSource;
-            if (Listeners.TryGetValue(window, out hWndSource))
+            HwndSource hwndSource;
+            if (Listeners.TryGetValue(window, out hwndSource))
                 throw new InvalidOperationException($"The given {window} is already registered as a clipboard listener.");
 
-            hWndSource = GetHwndSource(window);
-            if (hWndSource == null)
+            hwndSource = GetHwndSource(window);
+            if (hwndSource == null)
                 return;
 
-            Listeners.Add(window, hWndSource);
+            Listeners.Add(window, hwndSource);
 
             window.Dispatcher.Invoke(() =>
             {
                 // start processing window messages
-                hWndSource.AddHook(WinProc);
+                hwndSource.AddHook(WinProc);
                 // set the window as a viewer
-                hWndNextViewer = NativeHelper.SetClipboardViewer(hWndSource.Handle);
+                hwndNextViewer = NativeHelper.SetClipboardViewer(hwndSource.Handle);
             });
         }
 
+        /// <summary>
+        /// Unregisters the given <paramref name="window"/> as a clipboard viewer.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
+        /// <exception cref="InvalidOperationException">window was not previously registered.</exception>
         public static void UnregisterListener(Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
-            HwndSource hWndSource;
-            if (!Listeners.TryGetValue(window, out hWndSource))
+            HwndSource hwndSource;
+            if (!Listeners.TryGetValue(window, out hwndSource))
                 throw new InvalidOperationException($"The given {window} is not registered as a clipboard listener.");
 
             window.Dispatcher.Invoke(() =>
             {
                 // stop processing window messages
-                hWndSource.RemoveHook(WinProc);
+                hwndSource.RemoveHook(WinProc);
                 // restore the chain
-                NativeHelper.ChangeClipboardChain(hWndSource.Handle, hWndNextViewer);
+                NativeHelper.ChangeClipboardChain(hwndSource.Handle, hwndNextViewer);
             });
         }
 
@@ -60,11 +82,12 @@ namespace SiliconStudio.Presentation.Extensions
 
         private static void OnClipboardContentChanged(IntPtr hwnd)
         {
-            HwndSource.FromHwnd(hwnd)?.Dispatcher.InvokeAsync(() =>
+            var hwndSource = HwndSource.FromHwnd(hwnd);
+            hwndSource?.Dispatcher.InvokeAsync(() =>
             {
                 if (Clipboard.ContainsText())
                 {
-                    ClipboardTextChanged?.Invoke(null, EventArgs.Empty);
+                    ClipboardTextChanged?.Invoke(hwndSource.RootVisual, EventArgs.Empty);
                 }
             });
         }
@@ -74,15 +97,15 @@ namespace SiliconStudio.Presentation.Extensions
             switch (msg)
             {
                 case NativeHelper.WM_CHANGECBCHAIN:
-                    if (wParam == hWndNextViewer)
+                    if (wParam == hwndNextViewer)
                     {
                         // clipboard viewer chain changed, need to fix it. 
-                        hWndNextViewer = lParam;
+                        hwndNextViewer = lParam;
                     }
-                    else if (hWndNextViewer != IntPtr.Zero)
+                    else if (hwndNextViewer != IntPtr.Zero)
                     {
                         // pass the message to the next viewer. 
-                        NativeHelper.SendMessage(hWndNextViewer, msg, wParam, lParam);
+                        NativeHelper.SendMessage(hwndNextViewer, msg, wParam, lParam);
                     }
                     break;
 
@@ -90,7 +113,7 @@ namespace SiliconStudio.Presentation.Extensions
                     // clipboard content changed 
                     OnClipboardContentChanged(hwnd);
                     // pass the message to the next viewer. 
-                    NativeHelper.SendMessage(hWndNextViewer, msg, wParam, lParam);
+                    NativeHelper.SendMessage(hwndNextViewer, msg, wParam, lParam);
                     break;
             }
 
