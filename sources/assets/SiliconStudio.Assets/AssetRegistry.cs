@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -36,7 +35,6 @@ namespace SiliconStudio.Assets
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
-        private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
         private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
         private static readonly Dictionary<Type, Type> RegisteredContentReferenceTypes = new Dictionary<Type, Type>();
@@ -387,14 +385,6 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static IEnumerable<IDataCustomVisitor> GetDataVisitNodeBuilders()
-        {
-            lock (RegistryLock)
-            {
-                return RegisteredDataVisitNodeBuilders;
-            }
-        }
-
         public static bool IsAssetPartType(Type type)
         {
             lock (RegistryLock)
@@ -483,14 +473,7 @@ namespace SiliconStudio.Assets
                         {
                             if (instance == null)
                                 instance = Activator.CreateInstance(type);
-                            if (type.GetCustomAttribute<DiffNodeBuilderAttribute>() != null)
-                            {
-                                RegisteredDataVisitNodeBuilders.Add((IDataCustomVisitor)instance); // FIXME: is this obsolete?
-                            }
-                            else
-                            {
-                                RegisteredDataVisitNodes.Add((IDataCustomVisitor)instance);
-                            }
+                            RegisteredDataVisitNodes.Add((IDataCustomVisitor)instance);
                         }
                         catch (Exception ex)
                         {
@@ -707,11 +690,6 @@ namespace SiliconStudio.Assets
                 foreach (var instance in RegisteredDataVisitNodes.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredDataVisitNodes.Remove(instance);
-                }
-
-                foreach (var instance in RegisteredDataVisitNodeBuilders.Where(instance => instance.GetType().Assembly == assembly).ToList())
-                {
-                    RegisteredDataVisitNodeBuilders.Remove(instance);
                 }
             }
         }

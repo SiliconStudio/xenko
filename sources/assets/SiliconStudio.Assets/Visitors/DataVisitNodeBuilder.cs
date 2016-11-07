@@ -24,8 +24,6 @@ namespace SiliconStudio.Assets.Visitors
         private DataVisitNodeBuilder(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance)
             : base(typeDescriptorFactory)
         {
-            CustomVisitors.AddRange(AssetRegistry.GetDataVisitNodeBuilders());
-
             if (rootInstance == null) throw new ArgumentNullException(nameof(rootInstance));
             RootInstance = rootInstance;
             var objectDescriptor = typeDescriptorFactory.Find(rootInstance.GetType()) as ObjectDescriptor;
