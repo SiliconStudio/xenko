@@ -54,12 +54,6 @@ namespace SiliconStudio.Xenko.Assets
                 RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
-            {
-                // Create GameSettingsAsset
-                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
-            }
-
             if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha02"))
             {
                 // Delete EffectLogAsset

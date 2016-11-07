@@ -129,15 +129,6 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Set current game settings
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
-                // Copy properties from shared profiles to context properties
-                if (sharedProfile != null)
-                {
-                    sharedProfile.Properties.CopyTo(context.PackageProperties, true);
-                }
-
-                // Copy properties from build profile
-                buildProfile.Properties.CopyTo(context.PackageProperties, true);
-
                 // Builds the project
                 var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
                 assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;

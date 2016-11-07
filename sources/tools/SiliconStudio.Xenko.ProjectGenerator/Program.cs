@@ -225,9 +225,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 platformProfile.ProjectReferences.Add(projectPlatformRef);
 
-                // Add build configuration per platform
-                platform.Properties.CopyTo(platformProfile.Properties, true);
-
                 package.Profiles.Add(platformProfile);
             }
 
