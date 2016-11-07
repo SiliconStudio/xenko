@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -7,6 +8,7 @@ namespace SiliconStudio.Presentation.Extensions
     public static class ClipboardMonitor
     {
         private static IntPtr hWndNextViewer;
+        private static readonly ConditionalWeakTable<Window, HwndSource> Listeners = new ConditionalWeakTable<Window, HwndSource>();
 
         public static event EventHandler<EventArgs> ClipboardTextChanged;
 
@@ -14,12 +16,18 @@ namespace SiliconStudio.Presentation.Extensions
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
+            HwndSource hWndSource;
+            if (Listeners.TryGetValue(window, out hWndSource))
+                throw new InvalidOperationException($"The given {window} is already registered as a clipboard listener.");
+
+            hWndSource = GetHwndSource(window);
+            if (hWndSource == null)
+                return;
+
+            Listeners.Add(window, hWndSource);
+
             window.Dispatcher.Invoke(() =>
             {
-                var hWndSource = GetHwndSource(window);
-                if (hWndSource == null)
-                    return;
-
                 // start processing window messages
                 hWndSource.AddHook(WinProc);
                 // set the window as a viewer
@@ -31,12 +39,12 @@ namespace SiliconStudio.Presentation.Extensions
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
+            HwndSource hWndSource;
+            if (!Listeners.TryGetValue(window, out hWndSource))
+                throw new InvalidOperationException($"The given {window} is not registered as a clipboard listener.");
+
             window.Dispatcher.Invoke(() =>
             {
-                var hWndSource = GetHwndSource(window);
-                if (hWndSource == null)
-                    return;
-
                 // stop processing window messages
                 hWndSource.RemoveHook(WinProc);
                 // restore the chain
@@ -50,12 +58,15 @@ namespace SiliconStudio.Presentation.Extensions
             return handle != IntPtr.Zero ? HwndSource.FromHwnd(handle) : null;
         }
 
-        private static void OnClipboardContentChanged()
+        private static void OnClipboardContentChanged(IntPtr hwnd)
         {
-            if (Clipboard.ContainsText())
+            HwndSource.FromHwnd(hwnd)?.Dispatcher.InvokeAsync(() =>
             {
-                ClipboardTextChanged?.Invoke(null, EventArgs.Empty);
-            }
+                if (Clipboard.ContainsText())
+                {
+                    ClipboardTextChanged?.Invoke(null, EventArgs.Empty);
+                }
+            });
         }
 
         private static IntPtr WinProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -77,7 +88,7 @@ namespace SiliconStudio.Presentation.Extensions
 
                 case NativeHelper.WM_DRAWCLIPBOARD:
                     // clipboard content changed 
-                    OnClipboardContentChanged();
+                    OnClipboardContentChanged(hwnd);
                     // pass the message to the next viewer. 
                     NativeHelper.SendMessage(hWndNextViewer, msg, wParam, lParam);
                     break;
