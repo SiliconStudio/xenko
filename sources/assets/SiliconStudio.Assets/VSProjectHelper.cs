@@ -134,50 +134,46 @@ namespace SiliconStudio.Assets
 
         public static Task RestoreNugetPackages(ILogger logger, string solutionFullPath, Project project)
         {
+            var addedProjs = new List<string>(); //should not be necessary but anyway to avoid worst case circular dependencies.
             var allProjs = Utilities.IterateTree(project, project1 =>
             {
                 var projs = new List<Project>();
                 foreach (var item in project1.AllEvaluatedItems.Where(x => x.ItemType == "ProjectReference"))
                 {
                     var path = Path.Combine(project.DirectoryPath, item.EvaluatedInclude);
-                    if (File.Exists(path))
-                    {
-                        projs.Add(project.ProjectCollection.LoadProject(path));
-                    }
+                    if (!File.Exists(path)) continue;
+
+                    if (addedProjs.Contains(path)) continue;
+
+                    projs.Add(project.ProjectCollection.LoadProject(path));
+                    addedProjs.Add(path);
                 }
                 return projs;
             });
 
-            var projectJsonToRestore = new Queue<string>();
-
-            foreach (var proj in allProjs)
-            {
-                // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
-                // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
-                // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
-                var projectJson = Path.Combine(proj.DirectoryPath, "project.json");
-
-                // Nothing to do if there is no project.json
-                if (!File.Exists(projectJson)) continue;
-
-                // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
-                var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
-                if (File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
-                {
-                    projectJsonToRestore.Enqueue(projectJson);
-                }
-            }
-
             return Task.Run(async () =>
             {
-                while (projectJsonToRestore.Count > 0)
+                foreach (var proj in allProjs)
                 {
-                    // Check if it needs to be regenerated
-                    // Run NuGet.exe restore
-                    var parameters = $"restore \"{projectJsonToRestore.Dequeue()}\"";
-                    if (solutionFullPath != null)
-                        parameters += $" -solutiondirectory \"{Path.GetDirectoryName(solutionFullPath)}\"";
-                    await ShellHelper.RunProcessAndGetOutputAsync(NugetPath, parameters, logger);
+                    // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
+                    // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
+                    // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
+                    var projectJson = Path.Combine(proj.DirectoryPath, "project.json");
+
+                    // Nothing to do if there is no project.json
+                    if (!File.Exists(projectJson)) continue;
+
+                    // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
+                    var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
+                    if (File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
+                    {
+                        // Check if it needs to be regenerated
+                        // Run NuGet.exe restore
+                        var parameters = $"restore \"{projectJson}\"";
+                        if (solutionFullPath != null)
+                            parameters += $" -solutiondirectory \"{Path.GetDirectoryName(solutionFullPath)}\"";
+                        await ShellHelper.RunProcessAndGetOutputAsync(NugetPath, parameters, logger);
+                    }
                 }
             });
         }
