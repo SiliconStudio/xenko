@@ -13,13 +13,16 @@ namespace SiliconStudio.Xenko.Input
     {
         private Window window;
 
+        private readonly List<TextInputEvent> textEvents = new List<TextInputEvent>();
+
         public KeyboardSDL(Window window)
         {
             this.window = window;
             this.window.KeyDownActions += OnKeyEvent;
             this.window.KeyUpActions += OnKeyEvent;
+            this.window.TextInputActions += OnTextInputActions;
         }
-
+        
         public override void Dispose()
         {
             window.KeyDownActions -= OnKeyEvent;
@@ -28,6 +31,14 @@ namespace SiliconStudio.Xenko.Input
 
         public override string DeviceName => "SDL Keyboard";
         public override Guid Id => new Guid("a25469ad-804e-4713-82da-347c6b187323");
+        
+        public override void Update(List<InputEvent> inputEvents)
+        {
+            base.Update(inputEvents);
+
+            inputEvents.AddRange(textEvents);
+            textEvents.Clear();
+        }
 
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e)
         {
@@ -40,6 +51,14 @@ namespace SiliconStudio.Xenko.Input
                 else
                     HandleKeyUp(key);
             }
+        }
+        
+        private unsafe void OnTextInputActions(SDL.SDL_TextInputEvent e)
+        {
+            string text = new string((char*)e.text);
+            var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
+            textInputEvent.Text = text;
+            textEvents.Add(textInputEvent);
         }
 
         /// <summary>

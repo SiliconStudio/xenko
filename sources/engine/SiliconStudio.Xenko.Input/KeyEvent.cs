@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class KeyEvent : ButtonEvent
     {
         /// <summary>
-        /// Creates a new key event
-        /// </summary>
-        /// <param name="keyboard">The keyboard that produces this event</param>
-        public KeyEvent(IKeyboardDevice keyboard) : base(keyboard)
-        {
-        }
-
-        /// <summary>
         /// The key that is being pressed or released.
         /// </summary>
         public Keys Key;

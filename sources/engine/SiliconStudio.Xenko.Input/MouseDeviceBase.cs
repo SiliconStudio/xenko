@@ -15,10 +15,6 @@ namespace SiliconStudio.Xenko.Input
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
         protected readonly List<MouseInputEvent> MouseInputEvents = new List<MouseInputEvent>();
         
-        public EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
-        
-        public EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
-        
         public abstract bool IsMousePositionLocked { get; }
         
         public override PointerType Type => PointerType.Mouse;
@@ -32,20 +28,22 @@ namespace SiliconStudio.Xenko.Input
             {
                 if (evt.Type == MouseInputEventType.Down)
                 {
-                    var buttonEvent = new MouseButtonEvent(this) { State = ButtonState.Pressed, Button = evt.Button };
-                    OnMouseButton?.Invoke(this, buttonEvent);
+                    var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
+                    buttonEvent.State = ButtonState.Pressed;
+                    buttonEvent.Button = evt.Button;
                     inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == MouseInputEventType.Up)
                 {
-                    var buttonEvent = new MouseButtonEvent(this) { State = ButtonState.Released, Button = evt.Button };
-                    OnMouseButton?.Invoke(this, buttonEvent);
+                    var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
+                    buttonEvent.State = ButtonState.Released;
+                    buttonEvent.Button = evt.Button;
                     inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == MouseInputEventType.Scroll)
                 {
-                    var wheelEvent = new MouseWheelEvent(this) { WheelDelta = evt.WheelDelta };
-                    OnMouseWheel?.Invoke(this, wheelEvent);
+                    var wheelEvent = InputEventPool<MouseWheelEvent>.GetOrCreate(this);
+                    wheelEvent.WheelDelta = evt.WheelDelta;
                     inputEvents.Add(wheelEvent);
                 }
             }

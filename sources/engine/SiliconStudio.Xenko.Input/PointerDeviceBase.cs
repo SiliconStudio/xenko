@@ -172,8 +172,14 @@ namespace SiliconStudio.Xenko.Input
                 data.Down = false;
             }
 
-            var pointerEvent = new PointerEvent(this, pointerId,
-                data.Position, data.Delta, data.PointerClock.Elapsed, pointerState, Type, data.Down);
+            var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
+            pointerEvent.Position = data.Position;
+            pointerEvent.DeltaPosition = data.Delta;
+            pointerEvent.DeltaTime = data.PointerClock.Elapsed;
+            pointerEvent.IsDown = data.Down;
+            pointerEvent.PointerId = pointerId;
+            pointerEvent.PointerType = Type;
+            pointerEvent.State = pointerState;
 
             CurrentPointerEvents.Add(pointerEvent);
 

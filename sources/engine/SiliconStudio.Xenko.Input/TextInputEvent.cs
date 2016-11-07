@@ -7,18 +7,14 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class TextInputEvent : InputEvent
     {
-        public TextInputEvent(IKeyboardDevice device) : base(device)
-        {
-        }
-
         /// <summary>
-        /// The character that was entered
+        /// The text that was entered
         /// </summary>
-        public char Character;
+        public string Text;
 
         public override string ToString()
         {
-            return $"{nameof(Character)}: {Character}";
+            return $"{nameof(Text)}: {Text}";
         }
     }
 }

@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class GamePadPovControllerEvent : InputEvent
     {
         /// <summary>
-        /// Creates a new pov controller/direction event
-        /// </summary>
-        /// <param name="device">The device that produces this event</param>
-        public GamePadPovControllerEvent(IGamePadDevice device) : base(device)
-        {
-        }
-
-        /// <summary>
         /// The index of the pov controller
         /// </summary>
         public int Index;

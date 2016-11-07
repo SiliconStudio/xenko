@@ -84,6 +84,7 @@
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="GlobalInputState.cs" />
+    <Compile Include="InputEventPool.cs" />
     <Compile Include="iOS\InputSourceiOS.cs" />
     <Compile Include="iOS\PointeriOS.cs" />
     <Compile Include="Mapping\ActionBinder.cs" />

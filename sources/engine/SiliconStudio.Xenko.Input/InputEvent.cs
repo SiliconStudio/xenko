@@ -7,20 +7,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// An event that was generated from an <see cref="IInputDevice"/>
     /// </summary>
-    public abstract class InputEvent : EventArgs
+    public abstract class InputEvent
     {
-        /// <summary>
-        /// Creates a new input event
-        /// </summary>
-        /// <param name="device">The device that produces this event</param>
-        protected InputEvent(IInputDevice device)
-        {
-            Device = device;
-        }
-        
         /// <summary>
         /// The device that sent this event
         /// </summary>
-        public IInputDevice Device { get; }
+        public IInputDevice Device { get; protected internal set; }
     }
 }

@@ -9,14 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class GamePadButtonEvent : ButtonEvent
     {
         /// <summary>
-        /// Creates a new gamepad button event
-        /// </summary>
-        /// <param name="gamepad">The gamepad that produces this event</param>
-        public GamePadButtonEvent(IGamePadDevice gamepad) : base(gamepad)
-        {
-        }
-
-        /// <summary>
         /// The index of the button
         /// </summary>
         public int Index;
