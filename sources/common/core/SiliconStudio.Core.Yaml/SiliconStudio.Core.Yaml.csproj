@@ -122,6 +122,7 @@
     <Compile Include="Serialization\YamlSequenceNode.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\SerializerSettings.cs" />
+    <Compile Include="Serialization\YamlSerializerFactoryAttribute.cs" />
     <Compile Include="Serialization\YamlStream.cs" />
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />

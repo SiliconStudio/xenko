@@ -167,7 +167,6 @@
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />
-    <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

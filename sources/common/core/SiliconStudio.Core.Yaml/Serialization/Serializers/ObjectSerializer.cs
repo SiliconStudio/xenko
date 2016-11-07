@@ -53,6 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// <summary>
     /// Base class for serializing an object that can be a Yaml !!map or !!seq.
     /// </summary>
+    [YamlSerializerFactory]
     public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
     {
         /// <inheritdoc/>
