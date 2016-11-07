@@ -228,7 +228,7 @@ namespace SiliconStudio.Assets.Quantum
             //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
             //    return value;
 
-            var result = AssetCloner.Clone(value, AssetClonerFlags.RemoveOverrides);
+            var result = AssetCloner.Clone(value);
             return result;
         }
 

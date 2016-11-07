@@ -126,63 +126,6 @@ namespace SiliconStudio.Assets
                 //stream.Position = savedPosition;
 
                 var writer = new BinarySerializationWriter(stream);
-                Dictionary<string, OverrideType> overrides = null;
-                List<string> orderedNames = null;
-                foreach (var objectRef in objectReferences)
-                {
-                    //// If the object is actually a reference to another asset, we can skip it as their won't be any overrides
-                    //if (AttachedReferenceManager.GetAttachedReference(objectRef) != null)
-                    //{
-                    //    continue;
-                    //}
-
-                    // Else gets the id if there are any (including shadows that are not part of the standard serialization)
-                    var shadowObject = ShadowObject.GetOrCreate(objectRef);
-
-                    // Dump all members with overrides informations
-                    foreach (var item in shadowObject)
-                    {
-                        if (item.Key.Item2 == Override.OverrideKey)
-                        {
-                            // Use the member name to ensure a stable id
-                            var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
-                            // Only creates the overrides dictionary if needed
-                            if (overrides == null)
-                            {
-                                overrides = new Dictionary<string, OverrideType>();
-                            }
-                            overrides.Add(memberName, (OverrideType)item.Value);
-                        }
-                    }
-
-                    // Write any overrides information to the stream
-                    if (overrides != null)
-                    {
-                        // Collect names and order them by alphabetical order in order to make sure that we will get a stable id 
-                        // (Dictionary doesn't ensure order)
-                        if (orderedNames == null)
-                        {
-                            orderedNames = new List<string>();
-                        }
-                        orderedNames.Clear();
-                        foreach (var entry in overrides)
-                        {
-                            orderedNames.Add(entry.Key);
-                        }
-                        orderedNames.Sort();
-
-                        // Write all overrides for the current object reference
-                        foreach (var name in orderedNames)
-                        {
-                            writer.Write(name);
-                            // Write the override as an int
-                            writer.Write((int)overrides[name]);
-                        }
-
-                        // Clear overrides for next entry
-                        overrides.Clear();
-                    }
-                }
 
                 // Write invariant objects
                 foreach (var invarialtObject in invariantObjects)
@@ -215,11 +158,6 @@ namespace SiliconStudio.Assets
 
                 // NOTE: we don't use Add because of strings that might be duplicated
                 clonedObjectMapping[previousObject] = newObject;
-
-                if ((flags & AssetClonerFlags.RemoveOverrides) == AssetClonerFlags.RemoveOverrides)
-                {
-                    Override.RemoveFrom(newObject);
-                }
 
                 if ((flags & AssetClonerFlags.RemoveItemIds) != AssetClonerFlags.RemoveItemIds)
                 {

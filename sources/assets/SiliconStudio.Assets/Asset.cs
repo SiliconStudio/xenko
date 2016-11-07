@@ -128,11 +128,8 @@ namespace SiliconStudio.Assets
             // Make sure we have identifiers for all items
             AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
-            // Clone this asset to make the base
-            var assetBase = AssetCloner.Clone(this);
-
-            // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
-            var newAsset = AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
+            // Clone this asset without overrides (as we want all parameters to inherit from base)
+            var newAsset = AssetCloner.Clone(this);
 
             // Create a new identifier for this asset
             var newId = Guid.NewGuid();

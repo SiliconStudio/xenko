@@ -348,15 +348,15 @@ namespace SiliconStudio.Core.Yaml
                 var scalar = keyValue.Key as YamlScalarNode;
                 if (scalar?.Value != null)
                 {
-                    var isPostFixNew = scalar.Value.EndsWith(Override.PostFixNewText);
-                    var isPostFixSealed = scalar.Value.EndsWith(Override.PostFixSealedText);
+                    var isPostFixNew = scalar.Value.EndsWith(OverridePostfixes.PostFixNewText);
+                    var isPostFixSealed = scalar.Value.EndsWith(OverridePostfixes.PostFixSealedText);
                     if (isPostFixNew || isPostFixSealed)
                     {
                         var name = scalar.Value;
                         var type = isPostFixNew ? OverrideType.New : OverrideType.Sealed;
 
-                        var isPostFixNewSealedAlt = name.EndsWith(Override.PostFixNewSealedAlt);
-                        var isPostFixNewSealed = name.EndsWith(Override.PostFixNewSealed);
+                        var isPostFixNewSealedAlt = name.EndsWith(OverridePostfixes.PostFixNewSealedAlt);
+                        var isPostFixNewSealed = name.EndsWith(OverridePostfixes.PostFixNewSealed);
                         if (isPostFixNewSealed || isPostFixNewSealedAlt)
                         {
                             type = OverrideType.New | OverrideType.Sealed;
