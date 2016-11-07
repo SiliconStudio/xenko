@@ -39,7 +39,7 @@ namespace SiliconStudio.Core.Settings
                 throw new InvalidOperationException();
 
             parsingEvents = new List<ParsingEvent>();
-            YamlSerializer.Default.Serialize(new ParsingEventListEmitter(parsingEvents), Value, key.Type);
+            SettingsYamlSerializer.Default.Serialize(new ParsingEventListEmitter(parsingEvents), Value, key.Type);
 
             return parsingEvents;
         }

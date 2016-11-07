@@ -1196,7 +1196,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName).Asset;
+                        var templateDescription = YamlSerializer.Default.Load<TemplateDescription>(file.FullName);
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }

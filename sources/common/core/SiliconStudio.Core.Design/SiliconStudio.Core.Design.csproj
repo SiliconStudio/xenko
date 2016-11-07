@@ -65,7 +65,6 @@
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
-    <Compile Include="Reflection\MemberDescriptorExtensions.cs" />
     <Compile Include="Reflection\Override.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Yaml\AssetYamlSerializer.cs" />
     <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
@@ -167,9 +167,11 @@
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
     <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
     <Compile Include="Yaml\PropertyKeyYamlSerializer.cs" />
+    <Compile Include="Settings\SettingsYamlSerializer.cs" />
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />
+    <Compile Include="Yaml\YamlSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

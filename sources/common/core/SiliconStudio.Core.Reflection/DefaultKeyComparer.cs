@@ -52,7 +52,17 @@ namespace SiliconStudio.Core.Reflection
                     return leftOrder.CompareTo(rightOrder);
                 }
 
-                // else order by name
+                // try to order by class hierarchy + token (same as declaration order)
+                var leftMember = (x as MemberDescriptorBase)?.MemberInfo;
+                var rightMember = (y as MemberDescriptorBase)?.MemberInfo;
+                if (leftMember != null || rightMember != null)
+                {
+                    var comparison = leftMember.CompareMetadataTokenWith(rightMember);
+                    if (comparison != 0)
+                        return comparison;
+                }
+
+                // else order by name (dynamic members, etc...)
                 return left.DefaultNameComparer.Compare(left.Name, right.Name);
             }
 

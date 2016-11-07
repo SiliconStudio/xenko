@@ -141,7 +141,7 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    YamlSerializer.Default.Deserialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Deserialize(stream, settingsFile);
                 }
             }
             catch (Exception e)
@@ -186,7 +186,7 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    YamlSerializer.Default.Deserialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Deserialize(stream, settingsFile);
                 }
             }
             catch (Exception e)
@@ -231,7 +231,7 @@ namespace SiliconStudio.Core.Settings
                 var settingsFile = new SettingsFile(profile);
                 using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write))
                 {
-                    YamlSerializer.Default.Serialize(stream, settingsFile);
+                    SettingsYamlSerializer.Default.Serialize(stream, settingsFile);
                 }
 
                 if (filePath != profile.FilePath)

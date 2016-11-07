@@ -11,6 +11,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// An implementation of <see cref="CollectionWithIdsSerializerBase"/> for dictionaries.
     /// </summary>
+    [YamlSerializerFactory("Assets")]
     public class DictionaryWithIdsSerializer : CollectionWithIdsSerializerBase
     {
         /// <inheritdoc/>

@@ -24,6 +24,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MemberDescriptors\MemberDescriptorExtensions.cs" />
     <Compile Include="MemberPath.cs" />
     <Compile Include="MemberPathAction.cs" />
     <Compile Include="TypeDescriptorFactory.cs" />

@@ -268,7 +268,7 @@ Objects:
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
             objectIds[0] = IdentifierGenerator.Get(3);
             objectIds[1] = IdentifierGenerator.Get(4);
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlCollection, yaml);
         }
 
@@ -281,7 +281,7 @@ Objects:
             writer.Write(YamlCollection);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
             var obj = (ContainerCollection)instance;
@@ -325,7 +325,7 @@ Objects:
             writer.Write(yaml);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
             var obj = (ContainerCollection)instance;
@@ -364,7 +364,7 @@ Objects:
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
             objectIds["key3"] = IdentifierGenerator.Get(3);
             objectIds["key4"] = IdentifierGenerator.Get(4);
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlDictionary, yaml);
         }
 
@@ -377,7 +377,7 @@ Objects:
             writer.Write(YamlDictionary);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
             var obj = (ContainerDictionary)instance;
@@ -423,7 +423,7 @@ Objects:
             writer.Write(yaml);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
             var obj = (ContainerDictionary)instance;
@@ -455,7 +455,7 @@ Objects:
             writer.Write(YamlCollectionWithDeleted);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
             var obj = (ContainerCollection)instance;
@@ -502,7 +502,7 @@ Objects:
             objectIds[1] = IdentifierGenerator.Get(4);
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlCollectionWithDeleted, yaml);
         }
 
@@ -515,7 +515,7 @@ Objects:
             writer.Write(YamlDictionaryWithDeleted);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
             var obj = (ContainerDictionary)instance;
@@ -562,7 +562,7 @@ Objects:
             objectIds["key4"] = IdentifierGenerator.Get(4);
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlDictionaryWithDeleted, yaml);
         }
 
@@ -594,7 +594,7 @@ Objects:
             ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects[1].Strings);
             ids[0] = IdentifierGenerator.Get(11);
             ids[1] = IdentifierGenerator.Get(12);
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlCollectionNotIdentifiable, yaml);
         }
 
@@ -607,7 +607,7 @@ Objects:
             writer.Write(YamlCollectionNotIdentifiable);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerNonIdentifiableCollection), instance.GetType());
             var obj = (ContainerNonIdentifiableCollection)instance;
@@ -679,7 +679,7 @@ Objects:
             ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["DDD"].Strings);
             ids[0] = IdentifierGenerator.Get(11);
             ids[1] = IdentifierGenerator.Get(12);
-            var yaml = YamlSerializer.Default.Serialize(obj);
+            var yaml = AssetYamlSerializer.Default.Serialize(obj);
             Assert.AreEqual(YamlDictionaryNonIdentifiable, yaml);
         }
 
@@ -692,7 +692,7 @@ Objects:
             writer.Write(YamlDictionaryNonIdentifiable);
             writer.Flush();
             stream.Position = 0;
-            var instance = YamlSerializer.Default.Deserialize(stream);
+            var instance = AssetYamlSerializer.Default.Deserialize(stream);
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(ContainerNonIdentifiableDictionary), instance.GetType());
             var obj = (ContainerNonIdentifiableDictionary)instance;

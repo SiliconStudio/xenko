@@ -15,12 +15,12 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// Default serializer used for all Yaml content
     /// </summary>
-    internal class AssetYamlSerializer : IAssetSerializer, IAssetSerializerFactory
+    public class YamlAssetSerializer : IAssetSerializer, IAssetSerializerFactory
     {
         public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
         {
             PropertyContainer properties;
-            var result = YamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
+            var result = AssetYamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
             properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out overrides);
             return result;
         }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Serializers
             {
                 settings.Properties.Add(CustomObjectSerializerBackend.OverrideDictionaryKey, overrides);
             }
-            YamlSerializer.Default.Serialize(stream, asset, null, settings);
+            AssetYamlSerializer.Default.Serialize(stream, asset, null, settings);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)

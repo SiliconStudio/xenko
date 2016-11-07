@@ -6,6 +6,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {
+    // TODO: this works only for asset now. Allow to select the YamlSerializer to use to make it work for other scenario
     public static class DynamicYamlExtensions
     {
         public static T ConvertTo<T>(IDynamicYamlNode yamObject)
@@ -16,13 +17,13 @@ namespace SiliconStudio.Core.Yaml
                 using (var streamWriter = new StreamWriter(memoryStream))
                 {
                     var yamlStream = new YamlStream { new YamlDocument(yamObject.Node) };
-                    yamlStream.Save(streamWriter, true, YamlSerializer.Default.GetSerializerSettings().PreferredIndent);
+                    yamlStream.Save(streamWriter, true, AssetYamlSerializer.Default.GetSerializerSettings().PreferredIndent);
 
                     streamWriter.Flush();
                     memoryStream.Position = 0;
 
                     // convert string to object
-                    return (T)YamlSerializer.Default.Deserialize(memoryStream, typeof(T), null);
+                    return (T)AssetYamlSerializer.Default.Deserialize(memoryStream, typeof(T), null);
                 }
             }
         }
@@ -32,7 +33,7 @@ namespace SiliconStudio.Core.Yaml
             using (var stream = new MemoryStream())
             {
                 // convert data to string
-                YamlSerializer.Default.Serialize(stream, dataObject);
+                AssetYamlSerializer.Default.Serialize(stream, dataObject);
 
                 stream.Position = 0;
 

@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Debugger
                     // Get type info
                     var objectStartTag = objectStart.Tag;
                     bool alias;
-                    var componentType = YamlSerializer.Default.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
+                    var componentType = AssetYamlSerializer.Default.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
                     if (componentType != null)
                     {
                         reloadedScript.NewComponent = (EntityComponent)Activator.CreateInstance(componentType);
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Debugger
                 components.Add(newComponent);
 
             // Try to create component first
-            YamlSerializer.Default.Deserialize(eventReader, components, typeof(EntityComponentCollection));
+            AssetYamlSerializer.Default.Deserialize(eventReader, components, typeof(EntityComponentCollection));
             var component = components.Count == 1 ? components[0] : null;
             return component;
         }
@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Debugger
             var parsingEvents = new List<ParsingEvent>();
             // We also want to serialize live component variables
             var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | ScriptComponent.LiveScriptingMask };
-            YamlSerializer.Default.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
+            AssetYamlSerializer.Default.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
             return parsingEvents;
         }
 

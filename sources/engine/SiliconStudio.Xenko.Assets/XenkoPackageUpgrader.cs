@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -257,6 +258,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -356,6 +360,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -577,6 +584,15 @@ namespace SiliconStudio.Xenko.Assets
             Task.WaitAll(tasks);
         }
 
+        private bool IsYamlAsset(PackageLoadingAssetFile assetFile)
+        {
+            // Determine if asset was Yaml or not
+            var assetFileExtension = Path.GetExtension(assetFile.FilePath);
+            assetFileExtension = assetFileExtension?.ToLowerInvariant();
+
+            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
+            return serializer is YamlAssetSerializer;
+        }
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>

@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// The default serializer.
         /// </summary>
-        public static readonly IAssetSerializer Default = new AssetYamlSerializer();
+        public static readonly IAssetSerializer Default = new YamlAssetSerializer();
 
         static AssetSerializer()
         {

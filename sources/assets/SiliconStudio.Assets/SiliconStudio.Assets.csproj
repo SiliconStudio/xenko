@@ -179,7 +179,7 @@
     <Compile Include="PackageSaveParameters.cs" />
     <Compile Include="RootAssetCollection.cs" />
     <Compile Include="Serializers\AssetItemSerializer.cs" />
-    <Compile Include="Serializers\AssetYamlSerializer.cs" />
+    <Compile Include="Serializers\YamlAssetSerializer.cs" />
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="SourceFileMemberAttribute.cs" />

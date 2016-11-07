@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// A base class to serialize collections with unique identifiers for each item.
     /// </summary>
+    [YamlSerializerFactory("Assets")]
     public abstract class CollectionWithIdsSerializerBase : DictionarySerializer
     {
         /// <summary>
