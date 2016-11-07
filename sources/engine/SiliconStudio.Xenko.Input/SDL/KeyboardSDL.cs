@@ -4,12 +4,13 @@
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
+using System.Text;
 using SDL2;
 using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardSDL : KeyboardDeviceBase
+    public class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice
     {
         private Window window;
 
@@ -21,6 +22,7 @@ namespace SiliconStudio.Xenko.Input
             this.window.KeyDownActions += OnKeyEvent;
             this.window.KeyUpActions += OnKeyEvent;
             this.window.TextInputActions += OnTextInputActions;
+            this.window.TextEditingActions += OnTextEditingActions;
         }
         
         public override void Dispose()
@@ -40,6 +42,16 @@ namespace SiliconStudio.Xenko.Input
             textEvents.Clear();
         }
 
+        public void EnabledTextInput()
+        {
+            SDL.SDL_StartTextInput();
+        }
+
+        public void DisableTextInput()
+        {
+            SDL.SDL_StopTextInput();
+        }
+
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e)
         {
             // Try to map to a xenko key
@@ -52,13 +64,37 @@ namespace SiliconStudio.Xenko.Input
                     HandleKeyUp(key);
             }
         }
-        
+
+        private unsafe void OnTextEditingActions(SDL.SDL_TextEditingEvent e)
+        {
+            var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
+            textInputEvent.Text = FixedSizeTextToString(e.text);
+            textInputEvent.Type = TextInputEventType.Composition;
+            textInputEvent.CompositionStart = e.start;
+            textInputEvent.CompositionLength = e.length;
+            textEvents.Add(textInputEvent);
+        }
+
         private unsafe void OnTextInputActions(SDL.SDL_TextInputEvent e)
         {
-            string text = new string((char*)e.text);
             var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
-            textInputEvent.Text = text;
+            textInputEvent.Text = FixedSizeTextToString(e.text);
+            textInputEvent.Type = TextInputEventType.Input;
             textEvents.Add(textInputEvent);
+        }
+
+        private unsafe string FixedSizeTextToString(byte* text)
+        {
+            byte[] sourceBytes = new byte[32];
+            int length = 0;
+            for (int i = 0; i < 32; i++)
+            {
+                if (text[i] == 0)
+                    break;
+                sourceBytes[i] = text[i];
+                length++;
+            }
+            return Encoding.UTF8.GetString(sourceBytes,0,length);
         }
 
         /// <summary>

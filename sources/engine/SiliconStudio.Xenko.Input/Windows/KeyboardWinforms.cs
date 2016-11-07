@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWinforms : KeyboardDeviceBase
+    public class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice
     {
         private readonly List<TextInputEvent> textEvents = new List<TextInputEvent>();
 
@@ -46,6 +46,15 @@ namespace SiliconStudio.Xenko.Input
             var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
             textInputEvent.Text = new string(character, 1);
             textEvents.Add(textInputEvent);
+        }
+
+        public void EnabledTextInput()
+        {
+            // TODO: Enable IME on winforms input
+        }
+
+        public void DisableTextInput()
+        {
         }
     }
 }

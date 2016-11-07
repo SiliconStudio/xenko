@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         private bool synchronousCharacterGeneration;
 
         private readonly StringBuilder builder = new StringBuilder();
-        
+
         [Flags]
         public enum InputTypeFlags
         {
@@ -55,6 +55,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             /// </summary>
             /// <userdoc>No specific input type for the Edit Text.</userdoc>
             None,
+
             /// <summary>
             /// A password input type. Password text is hidden while editing.
             /// </summary>
@@ -146,9 +147,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (isSelectionActive == value)
                     return;
 
-                if(IsReadOnly && value) // prevent selection when the Edit is read only
+                if (IsReadOnly && value) // prevent selection when the Edit is read only
                     return;
-                
+
                 isSelectionActive = value;
 
                 if (IsSelectionActive)
@@ -435,6 +436,15 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DefaultValue(false)]
         public bool DoNotSnapText { get; set; } = false;
 
+        [DataMemberIgnore]
+        public int CompositionStart { get; private set; }
+
+        [DataMemberIgnore]
+        public int CompositionLength { get; private set; }
+
+        [DataMemberIgnore]
+        public string Composition { get; private set; } = "";
+
         /// <summary>
         /// Gets or sets the caret blinking frequency.
         /// </summary>
@@ -451,7 +461,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 if (float.IsNaN(value))
                     return;
-                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
         }
 
         /// <summary>
@@ -465,7 +476,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 UpdateSelectionFromEditImpl();
 
-                return caretAtStart? selectionStart: selectionStop;
+                return caretAtStart ? selectionStart : selectionStop;
             }
             set { Select(value, 0); }
         }
@@ -523,7 +534,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return characterFilterPredicate; }
             set
             {
-                if(characterFilterPredicate == value)
+                if (characterFilterPredicate == value)
                     return;
 
                 characterFilterPredicate = value;
@@ -542,7 +553,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return Text.Substring(SelectionStart, SelectionLength); }
             set
             {
-                if(value == null)
+                if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
                 var stringBfr = Text.Substring(0, SelectionStart);
@@ -565,13 +576,10 @@ namespace SiliconStudio.Xenko.UI.Controls
             get
             {
                 UpdateSelectionFromEditImpl();
-                
-                return selectionStop - selectionStart; 
+
+                return selectionStop - selectionStart;
             }
-            set
-            {
-                Select(SelectionStart, value);
-            }
+            set { Select(SelectionStart, value); }
         }
 
         /// <summary>
@@ -587,10 +595,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
                 return selectionStart;
             }
-            set
-            {
-                Select(value, SelectionLength);
-            }
+            set { Select(value, SelectionLength); }
         }
 
         /// <summary>
@@ -657,6 +662,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         private void UpdateTextToDisplay()
         {
             textToDisplay = ShouldHideText ? new string(PasswordHidingCharacter, text.Length) : text;
+            if (Composition.Length > 0)
+            {
+                textToDisplay = textToDisplay.Insert(CaretPosition, Composition);
+            }
         }
 
         /// <summary>
@@ -678,7 +687,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <param name="textData">A string that specifies the text to append to the current contents of the text control.</param>
         public void AppendText(string textData)
         {
-            if (textData == null) 
+            if (textData == null)
                 throw new ArgumentNullException(nameof(textData));
 
             Text += textData;
@@ -821,7 +830,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             editText.OnTextChanged(e);
         }
-        
+
         /// <summary>
         /// The class handler of the event <see cref="TextChanged"/>.
         /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
@@ -829,7 +838,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <param name="args">The arguments of the event</param>
         protected virtual void OnTextChanged(RoutedEventArgs args)
         {
-
         }
 
         protected override void OnTouchDown(TouchEventArgs args)

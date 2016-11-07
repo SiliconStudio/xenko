@@ -192,6 +192,11 @@ namespace SiliconStudio.Xenko.Input
         public IKeyboardDevice Keyboard => keyboardDevices.Count > 0 ? keyboardDevices[0] : null;
 
         /// <summary>
+        /// First device that supports text input, or null if there is none
+        /// </summary>
+        public ITextInputDevice TextInput => keyboardDevices.OfType<ITextInputDevice>().FirstOrDefault();
+
+        /// <summary>
         /// Gets the collection of connected gamepads, in no particular order
         /// </summary>
         public IReadOnlyCollection<IGamePadDevice> GamePads => gamePadDevices;

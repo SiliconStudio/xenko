@@ -94,17 +94,40 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         internal override void OnKeyPressed(KeyEventArgs args)
         {
+            if (Composition.Length > 0)
+                return; // Ignore keys if composing text
             InterpretKey(args.Key, args.Input);
         }
 
         internal override void OnTextInput(TextEventArgs args)
         {
-            // Backspace is already handled by regular keys
-            // Also ignore return and tab characters
-            if (args.Character == '\b' || args.Character == '\r' || args.Character == '\t')
-                return; 
+            if (args.Type == TextInputEventType.Input)
+            {
+                SelectedText = args.Text;
+                Composition = "";
+            }
+            else
+            {
+                Composition = args.Text;
+                CompositionStart = args.CompositionStart;
+                CompositionLength = args.CompositionLength;
+                UpdateTextToDisplay();
+                InvalidateMeasure();
+            }
+        }
 
-            SelectedText = new string(args.Character, 1);
+        private void ActivateEditTextImpl()
+        {
+            var input = (InputManager)UIElementServices.Services.GetService(typeof(InputManager));
+            input.TextInput?.EnabledTextInput();
+        }
+        private void DeactivateEditTextImpl()
+        {
+            var input = (InputManager)UIElementServices.Services.GetService(typeof(InputManager));
+            input.TextInput?.DisableTextInput();
+            Composition = "";
+
+            FocusedElement = null;
         }
 
         private void InterpretKey(Keys key, InputManager input)
@@ -135,14 +158,20 @@ namespace SiliconStudio.Xenko.UI.Controls
             // select until home
             if (key == Keys.Home && (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)))
             {
-                Select(0, selectionStart + SelectionLength, true);
+                if(caretAtStart)
+                    Select(0, selectionStart + SelectionLength, true);
+                else
+                    Select(0, selectionStart, true);
                 return;
             }
 
             // select until end
             if (key == Keys.End && (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)))
             {
-                Select(selectionStart, Text.Length-selectionStart, false);
+                if(caretAtStart)
+                    Select(selectionStop, Text.Length- selectionStop, false);
+                else
+                    Select(selectionStart, Text.Length - selectionStart, false);
                 return;
             }
 

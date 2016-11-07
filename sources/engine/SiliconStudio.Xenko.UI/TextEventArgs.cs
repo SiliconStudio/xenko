@@ -7,13 +7,28 @@ using SiliconStudio.Xenko.UI.Events;
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
-    /// The arguments associated to an key event.
+    /// The arguments associated to a text event
     /// </summary>
     internal class TextEventArgs : RoutedEventArgs
     {
         /// <summary>
-        /// The character that was entered
+        /// The text that was entered
         /// </summary>
-        public char Character { get; internal set; }
+        public string Text { get; internal set; }
+        
+        /// <summary>
+        /// The type of text input event
+        /// </summary>
+        public TextInputEventType Type { get; internal set; }
+
+        /// <summary>
+        /// Start of the current composition being edited
+        /// </summary>
+        public int CompositionStart { get; internal set; }
+
+        /// <summary>
+        /// Length of the current part of the composition being edited
+        /// </summary>
+        public int CompositionLength { get; internal set; }
     }
 }

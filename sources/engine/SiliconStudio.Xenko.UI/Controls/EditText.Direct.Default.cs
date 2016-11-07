@@ -30,15 +30,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
         }
 
-        private void ActivateEditTextImpl()
-        {
-        }
-
-        private void DeactivateEditTextImpl()
-        {
-            FocusedElement = null;
-        }
-
         private void UpdateTextToEditImpl()
         {
         }

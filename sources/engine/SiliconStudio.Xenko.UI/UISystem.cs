@@ -188,15 +188,34 @@ namespace SiliconStudio.Xenko.UI
 
             if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
 
+            bool enteredText = false;
             foreach (var textEvent in input.InputEvents.OfType<TextInputEvent>())
             {
-                UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs { Character = textEvent.Character });
+                string text = textEvent.Text;
+
+                // Filter out characters that should not be used in text input and use key events instead
+                text = text.Replace("\b", "").Replace("\r", "").Replace("\n", "");
+                if (text.Length == 0 && textEvent.Type != TextInputEventType.Composition) // Do allow empty composition events to update the composition string
+                    continue;
+
+                if (textEvent.Type == TextInputEventType.Input)
+                    enteredText = true;
+
+                UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs
+                {
+                    Text = textEvent.Text,
+                    Type = textEvent.Type,
+                    CompositionStart = textEvent.CompositionStart,
+                    CompositionLength = textEvent.CompositionLength
+                });
             }
 
             foreach (var keyEvent in input.KeyEvents)
             {
                 var key = keyEvent.Key;
                 var evt = new KeyEventArgs { Key = key, Input = input };
+                if (key == Keys.Return && enteredText)
+                    continue; // Skip return events if text was enterered, enter in IME
                 if (keyEvent.State == ButtonState.Pressed)
                 {
                     UIElement.FocusedElement?.RaiseKeyPressedEvent(evt);

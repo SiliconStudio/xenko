@@ -279,7 +279,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (state == PointerState.Down)
                 lastTouchPosition = position;
 
-            var pointerEvent = new PointerEvent(InputSourceSimulated.Instance.Mouse, 0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
+            var pointerEvent = new PointerEvent
+            {
+                Device = InputSourceSimulated.Instance.Mouse,
+                PointerId = 0,
+                Position = position,
+                DeltaPosition = position - lastTouchPosition,
+                DeltaTime = new TimeSpan(),
+                State = state,
+                PointerType = PointerType.Touch,
+                IsDown = true
+            };
 
             lastTouchPosition = position;
 
