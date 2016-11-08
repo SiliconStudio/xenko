@@ -44,9 +44,11 @@ namespace SiliconStudio.Presentation.Extensions
         {
             var monitor = GetMonitorInfo(new WindowInteropHelper(window).Handle);
             if (monitor == null) return Rect.Empty;
-
-            var area = monitor.rcWork;
-            return new Rect(area.Left, area.Top, area.Right - area.Left, area.Bottom - area.Top);
+            
+            var area = (Rect)monitor.rcWork;
+            var rect = window.RectFromScreen(ref area);
+            rect.Offset(window.Left, window.Top);
+            return rect;
         }
 
         /// <summary>
@@ -59,8 +61,10 @@ namespace SiliconStudio.Presentation.Extensions
             var monitor = GetMonitorInfo(new WindowInteropHelper(window).Handle);
             if (monitor == null) return Rect.Empty;
 
-            var area = monitor.rcMonitor;
-            return new Rect(area.Left, area.Top, area.Right - area.Left, area.Bottom - area.Top);
+            var area = (Rect)monitor.rcMonitor;
+            var rect = window.RectFromScreen(ref area);
+            rect.Offset(window.Left, window.Top);
+            return rect;
         }
 
         /// <summary>
