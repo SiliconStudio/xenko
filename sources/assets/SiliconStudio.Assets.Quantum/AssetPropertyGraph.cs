@@ -151,20 +151,45 @@ namespace SiliconStudio.Assets.Quantum
 
             var node = (AssetNode)assetContent.OwnerNode;
             var overrideType = OverrideType.Base;
-            var index = node.RetrieveDerivedIndex(e.Index);
-
-            // This item does not exist anymore
-            if (index.IsEmpty && !e.Index.IsEmpty && e.ChangeType != ContentChangeType.CollectionAdd)
-                return;
+            var index = Index.Empty;
 
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
+                // Find the index of the item in this instance corresponding to the modified item in the base.
+                index = node.RetrieveDerivedIndex(e.Index);
+
+                // If this item does not exist anymore in the instance, stop here.
+                if (index.IsEmpty && !e.Index.IsEmpty)
+                    return;
+
+                // Otherwise, retrieve the current override (before the change).
                 overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
             }
+            else if (e.ChangeType == ContentChangeType.CollectionRemove)
+            {
+                // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
+                // TODO: at some point it would be better to merge this algorithm and RetrieveDerivedIndex in a single method, private to this class (and remove RetrieveDerivedIndex)
+                var baseIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(node.Content.Retrieve());
+                var missingIds = baseIds.FindMissingIds(instanceIds);
+                bool foundUnique = false;
+                foreach (var id in missingIds)
+                {
+                    if (node.TryIdToIndex(id, out index))
+                    {
+                        if (foundUnique) throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
+                        foundUnique = true;
+                    }
+                }
+                if (!foundUnique) throw new InvalidOperationException("Couldn't find a single item id in the instance collection corresponding to the item removed in the base collection");
+            }
 
+            // Then we update the value of this instance according to the value from the base, but only if it's not overridden.
+            // Remark: if it's an Add/Remove, we always propagate the action which is why overrideType is always not New in this case.
             if (assetContent is MemberContent && !overrideType.HasFlag(OverrideType.New))
             {
                 UpdatingPropertyFromBase = true;
+                // Clone the value from the base
                 var newValue = node.Cloner(e.NewValue);
                 switch (e.ChangeType)
                 {
