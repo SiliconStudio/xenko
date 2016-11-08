@@ -6,11 +6,46 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
 {
     public static class VisualExtensions
     {
+        /// <summary>
+        /// Gets the position of the cursor in the current coordinates of the given <paramref name="visual"/>.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method does not rely on <see cref="System.Windows.Input.Mouse"/> but calls native code to retrieve the position of the cursor.
+        /// </remarks>
+        /// <seealso cref="NativeHelper.GetCursorPos"/>
+        /// <seealso cref="Visual.PointFromScreen"/>
+        public static Point GetCursorRelativePosition(this Visual visual)
+        {
+            if (visual == null) throw new ArgumentNullException(nameof(visual));
+
+            NativeHelper.POINT point;
+            NativeHelper.GetCursorPos(out point);
+            return visual.PointFromScreen((Point)point);
+        }
+
+        /// <summary>
+        /// Gets the position of the cursor in the WPF screen coordinates of the given <paramref name="visual"/>'s hosting window.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <returns></returns>
+        /// <seealso cref="WindowHelper.GetCursorScreenPosition"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Point GetCursorScreenPosition(this Visual visual)
+        {
+            if (visual == null) throw new ArgumentNullException(nameof(visual));
+
+            return Window.GetWindow(visual).GetCursorScreenPosition();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Visual FindAdornable(this Visual source)
         {
             return FindAdornableOfType<Visual>(source);
@@ -18,8 +53,7 @@ namespace SiliconStudio.Presentation.Extensions
 
         public static T FindAdornableOfType<T>(this Visual source) where T : Visual
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             if (AdornerLayer.GetAdornerLayer(source) != null && source is T)
                 return (T)source;
@@ -38,8 +72,7 @@ namespace SiliconStudio.Presentation.Extensions
 
         public static AdornerLayer FindAdornerLayer(this Visual source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             var adornerLayer = AdornerLayer.GetAdornerLayer(source);
             if (adornerLayer != null)
@@ -77,6 +110,8 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns></returns>
         public static Rect RectFromScreen(this Visual visual, ref Rect rect)
         {
+            if (visual == null) throw new ArgumentNullException(nameof(visual));
+
             var topLeft = visual.PointFromScreen(new Point(rect.Left, rect.Top));
             var bottomRight = visual.PointFromScreen(new Point(rect.Right, rect.Bottom));
             return new Rect(topLeft, bottomRight);
@@ -102,6 +137,8 @@ namespace SiliconStudio.Presentation.Extensions
         /// <returns></returns>
         public static Rect RectToScreen(this Visual visual, ref Rect rect)
         {
+            if (visual == null) throw new ArgumentNullException(nameof(visual));
+
             var topLeft = visual.PointToScreen(new Point(rect.Left, rect.Top));
             var bottomRight = visual.PointToScreen(new Point(rect.Right, rect.Bottom));
             return new Rect(topLeft, bottomRight);
