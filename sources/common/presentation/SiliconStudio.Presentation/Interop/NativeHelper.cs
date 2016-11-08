@@ -114,9 +114,6 @@ namespace SiliconStudio.Presentation.Interop
         [DllImport("user32.dll")]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        public static extern int GetSystemMetrics(SystemMetric smIndex);
-
         #endregion Methods
 
         #region Structures
