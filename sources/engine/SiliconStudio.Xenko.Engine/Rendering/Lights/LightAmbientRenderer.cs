@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     {
         private LightAmbientShaderGroup lightShaderGroup = new LightAmbientShaderGroup();
 
+        public override Type LightType => typeof(LightAmbient);
+
         public LightAmbientRenderer()
         {
             IsEnvironmentLight = true;

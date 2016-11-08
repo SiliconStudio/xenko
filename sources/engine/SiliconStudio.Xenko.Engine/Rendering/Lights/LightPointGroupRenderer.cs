@@ -24,6 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public class LightPointGroupRenderer : LightGroupRendererDynamic
     {
+        public override Type LightType => typeof(LightPoint);
+
         public override void Initialize(RenderContext context)
         {
         }

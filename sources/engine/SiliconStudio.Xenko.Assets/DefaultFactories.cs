@@ -5,6 +5,7 @@ using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Assets.RenderFrames;
 using SiliconStudio.Xenko.Assets.Rendering;
+using SiliconStudio.Xenko.Assets.Scripts;
 using SiliconStudio.Xenko.Assets.Skyboxes;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Assets.UI;
@@ -44,6 +45,10 @@ namespace SiliconStudio.Xenko.Assets
     }
 
     public class DefaultUILibraryFactory : DefaultAssetFactory<UILibraryAsset>
+    {
+    }
+
+    public class DefaultVisualScriptFactory : DefaultAssetFactory<VisualScriptAsset>
     {
     }
 

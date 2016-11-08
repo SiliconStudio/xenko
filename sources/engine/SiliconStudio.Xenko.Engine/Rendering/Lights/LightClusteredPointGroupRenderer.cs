@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public LightGroupRendererBase SpotRenderer { get; }
 
+        public override Type LightType => typeof(LightPoint);
+
         public LightClusteredPointGroupRenderer()
         {
             SpotRenderer = new LightClusteredSpotGroupRenderer(this);
@@ -214,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Initialize cluster with no light (-1)
                 for (int i = 0; i < clusterCountX * clusterCountY * ClusterSlices; ++i)
                 {
-                    lightNodes.Add(new LightClusterLinkedNode(LightType.Point, -1, -1));
+                    lightNodes.Add(new LightClusterLinkedNode(InternalLightType.Point, -1, -1));
                 }
 
                 // List of clusters moved by this light
@@ -284,7 +286,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         {
                             for (int x = tileStartX; x < tileEndX; ++x)
                             {
-                                AddLightToCluster(movedClusters, LightType.Spot, i - lightRange.Start, x + (y + z * clusterCountY) * clusterCountX);
+                                AddLightToCluster(movedClusters, InternalLightType.Spot, i - lightRange.Start, x + (y + z * clusterCountY) * clusterCountX);
                             }
                         }
                     }
@@ -350,7 +352,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         {
                             for (int x = tileStartX; x < tileEndX; ++x)
                             {
-                                AddLightToCluster(movedClusters, LightType.Point, i - lightRange.Start, x + (y + z * clusterCountY) * clusterCountX);
+                                AddLightToCluster(movedClusters, InternalLightType.Point, i - lightRange.Start, x + (y + z * clusterCountY) * clusterCountX);
                             }
                         }
                     }
@@ -485,10 +487,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                             lightIndices.Add(movedCluster.LightIndex);
                             switch (movedCluster.LightType)
                             {
-                                case LightType.Point:
+                                case InternalLightType.Point:
                                     pointLightCounter++;
                                     break;
-                                case LightType.Spot:
+                                case InternalLightType.Spot:
                                     spotLightCounter++;
                                     break;
                             }
@@ -505,10 +507,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // Last pass: store cluster id (instead of next node)
-                lightNodes.Items[clusterIndex] = new LightClusterLinkedNode(LightType.Point, -1, clusterId);
+                lightNodes.Items[clusterIndex] = new LightClusterLinkedNode(InternalLightType.Point, -1, clusterId);
             }
 
-            private void AddLightToCluster(Dictionary<LightClusterLinkedNode, int> movedClusters, LightType lightType, int lightIndex, int clusterIndex)
+            private void AddLightToCluster(Dictionary<LightClusterLinkedNode, int> movedClusters, InternalLightType lightType, int lightIndex, int clusterIndex)
             {
                 var nextNode = -1;
                 if (lightNodes.Items[clusterIndex].LightIndex != -1)
@@ -590,11 +592,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Single linked list of lights (stored in an array)
             struct LightClusterLinkedNode : IEquatable<LightClusterLinkedNode>
             {
-                public readonly LightType LightType;
+                public readonly InternalLightType LightType;
                 public readonly int LightIndex;
                 public readonly int NextNode;
 
-                public LightClusterLinkedNode(LightType lightType, int lightIndex, int nextNode)
+                public LightClusterLinkedNode(InternalLightType lightType, int lightIndex, int nextNode)
                 {
                     LightType = lightType;
                     LightIndex = lightIndex;
@@ -628,6 +630,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class LightClusteredSpotGroupRenderer : LightGroupRendererBase
         {
             private readonly LightClusteredPointGroupRenderer pointGroupRenderer;
+
+            public override Type LightType => typeof(LightSpot);
 
             public LightClusteredSpotGroupRenderer(LightClusteredPointGroupRenderer pointGroupRenderer)
             {
@@ -663,7 +667,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public new FastListStruct<LightDynamicEntry> Lights => base.Lights;
         }
 
-        enum LightType
+        enum InternalLightType
         {
             Point,
             Spot,

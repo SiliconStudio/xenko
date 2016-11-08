@@ -16,8 +16,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     [AssetPartReference(typeof(Link))]
     [AssetPartReference(typeof(Symbol))]
     [AssetPartReference(typeof(Slot))]
+    [DataContract("VisualScriptAsset")]
+    [Display(85, "Visual Script")]
+    [AssetDescription(FileExtension)]
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
+        /// <summary>
+        /// The default file extension used by the <see cref=VisualScriptAsset"/>.
+        /// </summary>
+        public const string FileExtension = ".xkvs";
+
         [DataMember(0)]
         [DefaultValue(Accessibility.Public)]
         public Accessibility Accessibility { get; set; } = Accessibility.Public;

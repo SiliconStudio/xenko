@@ -17,6 +17,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
+        /// <inheritdoc/>
+        public override Type LightType => typeof(LightDirectional);
+
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>

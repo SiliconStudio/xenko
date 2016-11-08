@@ -2,7 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using System.Threading;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
@@ -14,6 +17,12 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class MeshRenderFeature : RootEffectRenderFeature
     {
+        /// <summary>
+        /// Lists of sub render features that can be applied on <see cref="RenderMesh"/>.
+        /// </summary>
+        [DataMember]
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<SubRenderFeature> RenderFeatures = new TrackingCollection<SubRenderFeature>();
 
         private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();

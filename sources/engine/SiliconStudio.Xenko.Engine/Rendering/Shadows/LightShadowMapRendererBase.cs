@@ -2,13 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
+    [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
+        public abstract Type LightType { get; }
+
         public abstract void Reset();
 
         public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)

@@ -460,6 +460,7 @@
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
+    <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />

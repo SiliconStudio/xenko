@@ -153,10 +153,24 @@ namespace SiliconStudio.Xenko.Rendering
         {
             base.Load(context);
 
+            if (context.RenderContext.GraphicsDevice.Features.RequestedProfile < GraphicsProfile.Level_10_0)
+                return;
+
             var shadowMapRenderStage = context.RenderSystem.GetRenderStage("ShadowMapCaster");
 
             var forwardLightingRenderFeature = RenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().First();
-            forwardLightingRenderFeature.ShadowMapRenderStage = shadowMapRenderStage;
+            if (forwardLightingRenderFeature.ShadowMapRenderer == null)
+            {
+                forwardLightingRenderFeature.ShadowMapRenderer = new ShadowMapRenderer
+                {
+                    Renderers =
+                    {
+                        new LightDirectionalShadowMapRenderer(),
+                        new LightSpotShadowMapRenderer(),
+                    },
+                    ShadowMapRenderStage = shadowMapRenderStage,
+                };
+            }
 
             RegisterPostProcessPipelineState((RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
