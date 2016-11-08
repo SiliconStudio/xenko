@@ -166,6 +166,16 @@ namespace SiliconStudio.Presentation.Interop
             {
                 return new Point(p.X, p.Y);
             }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="Point"/> to <see cref="POINT"/>.
+            /// </summary>
+            /// <param name="p"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator POINT(Point p)
+            {
+                return new POINT((int)p.X, (int)p.Y);
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -179,6 +189,26 @@ namespace SiliconStudio.Presentation.Interop
                 Top = top;
                 Right = right;
                 Bottom = bottom;
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="RECT"/> to <see cref="Rect"/>.
+            /// </summary>
+            /// <param name="r"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator Rect(RECT r)
+            {
+                return new Rect(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="Rect"/> to <see cref="RECT"/>.
+            /// </summary>
+            /// <param name="r"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator RECT(Rect r)
+            {
+                return new RECT((int)r.Left, (int)r.Top, (int)r.Right, (int)r.Bottom);
             }
         }
 
