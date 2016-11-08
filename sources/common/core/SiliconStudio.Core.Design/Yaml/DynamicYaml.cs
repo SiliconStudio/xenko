@@ -13,6 +13,7 @@ namespace SiliconStudio.Core.Yaml
     /// </summary>
     public class DynamicYaml
     {
+        private static readonly SerializerSettings DefaultSettings = new SerializerSettings();
         private readonly YamlStream yamlStream;
         private DynamicYamlMapping dynamicRootNode;
 
@@ -70,13 +71,14 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Writes the content of this YAML node to the specified stream.
         /// </summary>
-        /// <param name="stream"></param>
-        public void WriteTo(Stream stream)
+        /// <param name="stream">The stream to output YAML to.</param>
+        /// <param name="settings">The settings to use to generate YAML. If null, a default <see cref="SerializerSettings"/> will be used.</param>
+        public void WriteTo(Stream stream, SerializerSettings settings)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             using (var streamWriter = new StreamWriter(stream))
             {
-                WriteTo(streamWriter);
+                WriteTo(streamWriter, DefaultSettings);
             }
         }
 
@@ -84,10 +86,11 @@ namespace SiliconStudio.Core.Yaml
         /// Writes the content of this YAML node to the specified writer.
         /// </summary>
         /// <param name="writer">The writer to output YAML to.</param>
-        public void WriteTo(TextWriter writer)
+        /// <param name="settings">The settings to use to generate YAML. If null, a default <see cref="SerializerSettings"/> will be used.</param>
+        public void WriteTo(TextWriter writer, SerializerSettings settings)
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
-            var preferredIndent = AssetYamlSerializer.Default.GetSerializerSettings().PreferredIndent;
+            var preferredIndent = (settings ?? DefaultSettings).PreferredIndent;
             yamlStream.Save(writer, true, preferredIndent);
             writer.Flush();
         }
@@ -96,7 +99,7 @@ namespace SiliconStudio.Core.Yaml
         {
             using (var streamWriter = new StringWriter())
             {
-                WriteTo(streamWriter);
+                WriteTo(streamWriter, DefaultSettings);
                 return streamWriter.ToString();
             }
         }

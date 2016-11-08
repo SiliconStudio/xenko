@@ -364,6 +364,14 @@ namespace SiliconStudio.Xenko.Assets
 
                         try
                         {
+                            if (assetFile.FilePath.GetFileExtension() == ".xkpkg")
+                            {
+                                foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
+                                {
+                                    profile["Properties"] = DynamicYamlEmpty.Default;
+                                }
+                            }                        
+
                             if (assetYaml.DynamicRootNode["~Base"] != null)
                             {
                                 var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
@@ -396,6 +404,27 @@ namespace SiliconStudio.Xenko.Assets
             //        }
             //    }
             //}
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkpkg");
+                foreach (var assetFile in files)
+                {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
+                        {
+                            profile["Properties"] = DynamicYamlEmpty.Default;
+                        }
+                    }
+                }
+            }
 
             return true;
         }

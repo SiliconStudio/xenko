@@ -1,12 +1,12 @@
 using System;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
-namespace SiliconStudio.Core.Design.Tests
+namespace SiliconStudio.Assets.Tests.Yaml
 {
     public static class IdentifierGenerator
     {
@@ -752,7 +752,7 @@ Objects:
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj1.Strings, out ids));
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj1.Objects, out ids));
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj1.Objects, out ids));
-            CollectionItemIdHelper.GenerateMissingItemIds(obj1);
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(obj1);
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(obj1.Strings, out ids));
             Assert.AreEqual(3, ids.Count);
             Assert.True(ids.ContainsKey(0));
@@ -779,7 +779,7 @@ Objects:
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj2.Strings, out ids));
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj2.Objects, out ids));
             Assert.False(CollectionItemIdHelper.TryGetCollectionItemIds(obj2.Objects, out ids));
-            CollectionItemIdHelper.GenerateMissingItemIds(obj2);
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(obj2);
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(obj2.Strings, out ids));
             Assert.AreEqual(3, ids.Count);
             Assert.True(ids.ContainsKey(GuidGenerator.Get(200)));
