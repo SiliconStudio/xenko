@@ -62,7 +62,13 @@ namespace SiliconStudio.Presentation.Interop
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowCmd uCmd);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr MonitorFromPoint(POINT lpPoint, int dwFlags);
+
+        [DllImport("user32.dll")]
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumDelegate lpfnEnum, IntPtr dwData);
 
         [DllImport("user32.dll")]
         public static extern bool GetMonitorInfo(IntPtr hmonitor, [In, Out] MONITORINFO monitorInfo);
@@ -115,7 +121,7 @@ namespace SiliconStudio.Presentation.Interop
         [DllImport("user32.dll")]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
 
-        #endregion Methods
+        #endregion // Methods
 
         #region Structures
 
@@ -214,9 +220,15 @@ namespace SiliconStudio.Presentation.Interop
             GetRootOwner = 3
         }
 
+        #endregion // Structures
+
+        #region Delegates
+
+        public delegate bool MonitorEnumDelegate(IntPtr hmonitor, IntPtr hdcMonitor, RECT lpRect, IntPtr dwData);
+
         public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
 
-        #endregion Structures
+        #endregion // Delegates
 
         #region Constants
 
@@ -539,7 +551,7 @@ namespace SiliconStudio.Presentation.Interop
         public const uint WINEVENT_OUTOFCONTEXT = 0;
         // ReSharper restore InconsistentNaming
 
-        #endregion Constants
+        #endregion // Constants
 
         public static bool SetCursorPos(Point pt)
         {
