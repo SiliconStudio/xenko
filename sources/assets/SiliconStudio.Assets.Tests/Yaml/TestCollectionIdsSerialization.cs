@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Tests.Yaml
     }
 
     [TestFixture]
-    public class TestCollectionIds
+    public class TestCollectionIdsSerialization
     {
         public class ContainerCollection
         {
@@ -122,7 +122,7 @@ namespace SiliconStudio.Assets.Tests.Yaml
         }
 
 
-        private const string YamlCollection = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerCollection,SiliconStudio.Assets.Tests
+        private const string YamlCollection = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerCollection,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     02000000020000000200000002000000: aaa
@@ -138,7 +138,7 @@ Objects:
         Objects: {}
 ";
 
-        private const string YamlCollectionNotIdentifiable = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerNonIdentifiableCollection,SiliconStudio.Assets.Tests
+        private const string YamlCollectionNotIdentifiable = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerNonIdentifiableCollection,SiliconStudio.Assets.Tests
 Name: Root
 Objects:
     02000000020000000200000002000000:
@@ -166,7 +166,7 @@ NonIdentifiableObjects:
         Objects: {}
 ";
 
-        private const string YamlDictionary = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerDictionary,SiliconStudio.Assets.Tests
+        private const string YamlDictionary = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerDictionary,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     02000000020000000200000002000000~000000c8-00c8-0000-c800-0000c8000000: aaa
@@ -182,7 +182,7 @@ Objects:
         Objects: {}
 ";
 
-        private const string YamlDictionaryNonIdentifiable = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerNonIdentifiableDictionary,SiliconStudio.Assets.Tests
+        private const string YamlDictionaryNonIdentifiable = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerNonIdentifiableDictionary,SiliconStudio.Assets.Tests
 Name: Root
 Objects:
     02000000020000000200000002000000~AAA:
@@ -212,7 +212,7 @@ NonIdentifiableObjects:
         Objects: {}
 ";
 
-        private const string YamlCollectionWithDeleted = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerCollection,SiliconStudio.Assets.Tests
+        private const string YamlCollectionWithDeleted = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerCollection,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     08000000080000000800000008000000: aaa
@@ -232,7 +232,7 @@ Objects:
     06000000060000000600000006000000: ~(Deleted)
 ";
 
-        private const string YamlDictionaryWithDeleted = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerDictionary,SiliconStudio.Assets.Tests
+        private const string YamlDictionaryWithDeleted = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerDictionary,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     08000000080000000800000008000000~000000c8-00c8-0000-c800-0000c8000000: aaa
@@ -304,7 +304,7 @@ Objects:
         public void TestCollectionDeserializationOldWay()
         {
             ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerCollection,SiliconStudio.Assets.Tests
+            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerCollection,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     - aaa
@@ -400,7 +400,7 @@ Objects:
         public void TestDictionaryDeserializationOldWay()
         {
             ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIds+ContainerDictionary,SiliconStudio.Assets.Tests
+            var yaml = @"!SiliconStudio.Assets.Tests.Yaml.TestCollectionIdsSerialization+ContainerDictionary,SiliconStudio.Assets.Tests
 Name: Root
 Strings:
     000000c8-00c8-0000-c800-0000c8000000: aaa

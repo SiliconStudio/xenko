@@ -26,6 +26,7 @@ namespace SiliconStudio.Assets.Quantum
                 throw new ArgumentNullException(nameof(assetItem));
             this.assetItem = assetItem;
             Container = container;
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides();
 

@@ -62,7 +62,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestPathSelector.cs" />
     <Compile Include="TestTemplateManager.cs" />
-    <Compile Include="Yaml\TestCollectionIds.cs" />
+    <Compile Include="Yaml\TestCollectionIdsSerialization.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
