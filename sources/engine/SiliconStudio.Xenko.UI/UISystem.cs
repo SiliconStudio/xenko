@@ -197,9 +197,7 @@ namespace SiliconStudio.Xenko.UI
                 text = text.Replace("\b", "").Replace("\r", "").Replace("\n", "");
                 if (text.Length == 0 && textEvent.Type != TextInputEventType.Composition) // Do allow empty composition events to update the composition string
                     continue;
-
-                if (textEvent.Type == TextInputEventType.Input)
-                    enteredText = true;
+                enteredText = true;
 
                 UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs
                 {
@@ -214,8 +212,8 @@ namespace SiliconStudio.Xenko.UI
             {
                 var key = keyEvent.Key;
                 var evt = new KeyEventArgs { Key = key, Input = input };
-                if (key == Keys.Return && enteredText)
-                    continue; // Skip return events if text was enterered, enter in IME
+                if (enteredText)
+                    continue; // Skip key events if text was entered
                 if (keyEvent.State == ButtonState.Pressed)
                 {
                     UIElement.FocusedElement?.RaiseKeyPressedEvent(evt);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
@@ -95,25 +95,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
                                                 editText.ActualHeight - editText.Padding.Top - editText.Padding.Bottom);
 
             var font = editText.Font;
-            var selectionColor = editText.RenderOpacity * editText.SelectionColor;
             var caretColor = editText.RenderOpacity * editText.CaretColor;
 
             var offsetTextStart = 0f;
             var offsetAlignment = 0f;
             var selectionSize = 0f;
 
-            var fontSize = new Vector2(fontScale.Y * editText.ActualTextSize);
-            offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
-
             // Draw the composition selection
             if (editText.Composition.Length > 0)
             {
-                RenderSelection(editText, context, editText.CaretPosition, editText.Composition.Length, Color.Lime, ref offsetTextStart, ref offsetAlignment, ref selectionSize);
+                var imeSelectionColor = editText.RenderOpacity * editText.IMESelectionColor;
+                RenderSelection(editText, context, editText.SelectionStart, editText.Composition.Length, imeSelectionColor, ref offsetTextStart, ref offsetAlignment, ref selectionSize);
             }
-            
             // Draw the regular selection
-            if (editText.IsSelectionActive)
+            else if (editText.IsSelectionActive)
             {
+                var selectionColor = editText.RenderOpacity * editText.SelectionColor;
                 RenderSelection(editText, context, editText.SelectionStart, editText.SelectionLength, selectionColor, ref offsetTextStart, ref offsetAlignment, ref selectionSize);
             }
 

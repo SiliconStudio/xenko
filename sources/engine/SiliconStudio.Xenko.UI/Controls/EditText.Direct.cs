@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX || SILICONSTUDIO_PLATFORM_UWP
 using System;
@@ -103,11 +103,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             if (args.Type == TextInputEventType.Input)
             {
-                SelectedText = args.Text;
+                // Clear the composition first, so it won't be inserted in to the text to display again
                 Composition = "";
+                SelectedText = args.Text;
             }
             else
             {
+                // Update the composition
                 Composition = args.Text;
                 CompositionStart = args.CompositionStart;
                 CompositionLength = args.CompositionLength;

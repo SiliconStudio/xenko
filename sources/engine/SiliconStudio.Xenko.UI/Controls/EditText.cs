@@ -326,6 +326,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         public Color SelectionColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
+        /// Gets or sets the color of the IME composition selection.
+        /// </summary>
+        /// <userdoc>The color of the selection.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color IMESelectionColor { get; set; } = Color.FromAbgr(0xF0FFF0FF);
+
+        /// <summary>
         /// Gets or sets whether the control is read-only, or not.
         /// </summary>
         /// <userdoc>True if the control is read-only, false otherwise.</userdoc>
@@ -664,7 +672,20 @@ namespace SiliconStudio.Xenko.UI.Controls
             textToDisplay = ShouldHideText ? new string(PasswordHidingCharacter, text.Length) : text;
             if (Composition.Length > 0)
             {
-                textToDisplay = textToDisplay.Insert(CaretPosition, Composition);
+                int insertPosition = CaretPosition;
+                if (SelectionLength > 0)
+                {
+                    // Replace selection
+                    textToDisplay = textToDisplay.Remove(selectionStart, SelectionLength);
+                    if (!caretAtStart)
+                        insertPosition -= SelectionLength;
+                }
+                
+                // Insert composition into text to display
+                if (insertPosition >= textToDisplay.Length)
+                    textToDisplay += Composition;
+                else
+                    textToDisplay = textToDisplay.Insert(insertPosition, Composition);
             }
         }
 
