@@ -51,20 +51,6 @@ namespace SiliconStudio.AssemblyProcessor
             voidPointerType = new PointerType(assembly.MainModule.TypeSystem.Void);
             intType = assembly.MainModule.TypeSystem.Int32;
 
-            // Remove CompilationRelaxationsAttribute
-            if (context.Platform == PlatformType.WindowsStore || context.Platform == PlatformType.WindowsPhone)
-            {
-                for (int i = 0; i < assembly.CustomAttributes.Count; i++)
-                {
-                    var customAttribute = assembly.CustomAttributes[i];
-                    if (customAttribute.AttributeType.FullName == typeof(CompilationRelaxationsAttribute).FullName)
-                    {
-                        assembly.CustomAttributes.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-
             context.Log.WriteLine($"Patch for assembly [{assembly.FullName}]");
             foreach (var type in assembly.MainModule.Types)
                 PatchType(type);

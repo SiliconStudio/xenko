@@ -38,7 +38,7 @@ namespace SiliconStudio.Core
     /// </summary>
     public static class Utilities
     {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS_10
+#if SILICONSTUDIO_PLATFORM_UWP
         public unsafe static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
         {
             Interop.memcpy((void*)dest, (void*)src, sizeInBytesToCopy);
@@ -793,7 +793,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <typeparam name="T">The type to iterate.</typeparam>
         /// <param name="root">The root item</param>
-        /// <param name="childrenF">The function to retreive childs</param>
+        /// <param name="childrenF">The function to retrieve a child</param>
         /// <returns></returns>
         public static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
         {

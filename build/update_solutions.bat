@@ -64,14 +64,6 @@ echo Processing iOS
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.iOS.sln -p iOS
 echo.
 
-echo Processing WindowsStore
-..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.WindowsStore.sln -p WindowsStore
-echo.
-
-echo Processing WindowsPhone
-..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.WindowsPhone.sln -p WindowsPhone
-echo.
-
-echo Processing Windows10
-..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Windows10.sln -p Windows10
+echo Processing UWP
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.UWP.sln -p UWP
 echo.

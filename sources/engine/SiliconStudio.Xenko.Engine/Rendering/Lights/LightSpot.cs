@@ -37,14 +37,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <summary>
-        /// Gets or sets the shadow.
-        /// </summary>
-        /// <value>The shadow.</value>
-        /// <userdoc>The settings of the light shadow</userdoc>
-        [DataMember(200)]
-        public override LightShadowMap Shadow { get; protected set; }
-
-        /// <summary>
         /// Gets or sets the range distance the light is affecting.
         /// </summary>
         /// <value>The range.</value>

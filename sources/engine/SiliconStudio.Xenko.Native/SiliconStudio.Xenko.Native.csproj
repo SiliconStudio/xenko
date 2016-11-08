@@ -34,6 +34,7 @@
     <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
+    <Compile Include="Navigation\Navigation.cs" />
     <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -79,6 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Audio\Common.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Navigation\Navigation.cpp" />
+    <None Include="Navigation\Navigation.hpp" />
+    <None Include="Navigation\NavigationBuilder.cpp" />
+    <None Include="Navigation\NavigationBuilder.hpp" />
+    <None Include="Navigation\NavigationMesh.cpp" />
+    <None Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

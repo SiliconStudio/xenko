@@ -51,8 +51,8 @@ namespace SiliconStudio.Xenko.Games
 
         public static GamePlatform Create(GameBase game)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            return new GamePlatformWindowsRuntime(game);
+#if SILICONSTUDIO_PLATFORM_UWP
+            return new GamePlatformUWP(game);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             return new GamePlatformAndroid(game);
 #elif SILICONSTUDIO_PLATFORM_IOS
