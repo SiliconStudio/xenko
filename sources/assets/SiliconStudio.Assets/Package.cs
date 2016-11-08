@@ -55,9 +55,10 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
+    [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
     public sealed partial class Package : Asset, IFileSynchronizable
     {
-        private const int PackageFileVersion = 3;
+        private const int PackageFileVersion = 4;
 
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
@@ -1402,6 +1403,17 @@ namespace SiliconStudio.Assets
                             profile.Platform = nameof(PlatformType.UWP);
                         }
                     }
+                }
+            }
+        }
+
+        private class RemoveProperties : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                foreach (var profile in asset["Profiles"])
+                {
+                    profile["Properties"] = DynamicYamlEmpty.Default;
                 }
             }
         }

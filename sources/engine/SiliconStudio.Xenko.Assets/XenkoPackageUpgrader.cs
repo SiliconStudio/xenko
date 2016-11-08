@@ -364,14 +364,6 @@ namespace SiliconStudio.Xenko.Assets
 
                         try
                         {
-                            if (assetFile.FilePath.GetFileExtension() == ".xkpkg")
-                            {
-                                foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
-                                {
-                                    profile["Properties"] = DynamicYamlEmpty.Default;
-                                }
-                            }                        
-
                             if (assetYaml.DynamicRootNode["~Base"] != null)
                             {
                                 var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
