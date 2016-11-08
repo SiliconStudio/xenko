@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.Yaml
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(Stream stream)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(true);
             return serializer.Deserialize(stream);
         }
 

@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Tests
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts.Select(it => new AssetPart(it.Id, null, x => { }));
+            return Parts.Select(it => new AssetPart(it.Id, it.Base, x => { }));
         }
 
         public override IIdentifiable FindPart(Guid partId)
@@ -120,16 +120,11 @@ namespace SiliconStudio.Assets.Tests
             // The assetPartBase must be a plain child asset
             if (assetBaseWithParts.Archetype == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
 
-            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetBaseWithParts.CollectParts().Any(it => it.Base == null))
-            {
-                throw new InvalidOperationException("An asset part base must contain only base assets");
-            }
-
+            var instanceId = Guid.NewGuid();
             for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
             {
                 var part = assetBaseWithParts.Parts[i];
-                Parts.Add(new AssetPartTestItem(part.Id, part.BaseId, assetBaseWithParts.Id));
+                Parts.Add(new AssetPartTestItem(Guid.NewGuid(), part.Id, instanceId));
             }
         }
     }
@@ -143,17 +138,16 @@ namespace SiliconStudio.Assets.Tests
 
         public AssetPartTestItem(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
         {
+            if (baseId.HasValue && basePartInstanceId.HasValue)
+            {
+                Base = new BasePart(new AssetReference(Guid.NewGuid(), Guid.NewGuid().ToString()), baseId.Value, basePartInstanceId.Value);
+            }
             Id = id;
-            BaseId = baseId;
-            BasePartInstanceId = basePartInstanceId;
         }
 
-        // TODO: this should be rewritten to use BasePart!
+        public BasePart Base { get; set; }
+
         public Guid Id { get; set; }
-
-        public Guid? BaseId;
-
-        public Guid? BasePartInstanceId;
     }
 
     [DataContract("!AssetImportObjectTest")]

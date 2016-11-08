@@ -64,8 +64,6 @@ namespace SiliconStudio.Assets.Tests
 
             var hash1WithOverrides = AssetHash.Compute(obj1);
             var hash2WithOverrides = AssetHash.Compute(obj2);
-            Assert.AreNotEqual(hash1, hash1WithOverrides);
-            Assert.AreNotEqual(hash2, hash2WithOverrides);
             Assert.AreEqual(hash1WithOverrides, hash2WithOverrides);
         }
     }
