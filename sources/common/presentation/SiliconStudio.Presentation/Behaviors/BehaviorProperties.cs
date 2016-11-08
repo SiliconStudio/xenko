@@ -124,8 +124,7 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             switch (msg)
             {
-                /* WM_GETMINMAXINFO */
-                case 0x0024:
+                case NativeHelper.WM_GETMINMAXINFO:
                     var monitorInfo = WindowHelper.GetMonitorInfo(hwnd);
                     if (monitorInfo == null)
                         break;
@@ -137,6 +136,7 @@ namespace SiliconStudio.Presentation.Behaviors
                     mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
                     // Get maximum width and height from WPF
+                    // FIXME: review this related to DPI
                     var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
                     var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
                     mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));

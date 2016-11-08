@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 using SiliconStudio.Presentation.Extensions;
-using SiliconStudio.Presentation.Interop;
 
 // Remark: The drag'n'drop is pretty broken in WPF, especially the DragLeave event (see https://social.msdn.microsoft.com/Forums/vstudio/en-US/d326384b-e182-4f48-ab8b-841a2c2ca4ab/whats-up-with-dragleave-and-egetposition?forum=wpf&prof=required)
 
@@ -61,7 +60,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void DragOver(object sender, DragEventArgs e)
         {
-            var position = GetMousePosition();
+            var position = AssociatedObject.GetCursorRelativePosition();
             lock (lockObject)
             {
                 edgeUnderMouse = GetEdgeUnderMouse(position);
@@ -74,7 +73,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void DragLeave(object sender, DragEventArgs e)
         {
-            var position = GetMousePosition();
+            var position = AssociatedObject.GetCursorRelativePosition();
             if (position.X <= 0 || position.Y <= 0 || position.X >= AssociatedObject.ActualWidth || position.Y >= AssociatedObject.ActualHeight)
             {
                 edgeUnderMouse = null;
@@ -103,13 +102,6 @@ namespace SiliconStudio.Presentation.Behaviors
                 scrollStarted = true;
                 Task.Run(() => ScrollTask(scrollViewer, delaySeconds), cancellationTokenSource.Token);
             }
-        }
-
-        private Point GetMousePosition()
-        {
-            NativeHelper.POINT position;
-            NativeHelper.GetCursorPos(out position);
-            return AssociatedObject.PointFromScreen((Point)position);
         }
 
         private async Task ScrollTask(ScrollViewer scrollViewer, double delaySeconds)

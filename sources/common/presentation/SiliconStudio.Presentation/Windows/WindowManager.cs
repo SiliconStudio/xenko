@@ -201,15 +201,10 @@ namespace SiliconStudio.Presentation.Windows
         private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
         {
             var window = (Window)sender;
-            NativeHelper.POINT cursorPoint;
-            NativeHelper.GetCursorPos(out cursorPoint);
-            var monitor = WindowHelper.GetMonitorInfo(WindowInfo.ToHwnd(window));
-            if (monitor != null)
+            var area = window.GetWorkArea();
+            if (area != Rect.Empty)
             {
-                var mousePosition = window.PointFromScreen((Point)cursorPoint);
-                mousePosition.Offset(window.Left, window.Top);
-                var area = window.RectFromScreen((Rect)monitor.rcWork);
-                area.Offset(window.Left, window.Top);
+                var mousePosition = window.GetCursorScreenPosition();
                 var expandRight = area.Right > mousePosition.X + window.ActualWidth;
                 var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
                 window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
