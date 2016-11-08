@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(PrefabModelAssetCompiler))]
-    [Display(1850, "Prefab Model")]
+    [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
         protected override int InternalBuildOrder => 0xFFFF; //make sure we build after Models
