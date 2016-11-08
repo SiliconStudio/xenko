@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             NativeHelper.POINT position;
             NativeHelper.GetCursorPos(out position);
-            return AssociatedObject.PointFromScreen(new Point(position.X, position.Y));
+            return AssociatedObject.PointFromScreen((Point)position);
         }
 
         private async Task ScrollTask(ScrollViewer scrollViewer, double delaySeconds)

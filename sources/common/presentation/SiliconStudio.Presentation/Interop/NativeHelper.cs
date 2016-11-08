@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -148,6 +149,16 @@ namespace SiliconStudio.Presentation.Interop
             {
                 X = x;
                 Y = y;
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="POINT"/> to <see cref="Point"/>.
+            /// </summary>
+            /// <param name="p"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator Point(POINT p)
+            {
+                return new Point(p.X, p.Y);
             }
         }
 
