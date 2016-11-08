@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
     [DataContract("RenderFrame")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(RenderFrameAssetCompiler))]
-    [Display(110, "Render Frame")]
+    [Display(1100, "Render Frame")]
     public class RenderFrameAsset : Asset
     {
         /// <summary>

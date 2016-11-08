@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
-    [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
+    [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
     public class SkeletonAsset : Asset

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<ConvexHullColliderShapeDesc>))]
     [DataContract("ConvexHullColliderShapeDesc")]
-    [Display(50, "Convex Hull")]
+    [Display(500, "Convex Hull")]
     public class ConvexHullColliderShapeDesc : IAssetColliderShapeDesc
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
