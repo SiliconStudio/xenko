@@ -125,19 +125,17 @@ namespace SiliconStudio.Core.Yaml.Serialization
         {
             lock (globalLock)
             {
-                // Use a cache of attributes
                 List<Attribute> attributes;
-
-                if (!cachedAttributes.TryGetValue(new MemberInfoKey(memberInfo, false), out attributes))
+                if (!registeredAttributes.TryGetValue(memberInfo, out attributes))
                 {
-                    if (!registeredAttributes.TryGetValue(memberInfo, out attributes))
-                    {
-                        attributes = new List<Attribute>();
-                        registeredAttributes.Add(memberInfo, attributes);
-                    }
+                    attributes = new List<Attribute>();
+                    registeredAttributes.Add(memberInfo, attributes);
                 }
+                // Insert it in the first position to ensure it will override same attributes from base classes when using First
+                attributes.Insert(0, attribute);
 
-                attributes.Add(attribute);
+                cachedAttributes.Remove(new MemberInfoKey(memberInfo, true));
+                cachedAttributes.Remove(new MemberInfoKey(memberInfo, false));
             }
         }
 

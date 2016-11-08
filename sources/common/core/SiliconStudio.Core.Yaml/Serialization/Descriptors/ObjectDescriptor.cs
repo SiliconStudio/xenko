@@ -67,6 +67,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private Dictionary<string, IMemberDescriptor> mapMembers;
         private readonly bool emitDefaultValues;
         private YamlStyle style;
+        private SerializeMemberMode defaultMemberMode;
         private bool isSorted;
         private readonly IMemberNamingConvention memberNamingConvention;
         private HashSet<string> remapMembers;
@@ -95,9 +96,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             this.AttributeRegistry = attributeRegistry;
             this.type = type;
 
+            var typename = type.Name;
+
+            var defaultMemberModeFound = false;
             attributes = AttributeRegistry.GetAttributes(type);
 
             this.style = YamlStyle.Any;
+            this.defaultMemberMode = SerializeMemberMode.Default;
             foreach (var attribute in attributes)
             {
                 var styleAttribute = attribute as YamlStyleAttribute;
@@ -106,9 +111,34 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     style = styleAttribute.Style;
                     continue;
                 }
+                var typeAttribute = attribute as YamlTypeAttribute;
+                if (typeAttribute != null)
+                {
+                    defaultMemberMode = typeAttribute.DefaultMemberMode;
+                    defaultMemberModeFound = true;
+                }
                 if (attribute is CompilerGeneratedAttribute)
                 {
                     this.IsCompilerGenerated = true;
+                }
+            }
+
+            // Note: this will probably disappear after ObjectDescriptor merge
+            // Remark: We scan parent type even though YamlTypeAttribute has Inherited true
+            //         this is because YamlTypeAttribute is remapped from DataContractAttribute which has Inherited = false
+            if (!defaultMemberModeFound)
+            {
+                // Get DefaultMemberMode from DataContract
+                var currentType = type.BaseType;
+                while (currentType != null)
+                {
+                    var typeAttribute = AttributeRegistry.GetAttribute<YamlTypeAttribute>(currentType);
+                    if (typeAttribute != null)
+                    {
+                        this.defaultMemberMode = typeAttribute.DefaultMemberMode;
+                        break;
+                    }
+                    currentType = currentType.BaseType;
                 }
             }
         }
@@ -315,17 +345,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 }
             }
 
-            // If the member has a set, this is a conventional assign method
-            if (member.HasSet)
-            {
-                member.SerializeMemberMode = SerializeMemberMode.Content;
-            }
-            else
-            {
-                // Else we cannot only assign its content if it is a class
-                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? SerializeMemberMode.Content : SerializeMemberMode.Never;
-            }
-
             // If it's a private member, check it has a YamlMemberAttribute on it
             if (!member.IsPublic)
             {
@@ -336,6 +355,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             // Gets the style
             member.Style = styleAttribute != null ? styleAttribute.Style : YamlStyle.Any;
             member.Mask = 1;
+
+            member.SerializeMemberMode = defaultMemberMode;
 
             // Handle member attribute
             if (memberAttribute != null)
@@ -348,11 +369,22 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                         throw new ArgumentException("{0} {1} is not writeable by {2}.".DoFormat(memberType.FullName, member.OriginalName, memberAttribute.SerializeMethod.ToString()));
                 }
 
-                if (memberAttribute.SerializeMethod != SerializeMemberMode.Default)
-                {
-                    member.SerializeMemberMode = memberAttribute.SerializeMethod;
-                }
+                member.SerializeMemberMode = memberAttribute.SerializeMethod;
                 member.Order = memberAttribute.Order;
+            }
+
+            if (member.SerializeMemberMode == SerializeMemberMode.Default)
+            {
+                // If the member has a set, this is a conventional assign method
+                if (member.HasSet)
+                {
+                    member.SerializeMemberMode = SerializeMemberMode.Content;
+                }
+                else
+                {
+                    // Else we cannot only assign its content if it is a class
+                    member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? SerializeMemberMode.Content : SerializeMemberMode.Never;
+                }
             }
 
             if (member.SerializeMemberMode == SerializeMemberMode.Binary)

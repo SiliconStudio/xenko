@@ -371,29 +371,7 @@ namespace SiliconStudio.Core.Yaml
                 var memberAttribute = originalAttribute as DataMemberAttribute;
                 if (memberAttribute != null)
                 {
-                    SerializeMemberMode mode;
-                    switch (memberAttribute.Mode)
-                    {
-                        case DataMemberMode.Default:
-                        case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
-                            mode = SerializeMemberMode.Default;
-                            break;
-                        case DataMemberMode.Assign:
-                            mode = SerializeMemberMode.Assign;
-                            break;
-                        case DataMemberMode.Content:
-                            mode = SerializeMemberMode.Content;
-                            break;
-                        case DataMemberMode.Binary:
-                            mode = SerializeMemberMode.Binary;
-                            break;
-                        case DataMemberMode.Never:
-                            mode = SerializeMemberMode.Never;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order, Mask = memberAttribute.Mask };
+                    attribute = new YamlMemberAttribute(memberAttribute.Name, ConvertDataMemberMode(memberAttribute.Mode)) { Order = memberAttribute.Order, Mask = memberAttribute.Mask };
                     //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
                 }
                 else if (originalAttribute is DataMemberIgnoreAttribute)
@@ -403,9 +381,10 @@ namespace SiliconStudio.Core.Yaml
                 else if (originalAttribute is DataContractAttribute)
                 {
                     var alias = ((DataContractAttribute)originalAttribute).Alias;
-                    if (!string.IsNullOrWhiteSpace(alias))
+                    var defaultMemberMode = ((DataContractAttribute)originalAttribute).DefaultMemberMode;
+                    if (alias != null || defaultMemberMode != DataMemberMode.Default)
                     {
-                        attribute = new YamlTagAttribute(alias);
+                        attribute = new YamlTypeAttribute(alias) { DefaultMemberMode = ConvertDataMemberMode(defaultMemberMode) };
                     }
                 }
                 else if (originalAttribute is DataStyleAttribute)
@@ -429,6 +408,26 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 return attribute ?? originalAttribute;
+            }
+
+            private static SerializeMemberMode ConvertDataMemberMode(DataMemberMode mode)
+            {
+                switch (mode)
+                {
+                    case DataMemberMode.Default:
+                    case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
+                        return SerializeMemberMode.Default;
+                    case DataMemberMode.Assign:
+                        return SerializeMemberMode.Assign;
+                    case DataMemberMode.Content:
+                        return SerializeMemberMode.Content;
+                    case DataMemberMode.Binary:
+                        return SerializeMemberMode.Binary;
+                    case DataMemberMode.Never:
+                        return SerializeMemberMode.Never;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 

@@ -1163,7 +1163,7 @@ Enum: Value2");
             }
         }
 
-        [YamlTag("TestRemapObject")]
+        [YamlType("TestRemapObject")]
         [YamlRemap("TestRemapObjectOld")]
         public class TestRemapObject
         {
@@ -1173,7 +1173,7 @@ Enum: Value2");
             public MyRemapEnum Enum { get; set; }
         }
 
-        [YamlTag("MyRemapEnum")]
+        [YamlType("MyRemapEnum")]
         public enum MyRemapEnum
         {
             [YamlRemap("OldValue1")] Value1,
@@ -1230,7 +1230,7 @@ Enum: OldValue2
             Assert.IsTrue(context.HasRemapOccurred);
         }
 
-        [YamlTag("TestWithMemberRenamed")]
+        [YamlType("TestWithMemberRenamed")]
         public sealed class TestWithMemberRenamed
         {
             [YamlMember("~Base")]

@@ -46,6 +46,7 @@ namespace SiliconStudio.Core.Reflection
         private IMemberDescriptor[] members;
         private Dictionary<string, IMemberDescriptor> mapMembers;
         private DataStyle style;
+        private DataMemberMode defaultMemberMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -63,8 +64,24 @@ namespace SiliconStudio.Core.Reflection
             Category = DescriptorCategory.Object;
             this.AttributeRegistry = factory.AttributeRegistry;
             this.type = type;
+            var typename = type.Name;
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(type);
             this.style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
+            this.defaultMemberMode = DataMemberMode.Default;
+
+            // Get DefaultMemberMode from DataContract
+            var currentType = type;
+            while (currentType != null)
+            {
+                var dataContractAttribute = AttributeRegistry.GetAttribute<DataContractAttribute>(currentType);
+                if (dataContractAttribute != null && (dataContractAttribute.Inherited || currentType == type))
+                {
+                    this.defaultMemberMode = dataContractAttribute.DefaultMemberMode;
+                    break;
+                }
+                currentType = currentType.BaseType;
+            }
+
             this.IsCompilerGenerated = AttributeRegistry.GetAttribute<CompilerGeneratedAttribute>(type) != null;
         }
 
@@ -263,22 +280,12 @@ namespace SiliconStudio.Core.Reflection
         {
             var memberType = member.Type;
 
-            // If the member has a set, this is a conventional assign method
-            if (member.HasSet)
-            {
-                member.Mode = DataMemberMode.Assign;
-            }
-            else
-            {
-                // Else we cannot only assign its content if it is a class
-                member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
-            }
-
             // Gets the style
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
             member.Style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
 
             // Handle member attribute
+            member.Mode = defaultMemberMode;
             var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
             if (memberAttribute != null)
             {
@@ -289,11 +296,22 @@ namespace SiliconStudio.Core.Reflection
                         throw new ArgumentException("{0} {1} is not writeable by {2}.".ToFormat(memberType.FullName, member.Name, memberAttribute.Mode.ToString()));
                 }
 
-                if (memberAttribute.Mode != DataMemberMode.Default)
-                {
-                    member.Mode = memberAttribute.Mode;
-                }
+                member.Mode = memberAttribute.Mode;
                 member.Order = memberAttribute.Order;
+            }
+
+            if (member.Mode == DataMemberMode.Default)
+            {
+                // If the member has a set, this is a conventional assign method
+                if (member.HasSet)
+                {
+                    member.Mode = DataMemberMode.Assign;
+                }
+                else
+                {
+                    // Else we cannot only assign its content if it is a class
+                    member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
+                }
             }
 
             if (member.Mode == DataMemberMode.Binary)

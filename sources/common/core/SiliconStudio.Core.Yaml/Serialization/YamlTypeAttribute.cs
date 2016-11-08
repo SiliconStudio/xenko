@@ -51,23 +51,32 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// An attribute to associate a tag with a particular type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Struct | AttributeTargets.Class | AttributeTargets.Enum)]
-    public class YamlTagAttribute : Attribute
+    public class YamlTypeAttribute : Attribute
     {
-        private readonly string tag;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="YamlTagAttribute"/> class.
+        /// Initializes a new instance of the <see cref="YamlTypeAttribute"/> class.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        public YamlTagAttribute(string tag)
+        public YamlTypeAttribute()
         {
-            this.tag = tag;
         }
 
         /// <summary>
-        /// Gets the tag.
+        /// Initializes a new instance of the <see cref="YamlTypeAttribute"/> class.
         /// </summary>
-        /// <value>The tag.</value>
-        public string Tag { get { return tag; } }
+        /// <param name="tag">The tag.</param>
+        public YamlTypeAttribute(string tag)
+        {
+            this.Tag = tag;
+        }
+
+        /// <summary>
+        /// The tag.
+        /// </summary>
+        public string Tag { get; set; }
+
+        /// <summary>
+        /// The default <see cref="SerializeMemberMode"/> for members.
+        /// </summary>
+        public SerializeMemberMode DefaultMemberMode { get; set; }
     }
 }

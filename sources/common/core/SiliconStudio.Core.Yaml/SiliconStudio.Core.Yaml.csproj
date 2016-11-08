@@ -149,7 +149,7 @@
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\SerializerSettings.cs" />
     <Compile Include="Serialization\YamlStream.cs" />
-    <Compile Include="Serialization\YamlTagAttribute.cs" />
+    <Compile Include="Serialization\YamlTypeAttribute.cs" />
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />
     <Compile Include="SortedDictionary.cs" />

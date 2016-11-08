@@ -114,8 +114,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     {
                         string name = null;
                         bool isAlias = false;
-                        var tagAttribute = attribute as YamlTagAttribute;
-                        if (tagAttribute != null)
+                        var tagAttribute = attribute as YamlTypeAttribute;
+                        if (tagAttribute?.Tag != null)
                         {
                             name = tagAttribute.Tag;
                         }
