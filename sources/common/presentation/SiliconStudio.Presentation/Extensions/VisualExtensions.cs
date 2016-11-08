@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -19,21 +19,18 @@ namespace SiliconStudio.Presentation.Extensions
         public static T FindAdornableOfType<T>(this Visual source) where T : Visual
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (AdornerLayer.GetAdornerLayer(source) != null && source is T)
                 return (T)source;
 
-            int childCount = VisualTreeHelper.GetChildrenCount(source);
-            for (int i = 0; i < childCount; i++)
+            var childCount = VisualTreeHelper.GetChildrenCount(source);
+            for (var i = 0; i < childCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(source, i) as T;
-                if (child != null)
-                {
-                    var test = child.FindAdornableOfType<T>();
-                    if (test != null)
-                        return test;
-                }
+                var test = child?.FindAdornableOfType<T>();
+                if (test != null)
+                    return test;
             }
 
             return null;
@@ -42,25 +39,72 @@ namespace SiliconStudio.Presentation.Extensions
         public static AdornerLayer FindAdornerLayer(this Visual source)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             var adornerLayer = AdornerLayer.GetAdornerLayer(source);
             if (adornerLayer != null)
                 return adornerLayer;
 
-            int childCount = VisualTreeHelper.GetChildrenCount(source);
-            for (int i = 0; i < childCount; i++)
+            var childCount = VisualTreeHelper.GetChildrenCount(source);
+            for (var i = 0; i < childCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(source, i) as Visual;
-                if (child != null)
-                {
-                    var test = child.FindAdornerLayer();
-                    if (test != null)
-                        return test;
-                }
+                var test = child?.FindAdornerLayer();
+                if (test != null)
+                    return test;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Rect"/> in screen coordinates into a <see cref="Rect"/> that represents the current coordinate system of the <see cref="Visual"/>.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <param name="rect">The <see cref="Rect"/> value in screen coordinates.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rect RectFromScreen(this Visual visual, Rect rect)
+        {
+            return RectFromScreen(visual, ref rect);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Rect"/> in screen coordinates into a <see cref="Rect"/> that represents the current coordinate system of the <see cref="Visual"/>.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <param name="rect">The <see cref="Rect"/> value in screen coordinates.</param>
+        /// <returns></returns>
+        public static Rect RectFromScreen(this Visual visual, ref Rect rect)
+        {
+            var topLeft = visual.PointFromScreen(new Point(rect.Left, rect.Top));
+            var bottomRight = visual.PointFromScreen(new Point(rect.Right, rect.Bottom));
+            return new Rect(topLeft, bottomRight);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Rect"/> that represents the current coordinate system of the <see cref="Visual"/> into a <see cref="Rect"/> in screen coordinates.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <param name="rect">The <see cref="Rect"/> value that represents the current coordinate system of the <see cref="Visual"/>.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Rect RectToScreen(this Visual visual, Rect rect)
+        {
+            return RectToScreen(visual, ref rect);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Rect"/> that represents the current coordinate system of the <see cref="Visual"/> into a <see cref="Rect"/> in screen coordinates.
+        /// </summary>
+        /// <param name="visual"></param>
+        /// <param name="rect">The <see cref="Rect"/> value that represents the current coordinate system of the <see cref="Visual"/>.</param>
+        /// <returns></returns>
+        public static Rect RectToScreen(this Visual visual, ref Rect rect)
+        {
+            var topLeft = visual.PointToScreen(new Point(rect.Left, rect.Top));
+            var bottomRight = visual.PointToScreen(new Point(rect.Right, rect.Bottom));
+            return new Rect(topLeft, bottomRight);
         }
 
     }
