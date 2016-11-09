@@ -133,15 +133,19 @@ namespace SiliconStudio.Assets.Quantum
             return keyOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
         }
 
-        // TODO: implement Is[Content/Item/Key]Inherited instead
-        public bool IsInherited(Index index)
+        public bool IsContentInherited()
         {
-            if (BaseContent == null)
-                return false;
+            return BaseContent != null && !IsContentOverridden();
+        }
 
-            OverrideType result;
-            var id = IndexToId(index);
-            return !itemOverrides.TryGetValue(id, out result) || (result & OverrideType.New) != OverrideType.New;
+        public bool IsItemInherited(Index index)
+        {
+            return BaseContent != null && !IsItemOverridden(index);
+        }
+
+        public bool IsKeyInherited(Index index)
+        {
+            return BaseContent != null && !IsKeyOverridden(index);
         }
 
         public IEnumerable<Index> GetOverriddenItemIndices()

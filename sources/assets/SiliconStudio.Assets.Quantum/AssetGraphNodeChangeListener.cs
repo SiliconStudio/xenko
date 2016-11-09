@@ -16,11 +16,6 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <summary>
-        /// Gets the set of registered node. This property is exposed for debug purpose only.
-        /// </summary>
-        internal HashSet<IGraphNode> DebugRegisteredNodes => RegisteredNodes;
-
-        /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
         public event EventHandler<AssetContentChangeEventArgs> ChangedWithOverride;

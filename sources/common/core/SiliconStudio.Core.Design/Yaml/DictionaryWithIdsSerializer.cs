@@ -83,6 +83,7 @@ namespace SiliconStudio.Core.Yaml
                 if (!identifier.TryGet(item.Key, out id))
                 {
                     id = ItemId.New();
+                    identifier.Add(item.Key, id);
                 }
                 var keyWithId = Activator.CreateInstance(keyWithIdType, id, item.Key);
                 instance.Add(keyWithId, item.Value);

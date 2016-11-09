@@ -97,6 +97,7 @@ namespace SiliconStudio.Core.Yaml
                 if (!identifier.TryGet(i, out id))
                 {
                     id = ItemId.New();
+                    identifier.Add(i, id);
                 }
                 instance.Add(id, item);
                 ++i;

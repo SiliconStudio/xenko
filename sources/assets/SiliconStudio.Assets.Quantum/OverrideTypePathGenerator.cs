@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
@@ -9,6 +10,7 @@ namespace SiliconStudio.Assets.Quantum
     public class OverrideTypePathGenerator : GraphVisitorBase
     {
         public Dictionary<ObjectPath, OverrideType> Result { get; } = new Dictionary<ObjectPath, OverrideType>();
+        private int inNonIdentifiableType;
 
         public void Reset()
         {
@@ -18,6 +20,13 @@ namespace SiliconStudio.Assets.Quantum
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = (AssetNode)node;
+
+            bool localInNonIdentifiableType = false;
+            if ((node.Content.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
+            {
+                localInNonIdentifiableType = true;
+                inNonIdentifiableType++;
+            }
 
             var path = ConvertPath(currentPath);
             if (assetNode.IsContentOverridden())
@@ -40,9 +49,12 @@ namespace SiliconStudio.Assets.Quantum
                 Result.Add(itemPath, assetNode.GetKeyOverride(index));
             }
             base.VisitNode(node, currentPath);
+
+            if (localInNonIdentifiableType)
+                inNonIdentifiableType--;
         }
 
-        private static ObjectPath ConvertPath(GraphNodePath path)
+        private ObjectPath ConvertPath(GraphNodePath path)
         {
             var currentPath = new GraphNodePath(path.RootNode);
             var currentNode = (AssetNode)path.RootNode;
@@ -67,7 +79,7 @@ namespace SiliconStudio.Assets.Quantum
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        if (AssetNode.IsNonIdentifiableCollectionContent(currentNode.Content))
+                        if (inNonIdentifiableType > 0 || AssetNode.IsNonIdentifiableCollectionContent(currentNode.Content))
                         {
                             result.PushIndex(index);
                         }
