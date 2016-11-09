@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SiliconStudio.Quantum;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Quantum
 {
     public static class AssetQuantumRegistry
     {
-        private static readonly Type[] AssetPropertyNodeGraphConstructorSignature = { typeof(AssetPropertyGraphContainer), typeof(AssetItem) };
+        private static readonly Type[] AssetPropertyNodeGraphConstructorSignature = { typeof(AssetPropertyGraphContainer), typeof(AssetItem), typeof(ILogger) };
         private static readonly Dictionary<Type, Type> NodeGraphTypes = new Dictionary<Type, Type>();
 
         public static void RegisterAssembly(Assembly assembly)
@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public static AssetPropertyGraph ConstructPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
+        public static AssetPropertyGraph ConstructPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
             var assetType = assetItem.Asset.GetType();
             while (assetType != null)
@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum
                 var typeToTest = assetType.IsGenericType ? assetType.GetGenericTypeDefinition() : assetType;
                 if (NodeGraphTypes.TryGetValue(typeToTest, out propertyGraphType))
                 {
-                    return (AssetPropertyGraph)Activator.CreateInstance(propertyGraphType, container, assetItem);
+                    return (AssetPropertyGraph)Activator.CreateInstance(propertyGraphType, container, assetItem, logger);
                 }
                 assetType = assetType.BaseType;
             }

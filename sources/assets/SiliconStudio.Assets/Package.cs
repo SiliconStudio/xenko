@@ -801,7 +801,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public void ValidateAssets(bool alwaysGenerateNewAssetId = false)
+        public void ValidateAssets(bool alwaysGenerateNewAssetId, ILogger log)
         {
             if (TemporaryAssets.Count == 0)
             {
@@ -829,6 +829,10 @@ namespace SiliconStudio.Assets
                 foreach (var item in outputItems)
                 {
                     Assets.Add(item);
+
+                    // Fix collection item ids
+                    AssetCollectionItemIdHelper.GenerateMissingItemIds(item.Asset);
+                    CollectionItemIdsAnalysis.FixupItemIds(item, log);
                 }
 
                 // Don't delete SourceCodeAssets as their files are handled by the package upgrader

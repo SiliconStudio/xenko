@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +9,10 @@ namespace SiliconStudio.Core.Reflection
     /// A container for item identifiers and similar metadata that is associated to a collection or a dictionary.
     /// </summary>
     // TODO: Arrange the API of this class once all use cases have been implemented
-    public class CollectionItemIdentifiers
+    public class CollectionItemIdentifiers : IEnumerable<KeyValuePair<object, ItemId>>
     {
-        // TODO: we could sort only at serialization
-        private readonly SortedList<object, ItemId> keyToIdMap = new SortedList<object, ItemId>(new DefaultKeyComparer());
+        private readonly Dictionary<object, ItemId> keyToIdMap = new Dictionary<object, ItemId>();
+
         private readonly HashSet<ItemId> deletedItems = new HashSet<ItemId>();
 
         public ItemId this[object key] { get { return keyToIdMap[key]; } set { Set(key, value); } }
@@ -197,12 +198,7 @@ namespace SiliconStudio.Core.Reflection
         public object GetKey(ItemId itemId)
         {
             // TODO: add indexing by guid to avoid O(n)
-            return keyToIdMap.FirstOrDefault(x => x.Value == itemId).Key;
-        }
-
-        public ItemId GetId(object key)
-        {
-            return keyToIdMap.FirstOrDefault(x => Equals(x.Key, key)).Value;
+            return keyToIdMap.SingleOrDefault(x => x.Value == itemId).Key;
         }
 
         public void CloneInto(CollectionItemIdentifiers target, IReadOnlyDictionary<object, object> referenceTypeClonedKeys)
@@ -212,11 +208,11 @@ namespace SiliconStudio.Core.Reflection
             foreach (var key in keyToIdMap)
             {
                 object clonedKey;
-                if (key.Key.GetType().IsValueType)
+                if (key.Key.GetType().IsValueType || referenceTypeClonedKeys == null)
                 {
                     target.Add(key.Key, key.Value);
                 }
-                else if (referenceTypeClonedKeys != null && referenceTypeClonedKeys.TryGetValue(key.Key, out clonedKey))
+                else if (referenceTypeClonedKeys.TryGetValue(key.Key, out clonedKey))
                 {
                     target.Add(clonedKey, key.Value);
                 }
@@ -231,5 +227,9 @@ namespace SiliconStudio.Core.Reflection
         {
             return DeletedItems.Contains(itemId);
         }
+
+        public IEnumerator<KeyValuePair<object, ItemId>> GetEnumerator() => keyToIdMap.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
@@ -20,13 +22,15 @@ namespace SiliconStudio.Assets.Quantum
         // TODO: this should be turn private once all quantum code has been split from view model
         public readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
 
-        public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
+        public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
             if (assetItem == null)
                 throw new ArgumentNullException(nameof(assetItem));
             this.assetItem = assetItem;
             Container = container;
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
+            // TODO: GenerateMissingItemIds and FixupItemIds are fixup operations that we might want to do at package load, not here
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);            
+            CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides();
 

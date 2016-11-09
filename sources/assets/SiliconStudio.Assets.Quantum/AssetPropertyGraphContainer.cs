@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -19,21 +20,13 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool PropagateChangesFromBase { get; set; } = true;
 
-        public void InitializeSession()
-        {
-            foreach (var asset in session.Packages.SelectMany(x => x.Assets).Where(x => !(x.Asset is SourceCodeAsset)))
-            {
-                InitializeAsset(asset);
-            }
-        }
-
-        public AssetPropertyGraph InitializeAsset(AssetItem assetItem)
+        public AssetPropertyGraph InitializeAsset(AssetItem assetItem, ILogger logger)
         {
             // SourceCodeAssets have no property
             if (assetItem.Asset is SourceCodeAsset)
                 return null;
 
-            var graph = AssetQuantumRegistry.ConstructPropertyGraph(this, assetItem);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(this, assetItem, logger);
             RegisterGraph(assetItem.Id, graph);
             return graph;
         }

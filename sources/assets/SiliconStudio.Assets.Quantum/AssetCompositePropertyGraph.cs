@@ -1,4 +1,5 @@
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
@@ -9,8 +10,8 @@ namespace SiliconStudio.Assets.Quantum
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
-        public AssetCompositePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem)
-            : base(container, assetItem)
+        public AssetCompositePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+            : base(container, assetItem, logger)
         {
         }
 
