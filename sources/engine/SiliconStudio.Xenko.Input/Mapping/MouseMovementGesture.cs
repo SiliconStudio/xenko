@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// A gesture that responds to mouse movement
+    /// A gesture that generates a direction from mouse X and Y movement
     /// </summary>
     [DataContract]
     public class MouseMovementGesture : ScalableInputGesture,  IDirectionGesture, IInputEventListener<PointerEvent>

@@ -15,6 +15,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private IAxisGesture y;
         private IAxisGesture x;
 
+        /// <summary>
+        /// The source for the X-axis component of the generated direction
+        /// </summary>
         public IAxisGesture X
         {
             get { return x; }
@@ -25,6 +28,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
+        /// <summary>
+        /// The source for the Y-axis component of the generated direction
+        /// </summary>
         public IAxisGesture Y
         {
             get { return y; }

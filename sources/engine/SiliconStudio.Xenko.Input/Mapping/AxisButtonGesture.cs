@@ -11,9 +11,16 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class AxisButtonGesture : InputGesture, IButtonGesture
     {
+        /// <summary>
+        /// The threshold value the axis needs to reach in order to trigger a button press
+        /// </summary>
         public float Threshold = 0.5f;
+
         private IAxisGesture axis;
 
+        /// <summary>
+        /// The axis that triggers this button
+        /// </summary>
         public IAxisGesture Axis
         {
             get { return axis; }
@@ -23,7 +30,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 axis = value;
             }
         }
-
+        
         [DataMemberIgnore]
         public bool Button => Axis?.Axis > Threshold;
 

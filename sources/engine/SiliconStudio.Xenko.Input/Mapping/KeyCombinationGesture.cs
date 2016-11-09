@@ -11,9 +11,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Represents a key combination, such as Alt+F4, Ctrl+Shift+4, etc.
     /// </summary>
     [DataContract]
-    public class KeyCombinationGesture : InputGesture, IButtonGesture, IAxisGesture, IInputEventListener<KeyEvent>
+    public class KeyCombinationGesture : InputGesture, IButtonGesture, IInputEventListener<KeyEvent>
     {
+        /// <summary>
+        /// The keys that are checked. When all these keys are pressed, the button evaluates to true.
+        /// </summary>
         public List<Keys> Keys;
+
         private readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
 
         public KeyCombinationGesture()
@@ -27,9 +31,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         [DataMemberIgnore]
         public bool Button => Keys != null && heldKeys.Count == Keys.Count;
-
-        [DataMemberIgnore]
-        public float Axis => Button ? 1.0f : 0.0f;
 
         public void ProcessEvent(KeyEvent inputEvent)
         {

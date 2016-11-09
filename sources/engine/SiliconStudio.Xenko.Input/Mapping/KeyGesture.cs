@@ -5,8 +5,11 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
+    /// <summary>
+    /// Represents a single keyboard key
+    /// </summary>
     [DataContract]
-    public class KeyGesture : InputGesture, IButtonGesture, IAxisGesture, IInputEventListener<KeyEvent>
+    public class KeyGesture : InputGesture, IButtonGesture, IInputEventListener<KeyEvent>
     {
         /// <summary>
         /// Key used for this gesture
@@ -26,8 +29,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         [DataMemberIgnore]
         public bool Button => currentState == ButtonState.Pressed;
-        [DataMemberIgnore]
-        public float Axis => Button ? 1.0f : 0.0f;
 
         public void ProcessEvent(KeyEvent inputEvent)
         {

@@ -5,12 +5,18 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
+    /// <summary>
+    /// A virtual axis that is calculated from a negative and positive button
+    /// </summary>
     [DataContract]
     public class TwoWayGesture : ScalableInputGesture, IAxisGesture
     {
         private IButtonGesture positive;
         private IButtonGesture negative;
 
+        /// <summary>
+        /// The button that generates a positive (1) axis value
+        /// </summary>
         public IButtonGesture Positive
         {
             get { return positive; }
@@ -21,6 +27,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
+        /// <summary>
+        /// The button that generates a negative (-1) axis value
+        /// </summary>
         public IButtonGesture Negative
         {
             get { return negative; }
@@ -30,9 +39,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 negative = value;
             }
         }
-
+        
+        /// <inheritdoc />
+        /// <remarks>
+        /// Calculates positive * 1.0f + negative * -1.0f so that both buttons cancel each other out when pressed at the same time
+        /// </remarks>
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput(Positive?.Button ?? false ? 1.0f : (Negative?.Button ?? false ? -1.0f : 0.0f));
+        public float Axis => GetScaledOutput((Positive?.Button ?? false ? 1.0f : 0.0f) + (Negative?.Button ?? false ? -1.0f : 0.0f));
 
         public override void Reset()
         {
