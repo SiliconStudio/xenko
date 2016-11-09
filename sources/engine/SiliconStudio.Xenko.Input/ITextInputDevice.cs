@@ -9,12 +9,12 @@ namespace SiliconStudio.Xenko.Input
     public interface ITextInputDevice : IInputDevice
     {
         /// <summary>
-        /// Enables the device specific way of entering text input
+        /// Allows input to be entered, the input device will then send text events through the input manager
         /// </summary>
         void EnabledTextInput();
         
         /// <summary>
-        /// Disables the device specific way of entering text input
+        /// Disallows text input to be entered, will close any IME active and stop sending text events
         /// </summary>
         void DisableTextInput();
     }

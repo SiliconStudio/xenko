@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.UI.Events;
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
-    /// The arguments associated to a text event
+    /// The arguments associated with a <see cref="TextInputEvent"/>
     /// </summary>
     internal class TextEventArgs : RoutedEventArgs
     {

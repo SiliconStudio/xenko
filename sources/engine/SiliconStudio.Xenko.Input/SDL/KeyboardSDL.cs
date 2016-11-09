@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
         private unsafe void OnTextEditingActions(SDL.SDL_TextEditingEvent e)
         {
             var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
-            textInputEvent.Text = FixedSizeTextToString(e.text);
+            textInputEvent.Text = SDLBufferToString(e.text);
             textInputEvent.Type = TextInputEventType.Composition;
             textInputEvent.CompositionStart = e.start;
             textInputEvent.CompositionLength = e.length;
@@ -78,16 +78,16 @@ namespace SiliconStudio.Xenko.Input
         private unsafe void OnTextInputActions(SDL.SDL_TextInputEvent e)
         {
             var textInputEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
-            textInputEvent.Text = FixedSizeTextToString(e.text);
+            textInputEvent.Text = SDLBufferToString(e.text);
             textInputEvent.Type = TextInputEventType.Input;
             textEvents.Add(textInputEvent);
         }
-
-        private unsafe string FixedSizeTextToString(byte* text)
+        
+        private unsafe string SDLBufferToString(byte* text, int size = 32)
         {
-            byte[] sourceBytes = new byte[32];
+            byte[] sourceBytes = new byte[size];
             int length = 0;
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < size; i++)
             {
                 if (text[i] == 0)
                     break;

@@ -1,19 +1,8 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 namespace SiliconStudio.Xenko.Input
 {
-    public enum TextInputEventType
-    {
-        /// <summary>
-        /// When new text is entered
-        /// </summary>
-        Input,
-        /// <summary>
-        /// When the text composition is changed (in the IME)
-        /// </summary>
-        Composition,
-    }
-
     /// <summary>
     /// Input event used for text input and IME related events
     /// </summary>

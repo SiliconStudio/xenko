@@ -1,15 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI
@@ -19,7 +16,6 @@ namespace SiliconStudio.Xenko.UI
     /// </summary>
     public class UISystem : GameSystemBase
     {
-
         internal UIBatch Batch { get; private set; }
 
         internal DepthStencilStateDescription KeepStencilValueState { get; private set; }
@@ -77,23 +73,23 @@ namespace SiliconStudio.Xenko.UI
 
             // create depth stencil states
             var depthStencilDescription = new DepthStencilStateDescription(true, true)
+            {
+                StencilEnable = true,
+                FrontFace = new DepthStencilStencilOpDescription
                 {
-                    StencilEnable = true,
-                    FrontFace = new DepthStencilStencilOpDescription
-                    {
-                        StencilDepthBufferFail = StencilOperation.Keep,
-                        StencilFail = StencilOperation.Keep,
-                        StencilPass = StencilOperation.Keep,
-                        StencilFunction = CompareFunction.Equal
-                    },
-                    BackFace = new DepthStencilStencilOpDescription
-                    {
-                        StencilDepthBufferFail = StencilOperation.Keep,
-                        StencilFail = StencilOperation.Keep,
-                        StencilPass = StencilOperation.Keep,
-                        StencilFunction = CompareFunction.Equal
-                    },
-                };
+                    StencilDepthBufferFail = StencilOperation.Keep,
+                    StencilFail = StencilOperation.Keep,
+                    StencilPass = StencilOperation.Keep,
+                    StencilFunction = CompareFunction.Equal
+                },
+                BackFace = new DepthStencilStencilOpDescription
+                {
+                    StencilDepthBufferFail = StencilOperation.Keep,
+                    StencilFail = StencilOperation.Keep,
+                    StencilPass = StencilOperation.Keep,
+                    StencilFunction = CompareFunction.Equal
+                },
+            };
             KeepStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
@@ -188,17 +184,12 @@ namespace SiliconStudio.Xenko.UI
 
             if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
 
+            // Raise text input events
+            var textEvents = input.InputEvents.OfType<TextInputEvent>();
             bool enteredText = false;
-            foreach (var textEvent in input.InputEvents.OfType<TextInputEvent>())
+            foreach (var textEvent in textEvents)
             {
-                string text = textEvent.Text;
-
-                // Filter out characters that should not be used in text input and use key events instead
-                text = text.Replace("\b", "").Replace("\r", "").Replace("\n", "");
-                if (text.Length == 0 && textEvent.Type != TextInputEventType.Composition) // Do allow empty composition events to update the composition string
-                    continue;
                 enteredText = true;
-
                 UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs
                 {
                     Text = textEvent.Text,

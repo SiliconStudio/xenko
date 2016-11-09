@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         {
         }
 
-        private void RenderSelection(EditText editText, UIRenderingContext context, int start, int length, Color color, ref float offsetTextStart, ref float offsetAlignment, ref float selectionSize)
+        private void RenderSelection(EditText editText, UIRenderingContext context, int start, int length, Color color, out float offsetTextStart, out float offsetAlignment, out float selectionSize)
         {
             // calculate the size of the text region by removing padding
             var textRegionSize = new Vector2(editText.ActualWidth - editText.Padding.Left - editText.Padding.Right,
@@ -105,13 +105,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             if (editText.Composition.Length > 0)
             {
                 var imeSelectionColor = editText.RenderOpacity * editText.IMESelectionColor;
-                RenderSelection(editText, context, editText.SelectionStart, editText.Composition.Length, imeSelectionColor, ref offsetTextStart, ref offsetAlignment, ref selectionSize);
+                RenderSelection(editText, context, editText.SelectionStart, editText.Composition.Length, imeSelectionColor, out offsetTextStart, out offsetAlignment, out selectionSize);
             }
             // Draw the regular selection
             else if (editText.IsSelectionActive)
             {
                 var selectionColor = editText.RenderOpacity * editText.SelectionColor;
-                RenderSelection(editText, context, editText.SelectionStart, editText.SelectionLength, selectionColor, ref offsetTextStart, ref offsetAlignment, ref selectionSize);
+                RenderSelection(editText, context, editText.SelectionStart, editText.SelectionLength, selectionColor, out offsetTextStart, out offsetAlignment, out selectionSize);
             }
 
             // create the text draw command

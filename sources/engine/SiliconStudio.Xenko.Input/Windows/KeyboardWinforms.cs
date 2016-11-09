@@ -4,7 +4,6 @@
 #if SILICONSTUDIO_XENKO_UI_WINFORMS
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -32,7 +31,6 @@ namespace SiliconStudio.Xenko.Input
             this.uiControl = uiControl;
 
             richTextBox = new RichTextBox();
-            richTextBox.ImeMode = ImeMode.On;
             // Move so it is not in view
             richTextBox.Location = new Point(-100, -100);
             richTextBox.Size = new Size(80, 80);
@@ -90,12 +88,18 @@ namespace SiliconStudio.Xenko.Input
             // Take all text inserted into the text box and send it as a text event instead
             if (richTextBox.Text.Length > 0)
             {
-                var compEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
-                compEvent.Type = TextInputEventType.Input;
-                compEvent.Text = richTextBox.Text;
-                compEvent.CompositionStart = richTextBox.SelectionStart;
-                compEvent.CompositionLength = richTextBox.SelectionLength;
-                textEvents.Add(compEvent);
+                // Filter out characters that do not belong in text input
+                string inputString = richTextBox.Text;
+                inputString = inputString.Replace("\r", "").Replace("\n", "").Replace("\t", "");
+                if (inputString.Length > 0)
+                {
+                    var compEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
+                    compEvent.Type = TextInputEventType.Input;
+                    compEvent.Text = inputString;
+                    compEvent.CompositionStart = richTextBox.SelectionStart;
+                    compEvent.CompositionLength = richTextBox.SelectionLength;
+                    textEvents.Add(compEvent);
+                }
             }
             compositionString = "";
             richTextBox.Text = "";

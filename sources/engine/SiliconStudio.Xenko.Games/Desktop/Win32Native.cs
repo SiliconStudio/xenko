@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
@@ -61,13 +61,13 @@ namespace SiliconStudio.Xenko.Games
         [StructLayout(LayoutKind.Sequential)]
         internal struct PAINTSTRUCT
         {
-            public IntPtr hdc;
-            public bool fErase;
-            public RECT rcPaint;
-            public bool fRestore;
-            public bool fIncUpdate;
+            public IntPtr Hdc;
+            public bool Erase;
+            public RECT PaintRectangle;
+            public bool Restore;
+            public bool IncUpdate;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public byte[] rgbReserved;
+            public byte[] Reserved;
         }
 
         public enum WindowLongType : int
@@ -158,20 +158,20 @@ namespace SiliconStudio.Xenko.Games
         [DllImport("user32.dll", EntryPoint = "DispatchMessage", CharSet = CharSet.Unicode)]
         public static extern int DispatchMessage(ref NativeMessage lpMsg);
 
+        [DllImport("user32.dll", EntryPoint = "BeginPaint")]
+        public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+
+        [DllImport("user32.dll", EntryPoint = "EndPaint")]
+        public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+
         [DllImport("imm32.dll", EntryPoint = "ImmGetContext")]
         public static extern IntPtr ImmGetContext(IntPtr hWnd);
 
         [DllImport("imm32.dll", EntryPoint = "ImmReleaseContext")]
         public static extern IntPtr ImmReleaseContext(IntPtr hWnd, IntPtr context);
 
-        [DllImport("imm32.dll", EntryPoint = "ImmGetCompositionStringW")]
+        [DllImport("imm32.dll", EntryPoint = "ImmGetCompositionString", CharSet = CharSet.Unicode)]
         public static extern int ImmGetCompositionString(IntPtr himc, int dwIndex, IntPtr buf, int bufLen);
-
-        [DllImport("user32.dll", EntryPoint = "BeginPaint")]
-        public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
-
-        [DllImport("user32.dll", EntryPoint = "EndPaint")]
-        public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
 
         public const int GCS_COMPSTR = 0x0008;
 
