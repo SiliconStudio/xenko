@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// Attribute to define for a <see cref="IObjectFactory"/> for a <see cref="Asset"/>.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class ObjectFactoryAttribute : Attribute
     {
         private readonly string typeName;

@@ -793,7 +793,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <typeparam name="T">The type to iterate.</typeparam>
         /// <param name="root">The root item</param>
-        /// <param name="childrenF">The function to retreive childs</param>
+        /// <param name="childrenF">The function to retrieve a child</param>
         /// <returns></returns>
         public static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
         {

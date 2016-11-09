@@ -312,9 +312,6 @@ namespace SiliconStudio.Xenko.Engine
             // changes in the same frame they will be applied
             GameSystems.Add(Script);
 
-            // Add the Audio System
-            GameSystems.Add(Audio);
-
             // Add the Font system
             GameSystems.Add(gameFontSystem);
 
@@ -335,6 +332,9 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(EffectSystem);
 
             GameSystems.Add(SceneSystem);
+
+            // Add the Audio System
+            GameSystems.Add(Audio);
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());

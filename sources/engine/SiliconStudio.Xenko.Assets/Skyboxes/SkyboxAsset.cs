@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [AssetDescription(FileExtension)]
     //[ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(SkyboxAssetCompiler))]
-    [Display(100, "Skybox")]
+    [Display(1000, "Skybox")]
     public sealed class SkyboxAsset : Asset
     {
         /// <summary>

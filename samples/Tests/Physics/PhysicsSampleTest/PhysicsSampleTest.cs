@@ -10,7 +10,7 @@ namespace PhysicsSampleTest
     [TestFixture]
     public class PhysicsSampleTest
     {
-        private const string Path = "samplesGenerated\\PhysicsSample\\Bin\\Windows-Direct3D11\\Debug\\PhysicsSample.exe";
+        private const string Path = "samplesGenerated\\PhysicsSample\\Bin\\Windows\\Debug\\PhysicsSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;
