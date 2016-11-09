@@ -742,6 +742,9 @@ typedef uint32_t uint4 __attribute__((ext_vector_type(4)));
 	#define cosf __builtin_cosf
 #endif
 
+#undef cosf
+#define cosf cos
+
 #if !__has_builtin(__builtin_cosh)
 	#error \"cosh clang built-in not available\"
 	// dd
@@ -1581,6 +1584,9 @@ typedef uint32_t uint4 __attribute__((ext_vector_type(4)));
 #else
 	#define sqrtf __builtin_sqrtf
 #endif
+
+#undef sqrtf
+#define sqrtf sqrt
 
 #if !__has_builtin(__builtin_sqrtl)
 	#error \"sqrtl clang built-in not available\"

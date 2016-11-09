@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Serializers
     /// A Yaml Serializer for <see cref="AssetBase"/>. Because this type is immutable
     /// we need to implement a special serializer.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class AssetItemSerializer : ObjectSerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

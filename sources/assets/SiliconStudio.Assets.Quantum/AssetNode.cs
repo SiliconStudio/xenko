@@ -228,7 +228,7 @@ namespace SiliconStudio.Assets.Quantum
             //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
             //    return value;
 
-            var result = AssetCloner.Clone(value, AssetClonerFlags.RemoveOverrides);
+            var result = AssetCloner.Clone(value);
             return result;
         }
 
@@ -316,7 +316,7 @@ namespace SiliconStudio.Assets.Quantum
             //    return;
 
             // Mark it as New if it does not come from the base
-            if (!baseNode?.contentUpdating == true)
+            if (!baseNode?.contentUpdating == true && e.ChangeType != ContentChangeType.CollectionRemove)
             {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 if (e.Index == Index.Empty)
@@ -367,7 +367,7 @@ namespace SiliconStudio.Assets.Quantum
             return index;
         }
 
-        private bool TryIdToIndex(ItemId id, out Index index)
+        internal bool TryIdToIndex(ItemId id, out Index index)
         {
             if (id == ItemId.Empty)
             {

@@ -14,6 +14,7 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// A serializer for the <see cref="AssetComposite"/> type.
     /// </summary>
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class AssetCompositeSerializer : ObjectSerializer, IDataCustomVisitor
     {
         /// <summary>

@@ -54,6 +54,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// <summary>
     /// Class for serializing a <see cref="System.Collections.Generic.ICollection{T}"/> or <see cref="System.Collections.ICollection"/>
     /// </summary>
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     public class CollectionSerializer : ObjectSerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

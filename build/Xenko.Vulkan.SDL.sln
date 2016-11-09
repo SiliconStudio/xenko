@@ -20,12 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
-		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
-		..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
+		..\sources\common\targets\SiliconStudio.UWP.Cpp.targets = ..\sources\common\targets\SiliconStudio.UWP.Cpp.targets
+		..\sources\common\targets\SiliconStudio.UWP.CSharp.targets = ..\sources\common\targets\SiliconStudio.UWP.CSharp.targets
 		..\store.config = ..\store.config
 		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
 		Xenko.build = Xenko.build
@@ -60,9 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
 		..\Targets\Xenko.Windows.CoreCLR.targets = ..\Targets\Xenko.Windows.CoreCLR.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
-		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
-		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
-		..\Targets\Xenko.WindowsStore.targets = ..\Targets\Xenko.WindowsStore.targets
+		..\Targets\Xenko.UWP.targets = ..\Targets\Xenko.UWP.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"

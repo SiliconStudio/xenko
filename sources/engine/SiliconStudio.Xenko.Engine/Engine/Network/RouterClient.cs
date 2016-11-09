@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Engine.Network
 
                 try
                 {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_UWP
                     var serverAddress = "127.0.0.1";
 #else
                     var serverAddress = Environment.GetEnvironmentVariable("XenkoConnectionRouterRemoteIP") ?? "127.0.0.1";
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Engine.Network
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10 || SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+#if SILICONSTUDIO_PLATFORM_UWP
                 return RouterConnectionMode.ConnectThenListen;
 #elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
                 return RouterConnectionMode.Listen;

@@ -121,9 +121,6 @@ namespace SiliconStudio.Xenko.Games
             PreferredMultiSampleLevel = MSAALevel.None;
             PreferredGraphicsProfile = new[]
                 {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-                    GraphicsProfile.Level_9_3, 
-#else
                     GraphicsProfile.Level_11_1, 
                     GraphicsProfile.Level_11_0, 
                     GraphicsProfile.Level_10_1, 
@@ -131,7 +128,6 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsProfile.Level_9_3, 
                     GraphicsProfile.Level_9_2, 
                     GraphicsProfile.Level_9_1, 
-#endif
                 };
 
             // Register the services to the registry

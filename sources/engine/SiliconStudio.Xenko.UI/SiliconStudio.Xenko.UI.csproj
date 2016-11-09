@@ -47,7 +47,7 @@
     <Compile Include="Controls\EditText.cs" />
     <Compile Include="Controls\EditText.iOS.cs" />
     <Compile Include="Controls\EditText.Direct.Default.cs" />
-    <Compile Include="Controls\EditText.Windows.Store.cs" />
+    <Compile Include="Controls\EditText.UWP.cs" />
     <Compile Include="Controls\EditText.Direct.cs" />
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />

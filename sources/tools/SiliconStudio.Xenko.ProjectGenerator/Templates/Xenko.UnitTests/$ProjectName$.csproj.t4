@@ -2,7 +2,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <#
 var curPlatform = (SiliconStudio.Core.PlatformType)System.Enum.Parse(typeof(SiliconStudio.Core.PlatformType), Properties.CurrentPlatform);
-var needSigning = (curPlatform != SiliconStudio.Core.PlatformType.WindowsPhone) && (curPlatform != SiliconStudio.Core.PlatformType.WindowsStore);
+var needSigning = true;
 #>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -32,24 +32,6 @@ var needSigning = (curPlatform != SiliconStudio.Core.PlatformType.WindowsPhone) 
     <OutputType>Exe</OutputType>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName><#= ProjectName.Replace(".", "") #></AssemblyName>
-<# } else if (curPlatform == SiliconStudio.Core.PlatformType.WindowsPhone) { #>
-    <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>AppContainerExe</OutputType>
-    <AssemblyName><#= ProjectName #></AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
-    <TargetPlatformVersion>8.1</TargetPlatformVersion>
-    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
-    <FileAlignment>512</FileAlignment>
-<# } else if (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore) { #>
-    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>AppContainerExe</OutputType>
-    <AssemblyName><#= ProjectName #></AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <TargetPlatformVersion>8.1</TargetPlatformVersion>
-    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
-    <FileAlignment>512</FileAlignment>
-    <PackageCertificateKeyFile>SiliconStudio.Xenko.Graphics.Tests.WindowsStore_TemporaryKey.pfx</PackageCertificateKeyFile>
 <# } else { #>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
@@ -98,46 +80,6 @@ var needSigning = (curPlatform != SiliconStudio.Core.PlatformType.WindowsPhone) 
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-<# } else if ((curPlatform == SiliconStudio.Core.PlatformType.WindowsPhone) || (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore)) { #>
-  <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <SDKReference Label="Xenko.DoNotSync" Include="Microsoft.VCLibs, Version=12.0">
-      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile  Label="Xenko.DoNotSync" Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.TestsMainPage.xaml.cs">
-      <DependentUpon>SiliconStudio.Xenko.Graphics.TestsMainPage.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <AppxManifest Label="Xenko.DoNotSync" Include="Package<#= curPlatform #>.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\Logo.png" />
-    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\SmallLogo.png" />
-    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\SplashScreen.png" />
-<# if (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore) { #>
-    <None Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.Tests.WindowsStore_TemporaryKey.pfx" />
-<# } #>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Label="Xenko.DoNotSync" Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.TestsMainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
-    <VisualStudioVersion>12.0</VisualStudioVersion>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
 <# } else { #>
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 <# } #>

@@ -58,7 +58,7 @@ namespace SiliconStudio.Assets.Tests
             var asset1Ids = CollectionItemIdHelper.GetCollectionItemIds(asset.Strings);
             asset1Ids.Add(0, new ItemId(MakeArray(1)));
             asset1Ids.Add(1, new ItemId(MakeArray(2)));
-            var serializer = new AssetYamlSerializer();
+            var serializer = new YamlAssetSerializer();
             var stream = new MemoryStream();
             serializer.Save(stream, asset);
             stream.Position = 0;

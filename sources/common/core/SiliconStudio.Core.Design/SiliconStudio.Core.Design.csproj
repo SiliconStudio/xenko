@@ -25,7 +25,7 @@
   </Choose>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
-    <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">
+    <When Condition="'$(SiliconStudioPlatform)' == 'UWP'">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
@@ -65,8 +65,8 @@
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
-    <Compile Include="Reflection\MemberDescriptorExtensions.cs" />
-    <Compile Include="Reflection\Override.cs" />
+    <Compile Include="Reflection\OverridePostfixes.cs" />
+    <Compile Include="Reflection\OverrideTarget.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Reflection\ShadowObjectExtensions.cs" />
@@ -98,6 +98,8 @@
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
     <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Yaml\AssetYamlSerializer.cs" />
+    <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
     <Compile Include="Yaml\CollectionWithItemIds.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="Reflection\ItemId.cs" />
     <Compile Include="Yaml\ItemIdSerializer.cs" />
     <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
     <Compile Include="Yaml\NonIdentifiableCollectionItemsAttribute.cs" />
@@ -164,10 +167,12 @@
     <Compile Include="Yaml\GuidSerializer.cs" />
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
     <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\PropertyKeyYamlSerializer.cs" />
+    <Compile Include="Settings\SettingsYamlSerializer.cs" />
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />
-    <Compile Include="Yaml\YamlSerializerFactoryAttribute.cs" />
+    <Compile Include="Yaml\YamlSerializerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

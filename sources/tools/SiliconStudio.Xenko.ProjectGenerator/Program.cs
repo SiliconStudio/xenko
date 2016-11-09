@@ -225,9 +225,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 platformProfile.ProjectReferences.Add(projectPlatformRef);
 
-                // Add build configuration per platform
-                platform.Properties.CopyTo(platformProfile.Properties, true);
-
                 package.Profiles.Add(platformProfile);
             }
 
@@ -600,8 +597,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 case PlatformType.Windows:
                         // Nothing to do here.
                     break;
-                case PlatformType.WindowsPhone:
-                case PlatformType.WindowsStore:
                 case PlatformType.Android:
                     configurations.Add(platform, platform);
                     needDeploy = true;
@@ -609,7 +604,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
                 case PlatformType.Linux:
                 case PlatformType.macOS:
-                case PlatformType.Windows10:
+                case PlatformType.UWP:
                     configurations.Add(platform, "Any CPU");
                     needDeploy = true;
                     break;

@@ -47,8 +47,8 @@ namespace SiliconStudio.Xenko.Input
                     res = NewInputManagerSDL(registry);
                     break;
 
-                case AppContextType.WindowsRuntime:
-                    res = NewInputManagerWindowsRuntime(registry);
+                case AppContextType.UWP:
+                    res = NewInputManagerUWP(registry);
                     break;
 
                 case AppContextType.Android:
@@ -102,10 +102,10 @@ namespace SiliconStudio.Xenko.Input
 #endif
         }
 
-        private static InputManager NewInputManagerWindowsRuntime(IServiceRegistry registry)
+        private static InputManager NewInputManagerUWP(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            return new InputManagerWindowsRuntime(registry);
+#if SILICONSTUDIO_PLATFORM_UWP
+            return new InputManagerUWP(registry);
 #else
             return null;
 #endif

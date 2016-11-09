@@ -54,9 +54,11 @@ namespace SiliconStudio.Assets
     [AssetFormatVersion("Assets", PackageFileVersion)]
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
+    [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
+    [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
     public sealed partial class Package : Asset, IFileSynchronizable
     {
-        private const int PackageFileVersion = 2;
+        private const int PackageFileVersion = 4;
 
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
@@ -1077,12 +1079,12 @@ namespace SiliconStudio.Assets
                         continue;
 
                     string assemblyPath = null;
-                    var fullProjectLocation = UPath.Combine(RootDirectory, projectReference.Location);
+                    var fullProjectLocation = UPath.Combine(RootDirectory, projectReference.Location).ToWindowsPath();
 
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
                             log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
@@ -1196,7 +1198,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName).Asset;
+                        var templateDescription = YamlSerializer.Default.Load<TemplateDescription>(file.FullName);
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }
@@ -1376,6 +1378,42 @@ namespace SiliconStudio.Assets
                         if (dependency.Name == "Paradox")
                             dependency.Name = "Xenko";
                     }
+                }
+            }
+        }
+
+        private class RemoveWindowsStoreAndPhone : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Profiles != null)
+                {
+                    var profiles = asset.Profiles;
+
+                    for (int i = 0; i < profiles.Count; ++i)
+                    {
+                        var profile = profiles[i];
+                        if (profile.Platform == "WindowsStore" || profile.Platform == "WindowsPhone")
+                        {
+                            profiles.RemoveAt(i--);
+                            context.Log.Warning($"Platform [{profile.Platform}] is not supported anymore, it will be removed from your package (but kept in solution as a backup). Please use Windows 10 (UWP) instead.");
+                        }
+                        else if (profile.Platform == nameof(PlatformType.Windows10))
+                        {
+                            profile.Platform = nameof(PlatformType.UWP);
+                        }
+                    }
+                }
+            }
+        }
+
+        private class RemoveProperties : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                foreach (var profile in asset["Profiles"])
+                {
+                    profile["Properties"] = DynamicYamlEmpty.Default;
                 }
             }
         }

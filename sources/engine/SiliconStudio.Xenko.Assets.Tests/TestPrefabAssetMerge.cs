@@ -609,8 +609,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMultiplePrefabsMixedInheritance()
         {
-            PrefabAssetMerge.Debug = true;
-
             // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
             // derived prefabs. We use the following scenario:
             // a1: base asset)
@@ -689,8 +687,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMultiplePrefabsInheritanceAndChildren()
         {
-            PrefabAssetMerge.Debug = true;
-
             // The purpose of this test is to check that modifying a prefab base is correctly propagated through all 
             // derived prefabs. We use the following scenario:
             //
@@ -744,14 +740,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             foreach (var entity in a2PartInstance1.Parts)
             {
                 entity.Entity.Name += "1";
-                entity.Entity.SetOverride(member, OverrideType.New);
             }
 
             var a2PartInstance2 = a1.CreatePrefabInstance(a2, "a1");
             foreach (var entity in a2PartInstance2.Parts)
             {
                 entity.Entity.Name += "2";
-                entity.Entity.SetOverride(member, OverrideType.New);
             }
 
             a2.Hierarchy.Parts.AddRange(a2PartInstance1.Parts);
@@ -767,7 +761,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             foreach (var entity in a3PartInstance1.Parts)
             {
                 entity.Entity.Name += "1'";
-                entity.Entity.SetOverride(member, OverrideType.New);
             }
             a3.Hierarchy.Parts.AddRange(a3PartInstance1.Parts);
             a3.Hierarchy.RootPartIds.AddRange(a3PartInstance1.RootPartIds);
@@ -782,7 +775,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             foreach (var entity in a2PartInstance3.Parts)
             {
                 entity.Entity.Name += "*";
-                entity.Entity.SetOverride(member, OverrideType.New);
             }
             foreach (var entity in a2PartInstance3.Parts.Where(t => a2PartInstance3.RootPartIds.Contains(t.Entity.Id)))
             {
@@ -792,7 +784,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
             foreach (var entity in a3PartInstance2.Parts)
             {
                 entity.Entity.Name += "*";
-                entity.Entity.SetOverride(member, OverrideType.New);
             }
 
             a4.Hierarchy.Parts.Add(new EntityDesign(eRoot));

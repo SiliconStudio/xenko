@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Reflection
     {
         public static void RunModuleConstructor(Module module)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME || SILICONSTUDIO_RUNTIME_CORECLR
+#if SILICONSTUDIO_PLATFORM_UWP || SILICONSTUDIO_RUNTIME_CORECLR
             // Initialize first type
             // TODO: Find a type without actual .cctor if possible, to avoid side effects
             System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(module.Assembly.DefinedTypes.First().AsType().TypeHandle);

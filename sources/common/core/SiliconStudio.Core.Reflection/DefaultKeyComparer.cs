@@ -23,22 +23,9 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Reflection
 {
-    /// <summary>
-    /// Default comparer used to sort keys for object members and dictionary keys. See remarks.
-    /// </summary>
-    /// <remarks><ul>
-    ///   <li>For members of an object, this comparer will first try to use an explicit order defined by
-    /// using <see cref="DataMemberAttribute.Order" /> otherwise It will use the name of the field/property.
-    ///   </li>
-    ///   <li>If both objects are string, use <see cref="string.CompareOrdinal(string,int,string,int,int)"/></li>
-    ///   <li>
-    /// For keys of a dictionary, this comparer will try to use <see cref="IComparable" /> interface
-    /// when comparing keys.
-    ///   </li>
-    ///   </ul></remarks>
     public class DefaultKeyComparer : IComparer<object>
     {
-        public virtual int Compare(object x, object y)
+        public int Compare(object x, object y)
         {
             var left = x as IMemberDescriptor;
             var right = y as IMemberDescriptor;
@@ -52,7 +39,7 @@ namespace SiliconStudio.Core.Reflection
                     return leftOrder.CompareTo(rightOrder);
                 }
 
-                // else order by name
+                // else order by name (dynamic members, etc...)
                 return left.DefaultNameComparer.Compare(left.Name, right.Name);
             }
 

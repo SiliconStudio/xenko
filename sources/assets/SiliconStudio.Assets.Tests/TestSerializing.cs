@@ -68,19 +68,11 @@ namespace SiliconStudio.Assets.Tests
             string testGenerated2 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated2.xkobj";
             string referenceFilePath = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj";
 
-            var myAssetDescriptor = TypeDescriptorFactory.Default.Find(typeof(MyAsset));
-
-            // Put a New Sealed on the Description
-            //assetObject.SetDynamicProperty(myAssetDescriptor["Description"], Override.Key, OverrideType.New | OverrideType.Sealed);
-            assetObject.SetOverride((IMemberDescriptor)myAssetDescriptor["Description"], OverrideType.New | OverrideType.Sealed);
-
             // First store the file on the disk and compare it to the reference
             GenerateAndCompare("Test Serialization 1", testGenerated1, referenceFilePath, assetObject);
 
             // Deserialize it
             var newAssetObject = AssetSerializer.Load<MyAsset>(testGenerated1).Asset;
-            var overrideKey = newAssetObject.GetOverride((IMemberDescriptor)myAssetDescriptor["Description"]);
-            Assert.AreEqual(overrideKey, OverrideType.New | OverrideType.Sealed);
 
             // Restore the deserialize version and compare it with the reference
             GenerateAndCompare("Test Serialization 2 - double check", testGenerated2, referenceFilePath, newAssetObject);

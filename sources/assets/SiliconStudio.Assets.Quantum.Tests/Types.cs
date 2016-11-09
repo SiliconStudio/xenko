@@ -44,6 +44,22 @@ namespace SiliconStudio.Assets.Quantum.Tests
         }
 
         [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAsset6 : Asset
+        {
+            public Dictionary<string, IMyInterface> MyDictionary { get; set; } = new Dictionary<string, IMyInterface>();
+        }
+
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAsset7 : Asset
+        {
+            public MyAsset2 MyAsset2 { get; set; }
+            public MyAsset3 MyAsset3 { get; set; }
+            public MyAsset4 MyAsset4 { get; set; }
+        }
+
+        [DataContract]
         public struct StructWithList
         {
             public List<string> MyStrings { get; set; }

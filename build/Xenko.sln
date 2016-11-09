@@ -19,12 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.iOS.CSharp.targets = ..\sources\common\targets\SiliconStudio.iOS.CSharp.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
-		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
-		..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.CSharp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
-		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
+		..\sources\common\targets\SiliconStudio.UWP.Cpp.targets = ..\sources\common\targets\SiliconStudio.UWP.Cpp.targets
+		..\sources\common\targets\SiliconStudio.UWP.CSharp.targets = ..\sources\common\targets\SiliconStudio.UWP.CSharp.targets
 		..\store.config = ..\store.config
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
@@ -70,10 +66,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.User", "00-Targe
 		..\Targets\Xenko.Linux.targets = ..\Targets\Xenko.Linux.targets
 		..\Targets\Xenko.macOS.targets = ..\Targets\Xenko.macOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
+		..\Targets\Xenko.UWP.targets = ..\Targets\Xenko.UWP.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
-		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
-		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
-		..\Targets\Xenko.WindowsStore.targets = ..\Targets\Xenko.WindowsStore.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
@@ -394,12 +388,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
 		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
 		Xenko.PreSettings.Local.targets = Xenko.PreSettings.Local.targets
+		Xenko.UWP.GlobalSettings.Local.targets = Xenko.UWP.GlobalSettings.Local.targets
+		Xenko.UWP.PreSettings.Local.targets = Xenko.UWP.PreSettings.Local.targets
 		Xenko.Vulkan.PreSettings.Local.targets = Xenko.Vulkan.PreSettings.Local.targets
 		Xenko.Vulkan.SDL.PreSettings.Local.targets = Xenko.Vulkan.SDL.PreSettings.Local.targets
-		Xenko.Windows10.GlobalSettings.Local.targets = Xenko.Windows10.GlobalSettings.Local.targets
-		Xenko.Windows10.PreSettings.Local.targets = Xenko.Windows10.PreSettings.Local.targets
-		Xenko.WindowsPhone.PreSettings.Local.targets = Xenko.WindowsPhone.PreSettings.Local.targets
-		Xenko.WindowsStore.PreSettings.Local.targets = Xenko.WindowsStore.PreSettings.Local.targets
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.ShellHelper", "..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.shproj", "{3A3CB33C-64D9-4948-86C1-0D86320D23C3}"
@@ -431,6 +423,7 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{6f5b53e9-39c8-4cad-b07c-588b0968c238}*SharedItemsImports = 4
+		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{3a3cb33c-64d9-4948-86c1-0d86320d23c3}*SharedItemsImports = 13
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4

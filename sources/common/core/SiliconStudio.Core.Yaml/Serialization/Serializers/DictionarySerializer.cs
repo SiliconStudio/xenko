@@ -56,6 +56,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// <summary>
     /// Class for serializing a <see cref="IDictionary{TKey,TValue}"/> or <see cref="System.Collections.IDictionary"/>
     /// </summary>
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     public class DictionarySerializer : ObjectSerializer
     {
         /// <inheritdoc/>

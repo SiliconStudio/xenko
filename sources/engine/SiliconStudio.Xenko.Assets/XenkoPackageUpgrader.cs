@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -51,12 +52,6 @@ namespace SiliconStudio.Xenko.Assets
                 var spritesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
                 RenameAndChangeTag(assetFiles, uiImageGroups, "!UIImageGroup");
                 RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
-            {
-                // Create GameSettingsAsset
-                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
             }
 
             if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha02"))
@@ -257,6 +252,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -356,6 +354,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -395,6 +396,27 @@ namespace SiliconStudio.Xenko.Assets
             //        }
             //    }
             //}
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkpkg");
+                foreach (var assetFile in files)
+                {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
+                        {
+                            profile["Properties"] = DynamicYamlEmpty.Default;
+                        }
+                    }
+                }
+            }
 
             return true;
         }
@@ -577,6 +599,15 @@ namespace SiliconStudio.Xenko.Assets
             Task.WaitAll(tasks);
         }
 
+        private bool IsYamlAsset(PackageLoadingAssetFile assetFile)
+        {
+            // Determine if asset was Yaml or not
+            var assetFileExtension = Path.GetExtension(assetFile.FilePath);
+            assetFileExtension = assetFileExtension?.ToLowerInvariant();
+
+            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
+            return serializer is YamlAssetSerializer;
+        }
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>

@@ -91,8 +91,6 @@ namespace SiliconStudio.Core.Yaml
                 var path = GetCurrentPath(ref objectContext, true);
                 path.PushMember(realMemberName);
                 overrides.Add(path, overrideType);
-
-                objectContext.Instance.SetOverride(memberDescriptor, overrideType);
             }
 
             var resultMemberName = base.ReadMemberName(ref objectContext, realMemberName, out skipMember);
@@ -131,11 +129,11 @@ namespace SiliconStudio.Core.Yaml
                         {
                             if ((overrideType & OverrideType.New) != 0)
                             {
-                                memberName += Override.PostFixNew;
+                                memberName += OverridePostfixes.PostFixNew;
                             }
                             if ((overrideType & OverrideType.Sealed) != 0)
                             {
-                                memberName += Override.PostFixSealed;
+                                memberName += OverridePostfixes.PostFixSealed;
                             }
                         }
                     }
@@ -241,22 +239,22 @@ namespace SiliconStudio.Core.Yaml
                 {
                     if ((overrideType & OverrideType.New) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, Override.PostFixNew.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixNew.ToString());
                     }
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, Override.PostFixSealed.ToString());
+                        objectContext.SerializerContext.Properties.Set(ItemIdSerializerBase.OverrideInfoKey, OverridePostfixes.PostFixSealed.ToString());
                     }
                 }
                 if (keyPath != null && overrides.TryGetValue(keyPath, out overrideType))
                 {
                     if ((overrideType & OverrideType.New) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, Override.PostFixNew.ToString());
+                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, OverridePostfixes.PostFixNew.ToString());
                     }
                     if ((overrideType & OverrideType.Sealed) != 0)
                     {
-                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, Override.PostFixSealed.ToString());
+                        objectContext.SerializerContext.Properties.Set(KeyWithIdSerializer.OverrideKeyInfoKey, OverridePostfixes.PostFixSealed.ToString());
                     }
                 }
             }
@@ -322,20 +320,20 @@ namespace SiliconStudio.Core.Yaml
             var trimmedName = string.Empty;
             foreach (var namePart in split)
             {
-                var realName = namePart.Trim(Override.PostFixSealed, Override.PostFixNew);
+                var realName = namePart.Trim(OverridePostfixes.PostFixSealed, OverridePostfixes.PostFixNew);
 
                 var overrideType = OverrideType.Base;
                 if (realName.Length != namePart.Length)
                 {
-                    if (namePart.Contains(Override.PostFixNewSealed) || namePart.EndsWith(Override.PostFixNewSealedAlt))
+                    if (namePart.Contains(OverridePostfixes.PostFixNewSealed) || namePart.EndsWith(OverridePostfixes.PostFixNewSealedAlt))
                     {
                         overrideType = OverrideType.New | OverrideType.Sealed;
                     }
-                    else if (namePart.EndsWith(Override.PostFixNew))
+                    else if (namePart.EndsWith(OverridePostfixes.PostFixNew))
                     {
                         overrideType = OverrideType.New;
                     }
-                    else if (namePart.EndsWith(Override.PostFixSealed))
+                    else if (namePart.EndsWith(OverridePostfixes.PostFixSealed))
                     {
                         overrideType = OverrideType.Sealed;
                     }

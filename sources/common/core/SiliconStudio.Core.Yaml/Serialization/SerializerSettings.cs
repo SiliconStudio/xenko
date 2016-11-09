@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
             ComparerForKeySorting = new DefaultKeyComparer();
             NamingConvention = new DefaultNamingConvention();
-
+            SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default);
             // Register default mapping for map and seq
             AssemblyRegistry.RegisterTagMapping("!!map", typeof(IDictionary<object, object>), false);
             AssemblyRegistry.RegisterTagMapping("!!seq", typeof(IList<object>), false);
@@ -310,6 +310,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <exception cref="System.ArgumentNullException">value</exception>
         public IYamlSchema Schema { get { return schema; } }
 
+        public ISerializerFactorySelector SerializerFactorySelector { get; set; }
+
         /// <summary>
         /// Register a mapping between a tag and a type.
         /// </summary>
@@ -328,37 +330,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public void RegisterTagMapping(string tagName, Type tagType, bool isAlias = false)
         {
             AssemblyRegistry.RegisterTagMapping(tagName, tagType, isAlias);
-        }
-
-        /// <summary>
-        /// Adds a custom serializer for the specified type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="serializer">The serializer.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// type
-        /// or
-        /// serializer
-        /// </exception>
-        public void RegisterSerializer(Type type, IYamlSerializable serializer)
-        {
-            if (type == null)
-                throw new ArgumentNullException("type");
-            if (serializer == null)
-                throw new ArgumentNullException("serializer");
-            serializers[type] = serializer;
-        }
-
-        /// <summary>
-        /// Adds a serializer factory.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <exception cref="System.ArgumentNullException">factory</exception>
-        public void RegisterSerializerFactory(IYamlSerializableFactory factory)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory");
-            AssemblyRegistry.SerializableFactories.Add(factory);
         }
     }
 }

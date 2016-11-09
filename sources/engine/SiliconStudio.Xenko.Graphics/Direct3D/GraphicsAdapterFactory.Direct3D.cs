@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if DIRECTX11_1
             using (var factory = new Factory1())
             NativeFactory = factory.QueryInterface<Factory2>();
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             // Maybe this will become default code for everybody if we switch to DX 11.1/11.2 SharpDX dll?
             NativeFactory = new Factory2();
 #else

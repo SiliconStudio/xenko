@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// A Yaml serializer for <see cref="IKeyWithId"/>.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory("Assets")] // TODO: use YamlAssetProfile.Name
     public class KeyWithIdSerializer : ItemIdSerializerBase
     {
         /// <summary>

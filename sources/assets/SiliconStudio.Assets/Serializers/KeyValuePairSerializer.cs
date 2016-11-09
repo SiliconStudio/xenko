@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Serializers
     /// A Yaml Serializer for <see cref="KeyValuePair{TKey,TValue}"/>.
     /// Because this type is immutable we need to implement a special serializer.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class KeyValuePairSerializer : ObjectSerializer
     {
         private struct MutableKeyValuePair<TKey, TValue>

@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
     /// <summary>
     /// When serializing/deserializing Yaml for live objects, this serializer will handle those objects as reference (similar to Clone serializer).
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class CloneReferenceSerializer : ObjectSerializer
     {
         // TODO: We might want to share some of the recursive logic with PrefabAssetSerializer?
