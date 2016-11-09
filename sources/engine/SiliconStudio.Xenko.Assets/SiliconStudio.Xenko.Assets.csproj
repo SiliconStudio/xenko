@@ -330,6 +330,7 @@
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
     <Compile Include="Scripts\Accessibility.cs" />
     <Compile Include="Scripts\CustomExpression.cs" />
     <Compile Include="Scripts\BlockDropTargetAttribute.cs" />

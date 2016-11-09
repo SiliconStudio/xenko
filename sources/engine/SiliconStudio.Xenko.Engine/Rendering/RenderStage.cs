@@ -45,16 +45,15 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Defines render targets this stage outputs to.
+        /// </summary>
+        public RenderOutputDescription Output;
+
+        /// <summary>
         /// Index in <see cref="RenderSystem.RenderStages"/>.
         /// </summary>
         [DataMemberIgnore]
         public int Index = -1;
-
-        /// <summary>
-        /// Defines render targets this stage outputs to.
-        /// </summary>
-        [DataMemberIgnore]
-        public RenderOutputDescription Output;
 
         /// <inheritdoc/>
         public override string ToString()

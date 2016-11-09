@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -21,6 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetDescription(FileExtension)]
     [AssetPartReference(typeof(RenderStage))]
     [AssetPartReference(typeof(RootRenderFeature))]
+    [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     public class GraphicsCompositorAsset : AssetComposite
     {
         /// <summary>
