@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             if (Scene != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);
-                yield return new AssetReference<SceneAsset>(reference.Id, reference.Url);
+                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

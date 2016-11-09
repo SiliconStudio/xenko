@@ -23,19 +23,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the unique identifier of the base entity in case of prefabs. If null, the entity is not a prefab.
-        /// </summary>
+        /// <inheritdoc/>
         [DataMember(-90), Display(Browsable = false)]
         [DefaultValue(null)]
-        public Guid? BaseId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the part group in case of prefabs. If null, the entity doesn't belong to a part.
-        /// </summary>
-        [DataMember(-80), Display(Browsable = false)]
-        [DefaultValue(null)]
-        public Guid? BasePartInstanceId { get; set; }
+        public BasePart Base { get; set; }
 
         /// <summary>
         /// Gets or sets the name of that variable.

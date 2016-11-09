@@ -180,7 +180,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
             if (gameSettings != null)
             {
-                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
             }
         }
 

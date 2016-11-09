@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace SiliconStudio.Quantum.Tests
@@ -11,6 +12,12 @@ namespace SiliconStudio.Quantum.Tests
             public string Name { get; set; }
             public int Value { get; set; }
             public override string ToString() => $"{{SimpleStruct: ({Value}), {Name}}}";
+        }
+
+        public struct StructWithCollection
+        {
+            public List<string> Strings { get; set; }
+            public override string ToString() => $"{{StructWithCollection: ({Strings})}}";
         }
 
         public struct FirstNestingStruct
@@ -29,6 +36,12 @@ namespace SiliconStudio.Quantum.Tests
         {
             public SimpleStruct Struct { get; set; }
             public override string ToString() => $"{{StructContainer: {Struct}}}";
+        }
+
+        public class StructWithCollectionContainer
+        {
+            public StructWithCollection Struct { get; set; }
+            public override string ToString() => $"{{StructWithCollectionContainer: {Struct}}}";
         }
 
         public class NestingStructContainer
@@ -88,6 +101,25 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual("Test2", container.Struct.Name);
             Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberContentNode(memberNode, memberNode.Children.First(), container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
+        }
+
+        [Test]
+        public void TestSimpleStructCollectionUpdate()
+        {
+            var nodeContainer = new NodeContainer();
+            var container = new StructWithCollectionContainer { Struct = new StructWithCollection { Strings = new List<string> { "aaa", "bbb" } } };
+            var containerNode = nodeContainer.GetOrCreateNode(container);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+
+            var memberNode = containerNode.Children.First();
+            Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructWithCollectionContainer.Struct), false);
+            Helper.TestStructContentNode(memberNode, container.Struct, 1);
+            var structMember1Node = memberNode.Children.First();
+            Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
+            structMember1Node.Content.Update("ddd", new Index(1));
+            Assert.AreEqual("ddd", container.Struct.Strings[1]);
+            Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
+            Helper.TestMemberContentNode(memberNode, memberNode.Children.First(), container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
         }
 
         [Test]

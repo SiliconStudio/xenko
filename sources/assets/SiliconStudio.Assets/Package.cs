@@ -15,6 +15,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -47,15 +48,17 @@ namespace SiliconStudio.Assets
     /// A package managing assets.
     /// </summary>
     [DataContract("Package")]
+    [NonIdentifiableCollectionItems]
     [AssetDescription(PackageFileExtensions)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion("Assets", PackageFileVersion)]
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
+    [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
     public sealed partial class Package : Asset, IFileSynchronizable
     {
-        private const int PackageFileVersion = 3;
+        private const int PackageFileVersion = 4;
 
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
@@ -156,7 +159,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
-        public AssetItemCollection TemporaryAssets { get; } = new AssetItemCollection();
+        public List<AssetItem> TemporaryAssets { get; } = new List<AssetItem>();
 
         /// <summary>
         /// Gets the path to the package file. May be null if the package was not loaded or saved.
@@ -326,7 +329,7 @@ namespace SiliconStudio.Assets
         {
             // Use a new ShadowRegistry to copy override parameters
             // Clone this asset
-            var package = (Package)AssetCloner.Clone(this); 
+            var package = AssetCloner.Clone(this); 
             package.FullPath = FullPath;
             foreach (var asset in Assets)
             {
@@ -429,7 +432,6 @@ namespace SiliconStudio.Assets
                 SetDirtyFlagOnAssetWhenFixingUFile = false,
                 ConvertUPathTo = UPathType.Relative,
                 IsProcessingUPaths = true,
-                AssetTemplatingRemoveUnusedBaseParts = true,
             });
             analysis.Run(log);
 
@@ -590,24 +592,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                var assetBase = asset.Asset.Base;
-                if (assetBase != null && !assetBase.IsRootImport)
-                {
-                    asset.Asset.Base = UpdateAssetBase(assetBase);
-                }
-
-                // Update base for BaseParts
-                if (asset.Asset.BaseParts != null)
-                {
-                    var baseParts = asset.Asset.BaseParts;
-                    for (int i = 0; i < baseParts.Count; i++)
-                    {
-                        var basePart = baseParts[i];
-                        baseParts[i] = UpdateAssetBase(basePart);
-                    }
-                }
-
-                AssetSerializer.Save(assetPath, asset.Asset, asset);
+                AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -624,23 +609,6 @@ namespace SiliconStudio.Assets
                 return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Finds the most recent asset base and return a new version of it.
-        /// </summary>
-        /// <param name="assetBase">The original asset base</param>
-        /// <returns>A copy of the asset base updated with the latest base</returns>
-        private AssetBase UpdateAssetBase(AssetBase assetBase)
-        {
-            var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
-            if (assetBaseItem != null)
-            {
-                var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
-                return new AssetBase(assetBase.Location, newBase);
-            }
-            // TODO: If we don't find it, should we log an error instead?
-            return assetBase;
         }
 
         /// <summary>
@@ -727,18 +695,17 @@ namespace SiliconStudio.Assets
 
             try
             {
-                bool aliasOccurred;
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath)) { CachedFileSize = filePath.Length };
                 var context = new AssetMigrationContext(null, log);
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
-                var package = packageFile.AssetContent != null
-                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), filePath, log, out aliasOccurred)
-                    : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
-
+                var loadResult = packageFile.AssetContent != null
+                    ? AssetSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), filePath, log)
+                    : AssetSerializer.Load<Package>(filePath, log);
+                var package = loadResult.Asset;
                 package.FullPath = filePath;
                 package.previousPackagePath = package.FullPath;
-                package.IsDirty = packageFile.AssetContent != null || aliasOccurred;
+                package.IsDirty = packageFile.AssetContent != null || loadResult.AliasOccurred;
 
                 return package;
             }
@@ -834,7 +801,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public void ValidateAssets(bool alwaysGenerateNewAssetId = false)
+        public void ValidateAssets(bool alwaysGenerateNewAssetId, ILogger log)
         {
             if (TemporaryAssets.Count == 0)
             {
@@ -849,7 +816,7 @@ namespace SiliconStudio.Assets
                 Assets.Clear();
 
                 // Get generated output items
-                var outputItems = new AssetItemCollection();
+                var outputItems = new List<AssetItem>();
 
                 // Create a resolver from the package
                 var resolver = AssetResolver.FromPackage(this);
@@ -862,6 +829,10 @@ namespace SiliconStudio.Assets
                 foreach (var item in outputItems)
                 {
                     Assets.Add(item);
+
+                    // Fix collection item ids
+                    AssetCollectionItemIdHelper.GenerateMissingItemIds(item.Asset);
+                    CollectionItemIdsAnalysis.FixupItemIds(item, log);
                 }
 
                 // Don't delete SourceCodeAssets as their files are handled by the package upgrader
@@ -1005,14 +976,16 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred);
+                IDictionary<ObjectPath, OverrideType> overrides;
+                var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
 
                 // Create asset item
                 var assetItem = new AssetItem(assetPath, asset, this)
                 {
                     IsDirty = assetContent != null || aliasOccurred,
                     SourceFolder = sourceFolder.MakeRelative(RootDirectory),
-                    SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null
+                    SourceProject = asset is IProjectAsset && assetFile.ProjectFile != null ? assetFile.ProjectFile : null,
+                    Overrides = overrides
                 };
 
                 // Set the modified time to the time loaded from disk
@@ -1044,7 +1017,7 @@ namespace SiliconStudio.Assets
 
                 var module = context.Log.Module;
 
-                var assetReference = new AssetReference<Asset>(Guid.Empty, fileUPath.FullPath);
+                var assetReference = new AssetReference(Guid.Empty, fileUPath.FullPath);
 
                 // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
                 if (loggerResult != null)
@@ -1075,21 +1048,24 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<ObjectPath, OverrideType> overrides)
         {
-            var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), assetFullPath, log, out assetDirty)
-                : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
+            var loadResult = assetContent != null
+                ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
+                : AssetSerializer.Load<Asset>(assetFullPath, log);
+
+            assetDirty = loadResult.AliasOccurred;
+            overrides = loadResult.Overrides;
 
             // Set location on source code asset
-            var sourceCodeAsset = asset as SourceCodeAsset;
+            var sourceCodeAsset = loadResult.Asset as SourceCodeAsset;
             if (sourceCodeAsset != null)
             {
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
             }
 
-            return asset;
+            return loadResult.Asset;
         }
 
         private void LoadAssemblyReferencesForPackage(ILogger log, PackageLoadParameters loadParameters)
@@ -1226,8 +1202,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        bool aliasOccurred;
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName, null, out aliasOccurred);
+                        var templateDescription = YamlSerializer.Default.Load<TemplateDescription>(file.FullName);
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }
@@ -1432,6 +1407,17 @@ namespace SiliconStudio.Assets
                             profile.Platform = nameof(PlatformType.UWP);
                         }
                     }
+                }
+            }
+        }
+
+        private class RemoveProperties : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                foreach (var profile in asset["Profiles"])
+                {
+                    profile["Properties"] = DynamicYamlEmpty.Default;
                 }
             }
         }

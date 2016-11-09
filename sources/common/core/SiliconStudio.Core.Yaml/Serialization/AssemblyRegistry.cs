@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Schemas;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -114,14 +115,14 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     {
                         string name = null;
                         bool isAlias = false;
-                        var tagAttribute = attribute as YamlTypeAttribute;
-                        if (tagAttribute?.Tag != null)
+                        var tagAttribute = attribute as DataContractAttribute;
+                        if (!string.IsNullOrWhiteSpace(tagAttribute?.Alias))
                         {
-                            name = tagAttribute.Tag;
+                            name = tagAttribute.Alias;
                         }
                         else
                         {
-                            var yamlRemap = attribute as YamlRemapAttribute;
+                            var yamlRemap = attribute as DataAliasAttribute;
                             if (yamlRemap != null)
                             {
                                 name = yamlRemap.Name;

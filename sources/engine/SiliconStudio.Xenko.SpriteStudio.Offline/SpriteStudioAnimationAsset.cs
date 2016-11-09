@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Animations;
 
@@ -20,7 +19,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         [DataMember(2)]
         [Display(Browsable = false)]
         [DefaultValue("")]
-        [DiffMember(Weight = 100)] // Because AnimationName is like a key, we use a high weight in order to match asset more accurately
         public string AnimationName { get; set; } = "";
     }
 }

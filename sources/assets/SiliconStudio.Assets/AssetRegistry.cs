@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Assets.Diff;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -36,10 +35,9 @@ namespace SiliconStudio.Assets
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
         private static readonly HashSet<IYamlSerializableFactory> RegisteredSerializerFactories = new HashSet<IYamlSerializableFactory>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
-        private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
         private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
-
+        private static readonly Dictionary<Type, Type> RegisteredContentReferenceTypes = new Dictionary<Type, Type>();
         private static Func<object, string, string> stringExpander;
 
         // Global lock used to secure the registry with threads
@@ -387,14 +385,6 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static IEnumerable<IDataCustomVisitor> GetDataVisitNodeBuilders()
-        {
-            lock (RegistryLock)
-            {
-                return RegisteredDataVisitNodeBuilders;
-            }
-        }
-
         public static bool IsAssetPartType(Type type)
         {
             lock (RegistryLock)
@@ -413,9 +403,25 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static bool IsContentReferenceType(Type type)
+        {
+            lock (RegistryLock)
+            {
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredContentReferenceTypes.ContainsKey(type))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
+            }
+        }
+
         /// <summary>
         /// Registers the asset assembly. This assembly should provide <see cref="Asset"/> objects, associated with
-        /// <see cref="IAssetCompiler"/> and optionaly a <see cref="IAssetImporter"/>.
+        /// <see cref="Compiler.IAssetCompiler"/> and optionaly a <see cref="IAssetImporter"/>.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <exception cref="System.ArgumentNullException">assembly</exception>
@@ -443,55 +449,47 @@ namespace SiliconStudio.Assets
                 // Process Asset types.
                 foreach (var type in assembly.GetTypes())
                 {
+                    object instance = null;
                     // Register serializer factories
-                    if (type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null)
+                    if (!type.IsAbstract && typeof(IYamlSerializableFactory).IsAssignableFrom(type) &&
+                        type.GetCustomAttribute<YamlSerializerFactoryAttribute>() != null && type.GetConstructor(Type.EmptyTypes) != null)
                     {
-                        if (typeof(IYamlSerializableFactory).IsAssignableFrom(type))
+                        try
                         {
-                            try
-                            {
-                                var yamlFactory = (IYamlSerializableFactory)Activator.CreateInstance(type);
-                                RegisteredSerializerFactories.Add(yamlFactory);
-
-                                // TODO: Handle IDataCustomVisitor on its own instead of relying on the coupling with IYamlSerializableFactory
-                                var dataCustomVisitor = yamlFactory as IDataCustomVisitor;
-                                if (dataCustomVisitor != null)
-                                {
-                                    RegisteredDataVisitNodes.Add(dataCustomVisitor);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
-                            }
+                            if (instance == null)
+                                instance = Activator.CreateInstance(type);
+                            RegisteredSerializerFactories.Add((IYamlSerializableFactory)instance);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
                         }
                     }
-
-                    if (type.GetCustomAttribute<DiffNodeBuilderAttribute>() != null)
+                    
+                    // Custom visitors
+                    if (!type.IsAbstract && typeof(IDataCustomVisitor).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
-                        if (typeof(IDataCustomVisitor).IsAssignableFrom(type))
+                        try
                         {
-                            try
-                            {
-                                var dataCustomVisitor = (IDataCustomVisitor)Activator.CreateInstance(type);
-                                RegisteredDataVisitNodeBuilders.Add(dataCustomVisitor);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error("Unable to instantiate diff converter [{0}]", ex, type);
-                            }
+                            if (instance == null)
+                                instance = Activator.CreateInstance(type);
+                            RegisteredDataVisitNodes.Add((IDataCustomVisitor)instance);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("Unable to instantiate custom visitor [{0}]", ex, type);
                         }
                     }
 
                     // Asset importer
-                    if (typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (!type.IsAbstract && typeof(IAssetImporter).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         try
                         {
-                            var importerInstance = Activator.CreateInstance(type) as IAssetImporter;
-
+                            if (instance == null)
+                                instance = Activator.CreateInstance(type);
                             // Register the importer instance
-                            RegisterImporter(importerInstance);
+                            RegisterImporter((IAssetImporter)instance);
                         }
                         catch (Exception ex)
                         {
@@ -500,13 +498,15 @@ namespace SiliconStudio.Assets
                     }
 
                     // Register asset factory
-                    if (typeof(IAssetFactory<Asset>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsGenericTypeDefinition && type.GetConstructor(Type.EmptyTypes) != null)
+                    if (!type.IsAbstract && typeof(IAssetFactory<Asset>).IsAssignableFrom(type) && !type.IsGenericTypeDefinition &&
+                        type.GetConstructor(Type.EmptyTypes) != null)
                     {
-                        var factory = (IAssetFactory<Asset>)Activator.CreateInstance(type);
-                        RegisteredAssetFactories.Add(type.Name, factory);
+                        if (instance == null)
+                            instance = Activator.CreateInstance(type);
+                        RegisteredAssetFactories.Add(type.Name, (IAssetFactory<Asset>)instance);
                     }
 
-                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(new Type[0]) != null)
+                    if (typeof(PackageSessionAnalysisBase).IsAssignableFrom(type) && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         RegisteredPackageSessionAnalysisTypes.Add(type);
                     }
@@ -611,6 +611,16 @@ namespace SiliconStudio.Assets
                             attributes.ForEach(x => relatedPartTypes.Add(x));
                         }
                     }
+
+                    var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
+                    if (serializer != null)
+                    {
+                        var serializerType = serializer.GetType();
+                        if (serializerType.IsGenericType && serializerType.GetGenericTypeDefinition().Name == "ReferenceSerializer`1")
+                        {
+                            RegisteredContentReferenceTypes.Add(type, null);
+                        }
+                    }
                 }
             }
         }
@@ -632,7 +642,7 @@ namespace SiliconStudio.Assets
                 RegisteredAssemblies.Remove(assembly);
 
 
-                foreach (var typeToRemove in RegisteredDefaultAssetExtension.Keys.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredDefaultAssetExtension.Keys.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredDefaultAssetExtension.Remove(typeToRemove);
                 }
@@ -642,49 +652,44 @@ namespace SiliconStudio.Assets
                     AssetTypes.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredPackageSessionAnalysisTypes.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredPackageSessionAnalysisTypes.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredPackageSessionAnalysisTypes.Remove(typeToRemove);
                 }
 
-                foreach (var instance in RegisteredImportersInternal.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredImportersInternal.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredImportersInternal.Remove(instance);
                 }
 
-                foreach (var typeToRemove in RegisteredFormatVersions.Keys.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredFormatVersions.Keys.Where(type => type.Assembly == assembly).ToList())
                 {
                     RegisteredFormatVersions.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.ToList().Where(type => type.Key.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.Where(type => type.Key.Assembly == assembly).ToList())
                 {
                     RegisteredAssetUpgraders.Remove(typeToRemove);
                 }
 
-                foreach (var extensionToRemove in RegisteredAssetFileExtensions.ToList().Where(keyValue => keyValue.Value.Assembly == assembly).Select(keyValue => keyValue.Key))
+                foreach (var extensionToRemove in RegisteredAssetFileExtensions.Where(keyValue => keyValue.Value.Assembly == assembly).Select(keyValue => keyValue.Key).ToList())
                 {
                     RegisteredAssetFileExtensions.Remove(extensionToRemove);
                 }
 
-                foreach (var upgraderToRemove in RegisteredPackageUpgraders.ToList().Where(keyValue => keyValue.Value.GetType().Assembly == assembly).Select(keyValue => keyValue.Key))
+                foreach (var upgraderToRemove in RegisteredPackageUpgraders.Where(keyValue => keyValue.Value.GetType().Assembly == assembly).Select(keyValue => keyValue.Key).ToList())
                 {
                     RegisteredPackageUpgraders.Remove(upgraderToRemove);
                 }
 
-                foreach (var instance in RegisteredSerializerFactories.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredSerializerFactories.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredSerializerFactories.Remove(instance);
                 }
 
-                foreach (var instance in RegisteredDataVisitNodes.ToList().Where(instance => instance.GetType().Assembly == assembly))
+                foreach (var instance in RegisteredDataVisitNodes.Where(instance => instance.GetType().Assembly == assembly).ToList())
                 {
                     RegisteredDataVisitNodes.Remove(instance);
-                }
-
-                foreach (var instance in RegisteredDataVisitNodeBuilders.ToList().Where(instance => instance.GetType().Assembly == assembly))
-                {
-                    RegisteredDataVisitNodeBuilders.Remove(instance);
                 }
             }
         }

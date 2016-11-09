@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// A Yaml serializer for <see cref="Guid"/>
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class GuidSerializer : AssetScalarSerializerBase
     {
         static GuidSerializer()

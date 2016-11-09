@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataSerializer(typeof(Serializer))]
     [DataContract(Inherited = true)]
-    public abstract class EntityComponent
+    public abstract class EntityComponent : IIdentifiable
     {
         /// <summary>
         /// Gets or sets the owner entity.
@@ -22,6 +22,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         [DataMemberIgnore]
         public Entity Entity { get; internal set; }
+
+        /// <summary>
+        /// The unique identifier of this component.
+        /// </summary>
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.

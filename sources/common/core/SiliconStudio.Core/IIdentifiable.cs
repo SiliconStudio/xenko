@@ -14,12 +14,4 @@ namespace SiliconStudio.Core
         /// </summary>
         Guid Id { get; set; }
     }
-
-    /// <summary>
-    /// Tag a class that should not have an attached unique identifier.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class NonIdentifiableAttribute : Attribute
-    {
-    }
 }

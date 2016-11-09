@@ -286,7 +286,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 VSProjectHelper.Reset();
 
                 // Reset cache hold by YamlSerializer
-                YamlSerializer.ResetCache();
+                YamlSerializer.Default.ResetCache();
             }
             return (int)exitCode;
         }

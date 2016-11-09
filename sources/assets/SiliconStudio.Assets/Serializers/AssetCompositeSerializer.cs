@@ -7,7 +7,6 @@ using System.Threading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets.Serializers
@@ -15,12 +14,13 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// A serializer for the <see cref="AssetComposite"/> type.
     /// </summary>
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class AssetCompositeSerializer : ObjectSerializer, IDataCustomVisitor
     {
         /// <summary>
         /// Context containing information about asset parts being serialized.
         /// </summary>
-        private readonly ThreadLocal<AssetCompositeVisitorContext> localContext = new ThreadLocal<AssetCompositeVisitorContext>();
+        private static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
@@ -45,21 +45,10 @@ namespace SiliconStudio.Assets.Serializers
         /// <inheritdoc/>
         public override object ReadYaml(ref ObjectContext objectContext)
         {
-            var type = objectContext.Descriptor.Type;
             var contextToken = PrepareLocalContext(objectContext.Descriptor.Type);
-
             try
             {
-                var result = base.ReadYaml(ref objectContext);
-
-                if (typeof(AssetComposite).IsAssignableFrom(type))
-                {
-                    // Let's fixup part references after serialization
-                    var assetComposite = (AssetComposite)objectContext.Instance;
-                    assetComposite.FixupPartReferences();
-                }
-
-                return result;
+                return base.ReadYaml(ref objectContext);
             }
             finally
             {
@@ -70,9 +59,9 @@ namespace SiliconStudio.Assets.Serializers
         /// <inheritdoc/>
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
-            if (localContext.Value.SerializeAsReference)
+            if (LocalContext.Value.SerializeAsReference)
             {
-                var attribute = localContext.Value.EnteredTypes.Peek();
+                var attribute = LocalContext.Value.EnteredTypes.Peek();
                 var referenceType = attribute.ReferenceType;
                 var reference = (IAssetPartReference)Activator.CreateInstance(referenceType);
 
@@ -107,7 +96,7 @@ namespace SiliconStudio.Assets.Serializers
         /// <inheritdoc/>
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            if (localContext.Value.SerializeAsReference)
+            if (LocalContext.Value.SerializeAsReference)
             {
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
@@ -133,12 +122,12 @@ namespace SiliconStudio.Assets.Serializers
                 return true;
             }
             // Accepts any part of an AssetComposite, they might be serialized out of a parent asset.
-            if (localContext.Value == null && AssetRegistry.IsAssetPartType(type))
+            if (LocalContext.Value == null && AssetRegistry.IsAssetPartType(type))
             {
                 return true;
             }
             // Accepts any type known as asset part type for the current asset type.
-            if (localContext.Value != null && localContext.Value.References.Any(x => x.ReferenceableType.IsAssignableFrom(type)))
+            if (LocalContext.Value != null && LocalContext.Value.References.Any(x => x.ReferenceableType.IsAssignableFrom(type)))
             {
                 return true;
             }
@@ -150,7 +139,7 @@ namespace SiliconStudio.Assets.Serializers
             var contextToken = PrepareLocalContext(context.Descriptor.Type);
             try
             {
-                context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
+                context.Visitor.VisitObject(context.Instance, context.Descriptor, !LocalContext.Value.SerializeAsReference);
             }
             finally
             {
@@ -166,40 +155,40 @@ namespace SiliconStudio.Assets.Serializers
             public AssetCompositeVisitorContext OldContext;
         }
 
-        private LocalContextToken PrepareLocalContext(Type type)
+        private static LocalContextToken PrepareLocalContext(Type type)
         {
             var token = new LocalContextToken
             {
                 Type = type,
-                OldContext = localContext.Value,
+                OldContext = LocalContext.Value,
                 ClearLocalContext = false
             };
 
             if (typeof(AssetComposite).IsAssignableFrom(token.Type))
             {
                 // Entering the asset root node, create the local context.
-                localContext.Value = new AssetCompositeVisitorContext(token.Type);
+                LocalContext.Value = new AssetCompositeVisitorContext(token.Type);
                 token.ClearLocalContext = true;
             }
-            else if (localContext.Value == null && AssetRegistry.IsAssetPartType(token.Type))
+            else if (LocalContext.Value == null && AssetRegistry.IsAssetPartType(token.Type))
             {
                 var attributes = AssetRegistry.GetPartReferenceAttributes(token.Type);
-                localContext.Value = new AssetCompositeVisitorContext(attributes);
+                LocalContext.Value = new AssetCompositeVisitorContext(attributes);
                 token.ClearLocalContext = true;
             }
 
-            token.RemoveLastEnteredType = localContext.Value?.EnterNode(token.Type) ?? false;
+            token.RemoveLastEnteredType = LocalContext.Value?.EnterNode(token.Type) ?? false;
             return token;
         }
 
-        private void CleanLocalContext(LocalContextToken token)
+        private static void CleanLocalContext(LocalContextToken token)
         {
-            localContext.Value?.LeaveNode(token.Type, token.RemoveLastEnteredType);
+            LocalContext.Value?.LeaveNode(token.Type, token.RemoveLastEnteredType);
 
             if (token.ClearLocalContext)
             {
                 // Exiting the asset root node, clear the local context.
-                localContext.Value = token.OldContext;
+                LocalContext.Value = token.OldContext;
             }
         }
     }

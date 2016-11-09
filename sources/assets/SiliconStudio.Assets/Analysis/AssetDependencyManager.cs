@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -102,6 +102,32 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
             return dependencies;
+        }
+
+        /// <summary>
+        /// Finds the assets the specified asset id inherits from (this is a direct inheritance, not indirect)..
+        /// </summary>
+        /// <param name="assetId">The asset identifier.</param>
+        /// <param name="searchOptions">The types of inheritance to search for</param>
+        /// <returns>A list of asset the specified asset id is inheriting from.</returns>
+        public List<AssetItem> FindAssetInheritances(Guid assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
+        {
+            var list = new List<AssetItem>();
+            lock (Initialize())
+            {
+                ContentLinkType searchType = 0;
+                if ((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
+                    searchType |= ContentLinkType.Inheritance;
+                if ((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
+                    searchType |= ContentLinkType.CompositionInheritance;
+
+                AssetDependencies dependencies;
+                if (Dependencies.TryGetValue(assetId, out dependencies))
+                {
+                    list.AddRange(dependencies.LinksOut.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
+                }
+            }
+            return list;
         }
 
         /// <summary>
@@ -480,7 +506,7 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
+                    : new AssetItem(assetItem.Location, AssetCloner.Clone(assetItem.Asset), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
                             SourceProject = assetItem.SourceProject
@@ -563,7 +589,7 @@ namespace SiliconStudio.Assets.Analysis
                 // Remove previous part assets registered
                 foreach (var part in dependencies.Parts)
                 {
-                    Dependencies.Remove(part.Id);
+                    Dependencies.Remove(part.PartId);
                 }
 
                 // Remove previous missing dependencies
@@ -582,7 +608,7 @@ namespace SiliconStudio.Assets.Analysis
                 // Add part assets
                 foreach (var part in dependencies.Parts)
                 {
-                    Dependencies[part.Id] = dependencies;
+                    Dependencies[part.PartId] = dependencies;
                 }
 
                 // Add [In] dependencies to new children
@@ -670,7 +696,7 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset);
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed
@@ -837,10 +863,11 @@ namespace SiliconStudio.Assets.Analysis
                 Visit(item.Asset);
 
                 // composition inheritances
-                if (item.Asset.BaseParts != null)
+                var assetComposite = item.Asset as IAssetComposite;
+                if (assetComposite != null)
                 {
-                    foreach (var compositionBase in item.Asset.BaseParts)
-                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
+                    foreach (var compositionBase in assetComposite.CollectParts().Select(x => x.Base).NotNull())
+                        dependencies.AddBrokenLinkOut(compositionBase.BasePartAsset, ContentLinkType.CompositionInheritance);
                 }
 
                 return dependencies.BrokenLinksOut;
@@ -859,13 +886,7 @@ namespace SiliconStudio.Assets.Analysis
 
                 if (reference != null)
                 {
-                    var isBase = reference is AssetBase;
-
-                    // Don't record base import
-                    if (isBase && ((AssetBase)reference).IsRootImport)
-                        return;
-
-                    dependencies.AddBrokenLinkOut(reference, (isBase ? ContentLinkType.Inheritance : 0) | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut(reference, ContentLinkType.Reference);
                 }
                 else
                 {
@@ -875,9 +896,9 @@ namespace SiliconStudio.Assets.Analysis
 
             public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
             {
-                // Don't visit base parts as they are visited at the top level.
-                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && member.Name == nameof(Asset.Archetype) && value != null)
                 {
+                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Inheritance | ContentLinkType.Reference);
                     return;
                 }
 

@@ -16,15 +16,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.4-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.9.0-alpha01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -49,12 +52,6 @@ namespace SiliconStudio.Xenko.Assets
                 var spritesGroups = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".pdxsprite");
                 RenameAndChangeTag(assetFiles, uiImageGroups, "!UIImageGroup");
                 RenameAndChangeTag(assetFiles, spritesGroups, "!SpriteGroup");
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha01"))
-            {
-                // Create GameSettingsAsset
-                GameSettingsAsset.UpgraderVersion130.Upgrade(session, log, dependentPackage, dependency, dependencyPackage, assetFiles);
             }
 
             if (dependency.Version.MinVersion < new PackageVersion("1.3.0-alpha02"))
@@ -150,12 +147,12 @@ namespace SiliconStudio.Xenko.Assets
                         var model = components["ModelComponent.Key"]?.Model;
                         if (animationComponent != null && model != null)
                         {
-                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(model);
+                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
                             var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
 
                             foreach (var animation in animationComponent.Animations)
                             {
-                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(animation.Value);
+                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
                                 var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
 
                                 if (modelAsset != null && animationAsset != null)
@@ -207,7 +204,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -221,15 +218,15 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference<Asset>(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
                 }
 
                 // Remove Nodes from models
                 foreach (var modelAsset in modelAssets)
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode[Asset.BaseProperty].Asset.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
                 }
 
                 // Save back
@@ -255,6 +252,9 @@ namespace SiliconStudio.Xenko.Assets
             {
                 foreach (var assetFile in assetFiles)
                 {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -350,7 +350,125 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                foreach (var assetFile in assetFiles)
+                {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        try
+                        {
+                            if (assetYaml.DynamicRootNode["~Base"] != null)
+                            {
+                                var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
+                                if (location != "--import--")
+                                {
+                                    var id = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Asset.Id.Node).Value;
+                                    var assetUrl = $"{id}:{location}";
+                                    assetYaml.DynamicRootNode["Archetype"] = assetUrl;
+                                }
+                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
+                            }
+                        }
+                        catch
+                            (Exception e)
+                        {
+                            e.Ignore();
+                        }
+                    }
+                }
+            }
+
+            //if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
+            //{
+            //    var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");
+            //    foreach (var assetFile in files.Select(x => x.AsYamlAsset()).NotNull().ToList())
+            //    {
+            //        using (var assetYaml = assetFile)
+            //        {
+            //            //UpdateCollectionNodes(assetYaml.RootNode);
+            //        }
+            //    }
+            //}
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
+            {
+                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkpkg");
+                foreach (var assetFile in files)
+                {
+                    if (!IsYamlAsset(assetFile))
+                        continue;
+
+                    using (var assetYaml = assetFile.AsYamlAsset())
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
+                        {
+                            profile["Properties"] = DynamicYamlEmpty.Default;
+                        }
+                    }
+                }
+            }
+
             return true;
+        }
+
+        private static YamlNode UpdateCollectionNodes(YamlNode node)
+        {
+            var mapping = node as YamlMappingNode;
+            if (mapping != null)
+            {
+                foreach (var child in mapping.ToList())
+                {
+                    var newNode = UpdateCollectionNodes(child.Value);
+                    if (newNode != child.Value)
+                        mapping.Children[child.Key] = newNode;
+                }
+            }
+
+            var sequence = node as YamlSequenceNode;
+            if (sequence != null)
+            {
+                var idMapping = new YamlMappingNode();
+
+                foreach (var child in sequence)
+                {
+                    UpdateCollectionNodes(child);
+                    var mappingChild = child as YamlMappingNode;
+                    if (mappingChild != null)
+                    {
+                        YamlNode idNode;
+                        var idKey = mappingChild.Children.FirstOrDefault(x => (x.Key as YamlScalarNode)?.Value == "~Id").Key;
+                        if (idKey != null)
+                        {
+                            idNode = mappingChild.Children[idKey];
+                            mappingChild.Children.Remove(idKey);
+                        }
+                        else
+                        {
+                            idNode = new YamlScalarNode(Guid.NewGuid().ToString());
+                        }
+                        idMapping.Children.Add(idNode, child);
+                    }
+                    else
+                    {
+                        var idNode = new YamlScalarNode(Guid.NewGuid().ToString());
+                        idMapping.Children.Add(idNode, child);
+                    }
+                }
+
+                return idMapping;
+            }
+
+            return node;
         }
 
         private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
@@ -374,7 +492,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var assetItem in dependentPackage.Assets)
                 {
                     if (!AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
-                        dependentPackage.RootAssets.Add(new AssetReference<Asset>(assetItem.Id, assetItem.Location));
+                        dependentPackage.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
                 }
             }
 
@@ -481,6 +599,15 @@ namespace SiliconStudio.Xenko.Assets
             Task.WaitAll(tasks);
         }
 
+        private bool IsYamlAsset(PackageLoadingAssetFile assetFile)
+        {
+            // Determine if asset was Yaml or not
+            var assetFileExtension = Path.GetExtension(assetFile.FilePath);
+            assetFileExtension = assetFileExtension?.ToLowerInvariant();
+
+            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
+            return serializer is YamlAssetSerializer;
+        }
         /// <summary>
         /// Base interface for code upgrading
         /// </summary>

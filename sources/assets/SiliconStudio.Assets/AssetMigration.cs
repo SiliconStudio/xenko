@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets
             assetFileExtension = assetFileExtension.ToLowerInvariant();
 
             var serializer = AssetSerializer.FindSerializer(assetFileExtension);
-            if (!(serializer is AssetYamlSerializer))
+            if (!(serializer is YamlAssetSerializer))
                 return false;
 
             // We've got a Yaml asset, let's get expected and serialized versions
@@ -51,8 +51,7 @@ namespace SiliconStudio.Assets
                 yamlEventReader.Expect<DocumentStart>();
                 var mappingStart = yamlEventReader.Expect<MappingStart>();
 
-                var yamlSerializerSettings = YamlSerializer.GetSerializerSettings();
-                var tagTypeRegistry = yamlSerializerSettings.TagTypeRegistry;
+                var tagTypeRegistry = AssetYamlSerializer.Default.GetSerializerSettings().TagTypeRegistry;
                 bool typeAliased;
                 assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);
 
@@ -81,7 +80,7 @@ namespace SiliconStudio.Assets
                                 yamlAsset.DynamicRootNode.RemoveChild(nameof(Asset.SerializedVersion));
                                 AssetUpgraderBase.SetSerializableVersion(yamlAsset.DynamicRootNode, dependencyName, serializedVersion);
 
-                                var baseBranch = yamlAsset.DynamicRootNode[Asset.BaseProperty];
+                                var baseBranch = yamlAsset.DynamicRootNode["~Base"];
                                 if (baseBranch != null)
                                 {
                                     var baseAsset = baseBranch["Asset"];

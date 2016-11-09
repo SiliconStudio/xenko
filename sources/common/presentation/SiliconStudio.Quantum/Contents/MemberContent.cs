@@ -138,7 +138,7 @@ namespace SiliconStudio.Quantum.Contents
                 else
                 {
                     collectionDescriptor.Remove(value, item);
-                }               
+                }
             }
             else if (dictionaryDescriptor != null)
             {

@@ -7,7 +7,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Tests
@@ -18,17 +17,17 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestSimple()
         {
-            var inputs = new AssetItemCollection();
+            var inputs = new List<AssetItem>();
 
             var asset = new AssetObjectTest();
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference =  new AssetReference<AssetObjectTest>(asset.Id, "bad")};
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference =  new AssetReference(asset.Id, "bad")};
                 inputs.Add(new AssetItem("0", newAsset));
             }
 
             // Tries to use existing ids
-            var outputs = new AssetItemCollection();
+            var outputs = new List<AssetItem>();
             AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true);
 
             // Make sure we are generating exactly the same number of elements
@@ -60,17 +59,17 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestSimpleNewGuids()
         {
-            var inputs = new AssetItemCollection();
+            var inputs = new List<AssetItem>();
 
             var asset = new AssetObjectTest();
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference<AssetObjectTest>(asset.Id, "bad") };
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference(asset.Id, "bad") };
                 inputs.Add(new AssetItem("0", newAsset));
             }
 
             // Force to use new ids
-            var outputs = new AssetItemCollection();
+            var outputs = new List<AssetItem>();
             AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true);
 
             // Make sure we are generating exactly the same number of elements
@@ -102,7 +101,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestWithPackage()
         {
-            var inputs = new AssetItemCollection();
+            var inputs = new List<AssetItem>();
 
             var asset = new AssetObjectTest();
 
@@ -111,12 +110,12 @@ namespace SiliconStudio.Assets.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference<AssetObjectTest>(asset.Id, "bad") };
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference(asset.Id, "bad") };
                 inputs.Add(new AssetItem("0", newAsset));
             }
 
             // Tries to use existing ids
-            var outputs = new AssetItemCollection();
+            var outputs = new List<AssetItem>();
             AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true);
 
             // Make sure we are generating exactly the same number of elements

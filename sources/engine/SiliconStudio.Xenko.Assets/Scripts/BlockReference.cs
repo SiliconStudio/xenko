@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [NonIdentifiable]
     public sealed class BlockReference : IAssetPartReference
     {
         /// <summary>
@@ -23,13 +22,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public void FillFromPart(object assetPart)
         {
             var block = (Block)assetPart;
-            Id = IdentifiableHelper.GetId(block);
+            Id = block.Id;
         }
 
         public object GenerateProxyPart(Type partType)
         {
             var block = FakeBlock.Create();
-            IdentifiableHelper.SetId(block, Id);
+            block.Id = Id;
             return block;
         }
 

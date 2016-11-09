@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
@@ -115,24 +115,16 @@ namespace SiliconStudio.Assets.Analysis
                     }
                 }
 
-                // Fix base if there are any
-                if (item.Asset.Base != null && idRemap.TryGetValue(item.Asset.Base.Id, out remap) && IsNewReference(remap, item.Asset.Base))
-                {
-                    item.Asset.Base.Asset.Id = remap.Item1;
-                    item.Asset.Base = new AssetBase(remap.Item2, item.Asset.Base.Asset);
-                    item.IsDirty = true;
-                }
-
                 // Fix base parts if there are any remap for them as well
-                if (item.Asset.BaseParts != null)
+                var assetComposite = item.Asset as IAssetComposite;
+                if (assetComposite != null)
                 {
-                    for (int i = 0; i < item.Asset.BaseParts.Count; i++)
+                    foreach (var basePart in assetComposite.CollectParts())
                     {
-                        var basePart = item.Asset.BaseParts[i];
-                        if (idRemap.TryGetValue(basePart.Id, out remap) && IsNewReference(remap, basePart))
+                        if (basePart.Base != null && idRemap.TryGetValue(basePart.Base.BasePartAsset.Id, out remap) && IsNewReference(remap, basePart.Base.BasePartAsset))
                         {
-                            basePart.Asset.Id = remap.Item1;
-                            item.Asset.BaseParts[i] = new AssetBase(remap.Item2, basePart.Asset);
+                            var newAssetReference = new AssetReference(remap.Item1, remap.Item2);
+                            basePart.UpdateBase(new BasePart(newAssetReference, basePart.Base.BasePartId, basePart.Base.InstanceId));
                             item.IsDirty = true;
                         }
                     }
@@ -159,7 +151,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, Dictionary<Guid, Tuple<Guid, UFile>> idRemap)
+        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, IReadOnlyDictionary<Guid, Tuple<Guid, UFile>> idRemap)
         {
             foreach (var rootAsset in rootAssetCollection.ToArray())
             {
@@ -168,7 +160,7 @@ namespace SiliconStudio.Assets.Analysis
 
                 if (idRemap.TryGetValue(id, out remap) && IsNewReference(remap, rootAsset))
                 {
-                    var newRootAsset = new AssetReference<Asset>(remap.Item1, remap.Item2);
+                    var newRootAsset = new AssetReference(remap.Item1, remap.Item2);
                     rootAssetCollection.Remove(rootAsset.Id);
                     rootAssetCollection.Add(newRootAsset);
                 }

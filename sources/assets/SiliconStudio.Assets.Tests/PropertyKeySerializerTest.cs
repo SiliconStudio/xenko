@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Tests
     /// We are copying the PropertyKey serializer from Xenko.Assets assembly to here in order 
     /// to validate our tests.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class PropertyKeySerializerTest : AssetScalarSerializerBase
     {
         public override bool CanVisit(Type type)

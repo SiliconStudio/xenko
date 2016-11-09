@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
@@ -13,7 +11,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class ContentReferenceSerializer : AssetScalarSerializerBase
     {
         public static readonly ContentReferenceSerializer Default = new ContentReferenceSerializer();
@@ -27,24 +25,12 @@ namespace SiliconStudio.Assets.Serializers
         {
             Guid guid;
             UFile location;
-            Guid referenceId;
-            if (!AssetReference.TryParse(fromScalar.Value, out referenceId, out guid, out location))
+            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
             var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
-
-            // If the referenceId is empty, force its creation, else attach it to the reference
-            if (referenceId == Guid.Empty)
-            {
-
-                IdentifiableHelper.GetId(instance);
-            }
-            else
-            {
-                IdentifiableHelper.SetId(instance, referenceId);
-            }
             return instance;
         }
         public override string ConvertTo(ref ObjectContext objectContext)
@@ -53,8 +39,7 @@ namespace SiliconStudio.Assets.Serializers
             if (attachedReference == null)
                 throw new YamlException($"Unable to extract asset reference from object [{objectContext.Instance}]");
 
-            var referenceId = IdentifiableHelper.GetId(objectContext.Instance);
-            return $"{referenceId}/{attachedReference.Id}:{attachedReference.Url}";
+            return $"{attachedReference.Id}:{attachedReference.Url}";
         }
     }
 }

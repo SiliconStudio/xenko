@@ -1006,7 +1006,7 @@ namespace SiliconStudio.Assets
                 package.LoadAssets(log, newLoadParameters);
 
                 // Validate assets from package
-                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds);
+                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, log);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
@@ -1167,7 +1167,6 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
-                AssetTemplatingMergeModifiedAssets = true
             };
         }
     }

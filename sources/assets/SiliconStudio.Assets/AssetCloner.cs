@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
 
         private readonly List<object> invariantObjects;
         private readonly object[] objectReferences;
-
+        private Dictionary<object, object> clonedObjectMapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
 
@@ -42,6 +42,7 @@ namespace SiliconStudio.Assets
             this.flags = flags;
             invariantObjects = null;
             objectReferences = null;
+            clonedObjectMapping = new Dictionary<object, object>();
 
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
@@ -125,70 +126,6 @@ namespace SiliconStudio.Assets
                 //stream.Position = savedPosition;
 
                 var writer = new BinarySerializationWriter(stream);
-                Dictionary<string, OverrideType> overrides = null;
-                List<string> orderedNames = null;
-                foreach (var objectRef in objectReferences)
-                {
-                    //// If the object is actually a reference to another asset, we can skip it as their won't be any overrides
-                    //if (AttachedReferenceManager.GetAttachedReference(objectRef) != null)
-                    //{
-                    //    continue;
-                    //}
-
-                    // Else gets the id if there are any (including shadows that are not part of the standard serialization)
-                    var shadowObject = ShadowObject.GetOrCreate(objectRef);
-                    if (shadowObject.IsIdentifiable)
-                    {
-                        // Get the shadow id (may be a non-shadow, so we may duplicate it in the stream (e.g Entity)
-                        // but it should not be a big deal
-                        var id = shadowObject.GetId(objectRef);
-                        writer.Write(id);
-                    }
-
-                    // Dump all members with overrides informations
-                    foreach (var item in shadowObject)
-                    {
-                        if (item.Key.Item2 == Override.OverrideKey)
-                        {
-                            // Use the member name to ensure a stable id
-                            var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
-                            // Only creates the overrides dictionary if needed
-                            if (overrides == null)
-                            {
-                                overrides = new Dictionary<string, OverrideType>();
-                            }
-                            overrides.Add(memberName, (OverrideType)item.Value);
-                        }
-                    }
-
-                    // Write any overrides information to the stream
-                    if (overrides != null)
-                    {
-                        // Collect names and order them by alphabetical order in order to make sure that we will get a stable id 
-                        // (Dictionary doesn't ensure order)
-                        if (orderedNames == null)
-                        {
-                            orderedNames = new List<string>();
-                        }
-                        orderedNames.Clear();
-                        foreach (var entry in overrides)
-                        {
-                            orderedNames.Add(entry.Key);
-                        }
-                        orderedNames.Sort();
-
-                        // Write all overrides for the current object reference
-                        foreach (var name in orderedNames)
-                        {
-                            writer.Write(name);
-                            // Write the override as an int
-                            writer.Write((int)overrides[name]);
-                        }
-
-                        // Clear overrides for next entry
-                        overrides.Clear();
-                    }
-                }
 
                 // Write invariant objects
                 foreach (var invarialtObject in invariantObjects)
@@ -218,9 +155,18 @@ namespace SiliconStudio.Assets
                 //}
 
                 ShadowObject.Copy(previousObject, newObject);
-                if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
+
+                // NOTE: we don't use Add because of strings that might be duplicated
+                clonedObjectMapping[previousObject] = newObject;
+
+                if ((flags & AssetClonerFlags.RemoveItemIds) != AssetClonerFlags.RemoveItemIds)
                 {
-                    Override.RemoveFrom(newObject);
+                    CollectionItemIdentifiers sourceIds;
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(previousObject, out sourceIds))
+                    {
+                        var newIds = CollectionItemIdHelper.GetCollectionItemIds(newObject);
+                        sourceIds.CloneInto(newIds, clonedObjectMapping);
+                    }
                 }
             }
         }
@@ -239,18 +185,20 @@ namespace SiliconStudio.Assets
             }
             var cloner = new AssetCloner(asset, flags);
             var newObject = cloner.Clone();
-
-            // By default, a clone doesn't copy the base/baseParts for Asset
-            if ((flags & AssetClonerFlags.KeepBases) == 0)
-            {
-                var newAsset = newObject as Asset;
-                if (newAsset != null)
-                {
-                    newAsset.Base = null;
-                    newAsset.BaseParts = null;
-                }
-            }
             return newObject;
+        }
+
+        /// <summary>
+        /// Clones the specified asset using asset serialization.
+        /// </summary>
+        /// <typeparam name="T">The type of the asset.</typeparam>
+        /// <param name="asset">The asset.</param>
+        /// <param name="flags">Flags used to control the cloning process</param>
+        /// <returns>A clone of the asset.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Clone<T>(T asset, AssetClonerFlags flags = AssetClonerFlags.None)
+        {
+            return (T)Clone((object)asset, flags);
         }
 
         /// <summary>

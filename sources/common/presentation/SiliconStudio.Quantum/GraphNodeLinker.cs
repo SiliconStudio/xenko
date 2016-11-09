@@ -41,7 +41,7 @@ namespace SiliconStudio.Quantum
                 base.VisitNode(node, currentPath);
             }
 
-            public override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
             {
                 IGraphNode targetNodeParent;
                 if (VisitedLinks.TryGetValue(node, out targetNodeParent))

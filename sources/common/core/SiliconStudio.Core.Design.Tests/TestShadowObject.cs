@@ -27,27 +27,28 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual(shadowObject, shadowObject2);
         }
 
-        [Test]
-        public void TestIdentifierHelper()
-        {
-            // Has IdentifierHelper is using ShadowObject, we will test it here
-            ShadowObject.Enable = true;
-            var obj = new object();
+        // IdentifierHelper is now obsolete
+        //[Test]
+        //public void TestIdentifierHelper()
+        //{
+        //    // Has IdentifierHelper is using ShadowObject, we will test it here
+        //    ShadowObject.Enable = true;
+        //    var obj = new object();
 
-            var id = IdentifiableHelper.GetId(obj);
-            Assert.AreNotEqual(Guid.Empty, id);
+        //    var id = IdentifiableHelper.GetId(obj);
+        //    Assert.AreNotEqual(Guid.Empty, id);
 
-            var id1 = IdentifiableHelper.GetId(obj);
-            Assert.AreEqual(id, id1);
+        //    var id1 = IdentifiableHelper.GetId(obj);
+        //    Assert.AreEqual(id, id1);
 
-            // We should not get an id for a collection
-            var idCollection = IdentifiableHelper.GetId(new List<object>());
-            Assert.AreEqual(Guid.Empty, idCollection);
+        //    // We should not get an id for a collection
+        //    var idCollection = IdentifiableHelper.GetId(new List<object>());
+        //    Assert.AreEqual(Guid.Empty, idCollection);
 
-            // We should not get an id for a dictionary
-            var idDict = IdentifiableHelper.GetId(new MyDictionary());
-            Assert.AreEqual(Guid.Empty, idDict);
-        }
+        //    // We should not get an id for a dictionary
+        //    var idDict = IdentifiableHelper.GetId(new MyDictionary());
+        //    Assert.AreEqual(Guid.Empty, idDict);
+        //}
 
         private class MyDictionary : Dictionary<object, object>
         {

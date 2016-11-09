@@ -1,7 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Linq;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum
 {
@@ -36,6 +38,7 @@ namespace SiliconStudio.Quantum
         /// <returns>The target node of the given <see cref="IGraphNode"/>.</returns>
         public static IGraphNode GetTarget(this IGraphNode graphNode, Index index)
         {
+            if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
             return graphNode.Content.Reference.AsEnumerable[index].TargetNode;
         }
     }

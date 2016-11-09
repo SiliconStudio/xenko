@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -9,11 +10,9 @@ using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering;
 
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
-
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class ParameterKeyDictionarySerializer : DictionarySerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
@@ -31,22 +30,22 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             objectContext.Settings.SortKeyForMapping = savedSettings;
         }
 
-        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
             var propertyKey = (PropertyKey)keyValue.Key;
-            objectContext.SerializerContext.WriteYaml(propertyKey, types.Key);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
-            objectContext.SerializerContext.WriteYaml(keyValue.Value, propertyKey.PropertyType);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Value, propertyKey.PropertyType);
         }
 
-        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
             // Read PropertyKey
-            var keyResult = (PropertyKey)objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
+            var keyResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
-            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyResult.PropertyType);
+            var valueResult = objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyResult.PropertyType, keyResult);
 
             return new KeyValuePair<object, object>(keyResult, valueResult);
         }

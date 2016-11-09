@@ -148,7 +148,7 @@ namespace SiliconStudio.Assets.Tests
 
             Console.WriteLine(File.ReadAllText(outputFilePath).Trim());
 
-            var upgradedAsset = AssetSerializer.Load<MyUpgradedAsset>(outputFilePath);
+            var upgradedAsset = AssetSerializer.Load<MyUpgradedAsset>(outputFilePath).Asset;
             AssertUpgrade(upgradedAsset);
         }
 

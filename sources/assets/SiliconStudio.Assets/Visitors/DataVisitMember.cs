@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Visitors
         /// memberDescriptor
         /// </exception>
         public DataVisitMember(object value, IMemberDescriptor memberDescriptor)
-            : base(value, memberDescriptor.TypeDescriptor)
+            : base(value, (ITypeDescriptor)memberDescriptor.TypeDescriptor)
         {
             if (memberDescriptor == null) throw new ArgumentNullException("memberDescriptor");
             this.memberDescriptor = memberDescriptor;

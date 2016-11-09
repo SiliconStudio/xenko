@@ -122,7 +122,7 @@ namespace SiliconStudio.Assets
                 // Save asset back to AssetContent
                 using (var memoryStream = new MemoryStream())
                 {
-                    WriteTo(memoryStream);
+                    WriteTo(memoryStream, AssetYamlSerializer.Default.GetSerializerSettings());
                     packageLoadingAssetFile.AssetContent = memoryStream.ToArray();
                 }
             }

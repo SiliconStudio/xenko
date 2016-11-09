@@ -24,8 +24,6 @@ namespace SiliconStudio.Assets.Visitors
         private DataVisitNodeBuilder(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance)
             : base(typeDescriptorFactory)
         {
-            CustomVisitors.AddRange(AssetRegistry.GetDataVisitNodeBuilders());
-
             if (rootInstance == null) throw new ArgumentNullException(nameof(rootInstance));
             RootInstance = rootInstance;
             var objectDescriptor = typeDescriptorFactory.Find(rootInstance.GetType()) as ObjectDescriptor;
@@ -164,7 +162,7 @@ namespace SiliconStudio.Assets.Visitors
                 return true;
 
             // Skip some properties that are not using when visiting
-            return member.Name != SourceHashesHelper.MemberName && member.Name != Asset.BaseProperty && member.Name != Asset.BasePartsProperty && member.Name != "Id";
+            return member.Name != SourceHashesHelper.MemberName && member.Name != "Id";
         }
     }
 }

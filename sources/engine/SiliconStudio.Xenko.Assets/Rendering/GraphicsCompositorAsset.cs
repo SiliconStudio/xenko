@@ -49,27 +49,38 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
+        /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var renderStage in RenderStages)
-                yield return new AssetPart(renderStage.Id);
+                yield return new AssetPart(renderStage.Id, null, newBase => {});
         }
 
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
-        {
-        }
-
-        public override bool ContainsPart(Guid id)
+        /// <inheritdoc/>
+        public override IIdentifiable FindPart(Guid partId)
         {
             foreach (var renderStage in RenderStages)
             {
-                if (renderStage.Id == id)
+                if (renderStage.Id == partId)
+                    return renderStage;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public override bool ContainsPart(Guid partId)
+        {
+            foreach (var renderStage in RenderStages)
+            {
+                if (renderStage.Id == partId)
                     return true;
             }
 
             return false;
         }
 
+        /// <inheritdoc/>
         protected override object ResolvePartReference(object referencedObject)
         {
             var renderStageReference = referencedObject as RenderStage;

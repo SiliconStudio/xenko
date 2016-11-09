@@ -6,10 +6,10 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
-
     /// <summary>
     /// An asset item part of a <see cref="Package"/> accessible through <see cref="SiliconStudio.Assets.Package.Assets"/>.
     /// </summary>
@@ -133,12 +133,19 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Gets the collection of overridden members in this asset. It is filled on Load, and must be synchronized before Save.
+        /// </summary>
+        /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
+        [DataMemberIgnore]
+        public IDictionary<ObjectPath, OverrideType> Overrides { get; set; }
+
+        /// <summary>
         /// Converts this item to a reference.
         /// </summary>
         /// <returns>AssetReference.</returns>
         public AssetReference ToReference()
         {
-            return new AssetReference<Asset>(Id, Location);
+            return new AssetReference(Id, Location);
         }
 
         /// <summary>
@@ -169,12 +176,13 @@ namespace SiliconStudio.Assets
         {
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
-            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), keepPackage ? Package : null)
-                {
-                    isDirty = isDirty,
-                    SourceFolder = SourceFolder,
-                    SourceProject = SourceProject
-                };
+            var item = new AssetItem(newLocation ?? location, newAsset ?? AssetCloner.Clone(Asset), keepPackage ? Package : null)
+            {
+                isDirty = isDirty,
+                SourceFolder = SourceFolder,
+                SourceProject = SourceProject,
+                Overrides = Overrides != null ? new Dictionary<ObjectPath, OverrideType>(Overrides) : null
+            };
             return item;
         }
 
@@ -278,7 +286,7 @@ namespace SiliconStudio.Assets
         /// <returns>A new asset inheriting the values of this asset.</returns>
         public Asset CreateChildAsset()
         {
-            return Asset.CreateChildAsset(Location);
+            return Asset.CreateDerivedAsset(Location);
         }
 
         /// <summary>
@@ -288,12 +296,12 @@ namespace SiliconStudio.Assets
         /// <returns>The base item or null if not found.</returns>
         public AssetItem FindBase()
         {
-            if (Package == null || Package.Session == null || Asset.Base == null || Asset.Base.IsRootImport)
+            if (Package == null || Package.Session == null || Asset.Archetype == null)
             {
                 return null;
             }
             var session = Package.Session;
-            return session.FindAsset(Asset.Base.Id);
+            return session.FindAsset(Asset.Archetype.Id);
         }
 
         /// <summary>

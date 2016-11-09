@@ -70,16 +70,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var member in Properties)
-                yield return new AssetPart(member.Id, member.BaseId, member.BasePartInstanceId);
+                yield return new AssetPart(member.Id, member.Base, newBase => member.Base = newBase);
             foreach (var function in Methods)
             {
-                yield return new AssetPart(function.Id, function.BaseId, function.BasePartInstanceId);
+                yield return new AssetPart(function.Id, function.Base, newBase => function.Base = newBase);
                 foreach (var parmeter in function.Parameters)
-                    yield return new AssetPart(parmeter.Id, parmeter.BaseId, parmeter.BasePartInstanceId);
+                    yield return new AssetPart(parmeter.Id, parmeter.Base, newBase => parmeter.Base = newBase);
                 foreach (var block in function.Blocks)
-                    yield return new AssetPart(block.Id, block.BaseId, block.BasePartInstanceId);
+                    yield return new AssetPart(block.Id, block.Base, newBase => block.Base = newBase);
                 foreach (var link in function.Links)
-                    yield return new AssetPart(link.Id, link.BaseId, link.BasePartInstanceId);
+                    yield return new AssetPart(link.Id, link.Base, newBase => link.Base = newBase);
             }
         }
 
@@ -120,53 +120,40 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
         /// <inheritdoc/>
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        public override IIdentifiable FindPart(Guid id)
         {
-            foreach (var property in Properties)
+            foreach (var variable in Properties)
             {
-                if (property.Id == id)
-                {
-                    property.BaseId = baseId;
-                    property.BasePartInstanceId = basePartInstanceId;
-                    return;
-                }
+                if (variable.Id == id)
+                    return variable;
             }
 
-            foreach (var function in Methods)
+            foreach (var method in Methods)
             {
-                if (function.Id == id)
-                {
-                    function.BaseId = baseId;
-                    function.BasePartInstanceId = basePartInstanceId;
-                    return;
-                }
+                if (method.Id == id)
+                    return method;
 
-                foreach (var parameter in function.Parameters)
+                Block matchingBlock;
+                if (method.Blocks.TryGetValue(id, out matchingBlock))
+                    return matchingBlock;
+
+                foreach (var parameter in method.Parameters)
                 {
                     if (parameter.Id == id)
+                        return parameter;
+                }
+
+                foreach (var block in method.Blocks)
+                {
+                    foreach (var slot in block.Slots)
                     {
-                        parameter.BaseId = baseId;
-                        parameter.BasePartInstanceId = basePartInstanceId;
-                        return;
+                        if (slot.Id == id)
+                            return slot;
                     }
                 }
-
-                Block block;
-                if (function.Blocks.TryGetValue(id, out block))
-                {
-                    block.BaseId = baseId;
-                    block.BasePartInstanceId = basePartInstanceId;
-                    return;
-                }
-
-                Link link;
-                if (function.Links.TryGetValue(id, out link))
-                {
-                    link.BaseId = baseId;
-                    link.BasePartInstanceId = basePartInstanceId;
-                    return;
-                }
             }
+
+            return null;
         }
 
         /// <inheritdoc/>
