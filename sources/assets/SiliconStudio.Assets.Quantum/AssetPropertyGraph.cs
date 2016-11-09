@@ -28,8 +28,7 @@ namespace SiliconStudio.Assets.Quantum
                 throw new ArgumentNullException(nameof(assetItem));
             this.assetItem = assetItem;
             Container = container;
-            // TODO: GenerateMissingItemIds and FixupItemIds are fixup operations that we might want to do at package load, not here
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);            
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides();
@@ -81,6 +80,13 @@ namespace SiliconStudio.Assets.Quantum
         public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {
             return target;
+        }
+
+        public void PrepareSave(ILogger logger)
+        {
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
+            CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
+            UpdateOverridesForSerialization();
         }
 
         public void UpdateOverridesForSerialization()

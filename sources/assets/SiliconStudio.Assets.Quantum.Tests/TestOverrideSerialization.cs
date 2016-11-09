@@ -83,7 +83,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(isDerived, assetItem.Asset.Archetype != null);
             if (isDerived)
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
-            graph.UpdateOverridesForSerialization();
+            graph.PrepareSave(null);
             var stream = new MemoryStream();
             AssetSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);
             stream.Position = 0;
