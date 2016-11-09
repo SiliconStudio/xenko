@@ -87,6 +87,7 @@
     <Compile Include="InputEventPool.cs" />
     <Compile Include="iOS\InputSourceiOS.cs" />
     <Compile Include="iOS\PointeriOS.cs" />
+    <Compile Include="ITextInputDevice.cs" />
     <Compile Include="Mapping\ActionBinder.cs" />
     <Compile Include="Mapping\AxisAction.cs" />
     <Compile Include="Mapping\AxisActionBinder.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="NamedGyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
     <Compile Include="TextInputEvent.cs" />
+    <Compile Include="TextInputEventType.cs" />
     <Compile Include="UWP\GamePadUWP.cs" />
     <Compile Include="UWP\InputSourceUWP.cs" />
     <Compile Include="UWP\KeyboardUWP.cs" />

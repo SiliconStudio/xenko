@@ -14,7 +14,5 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="key">The key</param>
         /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
         bool IsKeyDown(Keys key);
-
-        // TODO: IME, text input (shift key combinations, etc.), smartphone keyboard visiblity toggle
     }
 }

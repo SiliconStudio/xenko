@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using WinFormsKeys = System.Windows.Forms.Keys;
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Input
             Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
 
             // Do not register keyboard devices when using raw input instead
-            keyboard = new KeyboardWinforms();
+            keyboard = new KeyboardWinforms(this, uiControl);
             keyboard.Priority = InputManager.UseRawInput ? -1 : 0; // Don't take priority over raw input
             RegisterDevice(keyboard);
 
@@ -114,9 +114,6 @@ namespace SiliconStudio.Xenko.Input
                     if (!InputManager.UseRawInput)
                         keyboard?.HandleKeyUp(virtualKey);
                     break;
-                case Win32Native.WM_CHAR:
-                    keyboard?.HandleChar((char)wParam);
-                    break;
                 case Win32Native.WM_DEVICECHANGE:
                     // Trigger scan on device changed
                     input.Scan();
@@ -126,7 +123,7 @@ namespace SiliconStudio.Xenko.Input
             var result = Win32Native.CallWindowProc(defaultWndProc, hWnd, msg, wParam, lParam);
             return result;
         }
-
+        
         private static WinFormsKeys GetCorrectExtendedKey(WinFormsKeys virtualKey, long lParam)
         {
             if (virtualKey == WinFormsKeys.ControlKey)
