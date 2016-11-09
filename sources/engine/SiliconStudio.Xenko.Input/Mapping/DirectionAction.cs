@@ -39,12 +39,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
             foreach (var gesture in Gestures.OfType<IDirectionGesture>())
             {
                 Vector2 v = gesture.Direction;
-
-                // Apply scalable properties
-                var scalable = gesture as ScalableInputGesture;
-                if (scalable != null)
-                    v = (scalable.Inverted ? -v : v) * scalable.Sensitivity;
-
                 float length = v.Length();
                 if (length > largest)
                 {

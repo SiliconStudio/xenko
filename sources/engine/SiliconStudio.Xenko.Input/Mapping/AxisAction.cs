@@ -37,12 +37,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
             foreach (var gesture in Gestures.OfType<IAxisGesture>())
             {
                 float v = gesture.Axis;
-
-                // Apply scalable properties
-                var scalable = gesture as ScalableInputGesture;
-                if (scalable != null)
-                    v = (scalable.Inverted ? -v : v) * scalable.Sensitivity;
-
                 if (Math.Abs(v) > Math.Abs(newValue))
                     newValue = v;
             }

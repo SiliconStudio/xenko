@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private Vector2 currentDirection;
         
         [DataMemberIgnore]
-        public Vector2 Direction => currentDirection;
+        public Vector2 Direction => GetScaledOutput(currentDirection);
 
         public override void Reset()
         {

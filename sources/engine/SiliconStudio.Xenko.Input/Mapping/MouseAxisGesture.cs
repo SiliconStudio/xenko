@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public float Axis => currentDelta;
+        public float Axis => GetScaledOutput(currentDelta);
 
         public override void Reset()
         {

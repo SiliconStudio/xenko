@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     [DataContract]
-    public class MouseButtonGesture : InputGesture, IButtonGesture, IAxisGesture, IInputEventListener<MouseButtonEvent>
+    public class MouseButtonGesture : InputGesture, IButtonGesture, IInputEventListener<MouseButtonEvent>
     {
         /// <summary>
         /// Button used for this gesture
@@ -26,9 +26,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         [DataMemberIgnore]
         public bool Button => currentState == ButtonState.Pressed;
-
-        [DataMemberIgnore]
-        public float Axis => Button ? 1.0f : 0.0f;
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {

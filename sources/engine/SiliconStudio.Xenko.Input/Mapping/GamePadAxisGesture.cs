@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public float Axis => currentState;
+        public float Axis => GetScaledOutput(currentState);
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {

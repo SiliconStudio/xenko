@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                     if (length > 1.0f)
                         vec /= length;
                 }
-                return vec;
+                return GetScaledOutput(vec);
             }
         }
 

@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public float Axis => Positive?.Button ?? false ? 1.0f : (Negative?.Button ?? false ? -1.0f : 0.0f);
+        public float Axis => GetScaledOutput(Positive?.Button ?? false ? 1.0f : (Negative?.Button ?? false ? -1.0f : 0.0f));
 
         public override void Reset()
         {
