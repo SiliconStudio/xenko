@@ -452,8 +452,8 @@ MyObjects:
             derivedPropertyNode.Content.Add("String3");
             basePropertyNode.Content.Add("String4");
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            var expectedBaseYaml = string.Format(SimpleCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds.GetId(2));
-            var expectedDerivedYaml = string.Format(SimpleCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds.GetId(2), derivedIds.GetId(3));
+            var expectedBaseYaml = string.Format(SimpleCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds[2]);
+            var expectedDerivedYaml = string.Format(SimpleCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds[2], derivedIds[3]);
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }
@@ -510,8 +510,8 @@ MyObjects:
             basePropertyNode.Content.Add("String4", new Index("Key4"));
 
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var expectedBaseYaml = string.Format(SimpleDictionaryAddBaseYaml.Replace("{}", "{{}}"), baseIds.GetId("Key4"));
-            var expectedDerivedYaml = string.Format(SimpleDictionaryAddDerivedYaml.Replace("{}", "{{}}"), baseIds.GetId("Key4"), derivedIds.GetId("Key3"));
+            var expectedBaseYaml = string.Format(SimpleDictionaryAddBaseYaml.Replace("{}", "{{}}"), baseIds["Key4"]);
+            var expectedDerivedYaml = string.Format(SimpleDictionaryAddDerivedYaml.Replace("{}", "{{}}"), baseIds["Key4"], derivedIds["Key3"]);
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }
@@ -618,8 +618,8 @@ MyObjects:
 
             derivedPropertyNode.Content.Add(new Types.SomeObject { Value = "String3" });
             basePropertyNode.Content.Add(new Types.SomeObject { Value = "String4" });
-            var expectedBaseYaml = string.Format(ObjectCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds.GetId(2));
-            var expectedDerivedYaml = string.Format(ObjectCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds.GetId(2), derivedIds.GetId(3));
+            var expectedBaseYaml = string.Format(ObjectCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds[2]);
+            var expectedDerivedYaml = string.Format(ObjectCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds[2], derivedIds[3]);
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }

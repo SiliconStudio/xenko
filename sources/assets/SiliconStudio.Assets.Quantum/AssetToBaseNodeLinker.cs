@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets.Quantum
                 var targetReference = targetNode.Content.Reference.AsEnumerable;
                 var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Content.Retrieve());
                 var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Content.Retrieve());
-                var itemId = sourceIds.GetId(sourceReference.Index.Value);
+                var itemId = sourceIds[sourceReference.Index.Value];
                 var targetKey = targetIds.GetKey(itemId);
                 return targetReference.FirstOrDefault(x => Equals(x.Index.Value, targetKey));
             }

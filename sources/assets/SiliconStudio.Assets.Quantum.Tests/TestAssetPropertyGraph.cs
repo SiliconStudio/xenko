@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using SiliconStudio.Core;
+﻿using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Quantum.Tests
@@ -17,7 +12,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new Types.MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
-            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
         }
 
@@ -27,7 +22,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
             var assetItem = new AssetItem("MyAsset", asset);
-            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
@@ -43,7 +38,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
             var asset = new Types.MyAsset7 { MyAsset2 = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } } };
             var assetItem = new AssetItem("MyAsset", asset);
-            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyAsset2.MyStrings, out ids));
@@ -51,6 +46,29 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.True(ids.ContainsKey(0));
             Assert.True(ids.ContainsKey(1));
             Assert.True(ids.ContainsKey(2));
+        }
+
+        [Test]
+        public void TestCollectionItemIdentifierWithDuplicates()
+        {
+            var container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
+            var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
+            var ids = CollectionItemIdHelper.GetCollectionItemIds(asset.MyStrings);
+            ids.Add(0, IdentifierGenerator.Get(100));
+            ids.Add(1, IdentifierGenerator.Get(200));
+            ids.Add(2, IdentifierGenerator.Get(100));
+            var assetItem = new AssetItem("MyAsset", asset);
+            Assert.AreEqual(IdentifierGenerator.Get(100), ids[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(200), ids[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(100), ids[2]);
+            var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
+            Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
+            Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
+            Assert.AreEqual(3, ids.Count);
+            Assert.AreEqual(IdentifierGenerator.Get(100), ids[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(200), ids[1]);
+            Assert.AreNotEqual(IdentifierGenerator.Get(100), ids[2]);
+            Assert.AreNotEqual(IdentifierGenerator.Get(200), ids[2]);
         }
     }
 }

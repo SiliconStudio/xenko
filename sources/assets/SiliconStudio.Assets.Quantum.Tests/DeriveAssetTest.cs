@@ -34,8 +34,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         private void BuildGraph()
         {
-            BaseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem);
-            DerivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem);
+            BaseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem, null);
+            DerivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
             DerivedGraph.RefreshBase(BaseGraph);
         }
 

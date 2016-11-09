@@ -406,7 +406,7 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdentifiers ids;
             if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
             {
-                id = ids.GetId(index.Value);
+                id = ids[index.Value];
                 return true;
             }
             id = ItemId.Empty;
