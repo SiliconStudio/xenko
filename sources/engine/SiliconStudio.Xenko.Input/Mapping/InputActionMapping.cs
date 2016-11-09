@@ -67,8 +67,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 throw new InvalidOperationException("Can't add binding, a binding with the same name already exists");
 
             // Bind action to mapper so that when the gesture changes later it will call this function again
-            action.ActionMapping = this;
             action.MappingName = name;
+            action.ActionMapping = this;
             inputActions.Add(action);
             inputActionsByName.Add(name, action);
 

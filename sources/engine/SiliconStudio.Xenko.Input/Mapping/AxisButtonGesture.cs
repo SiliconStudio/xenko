@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
+        [DataMemberIgnore]
         public bool Button => Axis?.Axis > Threshold;
 
         public override void Reset()

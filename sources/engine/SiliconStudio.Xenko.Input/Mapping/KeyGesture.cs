@@ -24,7 +24,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
             this.Key = key;
         }
 
+        [DataMemberIgnore]
         public bool Button => currentState == ButtonState.Pressed;
+        [DataMemberIgnore]
         public float Axis => Button ? 1.0f : 0.0f;
 
         public void ProcessEvent(KeyEvent inputEvent)

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -10,21 +11,23 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// <summary>
     /// An action that generates a floating point value in the range -1 to 1
     /// </summary>
+    [DataContract]
     public class DirectionAction : InputAction
     {
         /// <summary>
         /// Raised when the axis is not 0
         /// </summary>
-        event EventHandler<ChangedEventArgs> OnNotZero;
+        public event EventHandler<ChangedEventArgs> OnNotZero;
 
         /// <summary>
         /// Raised when the axis changes value
         /// </summary>
-        event EventHandler<ChangedEventArgs> OnChanged;
+        public event EventHandler<ChangedEventArgs> OnChanged;
 
         /// <summary>
         /// The last value of this action
         /// </summary>
+        [DataMemberIgnore]
         public Vector2 Value => lastValue;
 
         private Vector2 lastValue;
@@ -35,7 +38,14 @@ namespace SiliconStudio.Xenko.Input.Mapping
             float largest = 0.0f;
             foreach (var gesture in Gestures.OfType<IDirectionGesture>())
             {
-                float length = gesture.Direction.Length();
+                Vector2 v = gesture.Direction;
+
+                // Apply scalable properties
+                var scalable = gesture as ScalableInputGesture;
+                if (scalable != null)
+                    v = (scalable.Inverted ? -v : v) * scalable.Sensitivity;
+
+                float length = v.Length();
                 if (length > largest)
                 {
                     target = gesture.Direction;

@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A direction gesture generated from 2 <see cref="IAxisGesture"/>s (X and Y axis)
     /// </summary>
     [DataContract]
-    public class FourWayGesture : InputGesture, IDirectionGesture
+    public class FourWayGesture : ScalableInputGesture, IDirectionGesture
     {
         private IAxisGesture y;
         private IAxisGesture x;
@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <remarks>This still allows the axis to report smaller ranges, for e.g. walk/run.</remarks>
         public bool Normalized { get; set; } = true;
 
+        [DataMemberIgnore]
         public Vector2 Direction
         {
             get
@@ -64,7 +65,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Normalized)}: {Normalized}, {nameof(Direction)}: {Direction}";
+            return $"{nameof(Normalized)}: {Normalized}, {nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}";
         }
     }
 }

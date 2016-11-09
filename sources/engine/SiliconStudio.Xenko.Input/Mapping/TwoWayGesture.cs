@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     [DataContract]
-    public class TwoWayGesture : InputGesture, IAxisGesture
+    public class TwoWayGesture : ScalableInputGesture, IAxisGesture
     {
         private IButtonGesture positive;
         private IButtonGesture negative;
@@ -31,6 +31,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
+        [DataMemberIgnore]
         public float Axis => Positive?.Button ?? false ? 1.0f : (Negative?.Button ?? false ? -1.0f : 0.0f);
 
         public override void Reset()
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(Positive)}: ({Positive}), {nameof(Negative)}: ({Negative}), {nameof(Axis)}: {Axis}";
+            return $"{nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}";
         }
     }
 }

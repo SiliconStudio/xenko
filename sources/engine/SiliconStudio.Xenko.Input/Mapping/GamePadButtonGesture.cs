@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A button gesture generated from a gamepad button press
     /// </summary>
     [DataContract]
-    public class GamePadButtonGesture : InputGesture, IButtonGesture, IAxisGesture, IInputEventListener<GamePadButtonEvent>
+    public class GamePadButtonGesture : InputGesture, IButtonGesture, IInputEventListener<GamePadButtonEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The controller index
         /// </summary>
-        public int ControllerIndex = 0;
+        internal int ControllerIndex = 0;
 
         private ButtonState currentState;
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             ButtonIndex = buttonIndex;
         }
 
-        public float Axis => Button ? 1.0f : 0.0f;
+        [DataMemberIgnore]
         public bool Button => currentState == ButtonState.Pressed;
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Specialized;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -10,24 +11,38 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// <summary>
     /// An object that can respond to actions from various input gestures (keyboard,mouse,touch,gamepad,etc.)
     /// </summary>
+    [DataContract]
     public abstract class InputAction
     {
         internal InputActionMapping ActionMapping;
-
+        private string mappingName;
+        
         protected InputAction()
         {
             Gestures.CollectionChanged += Gestures_CollectionChanged;
         }
 
         /// <summary>
+        /// The name of the action, as registered in the action mapping
+        /// </summary>
+        /// <remarks>
+        /// Changing the name of an action that has already been added to an <see cref="InputActionMapping"/> will trow an <see cref="InvalidOperationException"/>
+        /// </remarks>
+        public string MappingName
+        {
+            get { return mappingName; }
+            set
+            {
+                // Lock mapping name after being added to action mapping
+                if(ActionMapping != null) throw new InvalidOperationException("Can't change action name after it has been added to the action mapping");
+                mappingName = value; 
+            }
+        }
+
+        /// <summary>
         /// The gestures that are used for this action
         /// </summary>
         public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
-
-        /// <summary>
-        /// The name of the action, as registered in the action mapping
-        /// </summary>
-        public string MappingName { get; internal set; }
 
         /// <summary>
         /// Updates the input action, raising events whenever something changed
@@ -38,7 +53,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             // Handles adding/removing new gestures to/from the action mapping when this action is registered as well
             var gesture = e.Item as InputGesture;
-            if (gesture == null) throw new InvalidOperationException("New item does not inherit from InputGesture");
+            if (gesture == null) return; // This might happen when adding a new gesture in the GameStudio
             if (ActionMapping == null) return;
             switch (e.Action)
             {

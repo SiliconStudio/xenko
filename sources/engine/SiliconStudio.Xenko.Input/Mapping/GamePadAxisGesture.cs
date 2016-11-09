@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Represents a gamepad axis reading
     /// </summary>
     [DataContract]
-    public class GamePadAxisGesture : InputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
+    public class GamePadAxisGesture : ScalableInputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The controller index
         /// </summary>
-        public int ControllerIndex = 0;
+        internal int ControllerIndex = 0;
 
         private float currentState;
 
@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
             AxisIndex = axisIndex;
         }
 
-        public float Axis => Inverted ? -currentState : currentState;
-        public bool Inverted { get; set; } = false;
+        [DataMemberIgnore]
+        public float Axis => currentState;
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}";
+            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}";
         }
 
         protected bool Equals(GamePadAxisGesture other)
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             unchecked
             {
-                return (AxisIndex*397) ^ ControllerIndex;
+                return (AxisIndex * 397) ^ ControllerIndex;
             }
         }
     }

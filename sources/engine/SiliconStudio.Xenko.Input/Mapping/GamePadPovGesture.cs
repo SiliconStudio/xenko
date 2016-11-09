@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A direction or a 0-1 value generated from a gamepad pov controller
     /// </summary>
     [DataContract]
-    public class GamePadPovGesture : InputGesture, IAxisGesture, IDirectionGesture, IInputEventListener<GamePadPovControllerEvent>
+    public class GamePadPovGesture : ScalableInputGesture, IAxisGesture, IDirectionGesture, IInputEventListener<GamePadPovControllerEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The controller index
         /// </summary>
-        public int ControllerIndex = 0;
+        internal int ControllerIndex = 0;
 
         private Vector2 currentDirection;
         private float currentState;
@@ -35,7 +35,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
             PovIndex = povIndex;
         }
 
+        [DataMemberIgnore]
         public float Axis => currentState;
+
+        [DataMemberIgnore]
         public Vector2 Direction => currentDirection;
 
         public void ProcessEvent(GamePadPovControllerEvent inputEvent)
@@ -57,7 +60,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(PovIndex)}: {PovIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Direction)}: {Direction}";
+            return $"{nameof(PovIndex)}: {PovIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}";
         }
 
         protected bool Equals(GamePadPovGesture other)

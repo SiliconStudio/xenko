@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class KeyCombinationGesture : InputGesture, IButtonGesture, IAxisGesture, IInputEventListener<KeyEvent>
     {
-        [DataMember] private HashSet<Keys> keys;
+        public List<Keys> Keys;
         private readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
 
         public KeyCombinationGesture()
@@ -21,15 +22,18 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public KeyCombinationGesture(params Keys[] keys)
         {
-            this.keys = new HashSet<Keys>(keys);
+            this.Keys = new List<Keys>(keys);
         }
 
-        public bool Button => keys != null && heldKeys.Count == keys.Count;
+        [DataMemberIgnore]
+        public bool Button => Keys != null && heldKeys.Count == Keys.Count;
+
+        [DataMemberIgnore]
         public float Axis => Button ? 1.0f : 0.0f;
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (keys?.Contains(inputEvent.Key) ?? false)
+            if (Keys?.Contains(inputEvent.Key) ?? false)
             {
                 if (inputEvent.State == ButtonState.Pressed)
                     heldKeys.Add(inputEvent.Key);
@@ -40,12 +44,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"Keys: {string.Join(", ", keys)}, Held Keys: {string.Join(", ", heldKeys)}";
+            return $"Keys: {string.Join(", ", Keys)}, Held Keys: {string.Join(", ", heldKeys)}";
         }
 
         protected bool Equals(KeyCombinationGesture other)
         {
-            return Equals(keys, other.keys);
+            return Equals(Keys, other.Keys);
         }
 
         public override bool Equals(object obj)
@@ -58,7 +62,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override int GetHashCode()
         {
-            return (keys != null ? keys.GetHashCode() : 0);
+            return Keys?.GetHashCode() ?? 0;
         }
     }
 }

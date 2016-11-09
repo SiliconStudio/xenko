@@ -3,24 +3,27 @@
 
 using System;
 using System.Linq;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
     /// An action that triggers on a certain condition
     /// </summary>
+    [DataContract]
     public class ButtonAction : InputAction
     {
         /// <summary>
         /// Raised when the action was trigerred
         /// </summary>
-        event EventHandler<ChangedEventArgs> OnChanged;
+        public event EventHandler<ChangedEventArgs> OnChanged;
 
         private bool lastValue;
 
         /// <summary>
         /// The last value of the button action
         /// </summary>
+        [DataMemberIgnore]
         public bool Value => lastValue;
 
         public override void Update()

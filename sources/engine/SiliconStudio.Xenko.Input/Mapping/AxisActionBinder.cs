@@ -74,11 +74,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
             Vector2 absDelta = inputEvent.DeltaPosition*inputEvent.Pointer.SurfaceSize;
             if (Math.Abs(absDelta.X) > PointerThreshold)
             {
-                TryBindAxis(new MouseMovementGesture(MouseAxis.X) { Inverted = absDelta.X < 0 });
+                TryBindAxis(new MouseAxisGesture(MouseAxis.X) { Inverted = absDelta.X < 0 });
             }
             else if (Math.Abs(absDelta.Y) > PointerThreshold)
             {
-                TryBindAxis(new MouseMovementGesture(MouseAxis.Y) { Inverted = absDelta.Y < 0 });
+                TryBindAxis(new MouseAxisGesture(MouseAxis.Y) { Inverted = absDelta.Y < 0 });
             }
         }
 
