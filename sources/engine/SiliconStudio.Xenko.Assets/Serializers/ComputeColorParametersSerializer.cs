@@ -5,13 +5,12 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
     [YamlSerializerFactory(YamlAssetProfile.Name)]
-    internal class ComputeColorParametersSerializer : DictionarySerializer, IDataCustomVisitor
+    internal class ComputeColorParametersSerializer : DictionaryWithIdsSerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
