@@ -21,7 +21,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [Display(82, "Graphics Compositor")]
     [AssetDescription(FileExtension)]
     [AssetPartReference(typeof(RenderStage))]
+    // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
+    //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(RootRenderFeature))]
+    [AssetPartReference(typeof(GraphicsCompositorCode))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     public class GraphicsCompositorAsset : AssetComposite
     {
@@ -50,6 +53,11 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
+
+        /// <summary>
+        /// The code and values defined by this graphics compositor.
+        /// </summary>
+        public GraphicsCompositorCode Code { get; set; }
 
         /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()

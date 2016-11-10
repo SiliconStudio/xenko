@@ -10,8 +10,19 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public class GraphicsCompositor
     {
+        /// <summary>
+        /// The list of render stages.
+        /// </summary>
         public List<RenderStage> RenderStages { get; } = new List<RenderStage>();
 
+        /// <summary>
+        /// The list of render features.
+        /// </summary>
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
+
+        /// <summary>
+        /// The code and values defined by this graphics compositor.
+        /// </summary>
+        public GraphicsCompositorCode Code { get; set; }
     }
 }

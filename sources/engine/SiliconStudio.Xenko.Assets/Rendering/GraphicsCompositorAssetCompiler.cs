@@ -34,6 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
                 graphicsCompositor.RenderStages.AddRange(Parameters.RenderStages);
                 graphicsCompositor.RenderFeatures.AddRange(Parameters.RenderFeatures);
+                graphicsCompositor.Code = Parameters.Code;
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, graphicsCompositor);
