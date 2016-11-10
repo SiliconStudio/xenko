@@ -92,19 +92,15 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
+            base.CreateOrTransformObject(ref objectContext);
+
             // Allow to deserialize the old way
             if (!objectContext.SerializerContext.IsSerializing && objectContext.Reader.Accept<SequenceStart>())
-            {
-                base.CreateOrTransformObject(ref objectContext);
                 return;
-            }
 
             // Ignore collections flagged as having non-identifiable items
             if (!AreCollectionItemsIdentifiable(ref objectContext))
-            {
-                base.CreateOrTransformObject(ref objectContext);
                 return;
-            }
 
             // Store the information on the actual instance before transforming.
             var info = new InstanceInfo(objectContext.Instance, objectContext.Descriptor);
