@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-
+using System.Windows.Media;
 using SiliconStudio.Presentation.Extensions;
 using SiliconStudio.Presentation.Interop;
 
@@ -135,10 +135,11 @@ namespace SiliconStudio.Presentation.Behaviors
 
                     mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    // Get dpi scale
+                    var dpiScale = VisualTreeHelper.GetDpi(window);
                     // Get maximum width and height from WPF
-                    // FIXME: review this related to DPI
-                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
-                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
+                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)(window.MaxWidth*dpiScale.DpiScaleX);
+                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)(window.MaxHeight*dpiScale.DpiScaleY);
                     mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
                     mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
                     mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
