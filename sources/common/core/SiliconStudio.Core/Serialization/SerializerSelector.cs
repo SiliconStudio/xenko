@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializerSelector"/> class.
         /// </summary>
-        /// <param name="reuseReferences">if set to <c>true</c> [reuse references] (allow cycles in the object graph).</param>
+        /// <param name="reuseReferences">if set to <c>true</c> allow cycles in the object graph.</param>
         /// <param name="profiles">The profiles.</param>
         public SerializerSelector(bool reuseReferences, params string[] profiles)
         {
