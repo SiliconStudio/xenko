@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Shaders.Ast;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
         }
 
-        private class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
+        public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
             public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
                 : base(url, parameters)
@@ -61,6 +62,9 @@ namespace SiliconStudio.Xenko.Assets.Physics
             {
                 var assetManager = new ContentManager();
 
+                // Cloned list of collider shapes
+                var descriptions = Parameters.ColliderShapes.ToList();
+
                 Parameters.ColliderShapes = Parameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
@@ -69,18 +73,35 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     (from shape in Parameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
-                    //decompose and fill vertex data
+                    // Clone the convex hull shape description so the fields that should not be serialized can be cleared (Model in this case)
+                    ConvexHullColliderShapeDesc convexHullDescClone = new ConvexHullColliderShapeDesc
+                    {
+                        Scaling = convexHullDesc.Scaling,
+                        LocalOffset = convexHullDesc.LocalOffset,
+                        LocalRotation = convexHullDesc.LocalRotation,
+                        Depth = convexHullDesc.Depth,
+                        PosSampling = convexHullDesc.PosSampling,
+                        AngleSampling = convexHullDesc.AngleSampling,
+                        PosRefine = convexHullDesc.PosRefine,
+                        AngleRefine = convexHullDesc.AngleRefine,
+                        Alpha = convexHullDesc.Alpha,
+                        Threshold = convexHullDesc.Threshold,
+                    };
+
+                    // Replace shape in final result with cloned description
+                    int replaceIndex = descriptions.IndexOf(convexHullDesc);
+                    descriptions[replaceIndex] = convexHullDescClone;
 
                     var loadSettings = new ContentManagerLoaderSettings
                     {
                         ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
                     };
-
+                    
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);
                     if (modelAsset == null) continue;
 
-                    convexHullDesc.ConvexHulls = new List<List<List<Vector3>>>();
-                    convexHullDesc.ConvexHullsIndices = new List<List<List<uint>>>();
+                    convexHullDescClone.ConvexHulls = new List<List<List<Vector3>>>();
+                    convexHullDescClone.ConvexHullsIndices = new List<List<List<uint>>>();
 
                     commandContext.Logger.Info("Processing convex hull generation, this might take a while!");
 
@@ -91,7 +112,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     if (modelAsset.Skeleton == null)
                     {
                         Matrix baseMatrix;
-                        Matrix.Transformation(ref convexHullDesc.Scaling, ref convexHullDesc.LocalRotation, ref convexHullDesc.LocalOffset, out baseMatrix);
+                        Matrix.Transformation(ref convexHullDescClone.Scaling, ref convexHullDescClone.LocalRotation, ref convexHullDescClone.LocalOffset, out baseMatrix);
                         nodeTransforms.Add(baseMatrix);
                     }
                     else
@@ -119,7 +140,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             if (i == 0)
                             {
                                 Matrix baseMatrix;
-                                Matrix.Transformation(ref convexHullDesc.Scaling, ref convexHullDesc.LocalRotation, ref convexHullDesc.LocalOffset, out baseMatrix);
+                                Matrix.Transformation(ref convexHullDescClone.Scaling, ref convexHullDescClone.LocalRotation, ref convexHullDescClone.LocalOffset, out baseMatrix);
                                 nodeTransforms.Add(baseMatrix*worldMatrix);
                             }
                             else
@@ -138,10 +159,10 @@ namespace SiliconStudio.Xenko.Assets.Physics
                         var combinedIndices = new List<uint>();
 
                         var hullsList = new List<List<Vector3>>();
-                        convexHullDesc.ConvexHulls.Add(hullsList);
+                        convexHullDescClone.ConvexHulls.Add(hullsList);
 
                         var indicesList = new List<List<uint>>();
-                        convexHullDesc.ConvexHullsIndices.Add(indicesList);
+                        convexHullDescClone.ConvexHullsIndices.Add(indicesList);
 
                         foreach (var meshData in modelAsset.Meshes.Where(x => x.NodeIndex == i1))
                         {
@@ -275,7 +296,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     }
                 }
 
-                var runtimeShape = new PhysicsColliderShape { Descriptions = Parameters.ColliderShapes };
+                var runtimeShape = new PhysicsColliderShape { Descriptions = descriptions };
                 assetManager.Save(Url, runtimeShape);
 
                 return Task.FromResult(ResultStatus.Successful);
