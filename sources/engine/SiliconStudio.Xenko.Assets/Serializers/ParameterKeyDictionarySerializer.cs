@@ -24,11 +24,10 @@ namespace SiliconStudio.Xenko.Assets.Serializers
 
         protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
-            var propertyKey = (PropertyKey)keyValue.Key;
-            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, keyValueTypes.Key);
-
+            objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
             // Deduce expected value type from PropertyKey
-            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Value, propertyKey.PropertyType);
+            var propertyKey = (PropertyKey)((IKeyWithId)keyValue.Key).Key;
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Key, keyValue.Value, propertyKey.PropertyType);
         }
 
         protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
