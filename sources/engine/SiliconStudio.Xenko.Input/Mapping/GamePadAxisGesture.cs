@@ -22,18 +22,14 @@ namespace SiliconStudio.Xenko.Input.Mapping
         internal int ControllerIndex = 0;
 
         private float currentState;
-
-        public GamePadAxisGesture()
-        {
-        }
-
+        
         public GamePadAxisGesture(int axisIndex)
         {
             AxisIndex = axisIndex;
         }
 
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput(currentState);
+        public float Axis => GetScaledOutput(currentState, true);
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {

@@ -34,9 +34,9 @@ namespace SiliconStudio.Xenko.Input
         /// The deadzone amount applied to all gamepad axes
         /// </summary>
         public static float GamePadAxisDeadZone = 0.05f;
-
+        
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
-
+        
         // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
         internal GlobalInputState GlobalInputState = new GlobalInputState();
 
@@ -71,15 +71,8 @@ namespace SiliconStudio.Xenko.Input
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
-
-            ActionMapping = new InputActionMapping(this);
         }
-
-        /// <summary>
-        /// Virtual button mapping, maps gestures to input actions
-        /// </summary>
-        public InputActionMapping ActionMapping { get; }
-
+        
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
@@ -215,7 +208,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of connected sensor devices
         /// </summary>
         public IReadOnlyCollection<ISensorDevice> Sensors => sensorDevices;
-
+        
         /// <summary>
         /// Gets a list of keys being pressed down.
         /// </summary>
@@ -242,6 +235,11 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
         public float MouseWheelDelta => GlobalInputState.MouseWheelDelta;
+
+        /// <summary>
+        /// Raised before new input is sent to their respective event listeners
+        /// </summary>
+        public event EventHandler<InputPreUpdateEventArgs> PreUpdateInput;
 
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles
@@ -576,21 +574,21 @@ namespace SiliconStudio.Xenko.Input
                 pair.Key.Update(inputEvents);
             }
 
-            // Reset action mapping state
-            ActionMapping.Reset();
+            // Notify PreUpdateInput
+            PreUpdateInput?.Invoke(this, new InputPreUpdateEventArgs { GameTime = gameTime });
 
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
+                if(!(evt is PointerEvent))
+                    Debug.WriteLine(evt);
+
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
                 router.RouteEvent(evt);
             }
-
-            // Update action mappings
-            ActionMapping.Update(gameTime.Elapsed);
-
+            
             // Update gestures
             // TODO: Merge with input actions
             UpdateGestureEvents(gameTime.Elapsed);
@@ -747,6 +745,10 @@ namespace SiliconStudio.Xenko.Input
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
             {
                 gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, filteredPointerEvents));
+            }
+            foreach (var gesture in gestureEvents)
+            {
+                Debug.WriteLine($"Gesture> {gesture}");
             }
         }
 

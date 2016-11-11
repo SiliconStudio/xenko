@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -45,7 +46,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// If <c>true</c>, normalizes the direction if it's length is greater than 0
         /// </summary>
         /// <remarks>This still allows the axis to report smaller ranges, for e.g. walk/run.</remarks>
-        public bool Normalized { get; set; } = true;
+        public bool Normalized { get; set; } = false;
 
         [DataMemberIgnore]
         public Vector2 Direction
@@ -56,17 +57,19 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 if (Normalized)
                 {
                     float length = vec.Length();
-                    if (length > 1.0f)
-                        vec /= length;
+                    vec /= length;
+                    if (length < 1.0f)
+                        length *= length;
                 }
-                return GetScaledOutput(vec);
+                return GetScaledOutput(vec, false);
             }
         }
 
-        public override void Reset()
+        public override void Reset(TimeSpan elapsedTime)
         {
-            x?.Reset();
-            y?.Reset();
+            base.Reset(elapsedTime);
+            x?.Reset(elapsedTime);
+            y?.Reset(elapsedTime);
         }
 
         public override string ToString()

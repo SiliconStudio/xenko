@@ -33,6 +33,9 @@ namespace SiliconStudio.Xenko.Input.Tests
         private const float TextSpaceY = 3;
         private const float TextSubSectionOffsetX = 15;
 
+        private static readonly string[] directionNames = new[] { "Right", "Left", "Up", "Down" };
+        private static readonly string[] axisNames = new[] { "Positive", "Negative" };
+
         private readonly Vector2 textLeftTopCorner = new Vector2(5, 5);
         private readonly Color fontColor;
 
@@ -56,8 +59,6 @@ namespace SiliconStudio.Xenko.Input.Tests
         private InputAction currentlyBindingAction;
         private ActionBinder actionBinder;
         private bool resetBindingsOnBind;
-        private static readonly string[] directionNames = new[] {"Right", "Left", "Up", "Down"};
-        private static readonly string[] axisNames = new[] { "Positive", "Negative" };
 
         public ActionMappingTest()
         {

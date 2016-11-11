@@ -2,9 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -40,6 +44,16 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         /// <summary>
+        /// Multiplier for gestures that scale with delta time
+        /// </summary>
+        public float DeltaTimeScale { get; set; } = 50.0f;
+
+        /// <summary>
+        /// Should mouse input be ignored when the mouse is not locked
+        /// </summary>
+        public bool IgnoreMouseWhenNotLocked { get; set; } = false;
+
+        /// <summary>
         /// The gestures that are used for this action
         /// </summary>
         public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
@@ -48,6 +62,37 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Updates the input action, raising events whenever something changed
         /// </summary>
         public abstract void Update();
+
+        public InputAction Clone()
+        {
+            using (var memoryStream = new MemoryStream(4096))
+            {
+                var writer = new BinarySerializationWriter(memoryStream);
+                var reader = new BinarySerializationReader(memoryStream);
+
+                writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+
+                // Serialize
+                writer.SerializeExtended(this, ArchiveMode.Serialize);
+
+                // Deserialize
+                InputAction clone = null;
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                reader.SerializeExtended(ref clone, ArchiveMode.Deserialize);
+
+                return clone;
+            }
+        }
+
+        /// <summary>
+        /// Clones the list of input gestures used by this action
+        /// </summary>
+        /// <returns>A copy of this input action</returns>
+        public List<IInputGesture> CloneGestures()
+        {
+            return Clone().Gestures.ToList();
+        }
 
         private void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
@@ -59,6 +104,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 case NotifyCollectionChangedAction.Add:
                     gesture.ActionMapping = ActionMapping;
+                    gesture.Action = this;
                     gesture.OnAdded();
                     break;
                 case NotifyCollectionChangedAction.Remove:

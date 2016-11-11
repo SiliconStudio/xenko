@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -34,9 +35,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
         [DataMemberIgnore]
         public bool Button => Axis?.Axis > Threshold;
 
-        public override void Reset()
+        public override void Reset(TimeSpan elapsedTime)
         {
-            axis?.Reset();
+            axis?.Reset(elapsedTime);
         }
 
         protected bool Equals(AxisButtonGesture other)

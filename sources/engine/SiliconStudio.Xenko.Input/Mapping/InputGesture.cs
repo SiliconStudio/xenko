@@ -14,10 +14,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
     public abstract class InputGesture : IInputGesture
     {
         internal InputActionMapping ActionMapping;
+        internal InputAction Action;
         private readonly List<InputGesture> childGestures = new List<InputGesture>();
 
+        /// <param name="elapsedTime"></param>
         /// <inheritdoc />
-        public virtual void Reset()
+        public virtual void Reset(TimeSpan elapsedTime)
         {
         }
 
@@ -27,6 +29,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             foreach (var child in childGestures)
             {
                 child.ActionMapping = ActionMapping;
+                child.Action = Action;
                 child.OnAdded();
             }
         }
@@ -35,6 +38,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             ActionMapping.RemoveInputGesture(this);
             ActionMapping = null;
+            Action = null;
             foreach (var child in childGestures)
             {
                 child.OnRemoved();

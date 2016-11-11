@@ -47,6 +47,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public class ChangedEventArgs : EventArgs
         {
+            public IButtonGesture Gesture;
             public bool Value;
             public ButtonState State => Value ? ButtonState.Pressed : ButtonState.Released;
         }

@@ -4,11 +4,11 @@ using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Assets.Input
 {
-    class DefaultInputMappingFactory : AssetFactory<InputMappingAsset>
+    class DefaultInputActionConfigurationFactory : AssetFactory<InputActionConfigurationAsset>
     {
-        public override InputMappingAsset New()
+        public override InputActionConfigurationAsset New()
         {
-            return new InputMappingAsset
+            return new InputActionConfigurationAsset
             {
                 Actions = new List<InputAction>()
             };

@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
         
         [DataMemberIgnore]
-        public Vector2 Direction => GetScaledOutput(currentDirection);
+        public Vector2 Direction => GetScaledOutput(currentDirection, true);
 
         public void ProcessEvent(GamePadPovControllerEvent inputEvent)
         {

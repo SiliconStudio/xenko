@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Input.Mapping;
 
@@ -10,14 +11,16 @@ namespace SiliconStudio.Xenko.Assets.Input
 {
     [DataContract]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
-    [Display("Input Mapping")]
-    public class InputMappingAsset : Asset
+    [Display("Input Action Configuration")]
+    [AssetCompiler(typeof(InputActionConfigurationAssetCompiler))]
+    public class InputActionConfigurationAsset : Asset
     {
-        public const string FileExtension = ".xkimap";
+        public const string FileExtension = ".xkinput";
 
         /// <summary>
-        /// Lists all the actions that this input mapping wil define
+        /// Lists all the actions in this configuration and the default bindings for them
         /// </summary>
+        /// <remarks>Duplicate names for any of the actions are not allowed</remarks>
         [DataMember(0)]
         public List<InputAction> Actions { get; set; }
     }

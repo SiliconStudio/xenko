@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -42,15 +43,16 @@ namespace SiliconStudio.Xenko.Input.Mapping
         
         /// <inheritdoc />
         /// <remarks>
-        /// Calculates positive * 1.0f + negative * -1.0f so that both buttons cancel each other out when pressed at the same time
+        /// Calculates positive * 1.0f + negative * -1.0f so that both buttons cancel each other out when pressed at the same time. This value is scaled by delta time since it uses keyboard input.
         /// </remarks>
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput((Positive?.Button ?? false ? 1.0f : 0.0f) + (Negative?.Button ?? false ? -1.0f : 0.0f));
+        public float Axis => GetScaledOutput((Positive?.Button ?? false ? 1.0f : 0.0f) + (Negative?.Button ?? false ? -1.0f : 0.0f), true);
 
-        public override void Reset()
+        public override void Reset(TimeSpan elapsedTime)
         {
-            positive?.Reset();
-            negative?.Reset();
+            base.Reset(elapsedTime);
+            positive?.Reset(elapsedTime);
+            negative?.Reset(elapsedTime);
         }
 
         public override string ToString()

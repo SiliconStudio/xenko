@@ -85,6 +85,7 @@
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="GlobalInputState.cs" />
     <Compile Include="InputEventPool.cs" />
+    <Compile Include="InputPreUpdateEventArgs.cs" />
     <Compile Include="iOS\InputSourceiOS.cs" />
     <Compile Include="iOS\PointeriOS.cs" />
     <Compile Include="ITextInputDevice.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="Mapping\AxisButtonGesture.cs" />
     <Compile Include="Mapping\ButtonAction.cs" />
     <Compile Include="Mapping\ButtonActionBinder.cs" />
+    <Compile Include="Mapping\CompoundAxisGesture.cs" />
+    <Compile Include="Mapping\InputActionConfiguration.cs" />
     <Compile Include="Mapping\DirectionAction.cs" />
     <Compile Include="Mapping\DirectionActionBinder.cs" />
     <Compile Include="Mapping\FourWayGesture.cs" />

@@ -63,15 +63,17 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return null;
         }
 
-        protected override void TryBindAxis(IAxisGesture axis)
+        protected override void TryBindAxis(IAxisGesture axis, bool isBidirectional)
         {
             // Filter out duplicate axes
             if (UsedGestures.Contains(axis)) return;
 
+            // Don't bind triggers to directional axes
+            if (!isBidirectional) return;
+
             if (Index == 0)
             {
                 TargetFourWayGesture.X = axis;
-                UsedGestures.Add(axis);
                 CanBindButtons = false; // Don't allow buttons after binding an axis
                 Advance(2);
             }
@@ -80,6 +82,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 TargetFourWayGesture.Y = axis;
                 Advance(2);
             }
+
+            UsedGestures.Add(axis);
         }
     }
 }

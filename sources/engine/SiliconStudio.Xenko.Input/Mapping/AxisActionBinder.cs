@@ -26,7 +26,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// The threshold that is used to trigger axes
         /// </summary>
         public float AxisThreshold = 0.9f;
-        
+
+        /// <summary>
+        /// If true, when a single direction axis is used, both a positive and negative binding will be used
+        /// </summary>
+        public bool RequireBidirectionAxis = true;
+
         /// <summary>
         /// Creates a new axis action binder
         /// </summary>
@@ -63,7 +68,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
             if (Math.Abs(inputEvent.Value) > AxisThreshold)
-                TryBindAxis(new GamePadAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0, ControllerIndex = inputEvent.GamePad.Index });
+            {
+                var axis = new GamePadAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0, ControllerIndex = inputEvent.GamePad.Index };
+                TryBindAxis(axis, inputEvent.GamePad.AxisInfos[inputEvent.Index].IsBiDirectional);
+            }
         }
 
         public void ProcessEvent(PointerEvent inputEvent)
@@ -71,7 +79,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             // Only accept mouse movement as axis, touch should use gestures instead
             if (inputEvent.PointerType != PointerType.Mouse) return;
 
-            Vector2 absDelta = inputEvent.DeltaPosition*inputEvent.Pointer.SurfaceSize;
+            Vector2 absDelta = inputEvent.AbsoluteDeltaPosition;
             if (Math.Abs(absDelta.X) > PointerThreshold)
             {
                 TryBindAxis(new MouseAxisGesture(MouseAxis.X) { Inverted = absDelta.X < 0 });
@@ -82,17 +90,40 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
-        protected virtual void TryBindAxis(IAxisGesture axis)
+        protected virtual void TryBindAxis(IAxisGesture axis, bool isBidirectional = true)
         {
             // Filter out duplicate axes
             if (UsedGestures.Contains(axis)) return;
 
             if (TargetGesture == null)
             {
-                TargetGesture = axis;
-                UsedGestures.Add(axis);
-                Advance(2);
+                // Handle single directional axes, such as gamepad triggers
+                // this allows users to bind two triggers to a single (positive/negative) axis
+                if (RequireBidirectionAxis && !isBidirectional)
+                {
+                    if (TargetGesture != null) return;
+                    // Create compound gesture
+                    var compound = new CompoundAxisGesture();
+                    compound.Gestures.Add(axis);
+                    TargetGesture = compound;
+                    Advance(1);
+                }
+                else
+                {
+                    TargetGesture = axis;
+                    Advance(2);
+                }
             }
+            else if (TargetGesture is CompoundAxisGesture)
+            {
+                ((CompoundAxisGesture)TargetGesture).Gestures.Add(axis);
+                // Inver axis since this is now being used as the negative trigger
+                var scalable = axis as ScalableInputGesture;
+                if (scalable != null) scalable.Inverted = !scalable.Inverted;
+                Advance(1);
+            }
+
+            UsedGestures.Add(axis);
         }
 
         protected virtual TwoWayGesture AsTwoWayGesture()

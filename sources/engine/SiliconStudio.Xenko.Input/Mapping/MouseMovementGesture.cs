@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -15,17 +16,30 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private Vector2 currentDirection;
         
         [DataMemberIgnore]
-        public Vector2 Direction => GetScaledOutput(currentDirection);
+        public Vector2 Direction => GetScaledOutput(currentDirection, false);
+        
 
-        public override void Reset()
+        public override void Reset(TimeSpan elapsedTime)
         {
+            base.Reset(elapsedTime);
+
             // Reset delta
             currentDirection = Vector2.Zero;
         }
 
         public void ProcessEvent(PointerEvent inputEvent)
         {
-            currentDirection = inputEvent.DeltaPosition;
+            if (Action.IgnoreMouseWhenNotLocked)
+            {
+                var mouse = inputEvent.Pointer as IMouseDevice;
+                if (mouse != null && !mouse.IsMousePositionLocked)
+                {
+                    currentDirection = Vector2.Zero;
+                    return;
+                }
+            }
+
+            currentDirection = inputEvent.AbsoluteDeltaPosition;
         }
 
         public override string ToString()

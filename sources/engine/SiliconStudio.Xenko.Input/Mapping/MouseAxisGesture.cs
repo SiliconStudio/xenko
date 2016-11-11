@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -28,23 +29,35 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput(currentDelta);
+        public float Axis => GetScaledOutput(currentDelta, false);
 
-        public override void Reset()
+        public override void Reset(TimeSpan elapsedTime)
         {
+            base.Reset(elapsedTime);
+
             // Reset delta
             currentDelta = 0;
         }
 
         public void ProcessEvent(PointerEvent inputEvent)
         {
+            if (Action.IgnoreMouseWhenNotLocked)
+            {
+                var mouse = inputEvent.Pointer as IMouseDevice;
+                if (mouse != null && !mouse.IsMousePositionLocked)
+                {
+                    currentDelta = 0.0f;
+                    return;
+                }
+            }
+            
             switch (MouseAxis)
             {
                 case MouseAxis.X:
-                    currentDelta = inputEvent.DeltaPosition.X;
+                    currentDelta = inputEvent.AbsoluteDeltaPosition.X;
                     break;
                 case MouseAxis.Y:
-                    currentDelta = inputEvent.DeltaPosition.Y;
+                    currentDelta = inputEvent.AbsoluteDeltaPosition.Y;
                     break;
             }
         }
