@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -10,6 +12,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Physics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
 
@@ -80,7 +83,39 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             if (Scene != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);
-                yield return new AssetReference(reference.Id, reference.Url);
+                var sceneAsset = (SceneAsset)session.FindAsset(reference.Url)?.Asset;
+
+                HashSet<Guid> referencedColliderShapes = new HashSet<Guid>();
+
+                // Find collider assets to reference
+                if (sceneAsset != null)
+                {
+                    List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                    foreach (var entity in sceneEntities)
+                    {
+                        StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
+                        bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & IncludedCollisionGroups) != 0 && collider.Enabled;
+                        if (colliderEnabled)
+                        {
+                            var assetShapes = collider.ColliderShapes.OfType<ColliderShapeAssetDesc>();
+                            foreach (var assetShape in assetShapes)
+                            {
+                                if (assetShape.Shape == null)
+                                    continue;
+
+                                // Reference all asset collider shapes
+                                reference = AttachedReferenceManager.GetAttachedReference(assetShape.Shape);
+
+                                // Only need to reference each shape once
+                                if (referencedColliderShapes.Contains(reference.Id))
+                                    continue;
+
+                                yield return new AssetReference(reference.Id, reference.Url);
+                                referencedColliderShapes.Add(reference.Id);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

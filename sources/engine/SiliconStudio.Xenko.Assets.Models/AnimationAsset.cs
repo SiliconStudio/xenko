@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
-    [Display(180, "Animation")]
+    [Display(1805, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
     public class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
