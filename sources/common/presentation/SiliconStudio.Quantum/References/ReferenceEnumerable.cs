@@ -78,11 +78,6 @@ namespace SiliconStudio.Quantum.References
 
             ObjectValue = newObjectValue;
 
-            // First, let's build a new list of uninitialized references
-            //var newReferences = new List<ObjectReference>(IsDictionary
-            //    ? ((IEnumerable)ObjectValue).Cast<object>().Select(x => (ObjectReference)Reference.CreateReference(GetValue(x), elementType, GetKey(x)))
-            //    : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, new Index(i))));
-
             var newReferences = new HybridDictionary<Index, ObjectReference>();
             if (IsDictionary)
             {
@@ -109,19 +104,33 @@ namespace SiliconStudio.Quantum.References
             var needUpdate = items == null || newReferences.Count != items.Count || !AreItemsEqual(items, newReferences);
             if (needUpdate)
             {
-                // We create a dictionary that maps values of the old list of references to their corresponding target node.
-                var dictionary = items?.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).ToDictionary(x => x.ObjectValue) ?? new Dictionary<object, ObjectReference>();
+                // We create a mapping values of the old list of references to their corresponding target node. We use a list because we can have multiple times the same target in items.
+                var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
+                if (items != null)
+                {
+                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                }
+
                 foreach (var newReference in newReferences)
                 {
                     if (newReference.Value.ObjectValue != null)
                     {
-                        ObjectReference oldReference;
-                        if (dictionary.TryGetValue(newReference.Value.ObjectValue, out oldReference))
+                        var found = false;
+                        var i = 0;
+                        foreach (var item in oldReferenceMapping)
                         {
-                            // If this value was already present in the old list of reference, just use the same target node in the new list.
-                            newReference.Value.SetTarget(oldReference.TargetNode);
+                            if (Equals(newReference.Value.ObjectValue, item.Key))
+                            {
+                                // If this value was already present in the old list of reference, just use the same target node in the new list.
+                                newReference.Value.SetTarget(item.Value.TargetNode);
+                                // Remove consumed existing reference so if there is a second entry with the same "key", it will be the other reference that will be used.
+                                oldReferenceMapping.RemoveAt(i);
+                                found = true;
+                                break;
+                            }
+                            ++i;
                         }
-                        else
+                        if (!found)
                         {
                             // Otherwise, do a full update that will properly initialize the new reference.
                             newReference.Value.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Key);
