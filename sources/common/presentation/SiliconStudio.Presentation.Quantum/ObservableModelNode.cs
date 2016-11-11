@@ -206,7 +206,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 if (referenceEnumerable != null && !Index.IsEmpty)
                 {
-                    if (!referenceEnumerable.ContainsIndex(Index))
+                    if (!referenceEnumerable.HasIndex(Index))
                         throw new ObservableViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
 
                     if (targetNode != referenceEnumerable[Index].TargetNode)

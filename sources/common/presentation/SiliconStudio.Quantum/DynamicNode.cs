@@ -197,7 +197,7 @@ namespace SiliconStudio.Quantum
             if (node.Content.IsReference)
             {
                 var reference = node.Content.Reference as ReferenceEnumerable;
-                if (reference?.Indices.Contains(index) ?? false)
+                if (reference?.HasIndex(index) ?? false)
                 {
                     return true;
                 }
@@ -348,7 +348,7 @@ namespace SiliconStudio.Quantum
         protected override IGraphNode GetTargetNode()
         {
             var reference = Node.Content.Reference as ReferenceEnumerable;
-            if (Node.Content.IsReference && (reference?.Indices.Contains(index) ?? false))
+            if (Node.Content.IsReference && (reference?.HasIndex(index) ?? false))
             {
                 return reference[index].TargetNode;
             }
