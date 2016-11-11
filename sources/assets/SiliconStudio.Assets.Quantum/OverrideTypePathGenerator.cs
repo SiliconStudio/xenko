@@ -56,7 +56,7 @@ namespace SiliconStudio.Assets.Quantum
 
         private ObjectPath ConvertPath(GraphNodePath path)
         {
-            var currentPath = new GraphNodePath(path.RootNode);
+            //var currentPath = new GraphNodePath(path.RootNode);
             var currentNode = (AssetNode)path.RootNode;
             var result = new ObjectPath();
             var i = 0;
@@ -67,11 +67,9 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentPath = currentPath.PushMember(member);
                         currentNode = (AssetNode)currentNode.GetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
-                        currentPath = currentPath.PushTarget();
                         if (i < path.Path.Count - 1)
                         {
                             currentNode = (AssetNode)currentNode.GetTarget();
@@ -85,20 +83,12 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         else
                         {
-                            try
-                            {
-                                var id = currentNode.IndexToId(index);
-                                // Create a new id if we don't have any so far
-                                if (id == ItemId.Empty)
-                                    id = ItemId.New();
-                                result.PushItemId(id);
-                            }
-                            catch (Exception)
-                            {
-                                throw;
-                            }
+                            var id = currentNode.IndexToId(index);
+                            // Create a new id if we don't have any so far
+                            if (id == ItemId.Empty)
+                                id = ItemId.New();
+                            result.PushItemId(id);
                         }
-                        currentPath = currentPath.PushIndex(index);
                         if (i < path.Path.Count - 1)
                         {
                             currentNode = (AssetNode)currentNode.GetTarget(index);
