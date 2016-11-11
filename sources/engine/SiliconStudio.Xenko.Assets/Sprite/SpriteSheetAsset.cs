@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
-    [Display(160, "Sprite Sheet")]
+    [Display(1600, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset
     {
         /// <summary>
