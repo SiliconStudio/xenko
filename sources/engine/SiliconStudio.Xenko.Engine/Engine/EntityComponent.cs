@@ -26,6 +26,8 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The unique identifier of this component.
         /// </summary>
+        [DataMember(int.MinValue)]
+        [Display(Browsable = false)]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
@@ -44,14 +46,30 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal class Serializer : DataSerializer<EntityComponent>
+        internal class Serializer : DataSerializer<EntityComponent>, IDataSerializerInitializer
         {
+            private DataSerializer<Guid> guidSerializer;
+
+            /// <inheritdoc/>
+            public void Initialize(SerializerSelector serializerSelector)
+            {
+                guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
+            }
+
             public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)
             {
                 var entity = obj.Entity;
 
                 // Force containing Entity to be collected by serialization, no need to reassign it to EntityComponent.Entity
                 stream.SerializeExtended(ref entity, mode);
+
+                // Serialize Id
+                var id = obj.Id;
+                guidSerializer.Serialize(ref id, mode, stream);
+                if (mode == ArchiveMode.Deserialize)
+                {
+                    obj.Id = id;
+                }
             }
         }
     }
