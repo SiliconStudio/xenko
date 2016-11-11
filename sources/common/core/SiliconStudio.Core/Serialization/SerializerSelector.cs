@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializerSelector"/> class.
         /// </summary>
-        /// <param name="reuseReferences">if set to <c>true</c> [reuse references] (allow cycles in the object graph).</param>
+        /// <param name="reuseReferences">if set to <c>true</c> reuse references (allow cycles in the object graph).</param>
         /// <param name="profiles">The profiles.</param>
         public SerializerSelector(bool reuseReferences, params string[] profiles)
         {
@@ -129,11 +129,11 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [serialization reuses references]
+        /// Gets or sets a value indicating whether serialization reuses references 
         /// (that is, each reference gets assigned an ID and if it is serialized again, same instance will be reused).
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [serialization reuses references]; otherwise, <c>false</c>.
+        ///   <c>true</c> if serialization reuses references; otherwise, <c>false</c>.
         /// </value>
         public bool ReuseReferences { get { return reuseReferences; } }
 
