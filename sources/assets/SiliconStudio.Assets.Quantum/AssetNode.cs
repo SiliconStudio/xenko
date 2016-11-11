@@ -432,16 +432,18 @@ namespace SiliconStudio.Assets.Quantum
                         overrideOnKey = false;
                         if (currentNode.Content.IsReference)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget();
+                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
                         }
-                        currentNode = (AssetNode)currentNode.GetChild(item.AsMember());
+                        string name = item.AsMember();
+                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
                         break;
                     case ObjectPath.ItemType.Index:
                         index = new Index(item.Value);
                         overrideOnKey = true;
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget(new Index(item.Value));
+                            Index index1 = new Index(item.Value);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
                         }
                         break;
                     case ObjectPath.ItemType.ItemId:
@@ -451,7 +453,8 @@ namespace SiliconStudio.Assets.Quantum
                         overrideOnKey = false;
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget(new Index(key));
+                            Index index1 = new Index(key);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
                         }
                         break;
                     default:

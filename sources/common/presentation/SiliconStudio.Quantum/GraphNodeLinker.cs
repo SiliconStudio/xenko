@@ -50,7 +50,8 @@ namespace SiliconStudio.Quantum
                     {
                         if (ShouldVisitNode(child.Content as MemberContent, child))
                         {
-                            VisitedLinks.Add(child, targetNodeParent?.GetChild(child.Name));
+                            string name = child.Name;
+                            VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));
                         }
                     }
                 }

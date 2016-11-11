@@ -63,7 +63,6 @@
     <Compile Include="DefaultNodeBuilder.cs" />
     <Compile Include="NodeContainer.cs" />
     <Compile Include="DebugExtensions.cs" />
-    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="GuidContainer.cs" />
     <Compile Include="GraphNode.cs" />
   </ItemGroup>

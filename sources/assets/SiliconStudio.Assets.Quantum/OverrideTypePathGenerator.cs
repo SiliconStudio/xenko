@@ -56,7 +56,6 @@ namespace SiliconStudio.Assets.Quantum
 
         private ObjectPath ConvertPath(GraphNodePath path)
         {
-            //var currentPath = new GraphNodePath(path.RootNode);
             var currentNode = (AssetNode)path.RootNode;
             var result = new ObjectPath();
             var i = 0;
@@ -67,12 +66,12 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentNode = (AssetNode)currentNode.GetChild(member);
+                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget();
+                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:
@@ -91,7 +90,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget(index);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index);
                         }
                         break;
                     default:
