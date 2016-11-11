@@ -46,7 +46,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Calculates positive * 1.0f + negative * -1.0f so that both buttons cancel each other out when pressed at the same time. This value is scaled by delta time since it uses keyboard input.
         /// </remarks>
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput((Positive?.Button ?? false ? 1.0f : 0.0f) + (Negative?.Button ?? false ? -1.0f : 0.0f), true);
+        public float Axis => GetScaledOutput((Positive?.Button ?? false ? 1.0f : 0.0f) + (Negative?.Button ?? false ? -1.0f : 0.0f));
+
+        [DataMemberIgnore]
+        public bool IsRelative { get; } = true;
 
         public override void Reset(TimeSpan elapsedTime)
         {

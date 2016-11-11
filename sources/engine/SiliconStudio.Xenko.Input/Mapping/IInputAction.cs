@@ -44,10 +44,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         /// <summary>
-        /// Multiplier for gestures that scale with delta time
-        /// </summary>
-        public float DeltaTimeScale { get; set; } = 50.0f;
-
         /// <summary>
         /// Should mouse input be ignored when the mouse is not locked
         /// </summary>

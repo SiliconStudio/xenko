@@ -13,6 +13,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class AxisAction : InputAction
     {
+        private float lastValue;
+        private bool lastRelative;
+
         /// <summary>
         /// Raised when the axis is not 0
         /// </summary>
@@ -22,9 +25,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Raised when the axis changes value
         /// </summary>
         public event EventHandler<ChangedEventArgs> OnChanged;
-
-        private float lastValue;
-
+        
         /// <summary>
         /// The last value of this action
         /// </summary>
@@ -34,21 +35,26 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public override void Update()
         {
             float newValue = 0.0f;
+            bool relative = false;
             foreach (var gesture in Gestures.OfType<IAxisGesture>())
             {
                 float v = gesture.Axis;
                 if (Math.Abs(v) > Math.Abs(newValue))
+                {
                     newValue = v;
+                    relative = gesture.IsRelative;
+                }
             }
 
             if (lastValue != newValue)
             {
                 lastValue = newValue;
-                OnChanged?.Invoke(this, new ChangedEventArgs { Value = lastValue });
+                lastRelative = relative;
+                OnChanged?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative});
             }
             if (lastValue != 0.0f)
             {
-                OnNotZero?.Invoke(this, new ChangedEventArgs { Value = lastValue });
+                OnNotZero?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative });
             }
         }
 
@@ -60,6 +66,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public class ChangedEventArgs : EventArgs
         {
             public float Value;
+            public bool Relative;
         }
     }
 }

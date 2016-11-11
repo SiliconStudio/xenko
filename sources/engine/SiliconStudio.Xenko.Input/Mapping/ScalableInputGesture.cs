@@ -3,6 +3,7 @@
 
 using System;
 using System.Data.Common;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -10,6 +11,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// <summary>
     /// Extends InputGesture to have a setting to adjust the <see cref="Sensitivity"/> and toggle <see cref="Inverted"/>
     /// </summary>
+    [DataContract]
     public class ScalableInputGesture : InputGesture
     {
         /// <summary>
@@ -22,23 +24,14 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public bool Inverted = false;
 
-        private TimeSpan deltaTime;
-
-        public override void Reset(TimeSpan elapsedTime)
-        {
-            base.Reset(elapsedTime);
-            deltaTime = elapsedTime;
-        }
-
         /// <summary>
         /// Returns the input value with <see cref="Inverted"/> and <see cref="Sensitivity"/> applied to it
         /// </summary>
         /// <param name="v">the input axis value</param>
-        /// <param name="affectedByDeltaTime">Whether the output will be scaled by delta time, should be true for devices that provide a direction rather than displacement in value</param>
         /// <returns>The scaled output value</returns>
-        protected float GetScaledOutput(float v, bool affectedByDeltaTime)
+        protected float GetScaledOutput(float v)
         {
-            return v = (Inverted ? -v : v) * Sensitivity * (affectedByDeltaTime ? (float)deltaTime.TotalSeconds * Action.DeltaTimeScale : 1.0f);
+            return v = (Inverted ? -v : v) * Sensitivity;
         }
 
         /// <summary>
@@ -46,11 +39,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         /// <remarks>Inversion inverts both axes</remarks>
         /// <param name="v">the input direction value</param>
-        /// <param name="affectedByDeltaTime">Whether the output will be scaled by delta time, should be true for devices that provide a direction rather than displacement in value</param>
         /// <returns>The scaled output value</returns>
-        protected Vector2 GetScaledOutput(Vector2 v, bool affectedByDeltaTime)
+        protected Vector2 GetScaledOutput(Vector2 v)
         {
-            return v = (Inverted ? -v : v) * Sensitivity * (affectedByDeltaTime ? (float)deltaTime.TotalSeconds * Action.DeltaTimeScale : 1.0f);
+            return v = (Inverted ? -v : v) * Sensitivity;
         }
     }
 }

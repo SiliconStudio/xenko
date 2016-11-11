@@ -25,11 +25,6 @@ namespace SiliconStudio.Xenko.Input.Tests
 {
     public class ActionMappingTest : GameTestBase
     {
-        /// <summary>
-        /// Path to the file that will store the input gesture binding
-        /// </summary>
-        private const string ConfigPath = "input.yaml";
-
         private const float TextSpaceY = 3;
         private const float TextSubSectionOffsetX = 15;
 
@@ -44,16 +39,14 @@ namespace SiliconStudio.Xenko.Input.Tests
         private SpriteFont spriteFont11;
         private Texture roundTexture;
         private int lineOffset = 0;
-
-        // Used for automatic config file reload 
-        private bool reloadConfig = false;
-        private FileSystemWatcher fileSystemWatcher;
-
+        
         // List of actions
         List<InputAction> actions = new List<InputAction>();
 
         private Queue<string> eventLog = new Queue<string>();
         private Stopwatch checkNewDevicesStopwatch = new Stopwatch();
+
+        private InputActionMapping actionMapping;
 
         // State of action binder
         private InputAction currentlyBindingAction;
@@ -86,6 +79,8 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             await base.LoadContent();
 
+            actionMapping = new InputActionMapping(Input);
+
             // Load the fonts
             spriteFont11 = Content.Load<SpriteFont>("Arial");
 
@@ -99,19 +94,8 @@ namespace SiliconStudio.Xenko.Input.Tests
             textHeight = spriteFont11.MeasureString("Dummy").Y;
 
             SetupActions();
-            LoadConfig();
 
             BuildUI();
-
-            // Monitor the config file to check if it changed
-            fileSystemWatcher = new FileSystemWatcher(Directory.GetCurrentDirectory())
-            {
-                EnableRaisingEvents = true,
-                IncludeSubdirectories = false,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size
-            };
-            fileSystemWatcher.Changed += (sender, args) => { reloadConfig = true; };
-            fileSystemWatcher.Created += (sender, args) => { reloadConfig = true; };
         }
 
         protected override void Update(GameTime gameTime)
@@ -135,9 +119,6 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             if (Input.IsKeyReleased(Keys.Escape))
                 Exit();
-
-            if (reloadConfig)
-                LoadConfig();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -231,14 +212,13 @@ namespace SiliconStudio.Xenko.Input.Tests
                     currentlyBindingAction = null;
                     actionBinder.Dispose();
                     actionBinder = null;
-                    SaveConfig();
                 }
             }
         }
 
         private void SetupActions()
         {
-            Input.ActionMapping.ClearBindings();
+            actionMapping.ClearBindings();
             actions.Clear();
 
             AddAction<DirectionAction>("Move");
@@ -253,7 +233,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         private void AddAction<TType>(string name) where TType : InputAction, new()
         {
             var action = new TType();
-            Input.ActionMapping.AddBinding(name, action);
+            actionMapping.AddAction(action);
             actions.Add(action);
         }
 
@@ -277,46 +257,6 @@ namespace SiliconStudio.Xenko.Input.Tests
             currentlyBindingAction = action;
         }
         
-        /// <summary>
-        /// Tries to load the input gesture binding configuration
-        /// </summary>
-        private void LoadConfig()
-        {
-            try
-            {
-                using (FileStream file = File.OpenRead(ConfigPath))
-                {
-                    if (!Input.ActionMapping.LoadBindings(file))
-                    {
-                        file.Dispose();
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                // Save new config
-                SaveConfig();
-            }
-            reloadConfig = false;
-        }
-
-        /// <summary>
-        /// Tries to save the input gesture binding configuration
-        /// </summary>
-        private void SaveConfig()
-        {
-            try
-            {
-                using (FileStream file = File.Open(ConfigPath, FileMode.Create, FileAccess.Write))
-                {
-                    Input.ActionMapping.SaveBindings(file);
-                }
-            }
-            catch (IOException)
-            {
-            }
-        }
-
         private void BuildUI()
         {
             var width = 400;

@@ -14,5 +14,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// The direction state of this gesture
         /// </summary>
         Vector2 Direction { get; }
+
+        /// <summary>
+        /// If <c>true</c>, directional input should be scaled with delta time, otherwise this is an absolute movement (mouse for example)
+        /// </summary>
+        bool IsRelative { get; }
     }
 }

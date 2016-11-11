@@ -12,5 +12,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// The axis state of this gesture
         /// </summary>
         float Axis { get; }
+
+        /// <summary>
+        /// If <c>true</c>, axis input should be scaled with delta time, otherwise this is an absolute movement (mouse wheel for example)
+        /// </summary>
+        bool IsRelative { get; }
     }
 }

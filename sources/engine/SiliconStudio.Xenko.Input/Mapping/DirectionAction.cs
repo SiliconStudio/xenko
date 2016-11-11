@@ -9,11 +9,14 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// An action that generates a floating point value in the range -1 to 1
+    /// An action that generates a direction and velocity
     /// </summary>
     [DataContract]
     public class DirectionAction : InputAction
     {
+        private Vector2 lastValue;
+        private bool lastRelative;
+
         /// <summary>
         /// Raised when the axis is not 0
         /// </summary>
@@ -29,13 +32,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         [DataMemberIgnore]
         public Vector2 Value => lastValue;
-
-        private Vector2 lastValue;
-
+        
         public override void Update()
         {
             Vector2 target = Vector2.Zero;
             float largest = 0.0f;
+            bool relative = false;
             foreach (var gesture in Gestures.OfType<IDirectionGesture>())
             {
                 Vector2 v = gesture.Direction;
@@ -43,6 +45,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 if (length > largest)
                 {
                     target = gesture.Direction;
+                    relative = gesture.IsRelative;
                     largest = length;
                 }
             }
@@ -50,11 +53,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (lastValue != target)
             {
                 lastValue = target;
-                OnChanged?.Invoke(this, new ChangedEventArgs { Value = Value });
+                lastRelative = relative;
+                OnChanged?.Invoke(this, new ChangedEventArgs { Value = Value, Relative = lastRelative });
             }
             if (largest > 0)
             {
-                OnNotZero?.Invoke(this, new ChangedEventArgs { Value = Value });
+                OnNotZero?.Invoke(this, new ChangedEventArgs { Value = Value, Relative = lastRelative });
             }
         }
 
@@ -66,6 +70,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public class ChangedEventArgs : EventArgs
         {
             public Vector2 Value;
+            public bool Relative;
         }
     }
 }

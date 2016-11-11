@@ -16,8 +16,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private Vector2 currentDirection;
         
         [DataMemberIgnore]
-        public Vector2 Direction => GetScaledOutput(currentDirection, false);
-        
+        public Vector2 Direction => GetScaledOutput(currentDirection);
+
+        [DataMemberIgnore]
+        public bool IsRelative { get; } = false;
 
         public override void Reset(TimeSpan elapsedTime)
         {

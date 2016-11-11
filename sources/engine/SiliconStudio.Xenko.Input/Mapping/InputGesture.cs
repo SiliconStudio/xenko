@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         internal InputActionMapping ActionMapping;
         internal InputAction Action;
         private readonly List<InputGesture> childGestures = new List<InputGesture>();
-
+        
         /// <param name="elapsedTime"></param>
         /// <inheritdoc />
         public virtual void Reset(TimeSpan elapsedTime)

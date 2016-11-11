@@ -60,6 +60,17 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
         }
 
+        [DataMemberIgnore]
+        public bool IsRelative
+        {
+            get
+            {
+                if (gestures.Count > 0)
+                    return gestures[0].IsRelative;
+                return false;
+            }
+        }
+
         public override void Reset(TimeSpan elapsedTime)
         {
             base.Reset(elapsedTime);

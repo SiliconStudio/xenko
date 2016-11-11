@@ -29,7 +29,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public float Axis => GetScaledOutput(currentDelta, false);
+        public float Axis => GetScaledOutput(currentDelta);
+
+        [DataMemberIgnore]
+        public bool IsRelative { get; } = false;
 
         public override void Reset(TimeSpan elapsedTime)
         {

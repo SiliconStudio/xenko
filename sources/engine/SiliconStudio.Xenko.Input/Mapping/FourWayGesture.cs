@@ -41,12 +41,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 y = value;
             }
         }
-
-        /// <summary>
-        /// If <c>true</c>, normalizes the direction if it's length is greater than 0
-        /// </summary>
-        /// <remarks>This still allows the axis to report smaller ranges, for e.g. walk/run.</remarks>
-        public bool Normalized { get; set; } = false;
+        
+        [DataMemberIgnore]
+        public bool IsRelative
+        {
+            get { return X?.IsRelative ?? false; }
+        }
 
         [DataMemberIgnore]
         public Vector2 Direction
@@ -54,14 +54,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             get
             {
                 var vec = new Vector2(X?.Axis ?? 0.0f, Y?.Axis ?? 0.0f);
-                if (Normalized)
-                {
-                    float length = vec.Length();
-                    vec /= length;
-                    if (length < 1.0f)
-                        length *= length;
-                }
-                return GetScaledOutput(vec, false);
+                return GetScaledOutput(vec);
             }
         }
 
