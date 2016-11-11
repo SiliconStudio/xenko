@@ -47,7 +47,8 @@ namespace SiliconStudio.Assets.Quantum
                     return targetNode.Content.Reference.AsObject;
                 }
 
-                if (AssetNode.IsNonIdentifiableCollectionContent(sourceNode.Content))
+                var sourceAssetNode = (AssetNode)sourceNode;
+                if (sourceAssetNode.IsNonIdentifiableCollectionContent)
                     return null;
 
                 // Enumerable reference: we look for an object with the same id

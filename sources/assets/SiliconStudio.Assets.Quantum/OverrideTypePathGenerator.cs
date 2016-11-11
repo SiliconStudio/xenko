@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Quantum
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        if (inNonIdentifiableType > 0 || AssetNode.IsNonIdentifiableCollectionContent(currentNode.Content))
+                        if (inNonIdentifiableType > 0 || currentNode.IsNonIdentifiableCollectionContent)
                         {
                             result.PushIndex(index);
                         }

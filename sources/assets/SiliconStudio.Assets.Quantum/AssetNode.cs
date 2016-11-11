@@ -16,6 +16,7 @@ namespace SiliconStudio.Assets.Quantum
         private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
+        private CollectionItemIdentifiers collectionItemIdentifiers;
 
         static AssetNode()
         {
@@ -29,6 +30,7 @@ namespace SiliconStudio.Assets.Quantum
             Content.PrepareChange += (sender, e) => contentUpdating = true;
             Content.FinalizeChange += (sender, e) => contentUpdating = false;
             Content.Changed += ContentChanged;
+            IsNonIdentifiableCollectionContent = (Content as MemberContent)?.Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
         }
 
         public sealed override IContent Content => base.Content;
@@ -40,6 +42,8 @@ namespace SiliconStudio.Assets.Quantum
         public event EventHandler<EventArgs> OverrideChanged;
 
         public IContent BaseContent { get; private set; }
+
+        public bool IsNonIdentifiableCollectionContent { get; }
 
         internal bool ResettingOverride { get; private set; }
 
@@ -241,17 +245,13 @@ namespace SiliconStudio.Assets.Quantum
             BaseContent = baseContent;
         }
 
-        public static bool IsNonIdentifiableCollectionContent(IContent content)
-        {
-            return (content as MemberContent)?.Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-        }
-
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
             // Make sure that we have item ids everywhere we're supposed to.
             AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
 
-            if (IsNonIdentifiableCollectionContent(e.Content))
+            var node = (AssetNode)e.Content.OwnerNode;
+            if (node.IsNonIdentifiableCollectionContent)
                 return;
 
             // Create new ids for collection items
@@ -381,7 +381,7 @@ namespace SiliconStudio.Assets.Quantum
 
             var collection = Content.Retrieve();
             CollectionItemIdentifiers ids;
-            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+            if (TryGetCollectionItemIds(collection, out ids))
             {
                 index = new Index(ids.GetKey(id));
                 return true;
@@ -408,7 +408,7 @@ namespace SiliconStudio.Assets.Quantum
 
             var collection = Content.Retrieve();
             CollectionItemIdentifiers ids;
-            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+            if (TryGetCollectionItemIds(collection, out ids))
             {
                 id = ids[index.Value];
                 return true;
@@ -466,9 +466,22 @@ namespace SiliconStudio.Assets.Quantum
         {
             var collection = Content.Retrieve();
             CollectionItemIdentifiers ids;
-            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out ids))
+            if (!TryGetCollectionItemIds(collection, out ids))
                 throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
             return ids.IsDeleted(itemId);
+        }
+
+        private bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
+        {
+            if (collectionItemIdentifiers != null)
+            {
+                itemIds = collectionItemIdentifiers;
+                return true;
+            }
+
+            var result = CollectionItemIdHelper.TryGetCollectionItemIds(instance, out collectionItemIdentifiers);
+            itemIds = collectionItemIdentifiers;
+            return result;
         }
     }
 }
