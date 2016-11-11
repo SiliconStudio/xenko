@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using SiliconStudio.Core.Yaml.Events;
@@ -158,6 +159,25 @@ namespace SiliconStudio.Core.Yaml
             }
             T yamlEvent = (T) parser.Current;
             return yamlEvent;
+        }
+
+        public void ReadCurrent(IList<Event> events)
+        {
+            int depth = 0;
+
+            do
+            {
+                if (Accept<SequenceStart>() || Accept<MappingStart>() || Accept<StreamStart>() || Accept<DocumentStart>())
+                {
+                    ++depth;
+                }
+                else if (Accept<SequenceEnd>() || Accept<MappingEnd>() || Accept<StreamEnd>() || Accept<DocumentEnd>())
+                {
+                    --depth;
+                }
+
+                events.Add(Allow<Event>());
+            } while (depth > 0);
         }
 
         /// <summary>

@@ -377,6 +377,32 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
+        [NotNull]
+        public static GraphNodePath From(IGraphNode root, MemberPath memberPath)
+        {
+            var result = new GraphNodePath(root);
+            foreach (var memberPathItem in memberPath.Decompose())
+            {
+                if (memberPathItem.MemberDescriptor != null)
+                {
+                    result = result.PushMember(memberPathItem.MemberDescriptor.Name);
+                }
+                else if (memberPathItem.GetIndex() != null)
+                {
+                    result = result.PushIndex(new Index(memberPathItem.GetIndex()));
+                }
+
+                var node = result.GetNode();
+                var objectReference = node.Content.Reference as ObjectReference;
+                if (objectReference?.TargetNode != null)
+                {
+                    result = result.PushTarget();
+                }
+            }
+
+            return result;
+        }
+
         [Pure, NotNull]
         public MemberPath ToMemberPath()
         {
