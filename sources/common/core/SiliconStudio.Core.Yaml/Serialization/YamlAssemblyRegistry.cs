@@ -277,21 +277,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 // We ignore everything else (version, publickeytoken, etc...)
                 if (UseShortTypeName)
                 {
-                    var typeNameEnd = typeName.IndexOf(',');
-                    var assemblyNameStart = typeNameEnd;
-                    if (assemblyNameStart != -1 && typeName[++assemblyNameStart] == ' ') // Skip first comma and check if we have a space
-                        assemblyNameStart++; // Skip first space
-
-                    // Extract assemblyName and readjust typeName to not include assemblyName anymore
-                    if (assemblyNameStart != -1)
-                    {
-                        var assemblyNameEnd = typeName.IndexOf(',', assemblyNameStart);
-                        assemblyName = assemblyNameEnd != -1
-                            ? typeName.Substring(assemblyNameStart, assemblyNameEnd - assemblyNameStart)
-                            : typeName.Substring(assemblyNameStart);
-
-                        typeName = typeName.Substring(0, typeNameEnd);
-                    }
+                    ParseType(typeName, out typeName, out assemblyName);
                 }
 
                 // Look for type in loaded assemblies
@@ -329,6 +315,30 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 }
             }
             return type;
+        }
+
+        public void ParseType(string typeFullName, out string typeName, out string assemblyName)
+        {
+            var typeNameEnd = typeFullName.IndexOf(',');
+            var assemblyNameStart = typeNameEnd;
+            if (assemblyNameStart != -1 && typeFullName[++assemblyNameStart] == ' ') // Skip first comma and check if we have a space
+                assemblyNameStart++; // Skip first space
+
+            // Extract assemblyName and readjust typeName to not include assemblyName anymore
+            if (assemblyNameStart != -1)
+            {
+                var assemblyNameEnd = typeFullName.IndexOf(',', assemblyNameStart);
+                assemblyName = assemblyNameEnd != -1
+                    ? typeFullName.Substring(assemblyNameStart, assemblyNameEnd - assemblyNameStart)
+                    : typeFullName.Substring(assemblyNameStart);
+
+                typeName = typeFullName.Substring(0, typeNameEnd);
+            }
+            else
+            {
+                typeName = typeFullName;
+                assemblyName = null;
+            }
         }
 
         struct MappedType

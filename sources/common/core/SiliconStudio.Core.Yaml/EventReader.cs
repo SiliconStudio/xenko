@@ -177,7 +177,7 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 events.Add(Allow<Event>());
-            } while (depth > 0);
+            } while (depth > 0 && !endOfStream);
         }
 
         /// <summary>
@@ -199,18 +199,27 @@ namespace SiliconStudio.Core.Yaml
                 }
 
                 MoveNext();
-            } while (depth > 0);
+            } while (depth > 0 && !endOfStream);
         }
 
         /// <summary>
         /// Skips until we reach the appropriate depth again
         /// </summary>
-        public void Skip(int untilDepth)
+        public void Skip(int untilDepth, bool skipAtLeastOne = true)
         {
-            do
+            while (CurrentDepth > untilDepth || skipAtLeastOne)
             {
                 MoveNext();
-            } while (CurrentDepth > untilDepth);
+                skipAtLeastOne = false;
+            }
+        }
+
+        /// <summary>
+        /// Call this if <see cref="Parser"/> state has changed (i.e. it might not be at end of stream anymore).
+        /// </summary>
+        public void RefreshParserState()
+        {
+            endOfStream = parser.IsEndOfStream;
         }
 
         /// <summary>

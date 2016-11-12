@@ -283,12 +283,15 @@
     <Compile Include="Yaml\DeletedKeyWithId.cs" />
     <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
     <Compile Include="Yaml\DictionaryWithItemIds.cs" />
+    <Compile Include="Yaml\ErrorRecoverySerializer.cs" />
     <Compile Include="Yaml\IKeyWithId.cs" />
     <Compile Include="Yaml\ItemIdSerializer.cs" />
     <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\IUnloadable.cs" />
     <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
+    <Compile Include="Yaml\UnloadableObjectInstantiator.cs" />
     <Compile Include="Yaml\YamlAssetPath.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -108,6 +108,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ChainedSerializer PreSerializer { get; set; }
 
         /// <summary>
+        /// Gets or sets a serializer that is executed after all other serializers, including <see cref="TagTypeSerializer"/>.
+        /// </summary>
+        public ChainedSerializer PostSerializer { get; set; }
+
+        /// <summary>
         /// Gets or sets the preferred indentation. Default is 2.
         /// </summary>
         /// <value>The preferred indentation.</value>

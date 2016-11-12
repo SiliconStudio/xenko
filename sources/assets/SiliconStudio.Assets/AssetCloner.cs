@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,8 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SiliconStudio.Assets
 {
@@ -30,6 +33,7 @@ namespace SiliconStudio.Assets
         static AssetCloner()
         {
             ClonerSelector = new SerializerSelector(true, "Default", "Content", "AssetClone");
+            ClonerSelector.SerializerFactories.Add(new GenericSerializerFactory(typeof(IUnloadable), typeof(UnloadableCloneSerializer<>)));
         }
 
         /// <summary>
@@ -217,6 +221,52 @@ namespace SiliconStudio.Assets
             var cloner = new AssetCloner(asset, flags);
             var result = cloner.GetHashId();
             return result;
+        }
+
+        class UnloadableCloneSerializer<T> : DataSerializer<T> where T : class, IUnloadable
+        {
+            private DataSerializer parentSerializer;
+
+            public override void Initialize(SerializerSelector serializerSelector)
+            {
+                parentSerializer = serializerSelector.GetSerializer(typeof(T).BaseType);
+            }
+
+            public override void PreSerialize(ref T obj, ArchiveMode mode, SerializationStream stream)
+            {
+                var invariantObjectList = stream.Context.Get(InvariantObjectListProperty);
+                if (mode == ArchiveMode.Serialize)
+                {
+                    stream.Write(invariantObjectList.Count);
+                    invariantObjectList.Add(obj);
+                }
+                else
+                {
+                    var index = stream.Read<int>();
+
+                    if (index >= invariantObjectList.Count)
+                    {
+                        throw new InvalidOperationException($"The type [{typeof(T).FullName}] cannot be only be used for clone serialization");
+                    }
+
+                    var invariant = invariantObjectList[index] as T;
+                    if (invariant == null)
+                    {
+                        throw new InvalidOperationException($"Unexpected null {typeof(T).FullName} while cloning");
+                    }
+
+                    // Create a new object to avoid exception in case its identity is important
+                    obj = (T)Activator.CreateInstance(typeof(T), invariant.TypeName, invariant.AssemblyName, invariant.Error, invariant.ParsingEvents);
+                }
+            }
+
+            public override void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream)
+            {
+                // Process with parent serializer first
+                object parentObj = obj;
+                parentSerializer?.Serialize(ref parentObj, mode, stream);
+                obj = (T)parentObj;
+            }
         }
     }
 }

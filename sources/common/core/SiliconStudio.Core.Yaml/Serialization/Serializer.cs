@@ -578,6 +578,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
             {
                 serializer = ChainedSerializer.Prepend(new AnchorSerializer(), serializer);
             }
+            if (Settings.PostSerializer != null)
+            {
+                serializer = ChainedSerializer.Prepend(Settings.PostSerializer, serializer);
+            }
             return serializer;
         }
 
