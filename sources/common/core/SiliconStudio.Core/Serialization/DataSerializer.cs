@@ -17,6 +17,9 @@ namespace SiliconStudio.Core.Serialization
         // Format: major version * 10000 + minor version * 1000 + patch version * 100 + bump ID
         public const int BinaryFormatVersion = 19000;
 
+        /// <summary>
+        /// The type id of <see cref="SerializationType"/>. Used internally to avoid dealing with strings.
+        /// </summary>
         public ObjectId SerializationTypeId;
 
         /// <summary>
@@ -25,16 +28,31 @@ namespace SiliconStudio.Core.Serialization
         internal bool Initialized;
         internal SpinLock InitializeLock = new SpinLock(true);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// The type of the object that can be serialized or deserialized.
+        /// </summary>
         public abstract Type SerializationType { get; }
 
         /// <inheritdoc/>
         public abstract bool IsBlittable { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Serializes or deserializes the given object <paramref name="obj"/>.
+        /// </summary>
+        /// <param name="obj">The object to serialize or deserialize.</param>
+        /// <param name="mode">The serialization mode.</param>
+        /// <param name="stream">The stream to serialize or deserialize to.</param>
         public abstract void Serialize(ref object obj, ArchiveMode mode, SerializationStream stream);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Performs the first step of serialization or deserialization.
+        /// </summary>
+        /// <remarks>
+        /// Typically, it will instantiate the object if [null], and if it's a collection clear it.
+        /// </remarks>
+        /// <param name="obj">The object to process.</param>
+        /// <param name="mode">The serialization mode.</param>
+        /// <param name="stream">The stream to serialize or deserialize to.</param>
         public abstract void PreSerialize(ref object obj, ArchiveMode mode, SerializationStream stream);
     }
 
@@ -58,7 +76,11 @@ namespace SiliconStudio.Core.Serialization
             obj = objT;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Serializes the given object <paramref name="obj"/>.
+        /// </summary>
+        /// <param name="obj">The object to serialize or deserialize.</param>
+        /// <param name="stream">The stream to serialize or deserialize to.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Serialize(T obj, SerializationStream stream)
         {
@@ -73,12 +95,25 @@ namespace SiliconStudio.Core.Serialization
             obj = objT;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Performs the first step of serialization or deserialization.
+        /// </summary>
+        /// <remarks>
+        /// Typically, it will instantiate the object if [null], and if it's a collection clear it.
+        /// </remarks>
+        /// <param name="obj">The object to process.</param>
+        /// <param name="mode">The serialization mode.</param>
+        /// <param name="stream">The stream to serialize or deserialize to.</param>
         public virtual void PreSerialize(ref T obj, ArchiveMode mode, SerializationStream stream)
         {
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Serializes or deserializes the given object <paramref name="obj"/>.
+        /// </summary>
+        /// <param name="obj">The object to serialize or deserialize.</param>
+        /// <param name="mode">The serialization mode.</param>
+        /// <param name="stream">The stream to serialize or deserialize to.</param>
         public abstract void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream);
     }
 }
