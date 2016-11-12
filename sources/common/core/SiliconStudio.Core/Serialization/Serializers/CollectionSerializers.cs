@@ -16,12 +16,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     /// <typeparam name="T">Generics type of List{T}.</typeparam>
     [DataSerializerGlobal(typeof(ListSerializer<>), typeof(List<>), DataSerializerGenericMode.GenericArguments)]
-    public class ListSerializer<T> : DataSerializer<List<T>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class ListSerializer<T> : DataSerializer<List<T>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
@@ -73,13 +73,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// Data serializer for IList{T}.
     /// </summary>
     /// <typeparam name="T">Generics type of IList{T}.</typeparam>
-    public class ListAllSerializer<TList, T> : DataSerializer<TList>, IDataSerializerInitializer, IDataSerializerGenericInstantiation where TList : class, IList<T>
+    public class ListAllSerializer<TList, T> : DataSerializer<TList>, IDataSerializerGenericInstantiation where TList : class, IList<T>
     {
         private bool isInterface = typeof(TList).GetTypeInfo().IsInterface;
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
@@ -133,13 +133,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="TKey">The type of the key in SortedList{TKey, TValue}.</typeparam>
     /// <typeparam name="TValue">The type of the value in SortedList{TKey, TValue}.</typeparam>
     [DataSerializerGlobal(typeof(SortedListSerializer<,>), typeof(SiliconStudio.Core.Collections.SortedList<,>), DataSerializerGenericMode.GenericArguments)]
-    public class SortedListSerializer<TKey, TValue> : DataSerializer<SiliconStudio.Core.Collections.SortedList<TKey, TValue>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class SortedListSerializer<TKey, TValue> : DataSerializer<SiliconStudio.Core.Collections.SortedList<TKey, TValue>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Key should never be null
             keySerializer = MemberSerializer<TKey>.Create(serializerSelector, false);
@@ -200,12 +200,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     /// <typeparam name="T">Generics type of IList{T}.</typeparam>
     [DataSerializerGlobal(typeof(ListInterfaceSerializer<>), typeof(IList<>), DataSerializerGenericMode.GenericArguments)]
-    public class ListInterfaceSerializer<T> : DataSerializer<IList<T>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class ListInterfaceSerializer<T> : DataSerializer<IList<T>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
@@ -259,12 +259,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// Data serializer for T[].
     /// </summary>
     /// <typeparam name="T">Generics type of T[].</typeparam>
-    public class ArraySerializer<T> : DataSerializer<T[]>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class ArraySerializer<T> : DataSerializer<T[]>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
-        public virtual void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
@@ -347,13 +347,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="TKey">The type of the key in KeyValuePair{TKey, TValue}.</typeparam>
     /// <typeparam name="TValue">The type of the value in KeyValuePair{TKey, TValue}.</typeparam>
     [DataSerializerGlobal(typeof(KeyValuePairSerializer<,>), typeof(KeyValuePair<,>), DataSerializerGenericMode.GenericArguments)]
-    public class KeyValuePairSerializer<TKey, TValue> : DataSerializer<KeyValuePair<TKey, TValue>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class KeyValuePairSerializer<TKey, TValue> : DataSerializer<KeyValuePair<TKey, TValue>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Key should never be null
             keySerializer = MemberSerializer<TKey>.Create(serializerSelector);
@@ -392,13 +392,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="TKey">The type of the key in Dictionary{TKey, TValue}.</typeparam>
     /// <typeparam name="TValue">The type of the value in Dictionary{TKey, TValue}.</typeparam>
     [DataSerializerGlobal(typeof(DictionarySerializer<,>), typeof(Dictionary<,>), DataSerializerGenericMode.GenericArguments)]
-    public class DictionarySerializer<TKey, TValue> : DataSerializer<Dictionary<TKey, TValue>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class DictionarySerializer<TKey, TValue> : DataSerializer<Dictionary<TKey, TValue>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Key should never be null
             keySerializer = MemberSerializer<TKey>.Create(serializerSelector, false);
@@ -453,14 +453,14 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
     }
 
-    public class DictionaryAllSerializer<TDictionary, TKey, TValue> : DataSerializer<TDictionary>, IDataSerializerInitializer, IDataSerializerGenericInstantiation where TDictionary : IDictionary<TKey, TValue>
+    public class DictionaryAllSerializer<TDictionary, TKey, TValue> : DataSerializer<TDictionary>, IDataSerializerGenericInstantiation where TDictionary : IDictionary<TKey, TValue>
     {
         private bool isInterface = typeof(TDictionary).GetTypeInfo().IsInterface;
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Key should never be null
             keySerializer = MemberSerializer<TKey>.Create(serializerSelector, false);
@@ -521,13 +521,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="TKey">The type of the key in IDictionary{TKey, TValue}.</typeparam>
     /// <typeparam name="TValue">The type of the value in IDictionary{TKey, TValue}.</typeparam>
     [DataSerializerGlobal(typeof(DictionaryInterfaceSerializer<,>), typeof(IDictionary<,>), DataSerializerGenericMode.GenericArguments)]
-    public class DictionaryInterfaceSerializer<TKey, TValue> : DataSerializer<IDictionary<TKey, TValue>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class DictionaryInterfaceSerializer<TKey, TValue> : DataSerializer<IDictionary<TKey, TValue>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Key should never be null
             keySerializer = MemberSerializer<TKey>.Create(serializerSelector, false);

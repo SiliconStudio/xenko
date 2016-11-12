@@ -8,12 +8,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     /// <typeparam name="T">Generics type of HashSet{T}.</typeparam>
     [DataSerializerGlobal(typeof(HashSetSerializer<>), typeof(HashSet<>), DataSerializerGenericMode.GenericArguments)]
-    public class HashSetSerializer<T> : DataSerializer<HashSet<T>>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    public class HashSetSerializer<T> : DataSerializer<HashSet<T>>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }

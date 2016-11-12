@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// Serializer for <see cref="RuntimeRasterizedSpriteFont"/>.
     /// </summary>
-    internal class RuntimeRasterizedSpriteFontSerializer : DataSerializer<RuntimeRasterizedSpriteFont>, IDataSerializerInitializer
+    internal class RuntimeRasterizedSpriteFontSerializer : DataSerializer<RuntimeRasterizedSpriteFont>
     {
         private DataSerializer<SpriteFont> parentSerializer;
 
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // Do not create object during pre-serialize (OK because not recursive)
         }
 
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // We should use serializerSelector, but DataContentSerializerHelper we might have wrong context; make sure parent is resolved through proper context
             // (maybe we should have separate contexts for parent and members?)

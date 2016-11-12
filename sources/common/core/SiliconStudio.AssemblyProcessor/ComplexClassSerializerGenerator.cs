@@ -74,7 +74,7 @@ namespace SiliconStudio.AssemblyProcessor
             
             #line default
             #line hidden
-            this.Write(">, IDataSerializerInitializer");
+            this.Write(">");
             
             #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GenerateGenericConstraints(type)));
@@ -131,7 +131,8 @@ foreach (var serializableItem in serializableItems) {
             
             #line default
             #line hidden
-            this.Write("\r\n\t\tpublic void Initialize(SerializerSelector serializerSelector)\r\n\t\t{\r\n");
+            this.Write("\r\n\t\tpublic override void Initialize(SerializerSelector serializerSelector)\r\n\t\t{\r\n" +
+                    "");
             
             #line 27 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 if (hasParentSerializer) {

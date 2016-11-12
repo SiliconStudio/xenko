@@ -188,7 +188,7 @@ namespace SiliconStudio.Core.Serialization
                 if (!dataSerializer.Initialized)
                 {
                     // Initialize (if necessary)
-                    (dataSerializer as IDataSerializerInitializer)?.Initialize(SelectorOverride ?? this);
+                    dataSerializer.Initialize(SelectorOverride ?? this);
 
                     // Mark it as initialized
                     dataSerializer.Initialized = true;

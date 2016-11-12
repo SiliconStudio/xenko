@@ -37,6 +37,15 @@ namespace SiliconStudio.Core.Serialization
         public abstract bool IsBlittable { get; }
 
         /// <summary>
+        /// Initializes the specified serializer.
+        /// </summary>
+        /// <remarks>This method should be thread-safe and OK to call multiple times.</remarks>
+        /// <param name="serializerSelector">The serializer.</param>
+        public virtual void Initialize(SerializerSelector serializerSelector)
+        {
+        }
+
+        /// <summary>
         /// Serializes or deserializes the given object <paramref name="obj"/>.
         /// </summary>
         /// <param name="obj">The object to serialize or deserialize.</param>
