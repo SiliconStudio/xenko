@@ -57,19 +57,19 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetContentChanging(object sender, ContentChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
+            var node = (AssetNode)e.Content.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
-                var node = (AssetNode)e.Content.OwnerNode;
                 if (e.Index == Index.Empty)
                 {
                     overrideValue = node.GetContentOverride();
                 }
-                else if (!AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                else if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
                 }
             }
-            if (e.ChangeType == ContentChangeType.CollectionAdd && !AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+            if (e.ChangeType == ContentChangeType.CollectionAdd && !node.IsNonIdentifiableCollectionContent)
             {
                 // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
                 previousOverrides[e.Content.OwnerNode] = OverrideType.New;
@@ -90,7 +90,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     overrideValue = node.GetContentOverride();
                 }
-                else if (!AssetNode.IsNonIdentifiableCollectionContent(e.Content))
+                else if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
                 }
