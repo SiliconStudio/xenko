@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Engine
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMember(int.MinValue)]
         [Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>

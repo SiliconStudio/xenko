@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 
@@ -147,6 +148,7 @@ namespace SiliconStudio.Assets.Tests
 
         public BasePart Base { get; set; }
 
+        [NonOverridable]
         public Guid Id { get; set; }
     }
 

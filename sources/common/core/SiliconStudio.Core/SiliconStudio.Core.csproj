@@ -62,8 +62,8 @@
     <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
     <Compile Include="Annotations\InlinePropertyAttribute.cs" />
     <Compile Include="Annotations\NonInstantiableAttribute.cs" />
+    <Compile Include="Annotations\NonOverridableAttribute.cs" />
     <Compile Include="Annotations\NotNullAttribute.cs" />
-    <Compile Include="Annotations\NotNullItemsAttribute.cs" />
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />

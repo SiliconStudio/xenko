@@ -92,6 +92,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>A unique ID defining the UI element.</userdoc>
         [DataMember]
         [Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>

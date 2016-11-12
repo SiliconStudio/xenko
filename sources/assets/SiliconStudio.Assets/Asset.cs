@@ -50,6 +50,7 @@ namespace SiliconStudio.Assets
         /// <value>The identifier.</value>
         /// <exception cref="System.InvalidOperationException">Cannot change an Asset Object Id once it is locked</exception>
         [DataMember(-2000)]
+        [NonOverridable]
         [Display(Browsable = false)]
         public Guid Id
         {
@@ -74,11 +75,13 @@ namespace SiliconStudio.Assets
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
+        [NonOverridable]
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
         [DataMember(-900)]
         [Display(Browsable = false)]
+        [NonOverridable]
         [DefaultValue(null)]
         public AssetReference Archetype { get; set; }
 
@@ -94,6 +97,7 @@ namespace SiliconStudio.Assets
         [DataMember(-980)]
         [DefaultValue(0)]
         [Display(Browsable = false)]
+        [NonOverridable]
         [Obsolete]
         public int BuildOrder { get; set; }
 
@@ -106,6 +110,7 @@ namespace SiliconStudio.Assets
         [DataMember(-900)]
         [Display(Browsable = false)]
         [NonIdentifiableCollectionItems]
+        [NonOverridable]
         [MemberCollection(NotNullItems = true)]
         public TagCollection Tags { get; private set; }
 
