@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum
     [AssetPropertyGraph(typeof(Asset))]
     public class AssetPropertyGraph : IDisposable
     {
-        protected readonly AssetItem assetItem;
+        protected readonly AssetItem AssetItem;
         public readonly AssetGraphNodeChangeListener NodeListener;
         protected AssetPropertyGraphContainer Container;
         private readonly AssetToBaseNodeLinker baseLinker;
@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (assetItem == null)
                 throw new ArgumentNullException(nameof(assetItem));
-            this.assetItem = assetItem;
+            AssetItem = assetItem;
             Container = container;
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
@@ -84,8 +84,8 @@ namespace SiliconStudio.Assets.Quantum
 
         public void PrepareSave(ILogger logger)
         {
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
-            CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(AssetItem.Asset);
+            CollectionItemIdsAnalysis.FixupItemIds(AssetItem, logger);
             UpdateOverridesForSerialization();
         }
 
@@ -93,16 +93,16 @@ namespace SiliconStudio.Assets.Quantum
         {
             var visitor = new OverrideTypePathGenerator();
             visitor.Visit(RootNode);
-            assetItem.Overrides = visitor.Result;
+            AssetItem.Overrides = visitor.Result;
         }
 
         private void ApplyOverrides()
         {
             if (RootNode == null)
                 throw new InvalidOperationException($"{nameof(RootNode)} is not set.");
-            if (assetItem.Overrides != null)
+            if (AssetItem.Overrides != null)
             {
-                foreach (var overrideInfo in assetItem.Overrides)
+                foreach (var overrideInfo in AssetItem.Overrides)
                 {
                     Index index;
                     bool overrideOnKey;
