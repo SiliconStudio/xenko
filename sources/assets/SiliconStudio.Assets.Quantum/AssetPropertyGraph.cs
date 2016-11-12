@@ -143,7 +143,7 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         // TODO: turn protected
-        public virtual object CloneValueFromBase(object value, AssetNode node)
+        protected virtual object CloneValueFromBase(object value, AssetNode node)
         {
             return AssetNode.CloneFromBase(value);
         }
@@ -238,7 +238,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        private static void Reconcile(AssetNode assetNode)
+        private void Reconcile(AssetNode assetNode)
         {
             if (assetNode.Content is ObjectContent || assetNode.BaseContent == null || !assetNode.CanOverride)
                 return;
@@ -307,11 +307,13 @@ namespace SiliconStudio.Assets.Quantum
                             }
                             else
                             {
+                                var member = assetNode.Content as MemberContent;
+                                var targetNode = assetNode.Content.Reference?.AsEnumerable?[localIndex]?.TargetNode;
                                 if (!assetNode.IsItemOverridden(localIndex))
                                 {
                                     var localItemValue = assetNode.Content.Retrieve(localIndex);
                                     var baseItemValue = baseNode.Content.Retrieve(index);
-                                    if (ShouldReconcileItem(localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
+                                    if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
                                     {
                                         var clonedValue = assetNode.Cloner(baseItemValue);
                                         assetNode.Content.Update(clonedValue, localIndex);
@@ -319,7 +321,7 @@ namespace SiliconStudio.Assets.Quantum
                                 }
                                 if (assetNode.Content.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
                                 {
-                                    if (ShouldReconcileItem(localIndex.Value, index.Value, false))
+                                    if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
                                     {
                                         var clonedIndex = new Index(assetNode.Cloner(index.Value));
                                         var localItemValue = assetNode.Content.Retrieve(localIndex);
@@ -376,7 +378,9 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 else
                 {
-                    if (ShouldReconcileItem(localValue, baseValue, assetNode.Content.Reference is ObjectReference))
+                    var member = assetNode.Content as MemberContent;
+                    var targetNode = assetNode.Content.Reference?.AsObject?.TargetNode;
+                    if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Content.Reference is ObjectReference))
                     {
                         var clonedValue = assetNode.Cloner(baseValue);
                         assetNode.Content.Update(clonedValue);
@@ -386,7 +390,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        private static bool ShouldReconcileItem(object localValue, object baseValue, bool isReference)
+        protected virtual bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
         {
             if (isReference)
             {

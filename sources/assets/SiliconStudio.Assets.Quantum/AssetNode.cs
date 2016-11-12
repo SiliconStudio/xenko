@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public sealed override IContent Content => base.Content;
 
-        public Func<object, object> Cloner { get { return cloner; } set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
+        public Func<object, object> Cloner { get { return cloner; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
 
         public IContent BaseContent { get; private set; }
 

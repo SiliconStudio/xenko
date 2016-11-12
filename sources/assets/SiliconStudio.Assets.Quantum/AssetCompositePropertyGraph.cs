@@ -40,5 +40,15 @@ namespace SiliconStudio.Assets.Quantum
         {
             return new AssetCompositePartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
+
+        protected override bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
+        {
+            // Always reconcile referenced parts
+            if (isReference && IsReferencedPart(member, targetNode))
+            {
+                return true;
+            }
+            return base.ShouldReconcileItem(member, targetNode, localValue, baseValue, isReference);
+        }
     }
 }

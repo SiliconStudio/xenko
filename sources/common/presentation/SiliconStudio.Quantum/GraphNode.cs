@@ -133,7 +133,15 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{{Node: {Name} = [{Content.Value}]}}";
+            string type = null;
+            if (Content is MemberContent)
+                type = "Member";
+            else if (Content is ObjectContent)
+                type = "Object";
+            else if (Content is BoxedContent)
+                type = "Boxed";
+
+            return $"{{Node: {type} {Name} = [{Content.Value}]}}";
         }
     }
 }
