@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
 
             // On a derive asset all entities must have a base value and base must come from baseAsset
             Assert.True(newAsset.Hierarchy.Parts.All(item => item.Base != null && baseAsset.Hierarchy.Parts.ContainsKey(item.Base.BasePartId)));
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newBaseAsset.Hierarchy.RootPartIds.Add(entityD.Id);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
 
             // Both root and entities must be the same
             Assert.AreEqual(4, newAsset.Hierarchy.RootPartIds.Count);
@@ -177,7 +177,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newBaseAsset.Hierarchy.Parts[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
             var eA4 = new Entity() { Name = "A4" };
             newAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()].Entity.Transform.Children.Add(eA4.Transform);
@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
@@ -313,7 +313,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newBaseAsset.Hierarchy.Parts[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
 
             var eA4 = new Entity() { Name = "A4" };
 
@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (PrefabAsset)baseAssetItem.CreateDerivedAsset();
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
@@ -556,8 +556,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var asset = new PrefabAsset();
 
             // Create derived parts
-            //var eRoot1Asset = (PrefabAsset)part1.CreateChildAsset("part");
-            //var eRoot2Asset = (PrefabAsset)part1.CreateChildAsset("part");
+            //var eRoot1Asset = (PrefabAsset)part1.CreateDerivedAsset("part");
+            //var eRoot2Asset = (PrefabAsset)part1.CreateDerivedAsset("part");
             //asset.AddPart(eRoot1Asset);
             //asset.AddPart(eRoot2Asset);
             Guid eRoot1Id;
