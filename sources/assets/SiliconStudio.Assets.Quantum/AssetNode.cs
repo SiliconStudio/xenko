@@ -240,7 +240,7 @@ namespace SiliconStudio.Assets.Quantum
             return result;
         }
 
-        public void SetBase(IContent baseContent)
+        internal void SetBase(IContent baseContent)
         {
             BaseContent = baseContent;
         }
