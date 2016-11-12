@@ -35,5 +35,10 @@ namespace SiliconStudio.Assets.Quantum
             }
             return false;
         }
+
+        protected override GraphVisitorBase CreateReconcilierVisitor()
+        {
+            return new AssetCompositePartVisitor<TAssetPartDesign, TAssetPart>(this);
+        }
     }
 }

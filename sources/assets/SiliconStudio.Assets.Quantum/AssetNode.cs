@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool IsNonIdentifiableCollectionContent { get; }
 
-        internal bool ResettingOverride { get; private set; }
+        internal bool ResettingOverride { get; set; }
 
         public bool CanOverride { get; }
 
