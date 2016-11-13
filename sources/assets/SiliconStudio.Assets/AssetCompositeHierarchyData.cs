@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets

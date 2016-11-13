@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;

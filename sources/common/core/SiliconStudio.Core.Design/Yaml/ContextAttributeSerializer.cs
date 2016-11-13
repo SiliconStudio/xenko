@@ -1,4 +1,5 @@
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 

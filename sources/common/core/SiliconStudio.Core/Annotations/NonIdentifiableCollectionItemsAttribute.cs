@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Core.Yaml
+namespace SiliconStudio.Core.Annotations
 {
     /// <summary>
     /// This attribute indicates that a collection should not be serialized with identifiers associated to each of its item.

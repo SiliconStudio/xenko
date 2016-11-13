@@ -119,7 +119,6 @@
     <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
-    <Compile Include="Yaml\NonIdentifiableCollectionItemsAttribute.cs" />
     <Compile Include="Yaml\ObjectPath.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
