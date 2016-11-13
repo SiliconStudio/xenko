@@ -222,22 +222,84 @@ namespace SiliconStudio.Assets.Quantum
             return baseContent;
         }
 
-        public Index RetrieveDerivedIndex(Index baseIndex)
+        // TODO: move this in AssetPropertyGraph as a private method, it's the only usage (could also be inlined or split in 3 methods)
+        internal Index RetrieveDerivedIndex(Index baseIndex, ContentChangeType changeType)
         {
-            var memberContent = BaseContent as MemberContent;
-            if (memberContent == null || BaseContent == null)
+            var baseMemberContent = BaseContent as MemberContent;
+            if (baseMemberContent == null)
                 return Index.Empty;
 
-            if (baseIndex.IsEmpty)
-                return baseIndex;
+            switch (changeType)
+            {
+                case ContentChangeType.ValueChange:
+                {
+                    if (baseIndex.IsEmpty)
+                        return baseIndex;
 
-            var baseNode = (AssetNode)BaseContent.OwnerNode;
-            ItemId baseId;
-            if (!baseNode.TryIndexToId(baseIndex, out baseId))
-                return Index.Empty;
+                    var baseNode = (AssetNode)BaseContent.OwnerNode;
+                    ItemId baseId;
+                    if (!baseNode.TryIndexToId(baseIndex, out baseId))
+                        return Index.Empty;
 
-            Index index;
-            return TryIdToIndex(baseId, out index) ? index : Index.Empty;
+                    Index index;
+                    // Find the index of the item in this instance corresponding to the modified item in the base.
+                    return TryIdToIndex(baseId, out index) ? index : Index.Empty;
+                }
+                case ContentChangeType.CollectionAdd:
+                {
+                    if (baseIndex.IsEmpty)
+                        return Index.Empty;
+
+                    var baseNode = (AssetNode)BaseContent.OwnerNode;
+                    ItemId baseId;
+                    if (!baseNode.TryIndexToId(baseIndex, out baseId))
+                        throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
+
+                    if (BaseContent.Descriptor is CollectionDescriptor)
+                    {
+                        var currentBaseIndex = baseIndex.Int - 1;
+                        // Find the first item before the new one that also exists (in term of id) in the local node
+                        while (currentBaseIndex > 0)
+                        {
+                            if (!baseNode.TryIndexToId(new Index(currentBaseIndex), out baseId))
+                                throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
+
+                            Index localIndex;
+                            // If we have an matching item, we want to insert right after it
+                            if (TryIdToIndex(baseId, out localIndex))
+                                return new Index(localIndex.Int + 1);
+
+                            currentBaseIndex--;
+                        }
+                        // Otherwise, insert at 0
+                        return new Index(0);
+                    }
+                    return baseIndex;
+                }
+                case ContentChangeType.CollectionRemove:
+                {
+                        // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
+                        var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseMemberContent.Retrieve());
+                        var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(Content.Retrieve());
+                        var missingIds = baseIds.FindMissingIds(instanceIds);
+                        var foundUnique = false;
+                        var index = new Index();
+                        foreach (var id in missingIds)
+                        {
+                            if (TryIdToIndex(id, out index))
+                            {
+                                if (foundUnique)
+                                    throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
+                                foundUnique = true;
+                            }
+                        }
+                        if (!foundUnique)
+                            throw new InvalidOperationException("Couldn't find a single item id in the instance collection corresponding to the item removed in the base collection");
+                    return index;
+                }
+                default:
+                    throw new ArgumentException(@"Cannot retrieve index in derived asset for a remove operation.", nameof(changeType));
+            }
         }
 
         /// <summary>
@@ -406,7 +468,7 @@ namespace SiliconStudio.Assets.Quantum
             if (TryGetCollectionItemIds(collection, out ids))
             {
                 index = new Index(ids.GetKey(id));
-                return true;
+                return !index.IsEmpty;
             }
             index = Index.Empty;
             return false;

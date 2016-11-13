@@ -173,63 +173,66 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             var node = (AssetNode)assetContent.OwnerNode;
-            var overrideType = OverrideType.Base;
-            var index = Index.Empty;
-
-            if (e.ChangeType == ContentChangeType.ValueChange)
-            {
-                // Find the index of the item in this instance corresponding to the modified item in the base.
-                index = node.RetrieveDerivedIndex(e.Index);
-
-                // If this item does not exist anymore in the instance, stop here.
-                if (index.IsEmpty && !e.Index.IsEmpty)
-                    return;
-
-                // Otherwise, retrieve the current override (before the change).
-                overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
-            }
-            else if (e.ChangeType == ContentChangeType.CollectionRemove)
-            {
-                // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
-                // TODO: at some point it would be better to merge this algorithm and RetrieveDerivedIndex in a single method, private to this class (and remove RetrieveDerivedIndex)
-                var baseIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(node.Content.Retrieve());
-                var missingIds = baseIds.FindMissingIds(instanceIds);
-                bool foundUnique = false;
-                foreach (var id in missingIds)
-                {
-                    if (node.TryIdToIndex(id, out index))
-                    {
-                        if (foundUnique) throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
-                        foundUnique = true;
-                    }
-                }
-                if (!foundUnique) throw new InvalidOperationException("Couldn't find a single item id in the instance collection corresponding to the item removed in the base collection");
-            }
 
             // Then we update the value of this instance according to the value from the base, but only if it's not overridden.
             // Remark: if it's an Add/Remove, we always propagate the action which is why overrideType is always not New in this case.
-            if (assetContent is MemberContent && !overrideType.HasFlag(OverrideType.New))
+            if (assetContent is MemberContent)
             {
                 UpdatingPropertyFromBase = true;
                 // Clone the value from the base
                 var newValue = node.Cloner(e.NewValue);
+                Index index = node.RetrieveDerivedIndex(e.Index, e.ChangeType);
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
-                        assetContent.Update(newValue, index);
+                        // If this item does not exist anymore in the instance, stop here.
+                        if (index.IsEmpty && !e.Index.IsEmpty)
+                            return;
+
+                        // Otherwise, retrieve the current override (before the change).
+                        var overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
+                        if (!overrideType.HasFlag(OverrideType.New))
+                        {
+                            assetContent.Update(newValue, index);
+                        }
                         break;
                     case ContentChangeType.CollectionAdd:
-                        // Add at the same index than the base, if possible
-                        if (assetContent.Descriptor is DictionaryDescriptor || assetContent.Indices.Any(x => x.Equals(e.Index)))
-                            assetContent.Add(newValue, e.Index);
+                    {
+                        if (assetContent.Descriptor is DictionaryDescriptor)
+                        {
+                            // HasIndex is faster than iterating over Indices, but it's available only if the content is a reference
+                            if (assetContent.Reference?.HasIndex(e.Index) != true && !assetContent.Indices.Any(x => e.Index.Equals(x)))
+                            {
+                                assetContent.Add(newValue, e.Index);
+                            }
+                            else
+                            {
+                                // If we have a collision, we consider that the new value from the base is deleted in the instance.
+                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
+                                var id = ((AssetNode)node.BaseContent.OwnerNode).IndexToId(e.Index);
+                                instanceIds.MarkAsDeleted(id);
+                            }
+                        }
                         else
-                            assetContent.Add(newValue);
+                        {
+                            if (!e.Index.IsEmpty && e.Index.Int >= 0)
+                            {
+                                assetContent.Add(newValue, index);
+                            }
+                            else
+                            {
+                                assetContent.Add(newValue);
+                            }
+                        }
                         break;
+
+                    }
                     case ContentChangeType.CollectionRemove:
+                    {
                         var item = assetContent.Retrieve(index);
                         assetContent.Remove(item, index);
                         break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
