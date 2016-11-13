@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -37,7 +39,9 @@ namespace SiliconStudio.Assets
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
         private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
-        private static readonly Dictionary<Type, Type> RegisteredContentReferenceTypes = new Dictionary<Type, Type>();
+        private static readonly Dictionary<Type, List<Type>> RegisteredContentTypes = new Dictionary<Type, List<Type>>();
+        private static readonly Dictionary<Type, List<Type>> ContentToAssetTypes = new Dictionary<Type, List<Type>>();
+        private static readonly Dictionary<Type, Type> AssetToContentTypes = new Dictionary<Type, Type>();
 
         // Global lock used to secure the registry with threads
         private static readonly object RegistryLock = new object();
@@ -270,6 +274,42 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static IList<Type> GetContentTypes()
+        {
+            lock (RegistryLock)
+            {
+                return RegisteredContentTypes.Keys.ToList();
+            }
+        }
+
+        public static Type GetContentType(Type assetType)
+        {
+            IsAssetType(assetType, true);
+            lock (RegistryLock)
+            {
+                var currentType = assetType;
+                while (currentType != null)
+                {
+                    Type contentType;
+                    if (AssetToContentTypes.TryGetValue(assetType, out contentType))
+                        return contentType;
+
+                    currentType = currentType.BaseType;
+                }
+                return null;
+            }
+        }
+
+        public static IReadOnlyList<Type> GetAssetTypes(Type contentType)
+        {
+            lock (RegistryLock)
+            {
+                var currentType = contentType;
+                List<Type> assetTypes;
+                return ContentToAssetTypes.TryGetValue(currentType, out assetTypes) ? new List<Type>(assetTypes) : new List<Type>();
+            }
+        }
+
         /// <summary>
         /// Finds the importer associated with an asset by the file of the file to import.
         /// </summary>
@@ -353,14 +393,14 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static bool IsContentReferenceType(Type type)
+        public static bool IsContentType(Type type)
         {
             lock (RegistryLock)
             {
                 var currentType = type;
                 while (currentType != null)
                 {
-                    if (RegisteredContentReferenceTypes.ContainsKey(type))
+                    if (RegisteredContentTypes.ContainsKey(type))
                         return true;
 
                     currentType = currentType.BaseType;
@@ -379,18 +419,13 @@ namespace SiliconStudio.Assets
                     return;
 
                 RegisteredEngineAssemblies.Add(assembly);
-                
+
                 // Process Asset types.
                 foreach (var type in assembly.GetTypes())
                 {
-                    var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
-                    if (serializer != null)
+                    if (ReferenceSerializer.IsReferenceType(type))
                     {
-                        var serializerType = serializer.GetType();
-                        if (serializerType.IsGenericType && serializerType.GetGenericTypeDefinition().Name == "ReferenceSerializer`1")
-                        {
-                            RegisteredContentReferenceTypes.Add(type, null);
-                        }
+                        RegisteredContentTypes.Add(type, null);
                     }
                 }
             }
@@ -407,9 +442,9 @@ namespace SiliconStudio.Assets
 
                 RegisteredEngineAssemblies.Remove(assembly);
 
-                foreach (var type in RegisteredContentReferenceTypes.Keys.Where(x => x.Assembly == assembly).ToList())
+                foreach (var type in RegisteredContentTypes.Keys.Where(x => x.Assembly == assembly).ToList())
                 {
-                    RegisteredContentReferenceTypes.Remove(type);
+                    RegisteredContentTypes.Remove(type);
                 }
             }
         }
@@ -540,6 +575,20 @@ namespace SiliconStudio.Assets
                             }
                         }
 
+                        // Content type associated to assets
+                        var assetContentType = assetType.GetCustomAttribute<AssetContentTypeAttribute>();
+                        if (assetContentType != null)
+                        {
+                            List<Type> assetTypes;
+                            if (!ContentToAssetTypes.TryGetValue(assetContentType.ContentType, out assetTypes))
+                            {
+                                assetTypes = new List<Type>();
+                                ContentToAssetTypes[assetContentType.ContentType] = assetTypes;
+                            }
+                            assetTypes.Add(assetType);
+                            AssetToContentTypes.Add(assetType, assetContentType.ContentType);
+                        }
+
                         // Asset format version (process name by name)
                         var assetFormatVersions = assetType.GetCustomAttributes<AssetFormatVersionAttribute>();
                         foreach (var assetFormatVersion in assetFormatVersions)
@@ -570,6 +619,7 @@ namespace SiliconStudio.Assets
                             }
                         }
 
+                        // Part reference types for asset composites
                         if (typeof(AssetComposite).IsAssignableFrom(assetType))
                         {
                             var attributes = assetType.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToList();

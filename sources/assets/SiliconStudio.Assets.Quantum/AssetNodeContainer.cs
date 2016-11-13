@@ -37,6 +37,11 @@ namespace SiliconStudio.Assets.Quantum
             NodeBuilder.RegisterPrimitiveType(typeof(Matrix));
             NodeBuilder.RegisterPrimitiveType(typeof(UPath));
             NodeBuilder.RegisterPrimitiveType(typeof(AngleSingle));
+            // Register content types as primitive so they are not processed by Quantum
+            foreach (var contentType in AssetRegistry.GetContentTypes())
+            {
+                NodeBuilder.RegisterPrimitiveType(contentType);
+            }
             OverrideNodeFactory((name, content, guid) => new AssetNode(name, content, guid));
         }
     }

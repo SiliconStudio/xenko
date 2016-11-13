@@ -400,7 +400,7 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             // Content reference (note: they are not treated as reference
-            if (AssetRegistry.IsContentReferenceType(localValue?.GetType()) || AssetRegistry.IsContentReferenceType(localValue?.GetType()))
+            if (AssetRegistry.IsContentType(localValue?.GetType()) || AssetRegistry.IsContentType(localValue?.GetType()))
             {
                 var localRef = AttachedReferenceManager.GetAttachedReference(localValue);
                 var baseRef = AttachedReferenceManager.GetAttachedReference(baseValue);

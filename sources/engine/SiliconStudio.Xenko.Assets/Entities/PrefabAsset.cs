@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("PrefabAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Prefab))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.7.0-beta01", typeof(SpriteComponentUpgrader))]

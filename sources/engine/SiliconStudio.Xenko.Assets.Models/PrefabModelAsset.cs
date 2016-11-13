@@ -8,6 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -16,6 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     /// </summary>
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(PrefabModelAssetCompiler))]
     [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies

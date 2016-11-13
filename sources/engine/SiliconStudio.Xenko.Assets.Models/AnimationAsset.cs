@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(AnimationClip))]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [Display(1805, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]

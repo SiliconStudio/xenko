@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     /// </summary>
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(1850, "Procedural Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.9.0-beta01")]

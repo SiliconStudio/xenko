@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]

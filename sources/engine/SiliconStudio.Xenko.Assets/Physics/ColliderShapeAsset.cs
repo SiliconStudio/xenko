@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 {
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(PhysicsColliderShape))]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
