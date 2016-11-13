@@ -48,12 +48,12 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal class Serializer : DataSerializer<EntityComponent>, IDataSerializerInitializer
+        internal class Serializer : DataSerializer<EntityComponent>
         {
             private DataSerializer<Guid> guidSerializer;
 
             /// <inheritdoc/>
-            public void Initialize(SerializerSelector serializerSelector)
+            public override void Initialize(SerializerSelector serializerSelector)
             {
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
             }

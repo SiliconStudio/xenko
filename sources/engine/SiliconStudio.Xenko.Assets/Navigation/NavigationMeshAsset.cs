@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 if (referencedColliderShapes.Contains(reference.Id))
                                     continue;
 
-                                yield return new AssetReference<ColliderShapeAsset>(reference.Id, reference.Url);
+                                yield return new AssetReference(reference.Id, reference.Url);
                                 referencedColliderShapes.Add(reference.Id);
                             }
                         }
