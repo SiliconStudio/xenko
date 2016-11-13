@@ -40,7 +40,18 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(assets[0].Id, childAsset.Archetype.Id);
 
             // Check that base is correctly setup for the part
-            Assert.AreEqual(assets[0].Parts[0].Id, childAsset.Parts[0].Base?.BasePartId);
+            var i = 0;
+            var instanceId = Guid.Empty;
+            foreach (var part in childAsset.Parts)
+            {
+                Assert.AreEqual(assets[0].Id, part.Base.BasePartAsset.Id);
+                Assert.AreEqual(assets[0].Parts[i].Id, part.Base.BasePartId);
+                if (instanceId == Guid.Empty)
+                    instanceId = part.Base.InstanceId;
+                Assert.AreNotEqual(Guid.Empty, instanceId);
+                Assert.AreEqual(instanceId, part.Base.InstanceId);
+                ++i;
+            }
         }
     }
 }
