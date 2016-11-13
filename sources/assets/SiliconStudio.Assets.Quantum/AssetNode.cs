@@ -278,23 +278,21 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 case ContentChangeType.CollectionRemove:
                 {
-                        // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
-                        var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseMemberContent.Retrieve());
-                        var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(Content.Retrieve());
-                        var missingIds = baseIds.FindMissingIds(instanceIds);
-                        var foundUnique = false;
-                        var index = new Index();
-                        foreach (var id in missingIds)
+                    // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
+                    var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseMemberContent.Retrieve());
+                    var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(Content.Retrieve());
+                    var missingIds = baseIds.FindMissingIds(instanceIds);
+                    var foundUnique = false;
+                    var index = Index.Empty;
+                    foreach (var id in missingIds)
+                    {
+                        if (TryIdToIndex(id, out index))
                         {
-                            if (TryIdToIndex(id, out index))
-                            {
-                                if (foundUnique)
-                                    throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
-                                foundUnique = true;
-                            }
+                            if (foundUnique)
+                                throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
+                            foundUnique = true;
                         }
-                        if (!foundUnique)
-                            throw new InvalidOperationException("Couldn't find a single item id in the instance collection corresponding to the item removed in the base collection");
+                    }
                     return index;
                 }
                 default:

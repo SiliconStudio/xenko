@@ -229,8 +229,21 @@ namespace SiliconStudio.Assets.Quantum
                     }
                     case ContentChangeType.CollectionRemove:
                     {
-                        var item = assetContent.Retrieve(index);
-                        assetContent.Remove(item, index);
+                        // Index might be empty if the corresponding item has already been deleted in the instance (as an "override-delete")
+                        if (!index.IsEmpty)
+                        {
+                            var item = assetContent.Retrieve(index);
+                            assetContent.Remove(item, index);
+                        }
+                        else
+                        {
+                            var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
+                            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            // Find the id absent from the base but still present (NB: as deleted) in the instance.
+                            // TODO: Merging RetrieveDerivedIndex in this class would help avoiding to compute missing ids twice
+                            var missingIds = baseIds.FindMissingIds(instanceIds);
+                            instanceIds.UnmarkAsDeleted(missingIds.Single());
+                        }
                         break;
                     }
                     default:
@@ -242,6 +255,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        // TODO: this code is complex and redundant comparing to the normal base propagation. Try to simulate reconcile operations with normal changes coming from the base (OnBaseContentChanged) to simplify!
         private void Reconcile(AssetNode assetNode)
         {
             if (assetNode.Content is ObjectContent || assetNode.BaseContent == null || !assetNode.CanOverride)
@@ -298,16 +312,26 @@ namespace SiliconStudio.Assets.Quantum
                             ids.UnmarkAsDeleted(deletedId);
                         }
                     }
+                    // Add item present in the base and missing here
                     foreach (var index in assetNode.BaseContent.Indices)
                     {
                         var itemId = baseNode.IndexToId(index);
                         // TODO: What should we do if it's empty? It can happen only from corrupted data
                         if (itemId != ItemId.Empty && !assetNode.IsItemDeleted(itemId))
                         {
-                            var localIndex = assetNode.IdToIndex(itemId);
-                            if (localIndex == Index.Empty)
+                            Index localIndex;
+                            if (!assetNode.TryIdToIndex(itemId, out localIndex))
                             {
-                                itemsToAdd.Add(index.Value, itemId);
+                                if (assetNode.Content.Reference?.HasIndex(index) != true && !assetNode.Content.Indices.Any(x => index.Equals(x)))
+                                {
+                                    itemsToAdd.Add(index.Value, itemId);
+                                }
+                                else
+                                {
+                                    // If we have a collision, we consider that the new value from the base is deleted in the instance.
+                                    var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
+                                    instanceIds.MarkAsDeleted(itemId);
+                                }
                             }
                             else
                             {

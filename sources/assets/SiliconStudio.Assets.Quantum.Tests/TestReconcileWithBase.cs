@@ -287,6 +287,48 @@ MyDictionary:
         }
 
         [Test]
+        public void TestDictionaryKeyCollision()
+        {
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+Id: 10000000-0000-0000-0000-000000000000
+Tags: []
+MyDictionary:
+    0a0000000a0000000a0000000a000000~Key1: String1
+    14000000140000001400000014000000~Key2: String2
+";
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
+Id: 20000000-0000-0000-0000-000000000000
+Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Tags: []
+MyDictionary:
+    0a0000000a0000000a0000000a000000~Key1: String1
+    15000000150000001500000015000000*~Key2: String3
+";
+            var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
+            Assert.AreEqual("String2", context.BaseAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
+            Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key2"]);
+            context.DerivedGraph.ReconcileWithBase();
+            Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
+            Assert.AreEqual("String2", context.BaseAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
+            Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key2"]);
+            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var deletedItemId = ids["Key2"];
+            Assert.AreEqual(2, ids.KeyCount);
+            Assert.AreEqual(0, ids.DeletedCount);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
+            Assert.AreEqual(2, ids.KeyCount);
+            Assert.AreEqual(1, ids.DeletedCount);
+            Assert.True(ids.IsDeleted(deletedItemId));
+        }
+
+        [Test]
         public void TestDictionaryRemovedItemFromBase()
         {
             const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests

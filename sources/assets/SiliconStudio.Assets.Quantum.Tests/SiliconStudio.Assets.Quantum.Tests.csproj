@@ -42,7 +42,8 @@
     <Compile Include="DeriveAssetTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestArchetypes.cs" />
+    <Compile Include="TestArchetypesAdvanced.cs" />
+    <Compile Include="TestArchetypesBasic.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestCollectionUpdates.cs" />
     <Compile Include="TestOverrideSerialization.cs" />
