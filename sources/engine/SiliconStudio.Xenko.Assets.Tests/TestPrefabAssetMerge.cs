@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     }
 
     [TestFixture]
+    [Ignore("The infrastructure of merging this fixture was testing has been removed. This class is kept around the time to backport tests to the new infrastructure.")]
     public class TestPrefabAssetMerge
     {
         // TODO: Some tests are quite long. It woult be better to develop smaller test cases on particular cases
