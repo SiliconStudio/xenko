@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -395,8 +396,17 @@ namespace SiliconStudio.Assets.Quantum
             if (isReference)
             {
                 // Reference type, we check matches by type
-                return baseValue.GetType() != localValue.GetType();
+                return baseValue?.GetType() != localValue?.GetType();
             }
+
+            // Content reference (note: they are not treated as reference
+            if (AssetRegistry.IsContentReferenceType(localValue?.GetType()) || AssetRegistry.IsContentReferenceType(localValue?.GetType()))
+            {
+                var localRef = AttachedReferenceManager.GetAttachedReference(localValue);
+                var baseRef = AttachedReferenceManager.GetAttachedReference(baseValue);
+                return localRef?.Id != baseRef?.Id || localRef?.Url != baseRef?.Url;
+            }
+            
             // Value type, we check for equality
             return !Equals(localValue, baseValue);
         }
