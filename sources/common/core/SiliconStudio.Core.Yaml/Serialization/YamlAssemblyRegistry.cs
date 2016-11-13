@@ -54,7 +54,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// Default implementation of ITagTypeRegistry.
     /// </summary>
-    internal class AssemblyRegistry : ITagTypeRegistry
+    internal class YamlAssemblyRegistry : ITagTypeRegistry
     {
         private readonly IYamlSchema schema;
         private readonly Dictionary<string, MappedType> tagToType;
@@ -68,9 +68,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssemblyRegistry"/> class.
+        /// Initializes a new instance of the <see cref="YamlAssemblyRegistry"/> class.
         /// </summary>
-        public AssemblyRegistry(IYamlSchema schema)
+        public YamlAssemblyRegistry(IYamlSchema schema)
         {
             if (schema == null)
                 throw new ArgumentNullException("schema");
