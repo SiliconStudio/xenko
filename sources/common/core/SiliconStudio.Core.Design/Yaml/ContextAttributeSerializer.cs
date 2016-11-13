@@ -42,7 +42,7 @@ namespace SiliconStudio.Core.Yaml
         {
             var token = new ContextToken();
             // Check if we enter a context where collection items are not identifiable anymore (see doc of the related attribute)
-            if (objectContext.Descriptor.Type.GetCustomAttribute<NonIdentifiableCollectionItemsAttribute>() != null)
+            if (objectContext.Descriptor.Type.GetCustomAttribute<NonIdentifiableCollectionItemsAttribute>(true) != null)
             {
                 if (!objectContext.SerializerContext.Properties.ContainsKey(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey))
                 {
