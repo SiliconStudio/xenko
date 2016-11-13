@@ -99,7 +99,7 @@
     </PropertyGroup>
 
     <!-- Run assembly processor -->
-    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
+    <Message Importance="normal" Text="&quot;$(SiliconStudioAssemblyProcessorPath)&quot; $(SiliconStudioAssemblyProcessorOptions)"/>
     <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 

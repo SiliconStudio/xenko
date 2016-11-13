@@ -10,7 +10,7 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("AdditiveAnimation")]
-    [Display(175, "Additive Animation")]
+    [Display(1750, "Additive Animation")]
     public class AdditiveAnimationAsset : AnimationAsset
     {
         /// <summary>

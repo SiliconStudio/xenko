@@ -16,6 +16,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Physics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
@@ -28,7 +29,32 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context) };
+            result.BuildSteps = new ListBuildStep(); 
+
+            // Add navigation mesh dependencies
+            foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            {
+                var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
+                var colliderShapeAsset = colliderAssetItem.Asset as ColliderShapeAsset;
+                if (colliderShapeAsset != null)
+                {
+                    // Compile the collider assets first
+                    result.BuildSteps.Add(new AssetBuildStep(colliderAssetItem)
+                    {
+                        new ColliderShapeAssetCompiler.ColliderShapeCombineCommand(colliderAssetItem.Location, colliderShapeAsset, assetItem.Package)
+                    });
+                }
+            }
+
+            result.BuildSteps.Add(new WaitBuildStep());
+
+            // Compile the navigation mesh itself
+            result.BuildSteps.Add(new AssetBuildStep(assetItem)
+            {
+                new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
+            });
+
+            result.ShouldWaitForPreviousBuilds = true;
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
@@ -42,25 +68,31 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public NavigationMeshInputBuilder NavigationMeshInputBuilder;
             }
 
+            private readonly Package package;
+            private readonly ContentManager contentManager = new ContentManager();
+            private readonly Dictionary<string, PhysicsColliderShape> loadedColliderShapes = new Dictionary<string, PhysicsColliderShape>();
+            private readonly List<BoundingBox> updatedAreas = new List<BoundingBox>();
+            private readonly List<DeferredShape> deferredShapes = new List<DeferredShape>();
+
             private NavigationMeshCachedBuild oldBuild;
             private NavigationMeshCachedBuild currentBuild;
 
             private UFile assetUrl;
             private NavigationMeshAsset asset;
-            private readonly Package package;
 
             // Combined scene data to create input meshData
             private NavigationMeshInputBuilder sceneNavigationMeshInputBuilder;
             private BoundingBox globalBoundingBox;
             private bool generateBoundingBox;
-
-            private List<BoundingBox> updatedAreas = new List<BoundingBox>();
             private bool fullRebuild = false;
+
+            private int sceneHash = 0;
+            private SceneAsset clonedSceneAsset;
+            private List<Entity> sceneEntities;
+            private bool sceneCloned = false; // Used so that the scene is only cloned once when ComputeParameterHash or DoCommand is called
 
             // Automatically calculated bounding box
             private NavigationMeshBuildSettings buildSettings;
-
-            private List<DeferredShape> deferredShapes = new List<DeferredShape>();
 
             public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
                 : base(url, value)
@@ -70,27 +102,22 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 assetUrl = url;
             }
 
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+            {
+                foreach (var compileTimeDependency in asset.EnumerateCompileTimeDependencies(package.Session))
+                {
+                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
+                }
+            }
+
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
 
-                // Hash relevant scene objects
-                if (asset.Scene != null)
-                {
-                    string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-                    var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
-
-                    // Clone scene asset because we update the world transformation matrices
-                    var clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
-
-                    // Turn the entire entity hierarchy into a single list
-                    List<Entity> sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-
-                    int sceneHash = CollectInputHash(sceneEntities);
-                    writer.Write(sceneHash);
-                }
+                EnsureClonedSceneAndHash();
+                writer.Write(sceneHash);
             }
-
+            
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var intermediateDataId = ComputeAssetIntermediateDataId();
@@ -124,21 +151,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 if (buildSettings.TileSize <= 0)
                     return Task.FromResult(ResultStatus.Failed);
 
-                var assetManager = new ContentManager();
-                string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-                var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
-
-                if (sceneAsset == null)
+                // Clone scene, obtain hash and load collider shape assets
+                EnsureClonedSceneAndHash();
+                if (clonedSceneAsset == null)
                     return Task.FromResult(ResultStatus.Failed);
-
-                // Clone scene asset because we update the world transformation matrices
-                var clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
-
-                // Turn the entire entity hierarchy into a single list
-                List<Entity> sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-
+                
                 // This collects all the input geometry, calculates the modified areas and calculates the scene bounds
-                CollectInputGeometry(sceneEntities);
+                CollectInputGeometry();
                 List<BoundingBox> removedAreas = oldBuild?.GetRemovedAreas(sceneEntities);
 
                 BoundingBox boundingBox = globalBoundingBox;
@@ -158,7 +177,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         meshIndices[i*3 + 1] = meshIndices[i*3 + 2];
                         meshIndices[i*3 + 2] = j;
                     }
-
+                    
                     // Check if settings changed to trigger a full rebuild
                     int currentSettingsHash = asset.GetHashCode();
                     currentBuild.SettingsHash = currentSettingsHash;
@@ -235,7 +254,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 // Store used bounding box in navigation mesh
                 generatedNavigationMesh.BoundingBox = boundingBox;
 
-                assetManager.Save(assetUrl, generatedNavigationMesh);
+                contentManager.Save(assetUrl, generatedNavigationMesh);
                 SaveIntermediateData(intermediateDataId, currentBuild);
 
                 return Task.FromResult(ResultStatus.Successful);
@@ -304,26 +323,61 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 }
             }
 
-            private int CollectInputHash(List<Entity> sceneEntities)
+            private void EnsureClonedSceneAndHash()
             {
-                int hash = 0;
-                foreach (var entity in sceneEntities)
+                if (!sceneCloned)
                 {
-                    StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-
-                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
-                    if (colliderEnabled) // Removed or disabled
+                    // Hash relevant scene objects
+                    if (asset.Scene != null)
                     {
-                        // Update world transform before hashing
-                        entity.Transform.UpdateWorldMatrix();
+                        string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
+                        var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
-                        hash += NavigationMeshBuildUtils.HashEntityCollider(collider);
+                        // Clone scene asset because we update the world transformation matrices
+                        clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
+
+                        // Turn the entire entity hierarchy into a single list
+                        sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+
+                        sceneHash = 0;
+                        foreach (var entity in sceneEntities)
+                        {
+                            StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
+
+                            // Only process enabled colliders
+                            bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
+                            if (colliderEnabled) // Removed or disabled
+                            {
+                                // Update world transform before hashing
+                                entity.Transform.UpdateWorldMatrix();
+
+                                // Load collider shape assets since the scene asset is being used, which does not have these loaded by default
+                                foreach (var desc in collider.ColliderShapes)
+                                {
+                                    var shapeAssetDesc = desc as ColliderShapeAssetDesc;
+                                    if (shapeAssetDesc?.Shape != null)
+                                    {
+                                        var assetReference = AttachedReferenceManager.GetAttachedReference(shapeAssetDesc.Shape);
+                                        PhysicsColliderShape loadedColliderShape;
+                                        if (!loadedColliderShapes.TryGetValue(assetReference.Url, out loadedColliderShape))
+                                        {
+                                            loadedColliderShape = contentManager.Load<PhysicsColliderShape>(assetReference.Url);
+                                            loadedColliderShapes.Add(assetReference.Url, loadedColliderShape); // Store where we loaded the shapes from
+                                        }
+                                        shapeAssetDesc.Shape = loadedColliderShape;
+                                    }
+                                }
+
+                                // Finally compute the hash for this collider
+                                sceneHash += NavigationMeshBuildUtils.HashEntityCollider(collider);
+                            }
+                        }
                     }
+                    sceneCloned = true;
                 }
-                return hash;
             }
 
-            private void CollectInputGeometry(List<Entity> sceneEntities)
+            private void CollectInputGeometry()
             {
                 // Reset state
                 fullRebuild = false;
@@ -338,8 +392,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                     bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
                     if (colliderEnabled)
-                        entity.Transform.UpdateWorldMatrix(); // Update world transform so the update check uses the current world transform
-
+                    {
+                        // Compose collider shape, mark as disabled if it failed so the respective area gets updated
+                        collider.ComposeShape();
+                        if (collider.ColliderShape == null)
+                            colliderEnabled = false;
+                    }
+                    
                     if (!colliderEnabled) // Removed or disabled
                     {
                         // Check for old object
@@ -350,16 +409,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             updatedAreas.Add(oldObject.Data.BoundingBox);
                         }
                     }
-                    else if (oldBuild?.IsUpdatedOrNew(entity) ?? true) // Updated?
+                    else if (oldBuild?.IsUpdatedOrNew(entity) ?? true) // Is the entity updated?
                     {
                         TransformComponent entityTransform = entity.Transform;
                         Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
                         NavigationMeshInputBuilder entityNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
-
-                        collider.ComposeShape();
-                        if (collider.ColliderShape == null)
-                            continue; // No collider
 
                         bool isDeferred = false;
 
@@ -433,10 +488,20 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             }
                             else if (shapeType == typeof(ConvexHullColliderShape))
                             {
-                                // TODO: Fix loading of hull assets
                                 var hull = (ConvexHullColliderShape)shape;
-                                var hullDesc = (ConvexHullColliderShapeDesc)hull.Description;
                                 Matrix transform = hull.PositiveCenterMatrix*entityWorldMatrix;
+
+                                // Convert hull indices to int
+                                int[] indices = new int[hull.Indices.Count];
+                                if(hull.Indices.Count % 3 != 0) throw new InvalidOperationException("Physics hull does not consist of triangles");
+                                for (int i = 0; i < hull.Indices.Count; i += 3)
+                                {
+                                    indices[i] = (int)hull.Indices[i];
+                                    indices[i+1] = (int)hull.Indices[i+1];
+                                    indices[i+2] = (int)hull.Indices[i+2];
+                                }
+
+                                entityNavigationMeshInputBuilder.AppendArrays(hull.Points.ToArray(), indices, transform);
                             }
                             else if (shapeType == typeof(CompoundColliderShape))
                             {
@@ -471,6 +536,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         sceneNavigationMeshInputBuilder.AppendOther(oldObject.Data);
                         currentBuild.Add(entity, oldObject.Data);
                     }
+                }
+
+                // Unload loaded collider shapes
+                foreach (var pair in loadedColliderShapes)
+                {
+                    contentManager.Unload(pair.Key);
                 }
 
                 // Store calculated bounding box

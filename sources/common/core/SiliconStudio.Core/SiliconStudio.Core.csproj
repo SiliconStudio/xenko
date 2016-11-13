@@ -208,7 +208,6 @@
     <Compile Include="DataStyleAttribute.cs" />
     <Compile Include="Serialization\DataSerializerFactory.cs" />
     <Compile Include="Serialization\IDataSerializerGenericInstantiation.cs" />
-    <Compile Include="Serialization\IDataSerializerInitializer.cs" />
     <Compile Include="Serialization\MemberSerializer.cs" />
     <Compile Include="Serialization\EmptyDataSerializer.cs" />
     <Compile Include="Serialization\MemberSerializerGenerated.cs">
