@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Tests
             assetItems.Add(new AssetItem("asset-0", assets[0]));
             project.Assets.Add(assetItems[0]);
 
-            var childAsset = (TestAssetWithParts)assetItems[0].CreateChildAsset();
+            var childAsset = (TestAssetWithParts)assetItems[0].CreateDerivedAsset();
 
             // Check that child asset has a base
             Assert.NotNull(childAsset.Archetype);

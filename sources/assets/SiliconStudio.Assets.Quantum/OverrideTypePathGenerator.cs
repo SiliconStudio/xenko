@@ -78,7 +78,7 @@ namespace SiliconStudio.Assets.Quantum
                         var index = (Index)item.Value;
                         if (inNonIdentifiableType > 0 || currentNode.IsNonIdentifiableCollectionContent)
                         {
-                            result.PushIndex(index);
+                            result.PushIndex(index.Value);
                         }
                         else
                         {

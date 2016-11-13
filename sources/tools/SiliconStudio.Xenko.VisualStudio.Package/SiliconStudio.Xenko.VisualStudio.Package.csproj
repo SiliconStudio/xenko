@@ -177,6 +177,9 @@
     <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
       <Link>Commands\NugetStore.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverridePostfixes.cs">
+      <Link>Core\OverridePostfixes.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
       <Link>Core\OverrideType.cs</Link>
     </Compile>

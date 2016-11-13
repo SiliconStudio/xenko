@@ -6,8 +6,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using IMemberDescriptor = SiliconStudio.Core.Reflection.IMemberDescriptor;
-using ITypeDescriptor = SiliconStudio.Core.Reflection.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -18,7 +16,6 @@ namespace SiliconStudio.Core.Yaml
     public class CustomObjectSerializerBackend : DefaultObjectSerializerBackend
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
-        private ITypeDescriptor cachedDescriptor;
         private static readonly PropertyKey<ObjectPath> MemberPathKey = new PropertyKey<ObjectPath>("MemberPath", typeof(CustomObjectSerializerBackend));
         public static readonly PropertyKey<Dictionary<ObjectPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<ObjectPath, OverrideType>>("OverrideDictionary", typeof(CustomObjectSerializerBackend));
 
@@ -75,12 +72,6 @@ namespace SiliconStudio.Core.Yaml
             var overrideType = overrideTypes[overrideTypes.Length - 1];
             if (overrideType != OverrideType.Base)
             {
-                if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
-                {
-                    cachedDescriptor = typeDescriptorFactory.Find(objectType);
-                }
-                var memberDescriptor = cachedDescriptor[realMemberName];
-
                 Dictionary<ObjectPath, OverrideType> overrides;
                 if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
                 {

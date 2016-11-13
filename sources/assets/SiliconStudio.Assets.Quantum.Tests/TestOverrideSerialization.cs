@@ -240,6 +240,41 @@ MyObjects:
     {1}*:
         Value: String3
 ";
+        private const string ObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+Tags: []
+MyObjects:
+    0a0000000a0000000a0000000a000000:
+        Value: String1
+    14000000140000001400000014000000:
+        Value: MyBaseString
+";
+        private const string ObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
+Id: 00000002-0002-0000-0200-000002000000
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
+Tags: []
+MyObjects:
+    0a0000000a0000000a0000000a000000:
+        Value*: MyDerivedString
+    14000000140000001400000014000000:
+        Value: MyBaseString
+";
+        private const string NonIdentifiableObjectCollectionPropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+Tags: []
+MyObjects:
+    -   Value: String1
+    -   Value: MyBaseString
+";
+        private const string NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
+Id: 00000002-0002-0000-0200-000002000000
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
+Tags: []
+MyObjects:
+    -   Value*: MyDerivedString
+    -   Value: MyBaseString
+";
+
 
         [Test]
         public void TestSimplePropertySerialization()
@@ -666,5 +701,102 @@ MyObjects:
             Assert.AreEqual(baseIds[1], derivedIds[1]);
             Assert.AreEqual(baseIds[2], derivedIds[2]);
         }
+
+        [Test]
+        public void TestObjectCollectionPropertyUpdateSerialization()
+        {
+            var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
+            baseIds.Add(0, IdentifierGenerator.Get(10));
+            baseIds.Add(1, IdentifierGenerator.Get(20));
+            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+
+            basePropertyNode.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Content.Update("MyBaseString");
+            derivedPropertyNode.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Content.Update("MyDerivedString");
+            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, ObjectCollectionPropertyUpdateBaseYaml, false);
+            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, ObjectCollectionPropertyUpdateDerivedYaml, true);
+        }
+
+        [Test]
+        public void TestObjectCollectionPropertyUpdateDeserialization()
+        {
+            var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(ObjectCollectionPropertyUpdateBaseYaml, ObjectCollectionPropertyUpdateDerivedYaml);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
+
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("MyDerivedString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.New, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(2, baseIds.Count);
+            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(baseIds[0], derivedIds[0]);
+            Assert.AreEqual(baseIds[1], derivedIds[1]);
+        }
+
+        [Test]
+        public void TestNonIdentifiableObjectCollectionUpdateSerialization()
+        {
+            var asset = new Types.MyAsset8 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
+            var context = DeriveAssetTest<Types.MyAsset8>.DeriveAsset(asset);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
+            context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(0)), basePropertyNode.IndexedTarget(new Index(0)));
+            context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(1)), basePropertyNode.IndexedTarget(new Index(1)));
+            context.DerivedGraph.RefreshBase(context.BaseGraph);
+
+            basePropertyNode.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Content.Update("MyBaseString");
+            derivedPropertyNode.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Content.Update("MyDerivedString");
+            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, false);
+            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml, true);
+        }
+
+        [Test]
+        public void TestNonIdentifiableObjectCollectionUpdateDeserialization()
+        {
+            var context = DeriveAssetTest<Types.MyAsset8>.LoadFromYaml(NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
+            context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(0)), basePropertyNode.IndexedTarget(new Index(0)));
+            context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(1)), basePropertyNode.IndexedTarget(new Index(1)));
+            context.DerivedGraph.RefreshBase(context.BaseGraph);
+
+            Assert.AreEqual(2, context.BaseAsset.MyObjects.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreEqual("String1", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)basePropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual("MyDerivedString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
+            Assert.AreEqual("MyBaseString", ((Types.SomeObject)derivedPropertyNode.Content.Retrieve(new Index(1))).Value);
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
+            Assert.AreEqual(OverrideType.New, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+        }
     }
 }
+

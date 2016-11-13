@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMember(10)]
         [Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>

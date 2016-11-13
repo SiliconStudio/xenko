@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Tests
             var assetItem1 = new AssetItem("asset-1", asset1);
             var assetItem2 = new AssetItem("asset-2", asset2);
 
-            var asset3 = assetItem1.CreateChildAsset();
+            var asset3 = assetItem1.CreateDerivedAsset();
             var assetItem3 = new AssetItem("asset-3", asset3);
 
             asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);

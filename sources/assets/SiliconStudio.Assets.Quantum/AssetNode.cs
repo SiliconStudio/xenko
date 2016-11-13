@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
@@ -31,52 +32,73 @@ namespace SiliconStudio.Assets.Quantum
             Content.FinalizeChange += (sender, e) => contentUpdating = false;
             Content.Changed += ContentChanged;
             IsNonIdentifiableCollectionContent = (Content as MemberContent)?.Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+            CanOverride = (Content as MemberContent)?.Member.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }
 
         public sealed override IContent Content => base.Content;
 
-        public Func<object, object> Cloner { get { return cloner; } set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
-
-        public event EventHandler<EventArgs> OverrideChanging;
-
-        public event EventHandler<EventArgs> OverrideChanged;
+        public Func<object, object> Cloner { get { return cloner; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
 
         public IContent BaseContent { get; private set; }
 
         public bool IsNonIdentifiableCollectionContent { get; }
 
-        internal bool ResettingOverride { get; private set; }
+        internal bool ResettingOverride { get; set; }
+
+        public bool CanOverride { get; }
+
+        public event EventHandler<EventArgs> OverrideChanging;
+
+        public event EventHandler<EventArgs> OverrideChanged;
 
         public void OverrideContent(bool isOverridden)
         {
-            contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
+            if (CanOverride)
+            {
+                contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
+            }
         }
 
         public void OverrideItem(bool isOverridden, Index index)
         {
-            SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            if (CanOverride)
+            {
+                SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            }
         }
 
         public void OverrideKey(bool isOverridden, Index index)
         {
-            SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            if (CanOverride)
+            {
+                SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            }
         }
 
         internal void SetContentOverride(OverrideType overrideType)
         {
-            contentOverride = overrideType;
+            if (CanOverride)
+            {
+                contentOverride = overrideType;
+            }
         }
 
         internal void SetItemOverride(OverrideType overrideType, Index index)
         {
-            var id = IndexToId(index);
-            SetOverride(overrideType, id, itemOverrides);
+            if (CanOverride)
+            {
+                var id = IndexToId(index);
+                SetOverride(overrideType, id, itemOverrides);
+            }
         }
 
         internal void SetKeyOverride(OverrideType overrideType, Index index)
         {
-            var id = IndexToId(index);
-            SetOverride(overrideType, id, keyOverrides);
+            if (CanOverride)
+            {
+                var id = IndexToId(index);
+                SetOverride(overrideType, id, keyOverrides);
+            }
         }
 
         private static void SetOverride(OverrideType overrideType, ItemId id, Dictionary<ItemId, OverrideType> dictionary)
@@ -240,7 +262,7 @@ namespace SiliconStudio.Assets.Quantum
             return result;
         }
 
-        public void SetBase(IContent baseContent)
+        internal void SetBase(IContent baseContent)
         {
             BaseContent = baseContent;
         }
