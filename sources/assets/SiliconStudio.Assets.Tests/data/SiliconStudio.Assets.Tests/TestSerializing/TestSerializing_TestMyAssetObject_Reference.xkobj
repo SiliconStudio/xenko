@@ -1,7 +1,7 @@
 ﻿!MyAsset
 Id: 00000000-0000-0000-0000-000000000000
 Tags: []
-Description*!: This is a test
+Description: This is a test
 AssetDirectory: !UDirectory /test/dynamic/path/to/file/in/object/property
 AssetUrl: !UFile /test/dynamic/path/to/file/in/object/property
 CustomReference2: 00000000-0000-0000-0000-000000000000:/this/is/an/url/to/MyCustomReference2
