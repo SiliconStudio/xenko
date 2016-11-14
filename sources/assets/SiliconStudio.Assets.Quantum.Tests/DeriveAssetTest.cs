@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             DerivedGraph.RefreshBase(BaseGraph);
         }
 
-        private static Stream ToStream(string str)
+        public static Stream ToStream(string str)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -53,6 +53,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             stream.Position = 0;
             return stream;
         }
+
         public AssetPropertyGraphContainer Container { get; }
         public AssetItem BaseAssetItem { get; }
         public AssetItem DerivedAssetItem { get; }

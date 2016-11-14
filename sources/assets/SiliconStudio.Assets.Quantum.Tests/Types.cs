@@ -77,6 +77,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public List<SomeObject> MyObjects { get; set; } = new List<SomeObject>();
         }
 
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAsset9 : MyAssetBase
+        {
+            public SomeObject MyObject { get; set; }
+        }
+
 
         [DataContract]
         public struct StructWithList

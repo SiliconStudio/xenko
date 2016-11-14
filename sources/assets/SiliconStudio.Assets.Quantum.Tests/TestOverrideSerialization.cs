@@ -83,9 +83,19 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(isDerived, assetItem.Asset.Archetype != null);
             if (isDerived)
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
-            graph.PrepareSave(null);
+            graph.PrepareForSave(null);
             var stream = new MemoryStream();
             AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);
+            stream.Position = 0;
+            var streamReader = new StreamReader(stream);
+            var yaml = streamReader.ReadToEnd();
+            Assert.AreEqual(expectedYaml, yaml);
+        }
+
+        private static void SerializeAndCompare(object instance, Dictionary<ObjectPath, OverrideType> overrides, string expectedYaml)
+        {
+            var stream = new MemoryStream();
+            AssetFileSerializer.Default.Save(stream, instance, null, overrides);
             stream.Position = 0;
             var streamReader = new StreamReader(stream);
             var yaml = streamReader.ReadToEnd();
@@ -796,6 +806,68 @@ MyObjects:
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
             Assert.AreEqual(OverrideType.New, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+        }
+
+        [Test]
+        public void TestGenerateOverridesForSerializationOfObjectMember()
+        {
+            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
+Value*: OverriddenString
+";
+            var asset = new Types.MyAsset9 { MyObject = new Types.SomeObject { Value = "String1" } };
+            var context = DeriveAssetTest<Types.MyAsset9>.DeriveAsset(asset);
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset9.MyObject)];
+            derivedPropertyNode.Target[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
+            var expectedPath = new ObjectPath();
+            expectedPath.PushMember(nameof(Types.SomeObject.Value));
+
+            var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
+            Assert.AreEqual(1, overrides.Count);
+            Assert.True(overrides.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+
+            // We expect the same resulting path both from the member node and the target object node
+            overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode.Target);
+            Assert.AreEqual(1, overrides.Count);
+            Assert.True(overrides.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+
+            // Test deserialization
+            SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
+            bool aliasOccurred;
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTest<Types.MyAsset9>.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
+            Assert.AreEqual("OverriddenString", instance.Value);
+            Assert.AreEqual(1, overrides.Count);
+            Assert.True(overrides.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+        }
+
+        [Test]
+        public void TestGenerateOverridesForSerializationOfCollectionItem()
+        {
+            const string expectedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+SomeObject,SiliconStudio.Assets.Quantum.Tests
+Value*: OverriddenString
+";
+            var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
+            var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
+            derivedPropertyNode[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
+            var expectedPath = new ObjectPath();
+            expectedPath.PushMember(nameof(Types.SomeObject.Value));
+
+            var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
+            Assert.AreEqual(1, overrides.Count);
+            Assert.True(overrides.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+
+            // Test deserialization
+            SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
+            bool aliasOccurred;
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTest<Types.MyAsset9>.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
+            Assert.AreEqual("OverriddenString", instance.Value);
+            Assert.AreEqual(1, overrides.Count);
+            Assert.True(overrides.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
         }
     }
 }
