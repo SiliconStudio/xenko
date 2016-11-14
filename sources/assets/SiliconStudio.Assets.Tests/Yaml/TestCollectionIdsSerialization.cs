@@ -253,6 +253,17 @@ Objects:
     06000000060000000600000006000000~: ~(Deleted)
 ";
 
+        private static string SerializeAsString(object instance)
+        {
+            using (var stream = new MemoryStream())
+            {
+                AssetYamlSerializer.Default.Serialize(stream, instance);
+                stream.Flush();
+                stream.Position = 0;
+                return new StreamReader(stream).ReadToEnd();
+            }
+        }
+
         [Test]
         public void TestCollectionSerialization()
         {
@@ -269,7 +280,7 @@ Objects:
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
             objectIds[0] = IdentifierGenerator.Get(3);
             objectIds[1] = IdentifierGenerator.Get(4);
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlCollection, yaml);
         }
 
@@ -365,7 +376,7 @@ Objects:
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
             objectIds["key3"] = IdentifierGenerator.Get(3);
             objectIds["key4"] = IdentifierGenerator.Get(4);
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlDictionary, yaml);
         }
 
@@ -503,7 +514,7 @@ Objects:
             objectIds[1] = IdentifierGenerator.Get(4);
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlCollectionWithDeleted, yaml);
         }
 
@@ -563,7 +574,7 @@ Objects:
             objectIds["key4"] = IdentifierGenerator.Get(4);
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(1));
             objectIds.MarkAsDeleted(IdentifierGenerator.Get(6));
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlDictionaryWithDeleted, yaml);
         }
 
@@ -595,7 +606,7 @@ Objects:
             ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects[1].Strings);
             ids[0] = IdentifierGenerator.Get(11);
             ids[1] = IdentifierGenerator.Get(12);
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlCollectionNotIdentifiable, yaml);
         }
 
@@ -680,7 +691,7 @@ Objects:
             ids = CollectionItemIdHelper.GetCollectionItemIds(obj.NonIdentifiableObjects["DDD"].Strings);
             ids[0] = IdentifierGenerator.Get(11);
             ids[1] = IdentifierGenerator.Get(12);
-            var yaml = AssetYamlSerializer.Default.Serialize(obj);
+            var yaml = SerializeAsString(obj);
             Assert.AreEqual(YamlDictionaryNonIdentifiable, yaml);
         }
 

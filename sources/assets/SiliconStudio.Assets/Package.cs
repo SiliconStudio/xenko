@@ -160,6 +160,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
+        // TODO: turn that internal!
         public List<AssetItem> TemporaryAssets { get; } = new List<AssetItem>();
 
         /// <summary>
@@ -453,7 +454,7 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        AssetSerializer.Save(FullPath, this, null);
+                        AssetFileSerializer.Save(FullPath, this);
 
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
@@ -593,7 +594,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -701,8 +702,8 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var loadResult = packageFile.AssetContent != null
-                    ? AssetSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), filePath, log)
-                    : AssetSerializer.Load<Package>(filePath, log);
+                    ? AssetFileSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), filePath, log)
+                    : AssetFileSerializer.Load<Package>(filePath, log);
                 var package = loadResult.Asset;
                 package.FullPath = filePath;
                 package.previousPackagePath = package.FullPath;
@@ -1052,8 +1053,8 @@ namespace SiliconStudio.Assets
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<ObjectPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
-                ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
-                : AssetSerializer.Load<Asset>(assetFullPath, log);
+                ? AssetFileSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
+                : AssetFileSerializer.Load<Asset>(assetFullPath, log);
 
             assetDirty = loadResult.AliasOccurred;
             overrides = loadResult.Overrides;

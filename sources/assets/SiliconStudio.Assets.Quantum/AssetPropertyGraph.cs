@@ -8,6 +8,7 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -33,8 +34,7 @@ namespace SiliconStudio.Assets.Quantum
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
-            ApplyOverrides();
-
+            ApplyOverrides(RootNode, AssetItem.Overrides);
             NodeListener = new AssetGraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             baseLinker = new AssetToBaseNodeLinker(this) { LinkAction = LinkBaseNode };
         }
@@ -95,24 +95,26 @@ namespace SiliconStudio.Assets.Quantum
             return target;
         }
 
-        public void PrepareSave(ILogger logger)
+        public void PrepareForSave(ILogger logger)
         {
             AssetCollectionItemIdHelper.GenerateMissingItemIds(AssetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(AssetItem, logger);
-            UpdateOverridesForSerialization();
+            AssetItem.Overrides = GenerateOverridesForSerialization();
         }
 
-        public void UpdateOverridesForSerialization()
+        public Dictionary<ObjectPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode = null)
         {
             var visitor = new OverrideTypePathGenerator();
-            visitor.Visit(RootNode);
-            AssetItem.Overrides = visitor.Result;
+            visitor.Visit(rootNode ?? RootNode);
+            return visitor.Result;
         }
 
-        private void ApplyOverrides()
+        public void ApplyOverrides(AssetNode rootNode, IDictionary<ObjectPath, OverrideType> overrides)
         {
-            if (RootNode == null)
+            rootNode = rootNode ?? RootNode;
+            if (rootNode == null)
                 throw new InvalidOperationException($"{nameof(RootNode)} is not set.");
+
             if (AssetItem.Overrides == null)
                 return;
 
@@ -120,7 +122,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 Index index;
                 bool overrideOnKey;
-                var node = RootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
+                var node = rootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
                 if (index == Index.Empty)
                 {
                     node.SetContentOverride(overrideInfo.Value);

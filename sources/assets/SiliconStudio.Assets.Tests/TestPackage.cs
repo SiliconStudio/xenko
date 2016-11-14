@@ -45,7 +45,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.IsFalse(result.HasErrors);
 
             // Reload the raw package and if UFile and UDirectory were saved relative
-            var rawPackage = AssetSerializer.Load<Package>(testGenerated1).Asset;
+            var rawPackage = AssetFileSerializer.Load<Package>(testGenerated1).Asset;
             var rawPackageSharedProfile = rawPackage.Profiles.FirstOrDefault();
             Assert.IsNotNull(rawPackageSharedProfile);
             var rawSourceFolder = rawPackage.Profiles.First().AssetFolders.FirstOrDefault();

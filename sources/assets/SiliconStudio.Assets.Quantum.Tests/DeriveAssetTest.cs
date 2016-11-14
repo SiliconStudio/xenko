@@ -22,8 +22,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         public static DeriveAssetTest<T> LoadFromYaml(string baseYaml, string derivedYaml)
         {
-            var baseAsset = AssetSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
-            var derivedAsset = AssetSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
+            var baseAsset = AssetFileSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
+            var derivedAsset = AssetFileSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
             var result = new DeriveAssetTest<T>(baseAsset.Asset, derivedAsset.Asset)
             {
                 BaseAssetItem = { Overrides = baseAsset.Overrides },
@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             DerivedGraph.RefreshBase(BaseGraph);
         }
 
-        private static Stream ToStream(string str)
+        public static Stream ToStream(string str)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -53,6 +53,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             stream.Position = 0;
             return stream;
         }
+
         public AssetPropertyGraphContainer Container { get; }
         public AssetItem BaseAssetItem { get; }
         public AssetItem DerivedAssetItem { get; }

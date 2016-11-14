@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 {
                     bool b;
                     Dictionary<ObjectPath, OverrideType> o;
-                    var asset = AssetSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
+                    var asset = AssetFileSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
                     if (asset != null)
                     {
                         guid = asset.Id;

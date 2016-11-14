@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets
 
             assetFileExtension = assetFileExtension.ToLowerInvariant();
 
-            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
+            var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             if (!(serializer is YamlAssetSerializer))
                 return false;
 
