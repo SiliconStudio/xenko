@@ -13,6 +13,9 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -29,6 +32,7 @@ namespace SiliconStudio.Assets
         private Dictionary<object, object> clonedObjectMapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
+        private static ThreadLocal<UnloadableObjectRemover> unloadableObjectRemovers = new ThreadLocal<UnloadableObjectRemover>(() => new UnloadableObjectRemover());
 
         static AssetCloner()
         {
@@ -108,6 +112,13 @@ namespace SiliconStudio.Assets
                 reader.Context.Set(MemberSerializer.ObjectDeserializeCallback, OnObjectDeserialized);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
+
+                if ((flags & AssetClonerFlags.RemoveUnloadableObjects) != 0)
+                {
+                    var yamlProxyRemover = unloadableObjectRemovers.Value;
+                    yamlProxyRemover.Run(newObject);
+                }
+
                 return newObject;
             }
             // Else this is a value type, so it is cloned automatically
