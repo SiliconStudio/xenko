@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Yaml
             if (transformed)
                 base.ReadYamlAfterTransform(ref objectContext, true);
             else
-                collectionSerializer.ReadYaml(ref objectContext);
+                GetCollectionSerializerForNonTransformedObject().ReadYaml(ref objectContext);
         }
 
         /// <inheritdoc/>
@@ -46,7 +46,12 @@ namespace SiliconStudio.Core.Yaml
             if (transformed)
                 base.WriteYamlAfterTransform(ref objectContext, true);
             else
-                collectionSerializer.WriteYaml(ref objectContext);
+                GetCollectionSerializerForNonTransformedObject().WriteYaml(ref objectContext);
+        }
+
+        protected virtual CollectionSerializer GetCollectionSerializerForNonTransformedObject()
+        {
+            return collectionSerializer;
         }
 
         /// <inheritdoc/>
