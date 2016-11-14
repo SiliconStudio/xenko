@@ -10,6 +10,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
@@ -21,6 +22,74 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class EntityComponentCollectionSerializer : CollectionWithIdsSerializer
     {
+        /// <summary>
+        /// A class that implements serialization of EntityComponentCollection for pre-1.9 version. It is used to allow loading old projects in 1.9.
+        /// </summary>
+        [YamlSerializerFactory("Internal")] // Make sure this serializer is not grabbed as a default profile serializer.
+        private class InternalComponentCollectionSerializer : CollectionSerializer
+        {
+            protected override object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
+            {
+                // Save the Yaml stream, in case loading fails we can keep this representation
+                var parsingEvents = new List<ParsingEvent>();
+                var reader = objectContext.Reader;
+                var startDepth = reader.CurrentDepth;
+                do
+                {
+                    parsingEvents.Add(reader.Expect<ParsingEvent>());
+                } while (reader.CurrentDepth > startDepth);
+
+                // Save states
+                var previousReader = objectContext.SerializerContext.Reader;
+                var previousAllowErrors = objectContext.SerializerContext.AllowErrors;
+
+                objectContext.SerializerContext.Reader = new EventReader(new MemoryParser(parsingEvents));
+                objectContext.SerializerContext.AllowErrors = true;
+
+                try
+                {
+                    return base.ReadCollectionItem(ref objectContext, value, itemType, index);
+                }
+                catch (YamlException ex)
+                {
+                    // There was a failure, let's keep this object so that it can be serialized back later
+                    var startEvent = parsingEvents.FirstOrDefault() as MappingStart;
+                    string typeName = !string.IsNullOrEmpty(startEvent?.Tag) ? startEvent.Tag.Substring(1) : null;
+
+                    var log = objectContext.SerializerContext.Logger;
+                    log?.Warning($"Could not deserialize script {typeName}", ex);
+
+                    return new UnloadableComponent(parsingEvents, typeName);
+                }
+                finally
+                {
+                    // Restore states
+                    objectContext.SerializerContext.Reader = previousReader;
+                    objectContext.SerializerContext.AllowErrors = previousAllowErrors;
+                }
+            }
+
+            protected override void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
+            {
+                // TODO: this should be never use (we always save back to the new format) - can possibly be removed.
+                // Check if we have a Yaml representation (in case loading failed)
+                var unloadableScript = item as UnloadableComponent;
+                if (unloadableScript != null)
+                {
+                    var writer = objectContext.Writer;
+                    foreach (var parsingEvent in unloadableScript.ParsingEvents)
+                    {
+                        writer.Emit(parsingEvent);
+                    }
+                    return;
+                }
+
+                base.WriteCollectionItem(ref objectContext, item, itemType, index);
+            }
+        }
+
+        private readonly InternalComponentCollectionSerializer entityComponentCollectionSerializer = new InternalComponentCollectionSerializer();
+
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
@@ -45,6 +114,11 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         {
             objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
             WriteCollectionItem(ref objectContext, keyValue.Key, keyValue.Value, keyValueTypes.Value);
+        }
+
+        protected override CollectionSerializer GetCollectionSerializerForNonTransformedObject()
+        {
+            return entityComponentCollectionSerializer;
         }
 
         private static object ReadCollectionItem(ref ObjectContext objectContext, Type itemType, object key)

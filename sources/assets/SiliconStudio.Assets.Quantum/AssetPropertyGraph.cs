@@ -282,10 +282,14 @@ namespace SiliconStudio.Assets.Quantum
                         assetNode.Content.Update(null);
                     }
                 }
+                // Then handle collection and dictionary cases
                 else if (assetNode.Content.Descriptor is CollectionDescriptor || assetNode.Content.Descriptor is DictionaryDescriptor)
                 {
+                    // Items to add and to remove are stored in local collections and processed later, since they might affect indices
                     var itemsToRemove = new List<ItemId>();
                     var itemsToAdd = new SortedList<object, ItemId>(new DefaultKeyComparer());
+
+                    // Check for item present in the instance and absent from the base.
                     foreach (var index in assetNode.Content.Indices)
                     {
                         // Skip overridden items
@@ -293,17 +297,23 @@ namespace SiliconStudio.Assets.Quantum
                             continue;
 
                         var itemId = assetNode.IndexToId(index);
-                        // TODO: What should we do if it's empty? It can happen only from corrupted data
                         if (itemId != ItemId.Empty)
                         {
-                            if (baseNode.IdToIndex(itemId) == Index.Empty)
+                            // Look if an item with the same id exists in the base.
+                            if (!baseNode.HasId(itemId))
                             {
+                                // If not, remove this item from the instance.
                                 itemsToRemove.Add(itemId);
                             }
                         }
+                        else
+                        {
+                            // This case should not happen, but if we have an empty id due to corrupted data let's just remove the item.
+                            itemsToRemove.Add(itemId);
+                        }
                     }
 
-                    // Clean items marked as deleted that are absent from the base.
+                    // Clean items marked as "override-deleted" that are absent from the base.
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(localValue);
                     foreach (var deletedId in ids.DeletedItems.ToList())
                     {
@@ -312,56 +322,66 @@ namespace SiliconStudio.Assets.Quantum
                             ids.UnmarkAsDeleted(deletedId);
                         }
                     }
+
                     // Add item present in the base and missing here
                     foreach (var index in assetNode.BaseContent.Indices)
                     {
                         var itemId = baseNode.IndexToId(index);
                         // TODO: What should we do if it's empty? It can happen only from corrupted data
-                        if (itemId != ItemId.Empty && !assetNode.IsItemDeleted(itemId))
+
+                        // Skip items marked as "override-deleted"
+                        if (itemId == ItemId.Empty || assetNode.IsItemDeleted(itemId))
+                            continue;
+
+                        Index localIndex;
+                        if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
-                            Index localIndex;
-                            if (!assetNode.TryIdToIndex(itemId, out localIndex))
+                            // We have an item in the base that is missing in the instance (not even marked as "override-deleted")
+                            if (assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x))))
                             {
-                                if (assetNode.Content.Reference?.HasIndex(index) != true && !assetNode.Content.Indices.Any(x => index.Equals(x)))
-                                {
-                                    itemsToAdd.Add(index.Value, itemId);
-                                }
-                                else
-                                {
-                                    // If we have a collision, we consider that the new value from the base is deleted in the instance.
-                                    var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
-                                    instanceIds.MarkAsDeleted(itemId);
-                                }
+                                // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
+                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
+                                instanceIds.MarkAsDeleted(itemId);
                             }
                             else
                             {
-                                var member = assetNode.Content as MemberContent;
-                                var targetNode = assetNode.Content.Reference?.AsEnumerable?[localIndex]?.TargetNode;
-                                if (!assetNode.IsItemOverridden(localIndex))
+                                // Add it if the key is available for add
+                                itemsToAdd.Add(index.Value, itemId);
+                            }
+                        }
+                        else
+                        {
+                            // If the item is present in both the instance and the base, check if we need to reconcile the value
+                            var member = assetNode.Content as MemberContent;
+                            var targetNode = assetNode.Content.Reference?.AsEnumerable?[localIndex]?.TargetNode;
+                            // Skip it if it's overridden
+                            if (!assetNode.IsItemOverridden(localIndex))
+                            {
+                                var localItemValue = assetNode.Content.Retrieve(localIndex);
+                                var baseItemValue = baseNode.Content.Retrieve(index);
+                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
                                 {
-                                    var localItemValue = assetNode.Content.Retrieve(localIndex);
-                                    var baseItemValue = baseNode.Content.Retrieve(index);
-                                    if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
-                                    {
-                                        var clonedValue = assetNode.Cloner(baseItemValue);
-                                        assetNode.Content.Update(clonedValue, localIndex);
-                                    }
+                                    var clonedValue = assetNode.Cloner(baseItemValue);
+                                    assetNode.Content.Update(clonedValue, localIndex);
                                 }
-                                if (assetNode.Content.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
+                            }
+                            // In dictionaries, the keys might be different between the instance and the base. We need to reconcile them too
+                            if (assetNode.Content.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
+                            {
+                                if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
                                 {
-                                    if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
-                                    {
-                                        var clonedIndex = new Index(assetNode.Cloner(index.Value));
-                                        var localItemValue = assetNode.Content.Retrieve(localIndex);
-                                        assetNode.Content.Remove(localItemValue, localIndex);
-                                        assetNode.Content.Add(localItemValue, clonedIndex);
-                                        ids[clonedIndex.Value] = itemId;
-                                    }
+                                    // Reconcile using a move (Remove + Add) of the key-value pair
+                                    var clonedIndex = new Index(assetNode.Cloner(index.Value));
+                                    var localItemValue = assetNode.Content.Retrieve(localIndex);
+                                    assetNode.Content.Remove(localItemValue, localIndex);
+                                    assetNode.Content.Add(localItemValue, clonedIndex);
+                                    ids[clonedIndex.Value] = itemId;
                                 }
                             }
                         }
                     }
 
+                    // Process items marked to be removed
                     foreach (var item in itemsToRemove)
                     {
                         var index = assetNode.IdToIndex(item);
@@ -371,6 +391,7 @@ namespace SiliconStudio.Assets.Quantum
                         ids.UnmarkAsDeleted(item);
                     }
 
+                    // Process items marked to be added
                     foreach (var item in itemsToAdd)
                     {
                         var baseIndex = baseNode.IdToIndex(item.Value);
@@ -404,6 +425,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                     }
                 }
+                // Then handle collection and dictionary cases
                 else
                 {
                     var member = assetNode.Content as MemberContent;

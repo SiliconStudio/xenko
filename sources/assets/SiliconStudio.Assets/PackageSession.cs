@@ -1103,7 +1103,7 @@ namespace SiliconStudio.Assets
                     {
                         // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
-                        log.Error("Unable to find package {0} not installed", packageDependency);
+                        log.Error($"The package {package.FullPath?.GetFileName() ?? "[Untitled]"} depends on package {packageDependency} which is not installed");
                         packageDependencyErrors = true;
                         continue;
                     }
