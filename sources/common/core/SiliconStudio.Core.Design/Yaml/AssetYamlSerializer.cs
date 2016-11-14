@@ -42,24 +42,14 @@ namespace SiliconStudio.Core.Yaml
         /// Deserializes an object from the specified stream (expecting a YAML string).
         /// </summary>
         /// <param name="stream">A YAML string from a stream.</param>
-        /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(Stream stream)
-        {
-            var serializer = GetYamlSerializer(true);
-            return serializer.Deserialize(stream);
-        }
-
-        /// <summary>
-        /// Deserializes an object from the specified stream (expecting a YAML string).
-        /// </summary>
-        /// <param name="stream">A YAML string from a stream.</param>
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings)
+        public object Deserialize(Stream stream, Type expectedType = null, SerializerContextSettings contextSettings = null)
         {
-            var serializer = GetYamlSerializer(true);
-            return serializer.Deserialize(stream, expectedType, contextSettings);
+            bool aliasOccurred;
+            PropertyContainer contextProperties;
+            return Deserialize(stream, expectedType, contextSettings, out aliasOccurred, out contextProperties);
         }
 
         /// <summary>
@@ -86,22 +76,9 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="eventReader">A YAML event reader.</param>
         /// <param name="value">The value.</param>
         /// <param name="expectedType">The expected type.</param>
-        /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(EventReader eventReader, object value, Type expectedType)
-        {
-            var serializer = GetYamlSerializer();
-            return serializer.Deserialize(eventReader, expectedType, value);
-        }
-
-        /// <summary>
-        /// Deserializes an object from the specified stream (expecting a YAML string).
-        /// </summary>
-        /// <param name="eventReader">A YAML event reader.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings)
+        public object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings = null)
         {
             var serializer = GetYamlSerializer();
             return serializer.Deserialize(eventReader, expectedType, value, contextSettings);
@@ -135,20 +112,8 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="emitter">The emitter.</param>
         /// <param name="instance">The object to serialize.</param>
         /// <param name="type">The type.</param>
-        public void Serialize(IEmitter emitter, object instance, Type type)
-        {
-            var serializer = GetYamlSerializer();
-            serializer.Serialize(emitter, instance, type);
-        }
-
-        /// <summary>
-        /// Serializes an object to specified stream in YAML format.
-        /// </summary>
-        /// <param name="emitter">The emitter.</param>
-        /// <param name="instance">The object to serialize.</param>
-        /// <param name="type">The type.</param>
         /// <param name="contextSettings">The context settings.</param>
-        public void Serialize(IEmitter emitter, object instance, Type type, SerializerContextSettings contextSettings)
+        public void Serialize(IEmitter emitter, object instance, Type type, SerializerContextSettings contextSettings = null)
         {
             var serializer = GetYamlSerializer();
             serializer.Serialize(emitter, instance, type, contextSettings);
@@ -159,41 +124,12 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="stream">The stream to receive the YAML representation of the object.</param>
         /// <param name="instance">The instance.</param>
-        /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
-        public void Serialize(Stream stream, object instance, bool generateIds = true)
-        {
-            var serializer = GetYamlSerializer();
-            serializer.Serialize(stream, instance);
-        }
-
-        /// <summary>
-        /// Serializes an object to specified stream in YAML format.
-        /// </summary>
-        /// <param name="stream">The stream to receive the YAML representation of the object.</param>
-        /// <param name="instance">The instance.</param>
         /// <param name="type">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
-        public void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings)
+        public void Serialize(Stream stream, object instance, Type type = null, SerializerContextSettings contextSettings = null)
         {
             var serializer = GetYamlSerializer();
             serializer.Serialize(stream, instance, type, contextSettings);
-        }
-
-        /// <summary>
-        /// Serializes an object to a string in YAML format.
-        /// </summary>
-        /// <param name="instance">The instance.</param>
-        /// <returns>a string in YAML format</returns>
-        public string Serialize(object instance)
-        {
-            var serializer = GetYamlSerializer();
-            using (var stream = new MemoryStream())
-            {
-                serializer.Serialize(stream, instance, typeof(object));
-                stream.Flush();
-                stream.Position = 0;
-                return new StreamReader(stream).ReadToEnd();
-            }
         }
 
         /// <summary>

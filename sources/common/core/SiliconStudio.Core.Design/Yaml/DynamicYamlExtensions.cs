@@ -23,7 +23,7 @@ namespace SiliconStudio.Core.Yaml
                     memoryStream.Position = 0;
 
                     // convert string to object
-                    return (T)AssetYamlSerializer.Default.Deserialize(memoryStream, typeof(T), null);
+                    return (T)AssetYamlSerializer.Default.Deserialize(memoryStream, typeof(T));
                 }
             }
         }

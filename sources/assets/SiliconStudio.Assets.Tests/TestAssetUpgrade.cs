@@ -134,7 +134,7 @@ namespace SiliconStudio.Assets.Tests
         {
             var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), "");
             var outputFilePath = loadingFilePath.FilePath.FullPath;
-            AssetSerializer.Save(outputFilePath, asset, null);
+            AssetFileSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
             var context = new AssetMigrationContext(null, logger);
@@ -148,7 +148,7 @@ namespace SiliconStudio.Assets.Tests
 
             Console.WriteLine(File.ReadAllText(outputFilePath).Trim());
 
-            var upgradedAsset = AssetSerializer.Load<MyUpgradedAsset>(outputFilePath).Asset;
+            var upgradedAsset = AssetFileSerializer.Load<MyUpgradedAsset>(outputFilePath).Asset;
             AssertUpgrade(upgradedAsset);
         }
 

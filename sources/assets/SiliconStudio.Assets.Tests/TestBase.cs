@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Tests
         {
             Console.WriteLine(title + @"- from file " + outputFilePath);
             Console.WriteLine(@"---------------------------------------");
-            AssetSerializer.Save(outputFilePath, asset, null);
+            AssetFileSerializer.Save(outputFilePath, asset);
             var left = File.ReadAllText(outputFilePath).Trim();
             Console.WriteLine(left);
             var right = File.ReadAllText(referenceFilePath).Trim();

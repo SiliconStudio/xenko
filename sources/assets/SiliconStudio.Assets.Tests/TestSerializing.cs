@@ -72,7 +72,7 @@ namespace SiliconStudio.Assets.Tests
             GenerateAndCompare("Test Serialization 1", testGenerated1, referenceFilePath, assetObject);
 
             // Deserialize it
-            var newAssetObject = AssetSerializer.Load<MyAsset>(testGenerated1).Asset;
+            var newAssetObject = AssetFileSerializer.Load<MyAsset>(testGenerated1).Asset;
 
             // Restore the deserialize version and compare it with the reference
             GenerateAndCompare("Test Serialization 2 - double check", testGenerated2, referenceFilePath, newAssetObject);
@@ -101,7 +101,7 @@ namespace SiliconStudio.Assets.Tests
         private static string ToText(List<AssetItem> assetCollection)
         {
             var stream = new MemoryStream();
-            AssetSerializer.Default.Save(stream, assetCollection);
+            AssetFileSerializer.Default.Save(stream, assetCollection);
             stream.Position = 0;
             return new StreamReader(stream).ReadToEnd();
         }
@@ -118,7 +118,7 @@ namespace SiliconStudio.Assets.Tests
 
             bool aliasOccurred;
             Dictionary<ObjectPath, OverrideType> overrides;
-            var assetItems = (List<AssetItem>)AssetSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
+            var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
             if (aliasOccurred)
             {
                 foreach (var assetItem in assetItems)

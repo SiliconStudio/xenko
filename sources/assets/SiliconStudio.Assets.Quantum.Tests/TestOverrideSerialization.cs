@@ -85,7 +85,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
             graph.PrepareSave(null);
             var stream = new MemoryStream();
-            AssetSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);
+            AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);
             stream.Position = 0;
             var streamReader = new StreamReader(stream);
             var yaml = streamReader.ReadToEnd();

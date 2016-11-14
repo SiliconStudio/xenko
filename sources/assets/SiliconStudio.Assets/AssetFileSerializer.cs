@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// Main entry point for serializing/deserializing <see cref="Asset"/>.
     /// </summary>
-    public static class AssetSerializer
+    public static class AssetFileSerializer
     {
         private static readonly List<IAssetSerializerFactory> RegisteredSerializerFactories = new List<IAssetSerializerFactory>();
 
@@ -45,9 +45,9 @@ namespace SiliconStudio.Assets
         /// </summary>
         public static readonly IAssetSerializer Default = new YamlAssetSerializer();
 
-        static AssetSerializer()
+        static AssetFileSerializer()
         {
-            Register((IAssetSerializerFactory)Default);
+            Register((YamlAssetSerializer)Default);
             Register(SourceCodeAssetSerializer.Default);
         }
 
@@ -85,7 +85,7 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Deserializes an <see cref="Asset" /> from the specified stream.
+        /// Deserializes an <see cref="Asset"/> from the specified stream.
         /// </summary>
         /// <typeparam name="T">Type of the asset</typeparam>
         /// <param name="filePath">The file path.</param>
@@ -124,8 +124,9 @@ namespace SiliconStudio.Assets
         /// <param name="filePath">The file path.</param>
         /// <param name="asset">The asset object.</param>
         /// <param name="log">The logger.</param>
+        /// <param name="overrides"></param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, AssetItem assetItem, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
+        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 

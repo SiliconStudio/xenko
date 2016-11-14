@@ -22,14 +22,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             using (var stream = new MemoryStream())
             {
-                AssetSerializer.Save(stream, originAsset);
+                AssetFileSerializer.Save(stream, originAsset);
 
                 stream.Position = 0;
                 var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = AssetSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
+                var newAsset = AssetFileSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
 
                 CheckAsset(originAsset, newAsset);
             }

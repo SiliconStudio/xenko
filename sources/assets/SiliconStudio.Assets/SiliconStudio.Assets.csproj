@@ -227,7 +227,7 @@
     <Compile Include="AssetDescriptionAttribute.cs" />
     <Compile Include="Asset.cs" />
     <Compile Include="PackageAssetCollection.cs" />
-    <Compile Include="AssetSerializer.cs" />
+    <Compile Include="AssetFileSerializer.cs" />
     <Compile Include="Diagnostics\AssetLoggerExtensions.cs" />
     <Compile Include="Diagnostics\AssetLogMessage.cs" />
     <Compile Include="Diagnostics\AssetMessageCode.cs" />

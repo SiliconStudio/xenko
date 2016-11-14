@@ -22,8 +22,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         public static DeriveAssetTest<T> LoadFromYaml(string baseYaml, string derivedYaml)
         {
-            var baseAsset = AssetSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
-            var derivedAsset = AssetSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
+            var baseAsset = AssetFileSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
+            var derivedAsset = AssetFileSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
             var result = new DeriveAssetTest<T>(baseAsset.Asset, derivedAsset.Asset)
             {
                 BaseAssetItem = { Overrides = baseAsset.Overrides },

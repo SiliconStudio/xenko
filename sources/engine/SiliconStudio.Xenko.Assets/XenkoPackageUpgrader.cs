@@ -605,7 +605,7 @@ namespace SiliconStudio.Xenko.Assets
             var assetFileExtension = Path.GetExtension(assetFile.FilePath);
             assetFileExtension = assetFileExtension?.ToLowerInvariant();
 
-            var serializer = AssetSerializer.FindSerializer(assetFileExtension);
+            var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
         /// <summary>
