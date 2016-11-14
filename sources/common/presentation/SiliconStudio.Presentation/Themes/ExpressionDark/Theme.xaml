@@ -36,13 +36,6 @@
   <Color x:Key="BlackColor">#FF000000</Color>
   <Color x:Key="WhiteColor">#FFFFFFFF</Color>
 
-  <Color x:Key="DebugColor">DarkGray</Color>
-  <Color x:Key="VerboseColor">White</Color>
-  <Color x:Key="InfoColor">LightGreen</Color>
-  <Color x:Key="WarningColor">Gold</Color>
-  <Color x:Key="ErrorColor">Tomato</Color>
-  <Color x:Key="FatalColor">Red</Color>
-
   <SolidColorBrush x:Key="BackgroundBrush" Color="#FF434343"/>
   <SolidColorBrush x:Key="TextBrush" Color="#FFE0E0E0" />
   <SolidColorBrush x:Key="NormalBrush" Color="#FF595959" />
@@ -4435,12 +4428,12 @@
   </Style>
 
   <Style TargetType="ctrl:TextLogViewer" BasedOn="{StaticResource DefaultLogViewerStyle}">
-    <Setter Property="DebugBrush" Value="{DynamicResource DebugColor}"/>
-    <Setter Property="VerboseBrush" Value="{DynamicResource VerboseColor}"/>
-    <Setter Property="InfoBrush" Value="{DynamicResource InfoColor}"/>
-    <Setter Property="WarningBrush" Value="{DynamicResource WarningColor}"/>
-    <Setter Property="ErrorBrush" Value="{DynamicResource ErrorColor}"/>
-    <Setter Property="FatalBrush" Value="{DynamicResource FatalColor}"/>
+    <Setter Property="DebugBrush" Value="DarkGray"/>
+    <Setter Property="VerboseBrush" Value="White"/>
+    <Setter Property="InfoBrush" Value="LightGreen"/>
+    <Setter Property="WarningBrush" Value="Gold"/>
+    <Setter Property="ErrorBrush" Value="Tomato"/>
+    <Setter Property="FatalBrush" Value="Red"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ctrl:TextLogViewer">
