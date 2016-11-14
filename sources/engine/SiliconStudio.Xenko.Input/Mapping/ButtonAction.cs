@@ -16,7 +16,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Raised when the action was trigerred
         /// </summary>
-        public event EventHandler<ChangedEventArgs> OnChanged;
+        public event EventHandler<ChangedEventArgs> Changed;
+
+        /// <summary>
+        /// Raised when the state changed from <see cref="ButtonState.Released"/> to <see cref="ButtonState.Pressed"/>
+        /// </summary>
+        public event EventHandler Pressed;
 
         private bool lastValue;
 
@@ -35,8 +40,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
             }
             if (lastValue != newValue)
             {
-                OnChanged?.Invoke(this, new ChangedEventArgs { Value = Value });
                 lastValue = newValue;
+                Changed?.Invoke(this, new ChangedEventArgs { Value = Value });
+                if(lastValue)
+                    Pressed?.Invoke(this, null);
             }
         }
 

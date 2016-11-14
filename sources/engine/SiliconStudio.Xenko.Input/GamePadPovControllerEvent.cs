@@ -12,6 +12,11 @@ namespace SiliconStudio.Xenko.Input
         /// The index of the pov controller
         /// </summary>
         public int Index;
+        
+        /// <summary>
+        /// The gamepad buttons mapped to this direction, if mapped using  <see cref="GamePadLayout"/>
+        /// </summary>
+        public GamePadButton Button;
 
         /// <summary>
         /// <c>true</c> if the controller is enabled, <c>false</c> if the controller is in a neutral position (disabled)

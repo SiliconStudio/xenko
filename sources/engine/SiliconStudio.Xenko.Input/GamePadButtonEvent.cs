@@ -14,13 +14,18 @@ namespace SiliconStudio.Xenko.Input
         public int Index;
 
         /// <summary>
+        /// The common gamepad button, if mapped using  <see cref="GamePadLayout"/>
+        /// </summary>
+        public GamePadButton Button;
+
+        /// <summary>
         /// The gamepad that sent this event
         /// </summary>
         public IGamePadDevice GamePad => Device as IGamePadDevice;
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index} ({GamePad.ButtonInfos[Index].Name}), {nameof(State)}: {State}, {nameof(GamePad)}: {GamePad.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(Button)}: {Button}, ({GamePad.ButtonInfos[Index].Name}), {nameof(State)}: {State}, {nameof(GamePad)}: {GamePad.DeviceName}";
         }
     }
 }

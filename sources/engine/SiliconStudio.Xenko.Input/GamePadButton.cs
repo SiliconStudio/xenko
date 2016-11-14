@@ -30,6 +30,11 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>	
         PadRight = 1 << 3,
 
+        /// <summary>
+        /// Any button on the directional pad
+        /// </summary>
+        Pad = 0xF,
+
         /// <summary>	
         /// Start button.
         /// </summary>	

@@ -101,5 +101,49 @@ namespace SiliconStudio.Xenko.Input
         {
             return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
         }
+
+        public void Update(GamePadPovControllerEvent povEvent)
+        {
+            // Check if this maps to DPAD
+            if (povEvent.Button == GamePadButton.Pad)
+            {
+                Buttons &= ~GamePadButton.Pad;// Clear old DPAD value
+                if (povEvent.Enabled)
+                {
+                    Buttons |= GamePadUtils.PovControllerToButton(povEvent.Value);
+                }
+            }
+        }
+        public void Update(GamePadButtonEvent buttonEvent)
+        {
+            if (buttonEvent.State == ButtonState.Pressed)
+                Buttons |= buttonEvent.Button; // Set bits
+            else
+                Buttons &= ~buttonEvent.Button; // Clear bits
+        }
+        public void Update(GamePadAxisEvent axisEvent)
+        {
+            switch (axisEvent.Axis)
+            {
+                case GamePadAxis.LeftThumbX:
+                    LeftThumb.X = axisEvent.MappedValue;
+                    break;
+                case GamePadAxis.LeftThumbY:
+                    LeftThumb.Y = axisEvent.MappedValue;
+                    break;
+                case GamePadAxis.RightThumbX:
+                    RightThumb.X = axisEvent.MappedValue;
+                    break;
+                case GamePadAxis.RightThumbY:
+                    RightThumb.Y = axisEvent.MappedValue;
+                    break;
+                case GamePadAxis.LeftTrigger:
+                    LeftTrigger = axisEvent.MappedValue;
+                    break;
+                case GamePadAxis.RightTrigger:
+                    RightTrigger = axisEvent.MappedValue;
+                    break;
+            }
+        }
     }
 }

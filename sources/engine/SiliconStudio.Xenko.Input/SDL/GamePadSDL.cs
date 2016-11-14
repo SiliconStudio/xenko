@@ -13,8 +13,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<GamePadButtonInfo> buttonInfos = new List<GamePadButtonInfo>();
         private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
         private readonly List<GamePadPovControllerInfo> povControllerInfos = new List<GamePadPovControllerInfo>();
-
-        private bool initialized = false;
+        
         private IntPtr joystick;
 
         public GamePadSDL(int deviceIndex)

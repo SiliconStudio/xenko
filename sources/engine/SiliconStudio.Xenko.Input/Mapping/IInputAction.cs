@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The gestures that are used for this action
         /// </summary>
+        // TODO: Show only respective types of gestures
         public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
 
         /// <summary>

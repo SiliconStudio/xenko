@@ -42,26 +42,29 @@ namespace SiliconStudio.Xenko.Input
             new GamePadPovControllerInfo { Name = "Pad" },
         };
 
+        public GamePadLayoutXInput()
+        {
+            AddButtonMapping(0, GamePadButton.Start);
+            AddButtonMapping(1, GamePadButton.Back);
+            AddButtonMapping(2, GamePadButton.LeftThumb);
+            AddButtonMapping(3, GamePadButton.RightThumb);
+            AddButtonMapping(4, GamePadButton.LeftShoulder);
+            AddButtonMapping(5, GamePadButton.RightShoulder);
+            AddButtonMapping(6, GamePadButton.A);
+            AddButtonMapping(7, GamePadButton.B);
+            AddButtonMapping(8, GamePadButton.X);
+            AddButtonMapping(9, GamePadButton.Y);
+            AddAxisMapping(0, GamePadAxis.LeftThumbX);
+            AddAxisMapping(1, GamePadAxis.LeftThumbY);
+            AddAxisMapping(2, GamePadAxis.RightThumbX);
+            AddAxisMapping(3, GamePadAxis.RightThumbY);
+            AddAxisMapping(4, GamePadAxis.LeftTrigger);
+            AddAxisMapping(5, GamePadAxis.RightTrigger);
+        }
+
         public override bool MatchDevice(IGamePadDevice device)
         {
             return device is GamePadXInput;
-        }
-
-        public override void GetState(IGamePadDevice device, ref GamePadState state)
-        {
-            var gamepad = ((GamePadXInput)device).state.Gamepad;
-            
-            // Buttons amp directly
-            state.Buttons = (GamePadButton)gamepad.Buttons;
-
-            // Apply deadzone reported by XInput controller
-            float deadzoneL = Gamepad.LeftThumbDeadZone / 32768.0f;
-            float deadzoneR = Gamepad.RightThumbDeadZone / 32768.0f;
-            state.LeftThumb = new Vector2(GamePadUtils.ClampDeadZone(device.GetAxis(0), deadzoneL), GamePadUtils.ClampDeadZone(device.GetAxis(1), deadzoneL));
-            state.RightThumb = new Vector2(GamePadUtils.ClampDeadZone(device.GetAxis(2), deadzoneR), GamePadUtils.ClampDeadZone(device.GetAxis(3), deadzoneR));
-
-            state.LeftTrigger = device.GetAxis(4);
-            state.RightTrigger = device.GetAxis(5);
         }
     }
 }

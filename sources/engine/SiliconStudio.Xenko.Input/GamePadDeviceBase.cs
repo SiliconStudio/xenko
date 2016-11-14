@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Input
     {
         internal int IndexInternal;
         internal GamePadLayout Layout;
+        internal GamePadState State;
         protected bool[] ButtonStates;
         protected float[] AxisStates;
         protected float[] PovStates;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.Input
         private bool firstStateDetected = false;
 
         /// <summary>
-        /// Marks the device as disconnected
+        /// Marks the device as disconnected and calls <see cref="Disconnected"/>
         /// </summary>
         public virtual void Dispose()
         {
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (Layout == null)
                 return false;
-            Layout.GetState(this, ref state);
+            state = State;
             return true;
         }
 
@@ -120,6 +121,8 @@ namespace SiliconStudio.Xenko.Input
                     var buttonEvent = InputEventPool<GamePadButtonEvent>.GetOrCreate(this);
                     buttonEvent.State = evt.State;
                     buttonEvent.Index = evt.Index;
+                    Layout?.MapInputEvent(this, buttonEvent);
+                    State.Update(buttonEvent);
                     inputEvents.Add(buttonEvent);
                 }
                 else if (evt.Type == InputEventType.Axis)
@@ -128,6 +131,8 @@ namespace SiliconStudio.Xenko.Input
                     var axisEvent = InputEventPool<GamePadAxisEvent>.GetOrCreate(this);
                     axisEvent.Index = evt.Index;
                     axisEvent.Value = evt.Float;
+                    Layout?.MapInputEvent(this, axisEvent);
+                    State.Update(axisEvent);
                     inputEvents.Add(axisEvent);
                 }
                 else if (evt.Type == InputEventType.PovController)
@@ -138,6 +143,8 @@ namespace SiliconStudio.Xenko.Input
                     povEvent.Index = evt.Index;
                     povEvent.Value = evt.Float;
                     povEvent.Enabled = evt.Enabled;
+                    Layout?.MapInputEvent(this, povEvent);
+                    State.Update(povEvent);
                     inputEvents.Add(povEvent);
                 }
             }

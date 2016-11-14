@@ -14,7 +14,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The index of the axis to use
         /// </summary>
-        public int ButtonIndex = 0;
+        public int ButtonIndex = -1;
+
+        /// <summary>
+        /// Additionally the gamepad button to map to if a <see cref="GamePadLayout"/> is used
+        /// </summary>
+        public GamePadButton GamePadButton;
 
         /// <summary>
         /// The controller index
@@ -37,9 +42,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex && inputEvent.Index == ButtonIndex)
+            if (inputEvent.GamePad.Index == ControllerIndex)
             {
-                currentState = inputEvent.State;
+                if (inputEvent.Index == ButtonIndex || (inputEvent.Button & GamePadButton) != 0)
+                    currentState = inputEvent.State;
             }
         }
 

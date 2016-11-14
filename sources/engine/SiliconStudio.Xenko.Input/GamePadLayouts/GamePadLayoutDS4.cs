@@ -4,7 +4,6 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -48,6 +47,26 @@ namespace SiliconStudio.Xenko.Input
             return true;
         }
 
+        public GamePadLayoutDS4()
+        {
+            AddButtonMapping(9, GamePadButton.Start);
+            AddButtonMapping(8, GamePadButton.Back);
+            AddButtonMapping(10, GamePadButton.LeftThumb);
+            AddButtonMapping(11, GamePadButton.RightThumb);
+            AddButtonMapping(4, GamePadButton.LeftShoulder);
+            AddButtonMapping(5, GamePadButton.RightShoulder);
+            AddButtonMapping(1, GamePadButton.A);
+            AddButtonMapping(2, GamePadButton.B);
+            AddButtonMapping(0, GamePadButton.X);
+            AddButtonMapping(3, GamePadButton.Y);
+            AddAxisMapping(3, GamePadAxis.LeftThumbX);
+            AddAxisMapping(2, GamePadAxis.LeftThumbY, true);
+            AddAxisMapping(1, GamePadAxis.RightThumbX);
+            AddAxisMapping(0, GamePadAxis.RightThumbY, true);
+            AddAxisMapping(5, GamePadAxis.LeftTrigger);
+            AddAxisMapping(4, GamePadAxis.RightTrigger);
+        }
+
         public override bool MatchDevice(IGamePadDevice device)
         {
             var dinputDevice = device as GamePadDirectInput;
@@ -56,30 +75,6 @@ namespace SiliconStudio.Xenko.Input
                 return CompareProductId(dinputDevice.ProductId, commonProductId);
             }
             return false;
-        }
-
-        public override void GetState(IGamePadDevice device, ref GamePadState state)
-        {
-            // Provide default GamePadState mapping
-            state.Buttons = 0;
-
-            // Pov controller 0 as DPad
-            state.Buttons |= device.GetDPad(0);
-
-            // Map buttons using ds4ButtonMap
-            foreach (var map in buttonMapping)
-            {
-                if (device.GetButton(map.Key))
-                {
-                    state.Buttons |= map.Value;
-                }
-            }
-
-            // Convert axes while clamping deadzone
-            state.LeftThumb = new Vector2(device.GetAxis(axisMapping[0]), -device.GetAxis(axisMapping[1]));
-            state.RightThumb = new Vector2(device.GetAxis(axisMapping[2]), -device.GetAxis(axisMapping[3]));
-            state.LeftTrigger = device.GetAxis(axisMapping[4]);
-            state.RightTrigger = device.GetAxis(axisMapping[5]);
         }
     }
 }

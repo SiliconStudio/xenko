@@ -16,7 +16,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The index of the axis to use
         /// </summary>
-        public int PovIndex = 0;
+        public int PovIndex = -1;
+
+        /// <summary>
+        /// If this is true, it will map to the directional pad that is mapped by <see cref="GamePadLayout"/>
+        /// </summary>
+        public bool MapToLayoutPad = false;
 
         /// <summary>
         /// The controller index
@@ -43,17 +48,20 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadPovControllerEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex && inputEvent.Index == PovIndex)
+            if (inputEvent.GamePad.Index == ControllerIndex)
             {
-                if (inputEvent.Enabled)
+                if (inputEvent.Index == PovIndex || (MapToLayoutPad && inputEvent.Button == GamePadButton.Pad))
                 {
-                    currentState = inputEvent.Value;
-                    currentDirection = new Vector2((float)Math.Sin(currentState*Math.PI*2), (float)Math.Cos(currentState*Math.PI*2));
-                }
-                else
-                {
-                    currentState = 0.0f;
-                    currentDirection = Vector2.Zero;
+                    if (inputEvent.Enabled)
+                    {
+                        currentState = inputEvent.Value;
+                        currentDirection = new Vector2((float)Math.Sin(currentState * Math.PI * 2), (float)Math.Cos(currentState * Math.PI * 2));
+                    }
+                    else
+                    {
+                        currentState = 0.0f;
+                        currentDirection = Vector2.Zero;
+                    }
                 }
             }
         }

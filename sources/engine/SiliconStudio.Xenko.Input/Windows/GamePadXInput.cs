@@ -45,12 +45,20 @@ namespace SiliconStudio.Xenko.Input
                 float pov = GamePadUtils.ButtonToPovController(padDir);
                 HandlePovController(0, pov, ((int)padDir & 0xF) != 0);
 
-                // Process buttons
-                for (int i = 0; i < ButtonInfos.Count; i++)
+                // Start -> Right Shoulder button
+                for (int i = 0; i < 6; i++)
                 {
                     int mask = 1 << (i + 4);
                     bool buttonState = ((int)state.Gamepad.Buttons & mask) != 0;
                     HandleButton(i, buttonState);
+                }
+
+                // Face buttons
+                for (int i = 0; i < 4; i++)
+                {
+                    int mask = 1 << (i + 12);
+                    bool buttonState = ((int)state.Gamepad.Buttons & mask) != 0;
+                    HandleButton(i+6, buttonState);
                 }
 
                 // Proces Axes

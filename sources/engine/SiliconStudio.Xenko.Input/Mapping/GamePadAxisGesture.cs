@@ -14,7 +14,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The index of the axis to use
         /// </summary>
-        public int AxisIndex = 0;
+        public int AxisIndex = -1;
+
+        /// <summary>
+        /// Additionally the gamepad axis to map to if a <see cref="GamePadLayout"/> is used
+        /// </summary>
+        public GamePadAxis GamePadAxis;
 
         /// <summary>
         /// The controller index
@@ -22,7 +27,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         internal int ControllerIndex = 0;
 
         private float currentState;
-        
+
+        public GamePadAxisGesture()
+        {
+        }
+
         public GamePadAxisGesture(int axisIndex)
         {
             AxisIndex = axisIndex;
@@ -36,8 +45,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex && inputEvent.Index == AxisIndex)
-                currentState = inputEvent.Value;
+            if (inputEvent.GamePad.Index == ControllerIndex)
+            {
+                if (inputEvent.Index == AxisIndex)
+                    currentState = inputEvent.Value;
+                else if ((inputEvent.Axis & GamePadAxis) != 0)
+                    currentState = inputEvent.MappedValue;
+            }
         }
 
         public override string ToString()

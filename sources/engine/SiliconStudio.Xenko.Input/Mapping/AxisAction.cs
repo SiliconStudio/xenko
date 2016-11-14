@@ -19,12 +19,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Raised when the axis is not 0
         /// </summary>
-        public event EventHandler<ChangedEventArgs> OnNotZero;
+        public event EventHandler<ChangedEventArgs> NotZero;
 
         /// <summary>
         /// Raised when the axis changes value
         /// </summary>
-        public event EventHandler<ChangedEventArgs> OnChanged;
+        public event EventHandler<ChangedEventArgs> Changed;
         
         /// <summary>
         /// The last value of this action
@@ -50,11 +50,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 lastValue = newValue;
                 lastRelative = relative;
-                OnChanged?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative});
+                Changed?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative});
             }
             if (lastValue != 0.0f)
             {
-                OnNotZero?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative });
+                NotZero?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative });
             }
         }
 
