@@ -63,7 +63,6 @@ namespace SiliconStudio.Xenko.Input
 
             // Do not register keyboard devices when using raw input instead
             keyboard = new KeyboardWinforms(this, uiControl);
-            keyboard.Priority = InputManager.UseRawInput ? -1 : 0; // Don't take priority over raw input
             RegisterDevice(keyboard);
 
             mouse = new MouseWinforms(game, uiControl);

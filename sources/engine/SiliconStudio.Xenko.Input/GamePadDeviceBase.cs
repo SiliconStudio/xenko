@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Input
         protected bool[] PovEnabledStates;
         private bool disposed;
         private readonly List<GamePadInputEvent> gamePadInputEvents = new List<GamePadInputEvent>();
+        private bool firstStateDetected = false;
 
         /// <summary>
         /// Marks the device as disconnected
@@ -140,6 +141,8 @@ namespace SiliconStudio.Xenko.Input
                     inputEvents.Add(povEvent);
                 }
             }
+            if(gamePadInputEvents.Count > 0)
+                OnAnyObjectChanged();
             gamePadInputEvents.Clear();
         }
 
@@ -148,12 +151,14 @@ namespace SiliconStudio.Xenko.Input
             if (index < 0 || index > ButtonStates.Length)
                 throw new IndexOutOfRangeException();
             if (ButtonStates[index] != state)
+            {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {
                     Index = index,
                     Type = InputEventType.Button,
                     State = state ? ButtonState.Pressed : ButtonState.Released
                 });
+            }
         }
 
         protected void HandleAxis(int index, float state)
@@ -184,6 +189,23 @@ namespace SiliconStudio.Xenko.Input
                     Float = enabled ? state : 0.0f,
                     Enabled = enabled
                 });
+            }
+        }
+
+        private void OnAnyObjectChanged()
+        {
+            // Kind of a hack to find out when the device actually started reporting data, this event is triggered the first time sends any data that doesn't match the default state
+            if (!firstStateDetected)
+            {
+                for (int i = 0; i < AxisInfos.Count; i++)
+                {
+                    // TODO: Test this
+                    // Axes that do not idle around -1 are marked bidirectional
+                    float floatValue = AxisStates[i];
+                    AxisInfos[i].IsBiDirectional = floatValue > -0.75f;
+                }
+
+                firstStateDetected = true;
             }
         }
 

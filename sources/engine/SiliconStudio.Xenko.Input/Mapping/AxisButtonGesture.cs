@@ -40,6 +40,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
             axis?.Reset(elapsedTime);
         }
 
+        public override string ToString()
+        {
+            return $"{nameof(Threshold)}: {Threshold}, {nameof(Button)}: {Button}";
+        }
+
         protected bool Equals(AxisButtonGesture other)
         {
             return Threshold.Equals(other.Threshold);

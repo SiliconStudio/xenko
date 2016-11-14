@@ -84,27 +84,6 @@ namespace SiliconStudio.Xenko.Input
             state.Buttons = new bool[buttonInfos.Count];
             state.Axes = new float[axisInfos.Count];
             state.PovControllers = new int[povControllerInfos.Count];
-
-            // Query initial state to get some extra information about axes
-            try
-            {
-                // Read some data
-                for (int i = 0; i < 8; i++)
-                {
-                    gamepad.Acquire();
-                    gamepad.Poll();
-                    gamepad.GetCurrentState(ref state);
-                    Thread.Sleep(1);
-                }
-                for (int i = 0; i < axisInfos.Count; i++)
-                {
-                    // Axes that idle around 0.5 are marked as bidirectional
-                    axisInfos[i].IsBiDirectional = state.Axes[i] > 0.1f && state.Axes[i] < 0.9f;
-                }
-            }
-            catch (SharpDXException)
-            {
-            }
             
             InitializeButtonStates();
             InitializeLayout();

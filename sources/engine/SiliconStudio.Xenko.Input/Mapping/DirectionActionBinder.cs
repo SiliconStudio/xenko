@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public DirectionActionBinder(InputManager inputManager, HashSet<IInputGesture> usedGestures = null) : base(inputManager, usedGestures)
         {
             // A direction is always generated from a four way gesture
-            TargetGesture = TargetFourWayGesture = new FourWayGesture() { Normalized = true };
+            TargetGesture = TargetFourWayGesture = new FourWayGesture();
         }
         
         public override int NumBindings { get; } = 4;
@@ -82,10 +82,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 TargetFourWayGesture.Y = axis;
                 Advance(2);
             }
-
-            // Make gesture not normalized when using mouse input
-            if (axis is MouseAxisGesture)
-                TargetFourWayGesture.Normalized = false;
 
             UsedGestures.Add(axis);
         }

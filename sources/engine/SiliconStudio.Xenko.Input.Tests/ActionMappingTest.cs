@@ -101,19 +101,14 @@ namespace SiliconStudio.Xenko.Input.Tests
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            // Detect new gamepads
-            if (checkNewDevicesStopwatch.Elapsed.TotalSeconds > 0.5f)
-            {
-                checkNewDevicesStopwatch.Restart();
-                Input.Scan();
-            }
-
+            
             // Log events
             foreach (var evt in Input.InputEvents)
             {
                 LogEvent(evt.ToString());
             }
+
+            actionMapping.Update(gameTime.Elapsed);
 
             UpdateActionBinder();
 
@@ -169,22 +164,29 @@ namespace SiliconStudio.Xenko.Input.Tests
                     else if (gesture.GetType() == typeof(TwoWayGesture))
                     {
                         var twoWayGesture = (TwoWayGesture)gesture;
-                        WriteLine($"Two Way Gesture (+/-): {twoWayGesture.Axis}", tuple.Item2);
+                        WriteLine($"Two Way Gesture (+/-): {twoWayGesture}", tuple.Item2);
                         gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Negative, tuple.Item2 + 1));
                         gestures.Push(new Tuple<IInputGesture, int>(twoWayGesture.Positive, tuple.Item2 + 1));
                     }
                     else if (gesture.GetType() == typeof(FourWayGesture))
                     {
                         var fourWayGesture = (FourWayGesture)gesture;
-                        WriteLine($"Four Way Gesture (X/Y): Direction: {fourWayGesture.Direction}", tuple.Item2);
+                        WriteLine($"Four Way Gesture (X/Y): {fourWayGesture}", tuple.Item2);
                         gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.Y, tuple.Item2 + 1));
                         gestures.Push(new Tuple<IInputGesture, int>(fourWayGesture.X, tuple.Item2 + 1));
                     }
                     else if (gesture.GetType() == typeof(AxisButtonGesture))
                     {
                         var axisButton = (AxisButtonGesture)gesture;
-                        WriteLine($"Axis Button Gesture: {axisButton.Button}", tuple.Item2);
+                        WriteLine($"Axis Button Gesture: {axisButton}", tuple.Item2);
                         gestures.Push(new Tuple<IInputGesture, int>(axisButton.Axis, tuple.Item2 + 1));
+                    }
+                    else if (gesture.GetType() == typeof(CompoundAxisGesture))
+                    {
+                        var compound = (CompoundAxisGesture)gesture;
+                        WriteLine($"Compound Axis Gesture: {compound}", tuple.Item2);
+                        foreach(var child in compound.Gestures)
+                            gestures.Push(new Tuple<IInputGesture, int>(child, tuple.Item2 + 1));
                     }
                     else
                     {
@@ -223,16 +225,15 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             AddAction<DirectionAction>("Move");
             AddAction<DirectionAction>("Look");
+            AddAction<AxisAction>("Speed");
             AddAction<ButtonAction>("Jump");
             AddAction<ButtonAction>("Fire");
-            AddAction<ButtonAction>("Zoom");
-            AddAction<ButtonAction>("Reset Camera");
-            AddAction<ButtonAction>("Menu");
         }
 
         private void AddAction<TType>(string name) where TType : InputAction, new()
         {
             var action = new TType();
+            action.MappingName = name;
             actionMapping.AddAction(action);
             actions.Add(action);
         }

@@ -8,6 +8,12 @@ namespace SiliconStudio.Xenko.Input
 {
     public class KeyboardWindowsRawInput : KeyboardDeviceBase
     {
+        public KeyboardWindowsRawInput()
+        {
+            // Raw input is usually prefered above other keyboards
+            Priority = 100;
+        }
+
         public override string DeviceName => "Windows Keyboard (Raw Input)";
         public override Guid Id => new Guid("d7437ff5-d14f-4491-9673-377b6d0e241c");
     }

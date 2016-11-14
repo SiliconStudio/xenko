@@ -293,7 +293,8 @@ namespace SiliconStudio.Xenko.Input
                 case AppContextType.Desktop:
                     AddInputSource(new InputSourceWinforms());
                     AddInputSource(new InputSourceWindowsDirectInput());
-                    AddInputSource(new InputSourceWindowsXInput());
+                    if(InputSourceWindowsXInput.IsSupported())
+                        AddInputSource(new InputSourceWindowsXInput());
                     if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
                     break;
 #endif
@@ -580,9 +581,6 @@ namespace SiliconStudio.Xenko.Input
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
-                if(!(evt is PointerEvent))
-                    Debug.WriteLine(evt);
-
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
@@ -745,10 +743,6 @@ namespace SiliconStudio.Xenko.Input
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
             {
                 gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, filteredPointerEvents));
-            }
-            foreach (var gesture in gestureEvents)
-            {
-                Debug.WriteLine($"Gesture> {gesture}");
             }
         }
 

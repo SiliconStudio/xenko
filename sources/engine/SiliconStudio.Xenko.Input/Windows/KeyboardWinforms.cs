@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Input
         private Win32Native.WndProc myWndProc;
         private IntPtr oldWndProc;
         private bool textInputEnabled;
-        private string compositionString;
 
         public KeyboardWinforms(InputSourceWinforms source, Control uiControl)
         {
@@ -74,8 +73,6 @@ namespace SiliconStudio.Xenko.Input
         {
             if (!textInputEnabled)
             {
-                compositionString = "";
-                uiControl.Text = "";
                 uiControl.Controls.Add(richTextBox);
                 textInputEnabled = true;
                 richTextBox.TextChanged += RichTextBoxOnTextChanged;
@@ -101,7 +98,6 @@ namespace SiliconStudio.Xenko.Input
                     textEvents.Add(compEvent);
                 }
             }
-            compositionString = "";
             richTextBox.Text = "";
         }
 
@@ -194,7 +190,6 @@ namespace SiliconStudio.Xenko.Input
                 uiControl.Focus();
                 uiControl.Controls.Remove(richTextBox);
                 textInputEnabled = false;
-                compositionString = "";
             }
         }
     }

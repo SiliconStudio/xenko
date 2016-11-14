@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         private GamePadXInput[] devices;
 
         private readonly List<int> devicesToRemove = new List<int>();
-        
+
         public override void Dispose()
         {
             base.Dispose();
@@ -33,29 +33,38 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void Initialize(InputManager inputManager)
+        public static bool IsSupported()
         {
             try
             {
-                Controller.SetReporting(true);
-
-                controllers = new Controller[XInputGamePadCount];
-                controllerIds = new Guid[XInputGamePadCount];
-                devices = new GamePadXInput[XInputGamePadCount];
-
-                // Prebuild fake GUID
-                for (int i = 0; i < XInputGamePadCount; i++)
-                {
-                    controllerIds[i] = new Guid(i, 11, 22, 33, 0, 0, 0, 0, 0, 0, 0);
-                    controllers[i] = new Controller((UserIndex)i);
-                }
-                Scan();
+                Controller controller = new Controller();
+                bool connected = controller.IsConnected;
             }
             catch (Exception ex)
             {
                 InputManager.Logger.Warning("XInput dll was not found on the computer. GamePad detection will not fully work for the current game instance. " +
                                      "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
+                return false;
             }
+
+            return true;
+        }
+
+        public override void Initialize(InputManager inputManager)
+        {
+            Controller.SetReporting(true);
+
+            controllers = new Controller[XInputGamePadCount];
+            controllerIds = new Guid[XInputGamePadCount];
+            devices = new GamePadXInput[XInputGamePadCount];
+
+            // Prebuild fake GUID
+            for (int i = 0; i < XInputGamePadCount; i++)
+            {
+                controllerIds[i] = new Guid(i, 11, 22, 33, 0, 0, 0, 0, 0, 0, 0);
+                controllers[i] = new Controller((UserIndex)i);
+            }
+            Scan();
         }
 
         public override void Update()
@@ -78,7 +87,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public override void Scan()
         {
-            // TODO: put in try/catch in case XInput.dll can not be found and don't retry
             for (int i = 0; i < XInputGamePadCount; i++)
             {
                 if (devices[i] == null)

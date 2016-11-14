@@ -149,10 +149,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 {
                     gesture.Negative = button;
                 }
-            }
 
-            UsedGestures.Add(button);
-            Advance();
+                UsedGestures.Add(button);
+                Advance();
+            }
         }
     }
 }

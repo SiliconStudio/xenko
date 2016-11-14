@@ -102,14 +102,12 @@ namespace SiliconStudio.Xenko.Input
                         key = Keys.NumPadEnter;
                     break;
             }
-
-
+            
             if (key == Keys.None)
             {
                 WinKeys.mapKeys.TryGetValue(virtualKey, out key);
             }
-
-
+            
             if (key != Keys.None)
             {
                 bool isKeyUp = (flags & ScanCodeFlags.Break) != 0;

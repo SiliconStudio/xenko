@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.Input
         private Window uiControl;
         private MouseSDL mouse;
         private KeyboardSDL keyboard;
-        
+        private InputManager inputManager;
+
         public override void Dispose()
         {
             // Dispose all the gamepads
@@ -29,15 +30,18 @@ namespace SiliconStudio.Xenko.Input
                 pair.Value.Dispose();
             }
 
+            SDL.SDL_QuitSubSystem(SDL.SDL_INIT_JOYSTICK);
+
             base.Dispose();
         }
 
         public override void Initialize(InputManager inputManager)
         {
+            this.inputManager = inputManager;
             context = inputManager.Game.Context as GameContext<Window>;
             uiControl = context.Control;
 
-            SDL.SDL_Init(SDL.SDL_INIT_JOYSTICK);
+            SDL.SDL_InitSubSystem(SDL.SDL_INIT_JOYSTICK);
 
             mouse = new MouseSDL(inputManager.Game, uiControl);
             keyboard = new KeyboardSDL(uiControl);

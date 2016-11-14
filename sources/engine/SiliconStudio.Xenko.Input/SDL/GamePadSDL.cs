@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
         private readonly List<GamePadPovControllerInfo> povControllerInfos = new List<GamePadPovControllerInfo>();
 
+        private bool initialized = false;
         private IntPtr joystick;
 
         public GamePadSDL(int deviceIndex)
@@ -66,7 +67,15 @@ namespace SiliconStudio.Xenko.Input
             }
             for (int i = 0; i < axisInfos.Count; i++)
             {
-                float axis = (float)SDL.SDL_JoystickGetAxis(joystick, i)/0x7FFF;
+                short input = SDL.SDL_JoystickGetAxis(joystick, i);
+                float axis;
+                if (!axisInfos[i].IsBiDirectional)
+                {
+                    int inputUnsigned = input + 0x7FFF;
+                    axis = (float)inputUnsigned / 0xFFFF;
+                }
+                else
+                    axis = (float)input / 0x7FFF;
                 HandleAxis(i, axis);
             }
             for (int i = 0; i < povControllerInfos.Count; i++)

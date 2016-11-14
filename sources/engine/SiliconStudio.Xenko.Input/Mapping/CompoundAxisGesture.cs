@@ -70,6 +70,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 return false;
             }
         }
+        
+        public override string ToString()
+        {
+            return $"{nameof(Axis)}: {Axis}, {nameof(IsRelative)}: {IsRelative}";
+        }
 
         public override void Reset(TimeSpan elapsedTime)
         {
