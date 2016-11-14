@@ -259,7 +259,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var currentBaseIndex = baseIndex.Int - 1;
                         // Find the first item before the new one that also exists (in term of id) in the local node
-                        while (currentBaseIndex > 0)
+                        while (currentBaseIndex >= 0)
                         {
                             if (!baseNode.TryIndexToId(new Index(currentBaseIndex), out baseId))
                                 throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
