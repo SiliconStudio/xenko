@@ -38,6 +38,8 @@ namespace SiliconStudio.Xenko.Input
 
         public abstract Guid Id { get; }
 
+        public virtual Guid ProductId => Id;
+
         public int Priority { get; set; }
 
         public bool Connected => !disposed;
@@ -115,13 +117,15 @@ namespace SiliconStudio.Xenko.Input
             // Fire events
             foreach (var evt in gamePadInputEvents)
             {
+                InputEvent generatedEvent = null;
                 if (evt.Type == InputEventType.Button)
                 {
                     ButtonStates[evt.Index] = evt.State == ButtonState.Pressed;
                     var buttonEvent = InputEventPool<GamePadButtonEvent>.GetOrCreate(this);
                     buttonEvent.State = evt.State;
                     buttonEvent.Index = evt.Index;
-                    Layout?.MapInputEvent(this, buttonEvent);
+                    buttonEvent.Button = 0;
+                    Layout?.MapInputEvent(this, buttonEvent, out generatedEvent);
                     State.Update(buttonEvent);
                     inputEvents.Add(buttonEvent);
                 }
@@ -131,7 +135,8 @@ namespace SiliconStudio.Xenko.Input
                     var axisEvent = InputEventPool<GamePadAxisEvent>.GetOrCreate(this);
                     axisEvent.Index = evt.Index;
                     axisEvent.Value = evt.Float;
-                    Layout?.MapInputEvent(this, axisEvent);
+                    axisEvent.Axis = 0;
+                    Layout?.MapInputEvent(this, axisEvent, out generatedEvent);
                     State.Update(axisEvent);
                     inputEvents.Add(axisEvent);
                 }
@@ -142,10 +147,17 @@ namespace SiliconStudio.Xenko.Input
                     var povEvent = InputEventPool<GamePadPovControllerEvent>.GetOrCreate(this);
                     povEvent.Index = evt.Index;
                     povEvent.Value = evt.Float;
+                    povEvent.Button = 0;
                     povEvent.Enabled = evt.Enabled;
-                    Layout?.MapInputEvent(this, povEvent);
+                    Layout?.MapInputEvent(this, povEvent, out generatedEvent);
                     State.Update(povEvent);
                     inputEvents.Add(povEvent);
+                }
+
+                if (generatedEvent != null)
+                {
+                    State.Update(generatedEvent);
+                    inputEvents.Add(generatedEvent);
                 }
             }
             if(gamePadInputEvents.Count > 0)

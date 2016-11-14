@@ -24,18 +24,13 @@ namespace SiliconStudio.Xenko.Input
         public float Value;
 
         /// <summary>
-        /// The value of the axis matching the value in <see cref="GamePadLayout"/>
-        /// </summary>
-        public float MappedValue;
-
-        /// <summary>
         /// The gamepad that sent this event
         /// </summary>
         public IGamePadDevice GamePad => Device as IGamePadDevice;
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index} ({GamePad.AxisInfos[Index].Name}), {nameof(Axis)}: {Axis}, {nameof(Value)}: {Value}, {nameof(GamePad)}: {GamePad.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(Axis)}: {Axis}, {nameof(Value)}: {Value}, {nameof(GamePad)}: {GamePad.DeviceName}";
         }
     }
 }

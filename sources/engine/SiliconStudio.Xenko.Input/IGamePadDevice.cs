@@ -13,6 +13,11 @@ namespace SiliconStudio.Xenko.Input
     public interface IGamePadDevice : IInputDevice
     {
         /// <summary>
+        /// Product Id of the device
+        /// </summary>
+        Guid ProductId { get; }
+
+        /// <summary>
         /// The index of the GamePad
         /// </summary>
         int Index { get; }

@@ -47,10 +47,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (inputEvent.GamePad.Index == ControllerIndex)
             {
-                if (inputEvent.Index == AxisIndex)
+                if ((AxisIndex > 0 && inputEvent.Index == AxisIndex) || (inputEvent.Axis & GamePadAxis) != 0)
                     currentState = inputEvent.Value;
-                else if ((inputEvent.Axis & GamePadAxis) != 0)
-                    currentState = inputEvent.MappedValue;
             }
         }
 

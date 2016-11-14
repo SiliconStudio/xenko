@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string DeviceName { get; }
         public override Guid Id { get; }
-        public Guid ProductId { get; }
+        public override Guid ProductId { get; }
 
         public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => buttonInfos;
         public override IReadOnlyList<GamePadAxisInfo> AxisInfos => axisInfos;

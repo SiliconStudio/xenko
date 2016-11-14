@@ -13,40 +13,7 @@ namespace SiliconStudio.Xenko.Input
     public class GamePadLayoutDS4 : GamePadLayout
     {
         private static Guid commonProductId = new Guid(0x05c4054c, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-        private static Dictionary<int, GamePadButton> buttonMapping = new Dictionary<int, GamePadButton>
-        {
-            { 9, GamePadButton.Start },
-            { 8, GamePadButton.Back },
-            { 10, GamePadButton.LeftThumb },
-            { 11, GamePadButton.RightThumb },
-            { 4, GamePadButton.LeftShoulder },
-            { 5, GamePadButton.RightShoulder },
-            { 1, GamePadButton.A },
-            { 2, GamePadButton.B },
-            { 0, GamePadButton.X },
-            { 3, GamePadButton.Y },
-        };
-
-        private List<int> axisMapping = new List<int>
-        {
-            3,
-            2, // L Stick
-            1,
-            0, // R Stick 
-            5,
-            4 // Triggers
-        };
-
-        private static bool CompareProductId(Guid a, Guid b)
-        {
-            byte[] aBytes = a.ToByteArray();
-            byte[] bBytes = b.ToByteArray();
-            for (int i = 0; i < 4; i++)
-                if (aBytes[i] != bBytes[i]) return false;
-            return true;
-        }
-
+        
         public GamePadLayoutDS4()
         {
             AddButtonMapping(9, GamePadButton.Start);
@@ -69,12 +36,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override bool MatchDevice(IGamePadDevice device)
         {
-            var dinputDevice = device as GamePadDirectInput;
-            if (dinputDevice != null)
-            {
-                return CompareProductId(dinputDevice.ProductId, commonProductId);
-            }
-            return false;
+            return CompareProductId(device.ProductId, commonProductId, 4);
         }
     }
 }

@@ -101,7 +101,28 @@ namespace SiliconStudio.Xenko.Input
         {
             return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
         }
-
+        
+        public void Update(InputEvent evt)
+        {
+            var buttonEvent = evt as GamePadButtonEvent;
+            if (buttonEvent != null)
+            {
+                Update(buttonEvent);
+                return;
+            }
+            var povEvent = evt as GamePadPovControllerEvent;
+            if (povEvent != null)
+            {
+                Update(povEvent);
+                return;
+            }
+            var axisEvent = evt as GamePadAxisEvent;
+            if (axisEvent != null)
+            {
+                Update(axisEvent);
+                return;
+            }
+        }
         public void Update(GamePadPovControllerEvent povEvent)
         {
             // Check if this maps to DPAD
@@ -126,22 +147,22 @@ namespace SiliconStudio.Xenko.Input
             switch (axisEvent.Axis)
             {
                 case GamePadAxis.LeftThumbX:
-                    LeftThumb.X = axisEvent.MappedValue;
+                    LeftThumb.X = axisEvent.Value;
                     break;
                 case GamePadAxis.LeftThumbY:
-                    LeftThumb.Y = axisEvent.MappedValue;
+                    LeftThumb.Y = axisEvent.Value;
                     break;
                 case GamePadAxis.RightThumbX:
-                    RightThumb.X = axisEvent.MappedValue;
+                    RightThumb.X = axisEvent.Value;
                     break;
                 case GamePadAxis.RightThumbY:
-                    RightThumb.Y = axisEvent.MappedValue;
+                    RightThumb.Y = axisEvent.Value;
                     break;
                 case GamePadAxis.LeftTrigger:
-                    LeftTrigger = axisEvent.MappedValue;
+                    LeftTrigger = axisEvent.Value;
                     break;
                 case GamePadAxis.RightTrigger:
-                    RightTrigger = axisEvent.MappedValue;
+                    RightTrigger = axisEvent.Value;
                     break;
             }
         }
