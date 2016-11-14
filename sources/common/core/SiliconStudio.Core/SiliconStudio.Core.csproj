@@ -61,6 +61,7 @@
     <Compile Include="Annotations\MemberCollectionAttribute.cs" />
     <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
     <Compile Include="Annotations\InlinePropertyAttribute.cs" />
+    <Compile Include="Annotations\NonIdentifiableCollectionItemsAttribute.cs" />
     <Compile Include="Annotations\NonInstantiableAttribute.cs" />
     <Compile Include="Annotations\NonOverridableAttribute.cs" />
     <Compile Include="Annotations\NotNullAttribute.cs" />
@@ -208,7 +209,6 @@
     <Compile Include="DataStyleAttribute.cs" />
     <Compile Include="Serialization\DataSerializerFactory.cs" />
     <Compile Include="Serialization\IDataSerializerGenericInstantiation.cs" />
-    <Compile Include="Serialization\IDataSerializerInitializer.cs" />
     <Compile Include="Serialization\MemberSerializer.cs" />
     <Compile Include="Serialization\EmptyDataSerializer.cs" />
     <Compile Include="Serialization\MemberSerializerGenerated.cs">

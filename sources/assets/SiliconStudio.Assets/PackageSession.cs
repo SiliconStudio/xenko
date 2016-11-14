@@ -1126,7 +1126,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Expand the string of the location
-                var newLocation = (UFile)AssetRegistry.ExpandString(session, packageReference.Location);
+                var newLocation = packageReference.Location;
 
                 var subPackageFilePath = package.RootDirectory != null ? UPath.Combine(package.RootDirectory, newLocation) : newLocation;
 

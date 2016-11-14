@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Mono.TextTemplating;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;

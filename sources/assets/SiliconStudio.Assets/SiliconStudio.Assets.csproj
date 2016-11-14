@@ -50,7 +50,6 @@
     <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
-    <Compile Include="Analysis\AssetDependencyManagerExtensions.cs" />
     <Compile Include="Analysis\AssetDependencies.cs" />
     <Compile Include="Analysis\AssetDependencySearchOptions.cs" />
     <Compile Include="Analysis\AssetFileChangedEvent.cs" />
@@ -64,6 +63,7 @@
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="BasePart.cs" />

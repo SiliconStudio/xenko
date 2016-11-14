@@ -1,19 +1,12 @@
 ﻿using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
     [TestFixture]
-    public class TestArchetypes
+    public class TestArchetypesBasic
     {
-        /* test TODO:
-         * Non-abstract class (test result recursively) : simple prop + in collection
-         * Abstract (interface) override with different type
-         * class prop set to null
-         */
-
         [Test]
         public void TestSimplePropertyChange()
         {
@@ -513,6 +506,106 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual(4, context.DerivedAsset.MyDictionary.Count);
+        }
+
+        [Test]
+        public void TestSimpleDictionaryRemove()
+        {
+            var asset = new Types.MyAsset3 { MyDictionary = { { "Key1", "String1" }, { "Key2", "String2" }, { "Key3", "String3" }, { "Key4", "String4" } } };
+            var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+
+            // Initial checks
+            Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(4, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", basePropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual("String4", basePropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", derivedPropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual("String4", derivedPropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(4, baseIds.Count);
+            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+            Assert.AreEqual(baseIds["Key3"], derivedIds["Key3"]);
+            Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
+
+            // Update derived and check
+            var derivedDeletedId = derivedIds["Key3"];
+            derivedPropertyNode.Content.Remove("String3", new Index("Key3"));
+            Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(3, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", basePropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual("String4", basePropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String4", derivedPropertyNode.Content.Retrieve(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key4")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
+            Assert.AreNotSame(baseIds, derivedIds);
+            Assert.AreEqual(4, baseIds.Count);
+            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+            Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
+            Assert.True(derivedIds.IsDeleted(derivedDeletedId));
+
+            // Update base with propagation and check
+            var baseDeletedId = baseIds["Key4"];
+            basePropertyNode.Content.Remove("String4", new Index("Key4"));
+            Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
+            Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
+            Assert.AreEqual("String1", basePropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", basePropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual("String3", basePropertyNode.Content.Retrieve(new Index("Key3")));
+            Assert.AreEqual("String1", derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+            Assert.AreEqual("String2", derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key3")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
+            Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
+            Assert.AreEqual(3, baseIds.Count);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(3, derivedIds.Count);
+            Assert.AreEqual(3, derivedIds.Count);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
+            Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
+            Assert.True(derivedIds.IsDeleted(derivedDeletedId));
+            Assert.True(!baseIds.IsDeleted(baseDeletedId));
         }
 
         [Test]

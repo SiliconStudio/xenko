@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;

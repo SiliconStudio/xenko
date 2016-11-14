@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -48,10 +49,20 @@ namespace SiliconStudio.Core.Yaml
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
+            bool nonIdentifiableItems;
+            // We allow compact style only for collection with non-identifiable items
+            var allowCompactStyle = objectContext.SerializerContext.Properties.TryGetValue(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, out nonIdentifiableItems) && nonIdentifiableItems;
+
             var member = memberDescriptor as MemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
                 memberObjectContext.Properties.Add(CollectionWithIdsSerializerBase.NonIdentifiableCollectionItemsKey, true);
+                allowCompactStyle = true;
+            }
+
+            if (allowCompactStyle)
+            {
+                memberObjectContext.Style = memberDescriptor.Style;
             }
 
             var path = GetCurrentPath(ref objectContext, true);

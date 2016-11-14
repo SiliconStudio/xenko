@@ -86,25 +86,6 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Finds the dependencies for the specified asset.
-        /// </summary>
-        /// <param name="assetId">The asset identifier.</param>
-        /// <returns>The dependencies or null if not found.</returns>
-        public AssetDependencies FindDependencySet(Guid assetId)
-        {
-            AssetDependencies dependencies;
-            lock (Initialize())
-            {
-                if (Dependencies.TryGetValue(assetId, out dependencies))
-                {
-                    // Create a copy
-                    dependencies = new AssetDependencies(dependencies);
-                }
-            }
-            return dependencies;
-        }
-
-        /// <summary>
         /// Finds the assets the specified asset id inherits from (this is a direct inheritance, not indirect)..
         /// </summary>
         /// <param name="assetId">The asset identifier.</param>
@@ -190,6 +171,15 @@ namespace SiliconStudio.Assets.Analysis
                     CollectOutputReferences(dependencies, assetItem, visited, recursive, linkTypes, ref outCount);
                 }
 
+                // Manually fill the part list from the updated dependency we should have computed.
+                AssetDependencies computedDependencies;
+                if (Dependencies.TryGetValue(assetItem.Id, out computedDependencies))
+                {
+                    foreach (var part in computedDependencies.Parts)
+                    {
+                        dependencies.AddPart(part);
+                    }
+                }
                 //Console.WriteLine("Time to compute dependencies: {0}ms in: {1} out:{2}", clock.ElapsedMilliseconds, inCount, outCount);
 
                 return dependencies;
@@ -276,20 +266,6 @@ namespace SiliconStudio.Assets.Analysis
                 isInitialized = true;
             }
             return ThisLock;
-        }
-
-        /// <summary>
-        /// Collects all references of an asset dynamically.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <param name="packageSession">The package session.</param>
-        /// <param name="isRecursive">if set to <c>true</c> [is recursive].</param>
-        /// <param name="keepParents">Indicate if the parent of the provided <paramref name="result"/> should be kept or not</param>
-        /// <exception cref="System.ArgumentNullException">packageSession</exception>
-        private static void CollectDynamicOutReferences(AssetDependencies result, PackageSession packageSession, bool isRecursive, bool keepParents)
-        {
-            if (packageSession == null) throw new ArgumentNullException(nameof(packageSession));
-            CollectDynamicOutReferences(result, packageSession.FindAsset, isRecursive, keepParents);
         }
 
         /// <summary>
@@ -586,12 +562,6 @@ namespace SiliconStudio.Assets.Analysis
         {
             lock (ThisLock)
             {
-                // Remove previous part assets registered
-                foreach (var part in dependencies.Parts)
-                {
-                    Dependencies.Remove(part.PartId);
-                }
-
                 // Remove previous missing dependencies
                 RemoveMissingDependencies(dependencies);
 
@@ -604,12 +574,6 @@ namespace SiliconStudio.Assets.Analysis
 
                 // Recalculate [Out] dependencies
                 CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, true);
-
-                // Add part assets
-                foreach (var part in dependencies.Parts)
-                {
-                    Dependencies[part.PartId] = dependencies;
-                }
 
                 // Add [In] dependencies to new children
                 foreach (var assetLink in dependencies.LinksOut)

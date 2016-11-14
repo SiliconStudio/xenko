@@ -70,7 +70,8 @@
     <Compile Include="Reflection\OverrideTarget.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Reflection\ShadowObjectExtensions.cs" />
+    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
@@ -118,7 +119,6 @@
     <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
-    <Compile Include="Yaml\NonIdentifiableCollectionItemsAttribute.cs" />
     <Compile Include="Yaml\ObjectPath.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />

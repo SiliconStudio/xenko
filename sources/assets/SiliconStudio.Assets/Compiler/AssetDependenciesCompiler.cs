@@ -20,14 +20,6 @@ namespace SiliconStudio.Assets.Compiler
 
             var compilerResult = new AssetCompilerResult();
 
-            var dependencySet = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id);
-            if (dependencySet == null)
-            {
-                compilerResult.Warning("Could not find dependency for asset [{0}]", assetItem);
-                return compilerResult;
-            }
-            assetItem = dependencySet.Item;
-
             if (assetItem.Package == null)
             {
                 compilerResult.Warning("Asset [{0}] is not attached to a package", assetItem);

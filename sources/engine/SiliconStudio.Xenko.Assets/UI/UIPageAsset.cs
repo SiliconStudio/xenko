@@ -4,6 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -12,6 +13,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// </summary>
     [DataContract("UIPageAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(UIPage))]
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Page")]

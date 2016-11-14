@@ -6,11 +6,13 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Skeleton))]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
