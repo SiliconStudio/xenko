@@ -446,6 +446,12 @@ namespace SiliconStudio.Assets.Quantum
             ResettingOverride = false;
         }
 
+        internal bool HasId(ItemId id)
+        {
+            Index index;
+            return TryIdToIndex(id, out index);
+        }
+
         internal Index IdToIndex(ItemId id)
         {
             Index index;
