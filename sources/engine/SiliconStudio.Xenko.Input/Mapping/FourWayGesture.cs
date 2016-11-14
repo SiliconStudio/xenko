@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A direction gesture generated from 2 <see cref="IAxisGesture"/>s (X and Y axis)
     /// </summary>
     [DataContract]
-    public class FourWayGesture : ScalableInputGesture, IDirectionGesture
+    public class FourWayGesture : InvertibleInputGesture, IDirectionGesture
     {
         private IAxisGesture y;
         private IAxisGesture x;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
     }
 }

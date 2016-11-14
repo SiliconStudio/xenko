@@ -117,7 +117,7 @@
     <Compile Include="Mapping\MouseAxisGesture.cs" />
     <Compile Include="Mapping\MouseButtonGesture.cs" />
     <Compile Include="Mapping\MouseMovementGesture.cs" />
-    <Compile Include="Mapping\ScalableInputGesture.cs" />
+    <Compile Include="Mapping\InvertibleInputGesture.cs" />
     <Compile Include="Mapping\TwoWayGesture.cs" />
     <Compile Include="NamedAccelerometerSensor.cs" />
     <Compile Include="NamedCompassSensor.cs" />

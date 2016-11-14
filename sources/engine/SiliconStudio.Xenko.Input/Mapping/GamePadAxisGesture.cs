@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Represents a gamepad axis reading
     /// </summary>
     [DataContract]
-    public class GamePadAxisGesture : ScalableInputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
+    public class GamePadAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
         protected bool Equals(GamePadAxisGesture other)

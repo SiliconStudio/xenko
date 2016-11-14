@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// An axis made up out of multiple child axis gestures
     /// </summary>
     [DataContract]
-    public class CompoundAxisGesture : ScalableInputGesture, IAxisGesture
+    public class CompoundAxisGesture : InvertibleInputGesture, IAxisGesture
     {
         private TrackingCollection<IAxisGesture> gestures;
 

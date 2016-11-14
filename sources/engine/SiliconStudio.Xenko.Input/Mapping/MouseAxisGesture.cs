@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A gesture that responds to a single mouse mouse axis movement
     /// </summary>
     [DataContract]
-    public class MouseAxisGesture : ScalableInputGesture, IAxisGesture, IInputEventListener<PointerEvent>, IInputEventListener<MouseWheelEvent>
+    public class MouseAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<PointerEvent>, IInputEventListener<MouseWheelEvent>
     {
         /// <summary>
         /// Axis that is used for this gesture
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(MouseAxis)}: {MouseAxis}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(MouseAxis)}: {MouseAxis}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
         protected bool Equals(MouseAxisGesture other)

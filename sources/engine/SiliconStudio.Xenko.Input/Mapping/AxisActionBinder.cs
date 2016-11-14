@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 ((CompoundAxisGesture)TargetGesture).Gestures.Add(axis);
                 // Inver axis since this is now being used as the negative trigger
-                var scalable = axis as ScalableInputGesture;
+                var scalable = axis as InvertibleInputGesture;
                 if (scalable != null) scalable.Inverted = !scalable.Inverted;
                 Advance(1);
             }

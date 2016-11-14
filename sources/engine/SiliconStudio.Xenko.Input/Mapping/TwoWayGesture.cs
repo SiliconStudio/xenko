@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A virtual axis that is calculated from a negative and positive button
     /// </summary>
     [DataContract]
-    public class TwoWayGesture : ScalableInputGesture, IAxisGesture
+    public class TwoWayGesture : InvertibleInputGesture, IAxisGesture
     {
         private IButtonGesture positive;
         private IButtonGesture negative;
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
     }
 }

@@ -9,40 +9,35 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// Extends InputGesture to have a setting to adjust the <see cref="Sensitivity"/> and toggle <see cref="Inverted"/>
+    /// Extends InputGesture to have an <see cref="Inverted"/> setting
     /// </summary>
     [DataContract]
-    public class ScalableInputGesture : InputGesture
+    public class InvertibleInputGesture : InputGesture
     {
-        /// <summary>
-        /// The multiplier applied to the output axis or direction value of this gesture
-        /// </summary>
-        public float Sensitivity = 1.0f;
-
         /// <summary>
         /// Should the axis or direction be inverted
         /// </summary>
         public bool Inverted = false;
 
         /// <summary>
-        /// Returns the input value with <see cref="Inverted"/> and <see cref="Sensitivity"/> applied to it
+        /// Returns the input value with <see cref="Inverted"/> applied to it
         /// </summary>
         /// <param name="v">the input axis value</param>
         /// <returns>The scaled output value</returns>
         protected float GetScaledOutput(float v)
         {
-            return v = (Inverted ? -v : v) * Sensitivity;
+            return v = (Inverted ? -v : v);
         }
 
         /// <summary>
-        /// Returns the input direction with <see cref="Inverted"/> and <see cref="Sensitivity"/> applied to it
+        /// Returns the input direction with <see cref="Inverted"/> applied to it
         /// </summary>
         /// <remarks>Inversion inverts both axes</remarks>
         /// <param name="v">the input direction value</param>
         /// <returns>The scaled output value</returns>
         protected Vector2 GetScaledOutput(Vector2 v)
         {
-            return v = (Inverted ? -v : v) * Sensitivity;
+            return v = (Inverted ? -v : v);
         }
     }
 }

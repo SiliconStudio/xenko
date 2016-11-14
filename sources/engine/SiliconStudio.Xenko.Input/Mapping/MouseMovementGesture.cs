@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A gesture that generates a direction from mouse X and Y movement
     /// </summary>
     [DataContract]
-    public class MouseMovementGesture : ScalableInputGesture,  IDirectionGesture, IInputEventListener<PointerEvent>
+    public class MouseMovementGesture : InvertibleInputGesture,  IDirectionGesture, IInputEventListener<PointerEvent>
     {
         private Vector2 currentDirection;
         
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(Sensitivity)}: {Sensitivity}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
         protected bool Equals(MouseMovementGesture other)
