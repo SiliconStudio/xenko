@@ -102,14 +102,14 @@ namespace SiliconStudio.Assets.Quantum
             AssetItem.Overrides = GenerateOverridesForSerialization();
         }
 
-        public Dictionary<ObjectPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode = null)
+        public Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode = null)
         {
             var visitor = new OverrideTypePathGenerator();
             visitor.Visit(rootNode ?? RootNode);
             return visitor.Result;
         }
 
-        public void ApplyOverrides(AssetNode rootNode, IDictionary<ObjectPath, OverrideType> overrides)
+        public void ApplyOverrides(AssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             rootNode = rootNode ?? RootNode;
             if (rootNode == null)

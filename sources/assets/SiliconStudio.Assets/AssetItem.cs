@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
         [DataMemberIgnore]
-        public IDictionary<ObjectPath, OverrideType> Overrides { get; set; }
+        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
 
         /// <summary>
         /// Converts this item to a reference.
@@ -181,7 +181,7 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
-                Overrides = Overrides != null ? new Dictionary<ObjectPath, OverrideType>(Overrides) : null
+                Overrides = Overrides != null ? new Dictionary<YamlAssetPath, OverrideType>(Overrides) : null
             };
             return item;
         }

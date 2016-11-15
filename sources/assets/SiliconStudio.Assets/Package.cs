@@ -594,7 +594,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -978,7 +978,7 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                IDictionary<ObjectPath, OverrideType> overrides;
+                IDictionary<YamlAssetPath, OverrideType> overrides;
                 var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
 
                 // Create asset item
@@ -1050,7 +1050,7 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<ObjectPath, OverrideType> overrides)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
                 ? AssetFileSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)

@@ -181,7 +181,7 @@ namespace SiliconStudio.Assets.Tests
             stream.Position = 0;
 
             bool aliasOccurred;
-            Dictionary<ObjectPath, OverrideType> overrides;
+            Dictionary<YamlAssetPath, OverrideType> overrides;
             var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
             if (aliasOccurred)
             {

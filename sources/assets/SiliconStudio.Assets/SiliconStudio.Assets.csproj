@@ -279,7 +279,7 @@
     <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
     <Compile Include="Yaml\CollectionWithItemIds.cs" />
     <Compile Include="Yaml\ContextAttributeSerializer.cs" />
-    <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\AssetObjectSerializerBackend.cs" />
     <Compile Include="Yaml\DeletedKeyWithId.cs" />
     <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
     <Compile Include="Yaml\DictionaryWithItemIds.cs" />
@@ -289,7 +289,7 @@
     <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
-    <Compile Include="Yaml\ObjectPath.cs" />
+    <Compile Include="Yaml\YamlAssetPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">

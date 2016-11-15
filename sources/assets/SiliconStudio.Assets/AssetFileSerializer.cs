@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets
 {
     public class AssetLoadResult<T>
     {
-        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, IDictionary<ObjectPath, OverrideType> overrides)
+        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             if (overrides == null) throw new ArgumentNullException(nameof(overrides));
             Asset = asset;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets
 
         public bool AliasOccurred { get; }
 
-        public IDictionary<ObjectPath, OverrideType> Overrides { get; }
+        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; }
 
     }
     /// <summary>
@@ -111,11 +111,11 @@ namespace SiliconStudio.Assets
                 throw new InvalidOperationException("Unable to find a serializer for [{0}]".ToFormat(assetFileExtension));
             }
             bool aliasOccurred;
-            Dictionary<ObjectPath, OverrideType> overrides;
+            Dictionary<YamlAssetPath, OverrideType> overrides;
             var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out overrides);
             // Let's fixup references after deserialization
             (asset as Asset)?.FixupPartReferences();
-            return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<ObjectPath, OverrideType>());
+            return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<YamlAssetPath, OverrideType>());
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SiliconStudio.Assets
         /// <param name="log">The logger.</param>
         /// <param name="overrides"></param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
+        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
@@ -156,7 +156,7 @@ namespace SiliconStudio.Assets
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
+        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;

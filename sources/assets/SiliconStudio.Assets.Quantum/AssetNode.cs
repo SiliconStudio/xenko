@@ -512,7 +512,7 @@ namespace SiliconStudio.Assets.Quantum
             return false;
         }
 
-        public AssetNode ResolveObjectPath(ObjectPath path, out Index index, out bool overrideOnKey)
+        public AssetNode ResolveObjectPath(YamlAssetPath path, out Index index, out bool overrideOnKey)
         {
             var currentNode = this;
             index = Index.Empty;
@@ -522,7 +522,7 @@ namespace SiliconStudio.Assets.Quantum
                 var item = path.Items[i];
                 switch (item.Type)
                 {
-                    case ObjectPath.ItemType.Member:
+                    case YamlAssetPath.ItemType.Member:
                         index = Index.Empty;
                         overrideOnKey = false;
                         if (currentNode.Content.IsReference)
@@ -532,7 +532,7 @@ namespace SiliconStudio.Assets.Quantum
                         string name = item.AsMember();
                         currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
                         break;
-                    case ObjectPath.ItemType.Index:
+                    case YamlAssetPath.ItemType.Index:
                         index = new Index(item.Value);
                         overrideOnKey = true;
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
@@ -541,7 +541,7 @@ namespace SiliconStudio.Assets.Quantum
                             currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
                         }
                         break;
-                    case ObjectPath.ItemType.ItemId:
+                    case YamlAssetPath.ItemType.ItemId:
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
                         index = new Index(key);
