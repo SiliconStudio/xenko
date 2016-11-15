@@ -255,14 +255,10 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            // Prevent duplicate events
-            if (state == ButtonState.Pressed && DownKeys.Contains(xenkoKey))
-                return;
-            if (state == ButtonState.Released && !DownKeys.Contains(xenkoKey))
-                return;
-
-            DownKeys.Add(xenkoKey);
-            KeyboardInputEvents.Add(new KeyEvent(this) { State = state, Key = xenkoKey });
+            if(state == ButtonState.Pressed)
+                HandleKeyDown(xenkoKey);
+            else
+                HandleKeyUp(xenkoKey);
         }
         
         private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
