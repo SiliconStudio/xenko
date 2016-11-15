@@ -68,9 +68,25 @@
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
+    <Compile Include="DynamicYaml\DynamicYaml.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlArray.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlEmpty.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlMapping.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
+    <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
+    <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="Reflection\CollectionItemIdentifiers.cs" />
+    <Compile Include="Reflection\CollectionItemIdHelper.cs" />
+    <Compile Include="Reflection\IdentifiableHelper.cs" />
+    <Compile Include="Reflection\ItemId.cs" />
+    <Compile Include="Reflection\OverridePostfixes.cs" />
+    <Compile Include="Reflection\OverrideTarget.cs" />
+    <Compile Include="Reflection\OverrideType.cs" />
+    <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
@@ -258,6 +274,22 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
     <Compile Include="Serializers\YamlAssetProfile.cs" />
+    <Compile Include="Yaml\AssetYamlSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
+    <Compile Include="Yaml\CollectionWithItemIds.cs" />
+    <Compile Include="Yaml\ContextAttributeSerializer.cs" />
+    <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
+    <Compile Include="Yaml\DeletedKeyWithId.cs" />
+    <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
+    <Compile Include="Yaml\DictionaryWithItemIds.cs" />
+    <Compile Include="Yaml\IKeyWithId.cs" />
+    <Compile Include="Yaml\ItemIdSerializer.cs" />
+    <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\KeyValuePairSerializer.cs" />
+    <Compile Include="Yaml\KeyWithId.cs" />
+    <Compile Include="Yaml\KeyWithIdSerializer.cs" />
+    <Compile Include="Yaml\ObjectPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
@@ -332,6 +364,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

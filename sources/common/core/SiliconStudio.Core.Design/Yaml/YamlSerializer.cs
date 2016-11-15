@@ -82,7 +82,6 @@ namespace SiliconStudio.Core.Yaml
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
                         ComparerForKeySorting = new DefaultMemberComparer(),
-                        PreSerializer = new ContextAttributeSerializer(),
                         SerializerFactorySelector = CreateSelector(),
                     };
 

@@ -29,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\TestDesignExtensions.cs" />
-    <Compile Include="TestDynamicYaml.cs" />
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TestMemberPath.cs" />
     <Compile Include="TestDataMemberVisitor.cs" />
