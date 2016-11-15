@@ -93,6 +93,7 @@
     <Compile Include="Transactions\TransactionStackFactory.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
+    <Compile Include="Yaml\AssetIdSerializer.cs" />
     <Compile Include="Yaml\PropertyKeyNameResolver.cs" />
     <Compile Include="Yaml\ParsingEventListEmitter.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />

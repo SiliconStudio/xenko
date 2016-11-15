@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets
             }
             else
             {
-                var id = stream.Read<Guid>();
+                var id = stream.Read<AssetId>();
                 var location = stream.ReadString();
 
                 assetReference = new AssetReference(id, location);

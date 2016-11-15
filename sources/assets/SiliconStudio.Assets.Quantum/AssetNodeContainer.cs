@@ -22,6 +22,7 @@ namespace SiliconStudio.Assets.Quantum
             NodeBuilder.RegisterPrimitiveType(typeof(PropertyKey));
             NodeBuilder.RegisterPrimitiveType(typeof(TimeSpan));
             NodeBuilder.RegisterPrimitiveType(typeof(Guid));
+            NodeBuilder.RegisterPrimitiveType(typeof(AssetId));
             NodeBuilder.RegisterPrimitiveType(typeof(Color));
             NodeBuilder.RegisterPrimitiveType(typeof(Color3));
             NodeBuilder.RegisterPrimitiveType(typeof(Color4));

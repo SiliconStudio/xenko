@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         protected override int InternalBuildOrder => 100;
 
         [DataMemberIgnore]
-        public Guid MaterialId => Id;
+        public AssetId MaterialId => Id;
 
         /// <summary>
         /// Gets or sets the material attributes.

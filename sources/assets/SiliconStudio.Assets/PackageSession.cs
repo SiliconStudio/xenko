@@ -659,14 +659,14 @@ namespace SiliconStudio.Assets
         private Dictionary<UFile, object> BuildAssetsOrPackagesToRemove()
         {
             // Grab all previous assets
-            var previousAssets = new Dictionary<Guid, AssetItem>();
+            var previousAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in packagesCopy.SelectMany(package => package.Assets))
             {
                 previousAssets[assetItem.Id] = assetItem;
             }
 
             // Grab all new assets
-            var newAssets = new Dictionary<Guid, AssetItem>();
+            var newAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in LocalPackages.SelectMany(package => package.Assets))
             {
                 newAssets[assetItem.Id] = assetItem;

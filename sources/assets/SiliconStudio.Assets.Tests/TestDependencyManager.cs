@@ -437,7 +437,7 @@ namespace SiliconStudio.Assets.Tests
 
                 // Modify reference asset3 to asset1 with fake asset
                 var previousAsset3ToAsset1Reference = asset3.Reference;
-                asset3.Reference = new AssetReference(Guid.NewGuid(), "fake");
+                asset3.Reference = new AssetReference(AssetId.New(), "fake");
                 assetItem3.IsDirty = true;
                 {
                     var assets = dependencyManager.FindAssetsWithMissingReferences().ToList();
@@ -913,44 +913,6 @@ namespace SiliconStudio.Assets.Tests
                 var dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 var asset0 = dependencies.GetLinkOut(assetItems[0]);
                 Assert.AreEqual(assets[0].RawAsset, ((AssetObjectTest)asset0.Item.Asset).RawAsset);
-            }
-        }
-
-
-        [Test]
-        public void TestAssetPart()
-        {
-            var project = new Package();
-            var assets = new List<TestAssetWithParts>();
-            var assetItems = new List<AssetItem>();
-            for (var i = 0; i < 2; ++i)
-            {
-                assets.Add(new TestAssetWithParts { Parts = { new AssetPartTestItem(Guid.NewGuid()), new AssetPartTestItem(Guid.NewGuid()) } });
-                assetItems.Add(new AssetItem("asset-" + i, assets[i]));
-                project.Assets.Add(assetItems[i]);
-            }
-
-            using (var session = new PackageSession(project))
-            {
-                var dependencyManager = session.DependencyManager;
-
-                // Check that part asset is accessible from the dependency manager
-
-                var innerAssetId = assets[0].Parts[0].Id;
-                var dependencySet = dependencyManager.ComputeDependencies(assetItems[0], AssetDependencySearchOptions.InOut);
-                Assert.NotNull(dependencySet);
-
-                // Check that inners are all there
-                Assert.AreEqual(2, dependencySet.Parts.Count());
-
-                // Check that part asset is correctly stored into the dependencies
-                AssetPart part;
-                Assert.IsTrue(dependencySet.TryGetAssetPart(innerAssetId, out part));
-                Assert.AreEqual(assets[0].Parts[0].Id, part.PartId);
-
-                // Remove part asset
-                assets[0].Parts.Clear();
-                assetItems[0].IsDirty = true;
             }
         }
 

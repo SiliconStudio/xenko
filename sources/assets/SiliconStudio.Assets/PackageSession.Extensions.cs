@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets
         /// <param name="session">The session.</param>
         /// <param name="assetId">The assetId of the asset.</param>
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this PackageSession session, Guid assetId)
+        public static AssetItem FindAsset(this PackageSession session, AssetId assetId)
         {
             var packages = session.Packages;
             return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);

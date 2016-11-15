@@ -27,14 +27,14 @@ namespace SiliconStudio.Assets.CompilerApp
             }
         }
 
-        public AssetSerializableLogMessage(Guid assetId, UFile assetUrl, LogMessageType type, string text, ExceptionInfo exceptionInfo = null)
+        public AssetSerializableLogMessage(AssetId assetId, UFile assetUrl, LogMessageType type, string text, ExceptionInfo exceptionInfo = null)
             : base("", type, text, exceptionInfo)
         {
             AssetId = assetId;
             AssetUrl = assetUrl;
         }
 
-        public Guid AssetId { get; set; }
+        public AssetId AssetId { get; set; }
 
         public UFile AssetUrl { get; set; }
     }

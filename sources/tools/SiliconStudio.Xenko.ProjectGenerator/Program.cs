@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                     var asset = AssetFileSerializer.Default.Load(stream, filePath, null, out b, out o) as Asset;
                     if (asset != null)
                     {
-                        guid = asset.Id;
+                        guid = (Guid)asset.Id;
                     }
                 }
             }

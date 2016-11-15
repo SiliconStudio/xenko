@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different
@@ -82,7 +82,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreNotEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different
@@ -128,7 +128,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreNotEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different

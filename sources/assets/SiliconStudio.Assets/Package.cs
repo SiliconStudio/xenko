@@ -1098,7 +1098,7 @@ namespace SiliconStudio.Assets
 
                 var module = context.Log.Module;
 
-                var assetReference = new AssetReference(Guid.Empty, fileUPath.FullPath);
+                var assetReference = new AssetReference(AssetId.Empty, fileUPath.FullPath);
 
                 // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
                 if (loggerResult != null)
@@ -1143,7 +1143,7 @@ namespace SiliconStudio.Assets
             if (sourceCodeAsset != null)
             {
                 // Use an id generated from the location instead of the default id
-                sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
+                sourceCodeAsset.Id = SourceCodeAsset.GenerateIdFromLocation(assetPath);
             }
 
             return loadResult.Asset;

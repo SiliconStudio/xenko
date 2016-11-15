@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="path">The path.</param>
         /// <param name="reference">The reference.</param>
         /// <param name="updateReference">The update reference.</param>
-        public AssetReferenceLink(MemberPath path, object reference, Func<Guid?, string, object> updateReference)
+        public AssetReferenceLink(MemberPath path, object reference, Func<AssetId?, string, object> updateReference)
         {
             Path = path;
             this.reference = reference;
@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="guid">The unique identifier.</param>
         /// <param name="location">The location.</param>
-        public void UpdateReference(Guid? guid, string location)
+        public void UpdateReference(AssetId? guid, string location)
         {
             reference = updateReference(guid, location);
         }
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// A specialized method to update the reference (guid, and location).
         /// </summary>
-        private readonly Func<Guid?, string, object> updateReference;
+        private readonly Func<AssetId?, string, object> updateReference;
 
         private object reference;
     }

@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets
         /// Gets the unique identifier of this asset.
         /// </summary>
         /// <value>The unique identifier.</value>
-        public Guid Id
+        public AssetId Id
         {
             get
             {

@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 var reference = AttachedReferenceManager.GetAttachedReference(Scene);
                 var sceneAsset = (SceneAsset)session.FindAsset(reference.Url)?.Asset;
 
-                HashSet<Guid> referencedColliderShapes = new HashSet<Guid>();
+                var referencedColliderShapes = new HashSet<AssetId>();
 
                 // Find collider assets to reference
                 if (sceneAsset != null)

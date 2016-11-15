@@ -30,9 +30,9 @@ namespace SiliconStudio.Assets.Analysis
         private readonly PackageSession session;
         internal readonly object ThisLock = new object();
         internal readonly HashSet<Package> Packages;
-        internal readonly Dictionary<Guid, AssetDependencies> Dependencies;
-        internal readonly Dictionary<Guid, AssetDependencies> AssetsWithMissingReferences;
-        internal readonly Dictionary<Guid, HashSet<AssetDependencies>> MissingReferencesToParent;
+        internal readonly Dictionary<AssetId, AssetDependencies> Dependencies;
+        internal readonly Dictionary<AssetId, AssetDependencies> AssetsWithMissingReferences;
+        internal readonly Dictionary<AssetId, HashSet<AssetDependencies>> MissingReferencesToParent;
         private bool isDisposed;
         private bool isSessionSaving;
         private bool isInitialized;
@@ -54,10 +54,10 @@ namespace SiliconStudio.Assets.Analysis
             this.session = session;
             this.session.Packages.CollectionChanged += Packages_CollectionChanged;
             session.AssetDirtyChanged += Session_AssetDirtyChanged;
-            AssetsWithMissingReferences = new Dictionary<Guid, AssetDependencies>();
-            MissingReferencesToParent = new Dictionary<Guid, HashSet<AssetDependencies>>();
+            AssetsWithMissingReferences = new Dictionary<AssetId, AssetDependencies>();
+            MissingReferencesToParent = new Dictionary<AssetId, HashSet<AssetDependencies>>();
             Packages = new HashSet<Package>();
-            Dependencies = new Dictionary<Guid, AssetDependencies>();
+            Dependencies = new Dictionary<AssetId, AssetDependencies>();
             // If the session has already a root package, then initialize the dependency manager directly
             if (session.LocalPackages.Any())
             {
@@ -91,7 +91,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="assetId">The asset identifier.</param>
         /// <param name="searchOptions">The types of inheritance to search for</param>
         /// <returns>A list of asset the specified asset id is inheriting from.</returns>
-        public List<AssetItem> FindAssetInheritances(Guid assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
+        public List<AssetItem> FindAssetInheritances(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
         {
             var list = new List<AssetItem>();
             lock (Initialize())
@@ -117,7 +117,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="assetId">The asset identifier.</param>
         /// <param name="searchOptions">The types of inheritance to search for</param>
         /// <returns>A list of asset inheriting from the specified asset id.</returns>
-        public List<AssetItem> FindAssetsInheritingFrom(Guid assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
+        public List<AssetItem> FindAssetsInheritingFrom(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
         {
             var list = new List<AssetItem>();
             lock (Initialize())
@@ -144,13 +144,13 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="dependenciesOptions">The dependencies options.</param>
         /// <param name="linkTypes">The type of links to visit while computing the dependencies</param>
         /// <param name="visited">The list of element already visited.</param>
-        /// <returns>The dependencies.</returns>
-        public AssetDependencies ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<Guid> visited = null)
+        /// <returns>The dependencies, or null if the object is not tracked.</returns>
+        public AssetDependencies ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
         {
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
             if (visited == null && recursive)
-                visited = new HashSet<Guid>();
+                visited = new HashSet<AssetId>();
 
             //var clock = Stopwatch.StartNew();
 
@@ -171,15 +171,6 @@ namespace SiliconStudio.Assets.Analysis
                     CollectOutputReferences(dependencies, assetItem, visited, recursive, linkTypes, ref outCount);
                 }
 
-                // Manually fill the part list from the updated dependency we should have computed.
-                AssetDependencies computedDependencies;
-                if (Dependencies.TryGetValue(assetItem.Id, out computedDependencies))
-                {
-                    foreach (var part in computedDependencies.Parts)
-                    {
-                        dependencies.AddPart(part);
-                    }
-                }
                 //Console.WriteLine("Time to compute dependencies: {0}ms in: {1} out:{2}", clock.ElapsedMilliseconds, inCount, outCount);
 
                 return dependencies;
@@ -205,8 +196,8 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Finds the assets with missing references.
         /// </summary>
-        /// <returns>An enumeration of asset guid that have missing references.</returns>
-        public IEnumerable<Guid> FindAssetsWithMissingReferences()
+        /// <returns>An enumeration of asset id that have missing references.</returns>
+        public IEnumerable<AssetId> FindAssetsWithMissingReferences()
         {
             lock (Initialize())
             {
@@ -220,7 +211,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="assetId">The asset identifier.</param>
         /// <returns>IEnumerable{IReference}.</returns>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public IEnumerable<IReference> FindMissingReferences(Guid assetId)
+        public IEnumerable<IReference> FindMissingReferences(AssetId assetId)
         {
             lock (Initialize())
             {
@@ -280,12 +271,12 @@ namespace SiliconStudio.Assets.Analysis
         /// or
         /// assetResolver
         /// </exception>
-        private static void CollectDynamicOutReferences(AssetDependencies result, Func<Guid, AssetItem> assetResolver, bool isRecursive, bool keepParents)
+        private static void CollectDynamicOutReferences(AssetDependencies result, Func<AssetId, AssetItem> assetResolver, bool isRecursive, bool keepParents)
         {
             if (result == null) throw new ArgumentNullException(nameof(result));
             if (assetResolver == null) throw new ArgumentNullException(nameof(assetResolver));
 
-            var addedReferences = new HashSet<Guid>();
+            var addedReferences = new HashSet<AssetId>();
             var itemsToAnalyze = new Queue<AssetItem>();
             var referenceCollector = new DependenciesCollector();
 
@@ -293,16 +284,6 @@ namespace SiliconStudio.Assets.Analysis
             result.Reset(keepParents);
 
             var assetItem = result.Item;
-
-            // Collect part assets.
-            var container = assetItem.Asset as IAssetComposite;
-            if (container != null)
-            {
-                foreach (var part in container.CollectParts())
-                {
-                    result.AddPart(part);
-                }
-            }
 
             // marked as processed to not add it again
             addedReferences.Add(assetItem.Id);
@@ -345,14 +326,14 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private AssetItem FindAssetFromDependencyOrSession(Guid guid)
+        private AssetItem FindAssetFromDependencyOrSession(AssetId assetId)
         {
             // We cannot return the item from the session but we can only return assets currently tracked by the dependency 
             // manager
-            var item = session.FindAsset(guid);
+            var item = session.FindAsset(assetId);
             if (item != null)
             {
-                var dependencies = TrackAsset(guid);
+                var dependencies = TrackAsset(assetId);
                 return dependencies.Item;
             }
             return null;
@@ -458,7 +439,7 @@ namespace SiliconStudio.Assets.Analysis
         /// This method is called when an asset needs to be tracked
         /// </summary>
         /// <returns>AssetDependencies.</returns>
-        private AssetDependencies TrackAsset(Guid assetId)
+        private AssetDependencies TrackAsset(AssetId assetId)
         {
             lock (ThisLock)
             {
@@ -724,7 +705,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void CollectInputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ContentLinkType linkTypes, ref int count)
+        private void CollectInputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
         {
             var assetId = assetItem.Id;
             if (visited != null)
@@ -756,7 +737,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void CollectOutputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<Guid> visited, bool recursive, ContentLinkType linkTypes, ref int count)
+        private void CollectOutputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
         {
             var assetId = assetItem.Id;
             if (visited != null)
