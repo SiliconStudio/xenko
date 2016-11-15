@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS' or '$(SiliconStudioPlatform)' == 'macOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a;$(XenkoDependenciesDir)\NativePath\iOS\libDetour.a;$(XenkoDependenciesDir)\NativePath\iOS\libRecast.a" />
-    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux' or '$(SiliconStudioPlatform)' == 'Android'" Include="libCelt.a;libCompilerRt.a;libDetour.a;libRecast.a;libc++abi.a" />
+    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Android'" Include="libCelt.a;libCompilerRt.a;libDetour.a;libRecast.a;libc++abi.a" />
+    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="libCelt.a;libCompilerRt.a;libDetour.a;libRecast.a" />
   </ItemGroup>
 </Project>

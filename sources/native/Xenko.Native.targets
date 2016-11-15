@@ -25,7 +25,7 @@
   <Choose>
     <When Condition="('$(SiliconStudioPlatform)' == 'UWP')">
       <PropertyGroup>
-        <XenkoNativeClang Condition="'$(Configuration)' == 'Debug'">$(XenkoNativeClang) -O2</XenkoNativeClang>
+        <XenkoNativeClang Condition="'$(Configuration)' == 'Debug'">$(XenkoNativeClang) -Od</XenkoNativeClang>
         <XenkoNativeClang Condition="'$(Configuration)' == 'Release'">$(XenkoNativeClang) -O2</XenkoNativeClang>
       </PropertyGroup>
     </When>

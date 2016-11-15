@@ -13,12 +13,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     /// <typeparam name="T1">The type of the tuple's component 1.</typeparam>
     [DataSerializerGlobal(typeof(TupleSerializer<>), typeof(Tuple<>), DataSerializerGenericMode.GenericArguments)]
-    public class TupleSerializer<T1> : DataSerializer<Tuple<T1>>, IDataSerializerInitializer
+    public class TupleSerializer<T1> : DataSerializer<Tuple<T1>>
     {
         private DataSerializer<T1> item1Serializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             item1Serializer = MemberSerializer<T1>.Create(serializerSelector);
         }
@@ -45,13 +45,13 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="T1">The type of the tuple's component 1.</typeparam>
     /// <typeparam name="T2">The type of the tuple's component 2.</typeparam>
     [DataSerializerGlobal(typeof(TupleSerializer<,>), typeof(Tuple<,>), DataSerializerGenericMode.GenericArguments)]
-    public class TupleSerializer<T1, T2> : DataSerializer<Tuple<T1, T2>>, IDataSerializerInitializer
+    public class TupleSerializer<T1, T2> : DataSerializer<Tuple<T1, T2>>
     {
         private DataSerializer<T1> item1Serializer;
         private DataSerializer<T2> item2Serializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             item1Serializer = MemberSerializer<T1>.Create(serializerSelector);
             item2Serializer = MemberSerializer<T2>.Create(serializerSelector);
@@ -83,14 +83,14 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="T2">The type of the tuple's component 2.</typeparam>
     /// <typeparam name="T3">The type of the tuple's component 3.</typeparam>
     [DataSerializerGlobal(typeof(TupleSerializer<,,>), typeof(Tuple<,,>), DataSerializerGenericMode.GenericArguments)]
-    public class TupleSerializer<T1, T2, T3> : DataSerializer<Tuple<T1, T2, T3>>, IDataSerializerInitializer
+    public class TupleSerializer<T1, T2, T3> : DataSerializer<Tuple<T1, T2, T3>>
     {
         private DataSerializer<T1> item1Serializer;
         private DataSerializer<T2> item2Serializer;
         private DataSerializer<T3> item3Serializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             item1Serializer = MemberSerializer<T1>.Create(serializerSelector);
             item2Serializer = MemberSerializer<T2>.Create(serializerSelector);
@@ -127,7 +127,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="T3">The type of the tuple's component 3.</typeparam>
     /// <typeparam name="T4">The type of the tuple's component 4.</typeparam>
     [DataSerializerGlobal(typeof(TupleSerializer<,,,>), typeof(Tuple<,,,>), DataSerializerGenericMode.GenericArguments)]
-    public class TupleSerializer<T1, T2, T3, T4> : DataSerializer<Tuple<T1, T2, T3, T4>>, IDataSerializerInitializer
+    public class TupleSerializer<T1, T2, T3, T4> : DataSerializer<Tuple<T1, T2, T3, T4>>
     {
         private DataSerializer<T1> item1Serializer;
         private DataSerializer<T2> item2Serializer;
@@ -135,7 +135,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         private DataSerializer<T4> item4Serializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             item1Serializer = MemberSerializer<T1>.Create(serializerSelector);
             item2Serializer = MemberSerializer<T2>.Create(serializerSelector);

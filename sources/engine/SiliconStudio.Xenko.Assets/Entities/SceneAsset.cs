@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(EntityHierarchyAssetBase.EntityDesignUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "1.9.0-beta01", typeof(CharacterSlopeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(SceneSettingsIdentifiableUpgrader))]
-    [Display(200, "Scene")]
+    [Display(2000, "Scene")]
     [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {

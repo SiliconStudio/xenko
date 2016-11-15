@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
-    [Display(80, "Game Settings")]
+    [Display(10000, "Game Settings")]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.6.0-beta", "1.6.1-alpha01", typeof(UpgradeNewGameSettings))]
