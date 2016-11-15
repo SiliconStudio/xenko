@@ -9,9 +9,7 @@ using SiliconStudio.Xenko.Input.Mapping;
 namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
-    /// Should manage assigning the correct <see cref="InputActionMapping"/> to the correct <see cref="InputComponent"/>. 
-    /// this processor should also take care of loading the user specified settings and saving back changed settings to some storage 
-    /// that is persistent between game launches
+    /// Should manage assigning the correct <see cref="InputActionMapping"/> to the correct <see cref="InputComponent"/>.
     /// </summary>
     public class InputProcessor : EntityProcessor<InputComponent, InputProcessor.AssociatedData>
     {
