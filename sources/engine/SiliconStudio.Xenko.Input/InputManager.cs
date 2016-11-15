@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Input
         /// Keyboard events that happened since the last frame
         /// </summary>
         public IReadOnlyList<KeyEvent> KeyEvents => GlobalInputState.KeyEvents;
-
+        
         /// <summary>
         /// All input events that happened since the last frame
         /// </summary>
@@ -512,7 +512,10 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
         {
-            return (GetGamePadState(gamePadIndex).Buttons & button) != 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) == 0;
+            var device = GetGamePad(gamePadIndex);
+            if (device == null)
+                return false;
+            return GlobalInputState.IsPadButtonPressed(device, button);
         }
 
         /// <summary>
@@ -523,7 +526,10 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
         {
-            return (GetGamePadState(gamePadIndex).Buttons & button) == 0 && (GetLastGamePadState(gamePadIndex).Buttons & button) != 0;
+            var device = GetGamePad(gamePadIndex);
+            if (device == null)
+                return false;
+            return GlobalInputState.IsPadButtonReleased(device, button);
         }
 
 #endregion

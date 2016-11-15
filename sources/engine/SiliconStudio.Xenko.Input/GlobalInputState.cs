@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -10,7 +11,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Class that keeps track of the the global input state of all devices
     /// </summary>
-    internal class GlobalInputState : IInputEventListener<KeyEvent>, IInputEventListener<PointerEvent>, IInputEventListener<MouseButtonEvent>, IInputEventListener<MouseWheelEvent>
+    internal class GlobalInputState : IInputEventListener<KeyEvent>, 
+        IInputEventListener<PointerEvent>, 
+        IInputEventListener<MouseButtonEvent>, 
+        IInputEventListener<MouseWheelEvent>,
+        IInputEventListener<GamePadButtonEvent>
     {
         public readonly HashSet<Keys> DownKeysSet = new HashSet<Keys>();
         public readonly HashSet<Keys> PressedKeysSet = new HashSet<Keys>();
@@ -22,6 +27,9 @@ namespace SiliconStudio.Xenko.Input
 
         public readonly List<PointerEvent> PointerEvents = new List<PointerEvent>();
         public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
+
+        public readonly List<GamePadButtonEvent> PressedGamePadButtonEvents = new List<GamePadButtonEvent>();
+        public readonly List<GamePadButtonEvent> ReleasedGamePadButtonEvents = new List<GamePadButtonEvent>();
 
         /// <summary>
         /// Mouse delta in normalized (0,1) coordinates
@@ -68,6 +76,8 @@ namespace SiliconStudio.Xenko.Input
             ReleasedButtonsSet.Clear();
             PointerEvents.Clear();
             KeyEvents.Clear();
+            PressedGamePadButtonEvents.Clear();
+            ReleasedGamePadButtonEvents.Clear();
             MouseWheelDelta = 0;
             MouseDelta = Vector2.Zero;
         }
@@ -115,6 +125,14 @@ namespace SiliconStudio.Xenko.Input
         {
             if (Math.Abs(inputEvent.WheelDelta) > Math.Abs(MouseWheelDelta))
                 MouseWheelDelta = inputEvent.WheelDelta;
+        }
+
+        public void ProcessEvent(GamePadButtonEvent inputEvent)
+        {
+            if(inputEvent.State == ButtonState.Pressed)
+                PressedGamePadButtonEvents.Add(inputEvent);
+            else
+                ReleasedGamePadButtonEvents.Add(inputEvent);
         }
 
         #region InputManager Compatibility
@@ -204,6 +222,28 @@ namespace SiliconStudio.Xenko.Input
         public bool IsMouseButtonReleased(MouseButton mouseButton)
         {
             return ReleasedButtonsSet.Contains(mouseButton);
+        }
+
+        /// <summary>
+        /// Determines whether the specified game pad button is pressed since the previous update.
+        /// </summary>
+        /// <param name="device">The gamepad</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonPressed(IGamePadDevice device, GamePadButton button)
+        {
+            return PressedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
+        }
+
+        /// <summary>
+        /// Determines whether the specified game pad button is released since the previous update.
+        /// </summary>
+        /// <param name="device">The gamepad</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonReleased(IGamePadDevice device, GamePadButton button)
+        {
+            return ReleasedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
         }
 
         #endregion
