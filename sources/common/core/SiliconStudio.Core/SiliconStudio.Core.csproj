@@ -83,6 +83,7 @@
     <Compile Include="Diagnostics\ProfilingCustomValue.cs" />
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
+    <Compile Include="PropertyContainerClass.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="IL\RemoveInitLocalsAttribute.cs" />
     <Compile Include="RuntimeIdHelper.cs" />
@@ -185,7 +186,6 @@
     <Compile Include="ObjectInvalidationMetadata.cs" />
     <Compile Include="PlatformAndroid.cs" />
     <Compile Include="PropertyChangedExtendedEventArgs.cs" />
-    <Compile Include="PropertyContainer.Serializer.cs" />
     <Compile Include="ReferenceCounting\ReferenceCountingExtensions.cs" />
     <Compile Include="ReferenceEqualityComparer.cs" />
     <Compile Include="Reflection\AssemblyCommonCategories.cs" />

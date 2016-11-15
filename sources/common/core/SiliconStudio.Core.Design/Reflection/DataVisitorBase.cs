@@ -268,12 +268,8 @@ namespace SiliconStudio.Core.Reflection
                 return true;
             }
 
-            if (visitedObjects.Contains(obj))
-            {
-                return false;
-            }
-            visitedObjects.Add(obj);
-            return true;
+            // true if not visited yet; otherwise, false
+            return visitedObjects.Add(obj);
         }
     }
 }

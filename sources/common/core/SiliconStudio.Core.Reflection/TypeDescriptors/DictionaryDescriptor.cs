@@ -39,17 +39,18 @@ namespace SiliconStudio.Core.Reflection
                 ValueType = interfaceType.GetGenericArguments()[1];
                 IsGenericDictionary = true;
                 getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(KeyType, ValueType);
-                containsKeyMethod = type.GetMethod("ContainsKey", new[] { KeyType });
-                addMethod = interfaceType.GetMethod("Add", new[] { KeyType, ValueType });
+                containsKeyMethod = interfaceType.GetMethod("ContainsKey", new[] { KeyType });
+                // Retrieve the other properties and methods from the interface
+                type = interfaceType;
             }
             else
             {
                 KeyType = typeof(object);
                 ValueType = typeof(object);
                 containsKeyMethod = type.GetMethod("Contains", new[] { KeyType });
-                addMethod = type.GetMethod("Add", new[] { KeyType, ValueType });
             }
 
+            addMethod = type.GetMethod("Add", new[] { KeyType, ValueType });
             getKeysMethod = type.GetProperty("Keys");
             getValuesMethod = type.GetProperty("Values");
             indexerProperty = type.GetProperty("Item", ValueType, new[] { KeyType });

@@ -412,7 +412,8 @@ namespace SiliconStudio.Assets.Quantum
                                 if (index == baseIndex)
                                     break;
 
-                                if (assetNode.IdToIndex(baseNode.IndexToId(index)) == Index.Empty)
+                                var baseId = baseNode.IndexToId(index);
+                                if (!assetNode.HasId(baseId))
                                 {
                                     // If no corresponding item exist in our node, decrease the target index by one.
                                     localIndex = new Index(localIndex.Int - 1);

@@ -441,6 +441,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="UI\Resources\UIDesigns.dds" />
+    <None Include="UI\Resources\UIDesigns.pdn" />
+    <None Include="UI\XenkoUIDesigns.xksheet" />
+    <None Include="UI\XenkoUILibrary.xkuilib" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
