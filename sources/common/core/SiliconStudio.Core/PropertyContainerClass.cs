@@ -135,25 +135,26 @@ namespace SiliconStudio.Core
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)inner).GetEnumerator();
+            return inner.GetEnumerator();
         }
 
         /// <inheritdoc />
         IEnumerator<KeyValuePair<PropertyKey, object>> IEnumerable<KeyValuePair<PropertyKey, object>>.GetEnumerator()
         {
-            return ((IEnumerable<KeyValuePair<PropertyKey, object>>)inner).GetEnumerator();
+            return inner.GetEnumerator();
         }
 
         /// <inheritdoc />
         void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
-            ((ICollection<KeyValuePair<PropertyKey, object>>)inner).Add(item);
+            inner.SetObject(item.Key, item.Value);
         }
 
         /// <inheritdoc />
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)
         {
-            return ((ICollection<KeyValuePair<PropertyKey, object>>)inner).Contains(item);
+            object temp;
+            return inner.TryGetValue(item.Key, out temp) && Equals(temp, item.Value);
         }
 
         /// <inheritdoc />
@@ -165,13 +166,13 @@ namespace SiliconStudio.Core
         /// <inheritdoc />
         bool ICollection<KeyValuePair<PropertyKey, object>>.Remove(KeyValuePair<PropertyKey, object> item)
         {
-            return ((ICollection<KeyValuePair<PropertyKey, object>>)inner).Remove(item);
+            return Remove(item.Key);
         }
 
         /// <inheritdoc />
         void IDictionary<PropertyKey, object>.Add(PropertyKey key, object value)
         {
-            ((IDictionary<PropertyKey, object>)inner).Add(key, value);
+            inner.SetObject(key, value);
         }
     }
 }

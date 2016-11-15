@@ -590,12 +590,13 @@ namespace SiliconStudio.Core
 
         void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
-            ((IDictionary<PropertyKey, object>)this).Add(item.Key, item.Value);
+            SetObject(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)
         {
-            return properties.ContainsValue(item);
+            object temp;
+            return properties.TryGetValue(item.Key, out temp) && Equals(temp, item.Value);
         }
 
         void ICollection<KeyValuePair<PropertyKey, object>>.CopyTo(KeyValuePair<PropertyKey, object>[] array, int arrayIndex)
