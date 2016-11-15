@@ -2,11 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Mapping;
@@ -21,32 +16,23 @@ namespace SiliconStudio.Xenko.Engine.Processors
     public class InputProcessor : EntityProcessor<InputComponent, InputProcessor.AssociatedData>
     {
         private InputManager inputManager;
-        private readonly Dictionary<InputActionConfiguration, LoadedData> loadedActionMappings = new Dictionary<InputActionConfiguration, LoadedData>();
 
         public override void Update(GameTime time)
         {
             base.Update(time);
-
-            // Update loaded mappings on components in case they change
+            
+            // Update every input mapping
             foreach (var pair in ComponentDatas)
             {
-                if (pair.Key.DefaultInputActionConfiguration != pair.Value.ActionConfiguration)
+                var mapping = pair.Value.LoadedMapping;
+                if (mapping != null)
                 {
-                    pair.Value.ActionConfiguration = pair.Key.DefaultInputActionConfiguration;
-
-                    // Load new action mapping
-                    var loadedData = GetOrCreateInputActionMapping(pair.Key.DefaultInputActionConfiguration);
-                    pair.Key.ActionMappingInternal = loadedData.ActionMapping;
-                    if (pair.Value.LoadedMapping != null) pair.Value.LoadedMapping.Release();
-                    pair.Value.LoadedMapping = loadedData;
-                    if (loadedData != null) loadedData.AddReference();
+                    var component = pair.Key;
+                    mapping.ControllerIndex = component.ControllerIndex;
+                    mapping.AcceptMouse = component.AcceptMouse;
+                    mapping.AcceptKeyboard = component.AcceptKeyboard;
+                    mapping.Update(time.Elapsed);
                 }
-            }
-
-            // Update every input mapping
-            foreach (var data in loadedActionMappings.Values)
-            {
-                data.ActionMapping.Update(time.Elapsed);
             }
         }
 
@@ -60,13 +46,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected internal override void OnSystemRemove()
         {
-            base.OnSystemRemove();
-
-            foreach (var data in loadedActionMappings)
+            foreach (var data in ComponentDatas.Values)
             {
-                data.Value.Release();
+                data.LoadedMapping?.Dispose();
             }
-            loadedActionMappings.Clear();
+            base.OnSystemRemove();
         }
 
         protected override AssociatedData GenerateComponentData(Entity entity, InputComponent component)
@@ -74,67 +58,51 @@ namespace SiliconStudio.Xenko.Engine.Processors
             var data = new AssociatedData()
             {
                 ActionConfiguration = component.DefaultInputActionConfiguration,
-                LoadedMapping = GetOrCreateInputActionMapping(component.DefaultInputActionConfiguration),
+                LoadedMapping = CreateInputActionMapping(component.DefaultInputActionConfiguration),
             };
-            if (data.LoadedMapping != null)
+            component.ActionMappingInternal = data.LoadedMapping;
+            component.DefaultConfigurationChanged += (sender, args) =>
             {
-                data.LoadedMapping.AddReference();
-                component.ActionMappingInternal = data.LoadedMapping.ActionMapping;
-            }
+                var changedComponent = (InputComponent)sender;
+                if(changedComponent == null) throw new InvalidOperationException();
+                UpdateInputComponent(changedComponent);
+            };
             return data;
         }
 
-        private LoadedData GetOrCreateInputActionMapping(InputActionConfiguration inputActionConfiguration)
+        protected override void OnEntityComponentRemoved(Entity entity, InputComponent component, AssociatedData data)
+        {
+            data.LoadedMapping?.Dispose();
+        }
+        private void UpdateInputComponent(InputComponent component)
+        {
+            var data = ComponentDatas[component];
+            data.ActionConfiguration = component.DefaultInputActionConfiguration;
+
+            // Load new action mapping
+            var loadedData = CreateInputActionMapping(component.DefaultInputActionConfiguration);
+            component.ActionMappingInternal = loadedData;
+            data.LoadedMapping?.Dispose();
+            data.LoadedMapping = loadedData;
+        }
+
+        private InputActionMapping CreateInputActionMapping(InputActionConfiguration inputActionConfiguration)
         {
             if (inputActionConfiguration == null)
                 return null;
 
-            LoadedData loadedData;
-            if (!loadedActionMappings.TryGetValue(inputActionConfiguration, out loadedData))
-            {
-                var actionMapping = new InputActionMapping(inputManager);
-                loadedData = new LoadedData { ActionMapping = actionMapping };
-                loadedActionMappings.Add(inputActionConfiguration, loadedData);
+            var actionMapping = new InputActionMapping(inputManager);
 
-                // Add all the default actions to the mapping
-                foreach (var action in inputActionConfiguration.Actions)
-                {
-                    // Clone the action so the defaults can be restored at any point
-                    var actionClone = action.Clone();
-                    actionMapping.AddAction(actionClone);
-                }
+            // Add all the default actions to the mapping
+            foreach (var action in inputActionConfiguration.Actions)
+            {
+                // Clone the action so the defaults can be restored at any point
+                var actionClone = action.Clone();
+                actionMapping.AddAction(actionClone);
             }
-            return loadedData;
+            return actionMapping;
         }
-
-        public class LoadedData : IReferencable
-        {
-            public InputActionMapping ActionMapping;
-
-            private int referenceCount;
-
-            public int ReferenceCount
-            {
-                get { return referenceCount; }
-            }
-
-            public int AddReference()
-            {
-                return ++referenceCount;
-            }
-
-            public int Release()
-            {
-                --referenceCount;
-                if (referenceCount == 0)
-                {
-                    ActionMapping.Dispose();
-                    ActionMapping = null;
-                }
-                return referenceCount;
-            }
-        }
-
+        
         public class AssociatedData
         {
             /// <summary>
@@ -145,7 +113,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             /// <summary>
             /// The actual action mapping currently being used
             /// </summary>
-            public LoadedData LoadedMapping;
+            public InputActionMapping LoadedMapping;
         }
     }
 }

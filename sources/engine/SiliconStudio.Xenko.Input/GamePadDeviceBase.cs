@@ -218,7 +218,6 @@ namespace SiliconStudio.Xenko.Input
             {
                 for (int i = 0; i < AxisInfos.Count; i++)
                 {
-                    // TODO: Test this
                     // Axes that do not idle around -1 are marked bidirectional
                     float floatValue = AxisStates[i];
                     AxisInfos[i].IsBiDirectional = floatValue > -0.75f;

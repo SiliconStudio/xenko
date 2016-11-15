@@ -21,11 +21,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public GamePadButton GamePadButton;
 
-        /// <summary>
-        /// The controller index
-        /// </summary>
-        internal int ControllerIndex = 0;
-
         private ButtonState currentState;
 
         public GamePadButtonGesture()
@@ -42,7 +37,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex)
+            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
             {
                 if (inputEvent.Index == ButtonIndex || (inputEvent.Button & GamePadButton) != 0)
                     currentState = inputEvent.State;
@@ -51,12 +46,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(ButtonIndex)}: {ButtonIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Button)}: {Button}";
+            return $"{nameof(ButtonIndex)}: {ButtonIndex}, {nameof(Button)}: {Button}";
         }
 
         protected bool Equals(GamePadButtonGesture other)
         {
-            return ButtonIndex == other.ButtonIndex && ControllerIndex == other.ControllerIndex;
+            return ButtonIndex == other.ButtonIndex;
         }
 
         public override bool Equals(object obj)
@@ -69,10 +64,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (ButtonIndex*397) ^ ControllerIndex;
-            }
+            return ButtonIndex;
         }
     }
 }

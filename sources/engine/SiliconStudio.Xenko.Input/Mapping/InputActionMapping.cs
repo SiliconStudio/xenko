@@ -92,6 +92,21 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         /// <summary>
+        /// Gets or sets the controller index for this player, this will determine which gamepad will trigger actions for this input component
+        /// </summary>
+        public int ControllerIndex { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets if mouse input will trigger actions for this input component
+        /// </summary>
+        public bool AcceptMouse { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if Keyboard input will trigger actions for this input component
+        /// </summary>
+        public bool AcceptKeyboard { get; set; } = true;
+
+        /// <summary>
         /// Updates the input gestures and send input action events
         /// </summary>
         /// <param name="elapsedTime">The elapsed time since the last update</param>
@@ -214,5 +229,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
                     gesture.Reset(e.GameTime.Elapsed);
             }
         }
+
     }
 }

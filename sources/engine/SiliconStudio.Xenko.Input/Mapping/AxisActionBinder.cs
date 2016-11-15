@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
             if (inputEvent.State == ButtonState.Pressed)
-                TryBindSingleButton(new GamePadButtonGesture(inputEvent.Index) {ControllerIndex = inputEvent.GamePad.Index});
+                TryBindSingleButton(new GamePadButtonGesture(inputEvent.Index));
         }
 
         public void ProcessEvent(KeyEvent inputEvent)
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (Math.Abs(inputEvent.Value) > AxisThreshold)
             {
-                var axis = new GamePadAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0, ControllerIndex = inputEvent.GamePad.Index };
+                var axis = new GamePadAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0 };
                 TryBindAxis(axis, inputEvent.GamePad.AxisInfos[inputEvent.Index].IsBiDirectional);
             }
         }

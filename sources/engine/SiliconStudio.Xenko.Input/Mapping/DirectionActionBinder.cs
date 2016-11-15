@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (AcceptsDirections)
             {
-                var target = new GamePadPovGesture(inputEvent.Index) { ControllerIndex = inputEvent.GamePad.Index };
+                var target = new GamePadPovGesture(inputEvent.Index);
 
                 // Filter out duplicate pov gestures
                 if (UsedGestures.Contains(target)) return;

@@ -31,6 +31,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(PointerEvent inputEvent)
         {
+            if (!(ActionMapping?.AcceptMouse ?? true))
+                return;
+
             if (Action.IgnoreMouseWhenNotLocked)
             {
                 var mouse = inputEvent.Pointer as IMouseDevice;

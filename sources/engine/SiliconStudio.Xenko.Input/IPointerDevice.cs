@@ -37,8 +37,6 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         Vector2 Delta { get; }
         
-        // TODO: Add interface for multiple pointer Id's, so that the Position,Delta,State,etc. can be retrieved
-
         /// <summary>
         /// The size of the surface used by the pointer, for a mouse this is the size of the window, for a touch device, the size of the touch area, etc.
         /// </summary>

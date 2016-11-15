@@ -20,12 +20,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Additionally the gamepad axis to map to if a <see cref="GamePadLayout"/> is used
         /// </summary>
         public GamePadAxis GamePadAxis;
-
-        /// <summary>
-        /// The controller index
-        /// </summary>
-        internal int ControllerIndex = 0;
-
+        
         private float currentState;
 
         public GamePadAxisGesture()
@@ -45,21 +40,21 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex)
+            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
             {
-                if ((AxisIndex > 0 && inputEvent.Index == AxisIndex) || (inputEvent.Axis & GamePadAxis) != 0)
+                if ((AxisIndex >= 0 && inputEvent.Index == AxisIndex) || (inputEvent.Axis & GamePadAxis) != 0)
                     currentState = inputEvent.Value;
             }
         }
 
         public override string ToString()
         {
-            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
         protected bool Equals(GamePadAxisGesture other)
         {
-            return AxisIndex == other.AxisIndex && ControllerIndex == other.ControllerIndex;
+            return AxisIndex == other.AxisIndex;
         }
 
         public override bool Equals(object obj)
@@ -74,7 +69,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             unchecked
             {
-                return (AxisIndex * 397) ^ ControllerIndex;
+                return AxisIndex;
             }
         }
     }

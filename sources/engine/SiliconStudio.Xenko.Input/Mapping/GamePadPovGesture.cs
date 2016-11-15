@@ -23,11 +23,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public bool MapToLayoutPad = false;
 
-        /// <summary>
-        /// The controller index
-        /// </summary>
-        internal int ControllerIndex = 0;
-
         private Vector2 currentDirection;
         private float currentState;
 
@@ -48,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(GamePadPovControllerEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ControllerIndex)
+            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
             {
                 if (inputEvent.Index == PovIndex || (MapToLayoutPad && inputEvent.Button == GamePadButton.Pad))
                 {
@@ -68,12 +63,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override string ToString()
         {
-            return $"{nameof(PovIndex)}: {PovIndex}, {nameof(ControllerIndex)}: {ControllerIndex}, {nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(PovIndex)}: {PovIndex}, {nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
         protected bool Equals(GamePadPovGesture other)
         {
-            return PovIndex == other.PovIndex && ControllerIndex == other.ControllerIndex;
+            return PovIndex == other.PovIndex;
         }
 
         public override bool Equals(object obj)
@@ -86,10 +81,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return (PovIndex*397) ^ ControllerIndex;
-            }
+            return PovIndex;
         }
     }
 }

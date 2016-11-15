@@ -34,6 +34,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
+            if (!(ActionMapping?.AcceptKeyboard ?? true))
+                return;
+
             if (Keys?.Contains(inputEvent.Key) ?? false)
             {
                 if (inputEvent.State == ButtonState.Pressed)

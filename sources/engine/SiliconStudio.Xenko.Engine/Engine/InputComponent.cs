@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -16,11 +17,32 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(400)]
     public class InputComponent : EntityComponent
     {
+        private InputActionConfiguration defaultInputActionConfiguration;
+
+        /// <summary>
+        /// Gets or sets the controller index for this player, this will determine which gamepad will trigger actions for this input component
+        /// </summary>
+        public int ControllerIndex { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets if mouse input will trigger actions for this input component
+        /// </summary>
+        public bool AcceptMouse { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets if Keyboard input will trigger actions for this input component
+        /// </summary>
+        public bool AcceptKeyboard { get; set; } = true;
+
         /// <summary>
         /// The default configuration used for this input component
         /// </summary>
-        public InputActionConfiguration DefaultInputActionConfiguration { get; set; }
-        
+        public InputActionConfiguration DefaultInputActionConfiguration
+        {
+            get { return defaultInputActionConfiguration; }
+            set { defaultInputActionConfiguration = value; DefaultConfigurationChanged?.Invoke(this, null); }
+        }
+
         /// <summary>
         /// A set of gestures that is already used in this action mapping
         /// </summary>
@@ -34,6 +56,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         internal InputActionMapping ActionMappingInternal { get; set; }
+
+        /// <summary>
+        /// Raised when the configuration is changed
+        /// </summary>
+        internal event EventHandler DefaultConfigurationChanged;
 
         /// <summary>
         /// Retrieve an input action by name, or null if one does not exist with that name in the <see cref="Input.Mapping.InputActionConfiguration"/>

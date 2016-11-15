@@ -29,6 +29,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
+            if (!(ActionMapping?.AcceptMouse ?? true))
+                return;
+
             if (inputEvent.Button == MouseButton)
             {
                 currentState = inputEvent.State;
