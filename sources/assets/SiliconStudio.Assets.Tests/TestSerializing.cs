@@ -66,20 +66,23 @@ namespace SiliconStudio.Assets.Tests
 
             assetObject.CustomReference2 = new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReference2");
             assetObject.CustomReferences.Add(new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReferenceItem1"));
+            var ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.CustomReferences);
+            ids[0] = IdentifierGenerator.Get(99);
 
             assetObject.SeqItems1.Add("value1");
             assetObject.SeqItems1.Add("value2");
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems1);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems1);
             ids[0] = IdentifierGenerator.Get(1);
             ids[1] = IdentifierGenerator.Get(2);
 
-            assetObject.SeqItems2.Add("value1");
-            assetObject.SeqItems2.Add("value2");
-            assetObject.SeqItems2.Add("value3");
-            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems2);
-            ids[0] = IdentifierGenerator.Get(3);
-            ids[1] = IdentifierGenerator.Get(4);
-            ids[2] = IdentifierGenerator.Get(5);
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //assetObject.SeqItems2.Add("value1");
+            //assetObject.SeqItems2.Add("value2");
+            //assetObject.SeqItems2.Add("value3");
+            //ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems2);
+            //ids[0] = IdentifierGenerator.Get(3);
+            //ids[1] = IdentifierGenerator.Get(4);
+            //ids[2] = IdentifierGenerator.Get(5);
 
             assetObject.SeqItems3.Add("value1");
             assetObject.SeqItems3.Add("value2");
@@ -92,19 +95,38 @@ namespace SiliconStudio.Assets.Tests
             ids[3] = IdentifierGenerator.Get(9);
 
             assetObject.SeqItems4.Add("value0");
-            assetObject.SeqItems5.Add("value0");
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems4);
+            ids[0] = IdentifierGenerator.Get(10);
+
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //assetObject.SeqItems5.Add("value0");
+            //ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems5);
+            //ids[0] = IdentifierGenerator.Get(11);
 
             assetObject.MapItems1.Add("key1", 1);
             assetObject.MapItems1.Add("key2", 2);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.MapItems1);
+            ids["key1"] = IdentifierGenerator.Get(12);
+            ids["key2"] = IdentifierGenerator.Get(13);
 
-            assetObject.MapItems2.Add("key1", 1);
-            assetObject.MapItems2.Add("key2", 2);
-            assetObject.MapItems2.Add("key3", 3);
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //assetObject.MapItems2.Add("key1", 1);
+            //assetObject.MapItems2.Add("key2", 2);
+            //assetObject.MapItems2.Add("key3", 3);
+            //ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.MapItems2);
+            //ids["key1"] = IdentifierGenerator.Get(13);
+            //ids["key2"] = IdentifierGenerator.Get(14);
+            //ids["key3"] = IdentifierGenerator.Get(15);
 
             assetObject.MapItems3.Add("key1", 1);
             assetObject.MapItems3.Add("key2", 2);
             assetObject.MapItems3.Add("key3", 3);
             assetObject.MapItems3.Add("key4", 3);
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.MapItems3);
+            ids["key1"] = IdentifierGenerator.Get(16);
+            ids["key2"] = IdentifierGenerator.Get(17);
+            ids["key3"] = IdentifierGenerator.Get(18);
+            ids["key4"] = IdentifierGenerator.Get(19);
 
             string testGenerated1 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated1.xkobj";
             string testGenerated2 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated2.xkobj";
