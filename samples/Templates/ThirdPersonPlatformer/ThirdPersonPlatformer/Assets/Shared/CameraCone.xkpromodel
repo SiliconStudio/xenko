@@ -9,5 +9,4 @@ Type: !ConeProceduralModel
     UvScale: {X: 1.0, Y: 1.0}
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     MaterialInstance:
-        ~Id: 42b8f00d-2561-42b2-adb3-b63b370bf773
-        Material: d7fee2b9-d0fd-4e53-a18f-ec0c4039dfd3/a3f957de-0b1e-4836-85fa-bb7c86c45336:CameraMaterial
+        Material: a3f957de-0b1e-4836-85fa-bb7c86c45336:CameraMaterial

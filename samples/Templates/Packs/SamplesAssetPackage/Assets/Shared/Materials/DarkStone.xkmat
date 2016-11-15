@@ -16,12 +16,9 @@ Attributes:
         Intensity: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: d2d26876-e518-47cd-9d31-d521fdfcc0ef
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: f9f60ebb-a70b-4c93-8c55-0eceba50d1b0
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 6b3fac2d-a24c-46c2-9e7a-a349539c4dcb
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

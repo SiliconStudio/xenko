@@ -12,6 +12,36 @@ using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Tests
 {
+    // TODO: this class is duplicated in several tests. We need a common base assembly fot tests
+    public static class IdentifierGenerator
+    {
+        public static ItemId Get(int index)
+        {
+            var bytes = ToBytes(index);
+            return new ItemId(bytes);
+        }
+
+        public static bool Match(ItemId guid, int index)
+        {
+            var bytes = ToBytes(index);
+            var id = new ItemId(bytes);
+            return guid == id;
+        }
+
+        private static byte[] ToBytes(int index)
+        {
+            var bytes = new byte[16];
+            for (int i = 0; i < 4; ++i)
+            {
+                bytes[4 * i] = (byte)(index);
+                bytes[4 * i + 1] = (byte)(index >> 8);
+                bytes[4 * i + 2] = (byte)(index >> 16);
+                bytes[4 * i + 3] = (byte)(index >> 24);
+            }
+            return bytes;
+        }
+    }
+
     [TestFixture]
     public partial class TestSerializing : TestBase
     {
@@ -39,15 +69,27 @@ namespace SiliconStudio.Assets.Tests
 
             assetObject.SeqItems1.Add("value1");
             assetObject.SeqItems1.Add("value2");
+            var ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems1);
+            ids[0] = IdentifierGenerator.Get(1);
+            ids[1] = IdentifierGenerator.Get(2);
 
             assetObject.SeqItems2.Add("value1");
             assetObject.SeqItems2.Add("value2");
             assetObject.SeqItems2.Add("value3");
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems2);
+            ids[0] = IdentifierGenerator.Get(3);
+            ids[1] = IdentifierGenerator.Get(4);
+            ids[2] = IdentifierGenerator.Get(5);
 
             assetObject.SeqItems3.Add("value1");
             assetObject.SeqItems3.Add("value2");
             assetObject.SeqItems3.Add("value3");
             assetObject.SeqItems3.Add("value4");
+            ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.SeqItems3);
+            ids[0] = IdentifierGenerator.Get(6);
+            ids[1] = IdentifierGenerator.Get(7);
+            ids[2] = IdentifierGenerator.Get(8);
+            ids[3] = IdentifierGenerator.Get(9);
 
             assetObject.SeqItems4.Add("value0");
             assetObject.SeqItems5.Add("value0");
