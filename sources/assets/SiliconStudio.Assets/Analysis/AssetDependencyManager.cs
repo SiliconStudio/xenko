@@ -140,14 +140,13 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Computes the dependencies for the specified asset.
         /// </summary>
-        /// <param name="assetItem">The asset item.</param>
+        /// <param name="assetId">The asset id.</param>
         /// <param name="dependenciesOptions">The dependencies options.</param>
         /// <param name="linkTypes">The type of links to visit while computing the dependencies</param>
         /// <param name="visited">The list of element already visited.</param>
         /// <returns>The dependencies, or null if the object is not tracked.</returns>
-        public AssetDependencies ComputeDependencies(AssetItem assetItem, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
+        public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
         {
-            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
             if (visited == null && recursive)
                 visited = new HashSet<AssetId>();
@@ -156,19 +155,23 @@ namespace SiliconStudio.Assets.Analysis
 
             lock (Initialize())
             {
-                var dependencies = new AssetDependencies(assetItem);
+                AssetDependencies dependencies;
+                if (!Dependencies.TryGetValue(assetId, out dependencies))
+                    return null;
+
+                dependencies = new AssetDependencies(dependencies.Item);
 
                 int inCount = 0, outCount = 0;
 
                 if ((dependenciesOptions & AssetDependencySearchOptions.In) != 0)
                 {
-                    CollectInputReferences(dependencies, assetItem, visited, recursive, linkTypes, ref inCount);
+                    CollectInputReferences(dependencies, assetId, visited, recursive, linkTypes, ref inCount);
                 }
 
                 if ((dependenciesOptions & AssetDependencySearchOptions.Out) != 0)
                 {
                     visited?.Clear();
-                    CollectOutputReferences(dependencies, assetItem, visited, recursive, linkTypes, ref outCount);
+                    CollectOutputReferences(dependencies, assetId, visited, recursive, linkTypes, ref outCount);
                 }
 
                 //Console.WriteLine("Time to compute dependencies: {0}ms in: {1} out:{2}", clock.ElapsedMilliseconds, inCount, outCount);
@@ -359,18 +362,12 @@ namespace SiliconStudio.Assets.Analysis
         /// Calculate the dependencies for the specified asset either by using the internal cache if the asset is already in the session
         /// or by calculating 
         /// </summary>
-        /// <param name="assetItem">The asset item.</param>
+        /// <param name="assetId">The asset id.</param>
         /// <returns>The dependencies.</returns>
-        private AssetDependencies CalculateDependencies(AssetItem assetItem)
+        private AssetDependencies CalculateDependencies(AssetId assetId)
         {
             AssetDependencies dependencies;
-            if (!Dependencies.TryGetValue(assetItem.Id, out dependencies))
-            {
-                // If the asset is not followed by this instance (this could not be part of the session)
-                // We are allocating a new dependency on the fly and calculating first level dependencies
-                dependencies = new AssetDependencies(assetItem);
-                CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, false);
-            }
+            Dependencies.TryGetValue(assetId, out dependencies);
             return dependencies;
         }
 
@@ -705,9 +702,8 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void CollectInputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
+        private void CollectInputReferences(AssetDependencies dependencyRoot, AssetId assetId, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
         {
-            var assetId = assetItem.Id;
             if (visited != null)
             {
                 if (visited.Contains(assetId))
@@ -730,16 +726,15 @@ namespace SiliconStudio.Assets.Analysis
 
                         if (visited != null && recursive)
                         {
-                            CollectInputReferences(dependencyRoot, pair.Item, visited, true, linkTypes, ref count);
+                            CollectInputReferences(dependencyRoot, pair.Item.Id, visited, true, linkTypes, ref count);
                         }
                     }
                 }
             }
         }
 
-        private void CollectOutputReferences(AssetDependencies dependencyRoot, AssetItem assetItem, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
+        private void CollectOutputReferences(AssetDependencies dependencyRoot, AssetId assetId, HashSet<AssetId> visited, bool recursive, ContentLinkType linkTypes, ref int count)
         {
-            var assetId = assetItem.Id;
             if (visited != null)
             {
                 if (visited.Contains(assetId))
@@ -750,7 +745,9 @@ namespace SiliconStudio.Assets.Analysis
 
             count++;
 
-            var dependencies = CalculateDependencies(assetItem);
+            var dependencies = CalculateDependencies(assetId);
+            if (dependencies == null)
+                return;
 
             // Add missing references
             foreach (var missingRef in dependencies.BrokenLinksOut)
@@ -767,7 +764,7 @@ namespace SiliconStudio.Assets.Analysis
 
                     if (visited != null && recursive)
                     {
-                        CollectOutputReferences(dependencyRoot, child.Item, visited, true, linkTypes, ref count);
+                        CollectOutputReferences(dependencyRoot, child.Item.Id, visited, true, linkTypes, ref count);
                     }
                 }
             }
