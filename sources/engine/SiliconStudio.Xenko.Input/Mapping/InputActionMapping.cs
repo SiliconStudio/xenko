@@ -3,15 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Xenko.Games;
-#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_PLATFORM_UWP
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
-#endif
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -26,6 +19,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private readonly Dictionary<string, InputAction> inputActionsByName = new Dictionary<string, InputAction>();
         private InputManager inputManager;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="InputActionMapping"/>.
+        /// </summary>
+        /// <param name="inputManager">The <see cref="InputManager"/> which this mapping receives events from</param>
         public InputActionMapping(InputManager inputManager)
         {
             if (inputManager == null) throw new ArgumentNullException(nameof(inputManager));
@@ -165,6 +162,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
             action.MappingName = "";
         }
 
+        /// <summary>
+        /// Tries to find an action in the default configuration with <paramref name="name"/>
+        /// </summary>
+        /// <param name="name">The name of the action to find, speciefied in <see cref="InputAction.MappingName"/></param>
+        /// <returns>The found action or <c>null</c></returns>
         public InputAction TryGetAction(string name)
         {
             InputAction action;

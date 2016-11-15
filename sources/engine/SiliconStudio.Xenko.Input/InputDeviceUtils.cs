@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     public static class InputDeviceUtils
     {
         /// <summary>
-        /// Generates a Guid unique to thie name
+        /// Generates a Guid unique to this name
         /// </summary>
         /// <param name="name">the name to turn into a Guid</param>
         /// <returns>A unique Guid for the given name</returns>

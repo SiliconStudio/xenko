@@ -3,6 +3,9 @@
 
 namespace SiliconStudio.Xenko.Input
 {
+    /// <summary>
+    /// Provides easier ways to set vibration levels on a controller, rather than setting 4 motors
+    /// </summary>
     public static class GamePadVibrationExtensions
     {
         /// <summary>

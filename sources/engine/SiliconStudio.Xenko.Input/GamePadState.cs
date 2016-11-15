@@ -102,6 +102,10 @@ namespace SiliconStudio.Xenko.Input
             return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
         }
         
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="evt">The gamepad event to process</param>
         public void Update(InputEvent evt)
         {
             var buttonEvent = evt as GamePadButtonEvent;
@@ -123,6 +127,11 @@ namespace SiliconStudio.Xenko.Input
                 return;
             }
         }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="povEvent">The gamepad event to process</param>
         public void Update(GamePadPovControllerEvent povEvent)
         {
             // Check if this maps to DPAD
@@ -135,6 +144,11 @@ namespace SiliconStudio.Xenko.Input
                 }
             }
         }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="buttonEvent">The gamepad event to process</param>
         public void Update(GamePadButtonEvent buttonEvent)
         {
             if (buttonEvent.State == ButtonState.Pressed)
@@ -142,6 +156,11 @@ namespace SiliconStudio.Xenko.Input
             else
                 Buttons &= ~buttonEvent.Button; // Clear bits
         }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="axisEvent">The gamepad event to process</param>
         public void Update(GamePadAxisEvent axisEvent)
         {
             switch (axisEvent.Axis)

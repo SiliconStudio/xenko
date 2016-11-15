@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under Apache 2.0 License. See LICENSE.md for details.
 //
 // TouchRunner.cs: MonoTouch.Dialog-based driver to run unit tests
