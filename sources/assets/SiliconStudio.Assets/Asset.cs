@@ -18,6 +18,7 @@ namespace SiliconStudio.Assets
     {
         private Guid id;
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Locks the unique identifier for further changes.
         /// </summary>
@@ -31,7 +32,7 @@ namespace SiliconStudio.Assets
             Id = Guid.NewGuid();
             Tags = new TagCollection();
 
-            // Initializse asset with default versions
+            // Initializse asset with default versions (same code as in Package..ctor())
             var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
             if (defaultPackageVersion != null)
             {
@@ -54,6 +55,7 @@ namespace SiliconStudio.Assets
         [Display(Browsable = false)]
         public Guid Id
         {
+            // Note: Please keep this code in sync with Package class
             get
             {
                 return id;
@@ -67,6 +69,7 @@ namespace SiliconStudio.Assets
             }
         }
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
@@ -101,6 +104,7 @@ namespace SiliconStudio.Assets
         [Obsolete]
         public int BuildOrder { get; set; }
 
+        // Note: Please keep this code in sync with Asset class
         /// <summary>
         /// Gets the tags for this asset.
         /// </summary>
