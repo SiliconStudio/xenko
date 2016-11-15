@@ -195,7 +195,7 @@ namespace SiliconStudio.Core.Yaml
                     }
 
                     var newSerializer = new Serializer(config);
-                    newSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
+                    newSerializer.Settings.ObjectSerializerBackend = new AssetObjectSerializerBackend(TypeDescriptorFactory.Default);
 
                     // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
                     localSerializer = newSerializer;

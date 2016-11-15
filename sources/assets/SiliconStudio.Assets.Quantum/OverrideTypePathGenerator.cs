@@ -10,7 +10,7 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class OverrideTypePathGenerator : GraphVisitorBase
     {
-        public Dictionary<ObjectPath, OverrideType> Result { get; } = new Dictionary<ObjectPath, OverrideType>();
+        public Dictionary<YamlAssetPath, OverrideType> Result { get; } = new Dictionary<YamlAssetPath, OverrideType>();
         private int inNonIdentifiableType;
 
         public void Reset()
@@ -55,10 +55,10 @@ namespace SiliconStudio.Assets.Quantum
                 inNonIdentifiableType--;
         }
 
-        private ObjectPath ConvertPath(GraphNodePath path)
+        private YamlAssetPath ConvertPath(GraphNodePath path)
         {
             var currentNode = (AssetNode)path.RootNode;
-            var result = new ObjectPath();
+            var result = new YamlAssetPath();
             var i = 0;
             foreach (var item in path.Path)
             {

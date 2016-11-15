@@ -54,6 +54,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestDerivedAssets.cs" />
+    <Compile Include="TestDynamicYaml.cs" />
     <Compile Include="TestFileVersionManager.cs" />
     <Compile Include="TestPackageStore.cs" />
     <Compile Include="TestSerializing.TestMyAssetObject.cs" />

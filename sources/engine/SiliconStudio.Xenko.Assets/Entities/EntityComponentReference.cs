@@ -4,7 +4,6 @@
 using System;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -42,7 +41,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public object GenerateProxyPart(Type partType)
         {
             var component = (EntityComponent)Activator.CreateInstance(partType);
-            component.Entity = new Entity { Id = Entity.Id };
+            var entity = new Entity { Id = Entity.Id, Name = "EntityComponentReference" };
+            entity.Components.Clear();
+            entity.Components.Add(component);
             component.Id = Id;
             return component;
         }

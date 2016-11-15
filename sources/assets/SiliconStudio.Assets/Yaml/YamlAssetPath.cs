@@ -7,7 +7,7 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Core.Yaml
 {
     [DataContract]
-    public class ObjectPath : IEquatable<ObjectPath> // TODO: Rename this possibly, it's really tied to collection with ids and override
+    public class YamlAssetPath : IEquatable<YamlAssetPath>
     {
         public enum ItemType
         {
@@ -68,14 +68,14 @@ namespace SiliconStudio.Core.Yaml
             items.Add(new Item(ItemType.ItemId, itemId));
         }
 
-        public ObjectPath Clone()
+        public YamlAssetPath Clone()
         {
-            var clone = new ObjectPath();
+            var clone = new YamlAssetPath();
             clone.items.AddRange(items);
             return clone;
         }
 
-        public bool Equals(ObjectPath other)
+        public bool Equals(YamlAssetPath other)
         {
             if (Items.Count != other?.Items.Count)
                 return false;
@@ -97,7 +97,7 @@ namespace SiliconStudio.Core.Yaml
                 return true;
             if (obj.GetType() != GetType())
                 return false;
-            return Equals((ObjectPath)obj);
+            return Equals((YamlAssetPath)obj);
         }
 
         public override int GetHashCode()
@@ -105,12 +105,12 @@ namespace SiliconStudio.Core.Yaml
             return items.Aggregate(0, (hashCode, item) => (hashCode * 397) ^ item.GetHashCode());
         }
 
-        public static bool operator ==(ObjectPath left, ObjectPath right)
+        public static bool operator ==(YamlAssetPath left, YamlAssetPath right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ObjectPath left, ObjectPath right)
+        public static bool operator !=(YamlAssetPath left, YamlAssetPath right)
         {
             return !Equals(left, right);
         }

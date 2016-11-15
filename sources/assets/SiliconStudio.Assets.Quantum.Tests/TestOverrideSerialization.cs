@@ -85,14 +85,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
             graph.PrepareForSave(null);
             var stream = new MemoryStream();
-            AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<ObjectPath, OverrideType>)assetItem.Overrides);
+            AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<YamlAssetPath, OverrideType>)assetItem.Overrides);
             stream.Position = 0;
             var streamReader = new StreamReader(stream);
             var yaml = streamReader.ReadToEnd();
             Assert.AreEqual(expectedYaml, yaml);
         }
 
-        private static void SerializeAndCompare(object instance, Dictionary<ObjectPath, OverrideType> overrides, string expectedYaml)
+        private static void SerializeAndCompare(object instance, Dictionary<YamlAssetPath, OverrideType> overrides, string expectedYaml)
         {
             var stream = new MemoryStream();
             AssetFileSerializer.Default.Save(stream, instance, null, overrides);
@@ -818,7 +818,7 @@ Value*: OverriddenString
             var context = DeriveAssetTest<Types.MyAsset9>.DeriveAsset(asset);
             var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset9.MyObject)];
             derivedPropertyNode.Target[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
-            var expectedPath = new ObjectPath();
+            var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
@@ -852,7 +852,7 @@ Value*: OverriddenString
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
             var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
             derivedPropertyNode[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
-            var expectedPath = new ObjectPath();
+            var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
