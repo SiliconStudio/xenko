@@ -115,10 +115,10 @@ namespace SiliconStudio.Assets.Quantum
             if (rootNode == null)
                 throw new InvalidOperationException($"{nameof(RootNode)} is not set.");
 
-            if (AssetItem.Overrides == null)
+            if (overrides == null)
                 return;
 
-            foreach (var overrideInfo in AssetItem.Overrides)
+            foreach (var overrideInfo in overrides)
             {
                 Index index;
                 bool overrideOnKey;
