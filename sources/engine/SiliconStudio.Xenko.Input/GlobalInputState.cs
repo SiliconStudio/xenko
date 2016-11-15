@@ -23,9 +23,38 @@ namespace SiliconStudio.Xenko.Input
         public readonly List<PointerEvent> PointerEvents = new List<PointerEvent>();
         public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
 
+        /// <summary>
+        /// Mouse delta in normalized (0,1) coordinates
+        /// </summary>
         public Vector2 MouseDelta { get; private set; }
+
+        /// <summary>
+        /// Mouse movement in device coordinates
+        /// </summary>
+        public Vector2 AbsoluteMouseDelta
+        {
+            get
+            {
+                if (LastPointerDevice != null)
+                    return MouseDelta * LastPointerDevice.SurfaceSize;
+                return MouseDelta;
+            }
+        }
+
+        /// <summary>
+        /// Normalized mouse position
+        /// </summary>
         public Vector2 MousePosition { get; private set; }
+
+        /// <summary>
+        /// Delta of the mouse wheel
+        /// </summary>
         public float MouseWheelDelta { get; private set; }
+
+        /// <summary>
+        /// Device that is responsible for setting the current <see cref="MouseDelta"/> and <see cref="MousePosition"/>
+        /// </summary>
+        public IPointerDevice LastPointerDevice { get; private set; }
 
         /// <summary>
         /// Resets the state before updating
@@ -65,6 +94,7 @@ namespace SiliconStudio.Xenko.Input
             // Update position and delta from whatever device sends position updates
             MousePosition = inputEvent.Position;
             MouseDelta = inputEvent.DeltaPosition;
+            LastPointerDevice = inputEvent.Pointer;
         }
 
         public void ProcessEvent(MouseButtonEvent inputEvent)

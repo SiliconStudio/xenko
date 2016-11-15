@@ -232,6 +232,12 @@ namespace SiliconStudio.Xenko.Input
         public Vector2 MouseDelta => GlobalInputState.MouseDelta;
 
         /// <summary>
+        /// Gets the mouse delta in device coordinates
+        /// </summary>
+        /// <value>The mouse position.</value>
+        public Vector2 AbsoluteMouseDelta => GlobalInputState.AbsoluteMouseDelta;
+
+        /// <summary>
         /// Gets the delta value of the mouse wheel button since last frame.
         /// </summary>
         public float MouseWheelDelta => GlobalInputState.MouseWheelDelta;
