@@ -420,8 +420,15 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
         {
-            if (BaseContent == null || (changeType == ContentChangeType.ValueChange && !IsItemOverridden(index)))
+            if (BaseContent == null)
                 return;
+
+            if (changeType == ContentChangeType.ValueChange)
+            {
+                // Make sure that what we're trying to reset is actually overridden.
+                if ((index != Index.Empty && !IsItemOverridden(index)) || (index == Index.Empty && !IsContentOverridden()))
+                    return;
+            }
 
             object baseValue;
             object clonedValue;
