@@ -41,14 +41,6 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DirectInput.dll</HintPath>
         </Reference>
-        <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
-          <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
-          <Name>SiliconStudio.Core.Design</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
-          <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
-          <Name>SiliconStudio.Core.Yaml</Name>
-        </ProjectReference>
       </ItemGroup>
     </When>
   </Choose>
