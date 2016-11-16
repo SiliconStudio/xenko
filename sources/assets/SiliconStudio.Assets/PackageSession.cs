@@ -1006,7 +1006,7 @@ namespace SiliconStudio.Assets
                 package.LoadAssets(log, newLoadParameters);
 
                 // Validate assets from package
-                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, log);
+                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, newLoadParameters.RemoveUnloadableObjects, log);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {

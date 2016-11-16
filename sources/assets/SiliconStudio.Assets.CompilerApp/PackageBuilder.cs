@@ -78,6 +78,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
+                    RemoveUnloadableObjects = true,
                 };
 
                 // Loads the root Package

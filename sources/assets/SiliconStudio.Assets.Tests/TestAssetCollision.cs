@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -70,7 +70,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Force to use new ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -116,7 +116,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true);
+            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);

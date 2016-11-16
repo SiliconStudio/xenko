@@ -882,7 +882,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public void ValidateAssets(bool alwaysGenerateNewAssetId, ILogger log)
+        public void ValidateAssets(bool alwaysGenerateNewAssetId, bool removeUnloadableObjects, ILogger log)
         {
             if (TemporaryAssets.Count == 0)
             {
@@ -904,7 +904,7 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true, removeUnloadableObjects);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
