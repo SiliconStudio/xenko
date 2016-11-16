@@ -86,7 +86,7 @@ namespace SiliconStudio.Core.Transactions
             lock (lockObject)
             {
                 if (transactionsInProgress.Count == 0)
-                    throw new TransactionException("There is not transaction in progress in the transaction stack.");
+                    throw new TransactionException("There is no transaction in progress in the transaction stack.");
 
                 if (!operation.HasEffect)
                     return;
