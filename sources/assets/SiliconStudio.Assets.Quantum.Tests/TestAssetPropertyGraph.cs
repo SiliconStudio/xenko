@@ -26,7 +26,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
-            Assert.AreEqual(3, ids.Count);
+            Assert.AreEqual(3, ids.KeyCount);
+            Assert.AreEqual(0, ids.DeletedCount);
             Assert.True(ids.ContainsKey(0));
             Assert.True(ids.ContainsKey(1));
             Assert.True(ids.ContainsKey(2));
@@ -42,7 +43,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyAsset2.MyStrings, out ids));
-            Assert.AreEqual(3, ids.Count);
+            Assert.AreEqual(3, ids.KeyCount);
+            Assert.AreEqual(0, ids.DeletedCount);
             Assert.True(ids.ContainsKey(0));
             Assert.True(ids.ContainsKey(1));
             Assert.True(ids.ContainsKey(2));
@@ -64,7 +66,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
             Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
-            Assert.AreEqual(3, ids.Count);
+            Assert.AreEqual(3, ids.KeyCount);
+            Assert.AreEqual(0, ids.DeletedCount);
             Assert.AreEqual(IdentifierGenerator.Get(100), ids[0]);
             Assert.AreEqual(IdentifierGenerator.Get(200), ids[1]);
             Assert.AreNotEqual(IdentifierGenerator.Get(100), ids[2]);

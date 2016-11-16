@@ -113,8 +113,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -137,8 +139,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -161,8 +165,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 }
@@ -202,8 +208,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -227,8 +235,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(2)));
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(3, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -256,8 +266,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(2)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(3)));
-                    Assert.AreEqual(3, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(3, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                     Assert.AreEqual(baseIds[2], derivedIds[2]);
@@ -374,10 +386,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(3, baseIds.Count);
                     Assert.AreEqual(3, baseIds.KeyCount);
                     Assert.AreEqual(0, baseIds.DeletedCount);
-                    Assert.AreEqual(3, derivedIds.Count);
                     Assert.AreEqual(2, derivedIds.KeyCount);
                     Assert.AreEqual(1, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
@@ -423,8 +433,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -447,8 +459,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -471,8 +485,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 }
@@ -512,8 +528,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -536,8 +554,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -560,8 +580,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 }
@@ -601,8 +623,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -627,8 +651,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key3")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(3, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                     Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
@@ -659,8 +685,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key3")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(3, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(3, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                     Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
@@ -713,8 +741,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key3")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(4, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(4, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                     Assert.AreEqual(baseIds["Key3"], derivedIds["Key3"]);
@@ -747,8 +777,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(4, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(4, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
                     Assert.AreEqual(3, derivedIds.KeyCount);
                     Assert.AreEqual(1, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
@@ -778,11 +808,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(3, baseIds.Count);
                     Assert.AreEqual(3, baseIds.KeyCount);
                     Assert.AreEqual(0, baseIds.DeletedCount);
-                    Assert.AreEqual(3, derivedIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
                     Assert.AreEqual(2, derivedIds.KeyCount);
                     Assert.AreEqual(1, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
@@ -841,8 +868,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -873,8 +902,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -905,8 +936,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 }
@@ -961,8 +994,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -997,8 +1032,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(3, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -1040,8 +1077,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(3)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(3, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(3, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                     Assert.AreEqual(baseIds[2], derivedIds[2]);
@@ -1098,8 +1137,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -1130,8 +1171,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -1162,8 +1205,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 }
@@ -1218,8 +1263,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -1254,8 +1301,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(3, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                 },
@@ -1297,8 +1346,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(3)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(3, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(3, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds[0], derivedIds[0]);
                     Assert.AreEqual(baseIds[1], derivedIds[1]);
                     Assert.AreEqual(baseIds[2], derivedIds[2]);
@@ -1355,8 +1406,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -1387,8 +1440,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -1419,8 +1474,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 }
@@ -1475,8 +1532,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(2, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(2, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -1511,8 +1570,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key3")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(2, baseIds.Count);
-                    Assert.AreEqual(3, derivedIds.Count);
+                    Assert.AreEqual(2, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(3, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                 },
@@ -1554,8 +1615,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key3")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index("Key4")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
                     Assert.AreNotSame(baseIds, derivedIds);
-                    Assert.AreEqual(3, baseIds.Count);
-                    Assert.AreEqual(4, derivedIds.Count);
+                    Assert.AreEqual(3, baseIds.KeyCount);
+                    Assert.AreEqual(0, baseIds.DeletedCount);
+                    Assert.AreEqual(4, derivedIds.KeyCount);
+                    Assert.AreEqual(0, derivedIds.DeletedCount);
                     Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
                     Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
                     Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
