@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -12,20 +13,47 @@ namespace SiliconStudio.Assets
     /// </summary>
     public class UnloadableObjectRemover : AssetVisitorBase
     {
-        private readonly List<MemberPath> memberPaths = new List<MemberPath>();
+        private List<UnloadableItem> unloadableitems;
+        [ThreadStatic] private static UnloadableObjectRemover instanceTLS;
 
-        public void Run(object obj)
+        public static IReadOnlyList<UnloadableItem> Run(object obj)
+        {
+            var instance = GetYamlProxyRemover();
+
+            instance.DiscoverInternal(obj);
+
+            // We apply changes in opposite visit order so that indices remains valid when we remove objects while iterating
+            for (int index = instance.unloadableitems.Count - 1; index >= 0; index--)
+            {
+                var unloadableItem = instance.unloadableitems[index];
+                unloadableItem.MemberPath.Apply(obj, MemberPathAction.ValueClear, null);
+            }
+
+            return instance.unloadableitems;
+        }
+
+        public static IReadOnlyList<UnloadableItem> Discover(object obj)
+        {
+            var instance = GetYamlProxyRemover();
+            instance.DiscoverInternal(obj);
+            return instance.unloadableitems;
+        }
+
+        private static UnloadableObjectRemover GetYamlProxyRemover()
+        {
+            var yamlProxyRemover = instanceTLS;
+            if (yamlProxyRemover == null)
+            {
+                instanceTLS = yamlProxyRemover = new UnloadableObjectRemover();
+            }
+            return yamlProxyRemover;
+        }
+
+        private void DiscoverInternal(object obj)
         {
             Reset();
-            memberPaths.Clear();
+            unloadableitems = new List<UnloadableItem>();
             Visit(obj);
-            // We apply changes in opposite visit order so that indices remains valid when we remove objects while iterating
-            for (int index = memberPaths.Count - 1; index >= 0; index--)
-            {
-                var memberPath = memberPaths[index];
-                memberPath.Apply(obj, MemberPathAction.ValueClear, null);
-            }
-            memberPaths.Clear();
         }
 
         public override void VisitCollectionItem(IEnumerable collection, CollectionDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
@@ -61,14 +89,27 @@ namespace SiliconStudio.Assets
 
         private bool ProcessObject(object obj, Type expectedType)
         {
-            if (obj is IUnloadable)
+            var unloadable = obj as IUnloadable;
+            if (unloadable != null)
             {
-                memberPaths.Add(CurrentPath.Clone());
+                unloadableitems.Add(new UnloadableItem(unloadable, CurrentPath.Clone()));
 
                 // Don't recurse inside
                 return true;
             }
             return false;
+        }
+
+        public struct UnloadableItem
+        {
+            public readonly IUnloadable UnloadableObject;
+            public readonly MemberPath MemberPath;
+
+            public UnloadableItem(IUnloadable o, MemberPath memberPath)
+            {
+                UnloadableObject = o;
+                MemberPath = memberPath;
+            }
         }
     }
 }

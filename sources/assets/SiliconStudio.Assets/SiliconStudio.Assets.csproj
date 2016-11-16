@@ -65,6 +65,7 @@
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
+    <Compile Include="AssetLogger.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />

@@ -32,7 +32,6 @@ namespace SiliconStudio.Assets
         private Dictionary<object, object> clonedObjectMapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
-        private static ThreadLocal<UnloadableObjectRemover> unloadableObjectRemovers = new ThreadLocal<UnloadableObjectRemover>(() => new UnloadableObjectRemover());
 
         static AssetCloner()
         {
@@ -115,8 +114,7 @@ namespace SiliconStudio.Assets
 
                 if ((flags & AssetClonerFlags.RemoveUnloadableObjects) != 0)
                 {
-                    var yamlProxyRemover = unloadableObjectRemovers.Value;
-                    yamlProxyRemover.Run(newObject);
+                    UnloadableObjectRemover.Run(newObject);
                 }
 
                 return newObject;

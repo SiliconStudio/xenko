@@ -478,7 +478,7 @@ namespace SiliconStudio.Xenko.Assets
                 if (assetFile.Deleted)
                     continue;
 
-                var context = new AssetMigrationContext(dependentPackage, log);
+                var context = new AssetMigrationContext(dependentPackage, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log);
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, dependencyName, maxVersion);
             }
         }

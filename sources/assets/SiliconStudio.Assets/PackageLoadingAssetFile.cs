@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
@@ -61,6 +62,11 @@ namespace SiliconStudio.Assets
             SourceFolder = UPath.Combine(package.RootDirectory, sourceFolder ?? package.GetDefaultAssetFolder());
             FilePath = UPath.Combine(SourceFolder, filePath);
             ProjectFile = null;
+        }
+
+        public IReference ToReference()
+        {
+            return new AssetReference(AssetId.Empty, AssetPath);
         }
 
         public YamlAsset AsYamlAsset()
