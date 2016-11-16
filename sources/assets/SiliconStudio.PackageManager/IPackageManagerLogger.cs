@@ -8,6 +8,11 @@ namespace SiliconStudio.PackageManager
     /// </summary>
     public interface IPackageManagerLogger
     {
+        /// <summary>
+        /// Logs the <paramref name="message"/> using the log <paramref name="level"/>.
+        /// </summary>
+        /// <param name="level">The level of the logged message.</param>
+        /// <param name="message">The message to log.</param>
         void Log(MessageLevel level, string message);
     }
 }

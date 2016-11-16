@@ -36,7 +36,7 @@ namespace SiliconStudio.PackageManager
         /// the first set if it exists already, otherwise create a new sets where dependency will be added to.
         /// </summary>
         /// <param name="name">Name of package to add to <see cref="Dependencies"/></param>
-        /// <param name="v">Version of package to add to <see cref="Dependencies"/></param>
+        /// <param name="v">Version range accepted for package to add to <see cref="Dependencies"/></param>
         public void AddDependency(string name, PackageVersionRange v)
         {
             Dependencies.Add(new ManifestDependency() { Id = name, Version = v.ToString() });
