@@ -1080,8 +1080,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(2, context.DerivedAsset.MyInterfaces.Count);
                     Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index(0)));
                     Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index(1)));
-                    Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
-                    Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
+                    // NOTE: we're using this code to test undo/redo and in this case, we have different objects in the derived object after undoing due to the fact that the type of the instance has changed
+                    //Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index(0)));
+                    //Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index(1)));
                     Assert.AreEqual("String1", ((Types.IMyInterface)basePropertyNode.Content.Retrieve(new Index(0))).Value);
                     Assert.AreEqual("String2", ((Types.IMyInterface)basePropertyNode.Content.Retrieve(new Index(1))).Value);
                     Assert.AreEqual("String1", ((Types.IMyInterface)derivedPropertyNode.Content.Retrieve(new Index(0))).Value);
@@ -1336,8 +1337,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
                     Assert.AreEqual(objB0, basePropertyNode.Content.Retrieve(new Index("Key1")));
                     Assert.AreEqual(objB1, basePropertyNode.Content.Retrieve(new Index("Key2")));
-                    Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index("Key1")));
-                    Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index("Key2")));
+                    // NOTE: we're using this code to test undo/redo and in this case, we have different objects in the derived object after undoing due to the fact that the type of the instance has changed
+                    //Assert.AreEqual(objD0, derivedPropertyNode.Content.Retrieve(new Index("Key1")));
+                    //Assert.AreEqual(objD1, derivedPropertyNode.Content.Retrieve(new Index("Key2")));
                     Assert.AreEqual("String1", ((Types.IMyInterface)basePropertyNode.Content.Retrieve(new Index("Key1"))).Value);
                     Assert.AreEqual("String2", ((Types.IMyInterface)basePropertyNode.Content.Retrieve(new Index("Key2"))).Value);
                     Assert.AreEqual("String1", ((Types.IMyInterface)derivedPropertyNode.Content.Retrieve(new Index("Key1"))).Value);
