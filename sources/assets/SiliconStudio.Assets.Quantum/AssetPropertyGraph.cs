@@ -109,11 +109,9 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.Result;
         }
 
-        public void ApplyOverrides(AssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
+        public static void ApplyOverrides(AssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
         {
-            rootNode = rootNode ?? RootNode;
-            if (rootNode == null)
-                throw new InvalidOperationException($"{nameof(RootNode)} is not set.");
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
             if (overrides == null)
                 return;
