@@ -170,21 +170,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The download count.</value>
         [DataMemberIgnore]
-        public int DownloadCount { get; internal set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is absolute latest version.
-        /// </summary>
-        /// <value><c>true</c> if this instance is absolute latest version; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool IsAbsoluteLatestVersion { get; internal set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is latest version.
-        /// </summary>
-        /// <value><c>true</c> if this instance is latest version; otherwise, <c>false</c>.</value>
-        [DataMemberIgnore]
-        public bool IsLatestVersion { get; internal set; }
+        public long DownloadCount { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="PackageMeta"/> is listed.

@@ -271,8 +271,6 @@ namespace SiliconStudio.Assets
                 Language = metadata.Language,
                 Tags = metadata.Tags,
                 Copyright = metadata.Copyright,
-                IsAbsoluteLatestVersion = metadata.IsAbsoluteLatestVersion,
-                IsLatestVersion = metadata.IsLatestVersion,
                 Listed = metadata.Listed,
                 Published = metadata.Published,
                 ReportAbuseUrl = metadata.ReportAbuseUrl,

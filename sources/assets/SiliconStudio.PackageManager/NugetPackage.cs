@@ -79,8 +79,6 @@ namespace SiliconStudio.PackageManager
 
         public string Id => packageMetadata.Id;
 
-        public bool IsAbsoluteLatestVersion => IPackage?.IsAbsoluteLatestVersion ?? false;
-
         public bool IsLatestVersion => IPackage?.IsLatestVersion ?? false;
         public bool Listed => IPackage?.Listed ?? false;
         public DateTimeOffset? Published => IPackage?.Published;
@@ -138,7 +136,7 @@ namespace SiliconStudio.PackageManager
 
         public Version MinClientVersion => packageMetadata.MinClientVersion;
         
-        public int DownloadCount => IServerPackageMetadata?.DownloadCount ?? 0;
+        public long DownloadCount => IServerPackageMetadata?.DownloadCount ?? 0;
 
         public Uri ReportAbuseUrl => IServerPackageMetadata?.ReportAbuseUrl;
 
