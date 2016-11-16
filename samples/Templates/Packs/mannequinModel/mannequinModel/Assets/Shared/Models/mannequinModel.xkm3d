@@ -34,7 +34,7 @@ Materials:
         Name: lambert1
         MaterialInstance:
             ~Id: d94f8d35-1d9a-49d3-a00d-3103581b90f6
-            Material: null
+            Material: ed1d1531-6a3d-4ffb-a3a1-bf6897d7bda9/dbf44423-b639-4e84-8eca-fcea83343296:Materials/LambertMT
 Skeleton: 9915be9a-ef92-46c6-84bc-ac38d8e0b4e6/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 ~SourceHashes:
     ../../../Resources/Models/mannequinModel.fbx: 41531d1299044bd0f0b265374610fb1d
