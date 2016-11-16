@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
-using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -34,11 +32,18 @@ namespace SiliconStudio.Xenko.Input
             AddAxisMapping(4, GamePadAxis.RightTrigger);
         }
 
-        public override bool MatchDevice(IGameControllerDevice device)
+        public override void InitializeDevice(IGamePadDevice device)
         {
-            return CompareProductId(device.ProductId, commonProductId, 4);
+            // Make triggers not bi-directional
+            device.AxisInfos[4].IsBiDirectional = false;
+            device.AxisInfos[5].IsBiDirectional = false;
+
+            base.InitializeDevice(device);
+        }
+
+        public override bool MatchDevice(IInputSource source, string deviceName, Guid productId)
+        {
+            return CompareProductId(productId, commonProductId, 4);
         }
     }
 }
-
-#endif

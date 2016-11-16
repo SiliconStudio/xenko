@@ -4,19 +4,14 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// An event to describe a change in a gamepad point of view controller
+    /// An event to describe a change in a game controller's point of view controller
     /// </summary>
-    public class GameControllerPovControllerEvent : InputEvent
+    public class PovControllerEvent : InputEvent
     {
         /// <summary>
         /// The index of the pov controller
         /// </summary>
         public int Index;
-        
-        /// <summary>
-        /// The gamepad buttons mapped to this direction, if mapped using  <see cref="GamePadLayout"/>
-        /// </summary>
-        public GamePadButton Button;
 
         /// <summary>
         /// <c>true</c> if the controller is enabled, <c>false</c> if the controller is in a neutral position (disabled)
@@ -36,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index}, {nameof(Button)}: {Button}, {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GameController)}: {GameController.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GameController)}: {GameController.DeviceName}";
         }
     }
 }

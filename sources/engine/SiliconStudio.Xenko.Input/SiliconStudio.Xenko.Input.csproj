@@ -70,11 +70,14 @@
     <Compile Include="Android\InputSourceAndroid.cs" />
     <Compile Include="Android\KeyboardAndroid.cs" />
     <Compile Include="Android\PointerAndroid.cs" />
+    <Compile Include="AxisEvent.cs" />
     <Compile Include="ButtonEvent.cs" />
+    <Compile Include="GamePadAxisEvent.cs" />
+    <Compile Include="GamePadButtonEvent.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutDS4.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
-    <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
+    <Compile Include="IGamePadDevice.cs" />
     <Compile Include="InputManager.State.cs" />
     <Compile Include="InputEventPool.cs" />
     <Compile Include="InputPreUpdateEventArgs.cs" />
@@ -88,6 +91,8 @@
     <Compile Include="Mapping\ButtonAction.cs" />
     <Compile Include="Mapping\ButtonActionBinder.cs" />
     <Compile Include="Mapping\CompoundAxisGesture.cs" />
+    <Compile Include="Mapping\GamePadAxisGesture.cs" />
+    <Compile Include="Mapping\GamePadButtonGesture.cs" />
     <Compile Include="Mapping\InputActionConfiguration.cs" />
     <Compile Include="Mapping\DirectionAction.cs" />
     <Compile Include="Mapping\DirectionActionBinder.cs" />
@@ -120,9 +125,9 @@
     <Compile Include="ButtonState.cs" />
     <Compile Include="GameControllerButtonType.cs" />
     <Compile Include="GameControllerObjectInfo.cs" />
-    <Compile Include="GameControllerPovControllerEvent.cs" />
-    <Compile Include="GameControllerPovControllerInfo.cs" />
-    <Compile Include="GamePadUtils.cs" />
+    <Compile Include="PovControllerEvent.cs" />
+    <Compile Include="PovControllerInfo.cs" />
+    <Compile Include="GameControllerUtils.cs" />
     <Compile Include="NamedGravitySensor.cs" />
     <Compile Include="NamedGyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
@@ -137,7 +142,7 @@
     <Compile Include="GamePadAxis.cs" />
     <Compile Include="GameControllerDeviceBase.cs" />
     <Compile Include="GameControllerExtensions.cs" />
-    <Compile Include="GamePadVibrationExtensions.cs" />
+    <Compile Include="GamePadExtensions.cs" />
     <Compile Include="GestureConfigCollection.cs" />
     <Compile Include="GestureConfigDrag.cs" />
     <Compile Include="GestureConfigFlick.cs" />
@@ -159,7 +164,6 @@
     <Compile Include="IGravitySensor.cs" />
     <Compile Include="IGyroscopeSensor.cs" />
     <Compile Include="IGameControllerDevice.cs" />
-    <Compile Include="IGamePadVibration.cs" />
     <Compile Include="IInputDevice.cs" />
     <Compile Include="IInputSource.cs" />
     <Compile Include="IKeyboardDevice.cs" />
@@ -180,7 +184,7 @@
     <Compile Include="OpenTK\MouseOpenTK.cs" />
     <Compile Include="PointerDeviceBase.cs" />
     <Compile Include="NamedSensor.cs" />
-    <Compile Include="SDL\GameControllerSdl.cs" />
+    <Compile Include="SDL\GameControllerSDL.cs" />
     <Compile Include="SDL\InputSourceSDL.cs" />
     <Compile Include="SDL\KeyboardSDL.cs" />
     <Compile Include="SDL\MouseSDL.cs" />
@@ -210,7 +214,8 @@
     <Compile Include="Windows\CustomGamePad.cs" />
     <Compile Include="Windows\CustomGamePadState.cs" />
     <Compile Include="Windows\GameControllerDirectInput.cs" />
-    <Compile Include="Windows\GameControllerXInput.cs" />
+    <Compile Include="Windows\GamePadDirectInput.cs" />
+    <Compile Include="Windows\GamePadXInput.cs" />
     <Compile Include="Windows\InputSourceWinforms.cs" />
     <Compile Include="Windows\InputSourceWindowsDirectInput.cs" />
     <Compile Include="Windows\InputSourceWindowsRawInput.cs" />

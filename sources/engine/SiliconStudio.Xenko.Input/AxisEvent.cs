@@ -4,18 +4,13 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// State for a button on a device
+    /// Event for an axis changing state on a device
     /// </summary>
-    public enum ButtonState
+    public abstract class AxisEvent : InputEvent
     {
         /// <summary>
-        /// The button is not pressed
+        /// The new value of the axis
         /// </summary>
-        Up = 0,
-
-        /// <summary>
-        /// The button is pressed
-        /// </summary>
-        Down,
+        public float Value;
     }
 }

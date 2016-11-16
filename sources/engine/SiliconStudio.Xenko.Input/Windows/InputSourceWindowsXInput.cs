@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Input
         // Always monitored gamepads
         private Controller[] controllers;
         private Guid[] controllerIds;
-        private GameControllerXInput[] devices;
+        private GamePadXInput[] devices;
 
         private readonly List<int> devicesToRemove = new List<int>();
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Input
 
             controllers = new Controller[XInputGamePadCount];
             controllerIds = new Guid[XInputGamePadCount];
-            devices = new GameControllerXInput[XInputGamePadCount];
+            devices = new GamePadXInput[XInputGamePadCount];
 
             // Prebuild fake GUID
             for (int i = 0; i < XInputGamePadCount; i++)
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Input
             if (devices[index] != null)
                 throw new InvalidOperationException($"XInput device already opened {index}");
 
-            var newGamepad = new GameControllerXInput(controllers[index], controllerIds[index], index);
+            var newGamepad = new GamePadXInput(controllers[index], controllerIds[index], index);
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal

@@ -4,7 +4,6 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using SharpDX;
 using SharpDX.DirectInput;
 
@@ -14,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     {
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
-        private readonly List<GameControllerPovControllerInfo> povControllerInfos = new List<GameControllerPovControllerInfo>();
+        private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
 
         private CustomGamePad gamepad;
         private CustomGamePadState state = new CustomGamePadState();
@@ -64,7 +63,7 @@ namespace SiliconStudio.Xenko.Input
                         // Maximum amount of supported pov controllers reached, don't register any more
                         continue;
                     }
-                    var pov = new GameControllerPovControllerInfo();
+                    var pov = new PovControllerInfo();
                     objInfo = pov;
                     povControllerInfos.Add(pov);
                 }
@@ -86,7 +85,6 @@ namespace SiliconStudio.Xenko.Input
             state.PovControllers = new int[povControllerInfos.Count];
             
             InitializeButtonStates();
-            InitializeLayout();
         }
         
         public override void Dispose()
@@ -101,7 +99,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -117,9 +115,9 @@ namespace SiliconStudio.Xenko.Input
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
                     if(axisInfos[i].IsBiDirectional)
-                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
+                        HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
                     else
-                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GameControllerAxisDeadZone));
+                        HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i], InputManager.GameControllerAxisDeadZone));
                 }
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {

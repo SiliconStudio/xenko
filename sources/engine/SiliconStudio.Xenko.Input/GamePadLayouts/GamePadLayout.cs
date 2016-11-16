@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Base class for a mapping of anonymous gamepad objects to a common controller layout, as used with <see cref="GamePadState"/>. Derive from this type to create custom layouts
+    /// Provides a <see cref="IGameControllerDevice"/> to <see cref="IGamePadDevice"/> mapping
     /// </summary>
     public abstract class GamePadLayout
     {
@@ -42,55 +42,83 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Checks if a device matches this gamepad layout, and thus should use this when mapping it to a <see cref="GamePadState"/>
         /// </summary>
-        /// <param name="device"></param>
-        public abstract bool MatchDevice(IGameControllerDevice device);
+        /// <param name="source">Source that this device comes from</param>
+        /// <param name="deviceName">Friendly name of the device</param>
+        /// <param name="productId">Product or implementation specific ID for the device</param>
+        public abstract bool MatchDevice(IInputSource source, string deviceName, Guid productId);
 
         /// <summary>
-        /// Maps the raw gamepad event to a gamepad state event
+        /// Allows the user to perform some additional setup operations when using this layout on a device
         /// </summary>
         /// <param name="device"></param>
-        /// <param name="inputEvent">The gamepad input event to adjust</param>
-        /// <param name="generatedEvent">Optionally a generated event to respond to this input event</param>
-        public virtual void MapInputEvent(IGameControllerDevice device, InputEvent inputEvent, out InputEvent generatedEvent)
+        public virtual void InitializeDevice(IGamePadDevice device)
         {
-            generatedEvent = null;
-            var buttonEvent = inputEvent as GameControllerButtonEvent;
+        }
+
+        /// <summary>
+        /// Maps game controller events to gamepad events
+        /// </summary>
+        /// <returns>The equivalent gamepad event</returns>
+        /// <param name="device">The game controller that is mapped to a gamepad</param>
+        /// <param name="controllerEvent">The controller input event as a source</param>
+        /// <param name="target">Target list</param>
+        public virtual void MapInputEvent(IGamePadDevice device, InputEvent controllerEvent, List<InputEvent> target)
+        {
+            var buttonEvent = controllerEvent as GameControllerButtonEvent;
             if (buttonEvent != null)
             {
                 if (buttonEvent.Index < buttonMap.Count)
                 {
-                    buttonEvent.Button = buttonMap[buttonEvent.Index];
+                    if (buttonMap[buttonEvent.Index] == GamePadButton.None)
+                        return;
+
+                    GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(device);
+                    buttonEvent1.Button = buttonMap[buttonEvent.Index];
+                    buttonEvent1.State = buttonEvent.State;
+                    target.Add(buttonEvent1);
                 }
             }
             else
             {
-                var axisEvent = inputEvent as GameControllerAxisEvent;
+                var axisEvent = controllerEvent as GameControllerAxisEvent;
                 if (axisEvent != null)
                 {
                     if (axisEvent.Index < axisMap.Count)
                     {
                         var mappedAxis = axisMap[axisEvent.Index];
+                        if (mappedAxis.Axis == GamePadAxis.None)
+                            return;
+
+                        GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(device);
+
+                        axisEvent1.Axis = mappedAxis.Axis;
                         if (mappedAxis.Invert)
-                        {
-                            // Create new event that has the axis inverted
-                            var axisEvent1 = InputEventPool<GameControllerAxisEvent>.GetOrCreate(device);
-                            generatedEvent = axisEvent1;
-                            axisEvent1.Axis = mappedAxis.Axis;
-                            axisEvent1.Index = -1;
                             axisEvent1.Value = -axisEvent.Value;
-                        }
                         else
-                        {
-                            axisEvent.Axis = mappedAxis.Axis;
-                        }
+                            axisEvent1.Value = axisEvent.Value;
+
+                        target.Add(axisEvent1);
                     }
                 }
                 else if(MapFirstPovToPad)
                 {
-                    var povEvent = inputEvent as GameControllerPovControllerEvent;
+                    var povEvent = controllerEvent as PovControllerEvent;
                     if (povEvent?.Index == 0)
                     {
-                        povEvent.Button = GamePadButton.Pad;
+                        GamePadButton targetButtons = povEvent.Enabled ? GameControllerUtils.PovControllerToButton(povEvent.Value) : GamePadButton.None;
+
+                        // Pad buttons down
+                        for (int i = 0; i < 4; i++)
+                        {
+                            int mask = (1 << i);
+                            if (((int)device.State.Buttons & mask) != ((int)targetButtons & mask))
+                            {
+                                GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(device);
+                                buttonEvent1.Button = (GamePadButton)mask;
+                                buttonEvent1.State = ((int)targetButtons & mask) != 0 ? ButtonState.Down : ButtonState.Up;
+                                target.Add(buttonEvent1);
+                            }
+                        }
                     }
                 }
             }

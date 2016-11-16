@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// An event to describe a change in a gamepad axis
     /// </summary>
-    public class GameControllerAxisEvent : InputEvent
+    public class GameControllerAxisEvent : AxisEvent
     {
         /// <summary>
         /// Index of the axis
@@ -14,23 +14,13 @@ namespace SiliconStudio.Xenko.Input
         public int Index;
 
         /// <summary>
-        /// The common gamepad axis, if mapped using <see cref="GamePadLayout"/>
+        /// The game controller that sent this event
         /// </summary>
-        public GamePadAxis Axis;
-
-        /// <summary>
-        /// The new value of the axis
-        /// </summary>
-        public float Value;
-
-        /// <summary>
-        /// The gamepad that sent this event
-        /// </summary>
-        public IGameControllerDevice GameController => Device as IGameControllerDevice;
+        public IGameControllerDevice GameController => (IGameControllerDevice)Device;
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index}, {nameof(Axis)}: {Axis}, {nameof(Value)}: {Value}, {nameof(GameController)}: {GameController.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(Value)}: {Value}, {nameof(GameController)}: {GameController.DeviceName}";
         }
     }
 }

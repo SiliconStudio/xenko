@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Returns the value of a point of view controller converted to a <see cref="GamePadButton"/> which has the appropriate DPad flags set
+        /// Returns the value of a point of view controller converted to a <see cref="GamePadButton"/> which has the matching Pad flags set
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <param name="index">The index of the point of view controller</param>
@@ -45,20 +45,9 @@ namespace SiliconStudio.Xenko.Input
         {
             if (device.GetPovControllerEnabled(index))
             {
-                return GamePadUtils.PovControllerToButton(device.GetPovController(index));
+                return GameControllerUtils.PovControllerToButton(device.GetPovController(index));
             }
             return 0;
-        }
-
-        /// <summary>
-        /// Returns the gamepad layout, mapping the gamepad to generic <see cref="GamePadState"/>, or null if there is no mapping
-        /// </summary>
-        /// <param name="device">The gamepad</param>
-        /// <returns>A gamepad layout or null</returns>
-        public static GamePadLayout GetLayout(this IGameControllerDevice device)
-        {
-            var pad = device as GameControllerDeviceBase;
-            return pad?.Layout;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class InputSourceWindowsDirectInput : InputSourceBase
     {
+        private InputManager inputManager;
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
         private DirectInput directInput;
 
@@ -34,6 +35,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Initialize(InputManager inputManager)
         {
+            this.inputManager = inputManager;
             directInput = new DirectInput();
             Scan();
         }
@@ -68,19 +70,25 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Opens a new gamepad
+        /// Opens a new game controller or gamepad
         /// </summary>
-        /// <param name="instance">The gamepad</param>
-        public void OpenDevice(DeviceInstance instance)
+        /// <param name="deviceInstance">The device instance</param>
+        public void OpenDevice(DeviceInstance deviceInstance)
         {
             // Ignore XInput devices since they are handled by XInput
-            if (XInputChecker.IsXInputDevice(ref instance.ProductGuid))
+            if (XInputChecker.IsXInputDevice(ref deviceInstance.ProductGuid))
                 return;
 
-            if (InputDevices.ContainsKey(instance.InstanceGuid))
-                throw new InvalidOperationException($"DirectInput GameController already opened {instance.InstanceGuid}/{instance.InstanceName}");
+            if (InputDevices.ContainsKey(deviceInstance.InstanceGuid))
+                throw new InvalidOperationException($"DirectInput GameController already opened {deviceInstance.InstanceGuid}/{deviceInstance.InstanceName}");
 
-            var newGamepad = new GameControllerDirectInput(directInput, instance);
+            // Find gamepad layout
+            var layout = GamePadLayouts.FindLayout(this, deviceInstance.ProductName, deviceInstance.ProductGuid);
+
+            var newGamepad = (layout != null) ? 
+                new GamePadDirectInput(inputManager, directInput, deviceInstance, layout) : 
+                new GameControllerDirectInput(directInput, deviceInstance);
+
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal

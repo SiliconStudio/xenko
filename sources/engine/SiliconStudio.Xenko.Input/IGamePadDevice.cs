@@ -1,13 +1,17 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Provides an interface for gamepads that support vibration
+    /// A more specific type of <see cref="IGameControllerDevice"/> that has a fixed button mapping and supports vibration
     /// </summary>
-    public interface IGamePadVibration
+    public interface IGamePadDevice : IGameControllerDevice
     {
+        /// <summary>
+        /// The state of the gamepad
+        /// </summary>
+        GamePadState State { get; }
+        
         /// <summary>
         /// Sets 4 vibration motors one the device or approximates the effect if less are supported
         /// </summary>

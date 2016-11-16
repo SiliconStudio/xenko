@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Input
         IInputEventListener<PointerEvent>, 
         IInputEventListener<MouseButtonEvent>, 
         IInputEventListener<MouseWheelEvent>,
-        IInputEventListener<GameControllerButtonEvent>
+        IInputEventListener<GamePadButtonEvent>
     {
         /// <summary>
         /// The keys that are down
@@ -60,12 +60,12 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Game controller button press events that happened since the last frame
         /// </summary>
-        public readonly List<GameControllerButtonEvent> PressedGamePadButtonEvents = new List<GameControllerButtonEvent>();
+        public readonly List<GamePadButtonEvent> PressedGamePadButtonEvents = new List<GamePadButtonEvent>();
 
         /// <summary>
         /// Game controller button release events that happened since the last frame
         /// </summary>
-        public readonly List<GameControllerButtonEvent> ReleasedGamePadButtonEvents = new List<GameControllerButtonEvent>();
+        public readonly List<GamePadButtonEvent> ReleasedGamePadButtonEvents = new List<GamePadButtonEvent>();
 
         /// <summary>
         /// Mouse delta in normalized (0,1) coordinates
@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Input
                 MouseWheelDelta = inputEvent.WheelDelta;
         }
 
-        public void ProcessEvent(GameControllerButtonEvent inputEvent)
+        public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
             if(inputEvent.State == ButtonState.Down)
                 PressedGamePadButtonEvents.Add(inputEvent);
@@ -273,7 +273,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="device">The gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
-        public bool IsPadButtonPressed(IGameControllerDevice device, GamePadButton button)
+        public bool IsPadButtonPressed(IGamePadDevice device, GamePadButton button)
         {
             return PressedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
         }
@@ -284,7 +284,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="device">The gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
-        public bool IsPadButtonReleased(IGameControllerDevice device, GamePadButton button)
+        public bool IsPadButtonReleased(IGamePadDevice device, GamePadButton button)
         {
             return ReleasedGamePadButtonEvents.Any(x => x.Device == device && (x.Button & button) == button);
         }
@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonDown(int gamePadIndex, GamePadButton button)
         {
-            return (GetGameController(gamePadIndex).State.Buttons & button) != 0;
+            return (GetGamePad(gamePadIndex).State.Buttons & button) != 0;
         }
 
         /// <summary>
@@ -308,10 +308,24 @@ namespace SiliconStudio.Xenko.Input
         /// <returns></returns>
         public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
         {
-            var device = GetGameController(gamePadIndex);
+            var device = GetGamePad(gamePadIndex);
             if (device == null)
                 return false;
             return IsPadButtonPressed(device, button);
+        }
+        
+        /// <summary>
+        /// Determines whether the specified game pad button is pressed since the previous update.
+        /// </summary>
+        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
+        /// <param name="button">The button to check</param>
+        /// <returns></returns>
+        public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
+        {
+            var device = GetGamePad(gamePadIndex);
+            if (device == null)
+                return false;
+            return IsPadButtonReleased(device, button);
         }
 
         /// <summary>
@@ -320,9 +334,9 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
         /// <param name="button">The button to check</param>
         /// <returns></returns>
-        public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
+        public bool GetGamePad(int gamePadIndex, GamePadButton button)
         {
-            var device = GetGameController(gamePadIndex);
+            var device = GetGamePad(gamePadIndex);
             if (device == null)
                 return false;
             return IsPadButtonReleased(device, button);

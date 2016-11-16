@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         public override Guid Id { get; }
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
-        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos { get; }
+        public override IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
     }
 }
 #endif

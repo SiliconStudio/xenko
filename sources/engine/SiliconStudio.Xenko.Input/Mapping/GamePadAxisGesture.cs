@@ -6,25 +6,25 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// Represents a game controller axis reading
+    /// Represents a gamepad axis reading
     /// </summary>
     [DataContract]
-    public class GameControllerAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<GameControllerAxisEvent>
+    public class GamePadAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
     {
         /// <summary>
-        /// The index of the axis to use
+        /// The gamepad axis identifier
         /// </summary>
-        public int AxisIndex = 0;
-        
+        public GamePadAxis GamePadAxis;
+
         private float currentState;
 
-        public GameControllerAxisGesture()
+        public GamePadAxisGesture()
         {
         }
 
-        public GameControllerAxisGesture(int axisIndex)
+        public GamePadAxisGesture(GamePadAxis axis)
         {
-            AxisIndex = axisIndex;
+            GamePadAxis = axis;
         }
 
         [DataMemberIgnore]
@@ -33,23 +33,23 @@ namespace SiliconStudio.Xenko.Input.Mapping
         [DataMemberIgnore]
         public bool IsRelative { get; } = true;
 
-        public void ProcessEvent(GameControllerAxisEvent inputEvent)
+        public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
-            if (inputEvent.GameController.Index == ActionMapping.ControllerIndex)
+            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
             {
-                if (inputEvent.Index == AxisIndex)
+                if ((inputEvent.Axis & GamePadAxis) != 0)
                     currentState = inputEvent.Value;
             }
         }
 
         public override string ToString()
         {
-            return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
+            return $"{nameof(GamePadAxis)}: {GamePadAxis}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
-        protected bool Equals(GameControllerAxisGesture other)
+        protected bool Equals(GamePadAxisGesture other)
         {
-            return AxisIndex == other.AxisIndex;
+            return GamePadAxis == other.GamePadAxis;
         }
 
         public override bool Equals(object obj)
@@ -57,15 +57,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GameControllerAxisGesture)obj);
+            return Equals((GamePadAxisGesture)obj);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return AxisIndex;
-            }
+            return GamePadAxis.GetHashCode();
         }
     }
 }

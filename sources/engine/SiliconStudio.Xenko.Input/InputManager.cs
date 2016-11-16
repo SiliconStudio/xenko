@@ -49,6 +49,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
         private readonly List<IGameControllerDevice> gameControllerDevices = new List<IGameControllerDevice>();
+        private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
 
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
@@ -140,16 +141,28 @@ namespace SiliconStudio.Xenko.Input
         public bool HasKeyboard { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether game controllers are available.
+        /// </summary>
+        /// <value><c>true</c> if game controllers are available; otherwise, <c>false</c>.</value>
+        public bool HasGameController { get; private set; }
+        
+        /// <summary>
         /// Gets a value indicating whether gamepads are available.
         /// </summary>
         /// <value><c>true</c> if gamepads are available; otherwise, <c>false</c>.</value>
-        public bool HasGameController { get; private set; }
+        public bool HasGamePad { get; private set; }
 
         /// <summary>
-        /// Gets the number of gamepad connected.
+        /// Gets the number of game controllers connected.
         /// </summary>
-        /// <value>The number of gamepad connected.</value>
+        /// <value>The number of game controllers connected.</value>
         public int GameControllerCount { get; private set; }
+
+        /// <summary>
+        /// Gets the number of gamepads connected.
+        /// </summary>
+        /// <value>The number of gamepads connected.</value>
+        public int GamePadCount { get; private set; }
 
         /// <summary>
         /// Gets the first pointer device, or null if there is none
@@ -172,14 +185,19 @@ namespace SiliconStudio.Xenko.Input
         public ITextInputDevice TextInput { get; private set; }
 
         /// <summary>
-        /// Gets the first game controller that was added to the device
+        /// Gets the first gamepad that was added to the device
         /// </summary>
-        public IGameControllerDevice DefaultGameController { get; private set; }
+        public IGameControllerDevice DefaultGamePad { get; private set; }
 
         /// <summary>
         /// Gets the collection of connected game controllers
         /// </summary>
         public IReadOnlyCollection<IGameControllerDevice> GameControllers => gameControllerDevices;
+
+        /// <summary>
+        /// Gets the collection of connected gamepads
+        /// </summary>
+        public IReadOnlyCollection<IGamePadDevice> GamePads => gamePadDevices;
 
         /// <summary>
         /// Gets the collection of connected pointing devices (mouses, touchpads, etc)
@@ -284,7 +302,9 @@ namespace SiliconStudio.Xenko.Input
             RegisterEventType<PointerEvent>();
             RegisterEventType<GameControllerButtonEvent>();
             RegisterEventType<GameControllerAxisEvent>();
-            RegisterEventType<GameControllerPovControllerEvent>();
+            RegisterEventType<PovControllerEvent>();
+            RegisterEventType<GamePadButtonEvent>();
+            RegisterEventType<GamePadAxisEvent>();
 
             // Add global input state to listen for input events
             AddListener(this);
@@ -320,13 +340,25 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the game controller with a specific index
         /// </summary>
         /// <param name="controllerIndex">The index of the game controller</param>
-        /// <returns>The gamepad, or null if no gamepad has this index</returns>
+        /// <returns>The gamepad, or null if no game controller has this index</returns>
         public IGameControllerDevice GetGameController(int controllerIndex)
         {
             if (controllerIndex >= gameControllerIds.Count || controllerIndex < 0)
                 return null;
             Guid padId = gameControllerIds[controllerIndex];
-            return inputDevicesById[padId] as IGameControllerDevice;
+            if (padId == Guid.Empty)
+                return null;
+            return (IGameControllerDevice)inputDevicesById[padId];
+        }
+
+        /// <summary>
+        /// Gets the gamepad with a specific index
+        /// </summary>
+        /// <param name="controllerIndex">The index of the game controller</param>
+        /// <returns>The gamepad, or null if no gamepad has this index</returns>
+        public IGamePadDevice GetGamePad(int controllerIndex)
+        {
+            return GetGameController(controllerIndex) as IGamePadDevice;
         }
 
         /// <summary>
@@ -453,6 +485,15 @@ namespace SiliconStudio.Xenko.Input
         {
             var type = typeof(TEventType);
             eventRouters.Add(type, new InputEventRouter<TEventType>());
+        }
+
+        /// <summary>
+        /// Inserts any supported pointer event back into it's respective <see cref="InputEventPool&lt;"/>. This should normally not be used
+        /// </summary>
+        /// <param name="inputEvent">The event to instert into it's event pool</param>
+        public void PoolInputEvent(InputEvent inputEvent)
+        {
+            eventRouters[inputEvent.GetType()].PoolEvent(inputEvent);
         }
 
         protected override void Destroy()
@@ -608,19 +649,17 @@ namespace SiliconStudio.Xenko.Input
 
             Pointer = pointerDevices.FirstOrDefault();
             HasPointer = Pointer != null;
-
+            
             GameControllerCount = GameControllers.Count;
             HasGameController = GameControllerCount > 0;
 
-            var firstGamepadId = gameControllerIds.FirstOrDefault(x => x != Guid.Empty);
-            if (firstGamepadId != Guid.Empty)
-            {
-                DefaultGameController = inputDevicesById[firstGamepadId] as IGameControllerDevice;
-            }
-            else
-            {
-                DefaultGameController = null;
-            }
+            GamePadCount = GamePads.Count;
+            HasGameController = GamePadCount > 0;
+
+            gameControllerDevices.Sort((l, r) => l.Index.CompareTo(r.Index));
+            gamePadDevices.Sort((l,r)=>l.Index.CompareTo(r.Index));
+
+            DefaultGamePad = gamePadDevices.FirstOrDefault();
 
             Accelerometer = sensorDevices.OfType<IAccelerometerSensor>().FirstOrDefault();
             Gyroscope = sensorDevices.OfType<IGyroscopeSensor>().FirstOrDefault();
@@ -654,7 +693,11 @@ namespace SiliconStudio.Xenko.Input
         {
             gameControllerDevices.Add(gameController);
 
-            // Find a new index for this gamepad
+            var gamepad = gameController as IGamePadDevice;
+            if(gamepad != null)
+                gamePadDevices.Add(gamepad);
+
+            // Find a new index for this game controller
             int targetIndex = 0;
             for (int i = 0; i < gameControllerIds.Count; i++)
             {
@@ -690,6 +733,10 @@ namespace SiliconStudio.Xenko.Input
             gameControllerIds[gameController.Index] = Guid.Empty;
 
             gameControllerDevices.Remove(gameController);
+
+            var gamepad = gameController as IGamePadDevice;
+            if (gamepad != null)
+                gamePadDevices.Remove(gamepad);
         }
 
         private void RegisterSensor(ISensorDevice sensorDevice)

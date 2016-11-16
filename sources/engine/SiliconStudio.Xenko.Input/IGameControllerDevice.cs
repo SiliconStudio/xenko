@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// This interface is used for interacting with game controller devices.
     /// </summary>
-    /// <remarks>If vibration is required, check if the object implements <see cref="IGamePadVibration"/></remarks>
     public interface IGameControllerDevice : IInputDevice
     {
         /// <summary>
@@ -26,12 +25,7 @@ namespace SiliconStudio.Xenko.Input
         /// <c>true</c> if the game controller is currently connected
         /// </summary>
         bool IsConnected { get; }
-
-        /// <summary>
-        /// The state of the gamepad, if mapped with <see cref="GamePadLayout"/>
-        /// </summary>
-        GamePadState State { get; }
-
+        
         /// <summary>
         /// Information about the buttons on this game controller
         /// </summary>
@@ -45,10 +39,10 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Information about the point of view controllers on this game controller 
         /// </summary>
-        IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos { get; }
+        IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
 
         /// <summary>
-        /// Raised when this gamepad gets disconnected
+        /// Raised when this game controller gets disconnected
         /// </summary>
         event EventHandler Disconnected;
 

@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// An event to describe a change in gamepad button state
+    /// An event to describe a change in game controller button state
     /// </summary>
     public class GameControllerButtonEvent : ButtonEvent
     {
@@ -14,18 +14,13 @@ namespace SiliconStudio.Xenko.Input
         public int Index;
 
         /// <summary>
-        /// The common gamepad button, if mapped using  <see cref="GamePadLayout"/>
+        /// The game controller that sent this event
         /// </summary>
-        public GamePadButton Button;
-
-        /// <summary>
-        /// The gamepad that sent this event
-        /// </summary>
-        public IGameControllerDevice GameController => Device as IGameControllerDevice;
+        public IGameControllerDevice GameController => (IGameControllerDevice)Device;
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index}, {nameof(Button)}: {Button}, {nameof(State)}: {State}, {nameof(GameController)}: {GameController.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(State)}: {State}, {nameof(GameController)}: {GameController.DeviceName}";
         }
     }
 }

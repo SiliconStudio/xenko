@@ -11,17 +11,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A direction or a 0-1 value generated from a gamepad pov controller
     /// </summary>
     [DataContract]
-    public class GameControllerPovGesture : InvertibleInputGesture, IDirectionGesture, IInputEventListener<GameControllerPovControllerEvent>
+    public class GameControllerPovGesture : InvertibleInputGesture, IDirectionGesture, IInputEventListener<PovControllerEvent>
     {
         /// <summary>
         /// The index of the axis to use
         /// </summary>
-        public int PovIndex = -1;
-
-        /// <summary>
-        /// If this is true, it will map to the directional pad that is mapped by <see cref="GamePadLayout"/>
-        /// </summary>
-        public bool MapToLayoutPad = false;
+        public int PovIndex = 0;
 
         private Vector2 currentDirection;
         private float currentState;
@@ -41,11 +36,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         [DataMemberIgnore]
         public bool IsRelative { get; } = true;
 
-        public void ProcessEvent(GameControllerPovControllerEvent inputEvent)
+        public void ProcessEvent(PovControllerEvent inputEvent)
         {
             if (inputEvent.GameController.Index == ActionMapping.ControllerIndex)
             {
-                if (inputEvent.Index == PovIndex || (MapToLayoutPad && inputEvent.Button == GamePadButton.Pad))
+                if (inputEvent.Index == PovIndex)
                 {
                     if (inputEvent.Enabled)
                     {

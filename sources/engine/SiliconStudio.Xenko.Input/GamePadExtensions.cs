@@ -6,14 +6,14 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides easier ways to set vibration levels on a controller, rather than setting 4 motors
     /// </summary>
-    public static class GamePadVibrationExtensions
+    public static class GamePadExtensions
     {
         /// <summary>
         /// Sets all the gamepad vibration motors to the same amount
         /// </summary>
         /// <param name="pad">The gamepad</param>
         /// <param name="amount">The amount of vibration</param>
-        public static void SetVibration(this IGamePadVibration pad, float amount)
+        public static void SetVibration(this IGamePadDevice pad, float amount)
         {
             pad.SetVibration(amount, amount, amount, amount);
         }
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="pad">The gamepad</param>
         /// <param name="leftMotors">The amount of vibration for the left side</param>
         /// <param name="rightMotors">The amount of vibration for the right side</param>
-        public static void SetVibration(this IGamePadVibration pad, float leftMotors, float rightMotors)
+        public static void SetVibration(this IGamePadDevice pad, float leftMotors, float rightMotors)
         {
             pad.SetVibration(leftMotors, rightMotors, leftMotors, rightMotors);
         }

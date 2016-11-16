@@ -144,6 +144,11 @@ namespace SiliconStudio.Xenko.Input.Tests
                 lineOffset += 1;
             }
 
+            WriteLine("Gamepads:");
+            foreach(var gamepad in Input.GamePads)
+            {
+                WriteLine(gamepad.State.ToString(), 1);
+            }
             WriteLine("Actions:");
             for (int i = 0; i < actions.Count; i++)
             {

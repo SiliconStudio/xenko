@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Describes the state of a typical gamepad.
     /// </summary>
-    /// <seealso cref="InputManager.GetGameController"/>
+    /// <seealso cref="IGamePadDevice.State"/>
     [StructLayout(LayoutKind.Sequential)]
     public struct GamePadState : IEquatable<GamePadState>
     {
@@ -108,19 +108,13 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="evt">The gamepad event to process</param>
         public void Update(InputEvent evt)
         {
-            var buttonEvent = evt as GameControllerButtonEvent;
+            var buttonEvent = evt as GamePadButtonEvent;
             if (buttonEvent != null)
             {
                 Update(buttonEvent);
                 return;
             }
-            var povEvent = evt as GameControllerPovControllerEvent;
-            if (povEvent != null)
-            {
-                Update(povEvent);
-                return;
-            }
-            var axisEvent = evt as GameControllerAxisEvent;
+            var axisEvent = evt as GamePadAxisEvent;
             if (axisEvent != null)
             {
                 Update(axisEvent);
@@ -131,25 +125,8 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Updates the state from any gamepad events received that have mapped buttons
         /// </summary>
-        /// <param name="povEvent">The gamepad event to process</param>
-        public void Update(GameControllerPovControllerEvent povEvent)
-        {
-            // Check if this maps to DPAD
-            if (povEvent.Button == GamePadButton.Pad)
-            {
-                Buttons &= ~GamePadButton.Pad;// Clear old DPAD value
-                if (povEvent.Enabled)
-                {
-                    Buttons |= GamePadUtils.PovControllerToButton(povEvent.Value);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Updates the state from any gamepad events received that have mapped buttons
-        /// </summary>
         /// <param name="buttonEvent">The gamepad event to process</param>
-        public void Update(GameControllerButtonEvent buttonEvent)
+        public void Update(GamePadButtonEvent buttonEvent)
         {
             if (buttonEvent.State == ButtonState.Down)
                 Buttons |= buttonEvent.Button; // Set bits
@@ -161,7 +138,7 @@ namespace SiliconStudio.Xenko.Input
         /// Updates the state from any gamepad events received that have mapped buttons
         /// </summary>
         /// <param name="axisEvent">The gamepad event to process</param>
-        public void Update(GameControllerAxisEvent axisEvent)
+        public void Update(GamePadAxisEvent axisEvent)
         {
             switch (axisEvent.Axis)
             {

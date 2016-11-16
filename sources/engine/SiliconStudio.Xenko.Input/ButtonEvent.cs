@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input
     public abstract class ButtonEvent : InputEvent
     {
         /// <summary>
-        /// The state of the button
+        /// The new state of the button
         /// </summary>
         public ButtonState State;
     }

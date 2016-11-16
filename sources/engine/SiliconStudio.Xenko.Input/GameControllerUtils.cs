@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Provides some useful functions relating to gamepads
+    /// Provides some useful functions relating to game controllers
     /// </summary>
-    public static class GamePadUtils
+    public static class GameControllerUtils
     {
         /// <summary>
         /// Applies a deadzone to an axis input value
@@ -37,8 +37,7 @@ namespace SiliconStudio.Xenko.Input
             value = value/(1.0f - deadZone);
             return value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
         }
-
-
+        
         /// <summary>
         /// Returns the button next to this DPad button, going clockwise
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
@@ -15,12 +16,7 @@ namespace SiliconStudio.Xenko.Input
         static GamePadLayouts()
         {
             // Add default layouts
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             AddLayout(new GamePadLayoutDS4());
-#endif
-            AddLayout(new GamePadLayoutXInput());
-#endif
         }
 
         /// <summary>
@@ -40,11 +36,11 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The device to find a layout for</param>
         /// <returns>The gamepad layout that was found, or null if none was found</returns>
-        public static GamePadLayout FindLayout(IGameControllerDevice device)
+        public static GamePadLayout FindLayout(IInputSource source, string deviceName, Guid productId)
         {
             foreach (var layout in layouts)
             {
-                if (layout.MatchDevice(device))
+                if (layout.MatchDevice(source, deviceName, productId))
                     return layout;
             }
             return null;
