@@ -9,10 +9,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Generates gestures mapping to button actions
     /// </summary>
     public class ButtonActionBinder : ActionBinder,
-        IInputEventListener<GamePadButtonEvent>,
+        IInputEventListener<GameControllerButtonEvent>,
         IInputEventListener<KeyEvent>,
         IInputEventListener<MouseButtonEvent>,
-        IInputEventListener<GamePadAxisEvent>
+        IInputEventListener<GameControllerAxisEvent>
     {
         /// <summary>
         /// The threshold that is used to trigger using axes as buttons
@@ -34,17 +34,17 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public override bool AcceptsButtons => true;
         public override bool AcceptsDirections => false;
 
-        public void ProcessEvent(GamePadButtonEvent inputEvent)
+        public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
+            if (inputEvent.State == ButtonState.Down)
             {
-                TryBindButton(new GamePadButtonGesture(inputEvent.Index));
+                TryBindButton(new GameControllerButtonGesture(inputEvent.Index));
             }
         }
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
+            if (inputEvent.State == ButtonState.Down)
             {
                 TryBindButton(new KeyGesture(inputEvent.Key));
             }
@@ -52,19 +52,19 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
+            if (inputEvent.State == ButtonState.Down)
             {
                 TryBindButton(new MouseButtonGesture(inputEvent.Button));
             }
         }
 
-        public void ProcessEvent(GamePadAxisEvent inputEvent)
+        public void ProcessEvent(GameControllerAxisEvent inputEvent)
         {
             if (inputEvent.Value > AxisThreshold)
             {
                 TryBindButton(new AxisButtonGesture
                 {
-                    Axis = new GamePadAxisGesture(inputEvent.Index)
+                    Axis = new GameControllerAxisGesture(inputEvent.Index)
                 });
             }
         }

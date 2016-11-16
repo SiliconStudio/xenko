@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
             mapKeys = new Dictionary<VirtualKey, Keys>();
             // this dictionary was built from Desktop version (VirtualKey are compatible with WinForms keys)
             AddKeys(WinFormsKeys.None, Keys.None);
-            AddKeys(WinFormsKeys.Cancel, Keys.Cancel);
+            AddKeys(WinFormsKeys.Canceled, Keys.Canceled);
             AddKeys(WinFormsKeys.Back, Keys.Back);
             AddKeys(WinFormsKeys.Tab, Keys.Tab);
             AddKeys(WinFormsKeys.LineFeed, Keys.LineFeed);
@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            if(state == ButtonState.Pressed)
+            if(state == ButtonState.Press)
                 HandleKeyDown(xenkoKey);
             else
                 HandleKeyUp(xenkoKey);
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Input
         
         private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
         {
-            HandleKey(ButtonState.Pressed, args);
+            HandleKey(ButtonState.Press, args);
         }
 
         private void UIControlOnKeyUp(object sender, KeyRoutedEventArgs args)

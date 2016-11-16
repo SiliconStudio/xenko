@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
         private bool wasMouseVisibleBeforeCapture;
         private Point capturedPosition;
 
-        // Stored position for SetMousePosition
+        // Stored position for SetPosition
         private Point targetMousePosition;
         private bool shouldSetMousePosition;
 
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string DeviceName => "Windows Mouse";
         public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
+        public override bool IsPositionLocked => isMousePositionLocked;
         public override PointerType Type => PointerType.Mouse;
 
         public override void Update(List<InputEvent> inputEvents)
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void SetMousePosition(Vector2 normalizedPosition)
+        public override void SetPosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition*SurfaceSize;
 
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Input
             shouldSetMousePosition = true;
         }
 
-        public override void LockMousePosition(bool forceCenter = false)
+        public override void LockPosition(bool forceCenter = false)
         {
             if (!isMousePositionLocked)
             {
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void UnlockMousePosition()
+        public override void UnlockPosition()
         {
             if (isMousePositionLocked)
             {
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Input
             if (isMousePositionLocked)
             {
                 // Register mouse delta and reset
-                HandleMoveDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
+                HandleMouseDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
                 targetMousePosition = capturedPosition;
                 shouldSetMousePosition = true;
             }

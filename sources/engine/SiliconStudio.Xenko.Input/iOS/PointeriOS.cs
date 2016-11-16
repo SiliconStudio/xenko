@@ -68,17 +68,17 @@ namespace SiliconStudio.Xenko.Input
                     switch (uitouch.Phase)
                     {
                         case UITouchPhase.Began:
-                            pointerEvent.Type = InputEventType.Down;
+                            pointerEvent.Type = PointerEventType.Pressed;
                             break;
                         case UITouchPhase.Moved:
                         case UITouchPhase.Stationary:
-                            pointerEvent.Type = InputEventType.Move;
+                            pointerEvent.Type = PointerEventType.Moved;
                             break;
                         case UITouchPhase.Ended:
-                            pointerEvent.Type = InputEventType.Up;
+                            pointerEvent.Type = PointerEventType.Released;
                             break;
                         case UITouchPhase.Cancelled:
-                            pointerEvent.Type = InputEventType.Canceled;
+                            pointerEvent.Type = PointerEventType.Canceled;
                             break;
                         default:
                             throw new ArgumentException("Got an invalid Touch event in GetState");
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
 
                     // Assign finger index (starting at 0) to touch ID
                     int touchFingerIndex = 0;
-                    if (pointerEvent.Type == InputEventType.Down)
+                    if (pointerEvent.Type == PointerEventType.Pressed)
                     {
                         touchFingerIndex = touchCounter++;
                         touchFingerIndexMap.Add(touchId, touchFingerIndex);
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Input
                     }
 
                     // Remove index
-                    if (pointerEvent.Type == InputEventType.Up)
+                    if (pointerEvent.Type == PointerEventType.Released)
                     {
                         touchFingerIndexMap.Remove(touchId);
                         touchCounter = 0; // Reset touch counter
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Input
                     }
 
                     pointerEvent.Id = touchFingerIndex;
-                    pointerInputEvents.Add(pointerEvent);
+                    PointerInputEvents.Add(pointerEvent);
                 }
             }
         }

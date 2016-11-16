@@ -10,16 +10,16 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadDirectInput : GamePadDeviceBase
+    public class GameControllerDirectInput : GameControllerDeviceBase
     {
-        private readonly List<GamePadButtonInfo> buttonInfos = new List<GamePadButtonInfo>();
-        private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
-        private readonly List<GamePadPovControllerInfo> povControllerInfos = new List<GamePadPovControllerInfo>();
+        private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
+        private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
+        private readonly List<GameControllerPovControllerInfo> povControllerInfos = new List<GameControllerPovControllerInfo>();
 
         private CustomGamePad gamepad;
         private CustomGamePadState state = new CustomGamePadState();
 
-        public GamePadDirectInput(DirectInput directInput, DeviceInstance instance)
+        public GameControllerDirectInput(DirectInput directInput, DeviceInstance instance)
         {
             DeviceName = instance.InstanceName.TrimEnd('\0');
             Id = instance.InstanceGuid;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Input
             foreach (var obj in objects)
             {
                 var objectId = obj.ObjectId;
-                GamePadObjectInfo objInfo = null;
+                GameControllerObjectInfo objInfo = null;
                 if (objectId.HasAnyFlag(DeviceObjectTypeFlags.Button | DeviceObjectTypeFlags.PushButton | DeviceObjectTypeFlags.ToggleButton))
                 {
                     if (buttonInfos.Count == CustomGamePadStateRaw.MaxSupportedButtons)
@@ -37,11 +37,11 @@ namespace SiliconStudio.Xenko.Input
                         // Maximum amount of supported buttons reached, don't register any more
                         continue;
                     }
-                    var btn = new GamePadButtonInfo();
+                    var btn = new GameControllerButtonInfo();
                     if (objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton))
-                        btn.Type = GamePadButtonType.ToggleButton;
+                        btn.Type = GameControllerButtonType.ToggleButton;
                     else
-                        btn.Type = GamePadButtonType.PushButton;
+                        btn.Type = GameControllerButtonType.PushButton;
                     objInfo = btn;
                     buttonInfos.Add(btn);
                 }
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Input
                         continue;
                     }
 
-                    var axis = new GamePadAxisInfo();
+                    var axis = new GameControllerAxisInfo();
                     objInfo = axis;
                     axisInfos.Add(axis);
                 }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input
                         // Maximum amount of supported pov controllers reached, don't register any more
                         continue;
                     }
-                    var pov = new GamePadPovControllerInfo();
+                    var pov = new GameControllerPovControllerInfo();
                     objInfo = pov;
                     povControllerInfos.Add(pov);
                 }
@@ -99,9 +99,9 @@ namespace SiliconStudio.Xenko.Input
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 
-        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => buttonInfos;
-        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
+        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
+        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos => povControllerInfos;
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -117,9 +117,9 @@ namespace SiliconStudio.Xenko.Input
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
                     if(axisInfos[i].IsBiDirectional)
-                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GamePadAxisDeadZone));
+                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
                     else
-                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GamePadAxisDeadZone));
+                        HandleAxis(i, GamePadUtils.ClampDeadZone(state.Axes[i], InputManager.GameControllerAxisDeadZone));
                 }
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {

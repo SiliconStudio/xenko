@@ -6,31 +6,26 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// State of a pointer event.
     /// </summary>
-    public enum PointerState
+    public enum PointerEventType
     {
         /// <summary>
         /// The pointer just started to hit the digitizer.
         /// </summary>
-        Down,
-        
+        Pressed,
+
         /// <summary>
-        /// The pointer is moving onto the digitizer.
+        /// The pointer is moving on the digitizer.
         /// </summary>
-        Move,
+        Moved,
 
         /// <summary>
         /// The pointer just released pressure to the digitizer.
         /// </summary>
-        Up,
-
-        /// <summary>
-        /// The pointer is out of the digitizer.
-        /// </summary>
-        Out,
+        Released,
 
         /// <summary>
         /// The pointer has been canceled.
         /// </summary>
-        Cancel,
+        Canceled,
     }
 }

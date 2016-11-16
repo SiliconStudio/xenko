@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A button gesture generated from a gamepad button press
     /// </summary>
     [DataContract]
-    public class GamePadButtonGesture : InputGesture, IButtonGesture, IInputEventListener<GamePadButtonEvent>
+    public class GameControllerButtonGesture : InputGesture, IButtonGesture, IInputEventListener<GameControllerButtonEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -23,21 +23,21 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         private ButtonState currentState;
 
-        public GamePadButtonGesture()
+        public GameControllerButtonGesture()
         {
         }
 
-        public GamePadButtonGesture(int buttonIndex)
+        public GameControllerButtonGesture(int buttonIndex)
         {
             ButtonIndex = buttonIndex;
         }
 
         [DataMemberIgnore]
-        public bool Button => currentState == ButtonState.Pressed;
+        public bool Button => currentState == ButtonState.Down;
 
-        public void ProcessEvent(GamePadButtonEvent inputEvent)
+        public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
+            if (inputEvent.GameController.Index == ActionMapping.ControllerIndex)
             {
                 if (inputEvent.Index == ButtonIndex || (inputEvent.Button & GamePadButton) != 0)
                     currentState = inputEvent.State;
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"{nameof(ButtonIndex)}: {ButtonIndex}, {nameof(Button)}: {Button}";
         }
 
-        protected bool Equals(GamePadButtonGesture other)
+        protected bool Equals(GameControllerButtonGesture other)
         {
             return ButtonIndex == other.ButtonIndex;
         }
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GamePadButtonGesture)obj);
+            return Equals((GameControllerButtonGesture)obj);
         }
 
         public override int GetHashCode()

@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides information about an object exposed by a gamepad
     /// </summary>
-    public class GamePadObjectInfo
+    public class GameControllerObjectInfo
     {
         /// <summary>
         /// The index of this type of object, as reported by the device
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"GamePad Object {{{Name}}}";
+            return $"GameController Object {{{Name}}}";
         }
     }
 }

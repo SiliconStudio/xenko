@@ -11,10 +11,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Generates gestures mapping to axis actions, bindings are made in the order Up/Down (or first stick movement binds to the positive direction)
     /// </summary>
     public class AxisActionBinder : ActionBinder,
-        IInputEventListener<GamePadButtonEvent>,
+        IInputEventListener<GameControllerButtonEvent>,
         IInputEventListener<KeyEvent>,
         IInputEventListener<MouseButtonEvent>,
-        IInputEventListener<GamePadAxisEvent>,
+        IInputEventListener<GameControllerAxisEvent>,
         IInputEventListener<PointerEvent>
     {
         /// <summary>
@@ -47,30 +47,33 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public override bool AcceptsButtons => TargetGesture == null || TargetGesture is TwoWayGesture;
         public override bool AcceptsDirections => false;
 
-        public void ProcessEvent(GamePadButtonEvent inputEvent)
+        public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
-                TryBindSingleButton(new GamePadButtonGesture(inputEvent.Index));
+            if (inputEvent.State == ButtonState.Down)
+                TryBindSingleButton(new GameControllerButtonGesture(inputEvent.Index));
         }
 
         public void ProcessEvent(KeyEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
+            if (inputEvent.State == ButtonState.Down)
                 TryBindSingleButton(new KeyGesture(inputEvent.Key));
         }
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {
-            if (inputEvent.State == ButtonState.Pressed)
+            if (inputEvent.State == ButtonState.Down)
                 TryBindSingleButton(new MouseButtonGesture(inputEvent.Button));
         }
 
-        public void ProcessEvent(GamePadAxisEvent inputEvent)
+        public void ProcessEvent(GameControllerAxisEvent inputEvent)
         {
+            if (inputEvent.Index < 0)
+                return;
+
             if (Math.Abs(inputEvent.Value) > AxisThreshold)
             {
-                var axis = new GamePadAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0 };
-                TryBindAxis(axis, inputEvent.GamePad.AxisInfos[inputEvent.Index].IsBiDirectional);
+                var axis = new GameControllerAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0 };
+                TryBindAxis(axis, inputEvent.GameController.AxisInfos[inputEvent.Index].IsBiDirectional);
             }
         }
 

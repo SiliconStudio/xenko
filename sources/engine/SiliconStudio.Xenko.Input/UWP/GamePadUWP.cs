@@ -10,13 +10,13 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Gamepad
     /// </summary>
-    public class GamePadUWP : GamePadDeviceBase
+    public class GamePadUWP : GameControllerDeviceBase
     {
         public override string DeviceName { get; }
         public override Guid Id { get; }
-        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos { get; }
-        public override IReadOnlyList<GamePadAxisInfo> AxisInfos { get; }
-        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos { get; }
+        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
+        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
+        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos { get; }
     }
 }
 #endif

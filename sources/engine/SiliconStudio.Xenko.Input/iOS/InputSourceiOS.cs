@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Input
         private NamedOrientationSensor orientationSensor;
         private NamedGravitySensor gravitySensor;
         private NamedCompassSensor compassSensor;
-        private List<NamedSensor> sensors = new List<NamedSensor>();
         
         public override void Initialize(InputManager inputManager)
         {
@@ -74,7 +73,6 @@ namespace SiliconStudio.Xenko.Input
                 RegisterDevice(userAccelerationSensor);
                 RegisterDevice(orientationSensor);
             }
-            sensors.AddRange(registeredInputDevices.OfType<NamedSensor>());
         }
 
         public override void Update()

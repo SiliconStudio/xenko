@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// An event to describe a change in a gamepad point of view controller
     /// </summary>
-    public class GamePadPovControllerEvent : InputEvent
+    public class GameControllerPovControllerEvent : InputEvent
     {
         /// <summary>
         /// The index of the pov controller
@@ -32,11 +32,11 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The gamepad that sent this event
         /// </summary>
-        public IGamePadDevice GamePad => Device as IGamePadDevice;
+        public IGameControllerDevice GameController => Device as IGameControllerDevice;
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index}, {nameof(Button)}: {Button}, {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GamePad)}: {GamePad.DeviceName}";
+            return $"{nameof(Index)}: {Index}, {nameof(Button)}: {Button}, {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GameController)}: {GameController.DeviceName}";
         }
     }
 }

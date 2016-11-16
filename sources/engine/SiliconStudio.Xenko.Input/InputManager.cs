@@ -4,22 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Manages collecting input from connected input device in the form of <see cref="IInputDevice"/> objects. Also provides some convenience functions for most commonly used devices
     /// </summary>
-    public class InputManager : GameSystemBase
+    public partial class InputManager : GameSystemBase
     {
         //this is used in some mobile platform for accelerometer stuff
         internal const float G = 9.81f;
@@ -31,14 +28,11 @@ namespace SiliconStudio.Xenko.Input
         public static bool UseRawInput = true;
 
         /// <summary>
-        /// The deadzone amount applied to all gamepad axes
+        /// The deadzone amount applied to all game controller axes
         /// </summary>
-        public static float GamePadAxisDeadZone = 0.05f;
+        public static float GameControllerAxisDeadZone = 0.05f;
         
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
-        
-        // Keeps track of Position/Delta and Up/Down/Released states for multiple devices
-        internal GlobalInputState GlobalInputState = new GlobalInputState();
 
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
         private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
@@ -46,20 +40,18 @@ namespace SiliconStudio.Xenko.Input
         // Mapping of device guid to device
         private readonly Dictionary<Guid, IInputDevice> inputDevicesById = new Dictionary<Guid, IInputDevice>();
 
-        // List mapping GamePad index to the guid of the device
-        private readonly List<Guid> gamepadIds = new List<Guid>();
+        // List mapping GameController index to the guid of the device
+        private readonly List<Guid> gameControllerIds = new List<Guid>();
 
         private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private readonly List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
-        private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
+        private readonly List<IGameControllerDevice> gameControllerDevices = new List<IGameControllerDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
 
         private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
-        private Dictionary<int, GamePadState> lastGamePadStates = new Dictionary<int, GamePadState>();
-        private Dictionary<int, GamePadState> currentGamePadStates = new Dictionary<int, GamePadState>();
 
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
@@ -116,23 +108,13 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the value indicating if the mouse position is currently locked or not.
         /// </summary>
-        public bool IsMousePositionLocked => HasMouse && Mouse.IsMousePositionLocked;
+        public bool IsMousePositionLocked => HasMouse && Mouse.IsPositionLocked;
 
         /// <summary>
         /// Gets the collection of gesture events since the previous updates.
         /// </summary>
         /// <value>The gesture events.</value>
         public IReadOnlyList<GestureEvent> GestureEvents => gestureEvents;
-
-        /// <summary>
-        /// Pointer events that happened since the last frame
-        /// </summary>
-        public IReadOnlyList<PointerEvent> PointerEvents => GlobalInputState.PointerEvents;
-
-        /// <summary>
-        /// Keyboard events that happened since the last frame
-        /// </summary>
-        public IReadOnlyList<KeyEvent> KeyEvents => GlobalInputState.KeyEvents;
         
         /// <summary>
         /// All input events that happened since the last frame
@@ -143,56 +125,61 @@ namespace SiliconStudio.Xenko.Input
         /// Gets a value indicating whether pointer device is available.
         /// </summary>
         /// <value><c>true</c> if pointer devices are available; otherwise, <c>false</c>.</value>
-        public bool HasPointer => pointerDevices.Count > 0;
+        public bool HasPointer { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the mouse is available.
         /// </summary>
         /// <value><c>true</c> if the mouse is available; otherwise, <c>false</c>.</value>
-        public bool HasMouse => pointerDevices.Any(x => x.Type == PointerType.Mouse);
+        public bool HasMouse { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the keyboard is available.
         /// </summary>
         /// <value><c>true</c> if the keyboard is available; otherwise, <c>false</c>.</value>
-        public bool HasKeyboard => keyboardDevices.Count > 0;
+        public bool HasKeyboard { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether gamepads are available.
         /// </summary>
         /// <value><c>true</c> if gamepads are available; otherwise, <c>false</c>.</value>
-        public bool HasGamePad => gamePadDevices.Count > 0;
+        public bool HasGameController { get; private set; }
 
         /// <summary>
         /// Gets the number of gamepad connected.
         /// </summary>
         /// <value>The number of gamepad connected.</value>
-        public int GamePadCount => gamePadDevices.Count;
+        public int GameControllerCount { get; private set; }
 
         /// <summary>
         /// Gets the first pointer device, or null if there is none
         /// </summary>
-        public IPointerDevice Pointer => pointerDevices.Count > 0 ? pointerDevices[0] : null;
+        public IPointerDevice Pointer { get; private set; }
 
         /// <summary>
         /// Gets the first mouse pointer device, or null if there is none
         /// </summary>
-        public IMouseDevice Mouse => pointerDevices.FirstOrDefault(x => x.Type == PointerType.Mouse) as IMouseDevice;
+        public IMouseDevice Mouse { get; private set; }
 
         /// <summary>
         /// Gets the first keyboard device, or null if there is none
         /// </summary>
-        public IKeyboardDevice Keyboard => keyboardDevices.Count > 0 ? keyboardDevices[0] : null;
+        public IKeyboardDevice Keyboard { get; private set; }
 
         /// <summary>
         /// First device that supports text input, or null if there is none
         /// </summary>
-        public ITextInputDevice TextInput => keyboardDevices.OfType<ITextInputDevice>().FirstOrDefault();
+        public ITextInputDevice TextInput { get; private set; }
 
         /// <summary>
-        /// Gets the collection of connected gamepads, in no particular order
+        /// Gets the first game controller that was added to the device
         /// </summary>
-        public IReadOnlyCollection<IGamePadDevice> GamePads => gamePadDevices;
+        public IGameControllerDevice DefaultGameController { get; private set; }
+
+        /// <summary>
+        /// Gets the collection of connected game controllers
+        /// </summary>
+        public IReadOnlyCollection<IGameControllerDevice> GameControllers => gameControllerDevices;
 
         /// <summary>
         /// Gets the collection of connected pointing devices (mouses, touchpads, etc)
@@ -208,12 +195,6 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the collection of connected sensor devices
         /// </summary>
         public IReadOnlyCollection<ISensorDevice> Sensors => sensorDevices;
-        
-        /// <summary>
-        /// Gets a list of keys being pressed down.
-        /// </summary>
-        /// <value>A list of keys that are pressed</value>
-        public List<Keys> KeyDown => GlobalInputState.DownKeysSet.ToList();
 
         /// <summary>
         /// Gets or sets the mouse position.
@@ -221,26 +202,9 @@ namespace SiliconStudio.Xenko.Input
         /// <value>The mouse position.</value>
         public Vector2 MousePosition
         {
-            get { return GlobalInputState.MousePosition; }
+            get { return mousePosition; }
             set { SetMousePosition(value); }
         }
-
-        /// <summary>
-        /// Gets the mouse delta.
-        /// </summary>
-        /// <value>The mouse position.</value>
-        public Vector2 MouseDelta => GlobalInputState.MouseDelta;
-
-        /// <summary>
-        /// Gets the mouse delta in device coordinates
-        /// </summary>
-        /// <value>The mouse position.</value>
-        public Vector2 AbsoluteMouseDelta => GlobalInputState.AbsoluteMouseDelta;
-
-        /// <summary>
-        /// Gets the delta value of the mouse wheel button since last frame.
-        /// </summary>
-        public float MouseWheelDelta => GlobalInputState.MouseWheelDelta;
 
         /// <summary>
         /// Raised before new input is sent to their respective event listeners
@@ -318,12 +282,12 @@ namespace SiliconStudio.Xenko.Input
             RegisterEventType<MouseButtonEvent>();
             RegisterEventType<MouseWheelEvent>();
             RegisterEventType<PointerEvent>();
-            RegisterEventType<GamePadButtonEvent>();
-            RegisterEventType<GamePadAxisEvent>();
-            RegisterEventType<GamePadPovControllerEvent>();
+            RegisterEventType<GameControllerButtonEvent>();
+            RegisterEventType<GameControllerAxisEvent>();
+            RegisterEventType<GameControllerPovControllerEvent>();
 
             // Add global input state to listen for input events
-            AddListener(GlobalInputState);
+            AddListener(this);
         }
 
         /// <summary>
@@ -336,7 +300,7 @@ namespace SiliconStudio.Xenko.Input
             // Lock primary mouse
             if (HasMouse)
             {
-                Mouse.LockMousePosition(forceCenter);
+                Mouse.LockPosition(forceCenter);
             }
         }
 
@@ -348,205 +312,21 @@ namespace SiliconStudio.Xenko.Input
         {
             if (HasMouse)
             {
-                Mouse.UnlockMousePosition();
+                Mouse.UnlockPosition();
             }
         }
 
         /// <summary>
-        /// Gets the gamepad with a specific index.
+        /// Gets the game controller with a specific index
         /// </summary>
-        /// <param name="gamePadIndex">The index of the gamepad. -1 to return the first connected gamepad</param>
-        /// <returns>The gamepad, or null if no gamepad was found with the given index.</returns>
-        public IGamePadDevice GetGamePad(int gamePadIndex)
+        /// <param name="controllerIndex">The index of the game controller</param>
+        /// <returns>The gamepad, or null if no gamepad has this index</returns>
+        public IGameControllerDevice GetGameController(int controllerIndex)
         {
-            if (gamePadDevices.Count == 0)
-                return null; // No gamepads connected
-
-            Guid padId;
-
-            if (gamePadIndex < 0)
-                padId = gamepadIds.First(x => x != Guid.Empty); // Return the first gamepad
-            else if (gamePadIndex >= gamepadIds.Count)
+            if (controllerIndex >= gameControllerIds.Count || controllerIndex < 0)
                 return null;
-            else
-                padId = gamepadIds[gamePadIndex];
-
-            return inputDevicesById[padId] as IGamePadDevice;
-        }
-
-#region Convenience Functions
-
-        /// <summary>
-        /// Determines whether the specified key is being pressed down.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsKeyDown(Keys key)
-        {
-            return GlobalInputState.IsKeyDown(key);
-        }
-
-        /// <summary>
-        /// Determines whether the specified key is pressed since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is pressed; otherwise, <c>false</c>.</returns>
-        public bool IsKeyPressed(Keys key)
-        {
-            return GlobalInputState.IsKeyPressed(key);
-        }
-
-        /// <summary>
-        /// Determines whether the specified key is released since the previous update.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns><c>true</c> if the specified key is released; otherwise, <c>false</c>.</returns>
-        public bool IsKeyReleased(Keys key)
-        {
-            return GlobalInputState.IsKeyReleased(key);
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are down
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are down; otherwise, <c>false</c>.</returns>
-        public bool HasDownMouseButtons()
-        {
-            return GlobalInputState.HasDownMouseButtons();
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are released
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are released; otherwise, <c>false</c>.</returns>
-        public bool HasReleasedMouseButtons()
-        {
-            return GlobalInputState.HasReleasedMouseButtons();
-        }
-
-        /// <summary>
-        /// Determines whether one or more of the mouse buttons are pressed
-        /// </summary>
-        /// <returns><c>true</c> if one or more of the mouse buttons are pressed; otherwise, <c>false</c>.</returns>
-        public bool HasPressedMouseButtons()
-        {
-            return GlobalInputState.HasPressedMouseButtons();
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is being pressed down.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is being pressed down; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonDown(MouseButton mouseButton)
-        {
-            return GlobalInputState.IsMouseButtonDown(mouseButton);
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is pressed since the previous update.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is pressed since the previous update; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonPressed(MouseButton mouseButton)
-        {
-            return GlobalInputState.IsMouseButtonPressed(mouseButton);
-        }
-
-        /// <summary>
-        /// Determines whether the specified mouse button is released.
-        /// </summary>
-        /// <param name="mouseButton">The mouse button.</param>
-        /// <returns><c>true</c> if the specified mouse button is released; otherwise, <c>false</c>.</returns>
-        public bool IsMouseButtonReleased(MouseButton mouseButton)
-        {
-            return GlobalInputState.IsMouseButtonReleased(mouseButton);
-        }
-
-        /// <summary>
-        /// Gets the state of a gamepad with a given index
-        /// </summary>
-        /// <param name="gamePadIndex">The index of the gamepad. -1 to return the first connected gamepad</param>
-        /// <returns>The state of the gamepad</returns>
-        public GamePadState GetGamePadState(int gamePadIndex)
-        {
-            if (gamePadIndex == -1 && gamePadDevices.Count > 0)
-                gamePadIndex = gamePadDevices[0].Index;
-
-            GamePadState state;
-            currentGamePadStates.TryGetValue(gamePadIndex, out state);
-            return state;
-        }
-
-        /// <summary>
-        /// Gets the previous state of a gamepad with a given index
-        /// </summary>
-        /// <param name="gamePadIndex">The index of the gamepad. -1 to return the first connected gamepad</param>
-        /// <returns>The state of the gamepad</returns>
-        public GamePadState GetLastGamePadState(int gamePadIndex)
-        {
-            if (gamePadIndex == -1 && gamePadDevices.Count > 0)
-                gamePadIndex = gamePadDevices[0].Index;
-
-            GamePadState state;
-            lastGamePadStates.TryGetValue(gamePadIndex, out state);
-            return state;
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is being pressed down.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonDown(int gamePadIndex, GamePadButton button)
-        {
-            return (GetGamePadState(gamePadIndex).Buttons & button) != 0;
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is pressed since the previous update.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonPressed(int gamePadIndex, GamePadButton button)
-        {
-            var device = GetGamePad(gamePadIndex);
-            if (device == null)
-                return false;
-            return GlobalInputState.IsPadButtonPressed(device, button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is released since the previous update.
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonReleased(int gamePadIndex, GamePadButton button)
-        {
-            var device = GetGamePad(gamePadIndex);
-            if (device == null)
-                return false;
-            return GlobalInputState.IsPadButtonReleased(device, button);
-        }
-
-#endregion
-
-        /// <summary>
-        /// Sets the vibration state of the gamepad
-        /// </summary>
-        /// <param name="gamePadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
-        /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
-        public void SetGamePadVibration(int gamePadIndex, float leftMotor, float rightMotor)
-        {
-            var pad = GetGamePad(gamePadIndex);
-            if (pad == null)
-                return;
-            var padVibration = pad as IGamePadVibration;
-            padVibration?.SetVibration(leftMotor, rightMotor);
+            Guid padId = gameControllerIds[controllerIndex];
+            return inputDevicesById[padId] as IGameControllerDevice;
         }
 
         /// <summary>
@@ -565,7 +345,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(GameTime gameTime)
         {
-            GlobalInputState.Reset();
+            ResetGlobalInputState();
 
             // Recycle input event to reduce garbage generation
             foreach (var evt in inputEvents)
@@ -602,15 +382,6 @@ namespace SiliconStudio.Xenko.Input
             // Update gestures
             // TODO: Merge with input actions
             UpdateGestureEvents(gameTime.Elapsed);
-
-            // Update GamePadState for every gamepad
-            Utilities.Swap(ref currentGamePadStates, ref lastGamePadStates);
-            foreach (var gamepad in gamePadDevices)
-            {
-                var state = new GamePadState();
-                gamepad.GetGamePadState(ref state);
-                currentGamePadStates[gamepad.Index] = state;
-            }
         }
 
         /// <summary>
@@ -738,10 +509,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void SetMousePosition(Vector2 normalizedPosition)
         {
-            // Set mouse position for first pointer device
+            // Set mouse position for first mouse device
             if (HasMouse)
             {
-                Mouse.SetMousePosition(normalizedPosition);
+                Mouse.SetPosition(normalizedPosition);
             }
         }
 
@@ -749,12 +520,9 @@ namespace SiliconStudio.Xenko.Input
         {
             gestureEvents.Clear();
 
-            // Only pick out events that lie between Up/Down or are Up/Down events
-            var filteredPointerEvents = GlobalInputState.PointerEvents.Where(x => x.IsDown || x.State != PointerState.Move).ToList();
-
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
             {
-                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, filteredPointerEvents));
+                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, PointerEvents));
             }
         }
 
@@ -790,15 +558,16 @@ namespace SiliconStudio.Xenko.Input
                 RegisterPointer((IPointerDevice)device);
                 pointerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
-            else if (device is IGamePadDevice)
+            else if (device is IGameControllerDevice)
             {
-                RegisterGamePad((IGamePadDevice)device);
-                gamePadDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
+                RegisterGameController((IGameControllerDevice)device);
+                gameControllerDevices.Sort((l, r) => -l.Priority.CompareTo(r.Priority));
             }
             else if (device is ISensorDevice)
             {
                 RegisterSensor((ISensorDevice)device);
             }
+            UpdateConnectedDevices();
         }
 
         private void OnInputDeviceRemoved(IInputDevice device)
@@ -816,14 +585,49 @@ namespace SiliconStudio.Xenko.Input
             {
                 UnregisterPointer((IPointerDevice)device);
             }
-            else if (device is IGamePadDevice)
+            else if (device is IGameControllerDevice)
             {
-                UnregisterGamePad((IGamePadDevice)device);
+                UnregisterGameController((IGameControllerDevice)device);
             }
             else if (device is ISensorDevice)
             {
                 UnregisterSensor((ISensorDevice)device);
             }
+            UpdateConnectedDevices();
+        }
+        
+        private void UpdateConnectedDevices()
+        {
+            Keyboard = keyboardDevices.FirstOrDefault();
+            HasKeyboard = Keyboard != null;
+
+            TextInput = inputDevices.OfType<ITextInputDevice>().FirstOrDefault();
+
+            Mouse = pointerDevices.OfType<IMouseDevice>().FirstOrDefault();
+            HasMouse = Mouse != null;
+
+            Pointer = pointerDevices.FirstOrDefault();
+            HasPointer = Pointer != null;
+
+            GameControllerCount = GameControllers.Count;
+            HasGameController = GameControllerCount > 0;
+
+            var firstGamepadId = gameControllerIds.FirstOrDefault(x => x != Guid.Empty);
+            if (firstGamepadId != Guid.Empty)
+            {
+                DefaultGameController = inputDevicesById[firstGamepadId] as IGameControllerDevice;
+            }
+            else
+            {
+                DefaultGameController = null;
+            }
+
+            Accelerometer = sensorDevices.OfType<IAccelerometerSensor>().FirstOrDefault();
+            Gyroscope = sensorDevices.OfType<IGyroscopeSensor>().FirstOrDefault();
+            Compass = sensorDevices.OfType<ICompassSensor>().FirstOrDefault();
+            UserAcceleration = sensorDevices.OfType<IUserAccelerationSensor>().FirstOrDefault();
+            Orientation = sensorDevices.OfType<IOrientationSensor>().FirstOrDefault();
+            Gravity = sensorDevices.OfType<IGravitySensor>().FirstOrDefault();
         }
 
         private void RegisterPointer(IPointerDevice pointer)
@@ -846,15 +650,15 @@ namespace SiliconStudio.Xenko.Input
             keyboardDevices.Remove(keyboard);
         }
 
-        private void RegisterGamePad(IGamePadDevice gamePad)
+        private void RegisterGameController(IGameControllerDevice gameController)
         {
-            gamePadDevices.Add(gamePad);
+            gameControllerDevices.Add(gameController);
 
             // Find a new index for this gamepad
             int targetIndex = 0;
-            for (int i = 0; i < gamepadIds.Count; i++)
+            for (int i = 0; i < gameControllerIds.Count; i++)
             {
-                if (gamepadIds[i] == Guid.Empty)
+                if (gameControllerIds[i] == Guid.Empty)
                 {
                     targetIndex = i;
                     break;
@@ -862,52 +666,40 @@ namespace SiliconStudio.Xenko.Input
                 targetIndex++;
             }
 
-            if (targetIndex >= gamepadIds.Count)
+            if (targetIndex >= gameControllerIds.Count)
             {
-                gamepadIds.Add(gamePad.Id);
+                gameControllerIds.Add(gameController.Id);
             }
             else
             {
-                gamepadIds[targetIndex] = gamePad.Id;
+                gameControllerIds[targetIndex] = gameController.Id;
             }
 
-            var gamepadBase = gamePad as GamePadDeviceBase;
-            if (gamepadBase == null)
-                throw new InvalidOperationException("Cannot register GamePad id, because it does not inherit from GamePadDeviceBase");
-            gamepadBase.IndexInternal = targetIndex;
+            var gameControllerBase = gameController as GameControllerDeviceBase;
+            if (gameControllerBase == null)
+                throw new InvalidOperationException("Cannot register GameController id, because it does not inherit from GameControllerDeviceBase");
+            gameControllerBase.IndexInternal = targetIndex;
         }
 
-        private void UnregisterGamePad(IGamePadDevice gamePad)
+        private void UnregisterGameController(IGameControllerDevice gameController)
         {
             // Free the gamepad index in the gamepad list
             // this will allow another gamepad to use this index again
-            if (gamepadIds.Count <= gamePad.Index || gamePad.Index < 0)
+            if (gameControllerIds.Count <= gameController.Index || gameController.Index < 0)
                 throw new IndexOutOfRangeException("Gamepad index was out of range");
-            gamepadIds[gamePad.Index] = Guid.Empty;
+            gameControllerIds[gameController.Index] = Guid.Empty;
 
-            gamePadDevices.Remove(gamePad);
-        }
-
-        private void UpdateDefaultSensors()
-        {
-            Accelerometer = (IAccelerometerSensor)sensorDevices.FirstOrDefault(x => x is IAccelerometerSensor);
-            Gyroscope = (IGyroscopeSensor)sensorDevices.FirstOrDefault(x => x is IGyroscopeSensor);
-            Compass = (ICompassSensor)sensorDevices.FirstOrDefault(x => x is ICompassSensor);
-            UserAcceleration = (IUserAccelerationSensor)sensorDevices.FirstOrDefault(x => x is IUserAccelerationSensor);
-            Orientation = (IOrientationSensor)sensorDevices.FirstOrDefault(x => x is IOrientationSensor);
-            Gravity = (IGravitySensor)sensorDevices.FirstOrDefault(x => x is IGravitySensor);
+            gameControllerDevices.Remove(gameController);
         }
 
         private void RegisterSensor(ISensorDevice sensorDevice)
         {
             sensorDevices.Add(sensorDevice);
-            UpdateDefaultSensors();
         }
 
         private void UnregisterSensor(ISensorDevice sensorDevice)
         {
             sensorDevices.Remove(sensorDevice);
-            UpdateDefaultSensors();
         }
 
         protected interface IInputEventRouter

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// <summary>
     /// Generates gestures mapping to direction actions, bindings are made in the order Right/Left/Up/Down (or first stick movement binds to the positive direction of one axis)
     /// </summary>
-    public class DirectionActionBinder : AxisActionBinder, IInputEventListener<GamePadPovControllerEvent>
+    public class DirectionActionBinder : AxisActionBinder, IInputEventListener<GameControllerPovControllerEvent>
     {
         /// <summary>
         /// Backing field of <see cref="AcceptsButtons"/>
@@ -32,11 +32,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public override bool AcceptsButtons => CanBindButtons;
         public override bool AcceptsDirections => Index == 0;
         
-        public void ProcessEvent(GamePadPovControllerEvent inputEvent)
+        public void ProcessEvent(GameControllerPovControllerEvent inputEvent)
         {
             if (AcceptsDirections)
             {
-                var target = new GamePadPovGesture(inputEvent.Index);
+                var target = new GameControllerPovGesture(inputEvent.Index);
 
                 // Filter out duplicate pov gestures
                 if (UsedGestures.Contains(target)) return;

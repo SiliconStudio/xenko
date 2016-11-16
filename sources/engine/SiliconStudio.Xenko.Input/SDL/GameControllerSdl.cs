@@ -8,15 +8,15 @@ using SDL2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadSDL : GamePadDeviceBase
+    public class GameControllerSDL : GameControllerDeviceBase
     {
-        private readonly List<GamePadButtonInfo> buttonInfos = new List<GamePadButtonInfo>();
-        private readonly List<GamePadAxisInfo> axisInfos = new List<GamePadAxisInfo>();
-        private readonly List<GamePadPovControllerInfo> povControllerInfos = new List<GamePadPovControllerInfo>();
+        private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
+        private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
+        private readonly List<GameControllerPovControllerInfo> povControllerInfos = new List<GameControllerPovControllerInfo>();
         
         private IntPtr joystick;
 
-        public GamePadSDL(int deviceIndex)
+        public GameControllerSDL(int deviceIndex)
         {
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
             this.Id = SDL.SDL_JoystickGetGUID(joystick);
@@ -24,15 +24,15 @@ namespace SiliconStudio.Xenko.Input
             
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
-                buttonInfos.Add(new GamePadButtonInfo { Index = i, Name = $"Button {i}" });
+                buttonInfos.Add(new GameControllerButtonInfo { Index = i, Name = $"Button {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumAxes(joystick); i++)
             {
-                axisInfos.Add(new GamePadAxisInfo { Index = i, Name = $"Axis {i}" });
+                axisInfos.Add(new GameControllerAxisInfo { Index = i, Name = $"Axis {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
-                povControllerInfos.Add(new GamePadPovControllerInfo { Index = i, Name = $"Hat {i}" });
+                povControllerInfos.Add(new GameControllerPovControllerInfo { Index = i, Name = $"Hat {i}" });
             }
 
             InitializeButtonStates();
@@ -48,9 +48,9 @@ namespace SiliconStudio.Xenko.Input
         public override string DeviceName { get; }
         public override Guid Id { get; }
 
-        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => buttonInfos;
-        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => povControllerInfos;
+        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
+        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
+        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos => povControllerInfos;
 
         public override void Update(List<InputEvent> inputEvents)
         {

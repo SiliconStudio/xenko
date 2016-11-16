@@ -13,33 +13,33 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public class GamePadLayoutXInput : GamePadLayout
     {
-        public static readonly List<GamePadButtonInfo> Buttons = new List<GamePadButtonInfo>
+        public static readonly List<GameControllerButtonInfo> Buttons = new List<GameControllerButtonInfo>
         {
-            new GamePadButtonInfo { Name = "Start" },
-            new GamePadButtonInfo { Name = "Back" },
-            new GamePadButtonInfo { Name = "Left Thumb" },
-            new GamePadButtonInfo { Name = "Right Thumb" },
-            new GamePadButtonInfo { Name = "Left Shoulder" },
-            new GamePadButtonInfo { Name = "Right Shoulder" },
-            new GamePadButtonInfo { Name = "A" },
-            new GamePadButtonInfo { Name = "B" },
-            new GamePadButtonInfo { Name = "X" },
-            new GamePadButtonInfo { Name = "Y" },
+            new GameControllerButtonInfo { Name = "Start" },
+            new GameControllerButtonInfo { Name = "Back" },
+            new GameControllerButtonInfo { Name = "Left Thumb" },
+            new GameControllerButtonInfo { Name = "Right Thumb" },
+            new GameControllerButtonInfo { Name = "Left Shoulder" },
+            new GameControllerButtonInfo { Name = "Right Shoulder" },
+            new GameControllerButtonInfo { Name = "A" },
+            new GameControllerButtonInfo { Name = "B" },
+            new GameControllerButtonInfo { Name = "X" },
+            new GameControllerButtonInfo { Name = "Y" },
         };
 
-        public static readonly List<GamePadAxisInfo> Axes = new List<GamePadAxisInfo>
+        public static readonly List<GameControllerAxisInfo> Axes = new List<GameControllerAxisInfo>
         {
-            new GamePadAxisInfo { Name = "Left Stick X" },
-            new GamePadAxisInfo { Name = "Left Stick Y" },
-            new GamePadAxisInfo { Name = "Right Stick X" },
-            new GamePadAxisInfo { Name = "Right Stick Y" },
-            new GamePadAxisInfo { Name = "Left Trigger", IsBiDirectional = false },
-            new GamePadAxisInfo { Name = "Right Trigger", IsBiDirectional = false },
+            new GameControllerAxisInfo { Name = "Left Stick X" },
+            new GameControllerAxisInfo { Name = "Left Stick Y" },
+            new GameControllerAxisInfo { Name = "Right Stick X" },
+            new GameControllerAxisInfo { Name = "Right Stick Y" },
+            new GameControllerAxisInfo { Name = "Left Trigger", IsBiDirectional = false },
+            new GameControllerAxisInfo { Name = "Right Trigger", IsBiDirectional = false },
         };
 
-        public static readonly List<GamePadPovControllerInfo> PovControllers = new List<GamePadPovControllerInfo>
+        public static readonly List<GameControllerPovControllerInfo> PovControllers = new List<GameControllerPovControllerInfo>
         {
-            new GamePadPovControllerInfo { Name = "Pad" },
+            new GameControllerPovControllerInfo { Name = "Pad" },
         };
 
         public GamePadLayoutXInput()
@@ -62,9 +62,9 @@ namespace SiliconStudio.Xenko.Input
             AddAxisMapping(5, GamePadAxis.RightTrigger);
         }
 
-        public override bool MatchDevice(IGamePadDevice device)
+        public override bool MatchDevice(IGameControllerDevice device)
         {
-            return device is GamePadXInput;
+            return device is GameControllerXInput;
         }
     }
 }

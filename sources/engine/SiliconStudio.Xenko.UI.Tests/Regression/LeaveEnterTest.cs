@@ -97,51 +97,51 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw1()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.125f, 0.25f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.125f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw2()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.925f, 0.25f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.925f, 0.25f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.925f, 0.25f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.925f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw3()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.125f, 0.25f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.125f, 0.25f)));
 
             UI.Update(new GameTime());
         }
         public void Draw4()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.125f, 0.15f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.125f, 0.15f)));
 
             UI.Update(new GameTime());
         }
         public void Draw5()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.125f, 0.05f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.125f, 0.05f)));
 
             UI.Update(new GameTime());
         }
         public void Draw6()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.925f, 0.05f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.925f, 0.05f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.925f, 0.05f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.925f, 0.05f)));
 
             UI.Update(new GameTime());
         }
         public void Draw7()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.65f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.4f, 0.65f)));
 
             UI.Update(new GameTime());
         }
@@ -149,15 +149,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw8()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.6f, 0.65f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.6f, 0.65f)));
 
             UI.Update(new GameTime());
         }
         public void Draw9()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.65f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.6f, 0.65f)));
 
             UI.Update(new GameTime());
         }
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw10()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.6f, 0.85f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.6f, 0.85f)));
 
             UI.Update(new GameTime());
         }
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw11()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.4f, 0.85f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Moved, new Vector2(0.4f, 0.85f)));
 
             UI.Update(new GameTime());
         }

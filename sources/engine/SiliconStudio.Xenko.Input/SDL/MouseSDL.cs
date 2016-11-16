@@ -42,26 +42,26 @@ namespace SiliconStudio.Xenko.Input
 
         public override string DeviceName => "SDL Mouse";
         public override Guid Id => new Guid("0ccaf48e-e371-4b34-b6bb-a3720f6742a8");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
+        public override bool IsPositionLocked => isMousePositionLocked;
 
-        public override void LockMousePosition(bool forceCenter = false)
+        public override void LockPosition(bool forceCenter = false)
         {
-            if (!IsMousePositionLocked)
+            if (!IsPositionLocked)
             {
                 wasMouseVisibleBeforeCapture = game.IsMouseVisible;
                 game.IsMouseVisible = false;
                 if (forceCenter)
                 {
-                    SetMousePosition(new Vector2(0.5f, 0.5f));
+                    SetPosition(new Vector2(0.5f, 0.5f));
                 }
                 relativeCapturedPosition = uiControl.RelativeCursorPosition;
                 isMousePositionLocked = true;
             }
         }
 
-        public override void UnlockMousePosition()
+        public override void UnlockPosition()
         {
-            if (IsMousePositionLocked)
+            if (IsPositionLocked)
             {
                 isMousePositionLocked = false;
                 relativeCapturedPosition = Point.Zero;
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void SetMousePosition(Vector2 normalizedPosition)
+        public override void SetPosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition*SurfaceSize;
             Cursor.Position = new Point((int)position.X, (int)position.Y);
@@ -97,9 +97,9 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnMouseMoveEvent(SDL.SDL_MouseMotionEvent e)
         {
-            if (IsMousePositionLocked)
+            if (IsPositionLocked)
             {
-                HandleMoveDelta(new Vector2(e.x - relativeCapturedPosition.X, e.y - relativeCapturedPosition.Y));
+                HandleMouseDelta(new Vector2(e.x - relativeCapturedPosition.X, e.y - relativeCapturedPosition.Y));
 
                 // Restore position to prevent mouse from going out of the window where we would not get
                 // mouse move event.

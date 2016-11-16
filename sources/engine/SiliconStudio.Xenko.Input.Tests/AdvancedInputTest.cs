@@ -11,6 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -200,13 +201,13 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // Keyboard
                 if (Input.HasKeyboard)
                 {
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Pressed))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Down))
                         keyPressed += key + ", ";
 
-                    foreach (var key in Input.KeyDown)
+                    foreach (var key in Input.DownKeys)
                         keyDown += key + ", ";
 
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Released))
+                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.State == ButtonState.Up))
                         keyReleased += key + ", ";
                 }
 
@@ -232,19 +233,18 @@ namespace SiliconStudio.Xenko.Input.Tests
                 {
                     foreach (var pointerEvent in Input.PointerEvents)
                     {
-                        switch (pointerEvent.State)
+                        switch (pointerEvent.EventType)
                         {
-                            case PointerState.Down:
+                            case PointerEventType.Pressed:
                                 pointerPressed.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Move:
+                            case PointerEventType.Moved:
                                 pointerMoved.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Up:
+                            case PointerEventType.Released:
                                 pointerReleased.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Out:
-                            case PointerState.Cancel:
+                            case PointerEventType.Canceled:
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();

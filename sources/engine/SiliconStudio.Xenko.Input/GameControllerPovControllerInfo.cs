@@ -6,11 +6,11 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides information about a gamepad point of view controller
     /// </summary>
-    public class GamePadPovControllerInfo : GamePadObjectInfo
+    public class GameControllerPovControllerInfo : GameControllerObjectInfo
     {
         public override string ToString()
         {
-            return $"GamePad Pov Controller {{{Name}}}";
+            return $"GameController Pov Controller {{{Name}}}";
         }
     }
 }

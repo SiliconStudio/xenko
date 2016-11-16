@@ -89,20 +89,23 @@ namespace SiliconStudio.Xenko.Input
         {
             foreach (var pointerEvent in events)
             {
-                var state = pointerEvent.State;
+                var state = pointerEvent.EventType;
                 var id = pointerEvent.PointerId;
                 var pos = pointerEvent.Position;
 
                 switch (state)
                 {
-                    case PointerState.Down:
+                    case PointerEventType.Pressed:
                         ProcessDownEventPointer(id, UnnormalizeVector(pos));
                         break;
-                    case PointerState.Move:
-                        // just memorize the last position to avoid useless processing on move events
-                        fingerIdsToLastMovePos[id] = pos;
+                    case PointerEventType.Moved:
+                        if (pointerEvent.IsDown)
+                        {
+                            // just memorize the last position to avoid useless processing on move events
+                            fingerIdsToLastMovePos[id] = pos;
+                        }
                         break;
-                    case PointerState.Up:
+                    case PointerEventType.Released:
                         // process previous move events
                         ProcessAndClearMovePointerEvents();
 

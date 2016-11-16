@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Input
             AddAxisMapping(4, GamePadAxis.RightTrigger);
         }
 
-        public override bool MatchDevice(IGamePadDevice device)
+        public override bool MatchDevice(IGameControllerDevice device)
         {
             return CompareProductId(device.ProductId, commonProductId, 4);
         }

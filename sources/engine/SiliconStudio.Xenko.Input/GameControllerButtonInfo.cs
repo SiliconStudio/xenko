@@ -4,18 +4,18 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Provides information about a gamepad axis
+    /// Provides information about a gamepad button
     /// </summary>
-    public class GamePadAxisInfo : GamePadObjectInfo
+    public class GameControllerButtonInfo : GameControllerObjectInfo
     {
         /// <summary>
-        /// <c>true</c> for bidirectional axes that go from -1 to 1
+        /// The type of button
         /// </summary>
-        public bool IsBiDirectional = true;
+        public GameControllerButtonType Type;
 
         public override string ToString()
         {
-            return $"GamePad Axis {{{Name}}}, {nameof(IsBiDirectional)}: {IsBiDirectional}";
+            return $"GameController Button {{{Name}}} [{Type}]";
         }
     }
 }

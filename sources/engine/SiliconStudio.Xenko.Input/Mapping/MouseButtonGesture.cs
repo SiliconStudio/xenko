@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public MouseButton MouseButton;
 
-        private ButtonState currentState = ButtonState.Released;
+        private ButtonState currentState = ButtonState.Up;
 
         public MouseButtonGesture()
         {
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public bool Button => currentState == ButtonState.Pressed;
+        public bool Button => currentState == ButtonState.Down;
 
         public void ProcessEvent(MouseButtonEvent inputEvent)
         {

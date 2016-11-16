@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
             if (Keys?.Contains(inputEvent.Key) ?? false)
             {
-                if (inputEvent.State == ButtonState.Pressed)
+                if (inputEvent.State == ButtonState.Down)
                     heldKeys.Add(inputEvent.Key);
                 else
                     heldKeys.Remove(inputEvent.Key);

@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 var period = (float) (2 * Math.PI * UpdateTime.Total.TotalMilliseconds / 15000);
                 teapot.Transform.Rotation = Quaternion.RotationAxis(Vector3.UnitY, period);
 
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Pressed))
                     renderTargetToDisplayIndex = (renderTargetToDisplayIndex + 1) % 3;
             }
         }

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// A direction or a 0-1 value generated from a gamepad pov controller
     /// </summary>
     [DataContract]
-    public class GamePadPovGesture : InvertibleInputGesture, IDirectionGesture, IInputEventListener<GamePadPovControllerEvent>
+    public class GameControllerPovGesture : InvertibleInputGesture, IDirectionGesture, IInputEventListener<GameControllerPovControllerEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -26,11 +26,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private Vector2 currentDirection;
         private float currentState;
 
-        public GamePadPovGesture()
+        public GameControllerPovGesture()
         {
         }
 
-        public GamePadPovGesture(int povIndex)
+        public GameControllerPovGesture(int povIndex)
         {
             PovIndex = povIndex;
         }
@@ -41,9 +41,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
         [DataMemberIgnore]
         public bool IsRelative { get; } = true;
 
-        public void ProcessEvent(GamePadPovControllerEvent inputEvent)
+        public void ProcessEvent(GameControllerPovControllerEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
+            if (inputEvent.GameController.Index == ActionMapping.ControllerIndex)
             {
                 if (inputEvent.Index == PovIndex || (MapToLayoutPad && inputEvent.Button == GamePadButton.Pad))
                 {
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"{nameof(PovIndex)}: {PovIndex}, {nameof(Direction)}: {Direction}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
-        protected bool Equals(GamePadPovGesture other)
+        protected bool Equals(GameControllerPovGesture other)
         {
             return PovIndex == other.PovIndex;
         }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GamePadPovGesture)obj);
+            return Equals((GameControllerPovGesture)obj);
         }
 
         public override int GetHashCode()

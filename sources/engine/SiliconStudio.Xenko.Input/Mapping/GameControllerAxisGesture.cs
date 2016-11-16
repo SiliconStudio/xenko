@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// Represents a gamepad axis reading
     /// </summary>
     [DataContract]
-    public class GamePadAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<GamePadAxisEvent>
+    public class GameControllerAxisGesture : InvertibleInputGesture, IAxisGesture, IInputEventListener<GameControllerAxisEvent>
     {
         /// <summary>
         /// The index of the axis to use
@@ -23,11 +23,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         
         private float currentState;
 
-        public GamePadAxisGesture()
+        public GameControllerAxisGesture()
         {
         }
 
-        public GamePadAxisGesture(int axisIndex)
+        public GameControllerAxisGesture(int axisIndex)
         {
             AxisIndex = axisIndex;
         }
@@ -38,9 +38,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
         [DataMemberIgnore]
         public bool IsRelative { get; } = true;
 
-        public void ProcessEvent(GamePadAxisEvent inputEvent)
+        public void ProcessEvent(GameControllerAxisEvent inputEvent)
         {
-            if (inputEvent.GamePad.Index == ActionMapping.ControllerIndex)
+            if (inputEvent.GameController.Index == ActionMapping.ControllerIndex)
             {
                 if ((AxisIndex >= 0 && inputEvent.Index == AxisIndex) || (inputEvent.Axis & GamePadAxis) != 0)
                     currentState = inputEvent.Value;
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return $"{nameof(AxisIndex)}: {AxisIndex}, {nameof(Axis)}: {Axis}, {nameof(Inverted)}: {Inverted}, {nameof(IsRelative)}: {IsRelative}";
         }
 
-        protected bool Equals(GamePadAxisGesture other)
+        protected bool Equals(GameControllerAxisGesture other)
         {
             return AxisIndex == other.AxisIndex;
         }
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GamePadAxisGesture)obj);
+            return Equals((GameControllerAxisGesture)obj);
         }
 
         public override int GetHashCode()

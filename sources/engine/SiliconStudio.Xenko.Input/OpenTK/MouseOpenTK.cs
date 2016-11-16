@@ -42,9 +42,9 @@ namespace SiliconStudio.Xenko.Input
 
         public override string DeviceName => "OpenTK Mouse";
         public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
+        public override bool IsPositionLocked => isMousePositionLocked;
 
-        public override void LockMousePosition(bool forceCenter)
+        public override void LockPosition(bool forceCenter)
         {
             if (!isMousePositionLocked)
             {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
                 //game.IsMouseVisible = false;
                 if (forceCenter)
                 {
-                    SetMousePosition(new Vector2(0.5f, 0.5f));
+                    SetPosition(new Vector2(0.5f, 0.5f));
                 }
                 var mouseState = Mouse.GetCursorState();
                 capturedPosition = uiControl.PointToClient(new Point(mouseState.X, mouseState.Y));
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void UnlockMousePosition()
+        public override void UnlockPosition()
         {
             if (isMousePositionLocked)
             {
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public override void SetMousePosition(Vector2 normalizedPosition)
+        public override void SetPosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition*SurfaceSize;
             
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Input
             if (isMousePositionLocked)
             {
                 // Register mouse delta and reset
-                HandleMoveDelta(new Vector2(e.X - capturedPosition.X, e.Y - capturedPosition.Y));
+                HandleMouseDelta(new Vector2(e.X - capturedPosition.X, e.Y - capturedPosition.Y));
                 Mouse.SetPosition(capturedPosition.X, capturedPosition.Y);
             }
             else

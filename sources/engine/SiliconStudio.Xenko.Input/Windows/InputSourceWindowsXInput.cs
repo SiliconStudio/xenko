@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Input
         // Always monitored gamepads
         private Controller[] controllers;
         private Guid[] controllerIds;
-        private GamePadXInput[] devices;
+        private GameControllerXInput[] devices;
 
         private readonly List<int> devicesToRemove = new List<int>();
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
             }
             catch (Exception ex)
             {
-                InputManager.Logger.Warning("XInput dll was not found on the computer. GamePad detection will not fully work for the current game instance. " +
+                InputManager.Logger.Warning("XInput dll was not found on the computer. GameController detection will not fully work for the current game instance. " +
                                      "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
                 return false;
             }
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Input
 
             controllers = new Controller[XInputGamePadCount];
             controllerIds = new Guid[XInputGamePadCount];
-            devices = new GamePadXInput[XInputGamePadCount];
+            devices = new GameControllerXInput[XInputGamePadCount];
 
             // Prebuild fake GUID
             for (int i = 0; i < XInputGamePadCount; i++)
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Input
                 UnregisterDevice(gamePad);
                 devices[deviceIdToRemove] = null;
 
-                if (gamePad.Connected)
+                if (gamePad.IsConnected)
                     gamePad.Dispose();
             }
             devicesToRemove.Clear();
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Input
             if (devices[index] != null)
                 throw new InvalidOperationException($"XInput device already opened {index}");
 
-            var newGamepad = new GamePadXInput(controllers[index], controllerIds[index], index);
+            var newGamepad = new GameControllerXInput(controllers[index], controllerIds[index], index);
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal

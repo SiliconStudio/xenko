@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 if (actionBinder.AcceptsAxes) accepts.Add("Axis");
                 if (actionBinder.AcceptsDirections) accepts.Add("Direction");
 
-                string buttonName = "Pressed";
+                string buttonName = "Down";
                 if (actionBinder is DirectionActionBinder)
                     buttonName = directionNames[actionBinder.Index];
                 else if (actionBinder is AxisActionBinder)
@@ -199,6 +199,23 @@ namespace SiliconStudio.Xenko.Input.Tests
             WriteLine("Input Events:");
             foreach (var eventLogLine in eventLog.Reverse())
                 WriteLine(eventLogLine, 1);
+
+
+            if (Input.IsPadButtonPressed(0, GamePadButton.A))
+                WriteLine("A Button was pressed", 1);
+            if (Input.IsPadButtonReleased(0, GamePadButton.A))
+                WriteLine("A Button was released", 1);
+
+
+            if (Input.IsMouseButtonPressed(MouseButton.Left))
+                WriteLine("LMB was pressed", 1);
+            if (Input.IsMouseButtonReleased(MouseButton.Left))
+                WriteLine("LMB was released", 1);
+
+            if (Input.IsKeyPressed(Keys.E))
+                WriteLine("E Key was pressed", 1);
+            if (Input.IsKeyReleased(Keys.E))
+                WriteLine("E Key was released", 1);
 
             spriteBatch.End();
         }

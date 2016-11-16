@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         private void SetMousePosition(Vector2 position)
         {
             var mouse = InputSourceSimulated.Instance.Mouse;
-            mouse.SetMousePosition(position);
+            mouse.SetPosition(position);
         }
 
         private void Test1()

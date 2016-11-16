@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (Action.IgnoreMouseWhenNotLocked)
             {
                 var mouse = inputEvent.Pointer as IMouseDevice;
-                if (mouse != null && !mouse.IsMousePositionLocked)
+                if (mouse != null && !mouse.IsPositionLocked)
                 {
                     currentDelta = 0.0f;
                     return;

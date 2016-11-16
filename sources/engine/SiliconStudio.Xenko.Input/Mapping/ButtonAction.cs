@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public event EventHandler<ChangedEventArgs> Changed;
 
         /// <summary>
-        /// Raised when the state changed from <see cref="ButtonState.Released"/> to <see cref="ButtonState.Pressed"/>
+        /// Raised when the state changed from <see cref="ButtonState.Up"/> to <see cref="ButtonState.Down"/>
         /// </summary>
         public event EventHandler Pressed;
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             public IButtonGesture Gesture;
             public bool Value;
-            public ButtonState State => Value ? ButtonState.Pressed : ButtonState.Released;
+            public ButtonState State => Value ? ButtonState.Down : ButtonState.Up;
         }
     }
 }

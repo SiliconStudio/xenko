@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public Keys Key;
 
-        private ButtonState currentState = ButtonState.Released;
+        private ButtonState currentState = ButtonState.Up;
 
         public KeyGesture()
         {
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
 
         [DataMemberIgnore]
-        public bool Button => currentState == ButtonState.Pressed;
+        public bool Button => currentState == ButtonState.Down;
 
         public void ProcessEvent(KeyEvent inputEvent)
         {

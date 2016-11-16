@@ -156,8 +156,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw1()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.125f, 0.15f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up,   new Vector2(0.125f, 0.15f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.125f, 0.15f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released,   new Vector2(0.125f, 0.15f)));
 
             UI.Update(new GameTime());
         }
@@ -165,8 +165,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw2()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.85f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.85f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.85f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.5f, 0.85f)));
 
             UI.Update(new GameTime());
         }
@@ -174,8 +174,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw3()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.05f, 0.95f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.05f, 0.95f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.05f, 0.95f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.05f, 0.95f)));
 
             UI.Update(new GameTime());
         }
@@ -183,8 +183,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw4()
         {
             PointerEvents.Clear();
-            PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.5f)));
-            PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.5f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.5f)));
+            PointerEvents.Add(CreatePointerEvent(PointerEventType.Released, new Vector2(0.5f, 0.5f)));
 
             UI.Update(new GameTime());
         }

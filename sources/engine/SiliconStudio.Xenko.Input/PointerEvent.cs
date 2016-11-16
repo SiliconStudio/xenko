@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the state of this pointer event (down, up, move... etc.)
         /// </summary>
         /// <value>The state.</value>
-        public PointerState State { get; internal set; }
+        public PointerEventType EventType { get; internal set; }
 
         /// <summary>
         /// Gets the type of the pointer.
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
         public override string ToString()
         {
             return
-                $"Pointer {PointerId} {State}, {Position}, Delta: {DeltaPosition}/{AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
+                $"Pointer {PointerId} {EventType}, {Position}, Delta: {DeltaPosition}/{AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Input
                 Position = Position,
                 DeltaPosition = DeltaPosition,
                 DeltaTime = DeltaTime,
-                State = State,
+                EventType = EventType,
                 PointerType = PointerType,
                 IsDown = IsDown
             };

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Games.Testing.Requests
     [DataContract]
     internal class TapSimulationRequest : TestRequestBase
     {
-        public PointerState State;
+        public PointerEventType EventType;
         public TimeSpan Delta;
         public Vector2 Coords;
         public Vector2 CoordsDelta;

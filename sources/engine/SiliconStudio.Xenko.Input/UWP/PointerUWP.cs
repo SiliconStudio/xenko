@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.Input
             this.uiControl = uiControl;
 
             uiControl.SizeChanged += UIControlOnSizeChanged;
-            uiControl.PointerMoved += (sender, args) => HandlePointer(InputEventType.Move, args);
+            uiControl.PointerMoved += (sender, args) => HandlePointer(InputEventType.Moved, args);
             uiControl.PointerPressed += (sender, args) => HandlePointer(InputEventType.Down, args);
             uiControl.PointerReleased += (sender, args) => HandlePointer(InputEventType.Up, args);
             uiControl.PointerExited += (sender, args) => HandlePointer(InputEventType.Out, args);
-            uiControl.PointerCanceled += (sender, args) => HandlePointer(InputEventType.Cancel, args);
-            uiControl.PointerCaptureLost += (sender, args) => HandlePointer(InputEventType.Cancel, args);
+            uiControl.PointerCanceled += (sender, args) => HandlePointer(InputEventType.Canceled, args);
+            uiControl.PointerCaptureLost += (sender, args) => HandlePointer(InputEventType.Canceled, args);
 
             // Set initial surface size
             SetSurfaceSize(new Vector2((float)uiControl.Width, (float)uiControl.Height));

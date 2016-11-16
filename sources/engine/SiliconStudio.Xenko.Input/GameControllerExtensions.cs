@@ -3,14 +3,14 @@
 
 namespace SiliconStudio.Xenko.Input
 {
-    public static class GamePadExtensions
+    public static class GameControllerExtensions
     {
         /// <summary>
         /// Gets the number of buttons on this gamepad
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of buttons</returns>
-        public static int GetNumButtons(this IGamePadDevice device)
+        public static int GetNumButtons(this IGameControllerDevice device)
         {
             return device.ButtonInfos.Count;
         }
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of axes</returns>
-        public static int GetNumAxes(this IGamePadDevice device)
+        public static int GetNumAxes(this IGameControllerDevice device)
         {
             return device.AxisInfos.Count;
         }
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of pov controllers</returns>
-        public static int GetNumPovControllers(this IGamePadDevice device)
+        public static int GetNumPovControllers(this IGameControllerDevice device)
         {
             return device.PovControllerInfos.Count;
         }
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="device">The gamepad</param>
         /// <param name="index">The index of the point of view controller</param>
         /// <returns></returns>
-        public static GamePadButton GetDPad(this IGamePadDevice device, int index)
+        public static GamePadButton GetDPad(this IGameControllerDevice device, int index)
         {
             if (device.GetPovControllerEnabled(index))
             {
@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>A gamepad layout or null</returns>
-        public static GamePadLayout GetLayout(this IGamePadDevice device)
+        public static GamePadLayout GetLayout(this IGameControllerDevice device)
         {
-            var pad = device as GamePadDeviceBase;
+            var pad = device as GameControllerDeviceBase;
             return pad?.Layout;
         }
     }

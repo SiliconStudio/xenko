@@ -11,32 +11,37 @@ namespace SiliconStudio.Xenko.Input
     public interface IMouseDevice : IPointerDevice
     {
         /// <summary>
+        /// Normalized position(0,1) of the mouse
+        /// </summary>
+        Vector2 Position { get; }
+
+        /// <summary>
         /// Gets or sets if the mouse is locked to the screen
         /// </summary>
-        bool IsMousePositionLocked { get; }
+        bool IsPositionLocked { get; }
 
         /// <summary>
         /// Locks the mouse position to the screen
         /// </summary>
         /// <param name="forceCenter">Force the mouse position to the center of the screen</param>
-        void LockMousePosition(bool forceCenter = false);
+        void LockPosition(bool forceCenter = false);
 
         /// <summary>
         /// Unlocks the mouse position if it was locked
         /// </summary>
-        void UnlockMousePosition();
+        void UnlockPosition();
 
         /// <summary>
         /// Determines whether the specified button is being pressed down
         /// </summary>
         /// <param name="button">The button</param>
         /// <returns><c>true</c> if the specified button is being pressed down; otherwise, <c>false</c>.</returns>
-        bool IsMouseButtonDown(MouseButton button);
+        bool IsButtonDown(MouseButton button);
 
         /// <summary>
         /// Attempts to set the pointer position, this only makes sense for mouse pointers
         /// </summary>
         /// <param name="normalizedPosition"></param>
-        void SetMousePosition(Vector2 normalizedPosition);
+        void SetPosition(Vector2 normalizedPosition);
     }
 }

@@ -10,13 +10,13 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadXInput : GamePadDeviceBase, IGamePadVibration
+    public class GameControllerXInput : GameControllerDeviceBase, IGamePadVibration
     {
         internal readonly Controller controller;
         internal State state;
         private readonly int index;
         
-        public GamePadXInput(Controller controller, Guid id, int index)
+        public GameControllerXInput(Controller controller, Guid id, int index)
         {
             this.controller = controller;
             this.index = index;
@@ -29,21 +29,21 @@ namespace SiliconStudio.Xenko.Input
         public override string DeviceName => $"XInput Controller {index}";
         public override Guid Id { get; }
 
-        public override IReadOnlyList<GamePadButtonInfo> ButtonInfos => GamePadLayoutXInput.Buttons;
-        public override IReadOnlyList<GamePadAxisInfo> AxisInfos => GamePadLayoutXInput.Axes;
-        public override IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos => GamePadLayoutXInput.PovControllers;
+        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => GamePadLayoutXInput.Buttons;
+        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => GamePadLayoutXInput.Axes;
+        public override IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos => GamePadLayoutXInput.PovControllers;
 
         public override void Update(List<InputEvent> inputEvents)
         {
-            if (!Connected)
+            if (!IsConnected)
                 return;
 
             if (controller.GetState(out state))
             {
                 // Process DPad as point of view controller
-                GamePadButton padDir = ConvertPadDirection(state.Gamepad.Buttons);
-                float pov = GamePadUtils.ButtonToPovController(padDir);
-                HandlePovController(0, pov, ((int)padDir & 0xF) != 0);
+                GamePadButton padDirection = ConvertPadDirection(state.Gamepad.Buttons);
+                float pov = GamePadUtils.ButtonToPovController(padDirection);
+                HandlePovController(0, pov, ((int)padDirection & 0xF) != 0);
 
                 // Start -> Right Shoulder button
                 for (int i = 0; i < 6; i++)
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void SetVibration(float leftMotor, float rightMotor)
         {
-            if (!Connected)
+            if (!IsConnected)
                 return;
             try
             {

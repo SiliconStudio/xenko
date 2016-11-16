@@ -43,10 +43,10 @@ namespace SiliconStudio.Xenko.Input
             // Process device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = InputDevices[deviceIdToRemove] as GamePadDirectInput;
+                var gamePad = InputDevices[deviceIdToRemove] as GameControllerDirectInput;
                 UnregisterDevice(gamePad);
 
-                if (gamePad.Connected)
+                if (gamePad.IsConnected)
                     gamePad.Dispose();
             }
             devicesToRemove.Clear();
@@ -78,9 +78,9 @@ namespace SiliconStudio.Xenko.Input
                 return;
 
             if (InputDevices.ContainsKey(instance.InstanceGuid))
-                throw new InvalidOperationException($"DirectInput GamePad already opened {instance.InstanceGuid}/{instance.InstanceName}");
+                throw new InvalidOperationException($"DirectInput GameController already opened {instance.InstanceGuid}/{instance.InstanceName}");
 
-            var newGamepad = new GamePadDirectInput(directInput, instance);
+            var newGamepad = new GameControllerDirectInput(directInput, instance);
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal

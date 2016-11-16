@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
 
-            PointerEvents = Input.GlobalInputState.PointerEvents;
+            PointerEvents = Input.PointerEvents;
         }
 
         #region Temporary Fix (Style)
@@ -274,9 +274,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Exit();
         }
 
-        protected PointerEvent CreatePointerEvent(PointerState state, Vector2 position)
+        protected PointerEvent CreatePointerEvent(PointerEventType eventType, Vector2 position)
         {
-            if (state == PointerState.Down)
+            if (eventType == PointerEventType.Pressed)
                 lastTouchPosition = position;
 
             var pointerEvent = new PointerEvent
@@ -286,7 +286,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Position = position,
                 DeltaPosition = position - lastTouchPosition,
                 DeltaTime = new TimeSpan(),
-                State = state,
+                EventType = eventType,
                 PointerType = PointerType.Touch,
                 IsDown = true
             };

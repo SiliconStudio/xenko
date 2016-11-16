@@ -58,10 +58,10 @@ namespace SiliconStudio.Xenko.Input
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = InputDevices[deviceIdToRemove] as GamePadSDL;
+                var gamePad = InputDevices[deviceIdToRemove] as GameControllerSDL;
                 UnregisterDevice(gamePad);
 
-                if (gamePad.Connected)
+                if (gamePad.IsConnected)
                     gamePad.Dispose();
             }
             devicesToRemove.Clear();
@@ -83,9 +83,9 @@ namespace SiliconStudio.Xenko.Input
         {
             var joystickId = SDL.SDL_JoystickGetDeviceGUID(deviceIndex);
             if (InputDevices.ContainsKey(joystickId))
-                throw new InvalidOperationException($"SDL GamePad already opened {deviceIndex}/{joystickId}");
+                throw new InvalidOperationException($"SDL GameController already opened {deviceIndex}/{joystickId}");
 
-            var newGamepad = new GamePadSDL(deviceIndex);
+            var newGamepad = new GameControllerSDL(deviceIndex);
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal

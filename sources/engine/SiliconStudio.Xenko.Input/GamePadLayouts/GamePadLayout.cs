@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input
         /// Checks if a device matches this gamepad layout, and thus should use this when mapping it to a <see cref="GamePadState"/>
         /// </summary>
         /// <param name="device"></param>
-        public abstract bool MatchDevice(IGamePadDevice device);
+        public abstract bool MatchDevice(IGameControllerDevice device);
 
         /// <summary>
         /// Maps the raw gamepad event to a gamepad state event
@@ -51,10 +51,10 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="device"></param>
         /// <param name="inputEvent">The gamepad input event to adjust</param>
         /// <param name="generatedEvent">Optionally a generated event to respond to this input event</param>
-        public virtual void MapInputEvent(IGamePadDevice device, InputEvent inputEvent, out InputEvent generatedEvent)
+        public virtual void MapInputEvent(IGameControllerDevice device, InputEvent inputEvent, out InputEvent generatedEvent)
         {
             generatedEvent = null;
-            var buttonEvent = inputEvent as GamePadButtonEvent;
+            var buttonEvent = inputEvent as GameControllerButtonEvent;
             if (buttonEvent != null)
             {
                 if (buttonEvent.Index < buttonMap.Count)
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input
             }
             else
             {
-                var axisEvent = inputEvent as GamePadAxisEvent;
+                var axisEvent = inputEvent as GameControllerAxisEvent;
                 if (axisEvent != null)
                 {
                     if (axisEvent.Index < axisMap.Count)
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Input
                         if (mappedAxis.Invert)
                         {
                             // Create new event that has the axis inverted
-                            var axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(device);
+                            var axisEvent1 = InputEventPool<GameControllerAxisEvent>.GetOrCreate(device);
                             generatedEvent = axisEvent1;
                             axisEvent1.Axis = mappedAxis.Axis;
                             axisEvent1.Index = -1;
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Input
                 }
                 else if(MapFirstPovToPad)
                 {
-                    var povEvent = inputEvent as GamePadPovControllerEvent;
+                    var povEvent = inputEvent as GameControllerPovControllerEvent;
                     if (povEvent?.Index == 0)
                     {
                         povEvent.Button = GamePadButton.Pad;

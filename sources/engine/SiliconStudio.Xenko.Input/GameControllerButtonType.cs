@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// The types of gamepad buttons
     /// </summary>
-    public enum GamePadButtonType
+    public enum GameControllerButtonType
     {
         /// <summary>
         /// A regular button

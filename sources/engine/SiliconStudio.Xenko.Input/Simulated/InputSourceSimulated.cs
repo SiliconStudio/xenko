@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
 
             public override string DeviceName => "Simulated Mouse";
             public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
-            public override bool IsMousePositionLocked => false;
+            public override bool IsPositionLocked => false;
             
             public override void Update(List<InputEvent> inputEvents)
             {
@@ -87,50 +87,35 @@ namespace SiliconStudio.Xenko.Input
                 HandleButtonUp(button);
             }
 
-            public override void SetMousePosition(Vector2 position)
+            public override void SetPosition(Vector2 position)
             {
                 HandleMove(position);
             }
             
-            public void SimulatePointer(PointerState state, Vector2 position)
+            public void SimulatePointer(PointerEventType pointerEventType, Vector2 position)
             {
-                InputEventType eventType;
-                switch (state)
-                {
-                    case PointerState.Down:
-                        eventType = InputEventType.Down;
-                        break;
-                    case PointerState.Move:
-                        eventType = InputEventType.Move;
-                        break;
-                    case PointerState.Up:
-                        eventType = InputEventType.Up;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                PointerInputEvents.Add(new PointerInputEvent { Id = 0, Position = position, Type = eventType });
+                PointerInputEvents.Add(new PointerInputEvent { Id = 0, Position = position, Type = pointerEventType });
             }
 
-            public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerState state, int id = 0, PointerType type = PointerType.Mouse)
+            public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerEventType eventType, int id = 0, PointerType type = PointerType.Mouse)
             {
                 var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
                 pointerEvent.Position = position;
                 pointerEvent.DeltaPosition = deltaPosition;
                 pointerEvent.DeltaTime = delta;
-                pointerEvent.IsDown = state != PointerState.Up;
+                pointerEvent.IsDown = eventType != PointerEventType.Released;
                 pointerEvent.PointerId = id;
                 pointerEvent.PointerType = type;
-                pointerEvent.State = state;
+                pointerEvent.EventType = eventType;
 
                 injectedPointerEvents.Add(pointerEvent);
             }
 
-            public override void LockMousePosition(bool forceCenter = false)
+            public override void LockPosition(bool forceCenter = false)
             {
             }
 
-            public override void UnlockMousePosition()
+            public override void UnlockPosition()
             {
             }
         }

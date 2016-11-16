@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// This interface is used for interacting with gamepad devices.
+    /// This interface is used for interacting with game controller devices.
     /// </summary>
     /// <remarks>If vibration is required, check if the object implements <see cref="IGamePadVibration"/></remarks>
-    public interface IGamePadDevice : IInputDevice
+    public interface IGameControllerDevice : IInputDevice
     {
         /// <summary>
         /// Product Id of the device
@@ -18,29 +18,34 @@ namespace SiliconStudio.Xenko.Input
         Guid ProductId { get; }
 
         /// <summary>
-        /// The index of the GamePad
+        /// The index of the game controller
         /// </summary>
         int Index { get; }
 
         /// <summary>
-        /// <c>true</c> if the GamePad is currently connected
+        /// <c>true</c> if the game controller is currently connected
         /// </summary>
-        bool Connected { get; }
+        bool IsConnected { get; }
 
         /// <summary>
-        /// Information about the buttons on this GamePad
+        /// The state of the gamepad, if mapped with <see cref="GamePadLayout"/>
         /// </summary>
-        IReadOnlyList<GamePadButtonInfo> ButtonInfos { get; }
+        GamePadState State { get; }
 
         /// <summary>
-        /// Information about the axes on this GamePad
+        /// Information about the buttons on this game controller
         /// </summary>
-        IReadOnlyList<GamePadAxisInfo> AxisInfos { get; }
+        IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
 
         /// <summary>
-        /// Information about the point of view controllers (dpad) on this GamePad 
+        /// Information about the axes on this game controller
         /// </summary>
-        IReadOnlyList<GamePadPovControllerInfo> PovControllerInfos { get; }
+        IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
+
+        /// <summary>
+        /// Information about the point of view controllers on this game controller 
+        /// </summary>
+        IReadOnlyList<GameControllerPovControllerInfo> PovControllerInfos { get; }
 
         /// <summary>
         /// Raised when this gamepad gets disconnected
@@ -74,12 +79,5 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="index">The pov controller's index, as exposed in <see cref="PovControllerInfos"/></param>
         /// <returns><c>true</c> if the pov controller is enabled, <c>false</c> otherwise</returns>
         bool GetPovControllerEnabled(int index);
-
-        /// <summary>
-        /// Tries to read the current state of the <see cref="IGamePadDevice"/> and writes it to <see cref="state"/> in the form of a generic gamepad
-        /// </summary>
-        /// <param name="state">The state to update with this GamePad</param>
-        /// <returns><c>true</c> if the state was retrieved, <c>false</c> if the device does not provide a mapping to GamePadState</returns>
-        bool GetGamePadState(ref GamePadState state);
     }
 }

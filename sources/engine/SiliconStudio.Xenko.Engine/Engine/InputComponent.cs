@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine
         private InputActionConfiguration defaultInputActionConfiguration;
 
         /// <summary>
-        /// Gets or sets the controller index for this player, this will determine which gamepad will trigger actions for this input component
+        /// Gets or sets the controller index for this player, this will determine which controller will trigger actions for this input component
         /// </summary>
         public int ControllerIndex { get; set; } = 0;
 

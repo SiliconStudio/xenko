@@ -50,25 +50,23 @@ namespace SiliconStudio.Xenko.Input
             public bool OnTouch(View v, MotionEvent e)
             {
                 // Choose action type
-                InputEventType actionType;
+                PointerEventType actionType;
                 switch (e.ActionMasked)
                 {
                     case MotionEventActions.Down:
                     case MotionEventActions.Pointer1Down:
-                        actionType = InputEventType.Down;
+                        actionType = PointerEventType.Pressed;
                         break;
                     case MotionEventActions.Outside:
-                        actionType = InputEventType.Out;
-                        break;
-                    case MotionEventActions.Cancel:
-                        actionType = InputEventType.Cancel;
+                    case MotionEventActions.Canceled:
+                        actionType = PointerEventType.Canceled;
                         break;
                     case MotionEventActions.Up:
                     case MotionEventActions.Pointer1Up:
-                        actionType = InputEventType.Up;
+                        actionType = PointerEventType.Released;
                         break;
                     default:
-                        actionType = InputEventType.Move;
+                        actionType = PointerEventType.Moved;
                         break;
                 }
 

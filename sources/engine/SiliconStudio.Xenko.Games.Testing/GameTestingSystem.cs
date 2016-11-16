@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                InputSourceSimulated.Instance.Mouse.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.State);
+                InputSourceSimulated.Instance.Mouse.InjectPointerEvent(request.Coords, request.CoordsDelta, request.Delta, request.EventType);
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>

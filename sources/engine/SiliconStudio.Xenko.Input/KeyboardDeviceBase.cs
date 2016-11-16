@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
         public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
-        protected List<KeyEvent> KeyboardInputEvents = new List<KeyEvent>();
+        protected List<KeyEvent> EventQueue = new List<KeyEvent>();
         
         public virtual void Dispose()
         {
@@ -25,11 +25,11 @@ namespace SiliconStudio.Xenko.Input
         public virtual void Update(List<InputEvent> inputEvents)
         {
             // Fire events
-            foreach (var evt in KeyboardInputEvents)
+            foreach (var evt in EventQueue)
             {
                 inputEvents.Add(evt);
             }
-            KeyboardInputEvents.Clear();
+            EventQueue.Clear();
         }
         
         public virtual bool IsKeyDown(Keys key)
@@ -47,9 +47,9 @@ namespace SiliconStudio.Xenko.Input
                 KeyRepeats.Add(key, repeatCount);
 
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
-            keyEvent.State = ButtonState.Pressed;
+            keyEvent.State = ButtonState.Down;
             keyEvent.Key = key;
-            KeyboardInputEvents.Add(keyEvent);
+            EventQueue.Add(keyEvent);
         }
 
         public void HandleKeyUp(Keys key)
@@ -60,9 +60,9 @@ namespace SiliconStudio.Xenko.Input
 
             KeyRepeats.Remove(key);
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
-            keyEvent.State = ButtonState.Released;
+            keyEvent.State = ButtonState.Up;
             keyEvent.Key = key;
-            KeyboardInputEvents.Add(keyEvent);
+            EventQueue.Add(keyEvent);
         }
     }
 }
