@@ -1392,6 +1392,11 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
+                            Shadow:
+                                ~Id: 1cf2e547-a16c-4c73-9a36-541a884fbfec
+                                Size: Small
+                                BiasParameters:
+                                    ~Id: df062dc6-7f99-451a-9149-8e5ea27efc8f
                         Intensity: 10.0
         -   Folder: Platform/Walls
             Entity:
@@ -1526,6 +1531,11 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
+                            Shadow:
+                                ~Id: 7cc2c166-14ee-4cb2-8bee-36e12da73146
+                                Size: Small
+                                BiasParameters:
+                                    ~Id: f5d98c84-bee6-43c7-af40-e2481404de46
                         Intensity: 10.0
         -   BaseId: cfc05c6f-da7c-4ba4-8e09-1a659e64ff2a
             BasePartInstanceId: 12db9abd-a162-4997-8818-a1bf3d2058cb
@@ -3014,6 +3024,9 @@ Hierarchy:
                     - !TopDownRPG.Player.PlayerController,TopDownRPG.Game
                         ~Id: 94a122f7-1696-4669-a5d2-6eaf23d2ae03
                         MaxRunSpeed: 8.5
+                        DestinationThreshold: 0.2
+                        CornerSlowdown: 0.6
+                        DestinationSlowdown: 0.4
                         PunchCollision: 2399c011-3b6b-477f-b47f-c67d5abac3a8/f55cf113-4fc6-42b5-9ce1-a586368259bd
                         AttackDistance: 1.25
                         AttackCooldown: 0.65
@@ -4590,6 +4603,11 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
+                            Shadow:
+                                ~Id: 464088e7-3e27-4fa5-bd2b-8e248cc7557b
+                                Size: Small
+                                BiasParameters:
+                                    ~Id: 6e03e37c-6879-4a57-8f46-7fc0cbdc9ebb
                         Intensity: 10.0
         -   BaseId: b86036f4-0ce3-4794-9947-a61378390d41
             BasePartInstanceId: ecd3c316-8263-4fbb-b2e5-140bc057f98f
@@ -4707,6 +4725,11 @@ Hierarchy:
                                 ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                 Value: {R: 1.0, G: 0.960625, B: 0.60625}
                             Radius: 3.0
+                            Shadow:
+                                ~Id: b8631bf3-0702-4133-98a0-2dae1335cd39
+                                Size: Small
+                                BiasParameters:
+                                    ~Id: 8a2a244a-0d98-4a40-a201-86ceeed563da
                         Intensity: 10.0
         -   Folder: Platform/Walls
             Entity:
@@ -7447,6 +7470,11 @@ Hierarchy:
                                             ~Id: 1c19258c-67cd-4c1f-811b-21e3396b3526
                                             Value: {R: 1.0, G: 0.960625, B: 0.60625}
                                         Radius: 3.0
+                                        Shadow:
+                                            ~Id: 9b4769dd-7529-48e5-94b3-5daf1084a2d7
+                                            Size: Small
+                                            BiasParameters:
+                                                ~Id: d7616372-8a24-4bdf-b330-61a0227702cb
                                     Intensity: 10.0
     -   Location: LootBox
         Asset: !PrefabAsset
