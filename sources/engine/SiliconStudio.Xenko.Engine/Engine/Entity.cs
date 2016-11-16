@@ -277,8 +277,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Specialized serializer
         /// </summary>
         /// <seealso cref="Entity" />
-        /// <seealso cref="SiliconStudio.Core.Serialization.IDataSerializerInitializer" />
-        internal class EntitySerializer : DataSerializer<Entity>, IDataSerializerInitializer
+        internal class EntitySerializer : DataSerializer<Entity>
         {
             private DataSerializer<Guid> guidSerializer;
             private DataSerializer<string> stringSerializer;
@@ -286,7 +285,7 @@ namespace SiliconStudio.Xenko.Engine
             private DataSerializer<EntityComponentCollection> componentCollectionSerializer;
 
             /// <inheritdoc/>
-            public void Initialize(SerializerSelector serializerSelector)
+            public override void Initialize(SerializerSelector serializerSelector)
             {
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
                 stringSerializer = MemberSerializer<string>.Create(serializerSelector);

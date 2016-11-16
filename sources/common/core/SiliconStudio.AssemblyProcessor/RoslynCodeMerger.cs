@@ -18,9 +18,23 @@ namespace SiliconStudio.AssemblyProcessor
     /// </summary>
     public static class RoslynCodeMerger
     {
-        public static AssemblyDefinition GenerateRoslynAssembly(CustomAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, TextWriter log, IEnumerable<string> sourceCodes)
+        public static AssemblyDefinition GenerateRoslynAssembly(CustomAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, TextWriter log, IEnumerable<SourceCode> sourceCodes)
         {
-            var syntaxTrees = sourceCodes.Select(x => CSharpSyntaxTree.ParseText(x));
+            var sourceFolder = Path.GetDirectoryName(serializationAssemblyLocation);
+            var syntaxTrees = sourceCodes.Select(x =>
+            {
+                // It has a name, let's save it as a file
+                string sourcePath = null;
+                if (x.Name != null)
+                {
+                    sourcePath = Path.Combine(sourceFolder, $"{x.Name}.cs");
+                    File.WriteAllText(sourcePath, x.Code);
+                }
+
+                var result = CSharpSyntaxTree.ParseText(x.Code, null, sourcePath, Encoding.UTF8);
+
+                return result;
+            }).ToArray();
 
             var compilerOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true, assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
 
@@ -72,8 +86,9 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Do the actual compilation, and check errors
             using (var peStream = new FileStream(serializationAssemblyLocation, FileMode.Create, FileAccess.Write))
+            using (var pdbStream = new FileStream(Path.ChangeExtension(serializationAssemblyLocation, ".pdb"), FileMode.Create, FileAccess.Write))
             {
-                var compilationResult = compilation.Emit(peStream);
+                var compilationResult = compilation.Emit(peStream, pdbStream);
 
                 if (!compilationResult.Success)
                 {
@@ -190,6 +205,12 @@ namespace SiliconStudio.AssemblyProcessor
 
             // For historic reason, it is named *.Serializers.dll
             return Regex.Replace(assemblyLocation, ".dll|.exe", ".Serializers.dll", RegexOptions.IgnoreCase);
+        }
+
+        public struct SourceCode
+        {
+            public string Code;
+            public string Name;
         }
     }
 }

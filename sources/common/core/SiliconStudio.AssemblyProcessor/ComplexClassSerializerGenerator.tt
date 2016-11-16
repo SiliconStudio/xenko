@@ -11,7 +11,7 @@
 
 namespace SiliconStudio.DataSerializers
 {
-	<# if (type.HasGenericParameters) {#>public <#}#>sealed class <#=className#> : <#=type.IsClass && !type.IsValueType && !type.IsAbstract && !type.IsInterface && HasEmptyConstructor(type) ? "Class" : string.Empty#>DataSerializer<<#=type.ConvertCSharp()#>>, IDataSerializerInitializer<#=GenerateGenericConstraints(type)#>
+	<# if (type.HasGenericParameters) {#>public <#}#>sealed class <#=className#> : <#=type.IsClass && !type.IsValueType && !type.IsAbstract && !type.IsInterface && HasEmptyConstructor(type) ? "Class" : string.Empty#>DataSerializer<<#=type.ConvertCSharp()#>><#=GenerateGenericConstraints(type)#>
 	{
 <#if (hasParentSerializer) {#>
 		private DataSerializer<<#=parentType.ConvertCSharp()#>> parentSerializer;
@@ -22,7 +22,7 @@ var serializableItems = GetSerializableItems(type, true).ToArray();
 		private DataSerializer<<#=serializableItem.Type.ConvertCSharp()#>> <#=serializableItem.MemberInfo.Name#>Serializer;
 <#}#>
 
-		public void Initialize(SerializerSelector serializerSelector)
+		public override void Initialize(SerializerSelector serializerSelector)
 		{
 <#if (hasParentSerializer) {#>
 			// Get parent serializer

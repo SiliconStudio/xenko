@@ -3025,6 +3025,10 @@ Hierarchy:
                         HighlightMaterial: f2bc11d3-f182-4e2d-aa19-ce0f0a61daeb/4de4aa42-6f84-472f-8b50-7f4d8229723a:HighlightMaterial
                         Camera: a7b68422-0fb4-45c9-b853-8e17a08a3953/65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         ClickEffect: d61bd9b4-d93c-40d7-8de5-4de365372113/154d2027-e615-463b-a0e4-71b20f452eb1:VFXPrefabs/vfx-ClickEffect
+                    - !NavigationComponent
+                        ~Id: 627bae46-b057-4ec8-8a26-b517d4b95492
+                        NavigationMesh: cf0d7810-7f3e-42d9-bc40-0c993b7158cd/e50d6079-dc5b-43a9-a1aa-75cf370f1fc3:NavigationMesh
+                        NavigationMeshLayer: 0
         -   Folder: Platform/Walls
             Entity:
                 Id: 6007ab76-1be0-44d1-aee4-55e13a22f5b5

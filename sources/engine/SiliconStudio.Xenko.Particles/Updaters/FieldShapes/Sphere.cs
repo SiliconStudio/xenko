@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
 
@@ -32,7 +33,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         [DataMemberIgnore]
         private Vector3 mainAxis;
-        
+
         /// <summary>
         /// The maximum distance from the central point.
         /// </summary>
@@ -40,8 +41,13 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the central point.
         /// </userdoc>
         [DataMember(20)]
+        [DataMemberRange(0f, float.MaxValue)]
         [Display("Radius")]
-        public float Radius { get { return radius; } set { radius = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float Radius
+        {
+            get { return radius > MathUtil.ZeroTolerance ? radius : 0; }
+            set { radius = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float radius = 1f;
 
         public override void PreUpdateField(Vector3 position, Quaternion rotation, Vector3 size)
