@@ -80,9 +80,6 @@ namespace SiliconStudio.Assets
             }
             defaultPackage.IsSystem = true;
 
-            // A flag variable just to know if it is a bare bone development directory
-            var isDev = defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
-
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
@@ -249,6 +246,11 @@ namespace SiliconStudio.Assets
             // By default, we are not loading assets for installed packages
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
+
+        /// <summary>
+        /// Is current store a bare bone development one?
+        /// </summary>
+        private bool IsDevelopmentStore => defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
 
         /// <summary>
         /// New instance of <see cref="PackageMeta"/> from a nuget package <paramref name="metadata"/>.
