@@ -55,7 +55,7 @@ namespace SiliconStudio.Assets.Tests
         public void TestMyAssetObject()
         {
             var assetObject = new MyAsset();
-            assetObject.Id = Guid.Empty;
+            assetObject.Id = AssetId.Empty;
 
             assetObject.Description = "This is a test";
 
@@ -64,8 +64,8 @@ namespace SiliconStudio.Assets.Tests
 
             //assetObject.Base = new AssetBase("/this/is/an/url/to/MyObject", null);
 
-            assetObject.CustomReference2 = new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReference2");
-            assetObject.CustomReferences.Add(new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReferenceItem1"));
+            assetObject.CustomReference2 = new AssetReference(AssetId.Empty, "/this/is/an/url/to/MyCustomReference2");
+            assetObject.CustomReferences.Add(new AssetReference(AssetId.Empty, "/this/is/an/url/to/MyCustomReferenceItem1"));
             var ids = CollectionItemIdHelper.GetCollectionItemIds(assetObject.CustomReferences);
             ids[0] = IdentifierGenerator.Get(99);
 

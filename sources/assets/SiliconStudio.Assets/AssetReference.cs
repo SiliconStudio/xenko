@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="id">The unique identifier of the asset.</param>
         /// <param name="location">The location.</param>
-        public AssetReference(Guid id, UFile location)
+        public AssetReference(AssetId id, UFile location)
         {
             this.location = location;
             Id = id;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The unique identifier of the reference asset..</value>
         [DataMember(10)]
-        public Guid Id { get; }
+        public AssetId Id { get; }
 
         /// <summary>
         /// Gets or sets the location of the asset.
@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static AssetReference New(Guid id, UFile location)
+        public static AssetReference New(AssetId id, UFile location)
         {
             return new AssetReference(id, location);            
         }
@@ -116,11 +116,11 @@ namespace SiliconStudio.Assets
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        public static bool TryParse(string assetReferenceText, out Guid guid, out UFile location)
+        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
-            guid = Guid.Empty;
+            id = AssetId.Empty;
             location = null;
             int indexFirstSlash = assetReferenceText.IndexOf('/');
             int indexBeforelocation = assetReferenceText.IndexOf(':');
@@ -139,7 +139,7 @@ namespace SiliconStudio.Assets
                 startNextGuid = indexFirstSlash + 1;
             }
 
-            if (!Guid.TryParse(assetReferenceText.Substring(startNextGuid, indexBeforelocation - startNextGuid), out guid))
+            if (!AssetId.TryParse(assetReferenceText.Substring(startNextGuid, indexBeforelocation - startNextGuid), out id))
             {
                 return false;
             }
@@ -160,13 +160,13 @@ namespace SiliconStudio.Assets
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             assetReference = null;
-            Guid guid;
+            AssetId assetId;
             UFile location;
-            if (!TryParse(assetReferenceText, out guid, out location))
+            if (!TryParse(assetReferenceText, out assetId, out location))
             {
                 return false;
             }
-            assetReference = New(guid, location);
+            assetReference = New(assetId, location);
             return true;
         }
     }

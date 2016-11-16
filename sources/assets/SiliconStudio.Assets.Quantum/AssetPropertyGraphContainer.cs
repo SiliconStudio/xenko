@@ -8,7 +8,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetPropertyGraphContainer
     {
         private readonly PackageSession session;
-        private readonly Dictionary<Guid, AssetPropertyGraph> registeredGraphs = new Dictionary<Guid, AssetPropertyGraph>();
+        private readonly Dictionary<AssetId, AssetPropertyGraph> registeredGraphs = new Dictionary<AssetId, AssetPropertyGraph>();
 
         public AssetPropertyGraphContainer(PackageSession session, AssetNodeContainer nodeContainer)
         {
@@ -31,19 +31,19 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        public AssetPropertyGraph GetGraph(Guid assetId)
+        public AssetPropertyGraph GetGraph(AssetId assetId)
         {
             AssetPropertyGraph graph;
             registeredGraphs.TryGetValue(assetId, out graph);
             return graph;
         }
 
-        public void RegisterGraph(Guid assetId, AssetPropertyGraph graph)
+        public void RegisterGraph(AssetId assetId, AssetPropertyGraph graph)
         {
             registeredGraphs.Add(assetId, graph);
         }
 
-        public AssetItem GetAssetById(Guid assetId)
+        public AssetItem GetAssetById(AssetId assetId)
         {
             return session.FindAsset(assetId);
         }

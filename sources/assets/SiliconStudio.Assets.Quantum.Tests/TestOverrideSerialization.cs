@@ -74,8 +74,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
          * Abstract (interface) override with different type
          * class prop set to null
          */
-        private static readonly Guid BaseId = GuidGenerator.Get(1);
-        private static readonly Guid DerivedId = GuidGenerator.Get(2);
+        private static readonly AssetId BaseId = (AssetId)GuidGenerator.Get(1);
+        private static readonly AssetId DerivedId = (AssetId)GuidGenerator.Get(2);
 
         private static void SerializeAndCompare(AssetItem assetItem, AssetPropertyGraph graph, string expectedYaml, bool isDerived)
         {

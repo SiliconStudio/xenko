@@ -16,8 +16,9 @@ namespace SiliconStudio.Assets
     [DataContract(Inherited = true)]
     public abstract class Asset : IIdentifiable
     {
-        private Guid id;
+        private AssetId id;
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Locks the unique identifier for further changes.
         /// </summary>
@@ -28,10 +29,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         protected Asset()
         {
-            Id = Guid.NewGuid();
+            Id = AssetId.New();
             Tags = new TagCollection();
 
-            // Initializse asset with default versions
+            // Initializse asset with default versions (same code as in Package..ctor())
             var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
             if (defaultPackageVersion != null)
             {
@@ -52,8 +53,9 @@ namespace SiliconStudio.Assets
         [DataMember(-2000)]
         [NonOverridable]
         [Display(Browsable = false)]
-        public Guid Id
+        public AssetId Id
         {
+            // Note: Please keep this code in sync with Package class
             get
             {
                 return id;
@@ -67,6 +69,7 @@ namespace SiliconStudio.Assets
             }
         }
 
+        // Note: Please keep this code in sync with Package class
         /// <summary>
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
@@ -101,6 +104,7 @@ namespace SiliconStudio.Assets
         [Obsolete]
         public int BuildOrder { get; set; }
 
+        // Note: Please keep this code in sync with Asset class
         /// <summary>
         /// Gets the tags for this asset.
         /// </summary>
@@ -120,6 +124,9 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
 
+        /// <inheritdoc/>
+        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
+
         /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
@@ -138,10 +145,10 @@ namespace SiliconStudio.Assets
             var newAsset = AssetCloner.Clone(this);
 
             // Create a new identifier for this asset
-            var newId = Guid.NewGuid();
+            var newId = AssetId.New();
 
             // Register this new identifier in the remapping dictionary
-            idRemapping?.Add(newAsset.Id, newId);
+            idRemapping?.Add((Guid)newAsset.Id, (Guid)newId);
             
             // Write the new id into the new asset.
             newAsset.Id = newId;

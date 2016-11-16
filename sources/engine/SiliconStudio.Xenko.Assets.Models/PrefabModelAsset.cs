@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 if (prefab != null)
                 {
                     // Use a dictionary to ensure each reference is yielded only once
-                    var references = new Dictionary<Guid, IReference>();
+                    var references = new Dictionary<AssetId, IReference>();
                     foreach (var entity in prefab.Hierarchy.Parts)
                     {
                         // Gather all entities with a model component and a valid model

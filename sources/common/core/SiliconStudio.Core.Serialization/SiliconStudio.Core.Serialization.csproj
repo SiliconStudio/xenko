@@ -30,6 +30,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Assets\AssetId.cs" />
     <Compile Include="IO\IDatabaseStream.cs" />
     <Compile Include="IO\NativeLockFile.cs" />
     <Compile Include="LZ4\ILZ4Service.cs" />

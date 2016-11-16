@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Serialization
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// The asset unique identifier.
         /// </summary>
-        public Guid Id;
+        public AssetId Id;
 
         /// <summary>
         /// If yes, this object won't be recursively saved in a separate chunk by <see cref="ContentManager"/>.
@@ -32,7 +33,7 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         public object Data;
 
-        Guid IReference.Id => Id;
+        AssetId IReference.Id => Id;
 
         string IReference.Location => Url;
 

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -57,9 +58,17 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : Asset, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable
     {
         private const int PackageFileVersion = 4;
+
+        private Guid id;
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Locks the unique identifier for further changes.
+        /// </summary>
+        internal bool IsIdLocked;
 
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
@@ -71,6 +80,11 @@ namespace SiliconStudio.Assets
         private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
+        /// Occurs when package dirty changed occurred.
+        /// </summary>
+        public event DirtyFlagChangedDelegate<Package> PackageDirtyChanged;
+
+        /// <summary>
         /// Occurs when an asset dirty changed occurred.
         /// </summary>
         public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
@@ -80,11 +94,70 @@ namespace SiliconStudio.Assets
         /// </summary>
         public Package()
         {
+            Id = Guid.NewGuid();
+            // Initializse package with default versions (same code as in Asset..ctor())
+            var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
+            if (defaultPackageVersion != null)
+            {
+                SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
+            }
+
+            Tags = new TagCollection();
             Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
             IsDirty = true;
             settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
         }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets or sets the unique identifier of this package.
+        /// </summary>
+        /// <value>The identifier.</value>
+        [DataMember(-2000)]
+        [NonOverridable]
+        [Display(Browsable = false)]
+        public Guid Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                if (value != id && IsIdLocked)
+                    throw new InvalidOperationException("Cannot change an Asset Object Id once it is locked by a package");
+
+                id = value;
+            }
+        }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets or sets the version number for this asset, used internally when migrating assets.
+        /// </summary>
+        /// <value>The version.</value>
+        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataStyle(DataStyle.Compact)]
+        [Display(Browsable = false)]
+        [DefaultValue(null)]
+        [NonOverridable]
+        [NonIdentifiableCollectionItems]
+        public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets the tags for this asset.
+        /// </summary>
+        /// <value>
+        /// The tags for this asset.
+        /// </value>
+        [DataMember(-900)]
+        [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
+        [NonOverridable]
+        [MemberCollection(NotNullItems = true)]
+        public TagCollection Tags { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this package is a system package.
@@ -195,7 +268,7 @@ namespace SiliconStudio.Assets
             {
                 var oldValue = isDirty;
                 isDirty = value;
-                OnAssetDirtyChanged(this, oldValue, value);
+                OnPackageDirtyChanged(this, oldValue, value);
             }
         }
 
@@ -386,6 +459,12 @@ namespace SiliconStudio.Assets
                 }
                 IsDirty = true;
             }
+        }
+
+        internal void OnPackageDirtyChanged(Package package, bool oldValue, bool newValue)
+        {
+            if (package == null) throw new ArgumentNullException(nameof(package));
+            PackageDirtyChanged?.Invoke(package, oldValue, newValue);
         }
 
         internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
@@ -1019,7 +1098,7 @@ namespace SiliconStudio.Assets
 
                 var module = context.Log.Module;
 
-                var assetReference = new AssetReference(Guid.Empty, fileUPath.FullPath);
+                var assetReference = new AssetReference(AssetId.Empty, fileUPath.FullPath);
 
                 // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
                 if (loggerResult != null)
@@ -1064,7 +1143,7 @@ namespace SiliconStudio.Assets
             if (sourceCodeAsset != null)
             {
                 // Use an id generated from the location instead of the default id
-                sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
+                sourceCodeAsset.Id = SourceCodeAsset.GenerateIdFromLocation(assetPath);
             }
 
             return loadResult.Asset;

@@ -153,7 +153,7 @@ namespace SiliconStudio.Assets
         /// <returns>System.String.</returns>
         public static string GetDefaultExtension(Type assetType)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 string extension;
@@ -169,7 +169,7 @@ namespace SiliconStudio.Assets
         /// <returns>The current format version of this asset.</returns>
         public static SortedList<string, PackageVersion> GetCurrentFormatVersions(Type assetType)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 SortedList<string, PackageVersion> versions;
@@ -186,7 +186,7 @@ namespace SiliconStudio.Assets
         /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
         public static AssetUpgraderCollection GetAssetUpgraders(Type assetType, string dependencyName)
         {
-            IsAssetType(assetType, true);
+            IsAssetOrPackageType(assetType, true);
             lock (RegistryLock)
             {
                 AssetUpgraderCollection upgraders;
@@ -541,7 +541,7 @@ namespace SiliconStudio.Assets
 
                     // Asset types
                     var assetType = type;
-                    if (typeof(Asset).IsAssignableFrom(assetType) || !assetType.IsClass)
+                    if (typeof(Asset).IsAssignableFrom(assetType) || assetType == typeof(Package) || !assetType.IsClass)
                     {
                         // Store in a list all asset types loaded
                         if (assetType.IsPublic && !assetType.IsAbstract)
@@ -716,7 +716,27 @@ namespace SiliconStudio.Assets
             if (!typeof(Asset).IsAssignableFrom(assetType))
             {
                 if (throwException)
-                    throw new ArgumentException("Type [{0}] must be assignable to Asset".ToFormat(assetType), nameof(assetType));
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset or be a Package".ToFormat(assetType), nameof(assetType));
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Check if the specified type is an asset.
+        /// </summary>
+        /// <param name="assetType">Type of the asset.</param>
+        /// <param name="throwException">A boolean indicating whether this method should throw an exception if the type is not an asset type.</param>
+        /// <returns><c>true</c> if the asset is an asset type, false otherwise.</returns>
+        public static bool IsAssetOrPackageType(Type assetType, bool throwException = false)
+        {
+            if (assetType == null)
+                throw new ArgumentNullException(nameof(assetType));
+
+            if (!typeof(Asset).IsAssignableFrom(assetType) && assetType != typeof(Package))
+            {
+                if (throwException)
+                    throw new ArgumentException("Type [{0}] must be assignable to Asset or be a Package".ToFormat(assetType), nameof(assetType));
                 return false;
             }
             return true;

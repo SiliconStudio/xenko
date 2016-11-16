@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns>A collection that contains all valid assets.</returns>
         public HashSet<Asset> ValidateAssetBase(ILogger log)
         {
-            var invalidAssets = new HashSet<Guid>();
+            var invalidAssets = new HashSet<AssetId>();
             var validAssets = new HashSet<Asset>();
 
             foreach (var package in Session.Packages)

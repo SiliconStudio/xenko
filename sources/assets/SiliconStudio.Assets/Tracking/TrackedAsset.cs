@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Tracking
         /// <summary>
         /// Gets the id of this asset.
         /// </summary>
-        internal Guid AssetId => sessionAsset.Id;
+        internal AssetId AssetId => sessionAsset.Id;
 
         /// <inheritdoc/>
         public void Dispose()

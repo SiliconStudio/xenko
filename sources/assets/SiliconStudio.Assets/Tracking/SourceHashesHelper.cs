@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets.Tracking
             {
                 var asset = (Asset)thisObject;
                 // Id can be empty when the asset is contained in a base.
-                if (asset.Id == Guid.Empty)
+                if (asset.Id == AssetId.Empty)
                     return null;
 
                 lock (LockObj)
@@ -194,7 +194,7 @@ namespace SiliconStudio.Assets.Tracking
                 var sourceHashes = (Dictionary<UFile, ObjectId>)value;
                 var asset = (Asset)thisObject;
                 // Id can be empty when the asset is contained in a base.
-                if (asset.Id == Guid.Empty)
+                if (asset.Id == AssetId.Empty)
                     return;
 
                 lock (LockObj)

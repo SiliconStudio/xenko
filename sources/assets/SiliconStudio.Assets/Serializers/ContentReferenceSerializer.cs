@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Serializers
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
-            Guid guid;
+            AssetId guid;
             UFile location;
             if (!AssetReference.TryParse(fromScalar.Value, out guid, out location))
             {
