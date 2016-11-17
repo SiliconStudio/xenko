@@ -7,13 +7,16 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(UILibrary))]
     [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Library")]

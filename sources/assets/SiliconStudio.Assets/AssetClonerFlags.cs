@@ -24,5 +24,10 @@ namespace SiliconStudio.Assets
         /// Remove ids attached to item of collections when cloning
         /// </summary>
         RemoveItemIds = 2,
+
+        /// <summary>
+        /// Removes invalid objects
+        /// </summary>
+        RemoveUnloadableObjects = 4,
     }
 }

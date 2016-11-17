@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets
         /// Gets the unique identifier of this asset.
         /// </summary>
         /// <value>The unique identifier.</value>
-        public Guid Id
+        public AssetId Id
         {
             get
             {
@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
         [DataMemberIgnore]
-        public IDictionary<ObjectPath, OverrideType> Overrides { get; set; }
+        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
 
         /// <summary>
         /// Converts this item to a reference.
@@ -156,10 +156,11 @@ namespace SiliconStudio.Assets
         /// <param name="newAsset">The new asset that will be used in the cloned <see cref="AssetItem"/>. If this parameter
         /// is null, it clones the original asset. otherwise, the specified asset is used as-is in the new <see cref="AssetItem"/>
         /// (no clone on newAsset is performed)</param>
+        /// <param name="flags">Flags used with <see cref="AssetCloner.Clone"/>.</param>
         /// <returns>A clone of this instance.</returns>
-        public AssetItem Clone(UFile newLocation = null, Asset newAsset = null)
+        public AssetItem Clone(UFile newLocation = null, Asset newAsset = null, AssetClonerFlags flags = AssetClonerFlags.None)
         {
-            return Clone(false, newLocation, newAsset);
+            return Clone(false, newLocation, newAsset, flags);
         }
 
         /// <summary>
@@ -171,17 +172,18 @@ namespace SiliconStudio.Assets
         /// is null, it clones the original asset. otherwise, the specified asset is used as-is in the new <see cref="AssetItem" />
         /// (no clone on newAsset is performed)</param>
         /// <param name="keepPackage">if set to <c>true</c> copy package information, only used by the <see cref="AssetDependencyManager" />.</param>
+        /// <param name="flags">Flags used with <see cref="AssetCloner.Clone"/>.</param>
         /// <returns>A clone of this instance.</returns>
-        public AssetItem Clone(bool keepPackage, UFile newLocation = null, Asset newAsset = null)
+        public AssetItem Clone(bool keepPackage, UFile newLocation = null, Asset newAsset = null, AssetClonerFlags flags = AssetClonerFlags.None)
         {
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
-            var item = new AssetItem(newLocation ?? location, newAsset ?? AssetCloner.Clone(Asset), keepPackage ? Package : null)
+            var item = new AssetItem(newLocation ?? location, newAsset ?? AssetCloner.Clone(Asset, flags), keepPackage ? Package : null)
             {
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
-                Overrides = Overrides != null ? new Dictionary<ObjectPath, OverrideType>(Overrides) : null
+                Overrides = Overrides != null ? new Dictionary<YamlAssetPath, OverrideType>(Overrides) : null
             };
             return item;
         }
@@ -284,7 +286,7 @@ namespace SiliconStudio.Assets
         /// Creates a child asset that is inheriting the values of this asset.
         /// </summary>
         /// <returns>A new asset inheriting the values of this asset.</returns>
-        public Asset CreateChildAsset()
+        public Asset CreateDerivedAsset()
         {
             return Asset.CreateDerivedAsset(Location);
         }

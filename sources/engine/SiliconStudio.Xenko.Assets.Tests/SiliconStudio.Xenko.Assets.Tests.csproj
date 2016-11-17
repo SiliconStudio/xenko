@@ -80,6 +80,10 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{BF32DE1B-6276-4341-B212-F8862ADBBA7A}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>

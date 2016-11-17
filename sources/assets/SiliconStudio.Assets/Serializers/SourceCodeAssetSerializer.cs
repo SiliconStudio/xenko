@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides)
         {
             aliasOccurred = false;
 
@@ -41,12 +41,12 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             // No override in source code assets
-            overrides = new Dictionary<ObjectPath, OverrideType>();
+            overrides = new Dictionary<YamlAssetPath, OverrideType>();
 
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }

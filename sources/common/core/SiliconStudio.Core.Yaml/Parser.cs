@@ -98,6 +98,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         public Event Current { get { return current; } }
 
+        /// <inheritdoc/>
+        public bool IsEndOfStream => state == ParserState.YAML_PARSE_END_STATE;
+
         /// <summary>
         /// Moves to the next event.
         /// </summary>

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Yaml;
 

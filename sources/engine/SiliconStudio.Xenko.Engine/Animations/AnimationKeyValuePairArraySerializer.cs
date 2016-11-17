@@ -7,12 +7,12 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationKeyValuePairArraySerializer<T> : DataSerializer<AnimationKeyValuePair<T>[]>, IDataSerializerInitializer where T : struct
+    public class AnimationKeyValuePairArraySerializer<T> : DataSerializer<AnimationKeyValuePair<T>[]> where T : struct
     {
         private DataSerializer<AnimationKeyValuePair<T>> itemDataSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<AnimationKeyValuePair<T>>.Create(serializerSelector);
         }

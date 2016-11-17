@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -56,9 +58,17 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : Asset, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable
     {
         private const int PackageFileVersion = 4;
+
+        private Guid id;
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Locks the unique identifier for further changes.
+        /// </summary>
+        internal bool IsIdLocked;
 
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
@@ -70,6 +80,11 @@ namespace SiliconStudio.Assets
         private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
+        /// Occurs when package dirty changed occurred.
+        /// </summary>
+        public event DirtyFlagChangedDelegate<Package> PackageDirtyChanged;
+
+        /// <summary>
         /// Occurs when an asset dirty changed occurred.
         /// </summary>
         public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
@@ -79,11 +94,70 @@ namespace SiliconStudio.Assets
         /// </summary>
         public Package()
         {
+            Id = Guid.NewGuid();
+            // Initializse package with default versions (same code as in Asset..ctor())
+            var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
+            if (defaultPackageVersion != null)
+            {
+                SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
+            }
+
+            Tags = new TagCollection();
             Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
             IsDirty = true;
             settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
         }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets or sets the unique identifier of this package.
+        /// </summary>
+        /// <value>The identifier.</value>
+        [DataMember(-2000)]
+        [NonOverridable]
+        [Display(Browsable = false)]
+        public Guid Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                if (value != id && IsIdLocked)
+                    throw new InvalidOperationException("Cannot change an Asset Object Id once it is locked by a package");
+
+                id = value;
+            }
+        }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets or sets the version number for this asset, used internally when migrating assets.
+        /// </summary>
+        /// <value>The version.</value>
+        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataStyle(DataStyle.Compact)]
+        [Display(Browsable = false)]
+        [DefaultValue(null)]
+        [NonOverridable]
+        [NonIdentifiableCollectionItems]
+        public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
+
+        // Note: Please keep this code in sync with Asset class
+        /// <summary>
+        /// Gets the tags for this asset.
+        /// </summary>
+        /// <value>
+        /// The tags for this asset.
+        /// </value>
+        [DataMember(-900)]
+        [Display(Browsable = false)]
+        [NonIdentifiableCollectionItems]
+        [NonOverridable]
+        [MemberCollection(NotNullItems = true)]
+        public TagCollection Tags { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this package is a system package.
@@ -159,6 +233,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
+        // TODO: turn that internal!
         public List<AssetItem> TemporaryAssets { get; } = new List<AssetItem>();
 
         /// <summary>
@@ -193,7 +268,7 @@ namespace SiliconStudio.Assets
             {
                 var oldValue = isDirty;
                 isDirty = value;
-                OnAssetDirtyChanged(this, oldValue, value);
+                OnPackageDirtyChanged(this, oldValue, value);
             }
         }
 
@@ -386,6 +461,12 @@ namespace SiliconStudio.Assets
             }
         }
 
+        internal void OnPackageDirtyChanged(Package package, bool oldValue, bool newValue)
+        {
+            if (package == null) throw new ArgumentNullException(nameof(package));
+            PackageDirtyChanged?.Invoke(package, oldValue, newValue);
+        }
+
         internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
             if (asset == null) throw new ArgumentNullException(nameof(asset));
@@ -452,7 +533,7 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        AssetSerializer.Save(FullPath, this, null);
+                        AssetFileSerializer.Save(FullPath, this);
 
                         // Move the package if the path has changed
                         if (previousPackagePath != null && previousPackagePath != packagePath)
@@ -592,7 +673,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetSerializer.Save(assetPath, asset.Asset, asset, log, (Dictionary<ObjectPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;
@@ -696,12 +777,12 @@ namespace SiliconStudio.Assets
             try
             {
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath)) { CachedFileSize = filePath.Length };
-                var context = new AssetMigrationContext(null, log);
+                var context = new AssetMigrationContext(null, null, filePath, log);
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var loadResult = packageFile.AssetContent != null
-                    ? AssetSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), filePath, log)
-                    : AssetSerializer.Load<Package>(filePath, log);
+                    ? AssetFileSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), filePath, log)
+                    : AssetFileSerializer.Load<Package>(filePath, log);
                 var package = loadResult.Asset;
                 package.FullPath = filePath;
                 package.previousPackagePath = package.FullPath;
@@ -801,7 +882,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public void ValidateAssets(bool alwaysGenerateNewAssetId, ILogger log)
+        public void ValidateAssets(bool alwaysGenerateNewAssetId, bool removeUnloadableObjects, ILogger log)
         {
             if (TemporaryAssets.Count == 0)
             {
@@ -823,7 +904,7 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true, removeUnloadableObjects);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
@@ -903,8 +984,6 @@ namespace SiliconStudio.Assets
             }
 
 
-            var context = new AssetMigrationContext(this, log);
-
             // Update step counter for log progress
             var tasks = new List<System.Threading.Tasks.Task>();
             for (int i = 0; i < assetFiles.Count; i++)
@@ -920,8 +999,8 @@ namespace SiliconStudio.Assets
                 loggerResult?.Progress(progressMessage, i, assetFiles.Count);
 
                 var task = cancelToken.HasValue ?
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult), cancelToken.Value) : 
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult));
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(new AssetMigrationContext(this, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log), assetFile), cancelToken.Value) : 
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(new AssetMigrationContext(this, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log), assetFile));
 
                 tasks.Add(task);
             }
@@ -944,7 +1023,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private void LoadAsset(AssetMigrationContext context, PackageLoadingAssetFile assetFile, LoggerResult loggerResult)
+        private void LoadAsset(AssetMigrationContext context, PackageLoadingAssetFile assetFile)
         {
             var fileUPath = assetFile.FilePath;
             var sourceFolder = assetFile.SourceFolder;
@@ -976,7 +1055,7 @@ namespace SiliconStudio.Assets
                 var assetContent = assetFile.AssetContent;
 
                 bool aliasOccurred;
-                IDictionary<ObjectPath, OverrideType> overrides;
+                IDictionary<YamlAssetPath, OverrideType> overrides;
                 var asset = LoadAsset(context.Log, assetFullPath, assetPath.ToWindowsPath(), assetContent, out aliasOccurred, out overrides);
 
                 // Create asset item
@@ -1015,22 +1094,8 @@ namespace SiliconStudio.Assets
                     column = yamlException.Start.Column;
                 }
 
-                var module = context.Log.Module;
-
-                var assetReference = new AssetReference(Guid.Empty, fileUPath.FullPath);
-
-                // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
-                if (loggerResult != null)
-                {
-                    loggerResult.Module = "{0}({1},{2})".ToFormat(Path.GetFullPath(fileUPath.FullPath), row, column);
-                }
-
+                var assetReference = new AssetReference(AssetId.Empty, fileUPath.FullPath);
                 context.Log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
-
-                if (loggerResult != null)
-                {
-                    loggerResult.Module = module;
-                }
             }
         }
 
@@ -1048,11 +1113,11 @@ namespace SiliconStudio.Assets
             LoadAssemblyReferencesForPackage(log, loadParameters);
         }
 
-        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<ObjectPath, OverrideType> overrides)
+        private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, byte[] assetContent, out bool assetDirty, out IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             var loadResult = assetContent != null
-                ? AssetSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
-                : AssetSerializer.Load<Asset>(assetFullPath, log);
+                ? AssetFileSerializer.Load<Asset>(new MemoryStream(assetContent), assetFullPath, log)
+                : AssetFileSerializer.Load<Asset>(assetFullPath, log);
 
             assetDirty = loadResult.AliasOccurred;
             overrides = loadResult.Overrides;
@@ -1062,7 +1127,7 @@ namespace SiliconStudio.Assets
             if (sourceCodeAsset != null)
             {
                 // Use an id generated from the location instead of the default id
-                sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
+                sourceCodeAsset.Id = SourceCodeAsset.GenerateIdFromLocation(assetPath);
             }
 
             return loadResult.Asset;

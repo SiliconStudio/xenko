@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("PrefabAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Prefab))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(PrefabAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.7.0-beta01", typeof(SpriteComponentUpgrader))]
@@ -21,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "1.9.0-beta01", typeof(CharacterSlopeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(IdentifiableComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(BasePartsRemovalComponentUpgrader))]
-    [Display(195, "Prefab")]
+    [Display(1950, "Prefab")]
     public class PrefabAsset : EntityHierarchyAssetBase
     {
         private const string CurrentVersion = "1.9.0-beta03";

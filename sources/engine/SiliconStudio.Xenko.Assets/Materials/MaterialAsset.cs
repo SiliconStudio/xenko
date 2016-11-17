@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
@@ -20,11 +21,12 @@ namespace SiliconStudio.Xenko.Assets.Materials
     /// </summary>
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Material))]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
-    [Display(115, "Material")]
+    [Display(1150, "Material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         protected override int InternalBuildOrder => 100;
 
         [DataMemberIgnore]
-        public Guid MaterialId => Id;
+        public AssetId MaterialId => Id;
 
         /// <summary>
         /// Gets or sets the material attributes.

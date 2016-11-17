@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
@@ -8,7 +10,8 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class OverrideTypePathGenerator : GraphVisitorBase
     {
-        public Dictionary<ObjectPath, OverrideType> Result { get; } = new Dictionary<ObjectPath, OverrideType>();
+        public Dictionary<YamlAssetPath, OverrideType> Result { get; } = new Dictionary<YamlAssetPath, OverrideType>();
+        private int inNonIdentifiableType;
 
         public void Reset()
         {
@@ -18,6 +21,13 @@ namespace SiliconStudio.Assets.Quantum
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = (AssetNode)node;
+
+            bool localInNonIdentifiableType = false;
+            if ((node.Content.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
+            {
+                localInNonIdentifiableType = true;
+                inNonIdentifiableType++;
+            }
 
             var path = ConvertPath(currentPath);
             if (assetNode.IsContentOverridden())
@@ -40,13 +50,15 @@ namespace SiliconStudio.Assets.Quantum
                 Result.Add(itemPath, assetNode.GetKeyOverride(index));
             }
             base.VisitNode(node, currentPath);
+
+            if (localInNonIdentifiableType)
+                inNonIdentifiableType--;
         }
 
-        private static ObjectPath ConvertPath(GraphNodePath path)
+        private YamlAssetPath ConvertPath(GraphNodePath path)
         {
-            var currentPath = new GraphNodePath(path.RootNode);
             var currentNode = (AssetNode)path.RootNode;
-            var result = new ObjectPath();
+            var result = new YamlAssetPath();
             var i = 0;
             foreach (var item in path.Path)
             {
@@ -55,41 +67,31 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentPath = currentPath.PushMember(member);
-                        currentNode = (AssetNode)currentNode.GetChild(member);
+                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
-                        currentPath = currentPath.PushTarget();
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget();
+                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        if (AssetNode.IsNonIdentifiableCollectionContent(currentNode.Content))
+                        if (inNonIdentifiableType > 0 || currentNode.IsNonIdentifiableCollectionContent)
                         {
-                            result.PushIndex(index);
+                            result.PushIndex(index.Value);
                         }
                         else
                         {
-                            try
-                            {
-                                var id = currentNode.IndexToId(index);
-                                // Create a new id if we don't have any so far
-                                if (id == ItemId.Empty)
-                                    id = ItemId.New();
-                                result.PushItemId(id);
-                            }
-                            catch (Exception)
-                            {
-                                throw;
-                            }
+                            var id = currentNode.IndexToId(index);
+                            // Create a new id if we don't have any so far
+                            if (id == ItemId.Empty)
+                                id = ItemId.New();
+                            result.PushItemId(id);
                         }
-                        currentPath = currentPath.PushIndex(index);
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)currentNode.GetTarget(index);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index);
                         }
                         break;
                     default:

@@ -54,6 +54,7 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestDerivedAssets.cs" />
+    <Compile Include="TestDynamicYaml.cs" />
     <Compile Include="TestFileVersionManager.cs" />
     <Compile Include="TestPackageStore.cs" />
     <Compile Include="TestSerializing.TestMyAssetObject.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestPathSelector.cs" />
     <Compile Include="TestTemplateManager.cs" />
+    <Compile Include="Yaml\TestUnloadable.cs" />
     <Compile Include="Yaml\TestCollectionIdsSerialization.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// Serializer for <see cref="SignedDistanceFieldSpriteFont"/>.
     /// </summary>
-    internal class SignedDistanceFieldSpriteFontSerializer : DataSerializer<SignedDistanceFieldSpriteFont>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+    internal class SignedDistanceFieldSpriteFontSerializer : DataSerializer<SignedDistanceFieldSpriteFont>, IDataSerializerGenericInstantiation
     {
         private DataSerializer<SpriteFont> parentSerializer;
 
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // Do not create object during pre-serialize (OK because not recursive)
         }
 
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             parentSerializer = SerializerSelector.Default.GetSerializer<SpriteFont>();
             if (parentSerializer == null)

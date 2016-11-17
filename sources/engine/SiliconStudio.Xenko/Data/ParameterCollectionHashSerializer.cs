@@ -6,11 +6,11 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Rendering.Data
 {
-    public class ParameterCollectionHashSerializer : ClassDataSerializer<ParameterCollection>, IDataSerializerInitializer
+    public class ParameterCollectionHashSerializer : ClassDataSerializer<ParameterCollection>
     {
         private DataSerializer<ParameterKey> parameterKeySerializer;
 
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             parameterKeySerializer = serializerSelector.GetSerializer<ParameterKey>();
         }

@@ -66,7 +66,7 @@ namespace SiliconStudio.Assets.Tests
             var yaml = sr.ReadToEnd();
             stream.Position = 0;
             bool aliasOccurred;
-            Dictionary<ObjectPath, OverrideType> overrides;
+            Dictionary<YamlAssetPath, OverrideType> overrides;
             var loadedAsset = (MyAsset)serializer.Load(stream, null, null, out aliasOccurred, out overrides);
             var asset2Ids = CollectionItemIdHelper.GetCollectionItemIds(loadedAsset.Strings);
             Assert.AreEqual(2, asset2Ids.Count);

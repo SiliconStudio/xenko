@@ -2,10 +2,9 @@
 Id: 1e817413-2f49-48e3-b245-ee9acc49ce2e
 SerializedVersion: {Xenko: 1.6.1-alpha01}
 Tags: []
-DefaultScene: 68006325-08d2-4612-a3a5-2d5b0ed52e0b/bc8d83e5-a707-4213-b92c-d2e699e02d5f:MainScene
+DefaultScene: bc8d83e5-a707-4213-b92c-d2e699e02d5f:MainScene
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
-        ~Id: 2aad9b06-44de-4d47-ae20-c4e652a703e0
         DefaultBackBufferWidth: 1280
         DefaultBackBufferHeight: 720
         AdaptBackBufferToScreen: false
@@ -14,13 +13,10 @@ Defaults:
         DisplayOrientation: LandscapeRight
         PreferredGraphicsPlatform: Default
     - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
-        ~Id: db05e225-b83c-4d92-b5b6-53d2172bf87d
         RenderingMode: HDR
     - !SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets
-        ~Id: 0368b8dd-980a-4c94-ac5a-74b455b1d3c5
         TextureQuality: Fast
     - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
-        ~Id: 08b9e0af-9462-4cfe-bd1a-9cc98bd5a59c
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675

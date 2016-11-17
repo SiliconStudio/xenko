@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Tests
             // Create a fake reference to make sure that the attached reference will not be serialized
             var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(obj1.ObjectWithAttachedReference);
             attachedReference.Url = "just_for_test";
-            attachedReference.Id = Guid.NewGuid();
+            attachedReference.Id = AssetId.New();
 
             var obj2 = AssetCloner.Clone(obj1);
 

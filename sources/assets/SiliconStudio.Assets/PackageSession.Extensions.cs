@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets
         /// <param name="session">The session.</param>
         /// <param name="assetId">The assetId of the asset.</param>
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this PackageSession session, Guid assetId)
+        public static AssetItem FindAsset(this PackageSession session, AssetId assetId)
         {
             var packages = session.Packages;
             return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
@@ -74,7 +74,10 @@ namespace SiliconStudio.Assets
 
             // Calculate dependencies
             // Search only for references
-            var dependencies = session.DependencyManager.ComputeDependencies(assetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            var dependencies = session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            if (dependencies == null)
+                throw new InvalidOperationException("The asset doesn't exist in the dependency manager anymore");
+
             var assetItemRootCloned = dependencies.Item.Clone();
 
             // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages

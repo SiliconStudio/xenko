@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Serialization.Contents
@@ -110,7 +111,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 else
                 {
                     var type = AssemblyRegistry.GetType(stream.ReadString());
-                    var id = stream.Read<Guid>();
+                    var id = stream.Read<AssetId>();
                     var url = stream.ReadString();
 
                     obj = (T)AttachedReferenceManager.CreateProxyObject(type, id, url);

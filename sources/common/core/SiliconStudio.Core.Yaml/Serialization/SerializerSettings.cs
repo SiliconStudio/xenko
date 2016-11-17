@@ -58,7 +58,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     public sealed class SerializerSettings
     {
         internal readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
-        internal readonly AssemblyRegistry AssemblyRegistry;
+        internal readonly YamlAssemblyRegistry AssemblyRegistry;
         private IAttributeRegistry attributeRegistry;
         private readonly IYamlSchema schema;
         private IObjectFactory objectFactory;
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             LimitPrimitiveFlowSequence = 0;
             DefaultStyle = DataStyle.Normal;
             this.schema = schema ?? new CoreSchema();
-            AssemblyRegistry = new AssemblyRegistry(Schema);
+            AssemblyRegistry = new YamlAssemblyRegistry(Schema);
             attributeRegistry = new AttributeRegistry();
             ObjectFactory = new DefaultObjectFactory();
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
@@ -106,6 +106,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets or sets a serializer that is executed just before the <see cref="RoutingSerializer"/>.
         /// </summary>
         public ChainedSerializer PreSerializer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a serializer that is executed after all other serializers, including <see cref="TagTypeSerializer"/>.
+        /// </summary>
+        public ChainedSerializer PostSerializer { get; set; }
 
         /// <summary>
         /// Gets or sets the preferred indentation. Default is 2.

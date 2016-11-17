@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Scene))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
@@ -48,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.9.0-beta02", typeof(SceneSettingsIdentifiableUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(IdentifiableComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
-    [Display(200, "Scene")]
+    [Display(2000, "Scene")]
     [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {

@@ -118,7 +118,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != AssetId.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -168,7 +168,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     AddLink(attachedReference, (guid, location) =>
                     {
-                        var link = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
+                        var link = guid.HasValue && guid.Value != AssetId.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
                         descriptor.SetValue(collection, index, link);
                         return link;
                     });
@@ -213,7 +213,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ValueType, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != AssetId.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ValueType, guid.Value, location) : null;
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -260,7 +260,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(member.Type, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != AssetId.Empty ? AttachedReferenceManager.CreateProxyObject(member.Type, guid.Value, location) : null;
                             member.Set(container, newValue);
                             return newValue;
                         });
@@ -287,7 +287,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            private void AddLink(object value, Func<Guid?, string, object> updateReference)
+            private void AddLink(object value, Func<AssetId?, string, object> updateReference)
             {
                 References.Add(new AssetReferenceLink(CurrentPath.Clone(), value, updateReference));
             }

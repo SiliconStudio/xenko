@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver(), true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different
@@ -70,7 +70,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Force to use new ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true);
+            AssetCollision.Clean(null, inputs, outputs, new AssetResolver() { AlwaysCreateNewId = true }, true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -82,7 +82,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreNotEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different
@@ -116,7 +116,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Tries to use existing ids
             var outputs = new List<AssetItem>();
-            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true);
+            AssetCollision.Clean(null, inputs, outputs, AssetResolver.FromPackage(package), true, false);
 
             // Make sure we are generating exactly the same number of elements
             Assert.AreEqual(inputs.Count, outputs.Count);
@@ -128,7 +128,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreNotEqual(inputs[0].Id, outputs[0].Id);
 
             // Make sure that all ids are different
-            var ids = new HashSet<Guid>(outputs.Select(item => item.Id));
+            var ids = new HashSet<AssetId>(outputs.Select(item => item.Id));
             Assert.AreEqual(inputs.Count, ids.Count);
 
             // Make sure that all locations are different

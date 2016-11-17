@@ -43,6 +43,10 @@ namespace SiliconStudio.Core.Yaml
 
         private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
         {
+            // Process only our own assemblies
+            if (!e.Categories.Contains(AssemblyCommonCategories.Engine))
+                return;
+
             lock (Lock)
             {
                 RegisteredAssemblies.Add(e.Assembly);
@@ -54,6 +58,10 @@ namespace SiliconStudio.Core.Yaml
 
         private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
         {
+            // Process only our own assemblies
+            if (!e.Categories.Contains(AssemblyCommonCategories.Engine))
+                return;
+
             lock (Lock)
             {
                 RegisteredAssemblies.Remove(e.Assembly);

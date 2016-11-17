@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using NUnit.Framework;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -21,8 +22,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         public static DeriveAssetTest<T> LoadFromYaml(string baseYaml, string derivedYaml)
         {
-            var baseAsset = AssetSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}", null);
-            var derivedAsset = AssetSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}", null);
+            var baseAsset = AssetFileSerializer.Load<T>(ToStream(baseYaml), $"MyAsset{Types.FileExtension}");
+            var derivedAsset = AssetFileSerializer.Load<T>(ToStream(derivedYaml), $"MyDerivedAsset{Types.FileExtension}");
             var result = new DeriveAssetTest<T>(baseAsset.Asset, derivedAsset.Asset)
             {
                 BaseAssetItem = { Overrides = baseAsset.Overrides },
@@ -34,12 +35,16 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         private void BuildGraph()
         {
-            BaseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem, null);
-            DerivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
+            var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem, null);
+            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            BaseGraph = (MyAssetBasePropertyGraph)baseGraph;
+            var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
+            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            DerivedGraph = (MyAssetBasePropertyGraph)derivedGraph;
             DerivedGraph.RefreshBase(BaseGraph);
         }
 
-        private static Stream ToStream(string str)
+        public static Stream ToStream(string str)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -48,12 +53,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
             stream.Position = 0;
             return stream;
         }
+
         public AssetPropertyGraphContainer Container { get; }
         public AssetItem BaseAssetItem { get; }
         public AssetItem DerivedAssetItem { get; }
         public T BaseAsset => (T)BaseAssetItem.Asset;
         public T DerivedAsset => (T)DerivedAssetItem.Asset;
-        public AssetPropertyGraph BaseGraph { get; private set; }
-        public AssetPropertyGraph DerivedGraph { get; private set; }
+        public MyAssetBasePropertyGraph BaseGraph { get; private set; }
+        public MyAssetBasePropertyGraph DerivedGraph { get; private set; }
     }
 }

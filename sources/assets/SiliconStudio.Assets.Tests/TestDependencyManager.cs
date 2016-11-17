@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using NUnit.Framework;
 using SiliconStudio.Assets.Analysis;
 
@@ -35,7 +33,7 @@ namespace SiliconStudio.Assets.Tests
             var assetItem1 = new AssetItem("asset-1", asset1);
             var assetItem2 = new AssetItem("asset-2", asset2);
 
-            var asset3 = assetItem1.CreateChildAsset();
+            var asset3 = assetItem1.CreateDerivedAsset();
             var assetItem3 = new AssetItem("asset-3", asset3);
 
             asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
@@ -126,7 +124,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(0, dependencyManager.MissingReferencesToParent.Count);
 
                 // Check direct input references
-                var dependenciesFirst = dependencyManager.Find(assetItem1);
+                var dependenciesFirst = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                 Assert.AreEqual(1, dependenciesFirst.LinksIn.Count());
                 var copyItem = dependenciesFirst.LinksIn.FirstOrDefault();
                 Assert.NotNull(copyItem.Element);
@@ -139,7 +137,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(assetItem2.Id, copyItem.Item.Id);
 
                 // Calculate full recursive references
-                var dependencies = dependencyManager.ComputeDependencies(assetItem1);
+                var dependencies = dependencyManager.ComputeDependencies(assetItem1.Id);
 
                 // Check all input references (recursive)
                 var asset1RecursiveInputs = dependencies.LinksIn.OrderBy(item => item.Element.Location).ToList();
@@ -213,12 +211,12 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(assetItem3.Id, assetItemWithMissingReferences[0]);
 
                     // Check missing reference
-                    var missingReferences = dependencyManager.FindMissingReferences(assetItem3).ToList();
+                    var missingReferences = dependencyManager.FindMissingReferences(assetItem3.Id).ToList();
                     Assert.AreEqual(1, missingReferences.Count);
                     Assert.AreEqual(asset4.Id, missingReferences[0].Id);
 
                     // Check references for: asset1 => asset2
-                    var referencesFromAsset1 = dependencyManager.ComputeDependencies(assetItem1);
+                    var referencesFromAsset1 = dependencyManager.ComputeDependencies(assetItem1.Id);
                     Assert.AreEqual(1, referencesFromAsset1.LinksOut.Count());
                     var copyItem = referencesFromAsset1.LinksOut.FirstOrDefault();
                     Assert.NotNull(copyItem.Element);
@@ -289,12 +287,12 @@ namespace SiliconStudio.Assets.Tests
                 // Mark the asset dirty
                 assetItem1.IsDirty = true;
 
-                var dependencies1 = dependencyManager.FindDependencySet(asset1.Id);
+                var dependencies1 = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                 var copyItem = dependencies1.LinksOut.FirstOrDefault();
                 Assert.NotNull(copyItem.Element);
                 Assert.AreEqual(assetItem2.Id, copyItem.Element.Id);
 
-                var dependencies2 = dependencyManager.FindDependencySet(asset2.Id);
+                var dependencies2 = dependencyManager.ComputeDependencies(assetItem2.Id, AssetDependencySearchOptions.InOut);
                 copyItem = dependencies2.LinksIn.FirstOrDefault();
                 Assert.NotNull(copyItem.Element);
                 Assert.AreEqual(assetItem1.Id, copyItem.Element.Id);
@@ -344,7 +342,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset1.Id, assets[0]);
 
                     // Check dependencies on asset1
-                    var dependencySetAsset1 = dependencyManager.FindDependencySet(asset1.Id);
+                    var dependencySetAsset1 = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset1);
 
                     Assert.AreEqual(0, dependencySetAsset1.LinksOut.Count());
@@ -359,7 +357,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(0, assets.Count);
 
                     // Check dependencies on asset1
-                    var dependencySetAsset1 = dependencyManager.FindDependencySet(asset1.Id);
+                    var dependencySetAsset1 = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset1);
 
                     Assert.AreEqual(1, dependencySetAsset1.LinksOut.Count());
@@ -367,7 +365,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset2.Id, dependencySetAsset1.LinksOut.First().Element.Id);
 
                     // Check dependencies on asset2
-                    var dependencySetAsset2 = dependencyManager.FindDependencySet(asset2.Id);
+                    var dependencySetAsset2 = dependencyManager.ComputeDependencies(assetItem2.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset2);
 
                     Assert.AreEqual(0, dependencySetAsset2.LinksOut.Count());
@@ -383,7 +381,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(0, assets.Count);
 
                     // Check dependencies on asset1
-                    var dependencySetAsset1 = dependencyManager.FindDependencySet(asset1.Id);
+                    var dependencySetAsset1 = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset1);
 
                     Assert.AreEqual(1, dependencySetAsset1.LinksOut.Count());
@@ -392,7 +390,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset3.Id, dependencySetAsset1.LinksIn.First().Element.Id);
 
                     // Check dependencies on asset2
-                    var dependencySetAsset2 = dependencyManager.FindDependencySet(asset2.Id);
+                    var dependencySetAsset2 = dependencyManager.ComputeDependencies(assetItem2.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset2);
 
                     Assert.AreEqual(0, dependencySetAsset2.LinksOut.Count());
@@ -400,7 +398,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset1.Id, dependencySetAsset2.LinksIn.First().Element.Id);
 
                     // Check dependencies on asset3
-                    var dependencySetAsset3 = dependencyManager.FindDependencySet(asset3.Id);
+                    var dependencySetAsset3 = dependencyManager.ComputeDependencies(assetItem3.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset3);
 
                     Assert.AreEqual(1, dependencySetAsset3.LinksOut.Count());
@@ -417,14 +415,14 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset3.Id, assets[0]);
 
                     // Check dependencies on asset2
-                    var dependencySetAsset2 = dependencyManager.FindDependencySet(asset2.Id);
+                    var dependencySetAsset2 = dependencyManager.ComputeDependencies(assetItem2.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset2);
 
                     Assert.AreEqual(0, dependencySetAsset2.LinksOut.Count());
                     Assert.AreEqual(0, dependencySetAsset2.LinksIn.Count());
 
                     // Check dependencies on asset3
-                    var dependencySetAsset3 = dependencyManager.FindDependencySet(asset3.Id);
+                    var dependencySetAsset3 = dependencyManager.ComputeDependencies(assetItem3.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset3);
 
                     Assert.AreEqual(0, dependencySetAsset3.LinksOut.Count());
@@ -439,7 +437,7 @@ namespace SiliconStudio.Assets.Tests
 
                 // Modify reference asset3 to asset1 with fake asset
                 var previousAsset3ToAsset1Reference = asset3.Reference;
-                asset3.Reference = new AssetReference(Guid.NewGuid(), "fake");
+                asset3.Reference = new AssetReference(AssetId.New(), "fake");
                 assetItem3.IsDirty = true;
                 {
                     var assets = dependencyManager.FindAssetsWithMissingReferences().ToList();
@@ -447,7 +445,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset3.Id, assets[0]);
 
                     // Check dependencies on asset1
-                    var dependencySetAsset1 = dependencyManager.FindDependencySet(asset1.Id);
+                    var dependencySetAsset1 = dependencyManager.ComputeDependencies(assetItem1.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset1);
 
                     Assert.AreEqual(1, dependencySetAsset1.LinksOut.Count());
@@ -455,7 +453,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset2.Id, dependencySetAsset1.LinksOut.First().Element.Id);
 
                     // Check dependencies on asset2
-                    var dependencySetAsset2 = dependencyManager.FindDependencySet(asset2.Id);
+                    var dependencySetAsset2 = dependencyManager.ComputeDependencies(assetItem2.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset2);
 
                     Assert.AreEqual(0, dependencySetAsset2.LinksOut.Count());
@@ -463,7 +461,7 @@ namespace SiliconStudio.Assets.Tests
                     Assert.AreEqual(asset1.Id, dependencySetAsset2.LinksIn.First().Element.Id);
 
                     // Check dependencies on asset3
-                    var dependencySetAsset3 = dependencyManager.FindDependencySet(asset3.Id);
+                    var dependencySetAsset3 = dependencyManager.ComputeDependencies(assetItem3.Id, AssetDependencySearchOptions.InOut);
                     Assert.NotNull(dependencySetAsset3);
 
                     Assert.AreEqual(0, dependencySetAsset3.LinksOut.Count());
@@ -515,13 +513,15 @@ namespace SiliconStudio.Assets.Tests
             var assetItems = new List<AssetItem>();
             for (int i = 0; i < 7; ++i)
             {
-                assets.Add(new AssetObjectTest());
+                assets.Add(new AssetObjectTest { Parts = { new AssetPartTestItem { Id = Guid.NewGuid() } } });
                 assetItems.Add(new AssetItem("asset-" + i, assets[i]));
                 project.Assets.Add(assetItems[i]);
             }
 
             assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
             assets[2].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
+            assets[3].Parts[0].Base = new BasePart(new AssetReference(assetItems[1].Id, assetItems[1].Location), assets[1].Parts[0].Id, Guid.NewGuid());
+            assets[1].Parts[0].Base = new BasePart(new AssetReference(assetItems[4].Id, assetItems[4].Location), assets[4].Parts[0].Id, Guid.NewGuid());
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -530,16 +530,16 @@ namespace SiliconStudio.Assets.Tests
             {
                 var dependencyManager = session.DependencyManager;
 
-                var dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                var dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
 
                 Assert.AreEqual(3, dependencies.LinksIn.Count());
-                Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[3]).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[3]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[5]).Type);
 
                 Assert.AreEqual(3, dependencies.LinksOut.Count());
-                Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[0]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[4]).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[4]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[6]).Type);
                 
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -551,14 +551,14 @@ namespace SiliconStudio.Assets.Tests
                         project.Assets.Remove(assetItems[i]);
                 }
 
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
 
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(0, dependencies.LinksOut.Count());
 
                 Assert.AreEqual(3, dependencies.BrokenLinksOut.Count());
-                Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[6].Id).Type);
             }
         }
@@ -588,7 +588,7 @@ namespace SiliconStudio.Assets.Tests
             var assetItems = new List<AssetItem>();
             for (int i = 0; i < 3; ++i)
             {
-                assets.Add(new AssetObjectTest());
+                assets.Add(new AssetObjectTest { Parts = { new AssetPartTestItem { Id = Guid.NewGuid() } } });
                 assetItems.Add(new AssetItem("asset-" + i, assets[i]));
                 project.Assets.Add(assetItems[i]);
             }
@@ -596,17 +596,16 @@ namespace SiliconStudio.Assets.Tests
             // Create a session with this project
             using (var session = new PackageSession(project))
             {
-                AssetDependencies dependencies;
                 var dependencyManager = session.DependencyManager;
 
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                var dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(0, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 
                 assets[1].Reference = CreateAssetReference(assetItems[0]);
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -614,7 +613,7 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[2].Reference = CreateAssetReference(assetItems[1]);
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -623,7 +622,7 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[1].Archetype = new AssetReference(assetItems[0].Id, assetItems[0].Location);
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -632,23 +631,25 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[2].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
+                assets[1].Parts[0].Base = new BasePart(new AssetReference(assetItems[0].Id, assetItems[0].Location), assets[0].Parts[0].Id, Guid.NewGuid());
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
-                
+
+                assets[2].Parts[0].Base = new BasePart(new AssetReference(assetItems[1].Id, assetItems[1].Location), assets[1].Parts[0].Id, Guid.NewGuid());
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -656,7 +657,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
 
                 project.Assets.Remove(assetItems[0]);
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(0, dependencies.LinksOut.Count());
                 Assert.AreEqual(1, dependencies.BrokenLinksOut.Count());
@@ -664,21 +665,21 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
 
                 project.Assets.Remove(assetItems[2]);
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(0, dependencies.LinksOut.Count());
                 Assert.AreEqual(1, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
 
                 project.Assets.Add(assetItems[0]);
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
 
                 project.Assets.Add(assetItems[2]);
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -687,7 +688,7 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[2].Archetype = null;
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -696,23 +697,25 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[1].Archetype = null;
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
+                assets[2].Parts[0].Base = null;
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
+                assets[1].Parts[0].Base = null;
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -721,7 +724,7 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[2].Reference = null;
                 assetItems[2].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(1, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -729,7 +732,7 @@ namespace SiliconStudio.Assets.Tests
 
                 assets[1].Reference = null;
                 assetItems[1].IsDirty = true;
-                dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 Assert.AreEqual(0, dependencies.LinksIn.Count());
                 Assert.AreEqual(0, dependencies.LinksOut.Count());
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -745,6 +748,7 @@ namespace SiliconStudio.Assets.Tests
         /// Tests the <see cref="AssetDependencyManager.FindAssetsInheritingFrom"/> functions.
         /// </summary>
         [Test]
+        //[Ignore("This test is currently broken and we do not have any scenario of inheritance + composition, nor decided if we actually want to support it.")]
         public void TestInheritFrom()
         {
             // -----------------------------------------------------------
@@ -772,7 +776,7 @@ namespace SiliconStudio.Assets.Tests
             var assetItems = new List<AssetItem>();
             for (int i = 0; i < 9; ++i)
             {
-                assets.Add(new AssetObjectTest());
+                assets.Add(new AssetObjectTest { Parts = { new AssetPartTestItem { Id = Guid.NewGuid() } } });
                 assetItems.Add(new AssetItem("asset-" + i, assets[i]));
                 project.Assets.Add(assetItems[i]);
             }
@@ -783,6 +787,9 @@ namespace SiliconStudio.Assets.Tests
             assets[8].Archetype = new AssetReference(assetItems[1].Id, assetItems[1].Location);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
+            assets[1].Parts[0].Base = new BasePart(new AssetReference(assetItems[7].Id, assetItems[7].Location), assets[7].Parts[0].Id, Guid.NewGuid());
+            assets[2].Parts[0].Base = new BasePart(new AssetReference(assetItems[1].Id, assetItems[1].Location), assets[1].Parts[0].Id, Guid.NewGuid());
+            assets[6].Parts[0].Base = new BasePart(new AssetReference(assetItems[1].Id, assetItems[1].Location), assets[1].Parts[0].Id, Guid.NewGuid());
 
             // Create a session with this project
             using (var session = new PackageSession(project))
@@ -799,7 +806,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.IsTrue(compositionChildren.Any(x => x.Id == assets[2].Id));
                 Assert.IsTrue(compositionChildren.Any(x => x.Id == assets[6].Id));
 
-                var all = dependencyManager.FindAssetsInheritingFrom(assets[1].Id, AssetInheritanceSearchOptions.All);
+                var all = dependencyManager.FindAssetsInheritingFrom(assets[1].Id);
                 Assert.AreEqual(3, all.Count);
                 Assert.IsTrue(all.Any(x => x.Id == assets[2].Id));
                 Assert.IsTrue(all.Any(x => x.Id == assets[6].Id));
@@ -827,24 +834,28 @@ namespace SiliconStudio.Assets.Tests
             var a1 = new TestAssetWithParts();
             a1.Parts.Add(new AssetPartTestItem(Guid.NewGuid()));
             a1.Parts.Add(new AssetPartTestItem(Guid.NewGuid()));
-            assetItems.Add(new AssetItem("a1", a1));
+            var a1Item = new AssetItem("a1", a1);
+            assetItems.Add(a1Item);
 
             var a2 = new TestAssetWithParts();
             var aPartInstance1 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
             var aPartInstance2 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
-            a2.AddPart(aPartInstance1);
-            a2.AddPart(aPartInstance2);
-            assetItems.Add(new AssetItem("a2", a2));
+            a2.AddParts(aPartInstance1);
+            a2.AddParts(aPartInstance2);
+            var a2Item = new AssetItem("a2", a2);
+            assetItems.Add(a2Item);
 
             var a3 = a2.CreateDerivedAsset("a2");
-            assetItems.Add(new AssetItem("a3", a3));
+            var a3Item = new AssetItem("a3", a3);
+            assetItems.Add(a3Item);
 
             // Create a session with this project
             using (var session = new PackageSession(package))
             {
                 var dependencyManager = session.DependencyManager;
 
-                var deps = dependencyManager.FindDependencySet(aPartInstance1.Parts[0].Id);
+                //var deps = dependencyManager.FindDependencySet(aPartInstance1.Parts[0].Id);
+                var deps = dependencyManager.ComputeDependencies(a2Item.Id, AssetDependencySearchOptions.InOut);
                 Assert.NotNull(deps);
 
                 // The dependencies is the same as the a2 dependencies
@@ -853,15 +864,16 @@ namespace SiliconStudio.Assets.Tests
                 Assert.False(deps.HasMissingDependencies);
 
                 Assert.AreEqual(1, deps.LinksIn.Count()); // a3 inherits from a2
-                Assert.AreEqual(1, deps.LinksOut.Count()); // a1 use composition inheritance from a1
+                Assert.AreEqual(1, deps.LinksOut.Count()); // a2 use composition inheritance from a1
 
                 var linkIn = deps.LinksIn.FirstOrDefault();
                 Assert.AreEqual(a3.Id, linkIn.Item.Id);
-                Assert.AreEqual(ContentLinkType.Reference|ContentLinkType.Inheritance, linkIn.Type);
+                // a3 has a2 as archetype (Inheritance) and its parts are referencing a2 parts (CompositionInheritance)
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance | ContentLinkType.CompositionInheritance, linkIn.Type);
 
                 var linkOut = deps.LinksOut.FirstOrDefault();
                 Assert.AreEqual(a1.Id, linkOut.Item.Id);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance, linkOut.Type);
+                Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, linkOut.Type);
             }
         }
 
@@ -898,58 +910,9 @@ namespace SiliconStudio.Assets.Tests
                 assets[0].RawAsset = "tutu";
                 assetItems[0].IsDirty = true;
 
-                var dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
+                var dependencies = dependencyManager.ComputeDependencies(assetItems[1].Id);
                 var asset0 = dependencies.GetLinkOut(assetItems[0]);
                 Assert.AreEqual(assets[0].RawAsset, ((AssetObjectTest)asset0.Item.Asset).RawAsset);
-            }
-        }
-
-
-        [Test]
-        public void TestAssetPart()
-        {
-            var project = new Package();
-            var assets = new List<TestAssetWithParts>();
-            var assetItems = new List<AssetItem>();
-            for (int i = 0; i < 2; ++i)
-            {
-                assets.Add(new TestAssetWithParts() { Parts =
-                {
-                        new AssetPartTestItem(Guid.NewGuid()),
-                        new AssetPartTestItem(Guid.NewGuid())
-                }
-                });
-                assetItems.Add(new AssetItem("asset-" + i, assets[i]));
-                project.Assets.Add(assetItems[i]);
-            }
-
-            using (var session = new PackageSession(project))
-            {
-                var dependencyManager = session.DependencyManager;
-
-                // Check that part asset is accessible from the dependency manager
-
-                var innerAssetId = assets[0].Parts[0].Id;
-                var dependencySet = dependencyManager.FindDependencySet(innerAssetId);
-                Assert.NotNull(dependencySet);
-
-                // Check that dependencies are the same than container asset.
-                var containerDependencySet = dependencyManager.FindDependencySet(assets[0].Id);
-                Assert.AreEqual(containerDependencySet.Id, dependencySet.Id, "DependencySet must be the same for part and container");
-
-                // Check that inners are all there
-                Assert.AreEqual(2, dependencySet.Parts.Count());
-
-                // Check that part asset is correctly stored into the dependencies
-                AssetPart part;
-                Assert.IsTrue(dependencySet.TryGetAssetPart(innerAssetId, out part));
-                Assert.AreEqual(assets[0].Parts[0].Id, part.PartId);
-
-                // Remove part asset
-                assets[0].Parts.Clear();
-                assetItems[0].IsDirty = true;
-
-                Assert.Null(dependencyManager.FindDependencySet(innerAssetId));
             }
         }
 

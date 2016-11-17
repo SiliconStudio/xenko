@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -306,7 +307,7 @@ namespace SiliconStudio.Quantum
         /// Retrieve the node targeted by this path.
         /// </summary>
         /// <returns></returns>
-        [Pure]
+        [Pure, NotNull]
         public IGraphNode GetNode() => this.Last();
 
         /// <summary>
@@ -330,14 +331,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="newRoot">The root node for the cloned path.</param>
         /// <returns>A copy of this path with the given node as root node.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath Clone(IGraphNode newRoot) => Clone(newRoot, IsEmpty);
 
         /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/>.
         /// </summary>
         /// <returns>A copy of this path with the same root node.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
 
         // TODO: re-implement each of the method below in an optimized way.
@@ -354,7 +355,7 @@ namespace SiliconStudio.Quantum
         /// Creates a new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.
         /// </summary>
         /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath PushTarget() => PushElement(null, ElementType.Target);
 
         /// <summary>
@@ -362,10 +363,10 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="index">The index of the target node.</param>
         /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target at a given index of the enumerable reference contained in the node represented by this path.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath PushIndex(Index index) => PushElement(index, ElementType.Index);
 
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath PushChildPath(GraphNodePath childPath)
         {
             if (childPath.IsEmpty)
@@ -376,7 +377,33 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
-        [Pure]
+        [NotNull]
+        public static GraphNodePath From(IGraphNode root, MemberPath memberPath)
+        {
+            var result = new GraphNodePath(root);
+            foreach (var memberPathItem in memberPath.Decompose())
+            {
+                if (memberPathItem.MemberDescriptor != null)
+                {
+                    result = result.PushMember(memberPathItem.MemberDescriptor.Name);
+                }
+                else if (memberPathItem.GetIndex() != null)
+                {
+                    result = result.PushIndex(new Index(memberPathItem.GetIndex()));
+                }
+
+                var node = result.GetNode();
+                var objectReference = node.Content.Reference as ObjectReference;
+                if (objectReference?.TargetNode != null)
+                {
+                    result = result.PushTarget();
+                }
+            }
+
+            return result;
+        }
+
+        [Pure, NotNull]
         public MemberPath ToMemberPath()
         {
             if (!IsValid)

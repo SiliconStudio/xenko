@@ -3602,6 +3602,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>

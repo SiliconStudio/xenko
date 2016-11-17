@@ -206,7 +206,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 if (referenceEnumerable != null && !Index.IsEmpty)
                 {
-                    if (!referenceEnumerable.ContainsIndex(Index))
+                    if (!referenceEnumerable.HasIndex(Index))
                         throw new ObservableViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
 
                     if (targetNode != referenceEnumerable[Index].TargetNode)
@@ -294,13 +294,24 @@ namespace SiliconStudio.Presentation.Quantum
                 // Discard the children of the referenced object if requested by the property provider
                 if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
                     return;
+
+                var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
+                if (refEnum != null)
+                {
+                    foreach (var reference in refEnum)
+                    {
+                        // Discard the children of the referenced object if requested by the property provider
+                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
+                            return;
+                    }
+                }
             }
 
             var dictionary = targetNode.Content.Descriptor as DictionaryDescriptor;
             var list = targetNode.Content.Descriptor as CollectionDescriptor;
 
             // Node containing a collection of references to other objects
-            if (targetNode.Content.IsReference)
+            if (SourceNode == targetNode && targetNode.Content.IsReference)
             {
                 var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
@@ -312,13 +323,9 @@ namespace SiliconStudio.Presentation.Quantum
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                        var actualPath = targetNodePath.PushIndex(reference.Index);
-                        if (Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
-                        {
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
-                            AddChild(observableNode);
-                            observableNode.Initialize();
-                        }
+                        var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                        AddChild(observableNode);
+                        observableNode.Initialize();
                     }
                 }
             }

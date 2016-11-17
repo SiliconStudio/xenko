@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 if (dataSerializerType == null)
                     throw new InvalidOperationException($"Could not find a serializer for type {typeof(T)}");
                 dataSerializer = (DataSerializer<T>)Activator.CreateInstance(dataSerializerType);
-                (dataSerializer as IDataSerializerInitializer)?.Initialize(stream.Context.SerializerSelector);
+                dataSerializer.Initialize(stream.Context.SerializerSelector);
             }
 
             // Serialize object

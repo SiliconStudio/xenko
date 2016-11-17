@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets.Analysis
 
             protected override bool CanVisit(object obj)
             {
-                return !AssetRegistry.IsContentReferenceType(obj?.GetType()) && base.CanVisit(obj);
+                return !AssetRegistry.IsContentType(obj?.GetType()) && base.CanVisit(obj);
             }
 
             public override void VisitArray(Array array, ArrayDescriptor descriptor)

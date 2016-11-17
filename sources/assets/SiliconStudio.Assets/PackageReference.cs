@@ -60,11 +60,11 @@ namespace SiliconStudio.Assets
         /// <returns><c>true</c> if the package reference is a valid reference, <c>false</c> otherwise.</returns>
         public static bool TryParse(string packageReferenceAsText, out PackageReference packageReference)
         {
-            Guid id;
+            AssetId id;
             UFile location;
             packageReference = null;
             if (!AssetReference.TryParse(packageReferenceAsText, out id, out location)) return false;
-            packageReference = new PackageReference(id, location);
+            packageReference = new PackageReference((Guid)id, location);
             return true;
         }
 

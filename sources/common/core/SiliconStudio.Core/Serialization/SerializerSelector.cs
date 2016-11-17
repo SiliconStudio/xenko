@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.Serialization
         private readonly string[] profiles;
         private Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
         private Dictionary<ObjectId, DataSerializer> dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
-        private HashSet<Type> referenceTypes = new HashSet<Type>();
+        private List<SerializerFactory> serializerFactories = new List<SerializerFactory>();
 
         /// <summary>
         /// Gets the default instance of Serializer.
@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializerSelector"/> class.
         /// </summary>
-        /// <param name="reuseReferences">if set to <c>true</c> [reuse references] (allow cycles in the object graph).</param>
+        /// <param name="reuseReferences">if set to <c>true</c> reuse references (allow cycles in the object graph).</param>
         /// <param name="profiles">The profiles.</param>
         public SerializerSelector(bool reuseReferences, params string[] profiles)
         {
@@ -129,23 +129,15 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [serialization reuses references]
+        /// Gets or sets a value indicating whether serialization reuses references 
         /// (that is, each reference gets assigned an ID and if it is serialized again, same instance will be reused).
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [serialization reuses references]; otherwise, <c>false</c>.
+        ///   <c>true</c> if serialization reuses references; otherwise, <c>false</c>.
         /// </value>
         public bool ReuseReferences { get { return reuseReferences; } }
 
-        public virtual DataSerializer CreateSerializer(ref ObjectId typeId)
-        {
-            return null;
-        }
-
-        public virtual DataSerializer CreateSerializer(Type type)
-        {
-            return null;
-        }
+        public List<SerializerFactory> SerializerFactories => serializerFactories;
 
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
@@ -153,7 +145,17 @@ namespace SiliconStudio.Core.Serialization
                 UpdateDataSerializers();
 
             DataSerializer dataSerializer;
-            if (dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer) && dataSerializer != null && !dataSerializer.Initialized)
+            if (!dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer))
+            {
+                foreach (var serializerFactory in serializerFactories)
+                {
+                    dataSerializer = serializerFactory.GetSerializer(this, ref typeId);
+                    if (dataSerializer != null)
+                        break;
+                }
+            }
+
+            if (dataSerializer != null && !dataSerializer.Initialized)
                 EnsureInitialized(dataSerializer);
             return dataSerializer;
         }
@@ -169,12 +171,26 @@ namespace SiliconStudio.Core.Serialization
                 UpdateDataSerializers();
 
             DataSerializer dataSerializer;
-            if (dataSerializersByType.TryGetValue(type, out dataSerializer) && dataSerializer != null && !dataSerializer.Initialized)
+            if (!dataSerializersByType.TryGetValue(type, out dataSerializer))
+            {
+                foreach (var serializerFactory in serializerFactories)
+                {
+                    dataSerializer = serializerFactory.GetSerializer(this, type);
+                    if (dataSerializer != null)
+                        break;
+                }
+            }
+
+            if (dataSerializer != null && !dataSerializer.Initialized)
                 EnsureInitialized(dataSerializer);
             return dataSerializer;
         }
 
-        private void EnsureInitialized(DataSerializer dataSerializer)
+        /// <summary>
+        /// Internal function, for use by <see cref="SerializerFactory"/>.
+        /// </summary>
+        /// <param name="dataSerializer"></param>
+        public void EnsureInitialized(DataSerializer dataSerializer)
         {
             // Allow reentrency (in case a serializer needs itself)
             if (dataSerializer.InitializeLock.IsHeldByCurrentThread)
@@ -185,10 +201,13 @@ namespace SiliconStudio.Core.Serialization
             {
                 dataSerializer.InitializeLock.Enter(ref gotLock);
 
+                // Ensure a serialization type ID has been generated (otherwise do so now)
+                EnsureSerializationTypeId(dataSerializer);
+
                 if (!dataSerializer.Initialized)
                 {
                     // Initialize (if necessary)
-                    (dataSerializer as IDataSerializerInitializer)?.Initialize(SelectorOverride ?? this);
+                    dataSerializer.Initialize(SelectorOverride ?? this);
 
                     // Mark it as initialized
                     dataSerializer.Initialized = true;
@@ -198,6 +217,17 @@ namespace SiliconStudio.Core.Serialization
             {
                 if (gotLock)
                     dataSerializer.InitializeLock.Exit();
+            }
+        }
+
+        private static void EnsureSerializationTypeId(DataSerializer dataSerializer)
+        {
+            // Ensure a serialization type ID has been generated (otherwise do so now)
+            if (dataSerializer.SerializationTypeId == ObjectId.Empty)
+            {
+                // Need to generate serialization type id
+                var typeName = dataSerializer.SerializationType.FullName;
+                dataSerializer.SerializationTypeId = ObjectId.FromBytes(System.Text.Encoding.UTF8.GetBytes(typeName));
             }
         }
 
@@ -227,7 +257,6 @@ namespace SiliconStudio.Core.Serialization
                 {
                     var newDataSerializersByType = new Dictionary<Type, DataSerializer>();
                     var newDataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
-                    referenceTypes = new HashSet<Type>();
 
                     // Create list of combined serializers
                     var combinedSerializers = new Dictionary<Type, AssemblySerializerEntry>();
@@ -260,12 +289,7 @@ namespace SiliconStudio.Core.Serialization
                                 dataSerializer.SerializationTypeId = serializer.Value.Id;
 
                                 // Ensure a serialization type ID has been generated (otherwise do so now)
-                                if (dataSerializer.SerializationTypeId == ObjectId.Empty)
-                                {
-                                    // Need to generate serialization type id
-                                    var typeName = dataSerializer.SerializationType.FullName;
-                                    dataSerializer.SerializationTypeId = ObjectId.FromBytes(System.Text.Encoding.UTF8.GetBytes(typeName));
-                                }
+                                EnsureSerializationTypeId(dataSerializer);
                             }
                         }
 

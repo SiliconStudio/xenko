@@ -4,20 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
     [AssetDescription(FileExtension)]
-    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>
+    public class AssetObjectTest : TestAssetWithParts, IEquatable<AssetObjectTest>
     {
-        public const string FileExtension = ".xktest";
-
-        public string Name { get; set; }
+        private const string FileExtension = ".xktest";
 
         [DefaultValue(null)]
         public AssetReference Reference { get; set; }
@@ -36,7 +33,7 @@ namespace SiliconStudio.Assets.Tests
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((AssetObjectTest)obj);
         }
 
@@ -44,9 +41,9 @@ namespace SiliconStudio.Assets.Tests
         {
             unchecked
             {
-                var hashCode = (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Reference != null ? Reference.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RawAsset != null ? RawAsset.GetHashCode() : 0);
+                var hashCode = Name?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ (Reference != null ? Reference.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (RawAsset != null ? RawAsset.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -66,7 +63,7 @@ namespace SiliconStudio.Assets.Tests
     [AssetDescription(FileExtension)]
     public class TestAssetWithParts : AssetComposite
     {
-        public const string FileExtension = ".xkpart";
+        private const string FileExtension = ".xkpart";
 
         public TestAssetWithParts()
         {
@@ -79,7 +76,7 @@ namespace SiliconStudio.Assets.Tests
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            return Parts.Select(it => new AssetPart(it.Id, it.Base, x => { }));
+            return Parts.Select(it => new AssetPart(it.Id, it.Base, x => it.Base = x));
         }
 
         public override IIdentifiable FindPart(Guid partId)
@@ -102,30 +99,27 @@ namespace SiliconStudio.Assets.Tests
             var asset = (TestAssetWithParts)base.CreateDerivedAsset(baseLocation, idRemapping);
 
             // Create asset with new base
-            for (int i = 0; i < asset.Parts.Count; i++)
+            var assetRef = new AssetReference(Id, baseLocation);
+            var instanceId = Guid.NewGuid();
+            for (var i = 0; i < asset.Parts.Count; i++)
             {
                 var part = asset.Parts[i];
                 var newId = Guid.NewGuid();
                 idRemapping?.Add(part.Id, newId);
-                asset.Parts[i] = new AssetPartTestItem(newId, part.Id);
+                asset.Parts[i] = new AssetPartTestItem(newId, assetRef, part.Id, instanceId);
             }
 
             return asset;
         }
 
-        public void AddPart(TestAssetWithParts assetBaseWithParts)
+        public void AddParts(TestAssetWithParts assetBaseWithParts)
         {
             if (assetBaseWithParts == null) throw new ArgumentNullException(nameof(assetBaseWithParts));
 
             // The assetPartBase must be a plain child asset
             if (assetBaseWithParts.Archetype == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetBaseWithParts)}");
 
-            var instanceId = Guid.NewGuid();
-            for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
-            {
-                var part = assetBaseWithParts.Parts[i];
-                Parts.Add(new AssetPartTestItem(Guid.NewGuid(), part.Id, instanceId));
-            }
+            Parts.AddRange(assetBaseWithParts.Parts);
         }
     }
 
@@ -136,17 +130,20 @@ namespace SiliconStudio.Assets.Tests
         {
         }
 
-        public AssetPartTestItem(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
+        public AssetPartTestItem(Guid id)
         {
-            if (baseId.HasValue && basePartInstanceId.HasValue)
-            {
-                Base = new BasePart(new AssetReference(Guid.NewGuid(), Guid.NewGuid().ToString()), baseId.Value, basePartInstanceId.Value);
-            }
+            Id = id;
+        }
+
+        public AssetPartTestItem(Guid id, AssetReference baseAsset, Guid baseId, Guid basePartInstanceId)
+        {
+            Base = new BasePart(baseAsset, baseId, basePartInstanceId);
             Id = id;
         }
 
         public BasePart Base { get; set; }
 
+        [NonOverridable]
         public Guid Id { get; set; }
     }
 
@@ -172,3 +169,4 @@ namespace SiliconStudio.Assets.Tests
         public int Value { get; set; }
     }
 }
+

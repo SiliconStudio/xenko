@@ -9,12 +9,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     /// <typeparam name="T">The generic type in Nullable{T}.</typeparam>
     [DataSerializerGlobal(typeof(NullableSerializer<>), typeof(Nullable<>), DataSerializerGenericMode.GenericArguments)]
-    public class NullableSerializer<T> : DataSerializer<T?>, IDataSerializerInitializer where T : struct
+    public class NullableSerializer<T> : DataSerializer<T?> where T : struct
     {
         private DataSerializer<T> itemSerializer;
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemSerializer = serializerSelector.GetSerializer<T>();
         }

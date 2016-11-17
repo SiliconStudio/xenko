@@ -8,6 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -16,8 +17,9 @@ namespace SiliconStudio.Xenko.Assets.Models
     /// </summary>
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(PrefabModelAssetCompiler))]
-    [Display(185, "Prefab Model")]
+    [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
         protected override int InternalBuildOrder => 0xFFFF; //make sure we build after Models
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 if (prefab != null)
                 {
                     // Use a dictionary to ensure each reference is yielded only once
-                    var references = new Dictionary<Guid, IReference>();
+                    var references = new Dictionary<AssetId, IReference>();
                     foreach (var entity in prefab.Hierarchy.Parts)
                     {
                         // Gather all entities with a model component and a valid model

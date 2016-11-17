@@ -5,7 +5,7 @@ using System.Windows.Interop;
 namespace SiliconStudio.Presentation.Extensions
 {
     /// <summary>
-    /// Extension helpers for the <see cref="System.Windows.Window"/> class.
+    /// Extension helpers for the <see cref="Window"/> class.
     /// </summary>
     public static class WindowHelper
     {

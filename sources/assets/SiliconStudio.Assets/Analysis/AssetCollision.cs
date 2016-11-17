@@ -20,6 +20,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="outputItems">The output items.</param>
         /// <param name="assetResolver">The asset resolver.</param>
         /// <param name="cloneInput">if set to <c>true</c> [clone input].</param>
+        /// <param name="removeUnloadableObjects">If set to <c>true</c>, assets will be cloned with <see cref="AssetClonerFlags.RemoveUnloadableObjects"/>.</param>
         /// <exception cref="System.ArgumentNullException">
         /// inputItems
         /// or
@@ -28,7 +29,7 @@ namespace SiliconStudio.Assets.Analysis
         /// assetResolver
         /// </exception>
         /// <exception cref="System.ArgumentException">List cannot contain null items;inputItems</exception>
-        public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
+        public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput, bool removeUnloadableObjects)
         {
             if (inputItems == null) throw new ArgumentNullException(nameof(inputItems));
             if (outputItems == null) throw new ArgumentNullException(nameof(outputItems));
@@ -43,12 +44,12 @@ namespace SiliconStudio.Assets.Analysis
             var items = inputItems;
             if (cloneInput)
             {
-                items = inputItems.Select(item => item.Clone()).ToList();
+                items = inputItems.Select(item => item.Clone(flags: removeUnloadableObjects ? AssetClonerFlags.RemoveUnloadableObjects : AssetClonerFlags.None)).ToList();
             }
 
             // idRemap should contain only assets that have either 1) their id remapped or 2) their location remapped
-            var idRemap = new Dictionary<Guid, Tuple<Guid, UFile>>();
-            var itemRemap = new Dictionary<AssetItem, Tuple<Guid, UFile>>();
+            var idRemap = new Dictionary<AssetId, Tuple<AssetId, UFile>>();
+            var itemRemap = new Dictionary<AssetItem, Tuple<AssetId, UFile>>();
             foreach (var item in items)
             {
                 if (outputItems.Contains(item))
@@ -59,8 +60,8 @@ namespace SiliconStudio.Assets.Analysis
                 outputItems.Add(item);
 
                 bool changed = false;
-                Guid newGuid;
-                if (assetResolver.RegisterId(item.Id, out newGuid))
+                AssetId newId;
+                if (assetResolver.RegisterId(item.Id, out newId))
                 {
                     changed = true;
                 }
@@ -71,7 +72,7 @@ namespace SiliconStudio.Assets.Analysis
                     changed = true;
                 }
 
-                var tuple = new Tuple<Guid, UFile>(newGuid != Guid.Empty ? newGuid : item.Id, newLocation ?? item.Location);
+                var tuple = new Tuple<AssetId, UFile>(newId != AssetId.Empty ? newId : item.Id, newLocation ?? item.Location);
                 if (changed)
                 {
                     if (!itemRemap.ContainsKey(item))
@@ -89,7 +90,7 @@ namespace SiliconStudio.Assets.Analysis
             // Process assets
             foreach (var item in outputItems)
             {
-                Tuple<Guid, UFile> remap;
+                Tuple<AssetId, UFile> remap;
                 if (itemRemap.TryGetValue(item, out remap) && (remap.Item1 != item.Asset.Id || remap.Item2 != item.Location))
                 {
                     item.Asset.Id = remap.Item1;
@@ -151,12 +152,12 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, IReadOnlyDictionary<Guid, Tuple<Guid, UFile>> idRemap)
+        private static void UpdateRootAssets(RootAssetCollection rootAssetCollection, IReadOnlyDictionary<AssetId, Tuple<AssetId, UFile>> idRemap)
         {
             foreach (var rootAsset in rootAssetCollection.ToArray())
             {
                 var id = rootAsset.Id;
-                Tuple<Guid, UFile> remap;
+                Tuple<AssetId, UFile> remap;
 
                 if (idRemap.TryGetValue(id, out remap) && IsNewReference(remap, rootAsset))
                 {
@@ -167,7 +168,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private static bool IsNewReference(Tuple<Guid, UFile> newReference, IReference previousReference)
+        private static bool IsNewReference(Tuple<AssetId, UFile> newReference, IReference previousReference)
         {
             return newReference.Item1 != previousReference.Id ||
                    newReference.Item2 != previousReference.Location;

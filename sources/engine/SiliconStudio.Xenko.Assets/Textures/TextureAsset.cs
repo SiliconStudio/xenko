@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
@@ -19,8 +20,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// </summary>
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Texture))]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [Display(105, "Texture")]
+    [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [CategoryOrder(30, "Transparency")]

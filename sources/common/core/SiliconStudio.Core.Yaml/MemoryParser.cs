@@ -5,18 +5,42 @@ namespace SiliconStudio.Core.Yaml
 {
     public class MemoryParser : IParser
     {
-        private readonly IEnumerator<ParsingEvent> parsingEvents;
+        private readonly IList<ParsingEvent> parsingEvents;
+        private int position = -1;
+        private ParsingEvent current;
 
-        public MemoryParser(IEnumerable<ParsingEvent> parsingEvents)
+        public MemoryParser(IList<ParsingEvent> parsingEvents)
         {
-            this.parsingEvents = parsingEvents.GetEnumerator();
+            this.parsingEvents = parsingEvents;
         }
 
-        public ParsingEvent Current { get { return parsingEvents.Current; } }
+        public IList<ParsingEvent> ParsingEvents => parsingEvents;
+
+        /// <inheritdoc/>
+        public ParsingEvent Current => current;
+
+        /// <inheritdoc/>
+        public bool IsEndOfStream => position >= parsingEvents.Count;
+
+        public int Position
+        {
+            get { return position; }
+            set
+            {
+                position = value;
+                current = (position >= 0) ? parsingEvents[position] : null;
+            }
+        }
 
         public bool MoveNext()
         {
-            return parsingEvents.MoveNext();
+            if (++position < parsingEvents.Count)
+            {
+                current = parsingEvents[position];
+                return true;
+            }
+
+            return false;
         }
     }
 }

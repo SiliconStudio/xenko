@@ -111,7 +111,7 @@
     <Compile Include="Serialization\Serializers\PrimitiveSerializer.cs" />
     <Compile Include="Serialization\Serializers\RoutingSerializer.cs" />
     <Compile Include="Serialization\SerializerContext.cs" />
-    <Compile Include="Serialization\AssemblyRegistry.cs" />
+    <Compile Include="Serialization\YamlAssemblyRegistry.cs" />
     <Compile Include="Serialization\WriterEventEmitter.cs">
       <SubType>Code</SubType>
     </Compile>

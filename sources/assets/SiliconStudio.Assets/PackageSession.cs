@@ -659,14 +659,14 @@ namespace SiliconStudio.Assets
         private Dictionary<UFile, object> BuildAssetsOrPackagesToRemove()
         {
             // Grab all previous assets
-            var previousAssets = new Dictionary<Guid, AssetItem>();
+            var previousAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in packagesCopy.SelectMany(package => package.Assets))
             {
                 previousAssets[assetItem.Id] = assetItem;
             }
 
             // Grab all new assets
-            var newAssets = new Dictionary<Guid, AssetItem>();
+            var newAssets = new Dictionary<AssetId, AssetItem>();
             foreach (var assetItem in LocalPackages.SelectMany(package => package.Assets))
             {
                 newAssets[assetItem.Id] = assetItem;
@@ -1006,7 +1006,7 @@ namespace SiliconStudio.Assets
                 package.LoadAssets(log, newLoadParameters);
 
                 // Validate assets from package
-                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, log);
+                package.ValidateAssets(newLoadParameters.GenerateNewAssetIds, newLoadParameters.RemoveUnloadableObjects, log);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
@@ -1103,7 +1103,7 @@ namespace SiliconStudio.Assets
                     {
                         // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
-                        log.Error("Unable to find package {0} not installed", packageDependency);
+                        log.Error($"The package {package.FullPath?.GetFileName() ?? "[Untitled]"} depends on package {packageDependency} which is not installed");
                         packageDependencyErrors = true;
                         continue;
                     }
@@ -1126,7 +1126,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Expand the string of the location
-                var newLocation = (UFile)AssetRegistry.ExpandString(session, packageReference.Location);
+                var newLocation = packageReference.Location;
 
                 var subPackageFilePath = package.RootDirectory != null ? UPath.Combine(package.RootDirectory, newLocation) : newLocation;
 

@@ -17,20 +17,20 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     public class YamlAssetSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<ObjectPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides)
         {
             PropertyContainer properties;
             var result = AssetYamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
-            properties.TryGetValue(CustomObjectSerializerBackend.OverrideDictionaryKey, out overrides);
+            properties.TryGetValue(AssetObjectSerializerBackend.OverrideDictionaryKey, out overrides);
             return result;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<ObjectPath, OverrideType> overrides = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
         {
             var settings = new SerializerContextSettings(log);
             if (overrides != null)
             {
-                settings.Properties.Add(CustomObjectSerializerBackend.OverrideDictionaryKey, overrides);
+                settings.Properties.Add(AssetObjectSerializerBackend.OverrideDictionaryKey, overrides);
             }
             AssetYamlSerializer.Default.Serialize(stream, asset, null, settings);
         }
