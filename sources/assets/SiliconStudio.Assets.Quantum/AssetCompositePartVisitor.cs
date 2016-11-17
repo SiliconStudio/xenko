@@ -1,4 +1,3 @@
-using SiliconStudio.Core;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 
@@ -9,13 +8,11 @@ namespace SiliconStudio.Assets.Quantum
     /// </summary>
     /// <typeparam name="TAssetPartDesign">The type of the design-time object containing the part.</typeparam>
     /// <typeparam name="TAssetPart">The type of the part.</typeparam>
-    public class AssetCompositePartVisitor<TAssetPartDesign, TAssetPart> : GraphVisitorBase
-        where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
-        where TAssetPart : class, IIdentifiable
+    public class AssetCompositePartVisitor : GraphVisitorBase
     {
-        private readonly AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph;
+        private readonly AssetCompositePropertyGraph propertyGraph;
 
-        public AssetCompositePartVisitor(AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph)
+        public AssetCompositePartVisitor(AssetCompositePropertyGraph propertyGraph)
         {
             this.propertyGraph = propertyGraph;
         }
