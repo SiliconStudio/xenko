@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     partial class TargetGenerator
     {

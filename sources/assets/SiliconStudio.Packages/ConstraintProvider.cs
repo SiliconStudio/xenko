@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Collection of constraints associated to some packages expressed as version ranges.

@@ -8,7 +8,7 @@ using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.PackageManager;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
 {

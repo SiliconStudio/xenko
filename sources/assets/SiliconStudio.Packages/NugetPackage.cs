@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Nuget abstraction of a package.

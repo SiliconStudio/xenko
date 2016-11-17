@@ -9,7 +9,7 @@ using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Abstraction to build a NuGet package.

@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
-
 using NuGet;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     public class ProgressReport : IDisposable
     {

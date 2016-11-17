@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Representation of the name of a package made of an Id and a version.

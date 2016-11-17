@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using NShader;
 using SiliconStudio.Assets;
-using SiliconStudio.PackageManager;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {

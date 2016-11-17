@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using SiliconStudio.Assets;
-using SiliconStudio.PackageManager;
+using SiliconStudio.Packages;
 using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter

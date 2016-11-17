@@ -15,7 +15,7 @@ using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.PackageManager;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Assets
 {

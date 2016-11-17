@@ -8,8 +8,8 @@ using System.Windows.Forms;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.PackageManager;
 using System.Threading.Tasks;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Assets
 {

@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     internal static class NuGet2Extensions
     {

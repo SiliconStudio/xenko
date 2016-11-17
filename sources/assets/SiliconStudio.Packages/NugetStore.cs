@@ -1,5 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Windows;
-
 // Nuget v2.0 types
 using ISettings = NuGet.ISettings;
 using Settings = NuGet.Settings;
@@ -19,7 +19,7 @@ using PhysicalFileSystem = NuGet.PhysicalFileSystem;
 using AggregateRepository = NuGet.AggregateRepository;
 using PackageSourceProvider = NuGet.PackageSourceProvider;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Internal class to store nuget objects

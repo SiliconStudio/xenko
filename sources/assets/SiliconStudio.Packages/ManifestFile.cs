@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Describe a file in a package by giving the <see cref="Source"/> of a file or set of files, the destination <see cref="Target"/> where they will be copied

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     public class ManifestMetadata
     {

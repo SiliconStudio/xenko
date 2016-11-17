@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details
 
-using NuGet;
-
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     public class PackageOperationEventArgs
     {

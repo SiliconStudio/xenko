@@ -6,8 +6,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.PackageManager</RootNamespace>
-    <AssemblyName>SiliconStudio.PackageManager</AssemblyName>
+    <RootNamespace>SiliconStudio.Packages</RootNamespace>
+    <AssemblyName>SiliconStudio.Packages</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using ILogger = NuGet.ILogger;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackageManagerLogger"/> interface.

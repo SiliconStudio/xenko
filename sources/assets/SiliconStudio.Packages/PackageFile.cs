@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Packages
 {
     /// <summary>
     /// Representation of a file in a package.

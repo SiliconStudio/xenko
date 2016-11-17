@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets;
 
