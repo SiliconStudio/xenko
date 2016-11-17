@@ -23,6 +23,8 @@ namespace SiliconStudio.Core.Reflection
 
         public int DeletedCount => deletedItems.Count;
 
+        // This property is unsafe to use, better rely only on KeyCount and DeletedCount
+        [Obsolete("This property will be removed soon")]
         public int Count => KeyCount + DeletedCount;
 
         public void Add(object key, ItemId id)
@@ -68,7 +70,7 @@ namespace SiliconStudio.Core.Reflection
             return keyToIdMap.TryGetValue(key, out id);
         }
 
-        public void Delete(object key, bool markAsDeleted = true)
+        public ItemId Delete(object key, bool markAsDeleted = true)
         {
             var id = keyToIdMap[key];
             keyToIdMap.Remove(key);
@@ -76,9 +78,10 @@ namespace SiliconStudio.Core.Reflection
             {
                 MarkAsDeleted(id);
             }
+            return id;
         }
 
-        public void DeleteAndShift(int index, bool markAsDeleted = true)
+        public ItemId DeleteAndShift(int index, bool markAsDeleted = true)
         {
             var id = keyToIdMap[index];
             for (var i = index + 1; i < keyToIdMap.Count; ++i)
@@ -91,6 +94,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 MarkAsDeleted(id);
             }
+            return id;
         }
 
         public void MarkAsDeleted(ItemId id)

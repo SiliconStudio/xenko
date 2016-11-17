@@ -22,6 +22,7 @@ namespace SiliconStudio.Assets.Quantum
         public readonly AssetGraphNodeChangeListener NodeListener;
         protected AssetPropertyGraphContainer Container;
         private readonly AssetToBaseNodeLinker baseLinker;
+        private AssetPropertyGraph baseGraph;
         // TODO: this should be turn private once all quantum code has been split from view model
         public readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
 
@@ -62,6 +63,8 @@ namespace SiliconStudio.Assets.Quantum
             }
             baseLinkedNodes.Clear();
 
+            baseGraph = baseAssetGraph;
+
             // Link nodes to the new base.
             // Note: in case of composition (prefabs, etc.), even if baseAssetGraph is null, each part (entities, etc.) will discover
             // its own base by itself via the FindTarget method.
@@ -71,7 +74,7 @@ namespace SiliconStudio.Assets.Quantum
         public void ReconcileWithBase()
         {
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => Reconcile((AssetNode)node);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
             visitor.Visit(RootNode);
         }
 
@@ -153,6 +156,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var assetNode = (AssetNode)currentNode;
             assetNode.Cloner = x => CloneValueFromBase(x, assetNode);
+            assetNode.PropertyGraph = this;
             assetNode.SetBase(baseNode?.Content);
             if (!baseLinkedNodes.ContainsKey(assetNode))
             {
@@ -172,91 +176,99 @@ namespace SiliconStudio.Assets.Quantum
             if (!Container.PropagateChangesFromBase)
                 return;
 
-            var node = (AssetNode)assetContent.OwnerNode;
+            UpdatingPropertyFromBase = true;
+            // TODO: we want to refresh the base only starting from the modified node!
+            RefreshBase(baseGraph);
+            var rootNode = (AssetNode)assetContent.OwnerNode;
+            var visitor = CreateReconcilierVisitor();
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
+            visitor.Visit(rootNode);
 
-            // Then we update the value of this instance according to the value from the base, but only if it's not overridden.
-            // Remark: if it's an Add/Remove, we always propagate the action which is why overrideType is always not New in this case.
-            if (assetContent is MemberContent)
-            {
-                UpdatingPropertyFromBase = true;
-                // Clone the value from the base
-                var newValue = node.Cloner(e.NewValue);
-                Index index = node.RetrieveDerivedIndex(e.Index, e.ChangeType);
-                switch (e.ChangeType)
-                {
-                    case ContentChangeType.ValueChange:
-                        // If this item does not exist anymore in the instance, stop here.
-                        if (index.IsEmpty && !e.Index.IsEmpty)
-                            return;
+            BaseContentChanged?.Invoke(e, assetContent);
+            UpdatingPropertyFromBase = false;
 
-                        // Otherwise, retrieve the current override (before the change).
-                        var overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
-                        if (!overrideType.HasFlag(OverrideType.New))
-                        {
-                            assetContent.Update(newValue, index);
-                        }
-                        break;
-                    case ContentChangeType.CollectionAdd:
-                    {
-                        if (assetContent.Descriptor is DictionaryDescriptor)
-                        {
-                            // HasIndex is faster than iterating over Indices, but it's available only if the content is a reference
-                            if (assetContent.Reference?.HasIndex(e.Index) != true && !assetContent.Indices.Any(x => e.Index.Equals(x)))
-                            {
-                                assetContent.Add(newValue, e.Index);
-                            }
-                            else
-                            {
-                                // If we have a collision, we consider that the new value from the base is deleted in the instance.
-                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
-                                var id = ((AssetNode)node.BaseContent.OwnerNode).IndexToId(e.Index);
-                                instanceIds.MarkAsDeleted(id);
-                            }
-                        }
-                        else
-                        {
-                            if (!e.Index.IsEmpty && e.Index.Int >= 0)
-                            {
-                                assetContent.Add(newValue, index);
-                            }
-                            else
-                            {
-                                assetContent.Add(newValue);
-                            }
-                        }
-                        break;
+            //// Then we update the value of this instance according to the value from the base, but only if it's not overridden.
+            //// Remark: if it's an Add/Remove, we always propagate the action which is why overrideType is always not New in this case.
+            //if (assetContent is MemberContent)
+            //{
+            //    UpdatingPropertyFromBase = true;
+            //    // Clone the value from the base
+            //    var newValue = node.Cloner(e.NewValue);
+            //    Index index = node.RetrieveDerivedIndex(e.Index, e.ChangeType);
+            //    switch (e.ChangeType)
+            //    {
+            //        case ContentChangeType.ValueChange:
+            //            // If this item does not exist anymore in the instance, stop here.
+            //            if (index.IsEmpty && !e.Index.IsEmpty)
+            //                return;
 
-                    }
-                    case ContentChangeType.CollectionRemove:
-                    {
-                        // Index might be empty if the corresponding item has already been deleted in the instance (as an "override-delete")
-                        if (!index.IsEmpty)
-                        {
-                            var item = assetContent.Retrieve(index);
-                            assetContent.Remove(item, index);
-                        }
-                        else
-                        {
-                            var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
-                            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            // Find the id absent from the base but still present (NB: as deleted) in the instance.
-                            // TODO: Merging RetrieveDerivedIndex in this class would help avoiding to compute missing ids twice
-                            var missingIds = baseIds.FindMissingIds(instanceIds);
-                            instanceIds.UnmarkAsDeleted(missingIds.Single());
-                        }
-                        break;
-                    }
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+            //            // Otherwise, retrieve the current override (before the change).
+            //            var overrideType = index == Index.Empty ? node.GetContentOverride() : node.GetItemOverride(index);
+            //            if (!overrideType.HasFlag(OverrideType.New))
+            //            {
+            //                assetContent.Update(newValue, index);
+            //            }
+            //            break;
+            //        case ContentChangeType.CollectionAdd:
+            //        {
+            //            if (assetContent.Descriptor is DictionaryDescriptor)
+            //            {
+            //                // HasIndex is faster than iterating over Indices, but it's available only if the content is a reference
+            //                if (assetContent.Reference?.HasIndex(e.Index) != true && !assetContent.Indices.Any(x => e.Index.Equals(x)))
+            //                {
+            //                    assetContent.Add(newValue, e.Index);
+            //                }
+            //                else
+            //                {
+            //                    // If we have a collision, we consider that the new value from the base is deleted in the instance.
+            //                    var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
+            //                    var id = ((AssetNode)node.BaseContent.OwnerNode).IndexToId(e.Index);
+            //                    instanceIds.MarkAsDeleted(id);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                if (!e.Index.IsEmpty && e.Index.Int >= 0)
+            //                {
+            //                    assetContent.Add(newValue, index);
+            //                }
+            //                else
+            //                {
+            //                    assetContent.Add(newValue);
+            //                }
+            //            }
+            //            break;
 
-                BaseContentChanged?.Invoke(e, assetContent);
-                UpdatingPropertyFromBase = false;
-            }
+            //        }
+            //        case ContentChangeType.CollectionRemove:
+            //        {
+            //            // Index might be empty if the corresponding item has already been deleted in the instance (as an "override-delete")
+            //            if (!index.IsEmpty)
+            //            {
+            //                var item = assetContent.Retrieve(index);
+            //                assetContent.Remove(item, index);
+            //            }
+            //            else
+            //            {
+            //                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetContent.Retrieve());
+            //                var baseIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+            //                // Find the id absent from the base but still present (NB: as deleted) in the instance.
+            //                // TODO: Merging RetrieveDerivedIndex in this class would help avoiding to compute missing ids twice
+            //                var missingIds = baseIds.FindMissingIds(instanceIds);
+            //                instanceIds.UnmarkAsDeleted(missingIds.Single());
+            //            }
+            //            break;
+            //        }
+            //        default:
+            //            throw new ArgumentOutOfRangeException();
+            //    }
+
+            //    BaseContentChanged?.Invoke(e, assetContent);
+            //    UpdatingPropertyFromBase = false;
+            //}
         }
 
-        // TODO: this code is complex and redundant comparing to the normal base propagation. Try to simulate reconcile operations with normal changes coming from the base (OnBaseContentChanged) to simplify!
-        private void Reconcile(AssetNode assetNode)
+        private void ReconcileWithBaseNode(AssetNode assetNode)
         {
             if (assetNode.Content is ObjectContent || assetNode.BaseContent == null || !assetNode.CanOverride)
                 return;
@@ -323,7 +335,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                     }
 
-                    // Add item present in the base and missing here
+                    // Add item present in the base and missing here, and also update items that have different values between base and instance
                     foreach (var index in assetNode.BaseContent.Indices)
                     {
                         var itemId = baseNode.IndexToId(index);
@@ -400,33 +412,40 @@ namespace SiliconStudio.Assets.Quantum
                         if (assetNode.Content.Descriptor is CollectionDescriptor)
                         {
                             // In a collection, we need to find an index that matches the index on the base to maintain order.
-                            // Let's start with the same index and remove missing elements
-                            var localIndex = baseIndex;
+                            // To do so, we iterate from the index in the base to zero.
+                            var currentBaseIndex = baseIndex.Int - 1;
 
-                            // Let's iterate through base indices...
-                            foreach (var index in assetNode.BaseContent.Indices)
+                            // Initialize the target index to zero, in case we don't find any better index.
+                            var localIndex = new Index(0);
+                            
+                            // Find the first item of the base that also exists (in term of id) in the local node, iterating backward (from baseIndex to 0)
+                            while (currentBaseIndex >= 0)
                             {
-                                // ...until we reach the base index
-                                if (index == baseIndex)
-                                    break;
+                                ItemId baseId;
+                                // This should not happen since the currentBaseIndex comes from the base.
+                                if (!baseNode.TryIndexToId(new Index(currentBaseIndex), out baseId))
+                                    throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
 
-                                var baseId = baseNode.IndexToId(index);
-                                if (!assetNode.HasId(baseId))
+                                Index sameIndexInInstance;
+                                // If we have an matching item, we want to insert right after it
+                                if (assetNode.TryIdToIndex(baseId, out sameIndexInInstance))
                                 {
-                                    // If no corresponding item exist in our node, decrease the target index by one.
-                                    localIndex = new Index(localIndex.Int - 1);
+                                    localIndex = new Index(sameIndexInInstance.Int + 1);
+                                    break;
                                 }
+                                currentBaseIndex--;
                             }
 
-                            assetNode.Content.Add(clonedValue, localIndex);
+                            assetNode.Restore(clonedValue, localIndex, item.Value);
                         }
                         else
                         {
-                            assetNode.Content.Add(clonedValue, baseIndex);
+                            // This case is for dictionary. Key collisions have already been handle at that point so we can directly do the add without further checks.
+                            assetNode.Restore(clonedValue, baseIndex, item.Value);
                         }
                     }
                 }
-                // Then handle collection and dictionary cases
+                // Finally, handle single properties
                 else
                 {
                     var member = assetNode.Content as MemberContent;

@@ -9,6 +9,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetGraphNodeChangeListener : GraphNodeChangeListener
     {
         private readonly Dictionary<IContentNode, OverrideType> previousOverrides = new Dictionary<IContentNode, OverrideType>();
+        private readonly Dictionary<IContentNode, ItemId> removedItemIds = new Dictionary<IContentNode, ItemId>();
 
         public AssetGraphNodeChangeListener(IGraphNode rootNode, Func<MemberContent, IGraphNode, bool> shouldRegisterNode)
             : base(rootNode, shouldRegisterNode)
@@ -69,6 +70,16 @@ namespace SiliconStudio.Assets.Quantum
                     overrideValue = node.GetItemOverride(e.Index);
                 }
             }
+            if (e.ChangeType == ContentChangeType.CollectionRemove)
+            {
+                var itemId = ItemId.Empty;
+                CollectionItemIdentifiers ids;
+                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
+                {
+                    ids.TryGet(e.Index.Value, out itemId);
+                }
+                removedItemIds[e.Content.OwnerNode] = itemId;
+            }
             if (e.ChangeType == ContentChangeType.CollectionAdd && !node.IsNonIdentifiableCollectionContent)
             {
                 // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
@@ -82,10 +93,11 @@ namespace SiliconStudio.Assets.Quantum
             var previousOverride = previousOverrides[e.Content.OwnerNode];
             previousOverrides.Remove(e.Content.OwnerNode);
 
+            var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
+            var node = (AssetNode)e.Content.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
-                var node = (AssetNode)e.Content.OwnerNode;
                 if (e.Index == Index.Empty)
                 {
                     overrideValue = node.GetContentOverride();
@@ -94,9 +106,21 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     overrideValue = node.GetItemOverride(e.Index);
                 }
+                CollectionItemIdentifiers ids;
+                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
+                {
+                    ids.TryGet(e.Index.Value, out itemId);
+                }
+            }
+            else
+            {
+                // When deleting we are always overriding (unless there is no base)
+                overrideValue = !((AssetNode)node.BaseContent?.OwnerNode)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
+                itemId = removedItemIds[e.Content.OwnerNode];
+                removedItemIds.Remove(e.Content.OwnerNode);
             }
 
-            ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue));
+            ChangedWithOverride?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue, itemId));
         }
     }
 }
