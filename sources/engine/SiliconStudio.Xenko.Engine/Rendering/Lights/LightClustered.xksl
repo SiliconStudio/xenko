@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
     // TODO: We use ClusterSize2 otherwise we have a conflict with LightPointSpotGroup.ClusterSize (XenkoMessageCode.ErrorVariableNameConflict)
-    shader LightClustered<int ClusterSize2> : ShaderBase, ShaderBaseStream, Camera
+    shader LightClustered<uint ClusterSize2> : ShaderBase, ShaderBaseStream, Camera
     {
         stage stream uint2 lightData;
         stage stream int lightIndex;
