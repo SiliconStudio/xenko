@@ -44,6 +44,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
     <Compile Include="AssetCompositePartVisitor.cs" />
     <Compile Include="AssetCompositePropertyGraph.cs" />

@@ -6,12 +6,9 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Assets.Quantum
 {
     [AssetPropertyGraph(typeof(AssetComposite))]
-    public class AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart> : AssetPropertyGraph
-        where TAssetPart : class, IIdentifiable
-        where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
+    public class AssetCompositePropertyGraph : AssetPropertyGraph
     {
-        public AssetCompositePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-            : base(container, assetItem, logger)
+        public AssetCompositePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger)
         {
         }
 
@@ -23,22 +20,12 @@ namespace SiliconStudio.Assets.Quantum
 
         public virtual bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
         {
-            // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
-            // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || member == targetNode.Content)
-                return false;
-
-            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))
-            {
-                // Check if we're the part referenced by a part design - other cases are references
-                return member.Container.OwnerNode.Content.Type != typeof(TAssetPartDesign);
-            }
             return false;
         }
 
         protected override GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new AssetCompositePartVisitor<TAssetPartDesign, TAssetPart>(this);
+            return new AssetCompositePartVisitor(this);
         }
 
         protected override bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
