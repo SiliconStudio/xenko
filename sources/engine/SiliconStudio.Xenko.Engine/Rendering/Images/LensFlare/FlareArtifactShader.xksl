@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 tapColor *= alpha * alpha;
 
                 // Avoid bleeding (could be clamp to border instead)
-                if (distortedUV.x < 0 || distortedUV.x > 1 || distortedUV.y < 0 || distortedUV.y > 1) tapColor = float4(0.0, 0.0, 0.0, 1.0);
+                if (distortedUV.x < 0 || distortedUV.x > 1 || distortedUV.y < 0 || distortedUV.y > 1) tapColor = float3(0.0, 0.0, 0.0);
 
                 /*
                 // Debug colors

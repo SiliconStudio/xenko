@@ -102,14 +102,17 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     overrideValue = node.GetContentOverride();
                 }
-                else if (!node.IsNonIdentifiableCollectionContent)
+                else
                 {
-                    overrideValue = node.GetItemOverride(e.Index);
-                }
-                CollectionItemIdentifiers ids;
-                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
-                {
-                    ids.TryGet(e.Index.Value, out itemId);
+                    if (!node.IsNonIdentifiableCollectionContent)
+                    {
+                        overrideValue = node.GetItemOverride(e.Index);
+                    }
+                    CollectionItemIdentifiers ids;
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
+                    {
+                        ids.TryGet(e.Index.Value, out itemId);
+                    }
                 }
             }
             else

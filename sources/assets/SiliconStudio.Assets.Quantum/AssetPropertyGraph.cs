@@ -102,13 +102,15 @@ namespace SiliconStudio.Assets.Quantum
         {
             AssetCollectionItemIdHelper.GenerateMissingItemIds(AssetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(AssetItem, logger);
-            AssetItem.Overrides = GenerateOverridesForSerialization();
+            AssetItem.Overrides = GenerateOverridesForSerialization(RootNode);
         }
 
-        public Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode = null)
+        public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+
             var visitor = new OverrideTypePathGenerator();
-            visitor.Visit(rootNode ?? RootNode);
+            visitor.Visit(rootNode);
             return visitor.Result;
         }
 
