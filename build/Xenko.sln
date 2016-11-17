@@ -396,7 +396,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.ShellHelper", "..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.shproj", "{3A3CB33C-64D9-4948-86C1-0D86320D23C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.PackageManager", "..\sources\assets\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj", "{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Packages", "..\sources\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj", "{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Yaml", "..\sources\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj", "{BF32DE1B-6276-4341-B212-F8862ADBBA7A}"
 EndProject
