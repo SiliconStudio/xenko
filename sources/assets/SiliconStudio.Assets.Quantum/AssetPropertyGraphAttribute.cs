@@ -2,7 +2,7 @@
 
 namespace SiliconStudio.Assets.Quantum
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class AssetPropertyGraphAttribute : Attribute
     {
         public AssetPropertyGraphAttribute(Type assetType)
