@@ -5,47 +5,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// Maps <see cref="InputGesture"/>s to <see cref="InputAction"/>s. This allows the user to change what physical inputs map to a certain input gesture
+    /// Maps <see cref="InputGestureBase"/>s to <see cref="InputAction"/>s. This allows the user to change what physical inputs map to a certain input gesture
     /// </summary>
     public class InputActionMapping : IDisposable
     {
+        internal InputManager InputManager;
         // NOTE: Gestures are compared by reference here since normally they are equal if they are monitoring the same thing
         private readonly HashSet<IInputGesture> gestures = new HashSet<IInputGesture>(ReferenceEqualityComparer<IInputGesture>.Default);
         private readonly List<InputAction> inputActions = new List<InputAction>();
         private readonly Dictionary<string, InputAction> inputActionsByName = new Dictionary<string, InputAction>();
-        private InputManager inputManager;
 
         /// <summary>
         /// Creates a new instance of <see cref="InputActionMapping"/>.
         /// </summary>
-        /// <param name="inputManager">The <see cref="InputManager"/> which this mapping receives events from</param>
+        /// <param name="inputManager">The <see cref="Input.InputManager"/> which this mapping receives events from</param>
         public InputActionMapping(InputManager inputManager)
         {
             if (inputManager == null) throw new ArgumentNullException(nameof(inputManager));
-            this.inputManager = inputManager;
+            this.InputManager = inputManager;
             inputManager.PreUpdateInput += OnPreUpdateInput;
         }
         
         public void Dispose()
         {
-            if (inputManager == null) return; // Already disposed
+            if (InputManager == null) return; // Already disposed
 
             // Remove PreUpdate handler
-            inputManager.PreUpdateInput -= OnPreUpdateInput;
+            InputManager.PreUpdateInput -= OnPreUpdateInput;
 
-            // Remove all event listeners
-            foreach(var gesture in gestures)
+            // Remove all activated gestures
+            foreach(var action in inputActions)
             {
-                IInputEventListener listener = gesture as IInputEventListener;
-                if (listener != null) inputManager.RemoveListener(listener);
+                action.ActionMapping = null;
+                foreach (var gesture in action.Gestures)
+                {
+                    InputManager.ActivatedGestures.Remove(gesture);
+                }
             }
 
             // Avoids adding any new handlers later on
-            inputManager = null;
+            InputManager = null;
         }
 
         /// <summary>
@@ -61,15 +65,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Use this to serialize/deserialize the action mapping
         /// </summary>
-        public Dictionary<string, List<InputGesture>> Bindings
+        public Dictionary<string, List<InputGestureBase>> Bindings
         {
             get
             {
                 // Collect all the gesture bindings into a key/value pair mapping
-                Dictionary<string, List<InputGesture>> settings = new Dictionary<string, List<InputGesture>>();
+                Dictionary<string, List<InputGestureBase>> settings = new Dictionary<string, List<InputGestureBase>>();
                 foreach (var pair in inputActionsByName)
                 {
-                    settings.Add(pair.Key, pair.Value.Gestures.OfType<InputGesture>().ToList());
+                    settings.Add(pair.Key, pair.Value.Gestures.OfType<InputGestureBase>().ToList());
                 }
                 return settings;
             }
@@ -111,7 +115,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             // Update actions
             foreach (var action in inputActions)
-                action.Update();
+                action.Update(elapsedTime);
         }
 
         /// <summary>
@@ -132,12 +136,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
             inputActions.Add(action);
             inputActionsByName.Add(name, action);
 
-            // Add gestures to event routers
-            foreach (var gesture in action.Gestures.OfType<InputGesture>())
+            // Add gestures to the input managers
+            foreach (var gesture in action.Gestures.OfType<InputGestureBase>())
             {
-                gesture.ActionMapping = this;
-                gesture.Action = action;
-                gesture.OnAdded();
+                InputManager.ActivatedGestures.Add(gesture);
             }
         }
 
@@ -151,9 +153,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 throw new InvalidOperationException("Action was not added to this mapping");
 
             // Remove gestures from event routers
-            foreach (var gesture in action.Gestures.OfType<InputGesture>())
+            foreach (var gesture in action.Gestures.OfType<InputGestureBase>())
             {
-                gesture.OnRemoved();
+                InputManager.ActivatedGestures.Remove(gesture);
             }
 
             inputActions.Remove(action);
@@ -188,36 +190,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (gestures.Count != 0) throw new Exception("Failed to correctly clear bindings");
             if (inputActions.Count != 0) throw new Exception("Failed to correctly clear bindings");
         }
-
-        /// <summary>
-        /// Adds a gesture as a listener to the input manager, if it has any specific event listener. Also adds the gesture to a list of registered gestures (so one is not used twice)
-        /// </summary>
-        /// <param name="gesture"></param>
-        internal void AddInputGesture(IInputGesture gesture)
-        {
-            if (gestures.Contains(gesture)) throw new InvalidOperationException("Can't add input gesture, Gesture already registered");
-            gestures.Add(gesture);
-
-            if (inputManager == null) return;
-
-            IInputEventListener listener = gesture as IInputEventListener;
-            if (listener != null) inputManager.AddListener(listener);
-        }
-
-        /// <summary>
-        /// Removes the gesture as an event listener and removes it from the list of gesture registered with the action mapping
-        /// </summary>
-        /// <param name="gesture"></param>
-        internal void RemoveInputGesture(IInputGesture gesture)
-        {
-            if (!gestures.Contains(gesture)) throw new InvalidOperationException("Can't remove input gesture, Gesture was never registered");
-            gestures.Remove(gesture);
-
-            if (inputManager == null) return;
-
-            IInputEventListener listener = gesture as IInputEventListener;
-            if (listener != null) inputManager.RemoveListener(listener);
-        }
         
         /// <summary>
         /// Called before input update to reset gesture states
@@ -226,9 +198,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             foreach (var action in inputActions)
             {
-                // Update gestures
-                foreach (var gesture in action.Gestures)
-                    gesture.Reset(e.GameTime.Elapsed);
+                action.PreUpdate(e.GameTime.Elapsed);
             }
         }
 

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -146,8 +147,8 @@ namespace SiliconStudio.Xenko.Input
             ReleasedKeys.Clear();
             PressedButtons.Clear();
             ReleasedButtons.Clear();
-            PointerEvents.Clear();
             KeyEvents.Clear();
+            PointerEvents.Clear();
             PressedGamePadButtonEvents.Clear();
             ReleasedGamePadButtonEvents.Clear();
             MouseWheelDelta = 0;
@@ -158,7 +159,8 @@ namespace SiliconStudio.Xenko.Input
         {
             if (inputEvent.State == ButtonState.Down)
             {
-                DownKeys.Add(inputEvent.Key);
+                if(inputEvent.RepeatCount == 0)
+                    DownKeys.Add(inputEvent.Key);
                 PressedKeys.Add(inputEvent.Key);
             }
             else

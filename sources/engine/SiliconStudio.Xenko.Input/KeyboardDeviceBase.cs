@@ -49,6 +49,7 @@ namespace SiliconStudio.Xenko.Input
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
             keyEvent.State = ButtonState.Down;
             keyEvent.Key = key;
+            keyEvent.RepeatCount = repeatCount;
             EventQueue.Add(keyEvent);
         }
 
@@ -62,6 +63,7 @@ namespace SiliconStudio.Xenko.Input
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
             keyEvent.State = ButtonState.Up;
             keyEvent.Key = key;
+            keyEvent.RepeatCount = 0;
             EventQueue.Add(keyEvent);
         }
     }

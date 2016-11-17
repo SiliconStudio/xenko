@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input
         public TimeSpan DeltaTime { get; internal set; }
 
         /// <summary>
-        /// Gets the state of this pointer event (down, up, move... etc.)
+        /// Gets the type of pointer event (pressed,released,etc.)
         /// </summary>
         /// <value>The state.</value>
         public PointerEventType EventType { get; internal set; }
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The pointer that sent this event
         /// </summary>
-        public IPointerDevice Pointer => Device as IPointerDevice;
+        public IPointerDevice Pointer => (IPointerDevice)Device;
 
         public override string ToString()
         {

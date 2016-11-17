@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -14,63 +16,50 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class DirectionAction : InputAction
     {
-        private Vector2 lastValue;
-        private bool lastRelative;
+        private readonly List<DirectionGestureEventArgs> events = new List<DirectionGestureEventArgs>();
+        private Vector2 lastState;
 
         /// <summary>
-        /// Raised when the axis is not 0
+        /// Raised when the direction state changed
         /// </summary>
-        public event EventHandler<ChangedEventArgs> NotZero;
+        public event EventHandler<DirectionGestureEventArgs> Changed;
 
-        /// <summary>
-        /// Raised when the axis changes value
-        /// </summary>
-        public event EventHandler<ChangedEventArgs> Changed;
+        public Vector2 LastState => lastState;
 
-        /// <summary>
-        /// The last value of this action
-        /// </summary>
-        [DataMemberIgnore]
-        public Vector2 Value => lastValue;
-        
-        public override void Update()
+        public override void Update(TimeSpan deltaTime)
         {
-            Vector2 target = Vector2.Zero;
-            float largest = 0.0f;
-            bool relative = false;
-            foreach (var gesture in Gestures.OfType<IDirectionGesture>())
-            {
-                Vector2 v = gesture.Direction;
-                float length = v.Length();
-                if (length > largest)
-                {
-                    target = gesture.Direction;
-                    relative = gesture.IsRelative;
-                    largest = length;
-                }
-            }
+            base.Update(deltaTime);
 
-            if (lastValue != target)
+            // Only send the last event
+            if (events.Count > 0)
             {
-                lastValue = target;
-                lastRelative = relative;
-                Changed?.Invoke(this, new ChangedEventArgs { Value = Value, Relative = lastRelative });
+                var evt = events.Last();
+                lastState = evt.State;
+                Changed?.Invoke(this, evt);
             }
-            if (largest > 0)
-            {
-                NotZero?.Invoke(this, new ChangedEventArgs { Value = Value, Relative = lastRelative });
-            }
+            events.Clear();
+        }
+
+        protected override void OnGestureAdded(InputGestureBase gesture)
+        {
+            var direction = gesture as IDirectionGesture;
+            direction.Changed += DirectionOnChanged;
+        }
+
+        protected override void OnGestureRemoved(InputGestureBase gesture)
+        {
+            var direction = gesture as IDirectionGesture;
+            direction.Changed -= DirectionOnChanged;
+        }
+
+        private void DirectionOnChanged(object sender, DirectionGestureEventArgs args)
+        {
+            events.Add(new DirectionGestureEventArgs(args.Device, args.State));
         }
 
         public override string ToString()
         {
-            return $"Direction Action \"{MappingName}\", {nameof(Value)}: {Value}";
-        }
-
-        public class ChangedEventArgs : EventArgs
-        {
-            public Vector2 Value;
-            public bool Relative;
+            return $"Direction Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

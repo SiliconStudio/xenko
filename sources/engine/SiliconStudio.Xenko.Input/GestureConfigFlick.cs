@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input
 {

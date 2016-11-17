@@ -56,15 +56,15 @@ namespace SiliconStudio.Xenko.Input
             return (currPosition - startPosition).Length() >= ConfigDrag.MinimumDragDistance;
         }
 
-        protected override void AddGestureEventToCurrentList(GestureState state)
+        protected override void AddGestureEventToCurrentList(GestureEventType eventType)
         {
             var deltaTrans = currPosition - lastPosition;
-            CurrentGestureEvents.Add(new GestureEventDrag(state, ConfigDrag.RequiredNumberOfFingers, ElapsedSinceLast, ElapsedSinceBeginning, ConfigDrag.DragShape,
+            CurrentGestureEvents.Add(new GestureEventDrag(eventType, ConfigDrag.RequiredNumberOfFingers, ElapsedSinceLast, ElapsedSinceBeginning, ConfigDrag.DragShape,
                                                           NormalizeVector(startPosition), NormalizeVector(currPosition), NormalizeVector(deltaTrans)));
 
             lastPosition = currPosition;
 
-            base.AddGestureEventToCurrentList(state);
+            base.AddGestureEventToCurrentList(eventType);
         }
     }
 }

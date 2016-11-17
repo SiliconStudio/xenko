@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// An event to describe a change in a gamepad axis
+    /// An event to describe a change in a game controller axis
     /// </summary>
     public class GameControllerAxisEvent : AxisEvent
     {

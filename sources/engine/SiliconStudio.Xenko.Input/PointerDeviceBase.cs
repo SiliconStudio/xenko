@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Input
         public Vector2 InverseSurfaceSize => invSurfaceSize;
         public float SurfaceAspectRatio => aspectRatio;
         
-        public event EventHandler SurfaceSizeChanged;
+        public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
 
         public virtual void Update(List<InputEvent> inputEvents)
         {
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Input
             surfaceSize = newSize;
             aspectRatio = SurfaceSize.Y/SurfaceSize.X;
             invSurfaceSize = 1.0f/SurfaceSize;
-            SurfaceSizeChanged?.Invoke(this, null);
+            SurfaceSizeChanged?.Invoke(this, new SurfaceSizeChangedEventArgs { NewSurfaceSize = newSize });
         }
 
         /// <summary>

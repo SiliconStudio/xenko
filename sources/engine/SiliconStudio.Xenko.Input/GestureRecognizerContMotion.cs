@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input
             }
             else if (gestureWasStarted && GestureBeganEventSent) // end of the current gesture
             {
-                AddGestureEventToCurrentList(GestureState.Ended);
+                AddGestureEventToCurrentList(GestureEventType.Ended);
             }
         }
 
@@ -63,12 +63,12 @@ namespace SiliconStudio.Xenko.Input
 
             if (!GestureBeganEventSent && HasGestureStarted && GestureBeginningConditionFulfilled())
             {
-                AddGestureEventToCurrentList(GestureState.Began);
+                AddGestureEventToCurrentList(GestureEventType.Began);
                 GestureBeganEventSent = true;
             }
 
             if (GestureBeganEventSent)
-                AddGestureEventToCurrentList(HasGestureStarted ? GestureState.Changed : GestureState.Ended);
+                AddGestureEventToCurrentList(HasGestureStarted ? GestureEventType.Changed : GestureEventType.Ended);
         }
 
         protected abstract void UpdateGestureVarsAndPerfomChecks();
@@ -89,11 +89,11 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        protected virtual void AddGestureEventToCurrentList(GestureState state)
+        protected virtual void AddGestureEventToCurrentList(GestureEventType eventType)
         {
             ElapsedSinceLast = TimeSpan.Zero;
 
-            if (state == GestureState.Ended)
+            if (eventType == GestureEventType.Ended)
                 GestureBeganEventSent = false;
         }
     }

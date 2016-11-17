@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Raised when the sureface size of this pointer changed
         /// </summary>
-        event EventHandler SurfaceSizeChanged;
+        event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
 
         /// <summary>
         /// The type of the pointer device

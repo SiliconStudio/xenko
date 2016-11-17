@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The gamepad that sent this event
         /// </summary>
-        public IGameControllerDevice GameController => Device as IGameControllerDevice;
+        public IGameControllerDevice GameController => (IGameControllerDevice)Device;
 
         public override string ToString()
         {

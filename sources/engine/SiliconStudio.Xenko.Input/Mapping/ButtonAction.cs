@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -13,50 +15,50 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class ButtonAction : InputAction
     {
+        private readonly List<ButtonGestureEventArgs> events = new List<ButtonGestureEventArgs>();
+        private ButtonState lastState;
+
         /// <summary>
         /// Raised when the action was trigerred
         /// </summary>
-        public event EventHandler<ChangedEventArgs> Changed;
+        public event EventHandler<ButtonGestureEventArgs> Changed;
 
-        /// <summary>
-        /// Raised when the state changed from <see cref="ButtonState.Up"/> to <see cref="ButtonState.Down"/>
-        /// </summary>
-        public event EventHandler Pressed;
+        public ButtonState LastState => lastState;
 
-        private bool lastValue;
-
-        /// <summary>
-        /// The last value of the button action
-        /// </summary>
-        [DataMemberIgnore]
-        public bool Value => lastValue;
-
-        public override void Update()
+        public override void Update(TimeSpan deltaTime)
         {
-            bool newValue = false;
-            foreach (var gesture in Gestures.OfType<IButtonGesture>())
+            base.Update(deltaTime);
+
+            // Only send the last event
+            if (events.Count > 0)
             {
-                newValue = newValue || gesture.Button;
+                var evt = events.Last();
+                lastState = evt.State;
+                Changed?.Invoke(this, evt);
             }
-            if (lastValue != newValue)
-            {
-                lastValue = newValue;
-                Changed?.Invoke(this, new ChangedEventArgs { Value = Value });
-                if(lastValue)
-                    Pressed?.Invoke(this, null);
-            }
+            events.Clear();
         }
 
+        protected override void OnGestureAdded(InputGestureBase gesture)
+        {
+            var button = gesture as IButtonGesture;
+            button.Changed += ButtonOnChanged;
+        }
+
+        protected override void OnGestureRemoved(InputGestureBase gesture)
+        {
+            var button = gesture as IButtonGesture;
+            button.Changed -= ButtonOnChanged;
+        }
+
+        private void ButtonOnChanged(object sender, ButtonGestureEventArgs args)
+        {
+            events.Add(new ButtonGestureEventArgs(args.Device, args.State));
+        }
+        
         public override string ToString()
         {
-            return $"Button Action \"{MappingName}\", {nameof(Value)}: {Value}";
-        }
-
-        public class ChangedEventArgs : EventArgs
-        {
-            public IButtonGesture Gesture;
-            public bool Value;
-            public ButtonState State => Value ? ButtonState.Down : ButtonState.Up;
+            return $"Button Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

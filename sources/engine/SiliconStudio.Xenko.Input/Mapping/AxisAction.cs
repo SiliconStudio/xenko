@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -13,60 +15,50 @@ namespace SiliconStudio.Xenko.Input.Mapping
     [DataContract]
     public class AxisAction : InputAction
     {
-        private float lastValue;
-        private bool lastRelative;
-
-        /// <summary>
-        /// Raised when the axis is not 0
-        /// </summary>
-        public event EventHandler<ChangedEventArgs> NotZero;
-
-        /// <summary>
-        /// Raised when the axis changes value
-        /// </summary>
-        public event EventHandler<ChangedEventArgs> Changed;
+        private readonly List<AxisGestureEventArgs> events = new List<AxisGestureEventArgs>();
+        private float lastState;
         
         /// <summary>
-        /// The last value of this action
+        /// Raised when the axis state changed
         /// </summary>
-        [DataMemberIgnore]
-        public float Value => lastValue;
+        public event EventHandler<AxisGestureEventArgs> Changed;
 
-        public override void Update()
+        public float LastState => lastState;
+
+        public override void Update(TimeSpan deltaTime)
         {
-            float newValue = 0.0f;
-            bool relative = false;
-            foreach (var gesture in Gestures.OfType<IAxisGesture>())
-            {
-                float v = gesture.Axis;
-                if (Math.Abs(v) > Math.Abs(newValue))
-                {
-                    newValue = v;
-                    relative = gesture.IsRelative;
-                }
-            }
+            base.Update(deltaTime);
 
-            if (lastValue != newValue)
+            // Only send the last event
+            if (events.Count > 0)
             {
-                lastValue = newValue;
-                lastRelative = relative;
-                Changed?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative});
+                var evt = events.Last();
+                lastState = evt.State;
+                Changed?.Invoke(this, evt);
             }
-            if (lastValue != 0.0f)
-            {
-                NotZero?.Invoke(this, new ChangedEventArgs { Value = lastValue, Relative = lastRelative });
-            }
+            events.Clear();
+        }
+
+        protected override void OnGestureAdded(InputGestureBase gesture)
+        {
+            var axis = gesture as IAxisGesture;
+            axis.Changed += AxisOnChanged;
+        }
+
+        protected override void OnGestureRemoved(InputGestureBase gesture)
+        {
+            var axis = gesture as IAxisGesture;
+            axis.Changed -= AxisOnChanged;
+        }
+
+        private void AxisOnChanged(object sender, AxisGestureEventArgs args)
+        {
+            events.Add(new AxisGestureEventArgs(args.Device, args.State));
         }
 
         public override string ToString()
         {
-            return $"Axis Action \"{MappingName}\", {nameof(Value)}: {Value}";
-        }
-
-        public class ChangedEventArgs : EventArgs
-        {
-            public float Value;
-            public bool Relative;
+            return $"Axis Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

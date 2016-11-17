@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The mouse that sent this event
         /// </summary>
-        public IMouseDevice Mouse => Device as IMouseDevice;
+        public IMouseDevice Mouse => (IMouseDevice)Device;
 
         public override string ToString()
         {

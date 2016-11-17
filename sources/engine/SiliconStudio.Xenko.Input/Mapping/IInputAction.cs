@@ -9,6 +9,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -42,8 +43,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 mappingName = value; 
             }
         }
-
-        /// <summary>
+        
         /// <summary>
         /// Should mouse input be ignored when the mouse is not locked
         /// </summary>
@@ -56,9 +56,18 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
 
         /// <summary>
-        /// Updates the input action, raising events whenever something changed
+        /// Pre update of the input action
         /// </summary>
-        public abstract void Update();
+        public virtual void PreUpdate(TimeSpan deltaTime)
+        {
+        }
+
+        /// <summary>
+        /// Updates the input action
+        /// </summary>
+        public virtual void Update(TimeSpan deltaTime)
+        {
+        }
 
         public InputAction Clone()
         {
@@ -91,21 +100,35 @@ namespace SiliconStudio.Xenko.Input.Mapping
             return Clone().Gestures.ToList();
         }
 
+        /// <summary>
+        /// Called when a gesture should be linked to this action
+        /// </summary>
+        /// <param name="gesture"></param>
+        protected abstract void OnGestureAdded(InputGestureBase gesture);
+
+        /// <summary>
+        /// Called when a gesture should be unlinked from this action
+        /// </summary>
+        /// <param name="gesture"></param>
+        protected abstract void OnGestureRemoved(InputGestureBase gesture);
+
         private void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
+            var inputManager = ActionMapping?.InputManager;
+
             // Handles adding/removing new gestures to/from the action mapping when this action is registered as well
-            var gesture = e.Item as InputGesture;
+            var gesture = e.Item as InputGestureBase;
             if (gesture == null) return; // This might happen when adding a new gesture in the GameStudio
             if (ActionMapping == null) return;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    gesture.ActionMapping = ActionMapping;
-                    gesture.Action = this;
-                    gesture.OnAdded();
+                    OnGestureAdded(gesture);
+                    inputManager?.ActivatedGestures.Add(gesture);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    gesture.OnRemoved();
+                    OnGestureRemoved(gesture);
+                    inputManager?.ActivatedGestures.Remove(gesture);
                     break;
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Reset:

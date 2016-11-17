@@ -76,18 +76,18 @@ namespace SiliconStudio.Xenko.Input
             currentScale = Math.Abs(beginVectorLength) > MathUtil.ZeroTolerance? currentVector.Length() / beginVectorLength: 0;
         }
 
-        protected override void AddGestureEventToCurrentList(GestureState state)
+        protected override void AddGestureEventToCurrentList(GestureEventType eventType)
         {
             var deltaRotation = currentRotation - lastRotation;
             var deltaScale = currentScale - lastScale;
-            CurrentGestureEvents.Add(new GestureEventComposite(state, ElapsedSinceLast, ElapsedSinceBeginning, deltaRotation, currentRotation, deltaScale, currentScale,
+            CurrentGestureEvents.Add(new GestureEventComposite(eventType, ElapsedSinceLast, ElapsedSinceBeginning, deltaRotation, currentRotation, deltaScale, currentScale,
                                                                NormalizeVector(beginCenter), NormalizeVector(lastCenter), NormalizeVector(currentCenter)));
 
             lastRotation = currentRotation;
             lastScale = currentScale;
             lastCenter = currentCenter;
 
-            base.AddGestureEventToCurrentList(state);
+            base.AddGestureEventToCurrentList(eventType);
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -136,7 +137,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 ((CompoundAxisGesture)TargetGesture).Gestures.Add(axis);
                 // Inver axis since this is now being used as the negative trigger
-                var scalable = axis as InvertibleInputGesture;
+                var scalable = axis as AxisGestureBase;
                 if (scalable != null) scalable.Inverted = !scalable.Inverted;
                 Advance(1);
             }

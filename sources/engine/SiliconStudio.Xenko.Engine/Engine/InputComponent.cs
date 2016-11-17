@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Input.Gestures;
 using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Engine

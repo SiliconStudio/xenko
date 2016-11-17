@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The keyboard that sent this event
         /// </summary>
-        public IKeyboardDevice Keyboard => Device as IKeyboardDevice;
+        public IKeyboardDevice Keyboard => (IKeyboardDevice)Device;
 
         public override string ToString()
         {

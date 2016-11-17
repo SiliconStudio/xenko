@@ -10,6 +10,8 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input.Gestures;
+using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -42,8 +44,7 @@ namespace SiliconStudio.Xenko.Input
 
         // List mapping GameController index to the guid of the device
         private readonly List<Guid> gameControllerIds = new List<Guid>();
-
-        private readonly List<GestureEvent> gestureEvents = new List<GestureEvent>();
+        
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
@@ -51,30 +52,33 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<IGameControllerDevice> gameControllerDevices = new List<IGameControllerDevice>();
         private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
-
-        private readonly Dictionary<GestureConfig, GestureRecognizer> gestureConfigToRecognizer = new Dictionary<GestureConfig, GestureRecognizer>();
-
+        
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
-
-            ActivatedGestures = new GestureConfigCollection();
+            
+            ActivatedGestures = new TrackingCollection<IInputGesture>();
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
+
+        /// <summary>
+        /// Raised when a device was removed from the system
+        /// </summary>
+        public event EventHandler<DeviceChangedEventArgs> DeviceRemoved;
+
+        /// <summary>
+        /// Raised when a device was added to the system
+        /// </summary>
+        public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
         
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
-        /// <remarks>To detect a new gesture add its configuration to the list. 
-        /// To stop detecting a gesture remove its configuration from the list. 
-        /// To all gestures detection clear the list.
-        /// Note that once added to the list the <see cref="GestureConfig"/>s are frozen by the system and cannot be modified anymore.</remarks>
-        /// <seealso cref="GestureConfig"/>
-        public GestureConfigCollection ActivatedGestures { get; private set; }
+        public TrackingCollection<IInputGesture> ActivatedGestures { get; private set; }
 
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
@@ -110,12 +114,6 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the value indicating if the mouse position is currently locked or not.
         /// </summary>
         public bool IsMousePositionLocked => HasMouse && Mouse.IsPositionLocked;
-
-        /// <summary>
-        /// Gets the collection of gesture events since the previous updates.
-        /// </summary>
-        /// <value>The gesture events.</value>
-        public IReadOnlyList<GestureEvent> GestureEvents => gestureEvents;
         
         /// <summary>
         /// All input events that happened since the last frame
@@ -402,6 +400,12 @@ namespace SiliconStudio.Xenko.Input
             // Notify PreUpdateInput
             PreUpdateInput?.Invoke(this, new InputPreUpdateEventArgs { GameTime = gameTime });
 
+            // Pre Update on gestures
+            foreach (var gesture in ActivatedGestures)
+            {
+                gesture.PreUpdate(gameTime.Elapsed);
+            }
+
             // Send events to input listeners
             foreach (var evt in inputEvents)
             {
@@ -410,10 +414,12 @@ namespace SiliconStudio.Xenko.Input
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
                 router.RouteEvent(evt);
             }
-            
+
             // Update gestures
-            // TODO: Merge with input actions
-            UpdateGestureEvents(gameTime.Elapsed);
+            foreach (var gesture in ActivatedGestures)
+            {
+                gesture.Update(gameTime.Elapsed);
+            }
         }
 
         /// <summary>
@@ -500,6 +506,9 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Destroy();
 
+            // Unregister all gestures
+            ActivatedGestures.Clear();
+
             // Destroy all input sources
             foreach (var source in inputSources)
             {
@@ -512,42 +521,24 @@ namespace SiliconStudio.Xenko.Input
             // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
             OnApplicationPaused(this, EventArgs.Empty);
         }
-
+        
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
+            // TODO: Rename
+            var gesture = trackingCollectionChangedEventArgs.Item as InputGestureBase;
+            if(gesture == null) throw new InvalidOperationException("Added gesture does not inherit from InputGestureBase");
             switch (trackingCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    StartGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    gesture.InputManager = this;
+                    gesture.OnAdded();
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    StopGestureRecognition((GestureConfig)trackingCollectionChangedEventArgs.Item);
+                    gesture.OnRemoved();
                     break;
-                case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Reset:
-                    throw new NotSupportedException("ActivatedGestures collection was modified but the action was not supported by the system.");
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
-
-        private void StartGestureRecognition(GestureConfig config)
-        {
-            if (!HasPointer)
-                throw new InvalidOperationException("Need a pointer to use gestures");
-            // TODO: Allow gestures for multiple pointer devices?
-            gestureConfigToRecognizer.Add(config, config.CreateRecognizer(Pointer.SurfaceAspectRatio));
-        }
-
-        private void StopGestureRecognition(GestureConfig config)
-        {
-            if (!HasPointer)
-                throw new InvalidOperationException("Need a pointer to use gestures");
-            gestureConfigToRecognizer.Remove(config);
-        }
-
+        
         private void SetMousePosition(Vector2 normalizedPosition)
         {
             // Set mouse position for first mouse device
@@ -556,17 +547,7 @@ namespace SiliconStudio.Xenko.Input
                 Mouse.SetPosition(normalizedPosition);
             }
         }
-
-        private void UpdateGestureEvents(TimeSpan elapsedGameTime)
-        {
-            gestureEvents.Clear();
-
-            foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-            {
-                gestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, PointerEvents));
-            }
-        }
-
+        
         private void InputDevicesOnCollectionChanged(IInputSource source, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -609,12 +590,15 @@ namespace SiliconStudio.Xenko.Input
                 RegisterSensor((ISensorDevice)device);
             }
             UpdateConnectedDevices();
+
+            DeviceAdded?.Invoke(this, new DeviceChangedEventArgs { Device = device, Source = source, Type = DeviceChangedEventType.Added });
         }
 
         private void OnInputDeviceRemoved(IInputDevice device)
         {
             if (!inputDevices.ContainsKey(device))
                 throw new InvalidOperationException("Input device was not registered");
+            var source = inputDevices[device];
             inputDevices.Remove(device);
             inputDevicesById.Remove(device.Id);
 
@@ -635,6 +619,8 @@ namespace SiliconStudio.Xenko.Input
                 UnregisterSensor((ISensorDevice)device);
             }
             UpdateConnectedDevices();
+
+            DeviceRemoved?.Invoke(this, new DeviceChangedEventArgs { Device = device, Source = source, Type = DeviceChangedEventType.Removed});
         }
         
         private void UpdateConnectedDevices()
