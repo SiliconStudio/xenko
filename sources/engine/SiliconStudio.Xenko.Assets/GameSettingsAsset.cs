@@ -15,7 +15,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;

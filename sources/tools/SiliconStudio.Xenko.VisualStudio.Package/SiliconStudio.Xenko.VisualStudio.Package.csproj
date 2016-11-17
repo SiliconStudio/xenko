@@ -171,39 +171,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
-      <Link>Core\OverrideType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
-      <Link>Core\Design\Windows\FileLock.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\IDynamicYamlNode.cs">
-      <Link>Core\Design\Yaml\IDynamicYamlNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
-      <Link>Core\Design\Windows\NativeLockFile.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core\Diagnostics\CallerInfo.cs">
-      <Link>CallerInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlEmpty.cs">
-      <Link>Core\Design\Yaml\DynamicYamlEmpty.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlObject.cs">
-      <Link>Core\Design\Yaml\DynamicYamlObject.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlScalar.cs">
-      <Link>Core\Design\Yaml\DynamicYamlScalar.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlMapping.cs">
-      <Link>Core\Design\Yaml\DynamicYamlMapping.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\DynamicYamlArray.cs">
-      <Link>Core\Design\Yaml\DynamicYamlArray.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\VisualStudio\*.cs">
-      <Link>Core\Design\VisualStudio\%(Filename).cs</Link>
-    </Compile>
     <Compile Include="..\..\assets\SiliconStudio.Assets\PackageSessionHelper.Solution.cs">
       <Link>Assets\PackageSessionHelper.Solution.cs</Link>
     </Compile>
@@ -331,6 +298,10 @@
     <ProjectReference Include="..\..\assets\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj">
       <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
       <Name>SiliconStudio.PackageManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>

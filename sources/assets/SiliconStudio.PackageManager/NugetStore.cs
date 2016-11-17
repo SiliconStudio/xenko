@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Windows;
 
 // Nuget v2.0 types

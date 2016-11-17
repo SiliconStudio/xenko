@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
+
 namespace SiliconStudio.PackageManager
 {
     internal static class NuGet2Extensions
@@ -9,7 +11,7 @@ namespace SiliconStudio.PackageManager
         /// Given a <see cref="ConstraintProvider"/> construct a NuGet equivalent.
         /// </summary>
         /// <param name="provider">The provider to convert.</param>
-        /// <returns>An instance of conforming type <see cref="IPackageConstraintProvider"/> matching <paramref name="provider"/>.</returns>
+        /// <returns>An instance of conforming type <see cref="NuGet.IPackageConstraintProvider"/> matching <paramref name="provider"/>.</returns>
         public static NuGet.IPackageConstraintProvider Provider (this ConstraintProvider provider)
         {
             if ((provider == null) || (!provider.HasConstraints))

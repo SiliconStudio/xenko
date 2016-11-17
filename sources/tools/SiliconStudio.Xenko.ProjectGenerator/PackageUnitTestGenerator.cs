@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.IO;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Xenko.Assets;
 
 namespace SiliconStudio.Xenko.ProjectGenerator

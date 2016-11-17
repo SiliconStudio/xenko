@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using SiliconStudio.PackageManager;
+using SiliconStudio.Core;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;

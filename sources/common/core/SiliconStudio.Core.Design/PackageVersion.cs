@@ -10,12 +10,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
+
 using System;
 using System.Text.RegularExpressions;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.PackageManager
+namespace SiliconStudio.Core
 {
     /// <summary>
     /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to 

@@ -13,6 +13,7 @@ using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.PackageManager;
 

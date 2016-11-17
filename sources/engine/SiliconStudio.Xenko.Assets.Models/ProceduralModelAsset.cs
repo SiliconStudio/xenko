@@ -10,7 +10,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 

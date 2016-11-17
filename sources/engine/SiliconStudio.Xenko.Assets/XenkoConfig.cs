@@ -7,7 +7,6 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets
 {

@@ -14,7 +14,6 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {

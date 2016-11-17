@@ -9,7 +9,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;

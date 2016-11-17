@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using NuGet;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.PackageManager

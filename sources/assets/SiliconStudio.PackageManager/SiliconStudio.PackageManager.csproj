@@ -42,8 +42,6 @@
     <Compile Include="NugetPackage.cs" />
     <Compile Include="PackageManagerConstants.cs" />
     <Compile Include="NullPackageManagerLogger.cs" />
-    <Compile Include="PackageVersion.cs" />
-    <Compile Include="PackageVersionRange.cs" />
     <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>

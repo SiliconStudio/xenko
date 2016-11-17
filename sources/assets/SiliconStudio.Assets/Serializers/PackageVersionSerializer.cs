@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 

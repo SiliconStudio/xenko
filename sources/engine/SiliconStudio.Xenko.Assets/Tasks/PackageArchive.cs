@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.PackageManager;
 

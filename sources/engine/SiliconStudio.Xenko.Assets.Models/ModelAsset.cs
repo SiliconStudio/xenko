@@ -12,7 +12,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
 

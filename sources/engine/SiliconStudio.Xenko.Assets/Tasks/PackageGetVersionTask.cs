@@ -5,8 +5,8 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
 {

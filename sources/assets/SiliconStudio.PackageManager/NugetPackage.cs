@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.PackageManager
 {

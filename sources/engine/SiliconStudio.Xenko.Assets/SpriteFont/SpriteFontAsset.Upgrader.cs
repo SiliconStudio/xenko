@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont

@@ -3,8 +3,6 @@ using System.Linq;
 
 using NuGet;
 
-using SiliconStudio.PackageManager;
-
 namespace SiliconStudio.PackageManager
 {
     public class ProgressReport : IDisposable

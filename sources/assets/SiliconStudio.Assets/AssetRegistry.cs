@@ -11,7 +11,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.PackageManager;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 

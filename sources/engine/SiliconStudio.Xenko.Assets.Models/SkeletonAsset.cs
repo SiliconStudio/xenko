@@ -7,7 +7,6 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
