@@ -378,22 +378,28 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             {
                 if (link.Source.Kind == SlotKind.Execution)
                 {
-                    var sourceBlock = (ExecutionBlock)link.Source.Owner;
-                    var targetBlock = (ExecutionBlock)link.Target.Owner;
+                    var sourceBlock = link.Source.Owner as ExecutionBlock;
+                    var targetBlock = link.Target.Owner as ExecutionBlock;
 
                     List<ExecutionBlock> sourceOutputs, targetInputs;
 
                     // Store target in source
-                    if (!executionOutputs.TryGetValue(sourceBlock, out sourceOutputs))
-                        executionOutputs.Add(sourceBlock, sourceOutputs = new List<ExecutionBlock>());
-                    if (!sourceOutputs.Contains(targetBlock))
-                        sourceOutputs.Add(targetBlock);
+                    if (sourceBlock != null)
+                    {
+                        if (!executionOutputs.TryGetValue(sourceBlock, out sourceOutputs))
+                            executionOutputs.Add(sourceBlock, sourceOutputs = new List<ExecutionBlock>());
+                        if (!sourceOutputs.Contains(targetBlock))
+                            sourceOutputs.Add(targetBlock);
+                    }
 
                     // Store source in target
-                    if (!executionInputs.TryGetValue(targetBlock, out targetInputs))
-                        executionInputs.Add(targetBlock, targetInputs = new List<ExecutionBlock>());
-                    if (!targetInputs.Contains(sourceBlock))
-                        targetInputs.Add(sourceBlock);
+                    if (targetBlock != null)
+                    {
+                        if (!executionInputs.TryGetValue(targetBlock, out targetInputs))
+                            executionInputs.Add(targetBlock, targetInputs = new List<ExecutionBlock>());
+                        if (!targetInputs.Contains(sourceBlock))
+                            targetInputs.Add(sourceBlock);
+                    }
                 }
             }
         }
