@@ -22,7 +22,15 @@ namespace SiliconStudio.Xenko.Input.Gestures
         private float screenRatio;
         private int requiredNumberOfFingers;
 
+        // Keeps a list of events generated this frame
+        private List<PointerGestureEventArgs> events = new List<PointerGestureEventArgs>();
+
         public event EventHandler<PointerGestureEventArgs> Changed;
+
+        /// <summary>
+        /// The list of events that were triggered on this gesture since the last frame
+        /// </summary>
+        public IReadOnlyList<PointerGestureEventArgs> Events => events;
 
         /// <summary>
         /// This value represents the required number of simultaneous finger to tap to trigger the gesture. For example: 1 for single finger, and so on...
@@ -53,6 +61,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
             ElapsedSinceBeginning += elapsedTime;
             ElapsedSinceLast += elapsedTime;
             DeltaTime = elapsedTime;
+            events.Clear();
         }
 
         public virtual void ProcessEvent(PointerEvent pointerEvent)
@@ -91,6 +100,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         protected void SendChangedEvent(PointerGestureEventArgs args)
         {
             Changed?.Invoke(this, args);
+            events.Add(args);
         }
 
         protected abstract void ProcessDownEventPointer(int id, Vector2 pos);
