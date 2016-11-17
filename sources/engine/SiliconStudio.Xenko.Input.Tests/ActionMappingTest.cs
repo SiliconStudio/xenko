@@ -270,11 +270,11 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             // Setup binding a button/axis or direction
             if (action is ButtonAction)
-                actionBinder = new ButtonActionBinder(Input);
+                actionBinder = new ButtonActionBinder(Input, actionMapping.BoundGestures);
             else if (action is AxisAction)
-                actionBinder = new AxisActionBinder(Input);
+                actionBinder = new AxisActionBinder(Input, actionMapping.BoundGestures);
             else if (action is DirectionAction)
-                actionBinder = new DirectionActionBinder(Input);
+                actionBinder = new DirectionActionBinder(Input, actionMapping.BoundGestures);
             else
                 return;
 

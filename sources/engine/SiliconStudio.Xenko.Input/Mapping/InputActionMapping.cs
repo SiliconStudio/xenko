@@ -60,7 +60,23 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// A set of gestures that is already bound
         /// </summary>
-        public HashSet<IInputGesture> BoundGestures => gestures;
+        /// <remarks>This function is not cached, it will traverse all the gestures on this action mapping to list all gestures</remarks>
+        public HashSet<IInputGesture> BoundGestures
+        {
+            get
+            {
+                HashSet<IInputGesture> gestures = new HashSet<IInputGesture>();
+                foreach (var action in Actions)
+                {
+                    foreach (var gesture in action.Gestures)
+                    {
+                        var gestureBase = gesture as InputGestureBase;
+                        gestureBase.GetGesturesRecursive(gestures);
+                    }
+                }
+                return gestures;
+            }
+        }
 
         /// <summary>
         /// Use this to serialize/deserialize the action mapping

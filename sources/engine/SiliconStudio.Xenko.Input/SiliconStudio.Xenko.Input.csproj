@@ -121,7 +121,7 @@
     <Compile Include="Mapping\ButtonActionBinder.cs" />
     <Compile Include="Mapping\DirectionAction.cs" />
     <Compile Include="Mapping\DirectionActionBinder.cs" />
-    <Compile Include="Mapping\IInputAction.cs" />
+    <Compile Include="Mapping\InputAction.cs" />
     <Compile Include="Gestures\IInputGesture.cs" />
     <Compile Include="Mapping\InputActionConfiguration.cs" />
     <Compile Include="Mapping\InputActionMapping.cs" />

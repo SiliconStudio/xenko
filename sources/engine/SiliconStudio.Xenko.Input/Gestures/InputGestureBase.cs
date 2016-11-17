@@ -31,13 +31,15 @@ namespace SiliconStudio.Xenko.Input.Gestures
         }
 
         /// <summary>
-        /// Fills a list with all gestures in this tree
+        /// Fills a collection with all gestures in this tree
         /// </summary>
-        public void GetGesturesRecursive(List<IInputGesture> gestures)
+        public void GetGesturesRecursive(ICollection<IInputGesture> gestures)
         {
             gestures.Add(this);
             foreach (var child in childGestures)
-                gestures.Add(child);
+            {
+                child.GetGesturesRecursive(gestures);
+            }
         }
         
         /// <summary>
