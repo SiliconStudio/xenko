@@ -455,7 +455,7 @@ namespace SiliconStudio.Assets.Quantum
             //    return;
 
             // Mark it as New if it does not come from the base
-            if (!baseNode?.contentUpdating == true)
+            if (!baseNode?.contentUpdating == true && !ResettingOverride)
             {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
