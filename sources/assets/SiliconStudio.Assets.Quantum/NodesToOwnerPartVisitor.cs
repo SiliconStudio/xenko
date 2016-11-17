@@ -19,13 +19,13 @@ namespace SiliconStudio.Assets.Quantum
     /// </summary>
     /// <typeparam name="TAssetPartDesign">The type of the design-time object containing the part.</typeparam>
     /// <typeparam name="TAssetPart">The type of the part.</typeparam>
-    public class NodesToOwnerPartVisitor<TAssetPartDesign, TAssetPart> : AssetCompositePartVisitor<TAssetPartDesign, TAssetPart>
+    public class NodesToOwnerPartVisitor<TAssetPartDesign, TAssetPart> : AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
         where TAssetPart : class, IIdentifiable
     {
         private readonly IGraphNode partDesignNode;
 
-        public NodesToOwnerPartVisitor(AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph, INodeContainer nodeContainer, TAssetPartDesign partDesign)
+        public NodesToOwnerPartVisitor(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph, INodeContainer nodeContainer, TAssetPartDesign partDesign)
             : base(propertyGraph)
         {
             partDesignNode = nodeContainer.GetOrCreateNode(partDesign);

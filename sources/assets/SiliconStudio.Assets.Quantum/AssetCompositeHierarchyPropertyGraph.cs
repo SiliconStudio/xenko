@@ -7,7 +7,7 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Assets.Quantum
 {
     [AssetPropertyGraph(typeof(AssetCompositeHierarchy<,>))]
-    public class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph<TAssetPartDesign, TAssetPart>
+    public class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
     {
@@ -52,17 +52,37 @@ namespace SiliconStudio.Assets.Quantum
             {
                 // We need to find out for which entity we are cloning this (other) entity
                 var multiContentNode = node as MultiContentNode;
-                var ownerEntity = (TAssetPartDesign)multiContentNode?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
-                if (ownerEntity != null)
+                var owner = (TAssetPartDesign)multiContentNode?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
+                if (owner != null)
                 {
                     // Then instead of creating a clone, we just return the corresponding part in this asset (in term of base and base instance)
-                    var partInDerived = AssetHierarchy.Hierarchy.Parts.FirstOrDefault(x => x.Base?.BasePartId == part.Id && x.Base?.InstanceId == ownerEntity.Base?.InstanceId);
+                    var partInDerived = AssetHierarchy.Hierarchy.Parts.FirstOrDefault(x => x.Base?.BasePartId == part.Id && x.Base?.InstanceId == owner.Base?.InstanceId);
                     return partInDerived?.Part;
                 }
             }
 
             var result = base.CloneValueFromBase(value, node);
             return result;
+        }
+
+        protected override GraphVisitorBase CreateReconcilierVisitor()
+        {
+            return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
+        }
+
+        public override bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
+        {
+            // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
+            // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
+            if (member == null || member == targetNode.Content)
+                return false;
+
+            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))
+            {
+                // Check if we're the part referenced by a part design - other cases are references
+                return member.Container.OwnerNode.Content.Type != typeof(TAssetPartDesign);
+            }
+            return base.IsReferencedPart(member, targetNode);
         }
     }
 }
