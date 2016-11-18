@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
@@ -180,7 +181,13 @@ namespace SiliconStudio.Xenko.Rendering
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
                 // Result was async, keep it async
-                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult));
+                // NOTE: There was some hangs when doing ContinueWith() (note: it might switch from EffectPriorityScheduler to TaskScheduler.Default, maybe something doesn't work well in this case?)
+                //       it seems that TaskContinuationOptions.ExecuteSynchronously is helping in this case (also it will force continuation to execute right away on the thread pool, which is probably better)
+                //       Not sure if the probably totally disappeared (esp. if something does a ContinueWith() externally on that) -- might need further investigation.
+                var result = bytecode.Task.ContinueWith(
+                    x => CreateEffect(effectName, x.Result, compilerResult),
+                    TaskContinuationOptions.ExecuteSynchronously);
+                return result;
             }
             else
             {
