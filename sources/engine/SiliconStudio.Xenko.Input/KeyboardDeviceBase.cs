@@ -13,11 +13,6 @@ namespace SiliconStudio.Xenko.Input
     {
         public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
         protected List<KeyEvent> EventQueue = new List<KeyEvent>();
-        
-        public virtual void Dispose()
-        {
-        }
-        
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
         public int Priority { get; set; }

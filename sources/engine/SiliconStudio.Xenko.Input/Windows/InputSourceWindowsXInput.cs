@@ -75,9 +75,7 @@ namespace SiliconStudio.Xenko.Input
                 var gamePad = devices[deviceIdToRemove];
                 UnregisterDevice(gamePad);
                 devices[deviceIdToRemove] = null;
-
-                if (gamePad.IsConnected)
-                    gamePad.Dispose();
+                gamePad.Dispose();
             }
             devicesToRemove.Clear();
         }

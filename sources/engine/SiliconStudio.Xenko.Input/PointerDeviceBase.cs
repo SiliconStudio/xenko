@@ -19,12 +19,7 @@ namespace SiliconStudio.Xenko.Input
         private float aspectRatio;
         private Vector2 invSurfaceSize;
         private Vector2 lastPrimaryPointerPosition;
-
-        /// <inheritdoc />
-        public virtual void Dispose()
-        {
-        }
-
+        
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
         public abstract PointerType Type { get; }

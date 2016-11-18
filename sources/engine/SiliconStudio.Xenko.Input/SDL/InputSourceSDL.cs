@@ -24,10 +24,11 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Dispose()
         {
-            // Dispose all the gamepads
+            // Dispose all the game controllers
             foreach (var pair in InputDevices)
             {
-                pair.Value.Dispose();
+                var gameController = pair.Value as GameControllerSDL;
+                gameController?.Dispose();
             }
 
             SDL.SDL_QuitSubSystem(SDL.SDL_INIT_JOYSTICK);
@@ -58,11 +59,9 @@ namespace SiliconStudio.Xenko.Input
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = InputDevices[deviceIdToRemove] as GameControllerSDL;
-                UnregisterDevice(gamePad);
-
-                if (gamePad.IsConnected)
-                    gamePad.Dispose();
+                var gameController = InputDevices[deviceIdToRemove] as GameControllerSDL;
+                UnregisterDevice(gameController);
+                gameController.Dispose();
             }
             devicesToRemove.Clear();
         }

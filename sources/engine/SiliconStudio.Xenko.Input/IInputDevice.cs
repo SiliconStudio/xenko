@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public interface IInputDevice : IDisposable
+    public interface IInputDevice
     {
         /// <summary>
         /// Name for this device

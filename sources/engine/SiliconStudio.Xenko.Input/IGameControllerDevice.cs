@@ -20,11 +20,6 @@ namespace SiliconStudio.Xenko.Input
         /// The index of the game controller
         /// </summary>
         int Index { get; }
-
-        /// <summary>
-        /// <c>true</c> if the game controller is currently connected
-        /// </summary>
-        bool IsConnected { get; }
         
         /// <summary>
         /// Information about the buttons on this game controller
@@ -40,11 +35,6 @@ namespace SiliconStudio.Xenko.Input
         /// Information about the point of view controllers on this game controller 
         /// </summary>
         IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
-
-        /// <summary>
-        /// Raised when this game controller gets disconnected
-        /// </summary>
-        event EventHandler Disconnected;
 
         /// <summary>
         /// Retrieves the button state of a single button

@@ -41,8 +41,11 @@ namespace SiliconStudio.Xenko.Input
         
         public override void Dispose()
         {
-            SDL.SDL_JoystickClose(joystick);
-            base.Dispose();
+            if (!Disposed)
+            {
+                SDL.SDL_JoystickClose(joystick);
+                base.Dispose();
+            }
         }
 
         public override string DeviceName { get; }
@@ -54,6 +57,8 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(List<InputEvent> inputEvents)
         {
+            if (Disposed)
+                return;
             if (SDL.SDL_JoystickGetAttached(joystick) == SDL.SDL_bool.SDL_FALSE)
             {
                 Dispose();

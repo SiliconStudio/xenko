@@ -10,7 +10,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadXInput : GameControllerDeviceBase, IGamePadDevice
+    public class GamePadXInput : GameControllerDeviceBase, IGamePadDevice, IDisposable
     {
         private readonly Controller controller;
         private State xinputState;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(List<InputEvent> inputEvents)
         {
-            if (!IsConnected)
+            if (Disposed)
                 return;
 
             var lastXInputState = xinputState;
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void SetVibration(float leftMotor, float rightMotor)
         {
-            if (!IsConnected)
+            if (Disposed)
                 return;
             try
             {

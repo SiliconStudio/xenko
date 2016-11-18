@@ -9,7 +9,7 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GameControllerDirectInput : GameControllerDeviceBase
+    public class GameControllerDirectInput : GameControllerDeviceBase, IDisposable
     {
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
@@ -89,8 +89,11 @@ namespace SiliconStudio.Xenko.Input
         
         public override void Dispose()
         {
-            base.Dispose();
-            gamepad.Dispose();
+            if (!Disposed)
+            {
+                base.Dispose();
+                gamepad.Dispose();
+            }
         }
 
         public override string DeviceName { get; }
@@ -103,6 +106,8 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update(List<InputEvent> inputEvents)
         {
+            if (Disposed)
+                return;
             try
             {
                 gamepad.Acquire();

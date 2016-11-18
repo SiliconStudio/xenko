@@ -23,7 +23,8 @@ namespace SiliconStudio.Xenko.Input
             // Dispose all the gamepads
             foreach (var pair in InputDevices)
             {
-                pair.Value.Dispose();
+                var gameController = pair.Value as GameControllerDirectInput;
+                gameController?.Dispose();
             }
             
             // Unregisters all devices
@@ -45,11 +46,9 @@ namespace SiliconStudio.Xenko.Input
             // Process device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gamePad = InputDevices[deviceIdToRemove] as GameControllerDirectInput;
-                UnregisterDevice(gamePad);
-
-                if (gamePad.IsConnected)
-                    gamePad.Dispose();
+                var gameController = InputDevices[deviceIdToRemove] as GameControllerDirectInput;
+                UnregisterDevice(gameController);
+                gameController.Dispose();
             }
             devicesToRemove.Clear();
         }
