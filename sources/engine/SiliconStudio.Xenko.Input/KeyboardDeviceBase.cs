@@ -13,6 +13,9 @@ namespace SiliconStudio.Xenko.Input
     {
         public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
         protected List<KeyEvent> EventQueue = new List<KeyEvent>();
+        private List<Keys> downKeys = new List<Keys>();
+
+        public IReadOnlyList<Keys> DownKeys => downKeys;
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
         public int Priority { get; set; }
@@ -39,7 +42,10 @@ namespace SiliconStudio.Xenko.Input
             if (KeyRepeats.TryGetValue(key, out repeatCount))
                 KeyRepeats[key] = ++repeatCount;
             else
+            {
                 KeyRepeats.Add(key, repeatCount);
+                downKeys.Add(key);
+            }
 
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
             keyEvent.State = ButtonState.Down;
@@ -55,6 +61,7 @@ namespace SiliconStudio.Xenko.Input
                 return;
 
             KeyRepeats.Remove(key);
+            downKeys.Remove(key);
             var keyEvent = InputEventPool<KeyEvent>.GetOrCreate(this);
             keyEvent.State = ButtonState.Up;
             keyEvent.Key = key;
