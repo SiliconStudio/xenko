@@ -96,7 +96,7 @@
     <Exec Condition="'%(XenkoNativeCFiles.Extension)' == '.cpp'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(XenkoNativeClangCPP) $(XenkoNativeClang) -o &quot;$(OutputObjectPath)\%(XenkoNativeCFiles.Filename).o&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -DIOS -mios-version-min=6.0 -target x86_64-apple-ios" />
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_x86_64.a&quot; @(XenkoNativeCFiles->'&quot;$(OutputObjectPath)\%(Filename).o&quot;', ' ')" />
     
-	  <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lipo.exe&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_armv7.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_armv7s.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_arm64.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_i386.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_x86_64.a&quot; -create -output &quot;$(SiliconStudioXenkoSdkBinDir)\$(XenkoNativeOutputName).a&quot;" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lipo.exe&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_armv7.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_armv7s.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_arm64.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_i386.a&quot; &quot;$(OutputObjectPath)\$(XenkoNativeOutputName)_x86_64.a&quot; -create -output &quot;$(SiliconStudioXenkoSdkBinDir)\$(XenkoNativeOutputName).a&quot;" />
 
     <Copy SourceFiles="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
     
