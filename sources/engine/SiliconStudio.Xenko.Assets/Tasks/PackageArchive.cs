@@ -177,7 +177,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 
             // Output file is {id}.{version}
             string outputFile = builder.Id + "." + version;
-            outputFile += PackageManagerConstants.PackageExtension;
+            outputFile += PackagesConstants.PackageExtension;
 
             return Path.Combine(outputDirectory, outputFile);
         }

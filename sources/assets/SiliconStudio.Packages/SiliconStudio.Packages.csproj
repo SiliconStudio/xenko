@@ -40,7 +40,7 @@
     <Compile Include="PackageOperationEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
-    <Compile Include="PackageManagerConstants.cs" />
+    <Compile Include="PackagesConstants.cs" />
     <Compile Include="NullPackageManagerLogger.cs" />
     <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
