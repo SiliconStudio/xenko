@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Yaml;
@@ -283,6 +284,36 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         }
                     }
                 }
+            }
+        }
+
+        protected class MaterialFromModelComponentUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic entityDesign in entities)
+                {
+                    var entity = entityDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Value.Node.Tag;
+                        if (componentTag == "!ModelComponent")
+                        {
+                            var materials = component.Value.Materials;
+                            var node = ((DynamicYamlMapping)materials).Node;
+                            var i = 0;
+                            foreach (var material in node.Children.ToList())
+                            {
+                                node.Children.Remove(material.Key);
+                                node.Children.Add(new YamlScalarNode(((YamlScalarNode)material.Key).Value + '~' + i), material.Value);
+                                ++i;
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
