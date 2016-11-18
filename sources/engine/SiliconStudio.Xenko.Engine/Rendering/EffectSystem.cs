@@ -163,10 +163,12 @@ namespace SiliconStudio.Xenko.Rendering
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
             // Setup compilation parameters
-            // GraphicsDevice might have been not valid until this point, which is why we set this only here
-            effectCompilerParameters.Platform = GraphicsDevice.Platform;
-            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
-            compilerParameters.EffectParameters = effectCompilerParameters;
+            // GraphicsDevice might have been not valid until this point, which is why we compute platform and profile only at this point
+            compilerParameters.EffectParameters.Platform = GraphicsDevice.Platform;
+            compilerParameters.EffectParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
+            // Copy optimization/debug levels
+            compilerParameters.EffectParameters.OptimizationLevel = effectCompilerParameters.OptimizationLevel;
+            compilerParameters.EffectParameters.Debug = effectCompilerParameters.Debug;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);

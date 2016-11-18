@@ -51,6 +51,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Setup the effect compiler
             EffectInstance.Initialize(Context.Services);
 
+            // We give ImageEffectShader a higher priority, since they are usually executed serially and blocking
+            EffectInstance.EffectCompilerParameters.TaskPriority = -1;
+
             SetDefaultParameters();
         }
 
