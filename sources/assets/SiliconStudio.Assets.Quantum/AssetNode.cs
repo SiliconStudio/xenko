@@ -507,7 +507,6 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
-
         }
 
         public void ResetOverride(Index indexToReset)
@@ -535,16 +534,11 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     childNode.OverrideKey(false, overrideKey);
                 }
-                //if (childNode.IsContentOverridden())
-                //{
-                //    childNode.ResetOverride(Index.Empty, childNode.Content.Retrieve(), ContentChangeType.ValueChange);
-                //}
             };
             visitor.Visit(this);
 
             // TODO: we should reconcile directly only assetNode, not the whole asset
             PropertyGraph.ReconcileWithBase();
-            //assetNode.ResetOverride(index, assetNode.Content.Retrieve(index), ContentChangeType.ValueChange);
         }
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)

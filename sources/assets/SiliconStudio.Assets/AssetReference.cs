@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -111,16 +110,32 @@ namespace SiliconStudio.Assets
         /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
         /// </summary>
         /// <param name="assetReferenceText">The asset reference.</param>
-        /// <param name="referenceId">The unique identifier of this reference (may be null</param>
-        /// <param name="guid">The unique identifier of object pointed by this reference.</param>
+        /// <param name="id">The unique identifier of asset pointed by this reference.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
         public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location)
         {
+            Guid referenceId;
+            return TryParse(assetReferenceText, out id, out location, out referenceId);
+        }
+
+        /// <summary>
+        /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
+        /// </summary>
+        /// <param name="assetReferenceText">The asset reference.</param>
+        /// <param name="id">The unique identifier of object pointed by this reference.</param>
+        /// <param name="location">The location.</param>
+        /// <param name="referenceId">The unique identifier of this reference (may be null)</param>
+        /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
+        /// <remarks>The referenceId is obsolete since Xenko 1.9.</remarks>
+        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location, out Guid referenceId)
+        {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             id = AssetId.Empty;
+            referenceId = Guid.Empty;
             location = null;
             int indexFirstSlash = assetReferenceText.IndexOf('/');
             int indexBeforelocation = assetReferenceText.IndexOf(':');
@@ -131,7 +146,6 @@ namespace SiliconStudio.Assets
             int startNextGuid = 0;
             if (indexFirstSlash > 0 && indexFirstSlash < indexBeforelocation)
             {
-                Guid referenceId;
                 if (!Guid.TryParse(assetReferenceText.Substring(0, indexFirstSlash), out referenceId))
                 {
                     return false;
