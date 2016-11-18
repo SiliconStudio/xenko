@@ -23,24 +23,24 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             // long press gestures
             AddGesture(new LongPressGesture());
-            AddGesture(new LongPressGesture { RequiredNumberOfFingers = 2 });
-            AddGesture(new LongPressGesture { RequiredNumberOfFingers = 3 });
+            AddGesture(new LongPressGesture { RequiredFingerCount = 2 });
+            AddGesture(new LongPressGesture { RequiredFingerCount = 3 });
 
             // drag gestures
             AddGesture(new DragGesture(GestureShape.Horizontal));
             AddGesture(new DragGesture(GestureShape.Vertical));
             AddGesture(new DragGesture(GestureShape.Free));
-            AddGesture(new DragGesture(GestureShape.Horizontal) { RequiredNumberOfFingers = 2 });
-            AddGesture(new DragGesture(GestureShape.Vertical) { RequiredNumberOfFingers = 2 });
-            AddGesture(new DragGesture(GestureShape.Free) { RequiredNumberOfFingers = 2 });
+            AddGesture(new DragGesture(GestureShape.Horizontal) { RequiredFingerCount = 2 });
+            AddGesture(new DragGesture(GestureShape.Vertical) { RequiredFingerCount = 2 });
+            AddGesture(new DragGesture(GestureShape.Free) { RequiredFingerCount = 2 });
 
             // flick gestures
             AddGesture(new FlickGesture(GestureShape.Horizontal));
             AddGesture(new FlickGesture(GestureShape.Vertical));
             AddGesture(new FlickGesture(GestureShape.Free));
-            AddGesture(new FlickGesture(GestureShape.Horizontal) { RequiredNumberOfFingers = 2 });
-            AddGesture(new FlickGesture(GestureShape.Vertical) { RequiredNumberOfFingers = 2 });
-            AddGesture(new FlickGesture(GestureShape.Free) { RequiredNumberOfFingers = 2 });
+            AddGesture(new FlickGesture(GestureShape.Horizontal) { RequiredFingerCount = 2 });
+            AddGesture(new FlickGesture(GestureShape.Vertical) { RequiredFingerCount = 2 });
+            AddGesture(new FlickGesture(GestureShape.Free) { RequiredFingerCount = 2 });
 
             // rotation gestures
             AddGesture(new CompositeGesture());
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             gesture.Drag += (sender, args) =>
             {
-                log.Info("Drag: [Params = {0} {1} Time {2} {3} Pos {4} {5} Transl {6} {7} Speed {8}", args.EventType, args.NumberOfFingers, args.DeltaTime, args.TotalTime,
+                log.Info("Drag: [Params = {0} {1} Time {2} {3} Pos {4} {5} Transl {6} {7} Speed {8}", args.EventType, args.FingerCount, args.DeltaTime, args.TotalTime,
                                     args.StartPosition, args.CurrentPosition, args.DeltaTranslation, args.TotalTranslation, args.AverageSpeed);
             };
             Input.ActivatedGestures.Add(gesture);
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             gesture.Flick += (sender, args) =>
             {
-                log.Info("Flick: [Params = {0} {1} Time {2} Pos {3} {4} Transl {5} Speed {6}", args.EventType, args.NumberOfFingers, args.TotalTime,
+                log.Info("Flick: [Params = {0} {1} Time {2} Pos {3} {4} Transl {5} Speed {6}", args.EventType, args.FingerCount, args.TotalTime,
                     args.StartPosition, args.CurrentPosition, args.TotalTranslation, args.AverageSpeed);
             };
             Input.ActivatedGestures.Add(gesture);
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             gesture.LongPress += (sender, args) =>
             {
-                log.Info("A long press event has been detected. [Params = {0} {1} {2} {3}", args.EventType, args.DeltaTime, args.NumberOfFingers, args.Position);
+                log.Info("A long press event has been detected. [Params = {0} {1} {2} {3}", args.EventType, args.DeltaTime, args.FingerCount, args.Position);
             };
             Input.ActivatedGestures.Add(gesture);
         }
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             gesture.Tap += (sender, args) =>
             {
-                log.Info("Tap: [Params = Fingers {0} Taps {1} Time {2} Position {3}", args.NumberOfFingers, args.NumberOfTaps, args.DeltaTime, args.TapPosition);
+                log.Info("Tap: [Params = Fingers {0} Taps {1} Time {2} Position {3}", args.FingerCount, args.TapCount, args.DeltaTime, args.TapPosition);
             };
             Input.ActivatedGestures.Add(gesture);
         }

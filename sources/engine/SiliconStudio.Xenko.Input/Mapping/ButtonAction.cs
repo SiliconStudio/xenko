@@ -19,12 +19,15 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private ButtonState lastState;
 
         /// <summary>
+        /// Last state of the button
+        /// </summary>
+        public ButtonState LastState => lastState;
+
+        /// <summary>
         /// Raised when the action was trigerred
         /// </summary>
         public event EventHandler<ButtonGestureEventArgs> Changed;
-
-        public ButtonState LastState => lastState;
-
+        
         public override void Update(TimeSpan deltaTime)
         {
             base.Update(deltaTime);

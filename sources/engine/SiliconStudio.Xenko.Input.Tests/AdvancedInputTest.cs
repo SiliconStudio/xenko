@@ -305,7 +305,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 if (currentTime - lastTapEvent.Item2 < displayGestureDuration && lastTapEvent.Item1 != null)
                 {
                     var args = lastTapEvent.Item1;
-                    tapEvent = $"Position = {args.TapPosition} - number of taps = {args.NumberOfTaps} - EventType = {args.EventType}";
+                    tapEvent = $"Position = {args.TapPosition} - number of taps = {args.TapCount} - EventType = {args.EventType}";
                 }
                 if (currentTime - lastDragEvent.Item2 < displayGestureDuration && lastDragEvent.Item1 != null)
                 {

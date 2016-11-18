@@ -11,21 +11,21 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     public sealed class TapEventArgs : PointerGestureEventArgs
     {
-        public TapEventArgs(IPointerDevice pointerDevice, TimeSpan takenTime, int numberOfFingers, int numberOfTaps, Vector2 position)
+        public TapEventArgs(IPointerDevice pointerDevice, TimeSpan takenTime, int fingerCount, int tapCount, Vector2 position)
             : base(pointerDevice)
         {
             EventType = PointerGestureEventType.Occurred;
             DeltaTime = takenTime;
             TotalTime = takenTime;
-            NumberOfFingers = numberOfFingers;
-            NumberOfTaps = numberOfTaps;
+            FingerCount = fingerCount;
+            TapCount = tapCount;
             TapPosition = position;
         }
 
         /// <summary>
         /// The number of time the use successively touched the screen.
         /// </summary>
-        public int NumberOfTaps { get; internal set; }
+        public int TapCount { get; internal set; }
 
         /// <summary>
         /// The position (in pixels) of the tap.

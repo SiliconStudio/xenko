@@ -11,8 +11,8 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     public sealed class FlickEventArgs : TranslationEventArgs
     {
-        public FlickEventArgs(IPointerDevice pointerDevice, int numberOfFingers, TimeSpan time, GestureShape shape, Vector2 startPos, Vector2 currPos)
-            : base(pointerDevice, PointerGestureEventType.Occurred, numberOfFingers, time, time, shape, startPos, currPos, currPos-startPos)
+        public FlickEventArgs(IPointerDevice pointerDevice, int fingerCount, TimeSpan time, GestureShape shape, Vector2 startPos, Vector2 currPos)
+            : base(pointerDevice, PointerGestureEventType.Occurred, fingerCount, time, time, shape, startPos, currPos, currPos-startPos)
         {
         }
     }

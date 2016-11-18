@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             inputManager.AddListener(this);
         }
 
-        public override int NumBindings { get; } = 1;
+        public override int BindingCount { get; } = 1;
         public override bool AcceptsAxes => true;
         public override bool AcceptsButtons => true;
         public override bool AcceptsDirections => false;

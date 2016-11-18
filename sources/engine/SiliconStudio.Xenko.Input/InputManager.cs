@@ -64,16 +64,6 @@ namespace SiliconStudio.Xenko.Input
 
             Services.AddService(typeof(InputManager), this);
         }
-
-        /// <summary>
-        /// Raised when a device was removed from the system
-        /// </summary>
-        public event EventHandler<DeviceChangedEventArgs> DeviceRemoved;
-
-        /// <summary>
-        /// Raised when a device was added to the system
-        /// </summary>
-        public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
         
         /// <summary>
         /// List of the gestures to recognize.
@@ -226,6 +216,16 @@ namespace SiliconStudio.Xenko.Input
         /// Raised before new input is sent to their respective event listeners
         /// </summary>
         public event EventHandler<InputPreUpdateEventArgs> PreUpdateInput;
+        
+        /// <summary>
+        /// Raised when a device was removed from the system
+        /// </summary>
+        public event EventHandler<DeviceChangedEventArgs> DeviceRemoved;
+
+        /// <summary>
+        /// Raised when a device was added to the system
+        /// </summary>
+        public event EventHandler<DeviceChangedEventArgs> DeviceAdded;
 
         /// <summary>
         /// Helper method to transform mouse and pointer event positions to sub rectangles

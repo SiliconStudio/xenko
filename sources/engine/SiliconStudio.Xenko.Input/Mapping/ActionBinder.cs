@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The number of bindings
         /// </summary>
-        public abstract int NumBindings { get; }
+        public abstract int BindingCount { get; }
         
         /// <summary>
         /// <c>true</c> if this binder accepts axes input events, such as mouse X axis or gamepad axis 1
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         /// <summary>
         /// Moves the input being detected by a given amount (default = 1). 
-        /// If the number of inputs has reached <see cref="NumBindings"/>, <see cref="Done"/> will be set to true and the action will unbind itself from the input manager
+        /// If the number of inputs has reached <see cref="BindingCount"/>, <see cref="Done"/> will be set to true and the action will unbind itself from the input manager
         /// </summary>
         /// <param name="amount">The number of inputs to advance</param>
         protected void Advance(int amount = 1)
@@ -76,11 +76,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (!Done)
             {
                 Index += amount;
-                Done = Index >= NumBindings;
+                Done = Index >= BindingCount;
                 if (Done)
                 {
                     InputManager.RemoveListener(this);
-                    Index = NumBindings - 1;
+                    Index = BindingCount - 1;
                 }
             }
         }

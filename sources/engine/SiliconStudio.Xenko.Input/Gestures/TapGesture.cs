@@ -35,13 +35,13 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// This value represents the required number of successive user touches to trigger the gesture. For example: 1 for single touch, 2 for double touch, and so on...
         /// </summary>
         /// <remarks>This value is strictly positive.</remarks>
-        public int RequiredNumberOfTaps;
+        public int RequiredTapCount;
 
-        private int currentNumberOfTaps;
+        private int currentTapCount;
         private TimeSpan elapsedSinceTakeOff;
         private TimeSpan elapsedSinceDown;
         private bool isTapDown;
-        private int maxNumFingerTouched;
+        private int maxFingerTouchedCount;
 
         /// <summary>
         /// Create a default Tap gesture configuration for single touch and single finger detection.
@@ -54,12 +54,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// Create a default Tap gesture configuration for the given numbers of touches and fingers.
         /// </summary>
-        /// <param name="numberOfTap">The number of taps required</param>
-        /// <param name="numberOfFingers">The number of fingers required</param>
-        public TapGesture(int numberOfTap, int numberOfFingers)
+        /// <param name="tapCount">The number of taps required</param>
+        /// <param name="fingerCount">The number of fingers required</param>
+        public TapGesture(int tapCount, int fingerCount)
         {
-            RequiredNumberOfTaps = numberOfTap;
-            RequiredNumberOfFingers = numberOfFingers;
+            RequiredTapCount = tapCount;
+            RequiredFingerCount = fingerCount;
 
             MaximumTimeBetweenTaps = TimeSpan.FromMilliseconds(400);
             MaximumDistanceTaps = 0.04f;
@@ -100,25 +100,25 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
             FingerIdsToLastPos[id] = pos;
 
-            maxNumFingerTouched = Math.Max(maxNumFingerTouched, NumFingersOnScreen);
+            maxFingerTouchedCount = Math.Max(maxFingerTouchedCount, CurrentFingerCount);
 
             isTapDown = true;
 
-            if (NumFingersOnScreen == 1)
+            if (CurrentFingerCount == 1)
             {
                 elapsedSinceTakeOff = TimeSpan.Zero;
                 elapsedSinceDown = TimeSpan.Zero;
                 HasGestureStarted = true;
             }
 
-            if (HasGestureStarted && maxNumFingerTouched > RequiredNumberOfFingers)
+            if (HasGestureStarted && maxFingerTouchedCount > RequiredFingerCount)
                 EndCurrentTap();
 
             if (HasGestureStarted && !HadFingerAtThatPosition(pos))
             {
                 EndCurrentTap();
 
-                maxNumFingerTouched = NumFingersOnScreen;
+                maxFingerTouchedCount = CurrentFingerCount;
                 elapsedSinceTakeOff = TimeSpan.Zero;
                 elapsedSinceDown = TimeSpan.Zero;
                 HasGestureStarted = true;
@@ -165,30 +165,30 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
             FingerIdsToLastPos.Remove(id);
 
-            if (NumFingersOnScreen == 0)
+            if (CurrentFingerCount == 0)
             {
                 elapsedSinceTakeOff = TimeSpan.Zero;
                 isTapDown = false;
 
-                if (HasGestureStarted && maxNumFingerTouched == RequiredNumberOfFingers)
-                    ++currentNumberOfTaps;
+                if (HasGestureStarted && maxFingerTouchedCount == RequiredFingerCount)
+                    ++currentTapCount;
 
-                maxNumFingerTouched = 0;
+                maxFingerTouchedCount = 0;
             }
         }
 
         private void EndCurrentTap()
         {
             // add the gesture to the tap event list if the number of tap requirement is fulfilled
-            if (currentNumberOfTaps == RequiredNumberOfTaps)
+            if (currentTapCount == RequiredTapCount)
             {
                 var tapMeanPosition = ComputeMeanPosition(FingerIdToBeginPositions.Values);
-                var args = new TapEventArgs(PointerDevice, ElapsedSinceBeginning, RequiredNumberOfFingers, currentNumberOfTaps, NormalizeVector(tapMeanPosition));
+                var args = new TapEventArgs(PointerDevice, ElapsedSinceBeginning, RequiredFingerCount, currentTapCount, NormalizeVector(tapMeanPosition));
                 Tap?.Invoke(this, args);
                 SendChangedEvent(args);
             }
 
-            currentNumberOfTaps = 0;
+            currentTapCount = 0;
 
             HasGestureStarted = false;
             FingerIdToBeginPositions.Clear();

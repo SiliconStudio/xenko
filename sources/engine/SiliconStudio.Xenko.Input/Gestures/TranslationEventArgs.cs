@@ -11,12 +11,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     public class TranslationEventArgs : PointerGestureEventArgs
     {
-        public TranslationEventArgs(IPointerDevice pointerDevice, PointerGestureEventType eventType, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime,
+        public TranslationEventArgs(IPointerDevice pointerDevice, PointerGestureEventType eventType, int fingerCount, TimeSpan deltaTime, TimeSpan totalTime,
             GestureShape shape, Vector2 startPos, Vector2 currPos, Vector2 deltaTrans)
             : base(pointerDevice)
         {
             EventType = eventType;
-            NumberOfFingers = numberOfFingers;
+            FingerCount = fingerCount;
             DeltaTime = deltaTime;
             TotalTime = totalTime;
             Shape = shape;

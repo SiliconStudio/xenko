@@ -19,11 +19,14 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private float lastState;
         
         /// <summary>
+        /// Last state of the axis
+        /// </summary>
+        public float LastState => lastState;
+
+        /// <summary>
         /// Raised when the axis state changed
         /// </summary>
         public event EventHandler<AxisGestureEventArgs> Changed;
-
-        public float LastState => lastState;
 
         public override void Update(TimeSpan deltaTime)
         {

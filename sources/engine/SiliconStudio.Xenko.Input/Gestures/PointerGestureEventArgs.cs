@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <summary>
         /// The number of fingers involved in the gesture.
         /// </summary>
-        public int NumberOfFingers { get; internal set; }
+        public int FingerCount { get; internal set; }
 
         /// <summary>
         /// The time elapsed between the two last events of the gesture.

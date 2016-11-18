@@ -22,15 +22,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <remarks>Single finger and 1 second long press.</remarks>
         public LongPressGesture()
         {
-            RequiredNumberOfFingers = 1;
+            RequiredFingerCount = 1;
             RequiredPressTime = TimeSpan.FromSeconds(0.75);
             MaximumTranslationDistance = 0.02f;
         }
-        
-        /// <summary>
-        /// Raised when a long press occured that matches this gesture
-        /// </summary>
-        public event EventHandler<LongPressEventArgs> LongPress;
 
         /// <summary>
         /// The value represents the maximum distance a finger can translate during the longPress action.
@@ -65,8 +60,13 @@ namespace SiliconStudio.Xenko.Input.Gestures
             }
         }
 
-        protected override int NumFingersOnScreen => FingerIdToBeginPositions.Count;
-        
+        protected override int CurrentFingerCount => FingerIdToBeginPositions.Count;
+
+        /// <summary>
+        /// Raised when a long press occured that matches this gesture
+        /// </summary>
+        public event EventHandler<LongPressEventArgs> LongPress;
+
         public override void Update(TimeSpan elapsedTime)
         {
             base.Update(elapsedTime);
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
             if (HasGestureStarted && ElapsedSinceBeginning >= RequiredPressTime)
             {
                 var avgPosition = ComputeMeanPosition(FingerIdToBeginPositions.Values);
-                var args = new LongPressEventArgs(PointerDevice, RequiredNumberOfFingers, ElapsedSinceBeginning, NormalizeVector(avgPosition));
+                var args = new LongPressEventArgs(PointerDevice, RequiredFingerCount, ElapsedSinceBeginning, NormalizeVector(avgPosition));
                 LongPress?.Invoke(this, args);
                 SendChangedEvent(args);
                 HasGestureStarted = false;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         protected override void ProcessDownEventPointer(int id, Vector2 pos)
         {
             FingerIdToBeginPositions[id] = pos;
-            HasGestureStarted = (NumFingersOnScreen == RequiredNumberOfFingers);
+            HasGestureStarted = (CurrentFingerCount == RequiredFingerCount);
         }
 
         protected override void ProcessMoveEventPointers(Dictionary<int, Vector2> fingerIdsToMovePos)
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         protected override void ProcessUpEventPointer(int id, Vector2 pos)
         {
             FingerIdToBeginPositions.Remove(id);
-            HasGestureStarted = (NumFingersOnScreen == RequiredNumberOfFingers);
+            HasGestureStarted = (CurrentFingerCount == RequiredFingerCount);
         }
     }
 }

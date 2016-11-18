@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 {
     public abstract class PointerGestureBase : InputGestureBase, IInputEventListener<PointerEvent>
     {
-        protected int RestrictedNumberOfFinger;
+        protected int RestrictedFingerCount;
         protected readonly Dictionary<int, Vector2> FingerIdToBeginPositions = new Dictionary<int, Vector2>();
         protected readonly Dictionary<int, Vector2> FingerIdsToLastPos = new Dictionary<int, Vector2>();
         protected TimeSpan ElapsedSinceBeginning;
@@ -20,13 +20,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
         private static readonly List<int> FingerIdsCache = new List<int>();
         private bool hasGestureStarted;
         private float screenRatio;
-        private int requiredNumberOfFingers;
+        private int requiredFingerCount;
 
         // Keeps a list of events generated this frame
         private List<PointerGestureEventArgs> events = new List<PointerGestureEventArgs>();
-
-        public event EventHandler<PointerGestureEventArgs> Changed;
-
+        
         /// <summary>
         /// The list of events that were triggered on this gesture since the last frame
         /// </summary>
@@ -38,22 +36,24 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// <remarks>This value is strictly positive.</remarks>
         /// <exception cref="ArgumentOutOfRangeException">The given value is not in the allowed range.</exception>
         /// <exception cref="InvalidOperationException">Tried to modify the configuration after it has been frozen by the system.</exception>
-        public int RequiredNumberOfFingers
+        public int RequiredFingerCount
         {
-            get { return requiredNumberOfFingers; }
+            get { return requiredFingerCount; }
             set
             {
                 if (value < 1)
                     throw new ArgumentOutOfRangeException("value");
 
-                if (RestrictedNumberOfFinger != 0 && value != RestrictedNumberOfFinger)
+                if (RestrictedFingerCount != 0 && value != RestrictedFingerCount)
                     throw new ArgumentOutOfRangeException("value");
 
-                requiredNumberOfFingers = value;
+                requiredFingerCount = value;
             }
         }
 
-        protected virtual int NumFingersOnScreen => FingerIdsToLastPos.Count;
+        protected virtual int CurrentFingerCount => FingerIdsToLastPos.Count;
+
+        public event EventHandler<PointerGestureEventArgs> Changed;
 
         public override void PreUpdate(TimeSpan elapsedTime)
         {

@@ -34,15 +34,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
         public DragGesture(GestureShape dragShape)
         {
             DragShape = dragShape;
-            RequiredNumberOfFingers = 1;
+            RequiredFingerCount = 1;
             AllowedErrorMargins = 0.02f * Vector2.One;
             MinimumDragDistance = 0.02f;
         }
-
-        /// <summary>
-        /// Raised when a new composite gesture has began/ened or it's values changed
-        /// </summary>
-        public event EventHandler<DragEventArgs> Drag;
 
         /// <summary>
         /// Specify the minimum translation distance required  before that the gesture can be recognized as a Drag.
@@ -97,6 +92,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
             }
         }
 
+        /// <summary>
+        /// Raised when a new composite gesture has began/ened or it's values changed
+        /// </summary>
+        public event EventHandler<DragEventArgs> Drag;
+
         protected override void InitializeGestureVariables()
         {
             startPosition = ComputeMeanPosition(FingerIdsToLastPos.Values);
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         protected override void AddGestureEventToCurrentList(PointerGestureEventType eventType)
         {
             var deltaTrans = currPosition - lastPosition;
-            var args = new DragEventArgs(PointerDevice, eventType, RequiredNumberOfFingers, ElapsedSinceLast, ElapsedSinceBeginning, DragShape,
+            var args = new DragEventArgs(PointerDevice, eventType, RequiredFingerCount, ElapsedSinceLast, ElapsedSinceBeginning, DragShape,
                 NormalizeVector(startPosition), NormalizeVector(currPosition), NormalizeVector(deltaTrans));
             Drag?.Invoke(this, args);
             SendChangedEvent(args);

@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             TargetGesture = TargetFourWayGesture = new FourWayGesture();
         }
         
-        public override int NumBindings { get; } = 4;
+        public override int BindingCount { get; } = 4;
         public override bool AcceptsAxes => Index == 0 || !CanBindButtons;
         public override bool AcceptsButtons => CanBindButtons;
         public override bool AcceptsDirections => Index == 0;

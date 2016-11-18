@@ -11,9 +11,9 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     public sealed class DragEventArgs : TranslationEventArgs
     {
-        public DragEventArgs(IPointerDevice pointerDevice, PointerGestureEventType eventType, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime,
+        public DragEventArgs(IPointerDevice pointerDevice, PointerGestureEventType eventType, int fingerCount, TimeSpan deltaTime, TimeSpan totalTime,
             GestureShape shape, Vector2 startPos, Vector2 currPos, Vector2 deltaTrans)
-            : base(pointerDevice, eventType, numberOfFingers, deltaTime,totalTime,shape,startPos,currPos,deltaTrans)
+            : base(pointerDevice, eventType, fingerCount, deltaTime,totalTime,shape,startPos,currPos,deltaTrans)
         {
         }
     }

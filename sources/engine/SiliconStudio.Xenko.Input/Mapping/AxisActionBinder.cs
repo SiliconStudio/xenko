@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             inputManager.AddListener(this);
         }
         
-        public override int NumBindings { get; } = 2;
+        public override int BindingCount { get; } = 2;
         public override bool AcceptsAxes => TargetGesture == null;
         public override bool AcceptsButtons => TargetGesture == null || TargetGesture is TwoWayGesture;
         public override bool AcceptsDirections => false;

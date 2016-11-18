@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of buttons</returns>
-        public static int GetNumButtons(this IGameControllerDevice device)
+        public static int GetButtonCount(this IGameControllerDevice device)
         {
             return device.ButtonInfos.Count;
         }
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of axes</returns>
-        public static int GetNumAxes(this IGameControllerDevice device)
+        public static int GetAxisCount(this IGameControllerDevice device)
         {
             return device.AxisInfos.Count;
         }
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="device">The gamepad</param>
         /// <returns>The number of pov controllers</returns>
-        public static int GetNumPovControllers(this IGameControllerDevice device)
+        public static int GetPovControllersCount(this IGameControllerDevice device)
         {
             return device.PovControllerInfos.Count;
         }

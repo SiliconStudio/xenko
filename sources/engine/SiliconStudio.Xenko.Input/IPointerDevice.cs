@@ -12,11 +12,6 @@ namespace SiliconStudio.Xenko.Input
     public interface IPointerDevice : IInputDevice
     {
         /// <summary>
-        /// Raised when the sureface size of this pointer changed
-        /// </summary>
-        event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
-
-        /// <summary>
         /// The type of the pointer device
         /// </summary>
         PointerType Type { get; }
@@ -30,5 +25,10 @@ namespace SiliconStudio.Xenko.Input
         /// The size of the surface used by the pointer, for a mouse this is the size of the window, for a touch device, the size of the touch area, etc.
         /// </summary>
         float SurfaceAspectRatio { get; }
+
+        /// <summary>
+        /// Raised when the sureface size of this pointer changed
+        /// </summary>
+        event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
     }
 }

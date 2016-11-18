@@ -33,16 +33,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
         public FlickGesture(GestureShape flickShape)
         {
             FlickShape = flickShape;
-            RequiredNumberOfFingers = 1;
+            RequiredFingerCount = 1;
             MinimumAverageSpeed = 0.4f;
             MinimumFlickLength = 0.04f;
             AllowedErrorMargins = 0.02f * Vector2.One;
         }
-
-        /// <summary>
-        /// Raised when a new flick gesture occured
-        /// </summary>
-        public event EventHandler<FlickEventArgs> Flick;
         
         /// <summary>
         /// The (x,y) error margins allowed during directional dragging.
@@ -109,11 +104,16 @@ namespace SiliconStudio.Xenko.Input.Gestures
             }
         }
 
+        /// <summary>
+        /// Raised when a new flick gesture occured
+        /// </summary>
+        public event EventHandler<FlickEventArgs> Flick;
+
         protected override void ProcessDownEventPointer(int id, Vector2 pos)
         {
             FingerIdToBeginPositions[id] = pos;
             FingerIdsToLastPos[id] = pos;
-            HasGestureStarted = (NumFingersOnScreen == RequiredNumberOfFingers);
+            HasGestureStarted = (CurrentFingerCount == RequiredFingerCount);
         }
 
         protected override void ProcessMoveEventPointers(Dictionary<int, Vector2> fingerIdsToMovePos)
@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
                 var translDist = (currPos - startPos).Length();
                 if (translDist > MinimumFlickLength && translDist / ElapsedSinceBeginning.TotalSeconds > MinimumAverageSpeed)
                 {
-                    var args = new FlickEventArgs(PointerDevice, RequiredNumberOfFingers, ElapsedSinceBeginning, FlickShape, NormalizeVector(startPos), NormalizeVector(currPos));
+                    var args = new FlickEventArgs(PointerDevice, RequiredFingerCount, ElapsedSinceBeginning, FlickShape, NormalizeVector(startPos), NormalizeVector(currPos));
                     Flick?.Invoke(this, args);
                     SendChangedEvent(args);
                     HasGestureStarted = false;
@@ -157,7 +157,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         {
             FingerIdToBeginPositions.Remove(id);
             FingerIdsToLastPos.Remove(id);
-            HasGestureStarted = (NumFingersOnScreen == RequiredNumberOfFingers);
+            HasGestureStarted = (CurrentFingerCount == RequiredFingerCount);
         }
     }
 }

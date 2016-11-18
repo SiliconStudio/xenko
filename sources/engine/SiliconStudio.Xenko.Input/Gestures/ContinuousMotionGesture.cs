@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         private void UpdateGestureStartEndStatus(bool isKeyDown, int id, Vector2 pos)
         {
             var gestureWasStarted = HasGestureStarted;
-            HasGestureStarted = (NumFingersOnScreen + (isKeyDown ? 1 : -1) == RequiredNumberOfFingers);
+            HasGestureStarted = (CurrentFingerCount + (isKeyDown ? 1 : -1) == RequiredFingerCount);
 
             UpdateFingerDictionaries(isKeyDown, id, pos);
 

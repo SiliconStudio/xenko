@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// <para>A composite gesture is a transformation which is a composition of a translation, a rotation and a scale.
     /// It is performed by using two fingers and performing translation, scale and rotation motions.</para>
     /// <para>A composite gesture can only be composed of 2 fingers. 
-    /// Trying to modify the <see cref="CompositeGesture.RequiredNumberOfFingers"/> field will throw an exception.</para></remarks>
+    /// Trying to modify the <see cref="PointerGestureBase.RequiredFingerCount"/> field will throw an exception.</para></remarks>
     public class CompositeGesture : ContinuousMotionGesture
     {
         protected float MinimumScaleValueInv { get; set; }
@@ -37,17 +37,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public CompositeGesture()
         {
-            RestrictedNumberOfFinger = 2;
-            RequiredNumberOfFingers = 2;
+            RestrictedFingerCount = 2;
+            RequiredFingerCount = 2;
             MinimumRotationAngle = 0.1f;
             MinimumScaleValue = 1.075f;
             MinimumTranslationDistance = 0.016f;
         }
-
-        /// <summary>
-        /// Raised when a new composite gesture has began/ened or it's values changed
-        /// </summary>
-        public new event EventHandler<CompositeEventArgs> Changed;
 
         /// <summary>
         /// The scale value above which the gesture is started.
@@ -125,6 +120,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
             lastRotation = 0;
             lastScale = 1;
         }
+
+        /// <summary>
+        /// Raised when a new composite gesture has began/ened or it's values changed
+        /// </summary>
+        public new event EventHandler<CompositeEventArgs> Changed;
 
         protected override bool GestureBeginningConditionFulfilled()
         {

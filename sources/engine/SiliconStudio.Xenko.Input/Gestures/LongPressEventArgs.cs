@@ -11,11 +11,11 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// </summary>
     public sealed class LongPressEventArgs : PointerGestureEventArgs
     {
-        public LongPressEventArgs(IPointerDevice pointerDevice, int numberOfFinger, TimeSpan time, Vector2 position)
+        public LongPressEventArgs(IPointerDevice pointerDevice, int fingerCount, TimeSpan time, Vector2 position)
             : base(pointerDevice)
         {
             EventType = PointerGestureEventType.Occurred;
-            NumberOfFingers = numberOfFinger;
+            FingerCount = fingerCount;
             DeltaTime = time;
             TotalTime = time;
             Position = position;

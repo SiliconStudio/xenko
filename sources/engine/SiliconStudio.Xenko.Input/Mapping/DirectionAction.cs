@@ -20,11 +20,14 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private Vector2 lastState;
 
         /// <summary>
+        /// Last direction
+        /// </summary>
+        public Vector2 LastState => lastState;
+
+        /// <summary>
         /// Raised when the direction state changed
         /// </summary>
         public event EventHandler<DirectionGestureEventArgs> Changed;
-
-        public Vector2 LastState => lastState;
 
         public override void Update(TimeSpan deltaTime)
         {
