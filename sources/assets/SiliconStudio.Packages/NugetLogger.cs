@@ -8,17 +8,17 @@ using ILogger = NuGet.ILogger;
 namespace SiliconStudio.Packages
 {
     /// <summary>
-    /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackageManagerLogger"/> interface.
+    /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackagesLogger"/> interface.
     /// </summary>
     internal class NugetLogger : ILogger
     {
-        private readonly IPackageManagerLogger logger;
+        private readonly IPackagesLogger logger;
 
         /// <summary>
         /// Initialize new instance of NugetLogger.
         /// </summary>
-        /// <param name="logger">The <see cref="IPackageManagerLogger"/> instance to use to implement <see cref="ILogger"/></param>
-        public NugetLogger(IPackageManagerLogger logger)
+        /// <param name="logger">The <see cref="IPackagesLogger"/> instance to use to implement <see cref="ILogger"/></param>
+        public NugetLogger(IPackagesLogger logger)
         {
             this.logger = logger;
         }

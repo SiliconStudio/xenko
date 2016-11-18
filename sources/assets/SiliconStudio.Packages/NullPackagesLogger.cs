@@ -4,11 +4,11 @@
 namespace SiliconStudio.Packages
 {
     /// <summary>
-    /// Null implementation of <see cref="IPackageManagerLogger"/>.
+    /// Null implementation of <see cref="IPackagesLogger"/>.
     /// </summary>
-    public class NullPackageManagerLogger : IPackageManagerLogger
+    public class NullPackagesLogger : IPackagesLogger
     {
-        public static IPackageManagerLogger Instance { get; } = new NullPackageManagerLogger();
+        public static IPackagesLogger Instance { get; } = new NullPackagesLogger();
 
         public void Log(MessageLevel level, string message)
         {

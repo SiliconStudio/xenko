@@ -6,7 +6,7 @@ namespace SiliconStudio.Packages
     /// <summary>
     /// Generic interface for logging. See <see cref="MessageLevel"/> for various level of logging.
     /// </summary>
-    public interface IPackageManagerLogger
+    public interface IPackagesLogger
     {
         /// <summary>
         /// Logs the <paramref name="message"/> using the log <paramref name="level"/>.

@@ -26,7 +26,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="IPackageManagerLogger.cs" />
+    <Compile Include="IPackagesLogger.cs" />
     <Compile Include="ConstraintProvider.cs" />
     <Compile Include="ManifestDependency.cs" />
     <Compile Include="NuGet2Extensions.cs" />
@@ -41,7 +41,7 @@
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
     <Compile Include="PackagesConstants.cs" />
-    <Compile Include="NullPackageManagerLogger.cs" />
+    <Compile Include="NullPackagesLogger.cs" />
     <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>

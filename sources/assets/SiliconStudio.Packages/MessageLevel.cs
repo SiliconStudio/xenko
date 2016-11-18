@@ -4,7 +4,7 @@
 namespace SiliconStudio.Packages
 {
     /// <summary>
-    /// Possible level of logging used by <see cref="IPackageManagerLogger"/>.
+    /// Possible level of logging used by <see cref="IPackagesLogger"/>.
     /// </summary>
     public enum MessageLevel
     {
