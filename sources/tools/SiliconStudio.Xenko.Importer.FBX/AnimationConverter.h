@@ -64,7 +64,7 @@ namespace SiliconStudio {
 						return false;
 					}
 
-					AnimationInfo^ ProcessAnimation()
+					AnimationInfo^ ProcessAnimation(String^ inputFilename, String^ vfsOutputFilename)
 					{
 						auto animationData = gcnew AnimationInfo();
 
@@ -75,7 +75,8 @@ namespace SiliconStudio {
 						// We support only anim stack count == 1
 						if (animStackCount > 1)
 						{
-							logger->Warning("Multiple FBX animation stacks detected, exporting only the first one");
+							logger->Warning("Multiple FBX animation stacks detected in '{0}', exporting only the first one to '{1}", 
+								gcnew String(inputFilename), gcnew String(vfsOutputFilename));
 						}
 
 						FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(0);
@@ -84,7 +85,8 @@ namespace SiliconStudio {
 						// We support only anim layer count == 1
 						if (animLayerCount > 1)
 						{
-							logger->Warning("Multiple FBX animation layers detected, exporting only the first one");
+							logger->Warning("Multiple FBX animation layers detected in '{0}', exporting only the first one to '{1}'",
+								gcnew String(inputFilename), gcnew String(vfsOutputFilename));
 						}
 
 						FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
