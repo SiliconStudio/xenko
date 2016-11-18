@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (inputEvent.State == ButtonState.Down)
             {
-                TryBindButton(new GameControllerButtonGesture(inputEvent.Index));
+                TryBindButton(new GameControllerButtonGesture(inputEvent.Index, inputEvent.GameController.Id));
             }
         }
 
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 TryBindButton(new AxisButtonGesture
                 {
-                    Axis = new GameControllerAxisGesture(inputEvent.Index)
+                    Axis = new GameControllerAxisGesture(inputEvent.Index, inputEvent.GameController.Id)
                 });
             }
         }
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (inputEvent.State == ButtonState.Down)
             {
-                TryBindButton(new GamePadButtonGesture(inputEvent.Button));
+                TryBindButton(new GamePadButtonGesture(inputEvent.Button, inputEvent.GamePad.Index));
             }
         }
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 TryBindButton(new AxisButtonGesture
                 {
-                    Axis = new GamePadAxisGesture(inputEvent.Axis)
+                    Axis = new GamePadAxisGesture(inputEvent.Axis, inputEvent.GamePad.Index)
                 });
             }
         }

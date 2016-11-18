@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input

@@ -10,24 +10,24 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadXInput : GameControllerDeviceBase, IGamePadDevice, IDisposable
+    public class GamePadXInput : GameControllerDeviceBase, IGamePadDevice
     {
         private readonly Controller controller;
         private State xinputState;
         private GamePadState state;
-        private readonly int index;
+        private short[] lastAxisState = new short[6];
 
         public GamePadXInput(Controller controller, Guid id, int index)
         {
             this.controller = controller;
-            this.index = index;
+            IndexInternal = index;
             Id = id;
             state = new GamePadState();
-
+            
             InitializeButtonStates();
         }
 
-        public override string DeviceName => $"XInput Controller {index}";
+        public override string DeviceName => $"XInput Controller {IndexInternal}";
         public override Guid Id { get; }
         public GamePadState State => state;
 
@@ -39,8 +39,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (Disposed)
                 return;
-
-            var lastXInputState = xinputState;
+            
             if (controller.GetState(out xinputState))
             {
                 // DPad/Shoulder/Thumb/Option buttons
@@ -60,19 +59,19 @@ namespace SiliconStudio.Xenko.Input
                 }
                 
                 // Axes
-                if (xinputState.Gamepad.LeftThumbX != lastXInputState.Gamepad.LeftThumbX)
+                if (ChangeAxis(0, xinputState.Gamepad.LeftThumbX))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.LeftThumbX, xinputState.Gamepad.LeftThumbX / 32768.0f));
-                if (xinputState.Gamepad.LeftThumbY != lastXInputState.Gamepad.LeftThumbY)
+                if (ChangeAxis(1, xinputState.Gamepad.LeftThumbY))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.LeftThumbY, xinputState.Gamepad.LeftThumbY / 32768.0f));
 
-                if (xinputState.Gamepad.RightThumbX != lastXInputState.Gamepad.RightThumbX)
+                if (ChangeAxis(2, xinputState.Gamepad.RightThumbX))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.RightThumbX, xinputState.Gamepad.RightThumbX / 32768.0f));
-                if (xinputState.Gamepad.RightThumbY != lastXInputState.Gamepad.RightThumbY)
+                if (ChangeAxis(3, xinputState.Gamepad.RightThumbY))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.RightThumbY, xinputState.Gamepad.RightThumbY / 32768.0f));
 
-                if (xinputState.Gamepad.LeftTrigger != lastXInputState.Gamepad.LeftTrigger)
+                if (ChangeAxis(4, xinputState.Gamepad.LeftTrigger))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.LeftTrigger, xinputState.Gamepad.LeftTrigger / 255.0f));
-                if (xinputState.Gamepad.RightTrigger != lastXInputState.Gamepad.RightTrigger)
+                if (ChangeAxis(5, xinputState.Gamepad.RightTrigger))
                     inputEvents.Add(CreateAxisEvent(GamePadAxis.RightTrigger, xinputState.Gamepad.RightTrigger / 255.0f));
             }
 
@@ -110,7 +109,17 @@ namespace SiliconStudio.Xenko.Input
         {
             SetVibration((smallLeft + largeLeft) * 0.5f, (smallRight + largeRight) * 0.5f);
         }
-        
+
+        private bool ChangeAxis(int index, short newValue)
+        {
+            if (lastAxisState[index] != newValue)
+            {
+                lastAxisState[index] = newValue;
+                return true;
+            }
+            return false;
+        }
+
         private GamePadAxisEvent CreateAxisEvent(GamePadAxis axis, float newValue)
         {
             GamePadAxisEvent axisEvent = InputEventPool<GamePadAxisEvent>.GetOrCreate(this);

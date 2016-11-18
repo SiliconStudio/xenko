@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A known gamepad that uses DirectInput as a driver
     /// </summary>
-    public class GamePadDirectInput : GameControllerDirectInput, IGamePadDevice
+    public class GamePadDirectInput : GameControllerDirectInput, IGamePadDevice, IGamePadIndexAssignable
     {
         private GamePadState state = new GamePadState();
         private GamePadLayout layout;
@@ -51,6 +51,12 @@ namespace SiliconStudio.Xenko.Input
         public void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {
             // No vibration support in directinput gamepads
+        }
+
+        public new int Index
+        {
+            get { return IndexInternal; }
+            set { IndexInternal = value; }
         }
     }
 }

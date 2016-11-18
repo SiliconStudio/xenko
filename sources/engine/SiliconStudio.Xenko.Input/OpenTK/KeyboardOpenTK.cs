@@ -9,7 +9,7 @@ using OpenTK.Input;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardOpenTK : KeyboardDeviceBase
+    public class KeyboardOpenTK : KeyboardDeviceBase, IDisposable
     {
         private GameWindow gameWindow;
 
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
             gameWindow.KeyUp += Keyboard_KeyUp;
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             gameWindow.KeyDown -= Keyboard_KeyDown;
             gameWindow.KeyUp -= Keyboard_KeyUp;

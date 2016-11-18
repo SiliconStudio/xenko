@@ -11,7 +11,7 @@ using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseOpenTK : MouseDeviceBase
+    public class MouseOpenTK : MouseDeviceBase, IDisposable
     {
         private GameWindow uiControl;
         private readonly GameBase game;
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
             GameWindowOnResize(null, EventArgs.Empty);
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             uiControl.MouseDown -= Mouse_ButtonDown;
             uiControl.MouseUp -= Mouse_ButtonUp;

@@ -10,36 +10,51 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A button gesture generated from a gamepad button press
     /// </summary>
     [DataContract]
-    public class GamePadButtonGesture : ButtonGestureBase, IInputEventListener<GamePadButtonEvent>
+    public class GamePadButtonGesture : ButtonGestureBase, IInputEventListener<GamePadButtonEvent>, IGamePadGesture
     {
         /// <summary>
         /// The gamepad button identifier
         /// </summary>
         public GamePadButton GamePadButton;
 
+        private int gamePadIndex;
+
         public GamePadButtonGesture()
         {
         }
 
-        public GamePadButtonGesture(GamePadButton button)
+        public GamePadButtonGesture(GamePadButton button, int gamePadIndex)
         {
             GamePadButton = button;
+            this.gamePadIndex = gamePadIndex;
+        }
+
+        /// <summary>
+        /// The index of the gamepad to watch
+        /// </summary>
+        public int GamePadIndex
+        {
+            get { return gamePadIndex; }
+            set { gamePadIndex = value; }
         }
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if (GamePadButton == inputEvent.Button)
-                UpdateButton(inputEvent.State, inputEvent.Device);
+            if (inputEvent.GamePad.Index == gamePadIndex)
+            {
+                if (GamePadButton == inputEvent.Button)
+                    UpdateButton(inputEvent.State, inputEvent.Device);
+            }
         }
 
         public override string ToString()
         {
-            return $"{nameof(GamePadButton)}: {GamePadButton}";
+            return $"{nameof(GamePadButton)}: {GamePadButton}, {nameof(gamePadIndex)}: {gamePadIndex}, {base.ToString()}";
         }
 
         protected bool Equals(GamePadButtonGesture other)
         {
-            return GamePadButton == other.GamePadButton;
+            return GamePadButton == other.GamePadButton && gamePadIndex == other.gamePadIndex;
         }
 
         public override bool Equals(object obj)
@@ -52,7 +67,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public override int GetHashCode()
         {
-            return GamePadButton.GetHashCode();
+            unchecked
+            {
+                return ((int)GamePadButton * 397) ^ gamePadIndex;
+            }
         }
     }
 }

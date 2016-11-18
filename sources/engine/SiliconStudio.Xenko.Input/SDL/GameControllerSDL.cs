@@ -72,14 +72,7 @@ namespace SiliconStudio.Xenko.Input
             for (int i = 0; i < axisInfos.Count; i++)
             {
                 short input = SDL.SDL_JoystickGetAxis(joystick, i);
-                float axis;
-                if (!axisInfos[i].IsBiDirectional)
-                {
-                    int inputUnsigned = input + 0x7FFF;
-                    axis = (float)inputUnsigned / 0xFFFF;
-                }
-                else
-                    axis = (float)input / 0x7FFF;
+                float axis = (float)input / 0x7FFF;
                 HandleAxis(i, axis);
             }
             for (int i = 0; i < povControllerInfos.Count; i++)

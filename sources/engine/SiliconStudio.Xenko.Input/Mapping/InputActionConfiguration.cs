@@ -1,10 +1,13 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
 {
@@ -20,5 +23,42 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// Lists all the actions that this input mapping contains
         /// </summary>
         public List<InputAction> Actions { get; set; }
+
+        public void GestureForEach(Action<IInputGesture> action)
+        {
+            foreach (var inputAction in Actions)
+            {
+                inputAction.GestureForEach(action);
+            }
+        }
+        
+        /// <summary>
+        /// Changes all the gamepad gestures on this configuration to a different controller index
+        /// </summary>
+        /// <param name="targetIndex">The index to change all gamepad gestures to</param>
+        public void ShiftGamePadIndex(int targetIndex)
+        {
+            GestureForEach(gesture =>
+            {
+                var gamePadGesture = gesture as IGamePadGesture;
+                if (gamePadGesture != null)
+                    gamePadGesture.GamePadIndex = targetIndex;
+            });
+        }
+
+        /// <summary>
+        /// Changes all the gamepad gestures on this configuration to a different controller index
+        /// </summary>
+        /// <param name="sourceIndex">The current index on the gestures</param>
+        /// <param name="targetIndex">The index to change all matching gestures to</param>
+        public void ShiftGamePadIndex(int sourceIndex, int targetIndex)
+        {
+            GestureForEach(gesture =>
+            {
+                var gamePadGesture = gesture as IGamePadGesture;
+                if (gamePadGesture != null && gamePadGesture.GamePadIndex == sourceIndex)
+                    gamePadGesture.GamePadIndex = targetIndex;
+            });
+        }
     }
 }

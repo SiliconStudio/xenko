@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -98,6 +97,28 @@ namespace SiliconStudio.Xenko.Input.Tests
             SetupActions();
 
             BuildUI();
+
+            // Save/Load buttons
+            for (int i = 0; i < 12; i++)
+            {
+                var key = new KeyGesture{Key = Keys.F1 + i};
+                int saveIndex = i;
+                key.Changed += (sender, args) =>
+                {
+                    if (args.State == ButtonState.Down)
+                    {
+                        var kb = (IKeyboardDevice)args.Device;
+                        if (kb.IsKeyDown(Keys.LeftCtrl) || kb.IsKeyDown(Keys.RightCtrl))
+                            SaveBindings(saveIndex);
+                        else
+                            LoadBindings(saveIndex);
+                    }
+                };
+                Input.ActivatedGestures.Add(key);
+            }
+
+            // Load first save by default
+            LoadBindings(0);
         }
 
         protected override void Update(GameTime gameTime)
@@ -143,14 +164,29 @@ namespace SiliconStudio.Xenko.Input.Tests
                     buttonName = axisNames[actionBinder.Index];
 
                 WriteLine($"Use any {string.Join("/", accepts)} to bind to {buttonName} ({currentlyBindingAction.MappingName})...");
-                lineOffset += 1;
+            }
+            else
+            {
+                WriteLine("Press F1-12 to load bindings (with Ctrl held to save them)");
+            }
+            lineOffset += 1;
+
+            WriteLine("Game Controllers:");
+            foreach(var controller in Input.GameControllers)
+            {
+                WriteLine($"Name: \"{controller.DeviceName}\"", 1);
+                WriteLine($"ID: {controller.Id}", 2);
+                WriteLine($"PID: {controller.ProductId}", 2);
+                var gamePad = controller as IGamePadDevice;
+                if (gamePad != null)
+                {
+                    WriteLine($"GamePad Index: {gamePad.Index}", 2);
+                    WriteLine(gamePad.State.ToString(), 2);
+                }
             }
 
-            WriteLine("Gamepads:");
-            foreach(var gamepad in Input.GamePads)
-            {
-                WriteLine(gamepad.State.ToString(), 1);
-            }
+            lineOffset += 1;
+
             WriteLine("Actions:");
             for (int i = 0; i < actions.Count; i++)
             {
@@ -284,7 +320,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         
         private void BuildUI()
         {
-            var width = 400;
+            var width = 500;
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width / (float)GraphicsDevice.Presenter.BackBuffer.Height;
             var ui = new UIComponent { Resolution = new Vector3(width, width / bufferRatio, 500) };
             SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
@@ -293,7 +329,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             for (int i = 0; i < actions.Count; i++)
             {
                 var text = new TextBlock { Font = spriteFont11, Text = $"Action {actions[i].MappingName}", TextSize = 3.5f };
-                var add = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Add Binding", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+                var add = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Add Binding", TextSize = 3.5f }, BackgroundColor = Color.Gray};
                 var clear = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Clear", TextSize = 3.5f }, BackgroundColor = Color.Gray };
 
                 var i1 = i;
@@ -321,6 +357,25 @@ namespace SiliconStudio.Xenko.Input.Tests
                     }
                 });
             }
+
+            var numberField = new EditText() { Font = spriteFont11, Text = $"0", TextSize = 3.5f, BackgroundColor = Color.DarkSlateGray };
+            var changeGamePad = new Button { Content = new TextBlock { Font = spriteFont11, Text = "Change GamePad IDs", TextSize = 3.5f }, BackgroundColor = Color.Gray };
+            changeGamePad.Click += (sender, args) =>
+            {
+                int newIndex = 0;
+                if (int.TryParse(numberField.Text, out newIndex))
+                {
+                    var config = GetConfiguration();
+                    config.ShiftGamePadIndex(newIndex);
+                    SetConfiguration(config);
+                }
+            };
+            stackPanel.Children.Add(new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children = { numberField, changeGamePad },
+            });
+
             ui.Page = new UIPage
             {
                 RootElement = new Canvas
@@ -345,6 +400,95 @@ namespace SiliconStudio.Xenko.Input.Tests
             eventLog.Enqueue(s);
         }
 
+        private string GetSavePath(int index)
+        {
+            return $"input{index}.bin";
+        }
+
+        InputActionConfiguration GetConfiguration()
+        {
+            return new InputActionConfiguration
+            {
+                Actions = actionMapping.Actions.Select(x => x.Clone()).ToList()
+            };
+        }
+
+        void SetConfiguration(InputActionConfiguration config)
+        {
+            foreach (var defaultAction in config.Actions)
+            {
+                // For each action, restore the gestures.
+                //  this will leave all bindings to actions intact and just restore default gesture bindings
+                var action = actionMapping.TryGetAction(defaultAction.MappingName);
+                //var defaultGestures = defaultAction.CloneGestures();
+                action.Gestures.Clear();
+                action.Gestures.AddRange(defaultAction.Gestures);
+            }
+        }
+
+        private void LoadBindings(int index)
+        {
+            try
+            {
+                var stream = VirtualFileSystem.ApplicationLocal.OpenStream(GetSavePath(index), VirtualFileMode.Open, VirtualFileAccess.Read);
+                using (stream)
+                {
+                    BinarySerializationReader reader = new BinarySerializationReader(stream);
+                    //inputComponent.RestoreBindings(reader.Read<InputActionConfiguration>());
+                    InputActionConfiguration config = reader.Read<InputActionConfiguration>();
+                    SetConfiguration(config);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void SaveBindings(int index)
+        {
+            string savePath = GetSavePath(index);
+            string backupPath = savePath + "_backup";
+            var fileProvider = VirtualFileSystem.ApplicationLocal;
+
+            try
+            {
+                // Make sure data folder exists
+                if (!VirtualFileSystem.DirectoryExists(fileProvider.RootPath))
+                    VirtualFileSystem.CreateDirectory(fileProvider.RootPath);
+
+                // Remove old file
+                if (fileProvider.FileExists(savePath))
+                {
+                    if (fileProvider.FileExists(backupPath))
+                        fileProvider.FileDelete(backupPath);
+
+                    // Move old save to backup location
+                    fileProvider.FileMove(savePath, backupPath);
+                }
+
+                // Create new file
+                var stream = fileProvider.OpenStream(savePath, VirtualFileMode.CreateNew, VirtualFileAccess.Write);
+                using (stream)
+                {
+                    BinarySerializationWriter writer = new BinarySerializationWriter(stream);
+                    var config = GetConfiguration();
+                    writer.Write(config);
+                }
+            }
+            catch (IOException)
+            {
+                // Restore backup
+                if (fileProvider.FileExists(backupPath))
+                {
+                    if (fileProvider.FileExists(savePath))
+                        fileProvider.FileDelete(savePath);
+
+                    // Move backup to save location
+                    fileProvider.FileMove(backupPath, savePath);
+                }
+            }
+        }
+        
         [Test]
         public void RunSampleInputTest()
         {

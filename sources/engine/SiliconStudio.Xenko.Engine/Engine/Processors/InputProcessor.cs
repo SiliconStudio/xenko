@@ -26,9 +26,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 if (mapping != null)
                 {
                     var component = pair.Key;
-                    mapping.ControllerIndex = component.ControllerIndex;
-                    mapping.AcceptMouse = component.AcceptMouse;
-                    mapping.AcceptKeyboard = component.AcceptKeyboard;
                     mapping.Update(time.Elapsed);
                 }
             }

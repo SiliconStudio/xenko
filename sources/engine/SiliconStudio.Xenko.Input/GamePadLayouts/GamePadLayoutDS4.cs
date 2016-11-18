@@ -32,15 +32,6 @@ namespace SiliconStudio.Xenko.Input
             AddAxisMapping(4, GamePadAxis.RightTrigger);
         }
 
-        public override void InitializeDevice(IGamePadDevice device)
-        {
-            // Make triggers not bi-directional
-            device.AxisInfos[4].IsBiDirectional = false;
-            device.AxisInfos[5].IsBiDirectional = false;
-
-            base.InitializeDevice(device);
-        }
-
         public override bool MatchDevice(IInputSource source, string deviceName, Guid productId)
         {
             return CompareProductId(productId, commonProductId, 4);

@@ -116,10 +116,7 @@ namespace SiliconStudio.Xenko.Input
                 }
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
-                    if(axisInfos[i].IsBiDirectional)
-                        HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
-                    else
-                        HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i], InputManager.GameControllerAxisDeadZone));
+                    HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
                 }
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {

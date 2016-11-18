@@ -15,11 +15,6 @@ namespace SiliconStudio.Xenko.Input
         /// Product Id of the device
         /// </summary>
         Guid ProductId { get; }
-
-        /// <summary>
-        /// The index of the game controller assigned by the input manager
-        /// </summary>
-        int Index { get; }
         
         /// <summary>
         /// Information about the buttons on this game controller

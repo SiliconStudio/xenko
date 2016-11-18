@@ -228,16 +228,11 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
 
             // validate the text with "enter" or "escape"
-            if (key == Keys.Enter || key == Keys.Escape)
+            if (key == Keys.Enter || key == Keys.Escape || key == Keys.NumPadEnter)
             {
                 IsSelectionActive = false;
                 return;
             }
-
-            // try to convert the key to character and insert it at the caret position or replace the current selection
-            //var character = '\0';
-            //if (TryConvertKeyToCharacter(key, input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift), ref character))
-            //    SelectedText = new string(character, 1);
         }
     }
 }

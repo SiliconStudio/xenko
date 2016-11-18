@@ -19,22 +19,7 @@ namespace SiliconStudio.Xenko.Engine
     public class InputComponent : EntityComponent
     {
         private InputActionConfiguration defaultInputActionConfiguration;
-
-        /// <summary>
-        /// Gets or sets the controller index for this player, this will determine which controller will trigger actions for this input component
-        /// </summary>
-        public int ControllerIndex { get; set; } = 0;
-
-        /// <summary>
-        /// Gets or sets if mouse input will trigger actions for this input component
-        /// </summary>
-        public bool AcceptMouse { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets if Keyboard input will trigger actions for this input component
-        /// </summary>
-        public bool AcceptKeyboard { get; set; } = true;
-
+        
         /// <summary>
         /// The default configuration used for this input component
         /// </summary>
@@ -82,7 +67,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             return new InputActionConfiguration()
             {
-                Actions = ActionMappingInternal?.Actions.ToList() ?? new List<InputAction>()
+                Actions = ActionMappingInternal?.Actions.Select(x=>x.Clone()).ToList() ?? new List<InputAction>()
             };
         }
 

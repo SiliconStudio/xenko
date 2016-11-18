@@ -45,11 +45,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
         
         /// <summary>
-        /// Should mouse input be ignored when the mouse is not locked
-        /// </summary>
-        public bool IgnoreMouseWhenNotLocked { get; set; } = false;
-
-        /// <summary>
         /// The gestures that are used for this action
         /// </summary>
         // TODO: Show only respective types of gestures
@@ -98,6 +93,19 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public List<IInputGesture> CloneGestures()
         {
             return Clone().Gestures.ToList();
+        }
+
+        public void GestureForEach(Action<IInputGesture> action)
+        {
+            foreach (var rootGesture in Gestures)
+            {
+                List<IInputGesture> gestures = new List<IInputGesture>();
+                ((InputGestureBase)rootGesture).GetGesturesRecursive(gestures);
+                foreach (var gesture in gestures)
+                {
+                    action(gesture);
+                }
+            }
         }
 
         /// <summary>

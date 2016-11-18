@@ -92,7 +92,9 @@
     <Compile Include="Gestures\FourWayGesture.cs" />
     <Compile Include="Gestures\GameControllerAxisGesture.cs" />
     <Compile Include="Gestures\GameControllerButtonGesture.cs" />
-    <Compile Include="Gestures\GameControllerPovGesture.cs" />
+    <Compile Include="Gestures\IGameControllerDevice.cs" />
+    <Compile Include="Gestures\IGamePadGesture.cs" />
+    <Compile Include="Gestures\PovControllerGesture.cs" />
     <Compile Include="Gestures\GamePadAxisGesture.cs" />
     <Compile Include="Gestures\GamePadButtonGesture.cs" />
     <Compile Include="Gestures\GestureEventArgs.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="Gestures\TapGesture.cs" />
     <Compile Include="Gestures\CompositeGesture.cs" />
     <Compile Include="IGamePadDevice.cs" />
+    <Compile Include="IGamePadIndexAssignable.cs" />
     <Compile Include="InputManager.State.cs" />
     <Compile Include="InputEventPool.cs" />
     <Compile Include="InputPreUpdateEventArgs.cs" />

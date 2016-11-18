@@ -4,13 +4,10 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Provides information about a gamepad axis
+    /// Internal interface used to assign gamepad index to a gamepad device
     /// </summary>
-    public class GameControllerAxisInfo : GameControllerObjectInfo
+    internal interface IGamePadIndexAssignable : IGameControllerDevice
     {
-        public override string ToString()
-        {
-            return $"GameController Axis {{{Name}}}";
-        }
+        int Index { set; }
     }
 }

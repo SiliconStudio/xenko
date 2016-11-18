@@ -9,36 +9,51 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Represents a gamepad axis reading
     /// </summary>
     [DataContract]
-    public class GamePadAxisGesture : AxisGestureBase, IInputEventListener<GamePadAxisEvent>
+    public class GamePadAxisGesture : AxisGestureBase, IInputEventListener<GamePadAxisEvent>, IGamePadGesture
     {
         /// <summary>
         /// The gamepad axis identifier
         /// </summary>
         public GamePadAxis Axis;
 
+        private int gamePadIndex;
+
         public GamePadAxisGesture()
         {
         }
 
-        public GamePadAxisGesture(GamePadAxis axis)
+        public GamePadAxisGesture(GamePadAxis axis, int gamePadIndex)
         {
             Axis = axis;
+            this.gamePadIndex = gamePadIndex;
+        }
+        
+        /// <summary>
+        /// The index of the gamepad to watch
+        /// </summary>
+        public int GamePadIndex
+        {
+            get { return gamePadIndex; }
+            set { gamePadIndex = value; }
         }
 
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
-            if ((inputEvent.Axis & Axis) != 0)
-                UpdateAxis(inputEvent.Value, inputEvent.Device);
+            if (inputEvent.GamePad.Index == GamePadIndex)
+            {
+                if ((inputEvent.Axis & Axis) != 0)
+                    UpdateAxis(inputEvent.Value, inputEvent.Device);
+            }
         }
 
         public override string ToString()
         {
-            return $"{nameof(Axis)}: {Axis}, {base.ToString()}";
+            return $"{nameof(Axis)}: {Axis}, {nameof(GamePadIndex)}: {GamePadIndex}, {base.ToString()}";
         }
 
         protected bool Equals(GamePadAxisGesture other)
         {
-            return Axis == other.Axis;
+            return Axis == other.Axis && gamePadIndex == other.gamePadIndex;
         }
 
         public override bool Equals(object obj)
@@ -51,7 +66,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public override int GetHashCode()
         {
-            return Axis.GetHashCode();
+            unchecked
+            {
+                return ((int)Axis * 397) ^ gamePadIndex;
+            }
         }
     }
 }

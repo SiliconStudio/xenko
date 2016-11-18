@@ -66,21 +66,21 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
             if (inputEvent.State == ButtonState.Down)
-                TryBindSingleButton(new GameControllerButtonGesture(inputEvent.Index));
+                TryBindSingleButton(new GameControllerButtonGesture(inputEvent.Index, inputEvent.GameController.Id));
         }
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
             if (inputEvent.State == ButtonState.Down)
-                TryBindSingleButton(new GamePadButtonGesture(inputEvent.Button));
+                TryBindSingleButton(new GamePadButtonGesture(inputEvent.Button, inputEvent.GamePad.Index));
         }
 
         public void ProcessEvent(GameControllerAxisEvent inputEvent)
         {
             if (Math.Abs(inputEvent.Value) > AxisThreshold)
             {
-                var axis = new GameControllerAxisGesture(inputEvent.Index) { Inverted = inputEvent.Value < 0 };
-                TryBindAxis(axis, inputEvent.GameController.AxisInfos[inputEvent.Index].IsBiDirectional);
+                var axis = new GameControllerAxisGesture(inputEvent.Index, inputEvent.GameController.Id) { Inverted = inputEvent.Value < 0 };
+                TryBindAxis(axis);
             }
         }
 
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             if (Math.Abs(inputEvent.Value) > AxisThreshold)
             {
-                var axis = new GamePadAxisGesture(inputEvent.Axis) { Inverted = inputEvent.Value < 0 };
+                var axis = new GamePadAxisGesture(inputEvent.Axis, inputEvent.GamePad.Index) { Inverted = inputEvent.Value < 0 };
                 TryBindAxis(axis, inputEvent.Axis < GamePadAxis.LeftTrigger);
             }
         }

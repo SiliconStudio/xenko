@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
@@ -12,6 +13,11 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         GamePadState State { get; }
         
+        /// <summary>
+        /// The index of the gamepad assigned by the input manager
+        /// </summary>
+        int Index { get; }
+
         /// <summary>
         /// Sets 4 vibration motors one the device or approximates the effect if less are supported
         /// </summary>

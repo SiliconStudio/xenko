@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SharpDX.XInput;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
@@ -42,8 +43,9 @@ namespace SiliconStudio.Xenko.Input
         // Mapping of device guid to device
         private readonly Dictionary<Guid, IInputDevice> inputDevicesById = new Dictionary<Guid, IInputDevice>();
 
-        // List mapping GameController index to the guid of the device
-        private readonly List<Guid> gameControllerIds = new List<Guid>();
+        // List mapping GamePad index to the guid of the device
+        private readonly List<List<IGamePadDevice>> gamePadRequestedIndex = new List<List<IGamePadDevice>>();
+        private readonly List<IGamePadDevice> gamePadsByIndex = new List<IGamePadDevice>();
         
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
@@ -335,28 +337,16 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Gets the game controller with a specific index
-        /// </summary>
-        /// <param name="controllerIndex">The index of the game controller</param>
-        /// <returns>The gamepad, or null if no game controller has this index</returns>
-        public IGameControllerDevice GetGameController(int controllerIndex)
-        {
-            if (controllerIndex >= gameControllerIds.Count || controllerIndex < 0)
-                return null;
-            Guid padId = gameControllerIds[controllerIndex];
-            if (padId == Guid.Empty)
-                return null;
-            return (IGameControllerDevice)inputDevicesById[padId];
-        }
-
-        /// <summary>
         /// Gets the gamepad with a specific index
         /// </summary>
-        /// <param name="controllerIndex">The index of the game controller</param>
+        /// <param name="gamePadIndex">The index of the gamepad</param>
         /// <returns>The gamepad, or null if no gamepad has this index</returns>
-        public IGamePadDevice GetGamePad(int controllerIndex)
+        /// <exception cref="IndexOutOfRangeException">When <paramref name="gamePadIndex"/> is less than 0</exception>
+        public IGamePadDevice GetGamePad(int gamePadIndex)
         {
-            return GetGameController(controllerIndex) as IGamePadDevice;
+            if(gamePadIndex < 0) throw new IndexOutOfRangeException(nameof(gamePadIndex));
+            if (gamePadIndex >= gamePadsByIndex.Count) return null;
+            return gamePadsByIndex[gamePadIndex];
         }
 
         /// <summary>
@@ -628,7 +618,7 @@ namespace SiliconStudio.Xenko.Input
             Keyboard = keyboardDevices.FirstOrDefault();
             HasKeyboard = Keyboard != null;
 
-            TextInput = inputDevices.OfType<ITextInputDevice>().FirstOrDefault();
+            TextInput = inputDevices.Keys.OfType<ITextInputDevice>().FirstOrDefault();
 
             Mouse = pointerDevices.OfType<IMouseDevice>().FirstOrDefault();
             HasMouse = Mouse != null;
@@ -641,8 +631,7 @@ namespace SiliconStudio.Xenko.Input
 
             GamePadCount = GamePads.Count;
             HasGamePad = GamePadCount > 0;
-
-            gameControllerDevices.Sort((l, r) => l.Index.CompareTo(r.Index));
+            
             gamePadDevices.Sort((l,r)=>l.Index.CompareTo(r.Index));
 
             DefaultGamePad = gamePadDevices.FirstOrDefault();
@@ -679,50 +668,46 @@ namespace SiliconStudio.Xenko.Input
         {
             gameControllerDevices.Add(gameController);
 
-            var gamepad = gameController as IGamePadDevice;
-            if(gamepad != null)
-                gamePadDevices.Add(gamepad);
-
-            // Find a new index for this game controller
-            int targetIndex = 0;
-            for (int i = 0; i < gameControllerIds.Count; i++)
+            var gamePad = gameController as IGamePadDevice;
+            if (gamePad != null)
             {
-                if (gameControllerIds[i] == Guid.Empty)
+                gamePadDevices.Add(gamePad);
+
+                // Check if the gamepad provides an interface for assigning gamepad index
+                var assignable = gamePad as IGamePadIndexAssignable;
+
+                if (assignable != null)
                 {
-                    targetIndex = i;
-                    break;
+                    AssignGamepad(assignable);
                 }
-                targetIndex++;
-            }
-
-            if (targetIndex >= gameControllerIds.Count)
-            {
-                gameControllerIds.Add(gameController.Id);
-            }
-            else
-            {
-                gameControllerIds[targetIndex] = gameController.Id;
+                else
+                {
+                    // Add this game controller to the list
+                    GetOrCreateGamepadRequestedIndexList(gamePad.Index).Add(gamePad);
+                }
+                ReassignActiveGamepads();
             }
 
             var gameControllerBase = gameController as GameControllerDeviceBase;
             if (gameControllerBase == null)
                 throw new InvalidOperationException("Cannot register GameController id, because it does not inherit from GameControllerDeviceBase");
-            gameControllerBase.IndexInternal = targetIndex;
         }
 
         private void UnregisterGameController(IGameControllerDevice gameController)
         {
-            // Free the gamepad index in the gamepad list
-            // this will allow another gamepad to use this index again
-            if (gameControllerIds.Count <= gameController.Index || gameController.Index < 0)
-                throw new IndexOutOfRangeException("Gamepad index was out of range");
-            gameControllerIds[gameController.Index] = Guid.Empty;
-
             gameControllerDevices.Remove(gameController);
 
             var gamepad = gameController as IGamePadDevice;
             if (gamepad != null)
+            {
+                // Free the gamepad index in the gamepad list
+                // this will allow another gamepad to use this index again
+                if (gamePadRequestedIndex.Count <= gamepad.Index || gamepad.Index < 0)
+                    throw new IndexOutOfRangeException("Gamepad index was out of range");
+                gamePadRequestedIndex[gamepad.Index].Remove(gamepad);
+
                 gamePadDevices.Remove(gamepad);
+            }
         }
 
         private void RegisterSensor(ISensorDevice sensorDevice)
@@ -733,6 +718,76 @@ namespace SiliconStudio.Xenko.Input
         private void UnregisterSensor(ISensorDevice sensorDevice)
         {
             sensorDevices.Remove(sensorDevice);
+        }
+
+        private void AssignGamepad(IGamePadIndexAssignable assignable)
+        {
+            // Find a new index for this game controller
+            int targetIndex = 0;
+            for (int i = 0; i < gamePadRequestedIndex.Count; i++)
+            {
+                if (gamePadRequestedIndex[i].Count == 0)
+                {
+                    targetIndex = i;
+                    break;
+                }
+                targetIndex++;
+            }
+
+            GetOrCreateGamepadRequestedIndexList(targetIndex).Add((IGamePadDevice)assignable);
+            assignable.Index = targetIndex;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="gamePadsByIndex"/> collection to 1 gamepad per index, might also try to switch around gamepads so that the
+        /// fixed gamepads can have their index exclusively and other gamepads that have assignable index can still be used.
+        /// </summary>
+        private void ReassignActiveGamepads()
+        {
+            gamePadsByIndex.Clear();
+
+            // Try to shuffle around gamepad indices until gamepads each have a unique index
+            for (int i = 0; i < gamePadRequestedIndex.Count; i++)
+            {
+                var gamePadList = gamePadRequestedIndex[i];
+                if (gamePadList.Count > 1)
+                {
+                    for (int j = 0; j < gamePadList.Count;)
+                    {
+                        var assignable = gamePadList[j] as IGamePadIndexAssignable;
+                        if (assignable != null)
+                        {
+                            // Reassign this gamepad
+                            gamePadList.RemoveAt(j);
+                            AssignGamepad(assignable);
+                        }
+                        else
+                            j++;
+                        if (gamePadList.Count == 1)
+                            break; // Now there is only 1 gamepad with this index
+                    }
+                }
+            }
+
+            for (int i = 0; i < gamePadRequestedIndex.Count; i++)
+            { 
+                var gamePad = gamePadRequestedIndex[i].FirstOrDefault();
+                gamePadsByIndex.Add(gamePad);
+            }
+        }
+
+        /// <summary>
+        /// Gets the list that contains the gamepads mapped to this index
+        /// </summary>
+        /// <param name="gamepadIndex">The index for the id list to get</param>
+        /// <returns>A list of ids of gamepads that are mapped to this gamepad index</returns>
+        private List<IGamePadDevice> GetOrCreateGamepadRequestedIndexList(int gamepadIndex)
+        {
+            while (gamepadIndex >= gamePadRequestedIndex.Count)
+            {
+                gamePadRequestedIndex.Add(new List<IGamePadDevice>());
+            }
+            return gamePadRequestedIndex[gamepadIndex];
         }
 
         protected interface IInputEventRouter
