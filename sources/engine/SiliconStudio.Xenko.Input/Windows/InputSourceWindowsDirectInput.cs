@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
+using SharpDX;
 using SharpDX.DirectInput;
 using SiliconStudio.Xenko.Native.DirectInput;
 
@@ -26,7 +27,7 @@ namespace SiliconStudio.Xenko.Input
                 var gameController = pair.Value as GameControllerDirectInput;
                 gameController?.Dispose();
             }
-            
+
             // Unregisters all devices
             base.Dispose();
 
@@ -84,16 +85,25 @@ namespace SiliconStudio.Xenko.Input
             // Find gamepad layout
             var layout = GamePadLayouts.FindLayout(this, deviceInstance.ProductName, deviceInstance.ProductGuid);
 
-            var newGamepad = (layout != null) ? 
-                new GamePadDirectInput(inputManager, directInput, deviceInstance, layout) : 
-                new GameControllerDirectInput(directInput, deviceInstance);
+            GameControllerDirectInput newController;
+            try
+            {
+                newController = (layout != null) ? 
+                    new GamePadDirectInput(inputManager, directInput, deviceInstance, layout) : 
+                    new GameControllerDirectInput(directInput, deviceInstance);
+            }
+            catch (SharpDXException)
+            {
+                // Some failure occured during device creation
+                return;
+            }
 
-            newGamepad.Disconnected += (sender, args) =>
+            newController.Disconnected += (sender, args) =>
             {
                 // Queue device for removal
-                devicesToRemove.Add(newGamepad.Id);
+                devicesToRemove.Add(newController.Id);
             };
-            RegisterDevice(newGamepad);
+            RegisterDevice(newController);
         }
     }
 }
