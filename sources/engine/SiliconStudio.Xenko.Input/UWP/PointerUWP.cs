@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.Input
             this.uiControl = uiControl;
 
             uiControl.SizeChanged += UIControlOnSizeChanged;
-            uiControl.PointerMoved += (sender, args) => HandlePointer(InputEventType.Moved, args);
-            uiControl.PointerPressed += (sender, args) => HandlePointer(InputEventType.Down, args);
-            uiControl.PointerReleased += (sender, args) => HandlePointer(InputEventType.Up, args);
-            uiControl.PointerExited += (sender, args) => HandlePointer(InputEventType.Out, args);
-            uiControl.PointerCanceled += (sender, args) => HandlePointer(InputEventType.Canceled, args);
-            uiControl.PointerCaptureLost += (sender, args) => HandlePointer(InputEventType.Canceled, args);
+            uiControl.PointerMoved += (sender, args) => HandlePointer(PointerEventType.Moved, args);
+            uiControl.PointerPressed += (sender, args) => HandlePointer(PointerEventType.Pressed, args);
+            uiControl.PointerReleased += (sender, args) => HandlePointer(PointerEventType.Released, args);
+            uiControl.PointerExited += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
+            uiControl.PointerCanceled += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
+            uiControl.PointerCaptureLost += (sender, args) => HandlePointer(PointerEventType.Canceled, args);
 
             // Set initial surface size
             SetSurfaceSize(new Vector2((float)uiControl.Width, (float)uiControl.Height));
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Input
         public override Guid Id { get; } = new Guid("9b1e36b6-de69-4313-89dd-7cbfbe1a436e");
         public override PointerType Type { get; } = PointerType.Unknown;
         
-        protected virtual void HandlePointer(InputEventType type, PointerRoutedEventArgs args)
+        protected virtual void HandlePointer(PointerEventType type, PointerRoutedEventArgs args)
         {
             var pointer = args.Pointer;
             var point = args.GetCurrentPoint(uiControl);

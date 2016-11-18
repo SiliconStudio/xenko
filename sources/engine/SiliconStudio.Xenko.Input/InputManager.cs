@@ -5,14 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using SharpDX.XInput;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input.Gestures;
-using SiliconStudio.Xenko.Input.Mapping;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -686,6 +684,9 @@ namespace SiliconStudio.Xenko.Input
                     GetOrCreateGamepadRequestedIndexList(gamePad.Index).Add(gamePad);
                 }
                 ReassignActiveGamepads();
+
+                // Handle later index changed
+                gamePad.IndexChanged += GamePadOnIndexChanged;
             }
 
             var gameControllerBase = gameController as GameControllerDeviceBase;
@@ -697,19 +698,25 @@ namespace SiliconStudio.Xenko.Input
         {
             gameControllerDevices.Remove(gameController);
 
-            var gamepad = gameController as IGamePadDevice;
-            if (gamepad != null)
+            var gamePad = gameController as IGamePadDevice;
+            if (gamePad != null)
             {
                 // Free the gamepad index in the gamepad list
                 // this will allow another gamepad to use this index again
-                if (gamePadRequestedIndex.Count <= gamepad.Index || gamepad.Index < 0)
+                if (gamePadRequestedIndex.Count <= gamePad.Index || gamePad.Index < 0)
                     throw new IndexOutOfRangeException("Gamepad index was out of range");
-                gamePadRequestedIndex[gamepad.Index].Remove(gamepad);
+                gamePadRequestedIndex[gamePad.Index].Remove(gamePad);
 
-                gamePadDevices.Remove(gamepad);
+                gamePadDevices.Remove(gamePad);
+                gamePad.IndexChanged -= GamePadOnIndexChanged;
             }
         }
 
+        private void GamePadOnIndexChanged(object sender, GamePadIndexChangedEventArgs gamePadIndexChangedEventArgs)
+        {
+            ReassignActiveGamepads();
+        }
+        
         private void RegisterSensor(ISensorDevice sensorDevice)
         {
             sensorDevices.Add(sensorDevice);

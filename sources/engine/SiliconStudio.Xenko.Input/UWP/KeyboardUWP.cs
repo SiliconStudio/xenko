@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
             mapKeys = new Dictionary<VirtualKey, Keys>();
             // this dictionary was built from Desktop version (VirtualKey are compatible with WinForms keys)
             AddKeys(WinFormsKeys.None, Keys.None);
-            AddKeys(WinFormsKeys.Canceled, Keys.Canceled);
+            AddKeys(WinFormsKeys.Cancel, Keys.Cancel);
             AddKeys(WinFormsKeys.Back, Keys.Back);
             AddKeys(WinFormsKeys.Tab, Keys.Tab);
             AddKeys(WinFormsKeys.LineFeed, Keys.LineFeed);
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Input
         void HandleKey(ButtonState state, KeyRoutedEventArgs args)
         {
             // If our EditText TextBox is active, let's ignore all key events
-            if (((GameContextWindowsRuntime)game.Context).EditTextBox.Parent != null)
+            if (((GameContextUWP)game.Context).EditTextBox.Parent != null)
             {
                 return;
             }
@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            if(state == ButtonState.Press)
+            if(state == ButtonState.Down)
                 HandleKeyDown(xenkoKey);
             else
                 HandleKeyUp(xenkoKey);
@@ -263,12 +263,12 @@ namespace SiliconStudio.Xenko.Input
         
         private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
         {
-            HandleKey(ButtonState.Press, args);
+            HandleKey(ButtonState.Down, args);
         }
 
         private void UIControlOnKeyUp(object sender, KeyRoutedEventArgs args)
         {   
-            HandleKey(ButtonState.Released, args);
+            HandleKey(ButtonState.Up, args);
         }
     }
 }

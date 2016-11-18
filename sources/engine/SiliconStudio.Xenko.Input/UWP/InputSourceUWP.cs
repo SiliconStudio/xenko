@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Windows.Devices.Input;
 using Windows.System;
 using Windows.Devices.Sensors;
+using Windows.Gaming.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using SiliconStudio.Core.Mathematics;
@@ -23,6 +24,8 @@ namespace SiliconStudio.Xenko.Input
     public class InputSourceUWP : InputSourceBase
     {
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f / InputManager.DesiredSensorUpdateRate * 1000f);
+
+        private Dictionary<Gamepad, GamePadUWP> gamePads = new Dictionary<Gamepad, GamePadUWP>();
 
         private WindowsAccelerometer windowsAccelerometer;
         private WindowsCompass windowsCompass;
@@ -93,7 +96,40 @@ namespace SiliconStudio.Xenko.Input
                 RegisterDevice(userAcceleration);
             }
 
+            Gamepad.GamepadAdded += GamepadOnGamepadAdded;
+            Gamepad.GamepadRemoved += GamepadOnGamepadRemoved;
+            
             Scan();
+        }
+
+        public override void Scan()
+        {
+            base.Scan();
+
+            foreach (var gamepad in Gamepad.Gamepads)
+            {
+                GamepadOnGamepadAdded(this, gamepad);
+            }
+        }
+
+        private void GamepadOnGamepadRemoved(object sender, Gamepad gamepad)
+        {
+            GamePadUWP currentGamePad;
+            if (!gamePads.TryGetValue(gamepad, out currentGamePad))
+                return;
+
+            gamePads.Remove(gamepad);
+            UnregisterDevice(currentGamePad);
+        }
+
+        private void GamepadOnGamepadAdded(object sender, Gamepad gamepad)
+        {
+            if (gamePads.ContainsKey(gamepad))
+                return;
+
+            GamePadUWP newGamePad = new GamePadUWP(gamepad, Guid.NewGuid());
+            gamePads.Add(gamepad, newGamePad);
+            RegisterDevice(newGamePad);
         }
 
         public override void Update()

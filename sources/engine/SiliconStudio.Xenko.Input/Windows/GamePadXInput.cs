@@ -16,30 +16,49 @@ namespace SiliconStudio.Xenko.Input
         private State xinputState;
         private GamePadState state;
         private short[] lastAxisState = new short[6];
+        private int index;
 
         public GamePadXInput(Controller controller, Guid id, int index)
         {
             this.controller = controller;
-            IndexInternal = index;
+            this.index = index;
             Id = id;
             state = new GamePadState();
             
             InitializeButtonStates();
         }
 
-        public override string DeviceName => $"XInput Controller {IndexInternal}";
+        public override string DeviceName => $"XInput Controller {index}";
         public override Guid Id { get; }
         public GamePadState State => state;
 
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; } = new GameControllerButtonInfo[] { };
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; } = new GameControllerAxisInfo[] { };
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos { get; } = new PovControllerInfo[] { };
+        
+        public int Index
+        {
+            get { return index; }
+            set
+            {
+                index = value;
+                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = value, IsDeviceSideChange = false });
+            }
+        }
+
+        public event EventHandler<GamePadIndexChangedEventArgs> IndexChanged;
 
         public override void Update(List<InputEvent> inputEvents)
         {
             if (Disposed)
                 return;
-            
+
+            if ((int)controller.UserIndex != index)
+            {
+                index = (int)controller.UserIndex;
+                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = index, IsDeviceSideChange = true });
+            }
+
             if (controller.GetState(out xinputState))
             {
                 // DPad/Shoulder/Thumb/Option buttons

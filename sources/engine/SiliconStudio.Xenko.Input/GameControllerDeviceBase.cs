@@ -11,7 +11,6 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class GameControllerDeviceBase : IGameControllerDevice, IDisposable
     {
-        internal int IndexInternal;
         internal bool Disposed;
         protected bool[] ButtonStates;
         protected float[] AxisStates;
@@ -38,8 +37,6 @@ namespace SiliconStudio.Xenko.Input
         public virtual Guid ProductId => Id;
 
         public int Priority { get; set; }
-
-        public int Index => IndexInternal;
 
         public abstract IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
 

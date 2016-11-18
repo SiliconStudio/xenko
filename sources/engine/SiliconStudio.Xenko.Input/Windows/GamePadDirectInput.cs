@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+using System;
 using System.Collections.Generic;
 using SharpDX.DirectInput;
 
@@ -16,8 +17,7 @@ namespace SiliconStudio.Xenko.Input
         private GamePadLayout layout;
         private InputManager inputManager;
         private List<InputEvent> sourceEvents = new List<InputEvent>();
-
-        public GamePadState State => state;
+        private int index;
         
         public GamePadDirectInput(InputManager inputManager, DirectInput directInput, DeviceInstance instance, GamePadLayout layout)
             : base(directInput, instance)
@@ -25,6 +25,20 @@ namespace SiliconStudio.Xenko.Input
             this.inputManager = inputManager;
             this.layout = layout;
         }
+
+        public GamePadState State => state;
+
+        public int Index
+        {
+            get { return index; }
+            set
+            {
+                index = value;
+                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = value, IsDeviceSideChange = false });
+            }
+        }
+
+        public event EventHandler<GamePadIndexChangedEventArgs> IndexChanged;
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -51,12 +65,6 @@ namespace SiliconStudio.Xenko.Input
         public void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {
             // No vibration support in directinput gamepads
-        }
-
-        public new int Index
-        {
-            get { return IndexInternal; }
-            set { IndexInternal = value; }
         }
     }
 }
