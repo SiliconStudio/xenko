@@ -640,7 +640,7 @@ namespace SiliconStudio.Xenko.Input
             HasGameController = GameControllerCount > 0;
 
             GamePadCount = GamePads.Count;
-            HasGameController = GamePadCount > 0;
+            HasGamePad = GamePadCount > 0;
 
             gameControllerDevices.Sort((l, r) => l.Index.CompareTo(r.Index));
             gamePadDevices.Sort((l,r)=>l.Index.CompareTo(r.Index));
