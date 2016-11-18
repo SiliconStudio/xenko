@@ -2,21 +2,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    // TODO: unit test this collection
+    internal class IndexingDictionarySerializer<TValue> : DictionaryAllSerializer<IndexingDictionary<TValue>, int, TValue> where TValue : class
+    {
+    }
+
+    // TODO: unit test this collection!
     /// <summary>
     /// A dictionary that maps index values to items. It uses a sparse list internally for storage.
     /// </summary>
     /// <typeparam name="T">The type of item indexed in this collection.</typeparam>
+    [DataSerializer(typeof(IndexingDictionarySerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
     public class IndexingDictionary<T> : IDictionary<int, T> where T : class
     {
-        private FastListStruct<T> items = new FastListStruct<T>(0);
+        private readonly FastList<T> items = new FastList<T>(0);
         private List<int> keys;
         private List<T> values;
 
-        public int Count => items.Count;
+        public int Count { get; private set; }
 
         public bool IsReadOnly => false;
 
@@ -76,6 +83,7 @@ namespace SiliconStudio.Xenko.Engine
             items.Clear();
             keys = null;
             values = null;
+            Count = 0;
         }
 
         public bool Contains(KeyValuePair<int, T> item)
@@ -122,6 +130,7 @@ namespace SiliconStudio.Xenko.Engine
                 return false;
 
             items[index] = null;
+            --Count;
             index = items.Count - 1;
             while (index >= 0 && items[index] == null)
             {
@@ -153,6 +162,9 @@ namespace SiliconStudio.Xenko.Engine
             {
                 items.Add(null);
             }
+            if (items[index] == null)
+                ++Count;
+
             items[index] = value;
             keys = null;
             values = null;
