@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice
+    public class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
         private Window window;
 
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
             this.window.TextEditingActions += OnTextEditingActions;
         }
         
-        public override void Dispose()
+        public void Dispose()
         {
             window.KeyDownActions -= OnKeyEvent;
             window.KeyUpActions -= OnKeyEvent;

@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseSDL : MouseDeviceBase
+    public class MouseSDL : MouseDeviceBase, IDisposable
     {
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
             OnSizeChanged(new SDL.SDL_WindowEvent());
         }
         
-        public override void Dispose()
+        public void Dispose()
         {
             uiControl.MouseMoveActions -= OnMouseMoveEvent;
             uiControl.PointerButtonPressActions -= OnMouseInputEvent;

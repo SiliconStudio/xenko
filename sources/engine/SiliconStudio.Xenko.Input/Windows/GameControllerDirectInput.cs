@@ -37,10 +37,7 @@ namespace SiliconStudio.Xenko.Input
                         continue;
                     }
                     var btn = new GameControllerButtonInfo();
-                    if (objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton))
-                        btn.Type = GameControllerButtonType.ToggleButton;
-                    else
-                        btn.Type = GameControllerButtonType.PushButton;
+                    btn.Type = objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton) ? GameControllerButtonType.ToggleButton : GameControllerButtonType.PushButton;
                     objInfo = btn;
                     buttonInfos.Add(btn);
                 }

@@ -12,7 +12,7 @@ using Point = System.Drawing.Point;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseWinforms : MouseDeviceBase
+    public class MouseWinforms : MouseDeviceBase, IDisposable
     {
         private readonly GameBase game;
         private readonly Control uiControl;
@@ -39,10 +39,8 @@ namespace SiliconStudio.Xenko.Input
             OnSizeChanged(this, null);
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
-
             uiControl.MouseMove -= OnMouseMove;
             uiControl.MouseDown -= OnMouseDown;
             uiControl.MouseUp -= OnMouseUp;

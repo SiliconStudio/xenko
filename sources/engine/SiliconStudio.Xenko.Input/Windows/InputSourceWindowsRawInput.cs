@@ -43,7 +43,6 @@ namespace SiliconStudio.Xenko.Input
                 if(uiControl != null && !uiControl.IsDisposed)
                     Device.RegisterDevice(UsagePage.Generic, UsageId.GenericKeyboard, DeviceFlags.Remove, uiControl.Handle);
                 Device.KeyboardInput -= DeviceOnKeyboardInput;
-                keyboard.Dispose();
             }
         }
 

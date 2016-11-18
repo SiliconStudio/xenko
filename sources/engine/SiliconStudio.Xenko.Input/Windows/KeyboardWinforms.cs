@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice
+    public class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
         private InputSourceWinforms source;
         private Control uiControl;
@@ -29,13 +29,20 @@ namespace SiliconStudio.Xenko.Input
             this.source = source;
             this.uiControl = uiControl;
 
-            richTextBox = new RichTextBox();
+            richTextBox = new RichTextBox
+            {
+                Location = new Point(-100, -100),
+                Size = new Size(80, 80)
+            };
             // Move so it is not in view
-            richTextBox.Location = new Point(-100, -100);
-            richTextBox.Size = new Size(80, 80);
             myWndProc = WndProc;
             var windowProc = Marshal.GetFunctionPointerForDelegate(myWndProc);
             oldWndProc = Win32Native.SetWindowLong(richTextBox.Handle, Win32Native.WindowLongType.WndProc, windowProc);
+        }
+
+        public void Dispose()
+        {
+            richTextBox?.Dispose();
         }
 
         public override string DeviceName => "Windows Keyboard";
