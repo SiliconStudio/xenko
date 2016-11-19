@@ -89,7 +89,7 @@ namespace SiliconStudio.Core.Reflection
             get
             {
                 if (mapMembers == null)
-                    throw new KeyNotFoundException(name);
+                    return null;
                 IMemberDescriptor member;
                 mapMembers.TryGetValue(name, out member);
                 return member;
