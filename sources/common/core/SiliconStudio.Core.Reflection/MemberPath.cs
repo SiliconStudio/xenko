@@ -397,7 +397,7 @@ namespace SiliconStudio.Core.Reflection
         //    return true;
         //}
 
-        public IEnumerable<MemberPathItem> Decompose()
+        public IReadOnlyList<MemberPathItem> Decompose()
         {
             return items;
         }

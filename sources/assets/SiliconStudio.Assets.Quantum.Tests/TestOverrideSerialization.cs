@@ -821,13 +821,13 @@ Value*: OverriddenString
             var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
-            var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
+            var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
             Assert.AreEqual(1, overrides.Count);
             Assert.True(overrides.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
 
             // We expect the same resulting path both from the member node and the target object node
-            overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode.Target);
+            overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode.Target);
             Assert.AreEqual(1, overrides.Count);
             Assert.True(overrides.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
@@ -855,7 +855,7 @@ Value*: OverriddenString
             var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
-            var overrides = context.DerivedGraph.GenerateOverridesForSerialization(derivedPropertyNode);
+            var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
             Assert.AreEqual(1, overrides.Count);
             Assert.True(overrides.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overrides[expectedPath]);

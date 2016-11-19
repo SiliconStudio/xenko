@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         void ProcessLight(PointLightDataInternal light)
         {
-            float3 lightVector = light.PositionWS - streams.PositionWS;
+            float3 lightVector = light.PositionWS - streams.PositionWS.xyz;
             float lightVectorLength = length(lightVector);
             float3 lightVectorNorm = lightVector / lightVectorLength;
 

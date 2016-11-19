@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { material1 }, IsShadowReceiver = isShadowReceiver },
+                            new ModelComponent { Model = model, Materials = { { 0, material1 } }, IsShadowReceiver = isShadowReceiver },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);

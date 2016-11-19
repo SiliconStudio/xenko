@@ -60,11 +60,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                                 // Build the list of material for this model
                                 var materialList = model.Materials.Select(x => x.MaterialInstance.Material).ToList();
                                 for (var i = 0; i < modelComponent.Materials.Count && i < materialList.Count; i++)
+                                foreach (var material in modelComponent.Materials)
                                 {
                                     // Apply any material override from the model component
-                                    var material = modelComponent.Materials[i];
-                                    if (material != null)
-                                        materialList[i] = material;
+                                    materialList[material.Key] = material.Value;
                                 }
 
                                 // Add the model and the related materials to the list of reference
