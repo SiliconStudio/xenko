@@ -138,5 +138,14 @@ namespace SiliconStudio.Assets.Diagnostics
         /// </summary>
         /// <value>The related.</value>
         public List<IReference> Related { get; private set; }
+
+        public override string ToString()
+        {
+            var result = base.ToString();
+            if (AssetReference?.Location != null)
+                result = $"{AssetReference.Location}({Line + 1},{Character + 1}): {result}";
+
+            return result;
+        }
     }
 }
