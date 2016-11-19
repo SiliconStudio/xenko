@@ -43,7 +43,11 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// </userdoc>
         [DataMember(10)]
         [Display("Half height")]
-        public float HalfHeight { get { return halfHeight; } set { halfHeight = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float HalfHeight
+        {
+            get { return halfHeight > MathUtil.ZeroTolerance ? halfHeight : 0; }
+            set { halfHeight = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float halfHeight = 1f;
 
         /// <summary>
@@ -54,7 +58,11 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// </userdoc>
         [DataMember(20)]
         [Display("Radius")]
-        public float Radius { get { return radius; } set { radius = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float Radius
+        {
+            get { return radius > MathUtil.ZeroTolerance ? radius : 0; }
+            set { radius = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float radius = 1f;
 
 
@@ -128,7 +136,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
             var isOutside = (maxDist > fieldRadius) || (Math.Abs(particlePosition.Y) > fieldY);
 
-            var surfaceY = (particlePosition.Y >= 0) ? fieldY : -fieldY;
+            var surfaceY = particlePosition.Y >= 0 ? fieldY : -fieldY;
 
             var distR = Math.Abs(maxDist - fieldRadius);
             var distY = Math.Abs(particlePosition.Y - surfaceY);
@@ -152,7 +160,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
                 surfacePoint.Y = surfaceY;
 
-                surfaceNormal = (surfaceY > 0) ? new Vector3(0, 1, 0) : new Vector3(0, -1, 0);
+                surfaceNormal = surfaceY > 0 ? new Vector3(0, 1, 0) : new Vector3(0, -1, 0);
             }
 
             if (isOutside)
@@ -177,7 +185,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             surfacePoint += fieldPosition;
 
             // Is the point inside the cylinder?
-            return (!isOutside);
+            return !isOutside;
         }
     }
 }

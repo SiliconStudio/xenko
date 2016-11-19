@@ -72,6 +72,23 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        public void OverrideDeletedItem(bool isOverridden, ItemId deletedId)
+        {
+            CollectionItemIdentifiers ids;
+            if (CanOverride && TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            {
+                SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, deletedId, itemOverrides);
+                if (isOverridden)
+                {
+                    ids.MarkAsDeleted(deletedId);
+                }
+                else
+                {
+                    ids.UnmarkAsDeleted(deletedId);
+                }
+            }
+        }
+
         public void Restore(object restoredItem, ItemId id)
         {
             CollectionItemIdentifiers oldIds = null;
@@ -195,11 +212,10 @@ namespace SiliconStudio.Assets.Quantum
             return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
         }
 
-        // TODO: this is not verifying if the item is currently deleted!
         public bool IsItemOverriddenDeleted(ItemId id)
         {
             OverrideType result;
-            return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+            return IsItemDeleted(id) && itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
         }
 
         public bool IsKeyOverridden(Index index)
@@ -231,10 +247,18 @@ namespace SiliconStudio.Assets.Quantum
             if (BaseContent == null)
                 yield break;
 
+            CollectionItemIdentifiers ids;
+            var collection = Content.Retrieve();
+            TryGetCollectionItemIds(collection, out ids);
+
             foreach (var flags in itemOverrides)
             {
                 if ((flags.Value & OverrideType.New) == OverrideType.New)
                 {
+                    // If the override is a deleted item, there's no matching index to return.
+                    if (ids.IsDeleted(flags.Key))
+                        continue;
+
                     yield return IdToIndex(flags.Key);
                 }
             }
@@ -245,10 +269,18 @@ namespace SiliconStudio.Assets.Quantum
             if (BaseContent == null)
                 yield break;
 
+            CollectionItemIdentifiers ids;
+            var collection = Content.Retrieve();
+            TryGetCollectionItemIds(collection, out ids);
+
             foreach (var flags in keyOverrides)
             {
                 if ((flags.Value & OverrideType.New) == OverrideType.New)
                 {
+                    // If the override is a deleted item, there's no matching index to return.
+                    if (ids.IsDeleted(flags.Key))
+                        continue;
+
                     yield return IdToIndex(flags.Key);
                 }
             }
@@ -475,7 +507,6 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
-
         }
 
         public void ResetOverride(Index indexToReset)
@@ -503,16 +534,11 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     childNode.OverrideKey(false, overrideKey);
                 }
-                //if (childNode.IsContentOverridden())
-                //{
-                //    childNode.ResetOverride(Index.Empty, childNode.Content.Retrieve(), ContentChangeType.ValueChange);
-                //}
             };
             visitor.Visit(this);
 
             // TODO: we should reconcile directly only assetNode, not the whole asset
             PropertyGraph.ReconcileWithBase();
-            //assetNode.ResetOverride(index, assetNode.Content.Retrieve(index), ContentChangeType.ValueChange);
         }
 
         public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
@@ -590,7 +616,7 @@ namespace SiliconStudio.Assets.Quantum
             return id;
         }
 
-        internal bool TryIndexToId(Index index, out ItemId id)
+        public bool TryIndexToId(Index index, out ItemId id)
         {
             if (index == Index.Empty)
             {
@@ -665,7 +691,7 @@ namespace SiliconStudio.Assets.Quantum
             return ids.IsDeleted(itemId);
         }
 
-        private bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
+        public bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {
             if (collectionItemIdentifiers != null)
             {

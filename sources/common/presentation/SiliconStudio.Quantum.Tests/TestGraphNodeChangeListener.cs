@@ -38,6 +38,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member1 = 3 };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member1));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, 3, 4, () => node.Content.Update(4));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, 4, 5, () => node.Content.Update(5));
@@ -51,6 +52,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member2 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member2));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], () => node.Content.Update(obj[2]));
@@ -64,6 +66,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member2 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member2));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], () => node.Content.Update(obj[2]));
@@ -76,6 +79,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member3 = 3 };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member3));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, 3, 4, () => node.Content.Update(4));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, 4, 5, () => node.Content.Update(5));
@@ -89,6 +93,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member3 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member3));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], () => node.Content.Update(obj[2]));
@@ -102,6 +107,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member4 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member4));
             Assert.AreEqual("aa", node.TryGetChild(nameof(Struct.Member1)).Content.Retrieve());
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
@@ -120,6 +126,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member4 = new Struct { Member1 = obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member4)).TryGetChild(nameof(Struct.Member1));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1], Index.Empty));
             Assert.AreEqual(node, rootNode.TryGetChild(nameof(ComplexClass.Member4)).TryGetChild(nameof(Struct.Member1)));
@@ -135,6 +142,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member5 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member5));
             Assert.AreEqual("aa", node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
@@ -153,6 +161,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member5 = new List<string> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member5));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, new Index(0), obj[0], obj[1], () => node.Content.Update(obj[1], new Index(0)));
@@ -169,6 +178,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member5 = new List<string> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member5));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], () => node.Content.Add(obj[1], new Index(1)));
@@ -185,6 +195,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member5 = new List<string> { obj[0], obj[1], obj[2] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member5));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Content.Retrieve(new Index(1)));
@@ -204,6 +215,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member6 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             Assert.AreEqual(obj[0][0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
@@ -223,6 +235,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member6 = new List<SimpleClass> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, new Index(0), obj[0], obj[1], () => node.Content.Update(obj[1], new Index(0)));
@@ -239,6 +252,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member6 = new List<SimpleClass> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], () => node.Content.Add(obj[1], new Index(1)));
@@ -255,6 +269,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member6 = new List<SimpleClass> { obj[0], obj[1], obj[2] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Content.Retrieve(new Index(1)));
@@ -274,6 +289,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member6 = new List<SimpleClass> { new SimpleClass(), new SimpleClass { Member1 = obj[0] } } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             Index index = new Index(1);
             IGraphNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             var node = tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1));
@@ -292,6 +308,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member7 = obj[0] };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             Assert.AreEqual(obj[0][0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], () => node.Content.Update(obj[1]));
@@ -311,6 +328,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member7 = new List<Struct> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.ValueChange, new Index(0), obj[0], obj[1], () => node.Content.Update(obj[1], new Index(0)));
@@ -327,6 +345,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member7 = new List<Struct> { obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, node, ContentChangeType.CollectionAdd, new Index(1), null, obj[1], () => node.Content.Add(obj[1], new Index(1)));
@@ -343,6 +362,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member7 = new List<Struct> { obj[0], obj[1], obj[2] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             var node = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(obj[1], node.Content.Retrieve(new Index(1)));
@@ -362,6 +382,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member7 = new List<Struct> { new Struct(), new Struct { Member1 = obj[0] } } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             Index index = new Index(1);
             IGraphNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             var node = tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1));
@@ -385,6 +406,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj0Node = nodeContainer.GetOrCreateNode(obj[0]);
             var obj1Node = nodeContainer.GetOrCreateNode(obj[1]);
             var listener = new GraphNodeChangeListener(rootNode);
+            listener.Initialize();
             int changingCount = 0;
             int changedCount = 0;
             listener.Changing += (sender, e) => ++changingCount;

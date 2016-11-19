@@ -29,7 +29,10 @@ using namespace SiliconStudio::Xenko::Shaders;
 using namespace SiliconStudio::Xenko::Importer::Common;
 
 namespace SiliconStudio { namespace Xenko { namespace Importer { namespace FBX {
-	
+
+static const char* MappingModeName[] = { "None", "ByControlPoint", "ByPolygonVertex", "ByPolygon", "ByEdge", "AllSame" };
+static const char* MappingModeSuggestion[] = { "", "", "", "", " Try using ByPolygon mapping instead.", "" };
+
 public ref class MaterialInstantiation
 {
 public:
@@ -71,7 +74,7 @@ internal:
 	}
 
 	template <class T>
-	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int polygonIndex, String^ meshName, bool& firstTimeError)
+	int GetGroupIndexForLayerElementTemplate(FbxLayerElementTemplate<T>* layerElement, int controlPointIndex, int vertexIndex, int edgeIndex, int polygonIndex, String^ meshName, bool& firstTimeError)
 	{
 		int groupIndex = 0;
 		if (layerElement->GetMappingMode() == FbxLayerElement::eByControlPoint)
@@ -92,6 +95,12 @@ internal:
 				? layerElement->GetIndexArray().GetAt(polygonIndex)
 				: polygonIndex;
 		}
+		else if (layerElement->GetMappingMode() == FbxLayerElement::eByEdge)
+		{
+			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
+				? layerElement->GetIndexArray().GetAt(edgeIndex)
+				: edgeIndex;
+		}
 		else if (layerElement->GetMappingMode() == FbxLayerElement::eAllSame)
 		{
 			groupIndex = (layerElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
@@ -101,12 +110,15 @@ internal:
 		else if (firstTimeError)
 		{
 			firstTimeError = false;
-			logger->Warning("The mapping mode '{0}' for '{1}' is not supported yet by the FBX importer "
-				+ "(currently only mapping by control point and by polygon vertex are supported). "
-				+ "'{1}' will not be correct for mesh '{2}'.", 
-				gcnew Int32(layerElement->GetMappingMode()),
-				gcnew String(layerElement->GetName()),
-				meshName);
+			int mappingMode = layerElement->GetMappingMode();
+			if (mappingMode > (int)FbxLayerElement::eAllSame)
+				mappingMode = (int)FbxLayerElement::eAllSame;
+			const char* layerName = layerElement->GetName();
+			logger->Warning("'{0}' mapping mode for layer '{1}' in mesh '{2}' is not supported by the FBX importer.{3}",
+				gcnew String(MappingModeName[mappingMode]),
+				strlen(layerName) > 0 ? gcnew String(layerName) : gcnew String("Unknown"),
+				meshName,
+				gcnew String(MappingModeSuggestion[mappingMode]));
 		}
 
 		return groupIndex;
@@ -422,6 +434,8 @@ public:
 
 		bool layerIndexFirstTimeError = true;
 
+		pMesh->BeginGetMeshEdgeIndexForPolygon();
+
 		// Build polygons
 		int polygonVertexStartIndex = 0;
 		for (int i = 0; i < polygonCount; i++)
@@ -455,7 +469,11 @@ public:
 				{
 					int j = vertexInPolygon[polygonFanVertex];
 					int vertexIndex = polygonVertexStartIndex + j;
+					int jNext = vertexInPolygon[(polygonFanVertex + 1) % 3];
+					int vertexIndexNext = polygonVertexStartIndex + jNext;
 					int controlPointIndex = controlPointIndices[polygonFanVertex];
+					bool reverseEdge = false;
+					int edgeIndex = pMesh->GetMeshEdgeIndex(vertexIndex, vertexIndexNext, reverseEdge);
 
 					// POSITION
 					auto controlPoint = sceneMapping->ConvertPointFromFbx(controlPoints[controlPointIndex]);
@@ -464,7 +482,7 @@ public:
 					// NORMAL
 					if (normalElement != NULL)
 					{
-						int normalIndex = GetGroupIndexForLayerElementTemplate(normalElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
+						int normalIndex = GetGroupIndexForLayerElementTemplate(normalElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto src_normal = normalElement->GetDirectArray().GetAt(normalIndex);
 						Vector3 normal = sceneMapping->ConvertNormalFromFbx(src_normal);
 						*(Vector3*)(vbPointer + normalOffset) = normal;
@@ -474,7 +492,7 @@ public:
 					for (int uvGroupIndex = 0; uvGroupIndex < (int)uvElements.size(); ++uvGroupIndex)
 					{
 						auto uvElement = uvElements[uvGroupIndex];
-						int uvIndex = GetGroupIndexForLayerElementTemplate(uvElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
+						int uvIndex = GetGroupIndexForLayerElementTemplate(uvElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto uv = uvElement->GetDirectArray().GetAt(uvIndex);
 
 						((float*)(vbPointer + uvOffsets[uvGroupIndex]))[0] = (float)uv[0];
@@ -509,7 +527,7 @@ public:
 					for (int elementColorIndex = 0; elementColorIndex < elementVertexColorCount; elementColorIndex++)
 					{
 						auto vertexColorElement = pMesh->GetElementVertexColor(elementColorIndex);
-						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(vertexColorElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto color = vertexColorElement->GetDirectArray().GetAt(groupIndex);
 						((Color*)(vbPointer + colorOffset))[elementColorIndex] = Color((float)color.mRed, (float)color.mGreen, (float)color.mBlue, (float)color.mAlpha);
 					}
@@ -520,7 +538,7 @@ public:
 					// SMOOTHINGGROUP
 					if (smoothingElement != NULL)
 					{
-						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, i, meshName, layerIndexFirstTimeError);
+						auto groupIndex = GetGroupIndexForLayerElementTemplate(smoothingElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto group = smoothingElement->GetDirectArray().GetAt(groupIndex);
 						((int*)(vbPointer + smoothingOffset))[0] = (int)group;
 					}
@@ -532,6 +550,7 @@ public:
 			polygonVertexStartIndex += polygonSize;
 		}
 
+		pMesh->EndGetMeshEdgeIndexForPolygon();
 
 		// Create submeshes
 		for (int i = 0; i < buildMeshes->Count; ++i)
@@ -1965,7 +1984,7 @@ public:
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAnimationsOnly());
 
 			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
-			return animationConverter->ProcessAnimation();
+			return animationConverter->ProcessAnimation(inputFilename, vfsOutputFilename);
 		}
 		finally
 		{
