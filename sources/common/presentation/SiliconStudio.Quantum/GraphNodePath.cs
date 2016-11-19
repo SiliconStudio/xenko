@@ -377,26 +377,46 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
+        // TODO: Switch to tuple return as soon as we have C# 7.0
         [NotNull]
-        public static GraphNodePath From(IGraphNode root, MemberPath memberPath)
+        public static GraphNodePath From(IGraphNode root, MemberPath memberPath, out Index index)
         {
             var result = new GraphNodePath(root);
-            foreach (var memberPathItem in memberPath.Decompose())
+            index = Index.Empty;
+            var memberPathItems = memberPath.Decompose();
+            for (int i = 0; i < memberPathItems.Count; i++)
             {
+                var memberPathItem = memberPathItems[i];
+                bool lastItem = i == memberPathItems.Count - 1;
                 if (memberPathItem.MemberDescriptor != null)
                 {
                     result = result.PushMember(memberPathItem.MemberDescriptor.Name);
                 }
                 else if (memberPathItem.GetIndex() != null)
                 {
-                    result = result.PushIndex(new Index(memberPathItem.GetIndex()));
+                    var localIndex = new Index(memberPathItem.GetIndex());
+
+                    if (lastItem)
+                    {
+                        // If last item, we directly return the index rather than add it to the path
+                        index = localIndex;
+                    }
+                    else
+                    {
+                        result = result.PushIndex(localIndex);
+                    }
                 }
 
-                var node = result.GetNode();
-                var objectReference = node.Content.Reference as ObjectReference;
-                if (objectReference?.TargetNode != null)
+                // Don't apply Target on last item
+                if (!lastItem)
                 {
-                    result = result.PushTarget();
+                    // If this is a reference, add a target element to the path
+                    var node = result.GetNode();
+                    var objectReference = node.Content.Reference as ObjectReference;
+                    if (objectReference?.TargetNode != null)
+                    {
+                        result = result.PushTarget();
+                    }
                 }
             }
 
