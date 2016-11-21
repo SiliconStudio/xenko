@@ -44,9 +44,17 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Gets the <see cref="IMemberDescriptor"/> with the specified name.
         /// </summary>
-        /// <param name="name">The name.</param>
+        /// <param name="name">The name of the member.</param>
         /// <returns>The member.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when a member </exception>
         IMemberDescriptor this[string name] { get; }
+
+        /// <summary>
+        /// Tries to get a member with the specified name. If nothing could be found, returns null.
+        /// </summary>
+        /// <param name="name">The name of the member.</param>
+        /// <returns>The member if found, otherwise [null].</returns>
+        IMemberDescriptor TryGetMember(string name);
 
         /// <summary>
         /// Gets a value indicating whether this instance is a compiler generated type.

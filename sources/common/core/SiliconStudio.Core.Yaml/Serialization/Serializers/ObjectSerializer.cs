@@ -284,7 +284,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return ReadMemberState.Skip;
             }
 
-            var memberAccessor = objectContext.Descriptor[memberName];
+            var memberAccessor = objectContext.Descriptor.TryGetMember(memberName);
 
             // If the member was remapped, store this in the context
             if (objectContext.Descriptor.IsMemberRemapped(memberName))
