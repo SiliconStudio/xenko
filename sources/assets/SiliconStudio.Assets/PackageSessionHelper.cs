@@ -17,9 +17,9 @@ namespace SiliconStudio.Assets
     internal partial class PackageSessionHelper
     {
         private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
-MinimumVisualStudioVersion = 10.0.40219.1";
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 14.0.23107.0";
 
         public static bool IsPackageFile(string filePath)
         {
