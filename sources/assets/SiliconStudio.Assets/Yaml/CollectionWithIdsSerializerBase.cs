@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// A structure containing the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary. 
         /// </summary>
-        protected class InstanceInfo
+        protected internal class InstanceInfo
         {
             public InstanceInfo(object instance, ITypeDescriptor typeDescriptor)
             {               
