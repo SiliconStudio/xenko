@@ -105,11 +105,19 @@ namespace SiliconStudio.Core.Reflection
             get
             {
                 if (mapMembers == null)
-                    return null;
+                    throw new KeyNotFoundException();
                 IMemberDescriptor member;
-                mapMembers.TryGetValue(name, out member);
-                return member;
+                return mapMembers[name];
             }
+        }
+
+        public IMemberDescriptor TryGetMember(string name)
+        {
+            if (mapMembers == null)
+                return null;
+            IMemberDescriptor member;
+            mapMembers.TryGetValue(name, out member);
+            return member;
         }
 
         public override string ToString()

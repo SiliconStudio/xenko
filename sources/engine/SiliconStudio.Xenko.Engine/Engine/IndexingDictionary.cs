@@ -155,15 +155,15 @@ namespace SiliconStudio.Xenko.Engine
 
         private void SafeSet(int index, T value)
         {
-            if (value == null)
-                return;
-
             while (items.Count <= index)
             {
                 items.Add(null);
             }
+
             if (items[index] == null)
                 ++Count;
+            if (value == null)
+                --Count;
 
             items[index] = value;
             keys = null;

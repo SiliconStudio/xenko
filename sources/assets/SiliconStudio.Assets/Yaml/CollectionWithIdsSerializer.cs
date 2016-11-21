@@ -94,7 +94,11 @@ namespace SiliconStudio.Core.Yaml
         protected override object TransformForSerialization(ITypeDescriptor descriptor, object collection)
         {
             var instance = CreatEmptyContainer(descriptor);
-            var identifier = CollectionItemIdHelper.GetCollectionItemIds(collection);
+            CollectionItemIdentifiers identifier;
+            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out identifier))
+            {
+                identifier = new CollectionItemIdentifiers();
+            }
             var i = 0;
             foreach (var item in (IEnumerable)collection)
             {

@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
 {

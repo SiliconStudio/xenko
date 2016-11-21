@@ -225,6 +225,10 @@ namespace SiliconStudio.Core.Reflection
                     throw new KeyNotFoundException("Unable to find the non-value type key in the dictionary of cloned keys.");
                 }
             }
+            foreach (var deletedItem in DeletedItems)
+            {
+                target.MarkAsDeleted(deletedItem);
+            }
         }
 
         public bool IsDeleted(ItemId itemId)

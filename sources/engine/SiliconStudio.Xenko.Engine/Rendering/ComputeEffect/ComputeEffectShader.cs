@@ -28,6 +28,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             EffectInstance = new DynamicEffectInstance("ComputeEffectShader", Parameters);
             EffectInstance.Initialize(context.Services);
 
+            // We give ComputeEffectShader a higher priority, since they are usually executed serially and blocking
+            EffectInstance.EffectCompilerParameters.TaskPriority = -1;
+
             ThreadNumbers = new Int3(1);
             ThreadGroupCounts = new Int3(1);
 

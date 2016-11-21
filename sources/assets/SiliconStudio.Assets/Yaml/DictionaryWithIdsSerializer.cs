@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
@@ -76,7 +75,11 @@ namespace SiliconStudio.Core.Yaml
             var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
             var instance = CreatEmptyContainer(descriptor);
 
-            var identifier = CollectionItemIdHelper.GetCollectionItemIds(collection);
+            CollectionItemIdentifiers identifier;
+            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out identifier))
+            {
+                identifier = new CollectionItemIdentifiers();
+            }
             var keyWithIdType = typeof(KeyWithId<>).MakeGenericType(dictionaryDescriptor.KeyType);
             foreach (var item in dictionaryDescriptor.GetEnumerator(collection))
             {

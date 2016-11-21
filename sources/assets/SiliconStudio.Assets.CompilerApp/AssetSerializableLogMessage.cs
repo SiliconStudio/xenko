@@ -43,5 +43,10 @@ namespace SiliconStudio.Assets.CompilerApp
         public int Line { get; set; }
 
         public int Character { get; set; }
+
+        public override string ToString()
+        {
+            return $"{AssetUrl}({Line},{Character}): {base.ToString()}";
+        }
     }
 }

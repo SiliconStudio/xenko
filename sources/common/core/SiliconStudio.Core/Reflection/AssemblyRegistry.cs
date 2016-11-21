@@ -79,12 +79,12 @@ namespace SiliconStudio.Core.Reflection
                 Assembly assembly;
                 if (AssemblyNameToAssembly.TryGetValue(assemblyName.Name, out assembly))
                 {
-                    return assembly.GetType(typeName, throwOnError);
+                    return assembly.GetType(typeName, throwOnError, false);
                 }
             }
 
             // Fallback to default lookup
-            return Type.GetType(fullyQualifiedTypeName, throwOnError);
+            return Type.GetType(fullyQualifiedTypeName, throwOnError, false);
         }
 
         /// <summary>

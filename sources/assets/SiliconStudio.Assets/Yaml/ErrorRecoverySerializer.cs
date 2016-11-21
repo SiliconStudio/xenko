@@ -64,11 +64,12 @@ namespace SiliconStudio.Core.Yaml
                         parsingEvents.Add(memoryParser.ParsingEvents[i]);
 
                     // Get typename (if available) and temporarily erase it from the parsing events for partial deserialization of base type
-                    string tag = null;
+                    string tag = "Unknown";
                     var firstNode = memoryParser.ParsingEvents[startPosition] as NodeEvent;
                     if (firstNode != null)
                     {
-                        tag = firstNode.Tag;
+                        if (firstNode.Tag != null)
+                            tag = firstNode.Tag;
 
                         // Temporarily recreate the node without its tag, so that we can try deserializing as many members as possible still
                         // TODO: Replace this with switch pattern matching (C# 7.0)
