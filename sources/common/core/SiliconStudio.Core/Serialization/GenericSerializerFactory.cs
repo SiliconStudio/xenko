@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Serialization
             DataSerializer dataSerializer;
             if (!serializersByType.TryGetValue(type, out dataSerializer))
             {
-                if (baseType.GetTypeInfo().IsAssignableFrom(type))
+                if (baseType.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
                 {
                     dataSerializer = (DataSerializer)Activator.CreateInstance(serializerGenericType.MakeGenericType(type));
                     selector.EnsureInitialized(dataSerializer);
