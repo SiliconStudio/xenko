@@ -491,7 +491,7 @@ namespace SiliconStudio.Assets.Quantum
 
 
             // Don't update override if propagation from base is disabled.
-            if (!PropertyGraph.Container.PropagateChangesFromBase)
+            if (PropertyGraph?.Container?.PropagateChangesFromBase == false)
                 return;
 
             // Mark it as New if it does not come from the base
@@ -510,7 +510,7 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 else
                 {
-                    SetOverride(OverrideType.New, removedId, itemOverrides);
+                    OverrideDeletedItem(true, removedId);
                 }
             }
         }
