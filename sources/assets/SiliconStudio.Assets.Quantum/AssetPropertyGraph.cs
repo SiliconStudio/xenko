@@ -43,9 +43,6 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
 
-            nodeListener.PrepareChange += PrepareChange;
-            nodeListener.Changing += Changing;
-            nodeListener.FinalizeChange += FinalizeChange;
             baseLinker = new AssetToBaseNodeLinker(this) { LinkAction = LinkBaseNode };
         }
 
@@ -64,17 +61,17 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> PrepareChange;
+        public event EventHandler<GraphContentChangeEventArgs> PrepareChange { add { nodeListener.PrepareChange += value; } remove { nodeListener.PrepareChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange;
+        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange { add { nodeListener.FinalizeChange += value; } remove { nodeListener.FinalizeChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> Changing;
+        public event EventHandler<GraphContentChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
