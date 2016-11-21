@@ -93,7 +93,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             CollectionItemIdentifiers oldIds = null;
             CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (!IsNonIdentifiableCollectionContent && TryGetCollectionItemIds(Content.Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
