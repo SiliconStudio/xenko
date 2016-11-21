@@ -344,6 +344,7 @@
     <Compile Include="Scripts\ScriptCodeAttribute.cs" />
     <Compile Include="Scripts\ScriptVariableReferenceAttribute.cs" />
     <Compile Include="Scripts\SlotGeneratorContext.cs" />
+    <Compile Include="Scripts\VirtualModifier.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />

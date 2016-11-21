@@ -33,6 +33,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DefaultValue(Accessibility.Public)]
         public Accessibility Accessibility { get; set; } = Accessibility.Public;
 
+        [DataMember(5)]
+        [DefaultValue(VirtualModifier.None)]
+        public VirtualModifier VirtualModifier { get; set; } = VirtualModifier.None;
+
         [DataMember(10)]
         [DefaultValue(false)]
         public bool IsStatic { get; set; }

@@ -534,9 +534,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
                 context.ProcessEntryBlock(functionStartBlock);
 
-                var methodAccessibility = ConvertAccessibility(method.Accessibility);
+                var methodModifiers = new SyntaxTokenList();
+                methodModifiers = ConvertAccessibility(methodModifiers, method.Accessibility);
+                methodModifiers = ConvertVirtualModifier(methodModifiers, method.VirtualModifier);
                 if (method.IsStatic)
-                    methodAccessibility = methodAccessibility.Add(Token(SyntaxKind.StaticKeyword));
+                    methodModifiers = methodModifiers.Add(Token(SyntaxKind.StaticKeyword));
 
                 var parameters = new List<SyntaxNodeOrToken>();
                 foreach (var parameter in method.Parameters)
@@ -555,7 +557,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     MethodDeclaration(
                         ParseTypeName(method.ReturnType),
                         Identifier(method.Name))
-                    .WithModifiers(methodAccessibility)
+                    .WithModifiers(methodModifiers)
                     .WithParameterList(ParameterList(
                         SeparatedList<ParameterSyntax>(parameters)))
                     .WithBody(
@@ -566,14 +568,15 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // Generate class
-            var classAccessibility = ConvertAccessibility(visualScriptAsset.Accessibility).Add(Token(SyntaxKind.PartialKeyword));
+            var classModifiers = new SyntaxTokenList();
+            classModifiers = ConvertAccessibility(classModifiers, visualScriptAsset.Accessibility).Add(Token(SyntaxKind.PartialKeyword));
             if (visualScriptAsset.IsStatic)
-                classAccessibility = classAccessibility.Add(Token(SyntaxKind.StaticKeyword));
+                classModifiers = classModifiers.Add(Token(SyntaxKind.StaticKeyword));
 
             var @class =
                 ClassDeclaration(className)
                 .WithMembers(List(members))
-                .WithModifiers(classAccessibility);
+                .WithModifiers(classModifiers);
 
             if (visualScriptAsset.BaseType != null)
                 @class = @class.WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(visualScriptAsset.BaseType)))));
@@ -608,22 +611,39 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return result;
         }
 
-        private static SyntaxTokenList ConvertAccessibility(Accessibility accessibity)
+        private static SyntaxTokenList ConvertAccessibility(SyntaxTokenList tokenList, Accessibility accessibity)
         {
             switch (accessibity)
             {
                 case Accessibility.Public:
-                    return TokenList(Token(SyntaxKind.PublicKeyword));
+                    return tokenList.Add(Token(SyntaxKind.PublicKeyword));
                 case Accessibility.Private:
-                    return TokenList(Token(SyntaxKind.PrivateKeyword));
+                    return tokenList.Add(Token(SyntaxKind.PrivateKeyword));
                 case Accessibility.Protected:
-                    return TokenList(Token(SyntaxKind.ProtectedKeyword));
+                    return tokenList.Add(Token(SyntaxKind.ProtectedKeyword));
                 case Accessibility.Internal:
-                    return TokenList(Token(SyntaxKind.InternalKeyword));
+                    return tokenList.Add(Token(SyntaxKind.InternalKeyword));
                 case Accessibility.ProtectedOrInternal:
-                    return TokenList(Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.InternalKeyword));
+                    return tokenList.Add(Token(SyntaxKind.ProtectedKeyword)).Add(Token(SyntaxKind.InternalKeyword));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(accessibity), accessibity, null);
+            }
+        }
+
+        private static SyntaxTokenList ConvertVirtualModifier(SyntaxTokenList tokenList, VirtualModifier virtualModifier)
+        {
+            switch (virtualModifier)
+            {
+                case VirtualModifier.None:
+                    return tokenList;
+                case VirtualModifier.Abstract:
+                    return tokenList.Add(Token(SyntaxKind.AbstractKeyword));
+                case VirtualModifier.Virtual:
+                    return tokenList.Add(Token(SyntaxKind.VirtualKeyword));
+                case VirtualModifier.Override:
+                    return tokenList.Add(Token(SyntaxKind.OverrideKeyword));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(virtualModifier), virtualModifier, null);
             }
         }
 
