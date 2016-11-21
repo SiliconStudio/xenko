@@ -8,7 +8,7 @@ using SDL2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GameControllerSDL : GameControllerDeviceBase
+    public class GameControllerSDL : GameControllerDeviceBase, IDisposable
     {
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
@@ -19,10 +19,10 @@ namespace SiliconStudio.Xenko.Input
         public GameControllerSDL(int deviceIndex)
         {
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
-            this.Id = SDL.SDL_JoystickGetGUID(joystick);
+            Id = Guid.NewGuid(); // Should be unique
+            ProductId = SDL.SDL_JoystickGetGUID(joystick); // Will identify the type of controller
             DeviceName = SDL.SDL_JoystickName(joystick);
-
-
+            
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
                 buttonInfos.Add(new GameControllerButtonInfo { Index = i, Name = $"Button {i}" });
@@ -39,26 +39,26 @@ namespace SiliconStudio.Xenko.Input
             InitializeButtonStates();
         }
         
-        public override void Dispose()
+        public void Dispose()
         {
-            if (!Disposed)
-            {
-                SDL.SDL_JoystickClose(joystick);
-                base.Dispose();
-            }
+            SDL.SDL_JoystickClose(joystick);
+            if (Disconnected == null)
+                throw new InvalidOperationException("Something should handle controller disconnect");
+            Disconnected.Invoke(this, null);
         }
 
         public override string DeviceName { get; }
         public override Guid Id { get; }
+        public override Guid ProductId { get; }
 
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
 
+        public event EventHandler Disconnected;
+
         public override void Update(List<InputEvent> inputEvents)
         {
-            if (Disposed)
-                return;
             if (SDL.SDL_JoystickGetAttached(joystick) == SDL.SDL_bool.SDL_FALSE)
             {
                 Dispose();

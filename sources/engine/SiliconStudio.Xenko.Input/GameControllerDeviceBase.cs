@@ -9,26 +9,13 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Base class for gamepads, contains common functionality for gamepad devices
     /// </summary>
-    public abstract class GameControllerDeviceBase : IGameControllerDevice, IDisposable
+    public abstract class GameControllerDeviceBase : IGameControllerDevice
     {
-        internal bool Disposed;
         protected bool[] ButtonStates;
         protected float[] AxisStates;
         protected float[] PovStates;
         protected bool[] PovEnabledStates;
         private readonly List<InputEvent> eventQueue = new List<InputEvent>();
-
-        /// <summary>
-        /// Marks the device as disconnected and calls <see cref="Disconnected"/>
-        /// </summary>
-        public virtual void Dispose()
-        {
-            if (!Disposed)
-            {
-                Disposed = true;
-                Disconnected?.Invoke(this, null);
-            }
-        }
 
         public abstract string DeviceName { get; }
 
@@ -43,8 +30,6 @@ namespace SiliconStudio.Xenko.Input
         public abstract IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; }
 
         public abstract IReadOnlyList<PovControllerInfo> PovControllerInfos { get; }
-        
-        public event EventHandler Disconnected;
 
         /// <summary>
         /// Creates the correct amount of states based on the amount of object infos that are set

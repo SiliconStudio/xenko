@@ -82,15 +82,11 @@ namespace SiliconStudio.Xenko.Input
             if (InputDevices.ContainsKey(deviceInstance.InstanceGuid))
                 throw new InvalidOperationException($"DirectInput GameController already opened {deviceInstance.InstanceGuid}/{deviceInstance.InstanceName}");
 
-            // Find gamepad layout
-            var layout = GamePadLayouts.FindLayout(this, deviceInstance.ProductName, deviceInstance.ProductGuid);
 
-            GameControllerDirectInput newController;
+            GameControllerDirectInput controller;
             try
             {
-                newController = (layout != null) ? 
-                    new GamePadDirectInput(inputManager, directInput, deviceInstance, layout) : 
-                    new GameControllerDirectInput(directInput, deviceInstance);
+                controller = new GameControllerDirectInput(directInput, deviceInstance);
             }
             catch (SharpDXException)
             {
@@ -98,12 +94,28 @@ namespace SiliconStudio.Xenko.Input
                 return;
             }
 
-            newController.Disconnected += (sender, args) =>
+            // Find gamepad layout
+            var layout = GamePadLayouts.FindLayout(this, controller);
+            if (layout != null)
             {
-                // Queue device for removal
-                devicesToRemove.Add(newController.Id);
-            };
-            RegisterDevice(newController);
+                // Creata a gamepad wrapping around the controller
+                var gamePad = new GamePadDirectInput(inputManager, controller, layout);
+                controller.Disconnected += (sender, args) =>
+                {
+                    // Queue device for removal
+                    devicesToRemove.Add(gamePad.Id);
+                };
+                RegisterDevice(gamePad); // Register gamepad instead
+            }
+            else
+            {
+                controller.Disconnected += (sender, args) =>
+                {
+                    // Queue device for removal
+                    devicesToRemove.Add(controller.Id);
+                };
+                RegisterDevice(controller);
+            }
         }
     }
 }

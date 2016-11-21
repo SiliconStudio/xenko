@@ -84,13 +84,30 @@ namespace SiliconStudio.Xenko.Input
             if (InputDevices.ContainsKey(joystickId))
                 throw new InvalidOperationException($"SDL GameController already opened {deviceIndex}/{joystickId}");
 
-            var newGamepad = new GameControllerSDL(deviceIndex);
-            newGamepad.Disconnected += (sender, args) =>
+            var controller = new GameControllerSDL(deviceIndex);
+
+            // Find gamepad layout
+            var layout = GamePadLayouts.FindLayout(this, controller);
+            if (layout != null)
             {
-                // Queue device for removal
-                devicesToRemove.Add(newGamepad.Id);
-            };
-            RegisterDevice(newGamepad);
+                // Creata a gamepad wrapping around the controller
+                var gamePad = new GamePadSDL(inputManager, controller, layout);
+                controller.Disconnected += (sender, args) =>
+                {
+                    // Queue device for removal
+                    devicesToRemove.Add(gamePad.Id);
+                };
+                RegisterDevice(gamePad); // Register gamepad instead
+            }
+            else
+            {
+                controller.Disconnected += (sender, args) =>
+                {
+                    // Queue device for removal
+                    devicesToRemove.Add(controller.Id);
+                };
+                RegisterDevice(controller);
+            }
         }
     }
 }

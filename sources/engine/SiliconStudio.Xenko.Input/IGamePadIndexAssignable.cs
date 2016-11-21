@@ -6,8 +6,8 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Internal interface used to assign gamepad index to a gamepad device
     /// </summary>
-    internal interface IGamePadIndexAssignable : IGameControllerDevice
+    internal interface IGamePadIndexAssignable : IGamePadDevice
     {
-        int Index { set; }
+        new int Index { get; set; }
     }
 }

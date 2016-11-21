@@ -84,13 +84,12 @@ namespace SiliconStudio.Xenko.Input
             InitializeButtonStates();
         }
         
-        public override void Dispose()
+        public void Dispose()
         {
-            if (!Disposed)
-            {
-                base.Dispose();
-                gamepad.Dispose();
-            }
+            gamepad.Dispose();
+            if(Disconnected == null)
+                throw new InvalidOperationException("Something should handle controller disconnect");
+            Disconnected.Invoke(this, null);
         }
 
         public override string DeviceName { get; }
@@ -100,11 +99,11 @@ namespace SiliconStudio.Xenko.Input
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
+        
+        public event EventHandler Disconnected;
 
         public override void Update(List<InputEvent> inputEvents)
         {
-            if (Disposed)
-                return;
             try
             {
                 gamepad.Acquire();

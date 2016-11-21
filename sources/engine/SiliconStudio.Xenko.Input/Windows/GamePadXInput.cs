@@ -4,59 +4,60 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SharpDX;
+using SharpDX.Text;
 using SharpDX.XInput;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadXInput : GameControllerDeviceBase, IGamePadDevice
+    public class GamePadXInput : GamePadDeviceBase, IDisposable
     {
         private readonly Controller controller;
         private State xinputState;
-        private GamePadState state;
         private short[] lastAxisState = new short[6];
-        private int index;
+        private GamePadState state = new GamePadState();
 
         public GamePadXInput(Controller controller, Guid id, int index)
         {
             this.controller = controller;
-            this.index = index;
+            SetIndexInternal(index);
             Id = id;
-            state = new GamePadState();
-            
-            InitializeButtonStates();
+
+            // Used to create a produc ID that is consistent with SDL2's method of generating them
+            // Taken from SDL 2.0.5 (src\joystick\windows\SDL_xinputjoystick.c:149)
+            var subType = controller.GetCapabilities(DeviceQueryType.Any).SubType;
+            var pidBytes = Encoding.ASCII.GetBytes("xinput").ToList();
+            pidBytes.Add((byte)subType);
+            while(pidBytes.Count < 16)
+                pidBytes.Add(0);
+            ProductId = new Guid(pidBytes.ToArray());
         }
 
-        public override string DeviceName => $"XInput Controller {index}";
-        public override Guid Id { get; }
-        public GamePadState State => state;
-
-        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; } = new GameControllerButtonInfo[] { };
-        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; } = new GameControllerAxisInfo[] { };
-        public override IReadOnlyList<PovControllerInfo> PovControllerInfos { get; } = new PovControllerInfo[] { };
-        
-        public int Index
+        public void Dispose()
         {
-            get { return index; }
-            set
-            {
-                index = value;
-                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = value, IsDeviceSideChange = false });
-            }
+            if (Disconnected == null)
+                throw new InvalidOperationException("Something should handle controller disconnect");
+            Disconnected.Invoke(this, null);
         }
 
-        public event EventHandler<GamePadIndexChangedEventArgs> IndexChanged;
+        public override string DeviceName => $"XInput GamePad {Index}";
+        public override Guid Id { get; }
+        public override Guid ProductId { get; }
+
+        public override GamePadState State
+        {
+            get { return state; }
+        }
+
+        public event EventHandler Disconnected;
 
         public override void Update(List<InputEvent> inputEvents)
         {
-            if (Disposed)
-                return;
-
-            if ((int)controller.UserIndex != index)
+            if ((int)controller.UserIndex != Index)
             {
-                index = (int)controller.UserIndex;
-                IndexChanged?.Invoke(this, new GamePadIndexChangedEventArgs { Index = index, IsDeviceSideChange = true });
+                SetIndexInternal((int)controller.UserIndex);
             }
 
             if (controller.GetState(out xinputState))
@@ -98,15 +99,10 @@ namespace SiliconStudio.Xenko.Input
             {
                 Dispose();
             }
-
-            // Fire events
-            base.Update(inputEvents);
         }
 
         public void SetVibration(float leftMotor, float rightMotor)
         {
-            if (Disposed)
-                return;
             try
             {
                 leftMotor = MathUtil.Clamp(leftMotor, 0.0f, 1.0f);
@@ -124,7 +120,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        public void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
+        public override void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {
             SetVibration((smallLeft + largeLeft) * 0.5f, (smallRight + largeRight) * 0.5f);
         }

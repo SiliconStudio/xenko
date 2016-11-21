@@ -5,24 +5,16 @@ using System;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadIndexChangedEventArgs : EventArgs
-    {
-        /// <summary>
-        /// New device index
-        /// </summary>
-        public int Index;
-
-        /// <summary>
-        /// if <c>true</c>, this change was initiate by the device
-        /// </summary>
-        public bool IsDeviceSideChange;
-    }
-
     /// <summary>
     /// A more specific type of <see cref="IGameControllerDevice"/> that has a fixed button mapping and supports vibration
     /// </summary>
-    public interface IGamePadDevice : IGameControllerDevice
+    public interface IGamePadDevice : IInputDevice
     {
+        /// <summary>
+        /// Product Id of the device
+        /// </summary>
+        Guid ProductId { get; }
+
         /// <summary>
         /// The state of the gamepad
         /// </summary>

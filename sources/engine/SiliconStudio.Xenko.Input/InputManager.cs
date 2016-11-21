@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the first gamepad that was added to the device
         /// </summary>
-        public IGameControllerDevice DefaultGamePad { get; private set; }
+        public IGamePadDevice DefaultGamePad { get; private set; }
 
         /// <summary>
         /// Gets the collection of connected game controllers

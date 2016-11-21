@@ -76,9 +76,12 @@
     <Compile Include="DeviceChangedEventType.cs" />
     <Compile Include="GamePadAxisEvent.cs" />
     <Compile Include="GamePadButtonEvent.cs" />
+    <Compile Include="GamePadDeviceBase.cs" />
+    <Compile Include="GamePadIndexChangedEventArgs.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutDS4.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
+    <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="Gestures\AxisButtonGesture.cs" />
     <Compile Include="Gestures\AxisGestureEventArgs.cs" />
     <Compile Include="Gestures\ButtonGestureBase.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="GameControllerButtonType.cs" />
     <Compile Include="GameControllerObjectInfo.cs" />
     <Compile Include="PointerPoint.cs" />
+    <Compile Include="SDL\GamePadSDL.cs" />
     <Compile Include="SurfaceSizeChangedEventArgs.cs" />
     <Compile Include="PovControllerEvent.cs" />
     <Compile Include="PovControllerInfo.cs" />

@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Input
         {
             // Add default layouts
             AddLayout(new GamePadLayoutDS4());
+            AddLayout(new GamePadLayoutXInput());
         }
 
         /// <summary>
@@ -34,13 +35,14 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Finds a layout matching the given gamepad
         /// </summary>
+        /// <param name="source">The source that the <paramref name="device"/> came from</param>
         /// <param name="device">The device to find a layout for</param>
         /// <returns>The gamepad layout that was found, or null if none was found</returns>
-        public static GamePadLayout FindLayout(IInputSource source, string deviceName, Guid productId)
+        public static GamePadLayout FindLayout(IInputSource source, IGameControllerDevice device)
         {
             foreach (var layout in layouts)
             {
-                if (layout.MatchDevice(source, deviceName, productId))
+                if (layout.MatchDevice(source, device))
                     return layout;
             }
             return null;

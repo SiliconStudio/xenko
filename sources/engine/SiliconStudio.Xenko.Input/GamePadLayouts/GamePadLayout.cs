@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Input
 
         private List<GamePadButton> buttonMap = new List<GamePadButton>();
         private List<MappedAxis> axisMap = new List<MappedAxis>();
-        
+
         /// <summary>
         /// Compares a product id
         /// </summary>
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Input
             byte[] aBytes = a.ToByteArray();
             byte[] bBytes = b.ToByteArray();
             byteOffset = MathUtil.Clamp(byteOffset, 0, aBytes.Length);
-            numBytes = MathUtil.Clamp(byteOffset+numBytes, 0, aBytes.Length) - byteOffset;
+            numBytes = MathUtil.Clamp(byteOffset + numBytes, 0, aBytes.Length) - byteOffset;
             for (int i = byteOffset; i < numBytes; i++)
                 if (aBytes[i] != bBytes[i]) return false;
             return true;
@@ -43,15 +43,15 @@ namespace SiliconStudio.Xenko.Input
         /// Checks if a device matches this gamepad layout, and thus should use this when mapping it to a <see cref="GamePadState"/>
         /// </summary>
         /// <param name="source">Source that this device comes from</param>
-        /// <param name="deviceName">Friendly name of the device</param>
-        /// <param name="productId">Product or implementation specific ID for the device</param>
-        public abstract bool MatchDevice(IInputSource source, string deviceName, Guid productId);
+        /// <param name="device">The device to match</param>
+        public abstract bool MatchDevice(IInputSource source, IGameControllerDevice device);
 
         /// <summary>
         /// Allows the user to perform some additional setup operations when using this layout on a device
         /// </summary>
-        /// <param name="device"></param>
-        public virtual void InitializeDevice(IGamePadDevice device)
+        /// <param name="targetDevice">The gamepad that events are mapped to</param>
+        /// <param name="sourceDevice">The game controller that is mapped to a gamepad</param>
+        public virtual void InitializeDevice(IGamePadDevice targetDevice, IGameControllerDevice sourceDevice)
         {
         }
 
@@ -59,10 +59,11 @@ namespace SiliconStudio.Xenko.Input
         /// Maps game controller events to gamepad events
         /// </summary>
         /// <returns>The equivalent gamepad event</returns>
-        /// <param name="device">The game controller that is mapped to a gamepad</param>
+        /// <param name="targetDevice">The gamepad that events are mapped to</param>
+        /// <param name="sourceDevice">The game controller that is mapped to a gamepad</param>
         /// <param name="controllerEvent">The controller input event as a source</param>
         /// <param name="target">Target list</param>
-        public virtual void MapInputEvent(IGamePadDevice device, InputEvent controllerEvent, List<InputEvent> target)
+        public virtual void MapInputEvent(IGamePadDevice targetDevice, IGameControllerDevice sourceDevice, InputEvent controllerEvent, List<InputEvent> target)
         {
             var buttonEvent = controllerEvent as GameControllerButtonEvent;
             if (buttonEvent != null)
@@ -72,7 +73,7 @@ namespace SiliconStudio.Xenko.Input
                     if (buttonMap[buttonEvent.Index] == GamePadButton.None)
                         return;
 
-                    GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(device);
+                    GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                     buttonEvent1.Button = buttonMap[buttonEvent.Index];
                     buttonEvent1.State = buttonEvent.State;
                     target.Add(buttonEvent1);
@@ -89,18 +90,24 @@ namespace SiliconStudio.Xenko.Input
                         if (mappedAxis.Axis == GamePadAxis.None)
                             return;
 
-                        GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(device);
+                        GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(targetDevice);
 
                         axisEvent1.Axis = mappedAxis.Axis;
                         if (mappedAxis.Invert)
                             axisEvent1.Value = -axisEvent.Value;
                         else
                             axisEvent1.Value = axisEvent.Value;
+                        if (mappedAxis.Remap)
+                        {
+                            axisEvent1.Value = (axisEvent1.Value + 1.0f) * 0.5f;
+                            if (axisEvent1.Value < 0.0001f)
+                                axisEvent1.Value = 0.0f;
+                        }
 
                         target.Add(axisEvent1);
                     }
                 }
-                else if(MapFirstPovToPad)
+                else if (MapFirstPovToPad)
                 {
                     var povEvent = controllerEvent as PovControllerEvent;
                     if (povEvent?.Index == 0)
@@ -111,9 +118,9 @@ namespace SiliconStudio.Xenko.Input
                         for (int i = 0; i < 4; i++)
                         {
                             int mask = (1 << i);
-                            if (((int)device.State.Buttons & mask) != ((int)targetButtons & mask))
+                            if (((int)targetDevice.State.Buttons & mask) != ((int)targetButtons & mask))
                             {
-                                GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(device);
+                                GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                                 buttonEvent1.Button = (GamePadButton)mask;
                                 buttonEvent1.State = ((int)targetButtons & mask) != 0 ? ButtonState.Down : ButtonState.Up;
                                 target.Add(buttonEvent1);
@@ -141,16 +148,18 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="index">The axis index of the axis on this device</param>
         /// <param name="axis">The axis/axes to map to</param>
         /// <param name="invert">Should axis be inverted</param>
-        protected void AddAxisMapping(int index, GamePadAxis axis, bool invert = false)
+        /// <param name="remap">Remap this axis from (-1,1) to (0,1)</param>
+        protected void AddAxisMapping(int index, GamePadAxis axis, bool invert = false, bool remap = false)
         {
-            while (axisMap.Count <= index) axisMap.Add(new MappedAxis { Axis = GamePadAxis.None, Invert = false });
-            axisMap[index] = new MappedAxis { Axis = axis, Invert = invert };
+            while (axisMap.Count <= index) axisMap.Add(new MappedAxis { Axis = GamePadAxis.None });
+            axisMap[index] = new MappedAxis { Axis = axis, Invert = invert, Remap = remap };
         }
 
         private struct MappedAxis
         {
             public GamePadAxis Axis;
             public bool Invert;
+            public bool Remap;
         }
     }
 }
