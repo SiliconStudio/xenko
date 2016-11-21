@@ -76,7 +76,7 @@ namespace SiliconStudio.Core.Yaml
             var instance = CreatEmptyContainer(descriptor);
 
             CollectionItemIdentifiers identifier;
-            if (CollectionItemIdHelper.TryGetCollectionItemIds(collection, out identifier))
+            if (!CollectionItemIdHelper.TryGetCollectionItemIds(collection, out identifier))
             {
                 identifier = new CollectionItemIdentifiers();
             }
