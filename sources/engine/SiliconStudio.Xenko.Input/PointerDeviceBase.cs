@@ -15,10 +15,10 @@ namespace SiliconStudio.Xenko.Input
     {
         protected readonly List<PointerInputEvent> PointerInputEvents = new List<PointerInputEvent>();
         protected readonly List<PointerData> PointerDatas = new List<PointerData>();
+
         private Vector2 surfaceSize;
-        private float aspectRatio;
         private Vector2 invSurfaceSize;
-        private Vector2 lastPrimaryPointerPosition;
+        private float aspectRatio;
         
         public abstract string DeviceName { get; }
         public abstract Guid Id { get; }
@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.Input
         public Vector2 SurfaceSize => surfaceSize;
         public Vector2 InverseSurfaceSize => invSurfaceSize;
         public float SurfaceAspectRatio => aspectRatio;
-        
+        public IReadOnlyList<PointerPoint> PointerPoints => PointerDatas;
+
         public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
 
         public virtual void Update(List<InputEvent> inputEvents)
@@ -44,40 +45,6 @@ namespace SiliconStudio.Xenko.Input
                 inputEvents.Add(ProcessPointerEvent(evt));
             }
             PointerInputEvents.Clear();
-        }
-
-        /// <summary>
-        /// Handles a single pointer down
-        /// </summary>
-        protected void HandlePointerDown()
-        {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Pressed, Position = lastPrimaryPointerPosition, Id = 0 });
-        }
-
-        /// <summary>
-        /// Handles a single pointer up
-        /// </summary>
-        protected void HandlePointerUp()
-        {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Released, Position = lastPrimaryPointerPosition, Id = 0 });
-        }
-
-        /// <summary>
-        /// Handles a single pointer move
-        /// </summary>
-        /// <param name="newPosition">New position of the pointer</param>
-        protected void HandleMove(Vector2 newPosition)
-        {
-            // Normalize position
-            newPosition *= invSurfaceSize;
-
-            if (newPosition == lastPrimaryPointerPosition)
-                return;
-
-            lastPrimaryPointerPosition = newPosition;
-
-            // Generate Event
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
         }
 
         /// <summary>
@@ -108,25 +75,25 @@ namespace SiliconStudio.Xenko.Input
 
             if (evt.Type == PointerEventType.Pressed)
             {
-                data.PointerClock.Restart();
-                data.Down = true;
+                data.Clock.Restart();
+                data.IsDown = true;
             }
             else if (evt.Type == PointerEventType.Released || evt.Type == PointerEventType.Canceled)
             {
-                data.Down = false;
+                data.IsDown = false;
             }
-
+            
             var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
             pointerEvent.Position = data.Position;
             pointerEvent.DeltaPosition = data.Delta;
-            pointerEvent.DeltaTime = data.PointerClock.Elapsed;
-            pointerEvent.IsDown = data.Down;
+            pointerEvent.DeltaTime = data.Clock.Elapsed;
+            pointerEvent.IsDown = data.IsDown;
             pointerEvent.PointerId = evt.Id;
             pointerEvent.PointerType = Type;
             pointerEvent.EventType = evt.Type;
 
             // Reset pointer clock
-            data.PointerClock.Restart();
+            data.Clock.Restart();
 
             return pointerEvent;
         }
@@ -135,35 +102,17 @@ namespace SiliconStudio.Xenko.Input
         {
             while (PointerDatas.Count <= pointerId)
             {
-                PointerDatas.Add(new PointerData());
+                PointerDatas.Add(new PointerData {Pointer = this});
             }
             return PointerDatas[pointerId];
         }
 
         /// <summary>
-        /// Some data kept for each pointer id(finger) or mouse(only 1 in that case)
+        /// Some additional data kept on top of <see cref="PointerPoint"/> for the purpose of generating <see cref="PointerEvent"/>s
         /// </summary>
-        protected class PointerData
+        protected class PointerData : PointerPoint
         {
-            /// <summary>
-            /// Time since last pointer event
-            /// </summary>
-            public Stopwatch PointerClock = new Stopwatch();
-
-            /// <summary>
-            /// Last known position
-            /// </summary>
-            public Vector2 Position = Vector2.Zero;
-
-            /// <summary>
-            /// Distance moved since last frame
-            /// </summary>
-            public Vector2 Delta;
-
-            /// <summary>
-            /// Down state of the pointer
-            /// </summary>
-            public bool Down;
+            public Stopwatch Clock = new Stopwatch();
         }
 
         /// <summary>

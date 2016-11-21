@@ -13,7 +13,7 @@ using UIKit;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class PointeriOS : PointerDeviceBase
+    public class PointeriOS : PointerDeviceBase, IDisposable
     {
         private XenkoGameController gameController;
         private iOSWindow uiControl;
@@ -37,9 +37,8 @@ namespace SiliconStudio.Xenko.Input
             OnResize(null, EventArgs.Empty);
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
             gameController.TouchesBeganDelegate -= Touched;
             gameController.TouchesMovedDelegate -= Touched;
             gameController.TouchesEndedDelegate -= Touched;

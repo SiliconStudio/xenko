@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -11,6 +12,11 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public interface IPointerDevice : IInputDevice
     {
+        /// <summary>
+        /// A list of pointer points currently active
+        /// </summary>
+        IReadOnlyList<PointerPoint> PointerPoints { get; }
+
         /// <summary>
         /// The type of the pointer device
         /// </summary>
@@ -27,7 +33,7 @@ namespace SiliconStudio.Xenko.Input
         float SurfaceAspectRatio { get; }
 
         /// <summary>
-        /// Raised when the sureface size of this pointer changed
+        /// Raised when the surface size of this pointer changed
         /// </summary>
         event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;
     }

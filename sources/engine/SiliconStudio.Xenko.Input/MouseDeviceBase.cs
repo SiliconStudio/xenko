@@ -14,11 +14,12 @@ namespace SiliconStudio.Xenko.Input
     {
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
         protected readonly List<InputEvent> EventQueue = new List<InputEvent>();
-        protected Vector2 position;
+        
+        private Vector2 lastPrimaryPointerPosition;
 
         public abstract bool IsPositionLocked { get; }
         
-        public Vector2 Position => position;
+        public Vector2 Position => lastPrimaryPointerPosition;
 
         public override PointerType Type => PointerType.Mouse;
         
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.Input
             if (PointerDatas.Count > 0)
             {
                 // Mouse position == first pointer position
-                position = PointerDatas[0].Position;
+                lastPrimaryPointerPosition = PointerDatas[0].Position;
             }
             
             // Collect events from queue
@@ -69,13 +70,13 @@ namespace SiliconStudio.Xenko.Input
             // Update delta
             data.Delta = delta;
             
-            data.PointerClock.Restart();
+            data.Clock.Restart();
 
             var pointerEvent = InputEventPool<PointerEvent>.GetOrCreate(this);
             pointerEvent.Position = data.Position;
             pointerEvent.DeltaPosition = data.Delta;
-            pointerEvent.DeltaTime = data.PointerClock.Elapsed;
-            pointerEvent.IsDown = data.Down;
+            pointerEvent.DeltaTime = data.Clock.Elapsed;
+            pointerEvent.IsDown = data.IsDown;
             pointerEvent.PointerId = 0;
             pointerEvent.PointerType = Type;
             pointerEvent.EventType = PointerEventType.Moved;
@@ -125,19 +126,37 @@ namespace SiliconStudio.Xenko.Input
             wheelEvent.WheelDelta = wheelDelta;
             EventQueue.Add(wheelEvent);
         }
-
-        protected struct MouseInputEvent
+        
+        /// <summary>
+        /// Handles a single pointer down
+        /// </summary>
+        protected void HandlePointerDown()
         {
-            public MouseButton Button;
-            public MouseInputEventType Type;
-            public float WheelDelta;
+            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Pressed, Position = lastPrimaryPointerPosition, Id = 0 });
         }
 
-        protected enum MouseInputEventType
+        /// <summary>
+        /// Handles a single pointer up
+        /// </summary>
+        protected void HandlePointerUp()
         {
-            Up,
-            Down,
-            Scroll,
+            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Released, Position = lastPrimaryPointerPosition, Id = 0 });
+        }
+
+        /// <summary>
+        /// Handles a single pointer move
+        /// </summary>
+        /// <param name="newPosition">New position of the pointer</param>
+        protected void HandleMove(Vector2 newPosition)
+        {
+            // Normalize position
+            newPosition *= InverseSurfaceSize;
+
+            if (newPosition == lastPrimaryPointerPosition)
+                return;
+
+            // Generate Event
+            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
         }
     }
 }

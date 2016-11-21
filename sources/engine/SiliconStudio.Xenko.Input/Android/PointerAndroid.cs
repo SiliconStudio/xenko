@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class PointerAndroid : PointerDeviceBase
+    public class PointerAndroid : PointerDeviceBase, IDisposable
     {
         private AndroidXenkoGameView uiControl;
         private Listener listener;
@@ -24,9 +24,8 @@ namespace SiliconStudio.Xenko.Input
             OnResize(this, null);
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            base.Dispose();
             uiControl.Resize -= OnResize;
             uiControl.SetOnTouchListener(null);
         }
