@@ -80,10 +80,13 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(EventReader eventReader, object value, Type expectedType, SerializerContextSettings contextSettings = null)
+        public object Deserialize(EventReader eventReader, object value, Type expectedType, out PropertyContainer contextProperties, SerializerContextSettings contextSettings = null)
         {
             var serializer = GetYamlSerializer();
-            return serializer.Deserialize(eventReader, expectedType, value, contextSettings);
+            SerializerContext context;
+            var result = serializer.Deserialize(eventReader, expectedType, value, contextSettings, out context);
+            contextProperties = context.Properties;
+            return result;
         }
 
         /// <summary>

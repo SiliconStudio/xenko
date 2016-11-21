@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Internal class used when serializing/deserializing an object.
     /// </summary>
-    internal class AssetObjectSerializerBackend : DefaultObjectSerializerBackend
+    public class AssetObjectSerializerBackend : DefaultObjectSerializerBackend
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private static readonly PropertyKey<YamlAssetPath> MemberPathKey = new PropertyKey<YamlAssetPath>("MemberPath", typeof(AssetObjectSerializerBackend));
