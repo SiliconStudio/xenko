@@ -94,7 +94,9 @@
     <Compile Include="Reflection\IObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
+    <Compile Include="Serialization\GenericSerializerFactory.cs" />
     <Compile Include="Serialization\NullSerializer.cs" />
+    <Compile Include="Serialization\SerializerFactory.cs" />
     <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.UWP.cs" />

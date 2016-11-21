@@ -52,7 +52,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -60,7 +62,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -68,7 +72,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -77,6 +83,7 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdentifiers ids;
             if (CanOverride && TryGetCollectionItemIds(Content.Retrieve(), out ids))
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, deletedId, itemOverrides);
                 if (isOverridden)
                 {
@@ -86,6 +93,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     ids.UnmarkAsDeleted(deletedId);
                 }
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -93,7 +101,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             CollectionItemIdentifiers oldIds = null;
             CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (!IsNonIdentifiableCollectionContent && TryGetCollectionItemIds(Content.Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
@@ -489,7 +497,6 @@ namespace SiliconStudio.Assets.Quantum
             // Mark it as New if it does not come from the base
             if (!baseNode?.contentUpdating == true && !ResettingOverride)
             {
-                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
                 {
                     if (e.Index == Index.Empty)
@@ -505,7 +512,6 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     SetOverride(OverrideType.New, removedId, itemOverrides);
                 }
-                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

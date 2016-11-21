@@ -65,7 +65,9 @@
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
+    <Compile Include="AssetLogger.cs" />
     <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
     <Compile Include="DynamicYaml\DynamicYaml.cs" />
@@ -93,7 +95,6 @@
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
-    <Compile Include="Serializers\KeyValuePairSerializer.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
@@ -274,6 +275,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\SearchDirection.cs" />
     <Compile Include="Serializers\YamlAssetProfile.cs" />
+    <Compile Include="UnloadableObjectRemover.cs" />
     <Compile Include="Yaml\AssetYamlSerializer.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
     <Compile Include="Yaml\CollectionWithIdsSerializerBase.cs" />
@@ -283,12 +285,15 @@
     <Compile Include="Yaml\DeletedKeyWithId.cs" />
     <Compile Include="Yaml\DictionaryWithIdsSerializer.cs" />
     <Compile Include="Yaml\DictionaryWithItemIds.cs" />
+    <Compile Include="Yaml\ErrorRecoverySerializer.cs" />
     <Compile Include="Yaml\IKeyWithId.cs" />
     <Compile Include="Yaml\ItemIdSerializer.cs" />
     <Compile Include="Yaml\ItemIdSerializerBase.cs" />
+    <Compile Include="Yaml\IUnloadable.cs" />
     <Compile Include="Yaml\KeyValuePairSerializer.cs" />
     <Compile Include="Yaml\KeyWithId.cs" />
     <Compile Include="Yaml\KeyWithIdSerializer.cs" />
+    <Compile Include="Yaml\UnloadableObjectInstantiator.cs" />
     <Compile Include="Yaml\YamlAssetPath.cs" />
   </ItemGroup>
   <ItemGroup>

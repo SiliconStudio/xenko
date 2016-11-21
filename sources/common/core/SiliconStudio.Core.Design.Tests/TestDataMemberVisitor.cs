@@ -211,7 +211,7 @@ namespace SiliconStudio.Core.Design.Tests
         public void TestSelfReferencingType()
         {
             var typeDescriptor = TypeDescriptorFactory.Default.Find(typeof(SelfRef));
-            Assert.AreEqual(typeDescriptor, typeDescriptor["Self"].TypeDescriptor);
+            Assert.AreEqual(typeDescriptor, typeDescriptor[nameof(SelfRef.Self)].TypeDescriptor);
         }
     }
 }

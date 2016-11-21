@@ -162,7 +162,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
 
                     // Set the member to Base.
-                    error.Member = (IMemberDescriptor)TypeDescriptorFactory.Default.Find(typeof(Asset))["Base"];
+                    error.Member = TypeDescriptorFactory.Default.Find(typeof(Asset)).TryGetMember("Base");
 
                     // Log the error
                     log.Log(error);

@@ -37,5 +37,16 @@ namespace SiliconStudio.Assets.CompilerApp
         public AssetId AssetId { get; set; }
 
         public UFile AssetUrl { get; set; }
+
+        public string File { get; set; }
+
+        public int Line { get; set; }
+
+        public int Character { get; set; }
+
+        public override string ToString()
+        {
+            return $"{AssetUrl}({Line},{Character}): {base.ToString()}";
+        }
     }
 }

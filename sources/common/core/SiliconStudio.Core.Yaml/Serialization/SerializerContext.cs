@@ -202,6 +202,15 @@ namespace SiliconStudio.Core.Yaml.Serialization
         }
 
         /// <summary>
+        /// Resolves a type and assembly from the full name.
+        /// </summary>
+        /// <param name="typeFullName">Full name of the type.</param>
+        public void ParseType(string typeFullName, out string typeName, out string assemblyName)
+        {
+            Serializer.Settings.AssemblyRegistry.ParseType(typeFullName, out typeName, out assemblyName);
+        }
+
+        /// <summary>
         /// Gets the default tag and value for the specified <see cref="Scalar" />. The default tag can be different from a actual tag of this <see cref="NodeEvent" />.
         /// </summary>
         /// <param name="scalar">The scalar event.</param>

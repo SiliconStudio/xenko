@@ -43,9 +43,6 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
 
-            nodeListener.PrepareChange += PrepareChange;
-            nodeListener.Changing += Changing;
-            nodeListener.FinalizeChange += FinalizeChange;
             baseLinker = new AssetToBaseNodeLinker(this) { LinkAction = LinkBaseNode };
         }
 
@@ -64,17 +61,17 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> PrepareChange;
+        public event EventHandler<GraphContentChangeEventArgs> PrepareChange { add { nodeListener.PrepareChange += value; } remove { nodeListener.PrepareChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange;
+        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange { add { nodeListener.FinalizeChange += value; } remove { nodeListener.FinalizeChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> Changing;
+        public event EventHandler<GraphContentChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
@@ -212,6 +209,7 @@ namespace SiliconStudio.Assets.Quantum
             var node = (AssetNode)e.Content.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
+                // For value change and remove, we store the current override state.
                 if (e.Index == Index.Empty)
                 {
                     overrideValue = node.GetContentOverride();
@@ -223,6 +221,7 @@ namespace SiliconStudio.Assets.Quantum
             }
             if (e.ChangeType == ContentChangeType.CollectionRemove)
             {
+                // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
                 var itemId = ItemId.Empty;
                 CollectionItemIdentifiers ids;
                 if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
@@ -251,14 +250,17 @@ namespace SiliconStudio.Assets.Quantum
             {
                 if (e.Index == Index.Empty)
                 {
+                    // No index, we're changing an object that is not in a collection, let's just retrieve it's override status.
                     overrideValue = node.GetContentOverride();
                 }
                 else
                 {
+                    // We're changing an item of a collection. If the collection has identifiable items, retrieve the override status of the item.
                     if (!node.IsNonIdentifiableCollectionContent)
                     {
                         overrideValue = node.GetItemOverride(e.Index);
                     }
+                    // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
                     CollectionItemIdentifiers ids;
                     if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Content.Retrieve(), out ids))
                     {

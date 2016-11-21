@@ -113,7 +113,7 @@ namespace SiliconStudio.Core.Yaml
                 var customDescriptor = (IMemberDescriptor)member.Tag;
                 if (customDescriptor == null)
                 {
-                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
+                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType()).TryGetMember(memberName);
                     member.Tag = customDescriptor;
                 }
 

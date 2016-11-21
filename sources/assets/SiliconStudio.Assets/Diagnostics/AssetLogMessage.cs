@@ -6,6 +6,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Diagnostics
 {
@@ -55,6 +56,60 @@ namespace SiliconStudio.Assets.Diagnostics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AssetLogMessage" /> class.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="assetReference">The asset reference.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="messageCode">The message code.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <exception cref="System.ArgumentNullException">asset</exception>
+        public AssetLogMessage(Package package, IReference assetReference, LogMessageType type, string text)
+        {
+            this.package = package;
+            AssetReference = assetReference;
+            Type = type;
+            Related = new List<IReference>();
+            Text = text;
+        }
+
+        public static AssetLogMessage From(Package package, IReference assetReference, ILogMessage logMessage, string assetPath, int line = 0, int character = 0)
+        {
+            // Transform to AssetLogMessage
+            var assetLogMessage = logMessage as AssetLogMessage;
+            if (assetLogMessage == null)
+            {
+                assetLogMessage = new AssetLogMessage(null, assetReference, logMessage.Type, AssetMessageCode.CompilationMessage, assetReference?.Location, logMessage.Text)
+                {
+                    Exception = (logMessage as LogMessage)?.Exception
+                };
+            }
+
+            // Set file (and location if available)
+            assetLogMessage.File = assetPath;
+            assetLogMessage.Line = line;
+            assetLogMessage.Character = character;
+
+            // Generate location (if it's a Yaml exception)
+            var yamlException = (logMessage as LogMessage)?.Exception as YamlException;
+            if (yamlException != null)
+            {
+                assetLogMessage.Line = yamlException.Start.Line;
+                assetLogMessage.Character = yamlException.Start.Column;
+                // We've already got everything, no need to pollute log with stack trace of exception
+                assetLogMessage.Exception = null;
+            }
+
+            return assetLogMessage;
+        }
+
+        public string File { get; set; }
+
+        public int Line { get; set; }
+
+        public int Character { get; set; }
+
+        /// <summary>
         /// Gets or sets the message code.
         /// </summary>
         /// <value>The message code.</value>
@@ -83,5 +138,14 @@ namespace SiliconStudio.Assets.Diagnostics
         /// </summary>
         /// <value>The related.</value>
         public List<IReference> Related { get; private set; }
+
+        public override string ToString()
+        {
+            var result = base.ToString();
+            if (AssetReference?.Location != null)
+                result = $"{AssetReference.Location}({Line + 1},{Character + 1}): {result}";
+
+            return result;
+        }
     }
 }

@@ -58,6 +58,11 @@ namespace SiliconStudio.Core.Yaml
         ParsingEvent Current { get; }
 
         /// <summary>
+        /// True if end of stream has been reached, false otherwise.
+        /// </summary>
+        bool IsEndOfStream { get; }
+
+        /// <summary>
         /// Moves to the next event.
         /// </summary>
         /// <returns>Returns true if there are more events available, otherwise returns false.</returns>

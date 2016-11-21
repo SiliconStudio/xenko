@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets.Tests
             AssetFileSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
-            var context = new AssetMigrationContext(null, logger);
+            var context = new AssetMigrationContext(null, loadingFilePath.ToReference(), loadingFilePath.FilePath.ToWindowsPath(), logger);
             Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(context, loadingFilePath, "TestPackage"), needMigration);
 
             if (needMigration)
