@@ -67,6 +67,7 @@
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetLogger.cs" />
     <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="AssetTracker.cs" />
     <Compile Include="BasePart.cs" />
     <Compile Include="CollectionIdGenerator.cs" />
     <Compile Include="DynamicYaml\DynamicYaml.cs" />
