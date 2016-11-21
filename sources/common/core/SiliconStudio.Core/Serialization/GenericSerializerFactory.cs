@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using SiliconStudio.Core.Storage;
+using System.Reflection;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -37,7 +38,7 @@ namespace SiliconStudio.Core.Serialization
             DataSerializer dataSerializer;
             if (!serializersByType.TryGetValue(type, out dataSerializer))
             {
-                if (baseType.IsAssignableFrom(type))
+                if (baseType.GetTypeInfo().IsAssignableFrom(type))
                 {
                     dataSerializer = (DataSerializer)Activator.CreateInstance(serializerGenericType.MakeGenericType(type));
                     selector.EnsureInitialized(dataSerializer);
