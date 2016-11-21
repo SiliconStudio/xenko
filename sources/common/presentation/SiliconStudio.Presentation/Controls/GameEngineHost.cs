@@ -3,13 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
 namespace SiliconStudio.Presentation.Controls
@@ -24,8 +25,10 @@ namespace SiliconStudio.Presentation.Controls
         private bool updateRequested;
         private int mouseMoveCount;
         private Point contextMenuPosition;
+        private DpiScale dpiScale;
         private Int4 lastBoundingBox;
         private bool attached;
+        private bool isDisposed;
 
         static GameEngineHost()
         {
@@ -41,7 +44,7 @@ namespace SiliconStudio.Presentation.Controls
             Handle = childHandle;
             MinWidth = 32;
             MinHeight = 32;
-            Loaded += OnLayoutUpdated;
+            Loaded += OnLoaded;
             Unloaded += OnUnloaded;
             LayoutUpdated += OnLayoutUpdated;
             IsVisibleChanged += OnIsVisibleChanged;
@@ -53,8 +56,29 @@ namespace SiliconStudio.Presentation.Controls
 
         public void Dispose()
         {
+            if (isDisposed)
+                return;
+
+            Loaded -= OnLoaded;
+            Unloaded -= OnUnloaded;
+            LayoutUpdated -= OnLayoutUpdated;
+            IsVisibleChanged -= OnIsVisibleChanged;
             NativeHelper.SetParent(Handle, IntPtr.Zero);
             NativeHelper.DestroyWindow(Handle);
+            isDisposed = true;
+        }
+
+        /// <inheritdoc />
+        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+        {
+            dpiScale = newDpi;
+            UpdateWindowPosition();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            Attach();
+            UpdateWindowPosition();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -64,8 +88,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void OnLayoutUpdated(object sender, EventArgs e)
         {
-            // Remark: this callback is invoked a lot. It is critical to do minimum work of no update is needed.
-            Attach();
+            // Remark: this callback is invoked a lot. It is critical to do minimum work if no update is needed.
             UpdateWindowPosition();
         }
 
@@ -85,50 +108,53 @@ namespace SiliconStudio.Presentation.Controls
 
         private void Attach()
         {
-            if (!attached)
-            {
-                var hwndParent = GetParentHwnd();
-                if (hwndParent == IntPtr.Zero)
-                    return;
+            if (attached)
+                return;
 
-                int style = NativeHelper.GetWindowLong(Handle, NativeHelper.GWL_STYLE);
-                // Removes Caption bar and the sizing border
-                // Must be a child window to be hosted
-                style |= NativeHelper.WS_CHILD;
+            var hwndSource = GetHwndSource();
+            if (hwndSource == null)
+                return;
+                
+            var hwndParent = hwndSource.Handle;
+            if (hwndParent == IntPtr.Zero)
+                return;
 
-                NativeHelper.SetWindowLong(Handle, NativeHelper.GWL_STYLE, style);
-                NativeHelper.ShowWindow(Handle, NativeHelper.SW_HIDE);
+            // Get current DPI
+            dpiScale = VisualTreeHelper.GetDpi(this);
 
-                // Update the parent to be the parent of the host
-                NativeHelper.SetParent(Handle, hwndParent);
+            var style = NativeHelper.GetWindowLong(Handle, NativeHelper.GWL_STYLE);
+            // Removes Caption bar and the sizing border
+            // Must be a child window to be hosted
+            style |= NativeHelper.WS_CHILD;
 
-                // Register keyboard sink to make shortcuts work
-                var source = PresentationSource.FromVisual(this) as IKeyboardInputSink;
-                if (source != null)
-                {
-                    ((IKeyboardInputSink)this).KeyboardInputSite = source.RegisterKeyboardInputSink(this);
-                }
-                attached = true;
-            }
+            NativeHelper.SetWindowLong(Handle, NativeHelper.GWL_STYLE, style);
+            NativeHelper.ShowWindow(Handle, NativeHelper.SW_HIDE);
+
+            // Update the parent to be the parent of the host
+            NativeHelper.SetParent(Handle, hwndParent);
+
+            // Register keyboard sink to make shortcuts work
+            ((IKeyboardInputSink)this).KeyboardInputSite = ((IKeyboardInputSink)hwndSource).RegisterKeyboardInputSink(this);
+            attached = true;
         }
 
         private void Detach()
         {
-            if (attached)
-            {
-                // Hide window, clear parent
-                NativeHelper.ShowWindow(Handle, NativeHelper.SW_HIDE);
-                NativeHelper.SetParent(Handle, IntPtr.Zero);
+            if (!attached)
+                return;
 
-                // Unregister keyboard sink
-                var site = ((IKeyboardInputSink)this).KeyboardInputSite;
-                ((IKeyboardInputSink)this).KeyboardInputSite = null;
-                site?.Unregister();
+            // Hide window, clear parent
+            NativeHelper.ShowWindow(Handle, NativeHelper.SW_HIDE);
+            NativeHelper.SetParent(Handle, IntPtr.Zero);
 
-                // Make sure we will actually attach next time Attach() is called
-                lastBoundingBox = Int4.Zero;
-                attached = false;
-            }
+            // Unregister keyboard sink
+            var site = ((IKeyboardInputSink)this).KeyboardInputSite;
+            ((IKeyboardInputSink)this).KeyboardInputSite = null;
+            site?.Unregister();
+
+            // Make sure we will actually attach next time Attach() is called
+            lastBoundingBox = Int4.Zero;
+            attached = false;
         }
 
         private void UpdateWindowPosition()
@@ -142,7 +168,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 updateRequested = false;
                 Visual root = null;
-                bool shouldShow = true;
+                var shouldShow = true;
                 var parent = (Visual)VisualTreeHelper.GetParent(this);
                 while (parent != null)
                 {
@@ -163,7 +189,7 @@ namespace SiliconStudio.Presentation.Controls
                 // Find proper position for the game
                 var positionTransform = TransformToAncestor(root);
                 var areaPosition = positionTransform.Transform(new Point(0, 0));
-                var boundingBox = new Int4((int)areaPosition.X, (int)areaPosition.Y, (int)ActualWidth, (int)ActualHeight);
+                var boundingBox = new Int4((int)(areaPosition.X*dpiScale.DpiScaleX), (int)(areaPosition.Y*dpiScale.DpiScaleY), (int)(ActualWidth*dpiScale.DpiScaleX), (int)(ActualHeight*dpiScale.DpiScaleY));
                 if (boundingBox == lastBoundingBox)
                     return;
 
@@ -301,10 +327,10 @@ namespace SiliconStudio.Presentation.Controls
             return IntPtr.Zero;
         }
 
-        private IntPtr GetParentHwnd()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private HwndSource GetHwndSource()
         {
-            var panelHwnd = (HwndSource)PresentationSource.FromVisual(this);
-            return panelHwnd?.Handle ?? IntPtr.Zero;
+            return (HwndSource)PresentationSource.FromVisual(this);
         }
 
         IKeyboardInputSite IKeyboardInputSink.RegisterKeyboardInputSink(IKeyboardInputSink sink)

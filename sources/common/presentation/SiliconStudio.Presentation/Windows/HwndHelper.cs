@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Windows
 {

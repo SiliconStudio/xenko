@@ -9,7 +9,8 @@ Hierarchy:
         - 738595eb-2075-4262-a286-307ad6019676
     Parts:
         -   UIElement: !ContentDecorator
-                DependencyProperties: {}
+                DependencyProperties:
+                    f429d4809559ff25f35a7bed1dbb630f*~GridBase.RowPropertyKey: 1
                 Id: 05b09889-2d22-43fd-b0f1-89f520b3913e
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -106,7 +107,8 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 18
         -   UIElement: !Button
-                DependencyProperties: {}
+                DependencyProperties:
+                    1a4051fdbaacf8ac0c6443bc63fdcd00*~GridBase.RowPropertyKey: 1
                 Id: 400204bb-f5df-46ab-a676-e45f1817e586
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -132,7 +134,8 @@ Hierarchy:
                 BasePartId: dab3aa68-8d2a-4ca6-98d1-2d105b28679f
                 InstanceId: 89152f56-4839-46bb-832e-639865f4eebb
         -   UIElement: !Button
-                DependencyProperties: {}
+                DependencyProperties:
+                    83073f5a465d48df0401f826d6890f61*~GridBase.ColumnPropertyKey: 1
                 Id: 45cab71f-f28c-44af-a372-1115c4720ded
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -455,7 +458,9 @@ Hierarchy:
                 BasePartId: bb0e5ff1-a42a-4aba-aae0-c000d6098595
                 InstanceId: 3fdc96e4-2f1a-489c-a286-625af39fd94f
         -   UIElement: !Button
-                DependencyProperties: {}
+                DependencyProperties:
+                    1ef9843b0f9ccad16e505646bf851e91*~GridBase.RowPropertyKey: 1
+                    cb1475499f0dbc1b28a40c0bbbd73617*~GridBase.ColumnPropertyKey: 1
                 Id: a0f440ef-a80f-4f0f-ba20-389111ccbade
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -503,7 +508,8 @@ Hierarchy:
                 Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ContentDecorator
-                DependencyProperties: {}
+                DependencyProperties:
+                    d0cc17d5d1875fcb4e3a60c8329d6611*~GridBase.RowPropertyKey: 2
                 Id: be7dac6e-2cd7-4942-ae90-29d9b0c70d87
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2

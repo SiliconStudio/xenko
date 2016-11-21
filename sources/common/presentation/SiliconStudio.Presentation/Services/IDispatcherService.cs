@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Threading.Tasks;
 
@@ -23,13 +24,6 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="callback">The callback to execute in the dispatcher thread.</param>
         /// <returns>The result returned by the executed callback.</returns>
         TResult Invoke<TResult>(Func<TResult> callback);
-
-        /// <summary>
-        /// Executes the given callback in the dispatcher thread. This method will run asynchronously and return immediately.
-        /// </summary>
-        /// <param name="callback">The callback to execute in the dispatcher thread.</param>
-        [Obsolete("Use InvokeAsync instead")]
-        void BeginInvoke(Action callback);
 
         /// <summary>
         /// Executes the given asynchronous function in the dispatcher thread. This method will run asynchronously and return immediately.
