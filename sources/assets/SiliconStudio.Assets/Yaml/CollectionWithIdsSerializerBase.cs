@@ -109,10 +109,13 @@ namespace SiliconStudio.Core.Yaml
             if (objectContext.SerializerContext.IsSerializing && objectContext.Instance != null)
             {
                 // Store deleted items in the context
-                var identifier = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                var deletedItems = identifier.DeletedItems.ToList();
-                deletedItems.Sort();
-                objectContext.Properties.Add(DeletedItemsKey, deletedItems);
+                CollectionItemIdentifiers identifier;
+                if (CollectionItemIdHelper.TryGetCollectionItemIds(objectContext.Instance, out identifier))
+                {
+                    var deletedItems = identifier.DeletedItems.ToList();
+                    deletedItems.Sort();
+                    objectContext.Properties.Add(DeletedItemsKey, deletedItems);
+                }
                 // We're serializing, transform the collection to a dictionary of <id, items>
                 objectContext.Instance = TransformForSerialization(objectContext.Descriptor, objectContext.Instance);
             }
