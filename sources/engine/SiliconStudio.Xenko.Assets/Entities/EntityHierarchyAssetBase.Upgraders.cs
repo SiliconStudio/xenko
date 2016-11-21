@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -298,17 +300,56 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var entity = entityDesign.Entity;
                     foreach (var component in entity.Components)
                     {
-                        var componentTag = component.Value.Node.Tag;
-                        if (componentTag == "!ModelComponent")
+                        try
                         {
-                            var materials = component.Value.Materials;
-                            var node = ((DynamicYamlMapping)materials).Node;
-                            var i = 0;
-                            foreach (var material in node.Children.ToList())
+                            var componentTag = component.Value.Node.Tag;
+                            if (componentTag == "!ModelComponent")
                             {
-                                node.Children.Remove(material.Key);
-                                node.Children.Add(new YamlScalarNode(((YamlScalarNode)material.Key).Value + '~' + i), material.Value);
-                                ++i;
+                                var materials = component.Value.Materials;
+                                var node = ((DynamicYamlMapping)materials).Node;
+                                var i = 0;
+                                foreach (var material in node.Children.ToList())
+                                {
+                                    node.Children.Remove(material.Key);
+                                    node.Children.Add(new YamlScalarNode(((YamlScalarNode)material.Key).Value + '~' + i), material.Value);
+                                    ++i;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                // Component list serialized with the old version (as a sequence with ~Id in each item)
+                                var componentTag = component.Node.Tag;
+                                if (componentTag == "!ModelComponent")
+                                {
+                                    var materials = component.Materials;
+                                    var node = ((DynamicYamlArray)materials).Node;
+                                    var i = -1;
+                                    dynamic newMaterial = new DynamicYamlMapping(new YamlMappingNode());
+                                    foreach (var material in node.Children.ToList())
+                                    {
+                                        ++i;
+                                        var reference = (YamlScalarNode)material;
+                                        if (reference.Value == "null") // Skip null
+                                            continue;
+
+                                        UFile location;
+                                        Guid referenceId;
+                                        AssetId assetReference;
+                                        if (AssetReference.TryParse(reference.Value, out assetReference, out location, out referenceId) && referenceId != Guid.Empty)
+                                        {
+                                            var itemId = ItemId.New();
+                                            newMaterial[itemId + "~" + i] = new AssetReference(assetReference, location);
+                                        }
+                                    }
+                                    component["Materials"] = newMaterial;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                e.Ignore();
                             }
                         }
                     }
