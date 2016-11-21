@@ -16,6 +16,11 @@ namespace SiliconStudio.Xenko.Input
         Vector2 Position { get; }
 
         /// <summary>
+        /// Mouse delta
+        /// </summary>
+        Vector2 Delta { get; }
+
+        /// <summary>
         /// Gets or sets if the mouse is locked to the screen
         /// </summary>
         bool IsPositionLocked { get; }

@@ -75,15 +75,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Mouse movement in device coordinates
         /// </summary>
-        public Vector2 AbsoluteMouseDelta
-        {
-            get
-            {
-                if (LastPointerDevice != null)
-                    return MouseDelta * LastPointerDevice.SurfaceSize;
-                return MouseDelta;
-            }
-        }
+        public Vector2 AbsoluteMouseDelta { get; private set; }
 
         /// <summary>
         /// Normalized mouse position
@@ -175,9 +167,14 @@ namespace SiliconStudio.Xenko.Input
             PointerEvents.Add(inputEvent);
 
             // Update position and delta from whatever device sends position updates
-            mousePosition = inputEvent.Position;
-            MouseDelta = inputEvent.DeltaPosition;
             LastPointerDevice = inputEvent.Pointer;
+
+            if (inputEvent.Device is IMouseDevice)
+            {
+                mousePosition = inputEvent.Position;
+                MouseDelta = inputEvent.DeltaPosition;
+                AbsoluteMouseDelta = MouseDelta * LastPointerDevice.SurfaceSize;
+            }
         }
 
         public void ProcessEvent(MouseButtonEvent inputEvent)

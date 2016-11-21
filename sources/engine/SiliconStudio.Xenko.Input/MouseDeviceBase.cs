@@ -15,11 +15,10 @@ namespace SiliconStudio.Xenko.Input
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
         protected readonly List<InputEvent> EventQueue = new List<InputEvent>();
         
-        private Vector2 lastPrimaryPointerPosition;
-
         public abstract bool IsPositionLocked { get; }
         
-        public Vector2 Position => lastPrimaryPointerPosition;
+        public Vector2 Position { get; set; }
+        public Vector2 Delta { get; set; }
 
         public override PointerType Type => PointerType.Mouse;
         
@@ -29,8 +28,8 @@ namespace SiliconStudio.Xenko.Input
 
             if (PointerDatas.Count > 0)
             {
-                // Mouse position == first pointer position
-                lastPrimaryPointerPosition = PointerDatas[0].Position;
+                // Update delta
+                Delta = PointerDatas[0].Delta;
             }
             
             // Collect events from queue
@@ -132,7 +131,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         protected void HandlePointerDown()
         {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Pressed, Position = lastPrimaryPointerPosition, Id = 0 });
+            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Pressed, Position = Position, Id = 0 });
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         protected void HandlePointerUp()
         {
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Released, Position = lastPrimaryPointerPosition, Id = 0 });
+            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Released, Position = Position, Id = 0 });
         }
 
         /// <summary>
@@ -152,11 +151,13 @@ namespace SiliconStudio.Xenko.Input
             // Normalize position
             newPosition *= InverseSurfaceSize;
 
-            if (newPosition == lastPrimaryPointerPosition)
-                return;
+            if (newPosition != Position)
+            {
+                Position = newPosition;
 
-            // Generate Event
-            PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
+                // Generate Event
+                PointerInputEvents.Add(new PointerInputEvent { Type = PointerEventType.Moved, Position = newPosition, Id = 0 });
+            }
         }
     }
 }
