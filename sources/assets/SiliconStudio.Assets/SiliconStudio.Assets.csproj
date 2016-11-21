@@ -94,7 +94,6 @@
     <Compile Include="Serializers\IAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
-    <Compile Include="Serializers\KeyValuePairSerializer.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
