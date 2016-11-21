@@ -15,7 +15,7 @@ using System.Windows.Media;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
-
+using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
 namespace SiliconStudio.Presentation.Controls

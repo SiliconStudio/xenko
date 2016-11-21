@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
@@ -163,10 +164,12 @@ namespace SiliconStudio.Xenko.Rendering
             if (compilerParameters == null) throw new ArgumentNullException("compilerParameters");
 
             // Setup compilation parameters
-            // GraphicsDevice might have been not valid until this point, which is why we set this only here
-            effectCompilerParameters.Platform = GraphicsDevice.Platform;
-            effectCompilerParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
-            compilerParameters.EffectParameters = effectCompilerParameters;
+            // GraphicsDevice might have been not valid until this point, which is why we compute platform and profile only at this point
+            compilerParameters.EffectParameters.Platform = GraphicsDevice.Platform;
+            compilerParameters.EffectParameters.Profile = GraphicsDevice.ShaderProfile ?? GraphicsDevice.Features.RequestedProfile;
+            // Copy optimization/debug levels
+            compilerParameters.EffectParameters.OptimizationLevel = effectCompilerParameters.OptimizationLevel;
+            compilerParameters.EffectParameters.Debug = effectCompilerParameters.Debug;
 
             // Get the compiled result
             var compilerResult = GetCompilerResults(effectName, compilerParameters);
@@ -178,7 +181,13 @@ namespace SiliconStudio.Xenko.Rendering
             if (bytecode.Task != null && !bytecode.Task.IsCompleted)
             {
                 // Result was async, keep it async
-                return bytecode.Task.ContinueWith(x => CreateEffect(effectName, x.Result, compilerResult));
+                // NOTE: There was some hangs when doing ContinueWith() (note: it might switch from EffectPriorityScheduler to TaskScheduler.Default, maybe something doesn't work well in this case?)
+                //       it seems that TaskContinuationOptions.ExecuteSynchronously is helping in this case (also it will force continuation to execute right away on the thread pool, which is probably better)
+                //       Not sure if the probably totally disappeared (esp. if something does a ContinueWith() externally on that) -- might need further investigation.
+                var result = bytecode.Task.ContinueWith(
+                    x => CreateEffect(effectName, x.Result, compilerResult),
+                    TaskContinuationOptions.ExecuteSynchronously);
+                return result;
             }
             else
             {
