@@ -8,6 +8,6 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract(Inherited = true)]
     public abstract class GraphicsCompositorCode
     {
-        
+        public abstract void Draw(RenderDrawContext renderContext);
     }
 }
