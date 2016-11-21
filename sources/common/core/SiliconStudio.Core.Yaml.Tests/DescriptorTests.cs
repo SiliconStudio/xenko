@@ -128,29 +128,29 @@ namespace SiliconStudio.Core.Yaml.Tests
             var instance = new TestObject {Name = "Yes", Property = "property"};
 
             // Check field accessor
-            Assert.AreEqual("Yes", descriptor["Name"].Get(instance));
-            descriptor["Name"].Set(instance, "No");
+            Assert.AreEqual("Yes", descriptor[nameof(TestObject.Name)].Get(instance));
+            descriptor[nameof(TestObject.Name)].Set(instance, "No");
             Assert.AreEqual("No", instance.Name);
 
             // Check property accessor
-            Assert.AreEqual("property", descriptor["Property"].Get(instance));
-            descriptor["Property"].Set(instance, "property1");
+            Assert.AreEqual("property", descriptor[nameof(TestObject.Property)].Get(instance));
+            descriptor[nameof(TestObject.Property)].Set(instance, "property1");
             Assert.AreEqual("property1", instance.Property);
 
             // Check ShouldSerialize
-            Assert.True(descriptor["Name"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.Name)].ShouldSerialize(instance));
 
-            Assert.False(descriptor["Value"].ShouldSerialize(instance));
+            Assert.False(descriptor[nameof(TestObject.Value)].ShouldSerialize(instance));
             instance.Value = 1;
-            Assert.True(descriptor["Value"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.Value)].ShouldSerialize(instance));
 
-            Assert.False(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.False(descriptor[nameof(TestObject.DefaultValue)].ShouldSerialize(instance));
             instance.DefaultValue++;
-            Assert.True(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.DefaultValue)].ShouldSerialize(instance));
 
             // Check HasSet
-            Assert.True(descriptor["Collection"].HasSet);
-            Assert.False(descriptor["CollectionReadOnly"].HasSet);
+            Assert.True(descriptor[nameof(TestObject.Collection)].HasSet);
+            Assert.False(descriptor[nameof(TestObject.CollectionReadOnly)].HasSet);
         }
 
         public class TestObjectNamingConvention

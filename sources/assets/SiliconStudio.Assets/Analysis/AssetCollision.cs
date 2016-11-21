@@ -20,6 +20,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="outputItems">The output items.</param>
         /// <param name="assetResolver">The asset resolver.</param>
         /// <param name="cloneInput">if set to <c>true</c> [clone input].</param>
+        /// <param name="removeUnloadableObjects">If set to <c>true</c>, assets will be cloned with <see cref="AssetClonerFlags.RemoveUnloadableObjects"/>.</param>
         /// <exception cref="System.ArgumentNullException">
         /// inputItems
         /// or
@@ -28,7 +29,7 @@ namespace SiliconStudio.Assets.Analysis
         /// assetResolver
         /// </exception>
         /// <exception cref="System.ArgumentException">List cannot contain null items;inputItems</exception>
-        public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
+        public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput, bool removeUnloadableObjects)
         {
             if (inputItems == null) throw new ArgumentNullException(nameof(inputItems));
             if (outputItems == null) throw new ArgumentNullException(nameof(outputItems));
@@ -43,7 +44,7 @@ namespace SiliconStudio.Assets.Analysis
             var items = inputItems;
             if (cloneInput)
             {
-                items = inputItems.Select(item => item.Clone()).ToList();
+                items = inputItems.Select(item => item.Clone(flags: removeUnloadableObjects ? AssetClonerFlags.RemoveUnloadableObjects : AssetClonerFlags.None)).ToList();
             }
 
             // idRemap should contain only assets that have either 1) their id remapped or 2) their location remapped

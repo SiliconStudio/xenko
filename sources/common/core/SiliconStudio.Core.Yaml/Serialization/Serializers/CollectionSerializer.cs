@@ -152,7 +152,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var index = 0;
             while (!reader.Accept<SequenceEnd>())
             {
-                    var currentDepth = objectContext.Reader.CurrentDepth;
+                var currentDepth = objectContext.Reader.CurrentDepth;
 
                 try
                 {

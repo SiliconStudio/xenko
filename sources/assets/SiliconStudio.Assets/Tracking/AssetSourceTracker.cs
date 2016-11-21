@@ -11,6 +11,7 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Tracking
 {
+    // TODO: Inherit from AssetTracker
     public sealed class AssetSourceTracker : IDisposable
     {
         private readonly PackageSession session;

@@ -78,13 +78,14 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
+                    RemoveUnloadableObjects = true,
                 };
 
                 // Loads the root Package
                 var projectSessionResult = PackageSession.Load(builderOptions.PackageFile, sessionLoadParameters);
+                projectSessionResult.CopyTo(builderOptions.Logger);
                 if (projectSessionResult.HasErrors)
                 {
-                    projectSessionResult.CopyTo(builderOptions.Logger);
                     return BuildResultCode.BuildError;
                 }
 
@@ -220,16 +221,13 @@ namespace SiliconStudio.Assets.CompilerApp
             var assetItem = (AssetItem)e.Step.Tag;
             var assetRef = assetItem.ToReference();
             var project = assetItem.Package;
-            var stepLogger = e.Logger is BuildStepLogger ? ((BuildStepLogger)e.Logger).StepLogger : null;
+            var stepLogger = e.Step.Logger;
+            // TODO: Big review of the log infrastructure of CompilerApp & BuildEngine!
             if (stepLogger != null)
             {
-                foreach (var message in stepLogger.Messages.Where(x => x.LogMessage.IsAtLeast(LogMessageType.Warning)))
+                foreach (var message in stepLogger.Messages.Where(x => x.IsAtLeast(LogMessageType.Warning)))
                 {
-                    var assetMessage = new AssetLogMessage(project, assetRef, message.LogMessage.Type, AssetMessageCode.CompilationMessage, assetRef.Location, message.LogMessage.Text)
-                    {
-                        Exception = message.LogMessage is LogMessage ? ((LogMessage)message.LogMessage).Exception : null
-                    };
-                    builderOptions.Logger.Log(assetMessage);
+                    builderOptions.Logger.Log(message);
                 }
             }
             switch (e.Step.Status)

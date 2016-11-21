@@ -777,7 +777,7 @@ namespace SiliconStudio.Assets
             try
             {
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath)) { CachedFileSize = filePath.Length };
-                var context = new AssetMigrationContext(null, log);
+                var context = new AssetMigrationContext(null, null, filePath, log);
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var loadResult = packageFile.AssetContent != null
@@ -882,7 +882,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public void ValidateAssets(bool alwaysGenerateNewAssetId, ILogger log)
+        public void ValidateAssets(bool alwaysGenerateNewAssetId, bool removeUnloadableObjects, ILogger log)
         {
             if (TemporaryAssets.Count == 0)
             {
@@ -904,7 +904,7 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true, removeUnloadableObjects);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
@@ -984,8 +984,6 @@ namespace SiliconStudio.Assets
             }
 
 
-            var context = new AssetMigrationContext(this, log);
-
             // Update step counter for log progress
             var tasks = new List<System.Threading.Tasks.Task>();
             for (int i = 0; i < assetFiles.Count; i++)
@@ -1001,8 +999,8 @@ namespace SiliconStudio.Assets
                 loggerResult?.Progress(progressMessage, i, assetFiles.Count);
 
                 var task = cancelToken.HasValue ?
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult), cancelToken.Value) : 
-                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult));
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(new AssetMigrationContext(this, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log), assetFile), cancelToken.Value) : 
+                    System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(new AssetMigrationContext(this, assetFile.ToReference(), assetFile.FilePath.ToWindowsPath(), log), assetFile));
 
                 tasks.Add(task);
             }
@@ -1025,7 +1023,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private void LoadAsset(AssetMigrationContext context, PackageLoadingAssetFile assetFile, LoggerResult loggerResult)
+        private void LoadAsset(AssetMigrationContext context, PackageLoadingAssetFile assetFile)
         {
             var fileUPath = assetFile.FilePath;
             var sourceFolder = assetFile.SourceFolder;
@@ -1096,22 +1094,8 @@ namespace SiliconStudio.Assets
                     column = yamlException.Start.Column;
                 }
 
-                var module = context.Log.Module;
-
                 var assetReference = new AssetReference(AssetId.Empty, fileUPath.FullPath);
-
-                // TODO: Change this instead of patching LoggerResult.Module, use a proper log message
-                if (loggerResult != null)
-                {
-                    loggerResult.Module = "{0}({1},{2})".ToFormat(Path.GetFullPath(fileUPath.FullPath), row, column);
-                }
-
                 context.Log.Error(this, assetReference, AssetMessageCode.AssetLoadingFailed, ex, fileUPath, ex.Message);
-
-                if (loggerResult != null)
-                {
-                    loggerResult.Module = module;
-                }
             }
         }
 
