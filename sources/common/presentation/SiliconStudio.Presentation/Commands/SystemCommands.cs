@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Commands
 {

@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Presentation.Interop
 {
     public static class NativeHelper
     {
@@ -61,7 +62,13 @@ namespace SiliconStudio.Presentation.Extensions
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowCmd uCmd);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr MonitorFromPoint(POINT lpPoint, int dwFlags);
+
+        [DllImport("user32.dll")]
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr lprcClip, MonitorEnumDelegate lpfnEnum, IntPtr dwData);
 
         [DllImport("user32.dll")]
         public static extern bool GetMonitorInfo(IntPtr hmonitor, [In, Out] MONITORINFO monitorInfo);
@@ -120,7 +127,7 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
 
-        #endregion Methods
+        #endregion // Methods
 
         #region Structures
 
@@ -155,6 +162,26 @@ namespace SiliconStudio.Presentation.Extensions
                 X = x;
                 Y = y;
             }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="POINT"/> to <see cref="Point"/>.
+            /// </summary>
+            /// <param name="p"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator Point(POINT p)
+            {
+                return new Point(p.X, p.Y);
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="Point"/> to <see cref="POINT"/>.
+            /// </summary>
+            /// <param name="p"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator POINT(Point p)
+            {
+                return new POINT((int)p.X, (int)p.Y);
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -168,6 +195,26 @@ namespace SiliconStudio.Presentation.Extensions
                 Top = top;
                 Right = right;
                 Bottom = bottom;
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="RECT"/> to <see cref="Rect"/>.
+            /// </summary>
+            /// <param name="r"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator Rect(RECT r)
+            {
+                return new Rect(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
+            }
+
+            /// <summary>
+            /// Performs an explicit conversion from <see cref="Rect"/> to <see cref="RECT"/>.
+            /// </summary>
+            /// <param name="r"></param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static explicit operator RECT(Rect r)
+            {
+                return new RECT((int)r.Left, (int)r.Top, (int)r.Right, (int)r.Bottom);
             }
         }
 
@@ -209,9 +256,15 @@ namespace SiliconStudio.Presentation.Extensions
             GetRootOwner = 3
         }
 
+        #endregion // Structures
+
+        #region Delegates
+
+        public delegate bool MonitorEnumDelegate(IntPtr hmonitor, IntPtr hdcMonitor, RECT lpRect, IntPtr dwData);
+
         public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
 
-        #endregion Structures
+        #endregion // Delegates
 
         #region Constants
 
@@ -525,6 +578,7 @@ namespace SiliconStudio.Presentation.Extensions
         public const int WM_XBUTTONDBLCLK = 0x020D;
         public const int WM_XBUTTONDOWN = 0x020B;
         public const int WM_XBUTTONUP = 0x020C;
+        public const int WM_DPICHANGED = 0x02E0; // Note: available since Windows 8.1
 
         public const uint EVENT_OBJECT_SHOW = 0x8002;
         public const uint EVENT_OBJECT_HIDE = 0x8003;
@@ -534,7 +588,7 @@ namespace SiliconStudio.Presentation.Extensions
         public const uint WINEVENT_OUTOFCONTEXT = 0;
         // ReSharper restore InconsistentNaming
 
-        #endregion Constants
+        #endregion // Constants
 
         public static bool SetCursorPos(Point pt)
         {
