@@ -43,6 +43,11 @@ namespace SiliconStudio.Assets.Quantum
             registeredGraphs.Add(assetId, graph);
         }
 
+        public bool UnregisterGraph(AssetId assetId)
+        {
+            return registeredGraphs.Remove(assetId);
+        }
+
         public AssetItem GetAssetById(AssetId assetId)
         {
             return session.FindAsset(assetId);
