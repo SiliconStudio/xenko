@@ -1,6 +1,6 @@
 !Package
 Id: 69972eae-e2a4-4a4f-9059-59063dbb633c
-SerializedVersion: {Assets: 0.0.3}
+SerializedVersion: {Assets: 0.0.4}
 Tags: []
 Meta:
     Name: GravitySensor
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.9.0-alpha01
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +19,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Shared
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: ec1eed7a-9f01-45ff-9bed-29ec8635b18a
                 Location: GravitySensor.Game/GravitySensor.Game.csproj
@@ -30,8 +29,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: 62dec7c9-c494-4f3b-8aa6-a58d61fb5e07
                 Location: GravitySensor.Windows/GravitySensor.Windows.csproj

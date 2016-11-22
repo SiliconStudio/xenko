@@ -1,6 +1,6 @@
 !Package
 Id: 8427ab2b-9e4b-42b1-ae0a-cc590bec6880
-SerializedVersion: {Assets: 0.0.3}
+SerializedVersion: {Assets: 0.0.4}
 Tags: []
 Meta:
     Name: SimpleAudio
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.9.0-alpha01
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -20,7 +20,6 @@ Profiles:
             -   Path: Assets/Shared
             -   Path: SimpleAudio.Game/Effects
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences:
             -   Id: 88b8b752-b70c-4a4d-8b4f-6d256efbf064
                 Location: SimpleAudio.Game/SimpleAudio.Game.csproj
@@ -31,8 +30,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Windows
         OutputGroupDirectories: {}
-        Properties:
-            Xenko.GraphicsPlatform: Direct3D11
         ProjectReferences:
             -   Id: 22223ce8-bd79-4ef4-abe7-7f4e5d45cd4c
                 Location: SimpleAudio.Windows/SimpleAudio.Windows.csproj
