@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.KeyUp += UIControlOnKeyUp;
         }
 
-        public override string DeviceName { get; } = "UWP Keyboard";
+        public override string Name { get; } = "UWP Keyboard";
         public override Guid Id { get; } = new Guid("64f10812-74a6-448e-8454-7b8e47f39cf4");
         
         void HandleKey(ButtonState state, KeyRoutedEventArgs args)

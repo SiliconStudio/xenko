@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Input
             SetSurfaceSize(new Vector2((float)uiControl.Width, (float)uiControl.Height));
         }
 
-        public override string DeviceName { get; } = "UWP Pointer";
+        public override string Name { get; } = "UWP Pointer";
         public override Guid Id { get; } = new Guid("9b1e36b6-de69-4313-89dd-7cbfbe1a436e");
         public override PointerType Type { get; } = PointerType.Unknown;
         

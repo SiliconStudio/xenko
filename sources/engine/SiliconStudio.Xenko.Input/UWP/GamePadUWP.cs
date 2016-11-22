@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input
             Gamepad = gamepad;
         }
 
-        public override string DeviceName => "UWP GamePad";
+        public override string Name => "UWP GamePad";
         public override Guid Id { get; }
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; } = new List<GameControllerButtonInfo>();
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; } = new List<GameControllerAxisInfo>();
