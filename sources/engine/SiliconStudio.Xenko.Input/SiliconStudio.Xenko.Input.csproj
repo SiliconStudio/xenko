@@ -82,6 +82,7 @@
     <Compile Include="GamePadLayouts\GameControllerDbLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
+    <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="Gestures\AxisButtonGesture.cs" />
     <Compile Include="Gestures\AxisGestureEventArgs.cs" />
     <Compile Include="Gestures\ButtonGestureBase.cs" />

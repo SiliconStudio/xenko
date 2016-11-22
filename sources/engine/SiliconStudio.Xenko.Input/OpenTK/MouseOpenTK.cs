@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.Resize -= GameWindowOnResize;
         }
 
-        public override string DeviceName => "OpenTK Mouse";
+        public override string Name => "OpenTK Mouse";
         public override Guid Id => new Guid("b9f9fd0c-b090-4826-9d6b-c1118bb7c2d0");
         public override bool IsPositionLocked => isMousePositionLocked;
 
