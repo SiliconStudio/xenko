@@ -144,6 +144,7 @@ namespace SiliconStudio.Xenko.Input
             ReleasedGamePadButtonEvents.Clear();
             MouseWheelDelta = 0;
             MouseDelta = Vector2.Zero;
+            AbsoluteMouseDelta = Vector2.Zero;
         }
 
         public void ProcessEvent(KeyEvent inputEvent)

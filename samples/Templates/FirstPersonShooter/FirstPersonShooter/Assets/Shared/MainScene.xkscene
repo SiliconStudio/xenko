@@ -5047,7 +5047,7 @@ Hierarchy:
                         ~Id: c43fea5c-5e1b-401c-8659-11bd77ee624c
                         DeadZone: 0.25
                         Camera: 49a3257d-dfbc-4a64-a8eb-cb4dfe647e67/79c1cebd-d690-4e7f-b9d1-d3a9197c95a2
-                        MouseSensitivity: 100.0
+                        MouseSensitivity: 0.1
                         KeysLeft:
                             - Left
                             - A
