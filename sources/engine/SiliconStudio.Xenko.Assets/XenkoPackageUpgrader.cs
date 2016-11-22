@@ -385,90 +385,20 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            //if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
-            //{
-            //    var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");
-            //    foreach (var assetFile in files.Select(x => x.AsYamlAsset()).NotNull().ToList())
-            //    {
-            //        using (var assetYaml = assetFile)
-            //        {
-            //            //UpdateCollectionNodes(assetYaml.RootNode);
-            //        }
-            //    }
-            //}
-
             if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
             {
-                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkpkg");
-                foreach (var assetFile in files)
+                // This upgrader just mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                foreach (var assetFile in assetFiles)
                 {
                     if (!IsYamlAsset(assetFile))
                         continue;
 
-                    using (var assetYaml = assetFile.AsYamlAsset())
-                    {
-                        if (assetYaml == null)
-                            continue;
-
-                        foreach (var profile in assetYaml.DynamicRootNode["Profiles"])
-                        {
-                            profile["Properties"] = DynamicYamlEmpty.Default;
-                        }
-                    }
+                    var assetYaml = assetFile.AsYamlAsset();
+                    assetYaml.Dispose();
                 }
             }
 
             return true;
-        }
-
-        private static YamlNode UpdateCollectionNodes(YamlNode node)
-        {
-            var mapping = node as YamlMappingNode;
-            if (mapping != null)
-            {
-                foreach (var child in mapping.ToList())
-                {
-                    var newNode = UpdateCollectionNodes(child.Value);
-                    if (newNode != child.Value)
-                        mapping.Children[child.Key] = newNode;
-                }
-            }
-
-            var sequence = node as YamlSequenceNode;
-            if (sequence != null)
-            {
-                var idMapping = new YamlMappingNode();
-
-                foreach (var child in sequence)
-                {
-                    UpdateCollectionNodes(child);
-                    var mappingChild = child as YamlMappingNode;
-                    if (mappingChild != null)
-                    {
-                        YamlNode idNode;
-                        var idKey = mappingChild.Children.FirstOrDefault(x => (x.Key as YamlScalarNode)?.Value == "~Id").Key;
-                        if (idKey != null)
-                        {
-                            idNode = mappingChild.Children[idKey];
-                            mappingChild.Children.Remove(idKey);
-                        }
-                        else
-                        {
-                            idNode = new YamlScalarNode(Guid.NewGuid().ToString());
-                        }
-                        idMapping.Children.Add(idNode, child);
-                    }
-                    else
-                    {
-                        var idNode = new YamlScalarNode(Guid.NewGuid().ToString());
-                        idMapping.Children.Add(idNode, child);
-                    }
-                }
-
-                return idMapping;
-            }
-
-            return node;
         }
 
         private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
