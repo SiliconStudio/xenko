@@ -22,7 +22,6 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<IContentNode, ItemId> removedItemIds = new Dictionary<IContentNode, ItemId>();
 
         protected readonly AssetItem AssetItem;
-        protected AssetPropertyGraphContainer Container;
         private readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
@@ -52,6 +51,8 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         public AssetNode RootNode { get; }
+
+        public AssetPropertyGraphContainer Container { get; }
 
         /// <summary>
         /// Gets or sets whether a property is currently being updated from a change in the base of this asset.
@@ -157,6 +158,10 @@ namespace SiliconStudio.Assets.Quantum
                 Index index;
                 bool overrideOnKey;
                 var node = rootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
+                // The node is unreachable, skip this override.
+                if (node == null)
+                    continue;
+
                 if (index == Index.Empty)
                 {
                     node.SetContentOverride(overrideInfo.Value);

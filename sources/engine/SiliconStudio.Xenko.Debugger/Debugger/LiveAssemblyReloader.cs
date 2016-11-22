@@ -104,7 +104,8 @@ namespace SiliconStudio.Xenko.Debugger
                 components.Add(newComponent);
 
             // Try to create component first
-            AssetYamlSerializer.Default.Deserialize(eventReader, components, typeof(EntityComponentCollection));
+            PropertyContainer properties;
+            AssetYamlSerializer.Default.Deserialize(eventReader, components, typeof(EntityComponentCollection), out properties);
             var component = components.Count == 1 ? components[0] : null;
             return component;
         }

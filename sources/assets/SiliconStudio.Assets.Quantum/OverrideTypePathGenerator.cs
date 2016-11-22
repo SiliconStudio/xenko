@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Quantum
                 inNonIdentifiableType++;
             }
 
-            var path = ConvertPath(currentPath);
+            var path = ConvertPath(currentPath, inNonIdentifiableType);
             if (assetNode.IsContentOverridden())
             {
                 Result.Add(path, assetNode.GetContentOverride());
@@ -55,7 +55,7 @@ namespace SiliconStudio.Assets.Quantum
                 inNonIdentifiableType--;
         }
 
-        private YamlAssetPath ConvertPath(GraphNodePath path)
+        public static YamlAssetPath ConvertPath(GraphNodePath path, int inNonIdentifiableType)
         {
             var currentNode = (AssetNode)path.RootNode;
             var result = new YamlAssetPath();

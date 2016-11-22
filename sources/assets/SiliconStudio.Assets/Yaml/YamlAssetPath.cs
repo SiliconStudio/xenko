@@ -68,6 +68,18 @@ namespace SiliconStudio.Core.Yaml
             items.Add(new Item(ItemType.ItemId, itemId));
         }
 
+        public void RemoveFirstItem()
+        {
+            for (var i = 1; i < items.Count; ++i)
+            {
+                items[i - 1] = items[i];
+            }
+            if (items.Count > 0)
+            {
+                items.RemoveAt(items.Count - 1);
+            }
+        }
+
         public YamlAssetPath Clone()
         {
             var clone = new YamlAssetPath();
@@ -172,6 +184,14 @@ namespace SiliconStudio.Core.Yaml
         {
             object actualKey;
             return IsCollectionWithIdType(type, key, out id, out actualKey);
+        }
+
+        public YamlAssetPath Append(YamlAssetPath other)
+        {
+            var result = new YamlAssetPath();
+            result.items.AddRange(items);
+            result.items.AddRange(other.items);
+            return result;
         }
     }
 }
