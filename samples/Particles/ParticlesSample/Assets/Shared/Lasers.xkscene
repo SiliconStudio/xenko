@@ -434,9 +434,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
         -   Entity:
                 Id: 2407431b-c342-4631-bc69-f2a5a3fdc6ae
                 Name: Entity
@@ -467,9 +464,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
         -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
             BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
             Entity:
@@ -487,9 +481,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -757,9 +748,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   Entity:
                 Id: 3cd47523-b870-4072-99cc-1793cacb7fe3
                 Name: Lightning Arc
@@ -938,9 +926,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   Entity:
                 Id: 3e165d22-3def-48eb-97b5-fbaee2f6fa1f
                 Name: Stand (10)
@@ -1007,9 +992,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
         -   Entity:
                 Id: 42102787-023a-480b-a3d1-2648b1f533bb
                 Name: Prefab
@@ -1038,9 +1020,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1247,9 +1226,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1475,9 +1451,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
         -   Entity:
                 Id: 5a991e37-7289-444f-9bbd-2cdf3640e578
                 Name: Stand (9)
@@ -1536,9 +1509,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1708,9 +1678,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
             BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
             Entity:
@@ -1728,9 +1695,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1764,9 +1728,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -1817,9 +1778,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2465,9 +2423,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
         -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
             BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
             Entity:
@@ -2485,9 +2440,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2555,9 +2507,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
         -   Entity:
                 Id: 9705ec6e-d8b1-4a4f-86f9-c70e943ceaa4
                 Name: Spinning Target
@@ -2589,9 +2538,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2642,9 +2588,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2942,9 +2885,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
             BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
             Entity:
@@ -2975,9 +2915,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3395,9 +3332,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
             BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
             Entity:
@@ -3418,9 +3352,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
             BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
             Entity:
@@ -3438,9 +3369,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -3474,9 +3402,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
-                        TimeFactor: 1.0
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -4208,9 +4133,6 @@ Hierarchy:
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
-                        TimeFactor: 0.8
         -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
             BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
             Entity:
@@ -4241,9 +4163,6 @@ Hierarchy:
                         Model: 27dfe22e-399a-4d41-ba27-63971f83792d/38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
                         Materials:
                             - null
-                    - !ParticlesSample.RotationScript,ParticlesSample.Game
-                        ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
-                        TimeFactor: 0.65
                     - !ParticlesSample.RotationScript,ParticlesSample.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
