@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -67,12 +65,22 @@ MyStrings:
     14000000140000001400000014000000: MyBaseString
 ";
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
             Assert.AreEqual("String2", context.BaseAsset.MyStrings[1]);
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("MyBaseString", context.DerivedAsset.MyStrings[1]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
@@ -80,6 +88,70 @@ MyStrings:
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
+        }
+
+        [Test]
+        public void TestCollectionMismatchId()
+        {
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+Id: 10000000-0000-0000-0000-000000000000
+Tags: []
+Struct:
+    MyStrings: {}
+MyStrings:
+    0a0000000a0000000a0000000a000000: String1
+    14000000140000001400000014000000: String2
+";
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
+Id: 20000000-0000-0000-0000-000000000000
+Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+Tags: []
+Struct:
+    MyStrings: {}
+MyStrings:
+    1a0000001a0000001a0000001a000000: String1
+    14000000140000001400000014000000: String2
+";
+            var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
+            Assert.AreEqual("String2", context.BaseAsset.MyStrings[1]);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
+            Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
+            Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(26), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
+            context.DerivedGraph.ReconcileWithBase();
+            Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
+            Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
+            Assert.AreEqual("String2", context.BaseAsset.MyStrings[1]);
+            Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
+            Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
+            Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
         }
 
         [Test]
@@ -106,6 +178,8 @@ MyStrings:
     14000000140000001400000014000000: String2
 ";
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
             Assert.AreEqual("String2.5", context.BaseAsset.MyStrings[1]);
@@ -113,6 +187,15 @@ MyStrings:
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), baseIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[2]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(3, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
@@ -122,6 +205,16 @@ MyStrings:
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String2.5", context.DerivedAsset.MyStrings[1]);
             Assert.AreEqual("String2", context.DerivedAsset.MyStrings[2]);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), baseIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[2]);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), derivedIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[2]);
         }
 
         [Test]
@@ -148,6 +241,8 @@ MyStrings:
     14000000140000001400000014000000: String3
 ";
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
             Assert.AreEqual("String3", context.BaseAsset.MyStrings[1]);
@@ -155,6 +250,15 @@ MyStrings:
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
             Assert.AreEqual("String3", context.DerivedAsset.MyStrings[2]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[2]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
@@ -162,10 +266,14 @@ MyStrings:
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String3", context.DerivedAsset.MyStrings[1]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            Assert.AreEqual(0, ids.DeletedCount);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds[1]);
         }
 
         [Test]
@@ -192,15 +300,23 @@ MyStrings:
     14000000140000001400000014000000: ~(Deleted)
 ";
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
             Assert.AreEqual("String3", context.BaseAsset.MyStrings[1]);
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String2", context.DerivedAsset.MyStrings[1]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            Assert.AreEqual(1, ids.DeletedCount);
-            Assert.True(ids.DeletedItems.Contains(IdentifierGenerator.Get(20)));
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds[1]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds.DeletedItems.Single());
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyStrings[0]);
@@ -208,10 +324,14 @@ MyStrings:
             Assert.AreEqual(2, context.DerivedAsset.MyStrings.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyStrings[0]);
             Assert.AreEqual("String3", context.DerivedAsset.MyStrings[1]);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            Assert.AreEqual(0, ids.DeletedCount);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds[1]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds[0]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds[1]);
         }
 
         [Test]
@@ -233,12 +353,22 @@ MyDictionary:
     14000000140000001400000014000000~Key2: MyBaseString
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.BaseAsset.MyDictionary["Key2"]);
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("MyBaseString", context.DerivedAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key2"]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -246,6 +376,14 @@ MyDictionary:
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key2"]);
         }
 
         [Test]
@@ -268,6 +406,8 @@ MyDictionary:
     14000000140000001400000014000000~Key2: String2
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2.5", context.BaseAsset.MyDictionary["Key2.5"]);
@@ -275,6 +415,15 @@ MyDictionary:
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), baseIds["Key2.5"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key2"]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(3, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -284,6 +433,16 @@ MyDictionary:
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2.5", context.DerivedAsset.MyDictionary["Key2.5"]);
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), baseIds["Key2.5"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), derivedIds["Key2.5"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key2"]);
         }
 
         [Test]
@@ -305,12 +464,22 @@ MyDictionary:
     15000000150000001500000015000000*~Key2: String3
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.BaseAsset.MyDictionary["Key2"]);
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key2"]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), derivedIds["Key2"]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -318,14 +487,15 @@ MyDictionary:
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key2"]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
-            var deletedItemId = ids["Key2"];
-            Assert.AreEqual(2, ids.KeyCount);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            Assert.AreEqual(2, ids.KeyCount);
-            Assert.AreEqual(1, ids.DeletedCount);
-            Assert.True(ids.IsDeleted(deletedItemId));
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key2"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(21), derivedIds["Key2"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds.DeletedItems.Single());
         }
 
         [Test]
@@ -348,6 +518,8 @@ MyDictionary:
     14000000140000001400000014000000~Key3: String3
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.BaseAsset.MyDictionary["Key3"]);
@@ -355,6 +527,15 @@ MyDictionary:
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2"]);
             Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key3"]);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key3"]);
+            Assert.AreEqual(3, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds["Key2"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key3"]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -362,10 +543,14 @@ MyDictionary:
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key3"]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key3"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key3"]);
         }
 
         [Test]
@@ -385,18 +570,26 @@ Tags: []
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     24000000240000002400000024000000~Key3: String2
-    14000000140000001400000014000000~Key2: ~(Deleted)
+    14000000140000001400000014000000~: ~(Deleted)
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.BaseAsset.MyDictionary["Key3"]);
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key3"]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            Assert.AreEqual(1, ids.DeletedCount);
-            Assert.True(ids.DeletedItems.Contains(IdentifierGenerator.Get(20)));
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds["Key3"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(1, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds["Key3"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds.DeletedItems.Single());
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(2, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -404,10 +597,14 @@ MyDictionary:
             Assert.AreEqual(2, context.DerivedAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.DerivedAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String3", context.DerivedAsset.MyDictionary["Key3"]);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds["Key3"]);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds["Key3"]);
         }
 
         [Test]
@@ -433,6 +630,8 @@ MyDictionary:
     34000000340000003400000034000000~Key4*: MyDerivedString
 ";
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(baseYaml, derivedYaml);
+            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
+            var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
             Assert.AreEqual("String2", context.BaseAsset.MyDictionary["Key2Renamed"]);
@@ -443,6 +642,18 @@ MyDictionary:
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2"]);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyDictionary["Key3"]);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyDictionary["Key4"]);
+            Assert.AreEqual(4, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds["Key2Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key3Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(52), baseIds["Key4Renamed"]);
+            Assert.AreEqual(4, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds["Key2"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key3"]);
+            Assert.AreEqual(IdentifierGenerator.Get(52), derivedIds["Key4"]);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(4, context.BaseAsset.MyDictionary.Count);
             Assert.AreEqual("String1", context.BaseAsset.MyDictionary["Key1"]);
@@ -453,10 +664,18 @@ MyDictionary:
             Assert.AreEqual("String2", context.DerivedAsset.MyDictionary["Key2Renamed"]);
             Assert.AreEqual("MyDerivedString", context.DerivedAsset.MyDictionary["Key3Renamed"]);
             Assert.AreEqual("String4", context.DerivedAsset.MyDictionary["Key4"]);
-            var ids = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
-            ids = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            Assert.AreEqual(0, ids.DeletedCount);
+            Assert.AreEqual(4, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), baseIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), baseIds["Key2Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), baseIds["Key3Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(52), baseIds["Key4Renamed"]);
+            Assert.AreEqual(4, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
+            Assert.AreEqual(IdentifierGenerator.Get(10), derivedIds["Key1"]);
+            Assert.AreEqual(IdentifierGenerator.Get(36), derivedIds["Key2Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(20), derivedIds["Key3Renamed"]);
+            Assert.AreEqual(IdentifierGenerator.Get(52), derivedIds["Key4"]);
         }
     }
 }
