@@ -92,9 +92,9 @@ namespace SiliconStudio.Xenko.Input
                 HandleMove(position);
             }
             
-            public void SimulatePointer(PointerEventType pointerEventType, Vector2 position)
+            public void SimulatePointer(PointerEventType pointerEventType, Vector2 position, int id = 0)
             {
-                PointerInputEvents.Add(new PointerInputEvent { Id = 0, Position = position, Type = pointerEventType });
+                PointerInputEvents.Add(new PointerInputEvent { Id = id, Position = position, Type = pointerEventType });
             }
 
             public void InjectPointerEvent(Vector2 position, Vector2 deltaPosition, TimeSpan delta, PointerEventType eventType, int id = 0, PointerType type = PointerType.Mouse)

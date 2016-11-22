@@ -173,8 +173,10 @@ namespace SiliconStudio.Xenko.Input
             if (inputEvent.Device is IMouseDevice)
             {
                 mousePosition = inputEvent.Position;
-                MouseDelta = inputEvent.DeltaPosition;
-                AbsoluteMouseDelta = MouseDelta * LastPointerDevice.SurfaceSize;
+
+                // Add deltas together, so nothing gets lost if a down events gets sent after a move event with the actual delta
+                MouseDelta += inputEvent.DeltaPosition;
+                AbsoluteMouseDelta += inputEvent.DeltaPosition * LastPointerDevice.SurfaceSize;
             }
         }
 

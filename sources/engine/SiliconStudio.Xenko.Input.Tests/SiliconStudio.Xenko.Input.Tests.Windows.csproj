@@ -158,6 +158,7 @@
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="SensorGameTest.cs" />
+    <Compile Include="TestInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
