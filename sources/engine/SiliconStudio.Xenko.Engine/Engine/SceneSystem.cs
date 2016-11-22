@@ -2,13 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 
+using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -23,16 +26,18 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneSystem");
+
         private RenderContext renderContext;
         private RenderDrawContext renderDrawContext;
+
+        private int previousWidth;
+        private int previousHeight;
 
         /// <summary>
         /// The main render frame of the scene system
         /// </summary>
         public RenderFrame MainRenderFrame { get; set; }
-
-        private int previousWidth;
-        private int previousHeight;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
@@ -58,6 +63,8 @@ namespace SiliconStudio.Xenko.Engine
         /// URL of the initial scene that should be used upon loading
         /// </summary>
         public string InitialSceneUrl { get; set; }
+
+        public ISceneGraphicsCompositor GraphicsCompositor => SceneInstance.Scene?.Settings.GraphicsCompositor;
 
         protected override void LoadContent()
         {
@@ -99,10 +106,7 @@ namespace SiliconStudio.Xenko.Engine
 
         public override void Update(GameTime gameTime)
         {
-            if (SceneInstance != null)
-            {
-                SceneInstance.Update(gameTime);
-            }
+            SceneInstance?.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
@@ -131,7 +135,30 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance.Draw(renderContext);
 
             // Render phase
-            SceneInstance.Draw(renderDrawContext, MainRenderFrame);
+            // TODO GRAPHICS REFACTOR
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+            try
+            {
+                // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
+                renderDrawContext.CommandList.ClearState();
+
+                if (GraphicsCompositor != null)
+                {
+                    // Push context (pop after using)
+                    using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
+                    using (renderDrawContext.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, MainRenderFrame))
+                    using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
+                    {
+                        GraphicsCompositor.Draw(renderDrawContext);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("An exception occurred while rendering", ex);
+            }
         }
     }
 }

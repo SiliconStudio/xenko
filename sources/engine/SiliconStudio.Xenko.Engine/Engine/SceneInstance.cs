@@ -4,17 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Xenko.Engine
@@ -24,8 +20,6 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public sealed class SceneInstance : EntityManager
     {
-        private static readonly Logger Log = GlobalLogger.GetLogger("SceneInstance");
-
         /// <summary>
         /// A property key to get the current scene from the <see cref="RenderContext.Tags"/>.
         /// </summary>
@@ -44,7 +38,6 @@ namespace SiliconStudio.Xenko.Engine
         private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
         private Scene previousScene;
         private Scene scene;
-        private RenderContext currentRenderContext;
 
         public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
 
@@ -127,68 +120,6 @@ namespace SiliconStudio.Xenko.Engine
         public static SceneInstance GetCurrent(RenderContext context)
         {
             return context.Tags.GetSafe(Current);
-        }
-
-        /// <summary>
-        /// Draws this scene instance with the specified context and <see cref="RenderFrame"/>.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="toFrame">To frame.</param>
-        /// <param name="compositorOverride">The compositor overload. Set this value to by-pass the default compositor of a scene.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// context
-        /// or
-        /// toFrame
-        /// </exception>
-        public void Draw(RenderDrawContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
-        {
-            if (context == null) throw new ArgumentNullException("context");
-            if (toFrame == null) throw new ArgumentNullException("toFrame");
-
-            // If no scene, then we can return immediately
-            if (Scene == null)
-            {
-                return;
-            }
-
-            var commandList = context.CommandList;
-
-            var previousRenderContext = currentRenderContext;
-            currentRenderContext = context.RenderContext;
-
-            // Update global time
-
-            // TODO GRAPHICS REFACTOR
-            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
-            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
-
-            try
-            {
-                // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
-                commandList.ClearState();
-
-                // Draw the main scene using the current compositor (or the provided override)
-                var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
-
-                if (graphicsCompositor != null)
-                {
-                    // Push context (pop after using)
-                    using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, toFrame))
-                    using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (context.RenderContext.PushTagAndRestore(Current, this))
-                    {
-                        graphicsCompositor.Draw(context);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("An exception occurred while rendering", ex);
-            }
-            finally
-            {
-                currentRenderContext = previousRenderContext;
-            }
         }
 
         public VisibilityGroup GetOrCreateVisibilityGroup(RenderSystem renderSystem)
@@ -318,11 +249,9 @@ namespace SiliconStudio.Xenko.Engine
                         var processor = CreateRenderProcessor(registeredRenderProcessorType.Value, visibilityGroup);
 
                         // Assume we are in middle of a compositor draw so we need to run it manually once (Update/Draw already happened)
-                        if (currentRenderContext != null)
-                        {
-                            processor.Update(currentRenderContext.Time);
-                            processor.Draw(currentRenderContext);
-                        }
+                        var renderContext = RenderContext.GetShared(Services);
+                        processor.Update(renderContext.Time);
+                        processor.Draw(renderContext);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
@@ -388,7 +317,7 @@ namespace SiliconStudio.Xenko.Engine
             SceneChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        class RegisteredRenderProcessors
+        private class RegisteredRenderProcessors
         {
             public Type Type;
             public FastListStruct<KeyValuePair<VisibilityGroup, EntityProcessor>> Instances;

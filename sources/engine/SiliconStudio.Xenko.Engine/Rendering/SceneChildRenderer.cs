@@ -77,11 +77,18 @@ namespace SiliconStudio.Xenko.Engine
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             var sceneInstance = GetChildSceneInstance();
-            if (sceneInstance == null)
+            if (sceneInstance?.Scene == null)
                 return;
 
             // Draw scene recursively
-            sceneInstance.Draw(context, output, GraphicsCompositorOverride);
+            using (context.RenderContext.PushTagAndRestore(SceneInstance.Current, sceneInstance))
+            using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, output))
+            using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, output))
+            {
+                // Draw scene recursively
+                var graphicsCompositor = GraphicsCompositorOverride ?? sceneInstance.Scene.Settings.GraphicsCompositor;
+                graphicsCompositor.Draw(context);
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine
 
         public override string ToString()
         {
-            return string.Format("Scene {0}", Name);
+            return $"Scene {Name}";
         }
     }
 }
