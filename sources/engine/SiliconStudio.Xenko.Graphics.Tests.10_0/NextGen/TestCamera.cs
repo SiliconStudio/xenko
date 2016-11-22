@@ -274,9 +274,9 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                 position += forward * (Input.MouseWheelDelta / 120) * translationSpeed;
             }
 
-            if (Input.HasGameController)
+            if (Input.HasGamePad)
             {
-                var state = Input.GetGamePad(0)?.State ?? new GamePadState();
+                var state = Input.DefaultGamePad.State;
 
                 if (state.LeftThumb.LengthSquared() > 0)
                 {

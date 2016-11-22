@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace MaterialSample
 {
@@ -22,6 +23,9 @@ namespace MaterialSample
 
         private CameraComponent CameraComponent { get { return Entity.Get<CameraComponent>(); } }
 
+        private CompositeGesture compositeGesture = new CompositeGesture();
+        private DragGesture dragGesture = new DragGesture();
+
         /// <summary>
         /// Create a new instance of scene camera.
         /// </summary>
@@ -38,13 +42,13 @@ namespace MaterialSample
             CameraComponent.UseCustomViewMatrix = true;
             OnWindowSizeChanged(this, EventArgs.Empty);
             
-            Input.ActivatedGestures.Add(new GestureConfigComposite());
-            Input.ActivatedGestures.Add(new GestureConfigDrag());
+            Input.ActivatedGestures.Add(compositeGesture);
+            Input.ActivatedGestures.Add(dragGesture);
 
             while (true)
             {
                 // Update rotation according to mouse deltas
-                var dragEvent = (GestureEventDrag)Input.GestureEvents.FirstOrDefault(e => e.Type == GestureType.Drag);
+                var dragEvent = (DragEventArgs) dragGesture.Events.FirstOrDefault();
                 if(dragEvent != null)
                 {
                     var direction = Input.HasMouse? -1f: 1f;
@@ -80,7 +84,7 @@ namespace MaterialSample
                     if (Input.IsKeyDown(Keys.Q))
                         position += up * translationSpeed;
                 }
-                var compositeEvent = (GestureEventComposite)Input.GestureEvents.FirstOrDefault(e=>e.Type == GestureType.Composite);
+                var compositeEvent = (CompositeEventArgs)compositeGesture.Events.FirstOrDefault();
                 if (compositeEvent != null)
                 {
                     position -= 2.5f * right * compositeEvent.DeltaTranslation.X;

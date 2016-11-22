@@ -39,9 +39,9 @@ namespace PhysicsSample
 
             foreach(var evt in Input.PointerEvents)
             { 
-                switch (evt.State)
+                switch (evt.EventType)
                 {
-                    case PointerState.Down:
+                    case PointerEventType.Pressed:
                         if (evt.Position.X < 0.5)
                         {
                             pointerVector = -Vector3.UnitX;
@@ -51,9 +51,8 @@ namespace PhysicsSample
                             pointerVector = Vector3.UnitX;
                         }
                         break;
-                    case PointerState.Up:
-                    case PointerState.Out:
-                    case PointerState.Cancel:
+                    case PointerEventType.Released:
+                    case PointerEventType.Canceled:
                         pointerVector = Vector3.Zero;
                         break;
                 }

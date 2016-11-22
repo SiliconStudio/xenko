@@ -208,7 +208,7 @@ namespace SpriteEntity
             if (Input.PointerEvents.Any())
             {
                 var lastPointer = Input.PointerEvents.Last();
-                isPointerDown = lastPointer.State != PointerState.Up;
+                isPointerDown = lastPointer.EventType != PointerEventType.Pressed;
                 pointerState = lastPointer;
             }
 

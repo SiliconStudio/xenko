@@ -52,7 +52,7 @@ namespace SimpleAudio
 
             while (Game.IsRunning)
             {
-                if (Input.PointerEvents.Any(item => item.State == PointerState.Down)) // New click
+                if (Input.PointerEvents.Any(item => item.EventType == PointerEventType.Pressed)) // New click
                 {
                     if (imgLeft != null && imgRight != null)
                     {

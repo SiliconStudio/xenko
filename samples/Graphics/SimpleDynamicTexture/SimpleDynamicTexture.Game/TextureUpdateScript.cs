@@ -103,7 +103,7 @@ namespace SimpleDynamicTexture
             {
                 var pixelPosition = pointerEvent.Position * new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
 
-                if (pointerEvent.State != PointerState.Down || !destinationRectangle.Contains(pixelPosition)) continue;
+                if (pointerEvent.EventType != PointerEventType.Pressed || !destinationRectangle.Contains(pixelPosition)) continue;
 
                 var relativePosition = (pixelPosition - destinationRectangle.TopLeft);
 

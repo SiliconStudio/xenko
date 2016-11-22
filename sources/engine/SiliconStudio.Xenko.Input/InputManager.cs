@@ -180,27 +180,27 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the collection of connected game controllers
         /// </summary>
-        public IReadOnlyCollection<IGameControllerDevice> GameControllers => gameControllerDevices;
+        public IReadOnlyList<IGameControllerDevice> GameControllers => gameControllerDevices;
 
         /// <summary>
         /// Gets the collection of connected gamepads
         /// </summary>
-        public IReadOnlyCollection<IGamePadDevice> GamePads => gamePadDevices;
+        public IReadOnlyList<IGamePadDevice> GamePads => gamePadDevices;
 
         /// <summary>
         /// Gets the collection of connected pointing devices (mouses, touchpads, etc)
         /// </summary>
-        public IReadOnlyCollection<IPointerDevice> Pointers => pointerDevices;
+        public IReadOnlyList<IPointerDevice> Pointers => pointerDevices;
 
         /// <summary>
         /// Gets the collection of connected keyboard inputs
         /// </summary>
-        public IReadOnlyCollection<IKeyboardDevice> Keyboards => keyboardDevices;
+        public IReadOnlyList<IKeyboardDevice> Keyboards => keyboardDevices;
 
         /// <summary>
         /// Gets the collection of connected sensor devices
         /// </summary>
-        public IReadOnlyCollection<ISensorDevice> Sensors => sensorDevices;
+        public IReadOnlyList<ISensorDevice> Sensors => sensorDevices;
 
         /// <summary>
         /// Gets or sets the mouse position.

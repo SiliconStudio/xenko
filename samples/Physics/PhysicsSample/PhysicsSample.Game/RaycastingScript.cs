@@ -20,7 +20,7 @@ namespace PhysicsSample
 
         public override void Update()
         {
-            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.State == PointerState.Down))
+            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.EventType == PointerEventType.Pressed))
             {
                 Raycast(pointerEvent.Position);
             }

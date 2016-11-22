@@ -58,12 +58,12 @@ namespace SiliconStudio.Xenko.Input
         public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
 
         /// <summary>
-        /// Game controller button press events that happened since the last frame
+        /// Gamepad button press events that happened since the last frame
         /// </summary>
         public readonly List<GamePadButtonEvent> PressedGamePadButtonEvents = new List<GamePadButtonEvent>();
 
         /// <summary>
-        /// Game controller button release events that happened since the last frame
+        /// Gamepad button release events that happened since the last frame
         /// </summary>
         public readonly List<GamePadButtonEvent> ReleasedGamePadButtonEvents = new List<GamePadButtonEvent>();
 

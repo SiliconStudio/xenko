@@ -10,14 +10,14 @@ namespace ThirdPersonPlatformer.Core
             if (input.GamePadCount < index)
                 return false;
 
-            return (input.GetGamePadState(index).Buttons & button) == button;
+            return (input.GetGamePad(index).State.Buttons & button) == button;
         }
 
         public static bool IsGamePadButtonDownAny(this InputManager input, GamePadButton button)
         {
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                if ((input.GetGamePadState(i).Buttons & button) == button)
+                if ((input.GetGamePad(i).State.Buttons & button) == button)
                     return true;
             }
 
@@ -26,7 +26,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePadState(index).LeftThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftThumb : Vector2.Zero;
         }
 
         public static Vector2 GetLeftThumbAny(this InputManager input, float deadZone)
@@ -35,7 +35,7 @@ namespace ThirdPersonPlatformer.Core
             Vector2 totalMovement = Vector2.Zero;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                var leftVector = input.GetGamePadState(i).LeftThumb;
+                var leftVector = input.GetGamePad(i).State.LeftThumb;
                 if (leftVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -48,7 +48,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePadState(index).RightThumb : Vector2.Zero;
+            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightThumb : Vector2.Zero;
         }
 
         public static Vector2 GetRightThumbAny(this InputManager input, float deadZone)
@@ -57,7 +57,7 @@ namespace ThirdPersonPlatformer.Core
             Vector2 totalMovement = Vector2.Zero;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                var rightVector = input.GetGamePadState(i).RightThumb;
+                var rightVector = input.GetGamePad(i).State.RightThumb;
                 if (rightVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -70,7 +70,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePadState(index).LeftTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePad(index).State.LeftTrigger : 0.0f;
         }
 
         public static float GetLeftTriggerAny(this InputManager input, float deadZone)
@@ -79,7 +79,7 @@ namespace ThirdPersonPlatformer.Core
             float totalInput = 0;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                float triggerValue = input.GetGamePadState(i).LeftTrigger;
+                float triggerValue = input.GetGamePad(i).State.LeftTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;
@@ -92,7 +92,7 @@ namespace ThirdPersonPlatformer.Core
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePadState(index).RightTrigger : 0.0f;
+            return input.GamePadCount >= index ? input.GetGamePad(index).State.RightTrigger : 0.0f;
         }
 
         public static float GetRightTriggerAny(this InputManager input, float deadZone)
@@ -101,7 +101,7 @@ namespace ThirdPersonPlatformer.Core
             float totalInput = 0;
             for (int i = 0; i < input.GamePadCount; i++)
             {
-                float triggerValue = input.GetGamePadState(i).RightTrigger;
+                float triggerValue = input.GetGamePad(i).State.RightTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;

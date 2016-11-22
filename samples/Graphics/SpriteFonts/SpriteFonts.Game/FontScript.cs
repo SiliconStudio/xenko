@@ -364,7 +364,7 @@ at full size and full measure";
         private void UpdateInput()
         {
             // Toggle play/not play
-            if (Input.IsKeyPressed(Keys.Space) || Input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down))
+            if (Input.IsKeyPressed(Keys.Space) || Input.PointerEvents.Any(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed))
             {
                 isPlaying = !isPlaying;
             }
