@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 54499ca6-4dce-4a6d-a89c-7239509ecc32
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -19,5 +19,4 @@ Hierarchy:
                     1ec9ef58454c934191e2f7b9a5848857: !ModelComponent
                         Id: 58efc91e-4c45-4193-91e2-f7b9a5848857
                         Model: 5c759e03-f13d-4962-b8f2-4ff82e154629:Models/standCurved
-                        Materials:
-                            9d3df8157d3a0341a024b0b25a517878: null
+                        Materials: {}

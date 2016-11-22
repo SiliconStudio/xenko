@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 096eb3c7-390c-4135-871f-3dc0a5a554b7
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,4 +20,4 @@ Hierarchy:
                         Id: d97125a5-1c54-4689-bbb5-925290159529
                         Model: bf9b6939-78ab-44b1-aee5-ea23202deb4a:Models/standBowl
                         Materials:
-                            b1bbdf41928556489f2772ba8d9d8fc7: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
+                            49e03984c6e09a4091d2940d5f28ee3b~0: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone

@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: b459d7d8-b0db-4862-8579-6a511f4a9fe5
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            6cf613db83fd1d4cab36caac4ed1a680: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false

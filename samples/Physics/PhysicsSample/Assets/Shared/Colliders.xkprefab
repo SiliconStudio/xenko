@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: e13cbc01-7701-438b-b6d4-c97e66098dd8
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -57,9 +57,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            983ab118a3175f17d7fc3ac51fcd3ae9: null
-                            371432fbca8edde9758dcc4b55bbd5dc: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -99,9 +97,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            77f21ef58dd952d8a70d2ca83247e78d: null
-                            5bc60249f1d80ffe7959d349715c0a99: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -163,9 +159,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            585945285011922d5d1ed1c7efe5ce6d: null
-                            4077bc8742565298d55cd0fd5001f4ca: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -216,9 +210,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            2b6bb1cd5c6bdd3c4e4b0c9ed49dae27: null
-                            26b28690e7a9f1c304b127df2d77f3e5: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -258,9 +250,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            a786b64725b3a3c294e2d8f59a9bc544: null
-                            cb2e6977b5f4671eb44e9f7ced53b393: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -300,9 +290,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            a49479d5d58824e0f1482b7f6dd43d07: null
-                            106fee1107c2914cc41f4b8e38698e38: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -364,9 +352,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            6d9492bf96edeaf5587cc4e442d0d70e: null
-                            5d606c6f393d2f9b4af112bb114e3f9d: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -439,9 +425,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            5cb5407de468fd111b0bd1a815e77bc7: null
-                            b4eb3a42dcbdc8a25cc6d04b05e7652d: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null
@@ -481,9 +465,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            52efce9fd5b282afa7b507826cad658c: null
-                            1bf2db5e87e1cd09a3a6be79c569274d: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null

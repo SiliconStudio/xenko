@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 86fed268-baa8-4929-9eba-4d14cf3a0e68
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 309ba45b-9be7-4963-bafd-4dcc6de36659
@@ -106,9 +106,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            91e988fb98295071e42689b7b7ce9ef6: null
-                            1c9eb0273af44a362f027d46724aedba: null
+                        Materials: {}
             Base:
                 BasePartAsset: 81d2f7ea-8b18-44ab-96fd-6a0383065606:CubePrefab
                 BasePartId: 7bab5198-56f2-4bda-8979-f5b7022b951a
@@ -147,9 +145,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            1ba0f4685ec37ae4015ad7f764a336f0: null
-                            c9ed7ac60196cc14d0fe2ff1d3333e7b: null
+                        Materials: {}
             Base:
                 BasePartAsset: 81d2f7ea-8b18-44ab-96fd-6a0383065606:CubePrefab
                 BasePartId: 7bab5198-56f2-4bda-8979-f5b7022b951a
@@ -188,9 +184,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            e7b209471e032f5078d5f15bc21c30c1: null
-                            1b4be38fdf4cb6f300c2c75a32805a1a: null
+                        Materials: {}
             Base:
                 BasePartAsset: 81d2f7ea-8b18-44ab-96fd-6a0383065606:CubePrefab
                 BasePartId: 7bab5198-56f2-4bda-8979-f5b7022b951a

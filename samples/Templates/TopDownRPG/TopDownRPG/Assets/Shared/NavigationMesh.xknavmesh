@@ -18,7 +18,7 @@ BuildSettings:
     DetailSamplingDistance: 2.0
     MaxDetailSamplingError: 2.0
 NavigationMeshAgentSettings:
-    aaca87b5dc5c92e7a949bd5187dfccb5:
+    3f7b038e8ad7994f154fe924a1a33e55:
         Height: 1.2
         Radius: 0.5
         MaxClimb: 0.3

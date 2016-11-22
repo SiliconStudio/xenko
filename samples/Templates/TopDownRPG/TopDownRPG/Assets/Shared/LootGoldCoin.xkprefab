@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 6064f3e4-a929-424b-abea-688419f05265
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -55,8 +55,7 @@ Hierarchy:
                     76eeb34856ae80488daf19410ab51cf5: !ModelComponent
                         Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
                         Model: 43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
-                        Materials:
-                            f572463f05836e40a6a3cb718894274a: null
+                        Materials: {}
                     5d7c980f639f67459b68a76d9fcdd82c: !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly

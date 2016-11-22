@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 81d2f7ea-8b18-44ab-96fd-6a0383065606
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -40,6 +40,4 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            8a6e417304c02045b6f5151fa24fbd58: null
-                            365b5181d7eb5b48bf9a91dca364e2f2: null
+                        Materials: {}

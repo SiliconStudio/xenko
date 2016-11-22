@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 98760599-6f0e-4c6b-9ba2-613e9d68d2e3
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 9ac91f45-563c-4140-8571-3d8e1e115d51
@@ -229,7 +229,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            11c5349ae9ee52d65cf86ec70b392c74: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -283,7 +283,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            ced71a5d929c47c3487d6066a5c20314: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -337,7 +337,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            f7ffe6c2246a68dbddc8f491704b2923: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -402,7 +402,7 @@ Hierarchy:
                         Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
                         Model: 898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
                         Materials:
-                            4e5c1bcb7ecf2a53bbc272e5dc55692e: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
                         CanSleep: false
@@ -445,7 +445,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            186898edc8337bd62e1cc8d58c7e51eb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -491,7 +491,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            60dfe00b249e1ffeffd7b1b59895a9d4: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -557,7 +557,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            516eeb8fef63bc44f2a858f6e7e9a21e: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -592,7 +592,7 @@ Hierarchy:
                         Id: 78a9584d-778f-4c72-8234-18b8b7f17537
                         Model: 6582abd6-3c78-4242-96be-4fe6e77c056e:Models/Wall0x2x2Window
                         Materials:
-                            f8514e2ff8706207d1142052bf3e6170: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
                         CanSleep: false
@@ -641,7 +641,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            ae4e634c1b027811430bf8dbccc54284: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -686,8 +686,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            a15a6d263797c90f08ba8c0c188500a5: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -756,7 +755,7 @@ Hierarchy:
                         Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
                         Model: 898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
                         Materials:
-                            ce599df0ec20a8033ba94e743a8a9643: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
                         CanSleep: false
@@ -799,7 +798,7 @@ Hierarchy:
                         Id: 3cc68925-4436-4c49-91c3-58778fd622b0
                         Model: b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
                         Materials:
-                            9580695c660d0fc0192cc8674fb8c146: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
                         Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
                         CanSleep: false
@@ -833,7 +832,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            f491db3a0d95ef82c137d33dda7242ff: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -867,7 +866,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            c09fc4765f98b136b1c6812a5c285785: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -921,7 +920,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            f8842744997f729f49ce5fec956434a0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -986,7 +985,7 @@ Hierarchy:
                         Id: 0105b31e-5f75-48c3-875a-c99fdd5672d7
                         Model: ea5bbb6a-d2b7-4181-81e1-5d9708a7782a:Models/Wall0x2x2
                         Materials:
-                            211bb2d7561235a0314d66ef24aa2337: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
                         CanSleep: false
@@ -1065,21 +1064,21 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             d0c20c3b287021419c9ea5b1cc3c4829: 7344be21-2d5c-4dac-9e4e-de64165bd922/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            293f4b3744ff6185a86a59020574c767: f59ba0c6-c5af-42db-a3d9-9aed569d2af0/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            81e3a0999e3c9017b77e8b7aca84cc81: fd2d034d-63f0-4c02-bfa5-3abd39b4ee34/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            bccd38a4e25924757e98d4d97150f897: 76e558a6-6053-43b1-aa0c-7b3f092fe284/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            21f5a1176723df14231f5318654d4e55: ccf51923-08da-4442-a863-9ea424c98700/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            89169a54539c59b16bd0bca06186ffc2: 5d3c6406-4005-4677-9076-3dfb8713a046/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            93d8e88981e642e2fa248b69930df32f: 2034dc46-f43e-4016-b7d6-88e67755bc47/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            706e52481a4a0ef6907b414728b3d1e0: c5cdd92b-2cf1-4e6b-b42f-3586e10091cf/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            29b2bd1cff1a7a5b4adf6fe188114086: f59ba0c6-c5af-42db-a3d9-9aed569d2af0/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            82db909f461ed47cde9cae3ba70ec375: fd2d034d-63f0-4c02-bfa5-3abd39b4ee34/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            ddc142d330db42457f1cc1e406c640e6: 76e558a6-6053-43b1-aa0c-7b3f092fe284/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            015368ba1901f8e76c618ca3876ce83f: ccf51923-08da-4442-a863-9ea424c98700/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            74610ec9ce49189d56c926c1ae9864cd: 5d3c6406-4005-4677-9076-3dfb8713a046/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            29001be731f0c682e6f430a194e4c02c: 2034dc46-f43e-4016-b7d6-88e67755bc47/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            2ca63a92384e23c4d741e54fdbb9cde7: c5cdd92b-2cf1-4e6b-b42f-3586e10091cf/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
                             383cdd49c6066d438bbba7625ee9ba34: bafd9717-cf55-4438-9d92-165a44316674/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            0d2541c3efdce17e85c214d05503ac87: 606c2900-49c3-48ac-818f-e3af0aa432f4/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            39501002d10cddf39734e4b839045e8d: 115187f2-194a-4cfc-b346-3ae16415aad5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            aae5f8a41e70f9df45bde0b005b9fb24: f749728c-b66d-478b-a79a-b3f40648c516/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            f131bb5487d0114fb2124b5edbd997aa: 596c4723-f7bd-4a65-8eae-6d0a5667aea5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            6873421c2d422b0a642e80413a1e8be8: d9fc44f1-c7bb-4ecb-a236-b760855f2646/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            9a7fb8d5d93e00edb5b9abe49cf4438c: 6503c1a0-1861-442d-b637-f4f5d7f0ef93/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            a44e7d5518ca84d9e7bf5959e59b3cbd: acd6dd56-85f7-42ae-a749-061eec5bbbc0/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            9747b6483bb8791022a8502f36dc76a3: 606c2900-49c3-48ac-818f-e3af0aa432f4/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            a9265b05daa4af9c05321c71d89887bc: 115187f2-194a-4cfc-b346-3ae16415aad5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            da02fd51cdc323602ca56b18c018e479: f749728c-b66d-478b-a79a-b3f40648c516/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            7e29ecf0e9645d6b1333be90b1c84607: 596c4723-f7bd-4a65-8eae-6d0a5667aea5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            9ae76a4b7869fa664e97adae39888d90: d9fc44f1-c7bb-4ecb-a236-b760855f2646/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            22c9e39843135eaf1b87e29d3a0ffde7: 6503c1a0-1861-442d-b637-f4f5d7f0ef93/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            0ca78abcb0a1e5765e562bb54558507c: acd6dd56-85f7-42ae-a749-061eec5bbbc0/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
                     c29d2615bf9c8d42981af53debff444e: !StaticColliderComponent
                         Id: 15269dc2-9cbf-428d-981a-f53debff444e
                         CanSleep: false
@@ -1118,8 +1117,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            1f23cb602ffcb8885b2c71b456e65cde: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -1153,7 +1151,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            3b91dc6ca56aebfa9a3b70f02b559af4: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -1207,7 +1205,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            cdeabfd90dbcb2a5a9b892f2dfdbae84: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -1252,7 +1250,7 @@ Hierarchy:
                         Id: 3cc68925-4436-4c49-91c3-58778fd622b0
                         Model: b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
                         Materials:
-                            2f926b455d7354458529be4a13e9c895: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
                         Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
                         CanSleep: false
@@ -1285,8 +1283,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            fac5359161e0ba534495f6cdd75ac841: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -1332,7 +1329,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            bd38fa637d6516bcc6820d981a3a504f: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -1434,7 +1431,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            868336c7cb124879b0101068bd4005fd: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -1500,7 +1497,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            571355772a6df9f8920874a7bd8ee262: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -1566,7 +1563,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            542b3b6ae0a7bc91df34f789d2c3c802: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -1655,7 +1652,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            78f8b60469952ddeb45ab3a38f87f3cb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -1688,8 +1685,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            2e387140e4c8cab8f2d31b804a2cc5d7: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -1723,7 +1719,7 @@ Hierarchy:
                         Id: 59a5defc-5133-4381-9cb3-52a95df34140
                         Model: 924c9ca7-d8b3-4966-bc05-086bb500ff85:Models/Gate2x3x1
                         Materials:
-                            33b353f1f13a2359543b8aa855951c4e: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     87e4f56b172adb4f897ce1addcb0ec93: !StaticColliderComponent
                         Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
                         CanSleep: false
@@ -1767,7 +1763,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            e9356a175c4d14c01148d7811b8c08bb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -1801,7 +1797,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            8529edd3fc3a31e70721bfda355c5c6f: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -1835,8 +1831,7 @@ Hierarchy:
                     a3e7697c0b357746a3bca7d8193e97e9: !ModelComponent
                         Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
                         Model: 9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
-                        Materials:
-                            029fcc6212396a47b271679349a7690d: null
+                        Materials: {}
         -   Entity:
                 Id: 32b680b4-a62b-49a6-b1be-9296b58146b1
                 Name: Wall0x2x5 (2)
@@ -1874,7 +1869,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            44f2c1c15788f0de53eba488077eb538: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -1908,7 +1903,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            99dc30d87e3e7ca7aef3803b344fa0e9: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -1974,7 +1969,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            c5055c18838f059ee0a962dff628c529: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -2074,8 +2069,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            8bda39f38a673e7b6252f3fad7e1aa44: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -2121,7 +2115,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            0f81bfa24aacc893f087b102bedb6978: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -2167,7 +2161,7 @@ Hierarchy:
                         Id: be029228-5050-41af-832c-e05e2d398d2c
                         Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
-                            1bfdc438aad7a18fad19a62088c891c9: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
                         Id: 91586301-4ed6-4d2c-98af-82259f64e540
                         CanSleep: false
@@ -2182,7 +2176,7 @@ Hierarchy:
                                 Shape: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
             Base:
                 BasePartAsset: d74cc744-2324-4e4b-ad1b-577d83087eea:BlocksPrefabs/Stairs1x1x2
-                BasePartId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                BasePartId: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 InstanceId: 1b0ae547-3aeb-483b-8b0a-6d4707d05859
         -   Folder: Complex
             Entity:
@@ -2222,7 +2216,7 @@ Hierarchy:
                         Id: 78a9584d-778f-4c72-8234-18b8b7f17537
                         Model: 6582abd6-3c78-4242-96be-4fe6e77c056e:Models/Wall0x2x2Window
                         Materials:
-                            72f6e62f335e5d77a663040ca635996a: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
                         CanSleep: false
@@ -2271,7 +2265,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            c902dc86c8ee091ee0f01690047c556c: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -2328,7 +2322,7 @@ Hierarchy:
                         Id: 1351c7f8-9a6a-43a6-afa8-8b938510189c
                         Model: e55d79be-700a-44db-a70f-8512c67dd07d:Models/Ramp1x1x1
                         Materials:
-                            10fbda35643bf715fc1226173061b2fd: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     ef71e33350ba7041a0b72c62a58ca295: !StaticColliderComponent
                         Id: 33e371ef-ba50-4170-a0b7-2c62a58ca295
                         CanSleep: false
@@ -2359,7 +2353,7 @@ Hierarchy:
                         Id: 0a7a9526-6182-45b8-b71c-5ac294d1fd69
                         Model: a6a24fab-caf5-4344-8bc0-e29860ea3dbd:Models/Wall0x1x2
                         Materials:
-                            54c22abd4524d9f2556ac218c0a08749: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     2035050297cb7942b2b1f5e2f2ca07b5: !StaticColliderComponent
                         Id: 02053520-cb97-4279-b2b1-f5e2f2ca07b5
                         CanSleep: false
@@ -2405,8 +2399,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            4034994e5b2544c9443e5e2253957ea0: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -2473,13 +2466,7 @@ Hierarchy:
                     0fa4902c57c2de428808e383912863ea: !ModelComponent
                         Id: 2c90a40f-c257-42de-8808-e383912863ea
                         Model: f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel
-                        Materials:
-                            596d15eb3bc3cb4a919abbab457bf311: null
-                            df3f76b96338c649abf34d76861a3849: null
-                            c49ee59e4ac0e0439c780a5614291f3f: null
-                            99af0249767f0146b398c509478fedf1: null
-                            932c41ed4da7ce43a26ca7e85af8eda7: null
-                            a012c8ec24943d4592a38253034b23b6: null
+                        Materials: {}
                     978eabfaac453f4d9375495d32bc299f: !ThirdPersonPlatformer.Player.AnimationController,ThirdPersonPlatformer.Game
                         Id: faab8e97-45ac-4d3f-9375-495d32bc299f
                         AnimationComponent: 51a86f4d-298c-4fc4-964b-de29f9a624fc/c0b24758-fcad-47f3-a100-f94d96c5d325
@@ -2509,7 +2496,7 @@ Hierarchy:
                         Id: cc9c61d2-f2d5-4140-a405-add501ed26e6
                         Model: 922930df-514b-4eb5-8274-e427eecc434f:Models/Box2x1x1
                         Materials:
-                            2a29647707f9be29ea669165e257dff0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     6b416dc1a6679e41858a68dcecd16bc7: !StaticColliderComponent
                         Id: c16d416b-67a6-419e-858a-68dcecd16bc7
                         CanSleep: false
@@ -2543,7 +2530,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            1c9a61e89e25cd25add5ebb8d189e509: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -2597,7 +2584,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            af72847ab9c854dce79c2bb5e480753f: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -2662,7 +2649,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            a1cad108ced455f224e7222ffbb7f5cb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -2739,7 +2726,7 @@ Hierarchy:
                         Id: 3cc68925-4436-4c49-91c3-58778fd622b0
                         Model: b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
                         Materials:
-                            5f89e0314b7af4d2c00e5c560ae88ea5: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
                         Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
                         CanSleep: false
@@ -2773,7 +2760,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            d1f07cac372852f6016b6c43dc0f14ca: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -2864,7 +2851,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            7aed74112ce955bc1ea5a20a3b9867d5: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -2920,7 +2907,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            be4ea6fdb3a194732897ccc6be16751a: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -3014,19 +3001,19 @@ Hierarchy:
                         DeadZone: 0.25
                         Camera: a7b68422-0fb4-45c9-b853-8e17a08a3953/65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         KeysLeft:
-                            6054d14551c4cf0a57163fa1e6040552: A
-                            c178df885debfb532e922993b51a7685: Left
+                            188e93f66916cf656ff39c2c364a16ce: A
+                            209be0885cbd15e2824ee34abbf1e993: Left
                         KeysRight:
-                            208967d82d0e26ccd7af6dedf186f6be: D
-                            29b864dd6f1e5fa2b612f9c15bbdd78f: Right
+                            b19f9a0fb9749d53d2cf6e353c2dde59: D
+                            da3e9e9055cb7a4648d733f34b8a6afb: Right
                         KeysUp:
-                            84ad484899b08a8a135df06399a32b71: W
-                            9ad79bd89cfc796dc8eb28dfd435bbc7: Up
+                            6f9526aa5d381de305cc00fa39927ff8: W
+                            0bf61a77531d87ca4bc6697a5d3a9a73: Up
                         KeysDown:
-                            7a14fa603558c411419d3937d4ea399a: S
-                            25010c8f54b418734e04a2ac16938ff8: Down
+                            d074974d39648acf3dd67ba90125999c: S
+                            47b7f2884469c9d74a4712034dba6f5a: Down
                         KeysJump:
-                            63ef66518053b414acbb94199b025dee: Space
+                            23fe5ceb28bd9649fa594f451bbef24b: Space
         -   Folder: Platform/Grid
             Entity:
                 Id: 605ce261-0f03-4563-b2d4-4ed4a7d4cd89
@@ -3098,7 +3085,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            aa1672e4cb322afeb4d34a543a1aedb0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -3175,7 +3162,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            be9084599f15868943f8edff5c22fc6a: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -3244,7 +3231,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            6f2d7aa36821b0072748e7237fa7db87: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -3278,7 +3265,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            abe35a4e6ecd6fa36cff87ede7f21209: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -3323,7 +3310,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            e6d04b417086e4be2d23e5dd250d3100: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -3357,7 +3344,7 @@ Hierarchy:
                         Id: be029228-5050-41af-832c-e05e2d398d2c
                         Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
-                            49d4e786129bf1284d38304f50c5cfe2: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
                         Id: 91586301-4ed6-4d2c-98af-82259f64e540
                         CanSleep: false
@@ -3372,7 +3359,7 @@ Hierarchy:
                                 Shape: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
             Base:
                 BasePartAsset: d74cc744-2324-4e4b-ad1b-577d83087eea:BlocksPrefabs/Stairs1x1x2
-                BasePartId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                BasePartId: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 InstanceId: e35b1300-d9f3-41b6-bfed-85435f01ed50
         -   Folder: Platform
             Entity:
@@ -3386,21 +3373,21 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             d0c20c3b287021419c9ea5b1cc3c4829: 630d8c8e-a603-47bf-ac8e-72aeffb08735/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            81d2df6869e00273675b1764bc9497cc: 840c52f1-b005-4a2c-a79a-063a675098fe/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            14c5eddc18745b164029393332fbfcbb: 63850672-2b9a-4f92-a8d4-23d51a111391/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            92224ce89a823bb409d86fa9a4a85df9: 5bdbeb13-0fee-4451-b999-aeee28641f0e/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            3249f908dd6ebef522da3e8e23086269: 01c1b52e-7a12-4dba-a2a7-7e3c618c36f7/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            ccb12d37188499e371d46aeeb9bfffd6: 5891b840-6b81-411f-ae32-c00cb96a2ad3/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            697271c7d861c8000622e60785a4e8bd: ffcf87f5-5788-4dfc-837c-a2f5435779a6/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            5bde162666f39a76acbb9a71f63e9031: d5ddeb34-c91e-4405-8bd1-4e39b36d1fd9/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            ffbf91aac2879a15b0eea71967295c01: 840c52f1-b005-4a2c-a79a-063a675098fe/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            106b0493ebaa3b2a5dbd186419bfedfc: 63850672-2b9a-4f92-a8d4-23d51a111391/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            919fb5612f855947050ea46059f11ebf: 5bdbeb13-0fee-4451-b999-aeee28641f0e/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            873745d4d33d5a9ed606aa4207c3f24f: 01c1b52e-7a12-4dba-a2a7-7e3c618c36f7/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            6e6c980c4b907063be0b0699726d34ac: 5891b840-6b81-411f-ae32-c00cb96a2ad3/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            8d2722543e4fe62a81e57bdf95ba3777: ffcf87f5-5788-4dfc-837c-a2f5435779a6/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            4684d374800136619ec9f61865003302: d5ddeb34-c91e-4405-8bd1-4e39b36d1fd9/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
                             383cdd49c6066d438bbba7625ee9ba34: 67a00fc8-b582-4054-b318-23dab0342713/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            0e741997f6d52f83dbfadb68101927f3: 38b1ac0d-cd53-4266-85e1-31b78526baae/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            6157361870e19ca508c84124ea448b4e: f679c58b-53a4-4fbe-b70a-a5c6d143b53e/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            17b3aa0827de11d148aa4b0b3f40e97a: d43c3708-5d2a-4376-b486-d82cef6a3779/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            9d2f1ec9e076f4976ead1a197f49b223: a6a58bf2-0f1b-413b-bab2-0975547fbfb1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            64c94eb9e0f6cc0f227867b8e6781e5d: ef0ece6a-997a-4825-8d9d-125c5a446eb1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            3daed655ed52c66012dc5bd5020e388d: 32b680b4-a62b-49a6-b1be-9296b58146b1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            e8209a95361b15d9ed20cb47da1ba152: 6e70b748-4134-45be-88f4-6317e82246f9/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            9969993c9d82aba756039fba439fd8a4: 38b1ac0d-cd53-4266-85e1-31b78526baae/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            ddced091cf3f7df54a1f0a7463ed5454: f679c58b-53a4-4fbe-b70a-a5c6d143b53e/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            d6a39f526ecf98ae6893fcfe0128d92f: d43c3708-5d2a-4376-b486-d82cef6a3779/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            2409d4f7df223b702a98c6460eea8305: a6a58bf2-0f1b-413b-bab2-0975547fbfb1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            c5a59ce4d92166b9e9b5af2dd1422e4d: ef0ece6a-997a-4825-8d9d-125c5a446eb1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            3e1c619535a28db06bc24b86446284c9: 32b680b4-a62b-49a6-b1be-9296b58146b1/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            a0b8accb82ee58cffb44ed94ca3ef8b3: 6e70b748-4134-45be-88f4-6317e82246f9/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
                     e30a239f92de444082d500391972924d: !StaticColliderComponent
                         Id: 9f230ae3-de92-4044-82d5-00391972924d
                         CanSleep: false
@@ -3451,7 +3438,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            e0485e10a506f6b575d334d7be47334e: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -3497,7 +3484,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            2ba4403f9b035ca4d2c146b7f97b37cb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -3531,7 +3518,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            2638f9d3f512bd1f57a07473b2f894b6: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -3576,8 +3563,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            af3b2fd098be1157baca1db97aa0049a: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -3611,7 +3597,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            ddbcbf74daa5a30cd1f6a7b4556d1a86: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -3665,7 +3651,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            517577e3d5c7581efdae9e18815ce64b: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -3765,7 +3751,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            67636a2cc9cd15062b4e52e6302643e6: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -3830,7 +3816,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            c40010f275fd0ef4d6f4fdc402e4811d: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -3864,7 +3850,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            e483e970263ef7f4dd1f63de5ab96212: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -3899,7 +3885,7 @@ Hierarchy:
                         Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
                         Model: 6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
                         Materials:
-                            9aed864a1df0990ac0b8769bb9fdac87: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
                         CanSleep: false
@@ -3992,7 +3978,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            d9b898e33eb229560d85b4c897d5089b: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -4026,7 +4012,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            6416e4507a161fed8154578fc5c71582: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -4103,7 +4089,7 @@ Hierarchy:
                         Id: f6dbc59d-c6d3-47c1-a377-ea11fd11b1b2
                         Model: 01019ffb-11d0-42cb-a5c1-ce55f20e5042:Models/Gate1x2x1
                         Materials:
-                            b2713824bdc10e6cefd195bf01ccb708: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     c0e71cc466335b44b7cda9387da726a1: !StaticColliderComponent
                         Id: c41ce7c0-3366-445b-b7cd-a9387da726a1
                         CanSleep: false
@@ -4158,7 +4144,7 @@ Hierarchy:
                         Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
                         Model: 6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
                         Materials:
-                            53bba7ba38e7ac907c17fe7d9a2c8c32: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
                         CanSleep: false
@@ -4192,7 +4178,7 @@ Hierarchy:
                         Id: 3cc68925-4436-4c49-91c3-58778fd622b0
                         Model: b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
                         Materials:
-                            de0403c640016ad53df6327a98e66e46: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
                         Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
                         CanSleep: false
@@ -4237,7 +4223,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            1cd2e6773c389f97dfe350d4eaff9def: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -4302,7 +4288,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            1b7044d7b6ab814af2513f78e55bba05: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -4355,8 +4341,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            81cdd7ad106a4831a6fa938d42bcc111: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -4390,7 +4375,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            153c7098d6103fb1c971b6176fc1fc6f: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -4435,7 +4420,7 @@ Hierarchy:
                         Id: 6495ff8f-4e22-4b16-bfee-b200886985b1
                         Model: a0e0c032-4635-45cc-9d48-35525b89f1bb:Models/Box3x1x1
                         Materials:
-                            daeb0a825841ca7c0d0bb467aa03cec3: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
                         CanSleep: false
@@ -4479,8 +4464,7 @@ Hierarchy:
                     a3e7697c0b357746a3bca7d8193e97e9: !ModelComponent
                         Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
                         Model: 9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
-                        Materials:
-                            6be5d5e4388ffc4fbee430b73b90a90b: null
+                        Materials: {}
         -   Entity:
                 Id: 8e785842-c932-4cbb-bcd7-db260515426b
                 Name: Wall0x2x5Window (3)
@@ -4506,7 +4490,7 @@ Hierarchy:
                         Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
                         Model: 898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
                         Materials:
-                            f4a1e5aafc4cc0edb16d035c8dd92cf0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
                         CanSleep: false
@@ -4548,7 +4532,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            da795b658ed5c4cd57a8c83a2cd88f86: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -4602,7 +4586,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            eb10946fe479cb1b98f0718000baaf4f: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -4656,7 +4640,7 @@ Hierarchy:
                         Id: 3cc68925-4436-4c49-91c3-58778fd622b0
                         Model: b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
                         Materials:
-                            224dd860c04c980103b60131c7c98316: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     8f2d709e00a8674d8f31b62fda1f5a47: !StaticColliderComponent
                         Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
                         CanSleep: false
@@ -4688,21 +4672,21 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             d0c20c3b287021419c9ea5b1cc3c4829: f7ed78ec-c4b2-47b1-ac84-42ee5944ca01/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            46e37961a85839b496bf0e9ad75900db: 9a447ad9-064c-44a4-82d7-cf2e4b303dd3/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            c4aafe02c8e9ac63940c4718e977ae2d: 1c805465-0d5d-4e09-8181-408bc612f040/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            7609358958c710d54606d0669e394fe0: 8c9cd3e4-2b82-435f-8da0-8d1b31e8a7e9/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            0be1e8bd6c197dcda786aeaa27d3e8ff: 8efc24c7-7ae7-40f5-9537-7f3060a3dd33/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            8b5a6ef179d02adbd37465ecfaa5f75c: 8e785842-c932-4cbb-bcd7-db260515426b/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            3f81b3ab57add8841bb19f267f7b4334: 98487dd8-720b-481a-b60e-242e4a8b11e8/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            4ef736697ffaf8a7cfe14f8fbae02115: 003ea996-d3d5-46e1-8f7c-e934945032b4/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            f52da3cad17f1bdd7f9a3c890b390a27: 9a447ad9-064c-44a4-82d7-cf2e4b303dd3/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            6055a6c418620401f55eeff681207597: 1c805465-0d5d-4e09-8181-408bc612f040/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            8e81fe0ca3a9232de321c5eea6114963: 8c9cd3e4-2b82-435f-8da0-8d1b31e8a7e9/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            0f5d8c042b0c500974ac6fa40b39b207: 8efc24c7-7ae7-40f5-9537-7f3060a3dd33/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            98f64390d2f33438b19b4a549d8d8207: 8e785842-c932-4cbb-bcd7-db260515426b/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            cf13eb64adc622cb0aabc93e058cc203: 98487dd8-720b-481a-b60e-242e4a8b11e8/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            01c238bd62b7b54532d5a75edc194fcc: 003ea996-d3d5-46e1-8f7c-e934945032b4/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
                             383cdd49c6066d438bbba7625ee9ba34: 2c0e849b-1174-4401-9314-a9a119e239eb/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            26f6bb60e7b529316d30164f46e57783: a050714f-9578-4a60-b007-19ac532e7713/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            3a3a611680a4b46461811821a7e9e46f: 7f2774b4-71fe-4ff2-a742-792c74d64d0c/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            a423c865e62164da69fdec10583220fa: c432231b-91a5-4fec-9403-73675d96df0f/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            c286a774baf8bfafa29e7e8d748d54aa: d4bc1822-3ff8-42eb-9564-a0b29ec519db/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            53a12e57048c98dd865e8abc42ca935f: fe74b3b0-0604-44a0-bc2a-37660fbc02ca/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            e68ddee808c6d59ecd293594931ae1e4: 6f891180-0312-4cf0-912a-007720b7da91/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            a1634bc2601b12111713c1a73fa732b3: 47263f08-8f46-4d59-b60a-6248645c46de/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            0e732cd626411de9f859ae36e80287cd: a050714f-9578-4a60-b007-19ac532e7713/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            775339a6e508eeec30b5e28769be1611: 7f2774b4-71fe-4ff2-a742-792c74d64d0c/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            5c0a4796c2bfef7b4982f4677c9bd072: c432231b-91a5-4fec-9403-73675d96df0f/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            d722f5a24def566d9f9222fc9075d48a: d4bc1822-3ff8-42eb-9564-a0b29ec519db/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            93343ca1bcbcce6355598755e4d18e78: fe74b3b0-0604-44a0-bc2a-37660fbc02ca/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            651c39e0737bf5e66fa47aac36a3b3be: 6f891180-0312-4cf0-912a-007720b7da91/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            bdf8d2e6da8f38371b0fdc277eca1e99: 47263f08-8f46-4d59-b60a-6248645c46de/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
                     348dbb6ff7b7e148963fef4b0d9e0ca0: !StaticColliderComponent
                         Id: 6fbb8d34-b7f7-48e1-963f-ef4b0d9e0ca0
                         CanSleep: false
@@ -4730,7 +4714,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            549b48d5a583fde8ea384c4b89571369: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -4764,7 +4748,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            bf4c14d248ef311261d73f3293fae4a7: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -4819,8 +4803,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            5d8e2417d6af31bf7f0a86fae95dbe00: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -4863,8 +4846,8 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             868c9d6a0b63ab4f85026abab861d441: df706ef2-23e6-472a-a25f-7abe6d8ce798/6a9d8c86-630b-4fab-8502-6abab861d441
-                            e05ff8d29d9a3d3685a0acc6da7a03ae: 321e8a39-dee1-47c5-b25e-bb200b170e89/6a9d8c86-630b-4fab-8502-6abab861d441
-                            333acecef7514bd7142a2eefbe2d0539: 8d12d230-d2de-4202-b7eb-5db871ce1640/6a9d8c86-630b-4fab-8502-6abab861d441
+                            753c67fd172d39e64ea8961193919e8a: 321e8a39-dee1-47c5-b25e-bb200b170e89/6a9d8c86-630b-4fab-8502-6abab861d441
+                            7f5a5f3b2e0c07779bed982f2f150aa9: 8d12d230-d2de-4202-b7eb-5db871ce1640/6a9d8c86-630b-4fab-8502-6abab861d441
                             7f948a4ff4fd3346940ff1e70397b177: f341034f-bf28-4d75-9204-661ac043732e/4f8a947f-fdf4-4633-940f-f1e70397b177
         -   Folder: Complex
             Entity:
@@ -4903,8 +4886,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            187cc7b10869ddb5e5fd890c0334b504: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -4938,7 +4920,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            7b60f0d2d259e0b463394b3f0dbff3a0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -4972,7 +4954,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            9f590bdaeaf75ab32e151de07d200e7b: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5006,7 +4988,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            5042719ed802bc9bcf6ec04a04e41e47: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5039,8 +5021,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            d6eeee63e6fa0343345a47d8e147e471: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -5074,7 +5055,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            17378638e41a66c7b745b3afae0c9a60: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5119,7 +5100,7 @@ Hierarchy:
                         Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
                         Model: 898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
                         Materials:
-                            6067c0b6e2abbde4dd575ebe09fc88a9: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
                         CanSleep: false
@@ -5243,7 +5224,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            ed4a9753a64b1d0b27a0dbaa869d03d6: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5334,7 +5315,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            ae276d0902d4b7da17db6aa965a126b2: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -5387,8 +5368,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            c8f6368824145eba82ad9936f892dd5e: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -5421,8 +5401,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            e0b5c353085c9fd8ba53f39760c78978: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -5456,7 +5435,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            317b25ea4dfb28e5b44741f08b78da35: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -5510,7 +5489,7 @@ Hierarchy:
                         Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
                         Model: 6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
                         Materials:
-                            d401c36df8e8117de3e67ad5fe1c43b2: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
                         CanSleep: false
@@ -5544,7 +5523,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            8fda3c766d26aea7e3c1c0612cc7bb7b: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5578,7 +5557,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            ebcaa4b587ef1b08f6b3c1ea6f163de7: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5612,7 +5591,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            f3c6c3517f36f41aac33aff9224795d6: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -5665,8 +5644,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            953f46a463cc15098474aa5d7796ae01: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -5700,7 +5678,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            0e4422154c49aedda5b906d3821108f2: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5734,7 +5712,7 @@ Hierarchy:
                         Id: 6495ff8f-4e22-4b16-bfee-b200886985b1
                         Model: a0e0c032-4635-45cc-9d48-35525b89f1bb:Models/Box3x1x1
                         Materials:
-                            69d3c2b6b2025ce657807d400de9ce00: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
                         CanSleep: false
@@ -5768,7 +5746,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            4ea8e023b47d82c8c0a415a3baaffcc8: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -5802,7 +5780,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            6c6935a3dce8d5dcf484c94f93afa78e: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -5856,7 +5834,7 @@ Hierarchy:
                         Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
                         Model: 6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
                         Materials:
-                            18aa8fb1e8cbe05adce572e74f285bea: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
                         CanSleep: false
@@ -5890,7 +5868,7 @@ Hierarchy:
                         Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
                         Model: a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
                         Materials:
-                            f647b48c8ee7aaf6c127c822d231d599: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     e8d6d181aa1dab4fa7353dbc6a807bd7: !StaticColliderComponent
                         Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
                         CollisionGroup: StaticFilter
@@ -5955,7 +5933,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            1c4a507c44ef71d29f77ec98f25d433e: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -6020,7 +5998,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            984d71b9c8cd18220d613121157c2ccf: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -6054,7 +6032,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            cc56f941c167738562a3dfd4bdf1fbbb: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -6100,7 +6078,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            ca07f04cb4827eda3befd806bc7f8b4b: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -6135,7 +6113,7 @@ Hierarchy:
                         Id: cc9c61d2-f2d5-4140-a405-add501ed26e6
                         Model: 922930df-514b-4eb5-8274-e427eecc434f:Models/Box2x1x1
                         Materials:
-                            a143a0d7f186937d7984e7617d642d1e: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     6b416dc1a6679e41858a68dcecd16bc7: !StaticColliderComponent
                         Id: c16d416b-67a6-419e-858a-68dcecd16bc7
                         CanSleep: false
@@ -6169,7 +6147,7 @@ Hierarchy:
                         Id: 2e70504b-938d-4433-b17a-530059aebafc
                         Model: 2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
                         Materials:
-                            c4c78d3ef8c53be2d25c2e04e6923ca4: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9fd04a146701174387ebf7ca57fcecc3: !StaticColliderComponent
                         Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
                         CanSleep: false
@@ -6203,7 +6181,7 @@ Hierarchy:
                         Id: be029228-5050-41af-832c-e05e2d398d2c
                         Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
-                            c347ef6ef1965a5afb44503af86abf93: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
                         Id: 91586301-4ed6-4d2c-98af-82259f64e540
                         CanSleep: false
@@ -6218,7 +6196,7 @@ Hierarchy:
                                 Shape: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
             Base:
                 BasePartAsset: d74cc744-2324-4e4b-ad1b-577d83087eea:BlocksPrefabs/Stairs1x1x2
-                BasePartId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                BasePartId: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 InstanceId: 0d1701d5-b013-4643-aab6-22fa2cccd7fb
         -   Entity:
                 Id: c0801149-d963-4c7a-889b-868d994a4aad
@@ -6234,7 +6212,7 @@ Hierarchy:
                         Id: 0105b31e-5f75-48c3-875a-c99fdd5672d7
                         Model: ea5bbb6a-d2b7-4181-81e1-5d9708a7782a:Models/Wall0x2x2
                         Materials:
-                            20f5a5999415b140668ba73230a3620f: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
                         CanSleep: false
@@ -6268,7 +6246,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            dd44689c6b170add2f58477e8c5d4caf: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -6322,7 +6300,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            eb90dfafea662ace36818f889cd409a8: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -6410,7 +6388,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            9b797313c13cc33fed69c390fb9dc496: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -6454,8 +6432,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            26c812d9acf149513b13cabaa4393e89: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -6511,8 +6488,7 @@ Hierarchy:
                     7c901dfed21c864283aa0639481520b1: !ModelComponent
                         Id: fe1d907c-1cd2-4286-83aa-0639481520b1
                         Model: ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
-                        Materials:
-                            289f0a8df9dfe76d7e3234bf79fd6e46: null
+                        Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
                         CanSleep: false
@@ -6570,7 +6546,7 @@ Hierarchy:
                         Id: cc9c61d2-f2d5-4140-a405-add501ed26e6
                         Model: 922930df-514b-4eb5-8274-e427eecc434f:Models/Box2x1x1
                         Materials:
-                            fd256beeee9c6de961eb50f634a2d60b: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     6b416dc1a6679e41858a68dcecd16bc7: !StaticColliderComponent
                         Id: c16d416b-67a6-419e-858a-68dcecd16bc7
                         CanSleep: false
@@ -6649,7 +6625,7 @@ Hierarchy:
                         Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
                         Model: 6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
                         Materials:
-                            27fa2ce56e98ddb0352415a399f5fb81: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     9b0dc84c029fed4caf8b86b095c216e6: !StaticColliderComponent
                         Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
                         CanSleep: false
@@ -6741,7 +6717,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            c91a2ac4280eaea85741fbd932df8ca9: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -6774,8 +6750,7 @@ Hierarchy:
                     a3e7697c0b357746a3bca7d8193e97e9: !ModelComponent
                         Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
                         Model: 9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
-                        Materials:
-                            5f95c9bcc4c1514b86f146a6c51b5814: null
+                        Materials: {}
         -   Folder: Platform
             Entity:
                 Id: e03076e0-8d95-4b05-89b7-583c07f80f9d
@@ -6833,7 +6808,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            cd9cf4c2684f108e17f6084429f91cf2: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -6887,7 +6862,7 @@ Hierarchy:
                         Id: 6495ff8f-4e22-4b16-bfee-b200886985b1
                         Model: a0e0c032-4635-45cc-9d48-35525b89f1bb:Models/Box3x1x1
                         Materials:
-                            6a2d30420af0230c77ae093c82dc9624: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
                         CanSleep: false
@@ -6921,7 +6896,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            fa9e8491c0432dffacf963593e20e341: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -6997,21 +6972,21 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             d0c20c3b287021419c9ea5b1cc3c4829: 8b1e3570-d97b-415e-9dcb-48f659bf9d25/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            56e59370fa590474fb7584836ff391b7: ae2e7f9a-7ef2-452b-bf57-abbca9a4ef8f/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            3ae9da8ac5cb7ba86cfb3befc4a652cc: 6aeb636c-4750-4c89-abd3-f9929e42adde/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            cc115ad83107b187095c9ab3043df43e: 58bc8f88-44b1-462d-8aba-88d17799d0e2/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            b10c8abf5af4ee66de35b4ae8c0fd680: 796cfe92-99b9-4051-96f7-67c1704b25e0/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            4b397acb50ddb8834a7ab5e25da61086: e98cb0b8-2cd5-4b03-b25d-6a9fbed23516/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            273dd306226814926b54b4b879d71167: 50b90e9b-f169-41d2-8082-ac45ece81824/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
-                            ed9f404fc00e283b942398237ef89db7: 506aba5e-d07b-4bd6-933d-1da67cfcb2ad/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            b648a18203a3f9922f9242a2389a65d6: ae2e7f9a-7ef2-452b-bf57-abbca9a4ef8f/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            1d51f140e5a2413ddec0991bf1f45710: 6aeb636c-4750-4c89-abd3-f9929e42adde/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            32504a2e5ea6eb67ebb68f5551ad2249: 58bc8f88-44b1-462d-8aba-88d17799d0e2/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            ff2a3ecc89fa8d09a8f3d4a55d24ebdc: 796cfe92-99b9-4051-96f7-67c1704b25e0/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            291dcc4c7ad6e45b8a5382556a2104e2: e98cb0b8-2cd5-4b03-b25d-6a9fbed23516/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            eda53c049a95f0707c9b0cb3560e1e41: 50b90e9b-f169-41d2-8082-ac45ece81824/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
+                            565acaa050422c7f7c9d9c3838738bf6: 506aba5e-d07b-4bd6-933d-1da67cfcb2ad/3b0cc2d0-7028-4121-9c9e-a5b1cc3c4829
                             383cdd49c6066d438bbba7625ee9ba34: a44966c1-7ec3-4d28-9fc6-a386f69d2094/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            36053dd0fd0427acf2ec2be154d7c71b: 544c033e-07dd-42e8-b8be-79c157fe5110/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            5c762bcbf182b12bde268e851ef07fd9: a4cbf889-de9e-498b-a56f-8bc9cf15f2ba/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            f1dd33367f07448d14327f9338b94d83: 05edf065-474e-4277-98e6-1fb8db703694/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            08b355abedbef1724737ce9d3927708f: 8179b9a5-4f2f-4706-b98a-23a1054ba6a2/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            26a37d32f16ab247b68151029360a8b8: ad2cfaf1-6684-46f8-85f8-ab7f6bb6e90c/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            d93148408dac78aaab578cfdec73a7e2: cc32de44-35ae-4301-8b59-e50ed534bdd4/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
-                            34a75d96e3d47cc15034c5d91569d595: d7c1cd9f-e263-4e5e-a74c-8dba331c08a5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            26ba10a52a0ab7c9ec96dd2cb1edbc33: 544c033e-07dd-42e8-b8be-79c157fe5110/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            894de8920d3db6ab95042db0a985d89d: a4cbf889-de9e-498b-a56f-8bc9cf15f2ba/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            eabd42880a5926eb18307293eb749afc: 05edf065-474e-4277-98e6-1fb8db703694/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            9119a8aeb9e5b3ddba3462edc4260c60: 8179b9a5-4f2f-4706-b98a-23a1054ba6a2/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            828a3502d22492482d8f5bacbe003c6c: ad2cfaf1-6684-46f8-85f8-ab7f6bb6e90c/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            79913b62bde2b01cb91a80cb67548d21: cc32de44-35ae-4301-8b59-e50ed534bdd4/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
+                            a7b339b1eee164262d04b82b1d037f42: d7c1cd9f-e263-4e5e-a74c-8dba331c08a5/49dd3c38-06c6-436d-8bbb-a7625ee9ba34
                     92a04b857483bf4280de4390bd9a22bf: !StaticColliderComponent
                         Id: 854ba092-8374-42bf-80de-4390bd9a22bf
                         CanSleep: false
@@ -7050,7 +7025,7 @@ Hierarchy:
                         Id: be029228-5050-41af-832c-e05e2d398d2c
                         Model: da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
                         Materials:
-                            55c90db831438602651651159af295f5: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     01635891d64e2c4d98af82259f64e540: !StaticColliderComponent
                         Id: 91586301-4ed6-4d2c-98af-82259f64e540
                         CanSleep: false
@@ -7065,7 +7040,7 @@ Hierarchy:
                                 Shape: 934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
             Base:
                 BasePartAsset: d74cc744-2324-4e4b-ad1b-577d83087eea:BlocksPrefabs/Stairs1x1x2
-                BasePartId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                BasePartId: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 InstanceId: ff423348-dcd4-452b-b23b-814200e8a255
         -   Entity:
                 Id: ef0ece6a-997a-4825-8d9d-125c5a446eb1
@@ -7116,7 +7091,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            7a22d9e9e7129a61a507a92a429fdf07: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -7149,8 +7124,7 @@ Hierarchy:
                     27d80bc6775002448aab98217cee90b5: !ModelComponent
                         Id: c60bd827-5077-4402-8aab-98217cee90b5
                         Model: ba78e71b-c10d-4585-99ba-7f9c84d2d760:CameraCone
-                        Materials:
-                            32b4bddebcc41e4bbccf56b51a180b20: null
+                        Materials: {}
         -   Entity:
                 Id: f59ba0c6-c5af-42db-a3d9-9aed569d2af0
                 Name: Wall0x2x5Window (7)
@@ -7199,7 +7173,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            c6efdba023db437156177797ca85c1b8: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -7267,7 +7241,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            c75479843852dc8ef18850d308c3aab5: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -7321,7 +7295,7 @@ Hierarchy:
                         Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
                         Model: 66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
                         Materials:
-                            74897b81bad56e1dc8ae822bbac4c185: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
                         CanSleep: false
@@ -7375,7 +7349,7 @@ Hierarchy:
                         Id: 59a5defc-5133-4381-9cb3-52a95df34140
                         Model: 924c9ca7-d8b3-4966-bc05-086bb500ff85:Models/Gate2x3x1
                         Materials:
-                            454cbfd65772fc04d4c880b264419b14: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     87e4f56b172adb4f897ce1addcb0ec93: !StaticColliderComponent
                         Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
                         CanSleep: false
@@ -7419,7 +7393,7 @@ Hierarchy:
                         Id: cc9c61d2-f2d5-4140-a405-add501ed26e6
                         Model: 922930df-514b-4eb5-8274-e427eecc434f:Models/Box2x1x1
                         Materials:
-                            28874ee485f99898bce7a77c1377be67: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     6b416dc1a6679e41858a68dcecd16bc7: !StaticColliderComponent
                         Id: c16d416b-67a6-419e-858a-68dcecd16bc7
                         CanSleep: false
@@ -7453,7 +7427,7 @@ Hierarchy:
                         Id: d3e68565-27aa-4f88-8d14-790bf65b8607
                         Model: 96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
                         Materials:
-                            bd4f595a09004fceb1e836236a1927de: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
+                            ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
                         CanSleep: false
@@ -7509,7 +7483,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            a30617d8abb299fbd62ed985ba0ef6fe: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter
@@ -7544,7 +7518,7 @@ Hierarchy:
                         Id: 4ebe2498-0157-4113-9527-810ca0e59df5
                         Model: 15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
                         Materials:
-                            bf045807c7f4fa1620ee1f46d9d79a9c: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     23c28da116b69348aa23606dcc7b416f: !StaticColliderComponent
                         Id: a18dc223-b616-4893-aa23-606dcc7b416f
                         CollisionGroup: StaticFilter

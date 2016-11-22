@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: a304527a-9930-4408-a636-a652d7252330
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -38,9 +38,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            c0acc03f47db704892b86e60b314c17d: null
-                            76149a7df9ffe746824fe47f12735ab4: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity: null

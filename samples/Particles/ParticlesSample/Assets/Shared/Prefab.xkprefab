@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 311ff46f-bf71-4dd0-aa39-230dbf355536
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -40,8 +40,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            04c59dd22c913d4ea3f832eb18e39530: null
+                        Materials: {}
         -   Entity:
                 Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
                 Name: MetalRing
@@ -55,8 +54,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            d81b56846cf7784c81f5aae14ca16356: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -94,8 +92,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: 1f576934-655a-4878-8388-3ff907555fdb/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: 4d184225-610c-40fd-96a8-1409ca9f8729/968448c5-e6f3-4323-81c7-620bea800bdb
-                            78345a18a044aec7d55db462b745806f: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4/968448c5-e6f3-4323-81c7-620bea800bdb
-                            cd4d6f1f46050e7dab0ab1c8d76bfcf3: 11531b59-2e60-415e-82cf-81bdfafeb1d6/968448c5-e6f3-4323-81c7-620bea800bdb
+                            a325f7caaf833255c71ed29c5cd8f489: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4/968448c5-e6f3-4323-81c7-620bea800bdb
+                            ceb9cd1b0942d4539c677c5afbd69885: 11531b59-2e60-415e-82cf-81bdfafeb1d6/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: 04e87e84-9c4f-4b69-85f2-8fbac0028df2/0092eadc-6e4f-4295-b138-a52d7b0fc079
         -   Entity:
@@ -111,8 +109,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            f5caab0666123143b8f698c361ab8eec: null
+                        Materials: {}
         -   Entity:
                 Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
                 Name: MetalRing
@@ -126,8 +123,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            c0d6093179ab4b4485d2c799a17c8eb2: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -144,8 +140,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            d10035766e9d6c4d996b992f10b3a089: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8

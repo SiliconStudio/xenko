@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 74316bd3-3393-4654-850c-00837f64bac9
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -32,8 +32,7 @@ Hierarchy:
                     7af00b276f8c5549a07a63ca77db6023: !ModelComponent
                         Id: 270bf07a-8c6f-4955-a07a-63ca77db6023
                         Model: e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
-                        Materials:
-                            06c3e7d0621a8a4c9f4e4ec740f76ee9: null
+                        Materials: {}
         -   Entity:
                 Id: a3ccc846-034e-409a-ac44-0626a1898680
                 Name: RedTube
@@ -47,8 +46,7 @@ Hierarchy:
                     f7740c0672f2fe4f8c0682955d99d22e: !ModelComponent
                         Id: 060c74f7-f272-4ffe-8c06-82955d99d22e
                         Model: 3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
-                        Materials:
-                            be04500fb40270458468e5b9770c8553: null
+                        Materials: {}
         -   Entity:
                 Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
                 Name: GreenTube
@@ -62,5 +60,4 @@ Hierarchy:
                     3e4b24e57117c74f9b5523c9086fe363: !ModelComponent
                         Id: e5244b3e-1771-4fc7-9b55-23c9086fe363
                         Model: 0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
-                        Materials:
-                            6ab6dd56711d6c46b0d0979bf7bdfd69: null
+                        Materials: {}

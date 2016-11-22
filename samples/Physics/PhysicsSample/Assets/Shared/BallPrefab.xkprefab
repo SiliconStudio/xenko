@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 2603278e-1a16-4d57-a24c-563472a5b86b
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -43,5 +43,4 @@ Hierarchy:
                     99a4b625c60911438f882cfb1100888d: !ModelComponent
                         Id: 25b6a499-09c6-4311-8f88-2cfb1100888d
                         Model: ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Models/Ball
-                        Materials:
-                            30c4cfb800376444b677b2fcca24ed98: null
+                        Materials: {}

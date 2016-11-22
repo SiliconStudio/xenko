@@ -1,6 +1,6 @@
 !SceneAsset
 Id: a140a866-a7b3-4c89-8953-5f7adc428c0a
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 8dfe4154-403a-48cb-9020-dbc029d08503
@@ -229,14 +229,11 @@ Hierarchy:
                     e3a176d67f28e144bccf44d85bbd6588: !ModelComponent
                         Id: d676a1e3-287f-44e1-bccf-44d85bbd6588
                         Model: 55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
-                        Materials:
-                            7ba18e347c45cf43a11586d2f65f7029: null
-                            0a64c834a4dc0b49b0a666b7cbc82bdd: null
-                            7e3bbbc532f13c488cb7c9e07038f8a0: null
+                        Materials: {}
                     b64ad55d83b63142a5553396fa1fe1e8: !AnimationComponent
                         Id: 5dd54ab6-b683-4231-a555-3396fa1fe1e8
                         Animations:
-                            82df9eda9ae2cc4ca5ac2c4db413c44d~Default: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
+                            02e43a0b0a19d6459045f27c12de752e~Default: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
                         PlayingAnimations:
                             68b69714351e3d4c8cdaeb8cc50b90f3:
                                 Name: null
@@ -273,5 +270,4 @@ Hierarchy:
                     854e22fd775f2641b662a616b9d8ef3d: !ModelComponent
                         Id: fd224e85-5f77-4126-b662-a616b9d8ef3d
                         Model: be1aa9c8-4b3f-48d4-a759-d3b28603cb41:ProceduralModel
-                        Materials:
-                            fd35d1fc173c3442bb7e6bdf666843d5: null
+                        Materials: {}
