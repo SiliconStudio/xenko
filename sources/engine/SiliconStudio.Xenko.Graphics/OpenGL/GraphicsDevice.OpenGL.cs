@@ -243,9 +243,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             ++contextBeginCounter;
 
-#if SILICONSTUDIO_PLATFORM_ANDROID
             if (contextBeginCounter == 1)
             {
+                FrameCounter++;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
                 if (Workaround_Context_Tegra2_Tegra3)
                 {
                     Monitor.Enter(asyncCreationLockObject, ref asyncCreationLockTaken);
@@ -261,11 +263,7 @@ namespace SiliconStudio.Xenko.Graphics
                         return;
                     }
                 }
-            }
 #endif
-
-            if (contextBeginCounter == 1)
-            {
                 graphicsContext.MakeCurrent(windowInfo);
             }
         }
