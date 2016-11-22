@@ -14,7 +14,7 @@ using Keycode = Android.Views.Keycode;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardAndroid : KeyboardDeviceBase, IDisposable
+    internal class KeyboardAndroid : KeyboardDeviceBase, IDisposable
     {
         private AndroidXenkoGameView gameView;
         private Listener listener;

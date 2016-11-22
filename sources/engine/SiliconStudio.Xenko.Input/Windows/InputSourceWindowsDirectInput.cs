@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for various game controllers on windows
     /// </summary>
-    public class InputSourceWindowsDirectInput : InputSourceBase
+    internal class InputSourceWindowsDirectInput : InputSourceBase
     {
         private InputManager inputManager;
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();

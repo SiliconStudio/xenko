@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Gamepad
     /// </summary>
-    public class GamePadUWP : GameControllerDeviceBase, IGamePadDevice, IGamePadIndexAssignable
+    internal class GamePadUWP : GameControllerDeviceBase, IGamePadDevice, IGamePadIndexAssignable
     {
         internal Gamepad Gamepad;
         private GamePadState state = new GamePadState();

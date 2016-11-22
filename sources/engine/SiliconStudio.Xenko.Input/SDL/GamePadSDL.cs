@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A known gamepad that uses SDL as a driver
     /// </summary>
-    public class GamePadSDL : GamePadFromLayout, IGamePadIndexAssignable
+    internal class GamePadSDL : GamePadFromLayout, IGamePadIndexAssignable
     {
         public GamePadSDL(InputManager inputManager, GameControllerSDL controller, GamePadLayout layout)
             : base(inputManager, controller, layout)

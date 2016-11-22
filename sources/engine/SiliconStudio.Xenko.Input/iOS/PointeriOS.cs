@@ -13,7 +13,10 @@ using UIKit;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class PointeriOS : PointerDeviceBase, IDisposable
+    /// <summary>
+    /// iOS pointer device
+    /// </summary>
+    internal class PointeriOS : PointerDeviceBase, IDisposable
     {
         private XenkoGameController gameController;
         private iOSWindow uiControl;

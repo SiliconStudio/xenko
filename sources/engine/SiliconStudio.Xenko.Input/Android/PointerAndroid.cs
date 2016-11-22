@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class PointerAndroid : PointerDeviceBase, IDisposable
+    internal class PointerAndroid : PointerDeviceBase, IDisposable
     {
         private AndroidXenkoGameView uiControl;
         private Listener listener;

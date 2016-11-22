@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Mouse device
     /// </summary>
-    public class PointerUWP : PointerDeviceBase
+    internal class PointerUWP : PointerDeviceBase
     {
         private readonly FrameworkElement uiControl;
 

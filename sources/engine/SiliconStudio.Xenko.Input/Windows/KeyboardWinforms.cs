@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice, IDisposable
+    internal class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
         private InputSourceWinforms source;
         private Control uiControl;

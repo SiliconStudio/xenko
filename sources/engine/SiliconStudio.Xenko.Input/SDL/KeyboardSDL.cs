@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice, IDisposable
+    internal class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
         private Window window;
 

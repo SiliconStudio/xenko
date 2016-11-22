@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Listener for android sensors
     /// </summary>
-    public class AndroidSensorListener : Java.Lang.Object, ISensorEventListener
+    internal class AndroidSensorListener : Java.Lang.Object, ISensorEventListener
     {
         private const int SensorDesiredUpdateDelay = (int)(1/InputManager.DesiredSensorUpdateRate*1000f*1000.0f);
 

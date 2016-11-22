@@ -8,7 +8,7 @@ using SDL2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GameControllerSDL : GameControllerDeviceBase, IDisposable
+    internal class GameControllerSDL : GameControllerDeviceBase, IDisposable
     {
         private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();

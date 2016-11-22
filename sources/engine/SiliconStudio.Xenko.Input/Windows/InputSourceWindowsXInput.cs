@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for XInput gamepads
     /// </summary>
-    public class InputSourceWindowsXInput : InputSourceBase
+    internal class InputSourceWindowsXInput : InputSourceBase
     {
         private const int XInputGamePadCount = 4;
 

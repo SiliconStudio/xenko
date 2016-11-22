@@ -12,7 +12,7 @@ using Point = System.Drawing.Point;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseWinforms : MouseDeviceBase, IDisposable
+    internal class MouseWinforms : MouseDeviceBase, IDisposable
     {
         private readonly GameBase game;
         private readonly Control uiControl;

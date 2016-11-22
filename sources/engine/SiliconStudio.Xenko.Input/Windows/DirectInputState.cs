@@ -2,12 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-using System;
 using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class DirectInputState : IDeviceState<RawJoystickState, JoystickUpdate>
+    internal class DirectInputState : IDeviceState<RawJoystickState, JoystickUpdate>
     {
         public bool[] Buttons = new bool[128];
         public float[] Axes = new float[8];

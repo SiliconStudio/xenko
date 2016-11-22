@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A known gamepad that uses DirectInput as a driver
     /// </summary>
-    public class GamePadDirectInput : GamePadFromLayout, IGamePadIndexAssignable
+    internal class GamePadDirectInput : GamePadFromLayout, IGamePadIndexAssignable
     {
         public GamePadDirectInput(InputManager inputManager, GameControllerDirectInput controller, GamePadLayout layout)
             : base(inputManager, controller, layout)

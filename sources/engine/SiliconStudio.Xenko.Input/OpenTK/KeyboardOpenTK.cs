@@ -9,7 +9,7 @@ using OpenTK.Input;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardOpenTK : KeyboardDeviceBase, IDisposable
+    internal class KeyboardOpenTK : KeyboardDeviceBase, IDisposable
     {
         private GameWindow gameWindow;
 

@@ -7,7 +7,7 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class DirectInputJoystick : CustomDevice<DirectInputState, RawJoystickState, JoystickUpdate>
+    internal class DirectInputJoystick : CustomDevice<DirectInputState, RawJoystickState, JoystickUpdate>
     {
         public DirectInputJoystick(IntPtr nativePtr) : base(nativePtr)
         {

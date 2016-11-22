@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for pointer/keyboard/sensor input on Android
     /// </summary>
-    public class InputSourceAndroid : InputSourceBase
+    internal class InputSourceAndroid : InputSourceBase
     {
         private AndroidXenkoGameView uiControl;
         

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// UWP Keyboard
     /// </summary>
-    public class KeyboardUWP : KeyboardDeviceBase
+    internal class KeyboardUWP : KeyboardDeviceBase
     {
         private static readonly Dictionary<VirtualKey, Keys> mapKeys;
         private readonly FrameworkElement uiControl;

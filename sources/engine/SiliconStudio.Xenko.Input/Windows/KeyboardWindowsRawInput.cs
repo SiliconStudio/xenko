@@ -6,7 +6,7 @@ using System;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWindowsRawInput : KeyboardDeviceBase
+    internal class KeyboardWindowsRawInput : KeyboardDeviceBase
     {
         public KeyboardWindowsRawInput()
         {

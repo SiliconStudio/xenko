@@ -12,7 +12,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GamePadXInput : GamePadDeviceBase, IDisposable
+    internal class GamePadXInput : GamePadDeviceBase, IDisposable
     {
         private readonly Controller controller;
         private State xinputState;

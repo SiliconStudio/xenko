@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for raw keyboard input on windows
     /// </summary>
-    public class InputSourceWindowsRawInput : InputSourceBase
+    internal class InputSourceWindowsRawInput : InputSourceBase
     {
         private KeyboardWindowsRawInput keyboard;
         private Control uiControl;

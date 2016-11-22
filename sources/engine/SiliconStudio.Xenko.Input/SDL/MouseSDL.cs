@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseSDL : MouseDeviceBase, IDisposable
+    internal class MouseSDL : MouseDeviceBase, IDisposable
     {
         private bool isMousePositionLocked;
         private bool wasMouseVisibleBeforeCapture;

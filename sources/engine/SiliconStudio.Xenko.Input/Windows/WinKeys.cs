@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// Mapping between <see cref="WinFormsKeys"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/> needed for
     /// translating Winform key events into Xenko ones.
     /// </summary>
-    static class WinKeys
+    internal static class WinKeys
     {
         [DllImport("user32.dll")]
         internal static extern int MapVirtualKey(int uCode, uint uMapType);

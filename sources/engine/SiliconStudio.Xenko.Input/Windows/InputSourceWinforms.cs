@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for mouse and keyboard input on windows forms
     /// </summary>
-    public class InputSourceWinforms : InputSourceBase
+    internal class InputSourceWinforms : InputSourceBase
     {
         private KeyboardWinforms keyboard;
         private MouseWinforms mouse;

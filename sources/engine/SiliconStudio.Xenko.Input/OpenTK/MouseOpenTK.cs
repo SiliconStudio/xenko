@@ -11,7 +11,7 @@ using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class MouseOpenTK : MouseDeviceBase, IDisposable
+    internal class MouseOpenTK : MouseDeviceBase, IDisposable
     {
         private GameWindow uiControl;
         private readonly GameBase game;

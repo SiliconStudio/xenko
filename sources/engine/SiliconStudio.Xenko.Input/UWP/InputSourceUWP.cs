@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Input source for devices using the universal windows platform
     /// </summary>
-    public class InputSourceUWP : InputSourceBase
+    internal class InputSourceUWP : InputSourceBase
     {
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f / InputManager.DesiredSensorUpdateRate * 1000f);
 

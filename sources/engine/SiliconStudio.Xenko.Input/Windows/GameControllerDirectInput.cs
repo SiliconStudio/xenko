@@ -4,14 +4,12 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SharpDX;
 using SharpDX.DirectInput;
-using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class GameControllerDirectInput : GameControllerDeviceBase, IDisposable
+    internal class GameControllerDirectInput : GameControllerDeviceBase, IDisposable
     {
         private static readonly Dictionary<Guid, int> GuidToAxisOffsets =new Dictionary<Guid, int>
         {
@@ -83,7 +81,7 @@ namespace SiliconStudio.Xenko.Input
                 }
             }
             
-            // Sort objects
+            // Sort axes, buttons and hats do not need to be sorted
             axisInfos.Sort((a, b) => a.Offset.CompareTo(b.Offset));
 
             InitializeButtonStates();

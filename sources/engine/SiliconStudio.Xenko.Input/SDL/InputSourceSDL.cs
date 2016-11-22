@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for mouse/keyboard/gamepads using SDL
     /// </summary>
-    public class InputSourceSDL : InputSourceBase
+    internal class InputSourceSDL : InputSourceBase
     {
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
         private GameContext<Window> context;

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Provides support for pointer/sensor input on iOS
     /// </summary>
-    public class InputSourceiOS : InputSourceBase
+    internal class InputSourceiOS : InputSourceBase
     {
         private CMMotionManager motionManager;
         private CLLocationManager locationManager;
