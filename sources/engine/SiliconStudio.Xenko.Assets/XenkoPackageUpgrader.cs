@@ -357,6 +357,7 @@ namespace SiliconStudio.Xenko.Assets
                     if (!IsYamlAsset(assetFile))
                         continue;
 
+                    // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
                     using (var assetYaml = assetFile.AsYamlAsset())
                     {
                         if (assetYaml == null)
@@ -382,19 +383,6 @@ namespace SiliconStudio.Xenko.Assets
                             e.Ignore();
                         }
                     }
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
-            {
-                // This upgrader just mark every yaml asset as dirty. We want to re-save everything with the new serialization system
-                foreach (var assetFile in assetFiles)
-                {
-                    if (!IsYamlAsset(assetFile))
-                        continue;
-
-                    var assetYaml = assetFile.AsYamlAsset();
-                    assetYaml.Dispose();
                 }
             }
 
