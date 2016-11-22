@@ -6,7 +6,7 @@ using System;
 namespace SiliconStudio.Core.Reflection
 {
     // This class exists only for backward compatibility with previous ~Id. It can be removed once we drop backward support
-    internal static class IdentifiableHelper
+    public static class IdentifiableHelper
     {
         public static Guid GetId(object instance)
         {

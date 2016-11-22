@@ -3,6 +3,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
@@ -25,12 +26,17 @@ namespace SiliconStudio.Assets.Serializers
         {
             AssetId guid;
             UFile location;
-            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location))
+            Guid referenceId;
+            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location, out referenceId))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
             var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
+            if (referenceId != Guid.Empty)
+            {
+                IdentifiableHelper.SetId(instance, referenceId);
+            }
             return instance;
         }
         public override string ConvertTo(ref ObjectContext objectContext)
