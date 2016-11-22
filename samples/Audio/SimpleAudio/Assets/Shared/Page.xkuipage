@@ -1,45 +1,48 @@
 !UIPageAsset
 Id: 507637ea-07f7-46e1-96df-f39e5a4cc8b2
-SerializedVersion: {Xenko: 1.9.0-beta01}
+SerializedVersion: {Xenko: 0.0.0}
 Tags: []
 Design:
     Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
 Hierarchy:
+    ~Id: 75823b6a-2b24-43c1-b98e-fa2f3ca06e9c
     RootPartIds:
         - c8ffe87b-1905-4151-9af2-e60ed000ba3e
     Parts:
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    7d4227f0b22140f10f30f206017aabaf~Canvas.RelativeSizePropertyKey: {X: 1.0, Y: 1.5, Z: 0.0}
-                    ed4c145bcdbc3889b26cb98c60a4e318~Canvas.UseAbsolutePositionPropertyKey: false
-                    2b461517b342b307f86003bb5c292711~Canvas.RelativePositionPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
-                    063d1536f4f0c0fdff6723d835560673~Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.RelativeSizePropertyKey: {X: 1.0, Y: 1.5, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.RelativePositionPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
                 Id: 344d9e2d-eba4-435f-842a-00cc68189976
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Source: !SpriteFromSheet
-                    Sheet: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
+                    ~Id: 5e34c64d-a360-4c9b-a9e8-c33ba089d6f1
+                    Sheet: e777803f-b702-413f-b330-28bdae34ff4c/ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
                     CurrentFrame: 2
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchType: Fill
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    5f30ca7c55512dd8063784cdaa092155~Canvas.UseAbsolutePositionPropertyKey: false
-                    e9f98254c1ba816b241b32acfe163ae9~Canvas.RelativePositionPropertyKey: {X: 0.65, Y: 0.5, Z: 0.0}
-                    66d063beff3e6364c074777cf49640ab~Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.RelativePositionPropertyKey: {X: 0.65, Y: 0.5, Z: 0.0}
+                    Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
                 Id: 6b48de18-466e-41b2-be2d-5125a8a9a289
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: RightWave
                 Source: !SpriteFromSheet
-                    Sheet: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
+                    ~Id: ef75f35f-4e3a-4fed-afb2-7e7f1488fb07
+                    Sheet: e777803f-b702-413f-b330-28bdae34ff4c/ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
                     CurrentFrame: 1
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    2f7094f1b8096492becfa700e5660a08~Canvas.UseAbsolutePositionPropertyKey: false
-                    4e88faa74f41c862dbb27156cc6e2a29~Canvas.RelativePositionPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
-                    e74f0d7c9688de9ef3fb30272666f534~Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.RelativePositionPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
                 Id: b78d1749-79b1-4753-b0c8-d4134557f2eb
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Width: 367.0
@@ -48,7 +51,8 @@ Hierarchy:
                 VerticalAlignment: Top
                 Margin: {}
                 Source: !SpriteFromSheet
-                    Sheet: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
+                    ~Id: 34b7365f-ab80-4db4-89e2-771ee7e29e56
+                    Sheet: e777803f-b702-413f-b330-28bdae34ff4c/ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Canvas
                 DependencyProperties: {}
@@ -56,33 +60,34 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Children:
-                    2d9e4d34a4eb5f43842a00cc68189976: !ImageElement 344d9e2d-eba4-435f-842a-00cc68189976
-                    e35177ea82ec0447812f618b04bf4168: !TextBlock ea7751e3-ec82-4704-812f-618b04bf4168
-                    49178db7b1795347b0c8d4134557f2eb: !ImageElement b78d1749-79b1-4753-b0c8-d4134557f2eb
-                    2095eef44f413f4094c7e06eb7613445: !ImageElement f4ee9520-414f-403f-94c7-e06eb7613445
-                    18de486b6e46b241be2d5125a8a9a289: !ImageElement 6b48de18-466e-41b2-be2d-5125a8a9a289
+                    - !ImageElement 344d9e2d-eba4-435f-842a-00cc68189976
+                    - !TextBlock ea7751e3-ec82-4704-812f-618b04bf4168
+                    - !ImageElement b78d1749-79b1-4753-b0c8-d4134557f2eb
+                    - !ImageElement f4ee9520-414f-403f-94c7-e06eb7613445
+                    - !ImageElement 6b48de18-466e-41b2-be2d-5125a8a9a289
         -   UIElement: !TextBlock
                 DependencyProperties:
-                    2fccd1f730d4bfa009a4eca93ae32b71~Canvas.RelativePositionPropertyKey: {X: 0.63, Y: 0.8, Z: 0.0}
-                    d538fe813c8adb0db2cc1a68a3400115~Canvas.UseAbsolutePositionPropertyKey: false
-                    70eeebf4f7ca73a66cd1351cc48a84d8~Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
+                    Canvas.RelativePositionPropertyKey: {X: 0.63, Y: 0.8, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
                 Id: ea7751e3-ec82-4704-812f-618b04bf4168
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Text: Tap on the screen!
-                Font: 61f4751d-2878-4118-b212-ac554de05399:Font
+                Font: cebf53b7-208f-4a1b-8f14-6468312d67a4/61f4751d-2878-4118-b212-ac554de05399:Font
                 TextSize: 40.0
                 TextColor: {R: 240, G: 240, B: 240, A: 255}
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    dad2767d863e6832402bee40553c26dc~Canvas.UseAbsolutePositionPropertyKey: false
-                    5196f7a61011214cc8106fe37d8d2977~Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
-                    bc14c4d7b2ed8eb7e49cfe2a2eca8680~Canvas.RelativePositionPropertyKey: {X: 0.35, Y: 0.5, Z: 0.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
+                    Canvas.PinOriginPropertyKey: {X: 0.5, Y: 0.5, Z: 0.0}
+                    Canvas.RelativePositionPropertyKey: {X: 0.35, Y: 0.5, Z: 0.0}
                 Id: f4ee9520-414f-403f-94c7-e06eb7613445
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: LeftWave
                 Source: !SpriteFromSheet
-                    Sheet: ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
+                    ~Id: 7d130884-6116-490b-9f6d-30d869dae7c1
+                    Sheet: e777803f-b702-413f-b330-28bdae34ff4c/ae297c1f-91b7-45d3-8a13-fe64ddf8f9f2:SpriteSheet
                     CurrentFrame: 1
                 Color: {R: 255, G: 255, B: 255, A: 255}
