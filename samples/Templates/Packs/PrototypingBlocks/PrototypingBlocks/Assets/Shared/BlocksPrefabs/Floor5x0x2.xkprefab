@@ -5,10 +5,10 @@ Tags: []
 Hierarchy:
     ~Id: 1e54fe9f-ddd1-46d0-8255-c576ced3ea7c
     RootPartIds:
-        - 1067d427-d2bf-41dc-a6a9-edec00e56c37
+        - b7714728-e14c-4905-8c02-6e657d62f341
     Parts:
         -   Entity:
-                Id: 1067d427-d2bf-41dc-a6a9-edec00e56c37
+                Id: b7714728-e14c-4905-8c02-6e657d62f341
                 Name: Floor5x0x2
                 Components:
                     - !TransformComponent

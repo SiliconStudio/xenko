@@ -5,10 +5,10 @@ Tags: []
 Hierarchy:
     ~Id: 8dd3ec1b-e863-43b2-a6ab-6413ec1ab96e
     RootPartIds:
-        - 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        - b7b6a519-2edb-4e90-88ef-1426d0feac16
     Parts:
         -   Entity:
-                Id: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                Id: b7b6a519-2edb-4e90-88ef-1426d0feac16
                 Name: Stairs1x1x2
                 Components:
                     - !TransformComponent

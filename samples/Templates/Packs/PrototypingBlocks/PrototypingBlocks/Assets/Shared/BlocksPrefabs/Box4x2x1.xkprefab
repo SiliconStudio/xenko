@@ -5,10 +5,10 @@ Tags: []
 Hierarchy:
     ~Id: 65f3e7dd-9f10-4e0a-9b6b-56e77369f021
     RootPartIds:
-        - 496dab69-b03b-4272-a196-8e81329ce249
+        - 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
     Parts:
         -   Entity:
-                Id: 496dab69-b03b-4272-a196-8e81329ce249
+                Id: 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
                 Name: Box4x2x1
                 Components:
                     - !TransformComponent

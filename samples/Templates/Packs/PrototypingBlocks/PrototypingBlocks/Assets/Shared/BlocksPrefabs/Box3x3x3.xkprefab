@@ -5,10 +5,10 @@ Tags: []
 Hierarchy:
     ~Id: 65f3e7dd-9f10-4e0a-9b6b-56e77369f021
     RootPartIds:
-        - 496dab69-b03b-4272-a196-8e81329ce249
+        - fa9df93c-3b86-4404-96ca-decbb2f4171a
     Parts:
         -   Entity:
-                Id: 496dab69-b03b-4272-a196-8e81329ce249
+                Id: fa9df93c-3b86-4404-96ca-decbb2f4171a
                 Name: Box3x3x3
                 Components:
                     - !TransformComponent

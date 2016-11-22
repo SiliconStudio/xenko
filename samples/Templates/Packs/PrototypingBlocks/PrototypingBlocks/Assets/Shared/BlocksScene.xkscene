@@ -218,7 +218,7 @@ Hierarchy:
                         Position: {X: -2.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   BaseId: 496dab69-b03b-4272-a196-8e81329ce249
+        -   BaseId: fa9df93c-3b86-4404-96ca-decbb2f4171a
             BasePartInstanceId: 175fa990-e3ab-48aa-9188-7bac575029b1
             Entity:
                 Id: 03a3f790-f41d-4a23-ba6c-241213813123
@@ -866,7 +866,7 @@ Hierarchy:
                             - !ColliderShapeAssetDesc
                                 ~Id: e82509e5-996d-49e8-bde2-b006ac86de09
                                 Shape: b83d417c-fc74-4d4e-a2bd-98eba27251c1/60258ea8-0806-483e-a80d-4ad76595042d:CollisionMeshes/Stairs2x2x4
-        -   BaseId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        -   BaseId: b7b6a519-2edb-4e90-88ef-1426d0feac16
             BasePartInstanceId: f5e81448-2678-4ac0-98d9-fc516bc387a2
             Entity:
                 Id: 6b97ead6-cee3-4c7d-9ad2-0385a99ff0b9
@@ -1131,7 +1131,7 @@ Hierarchy:
                                 Size: {X: 0.1, Y: 1.0, Z: 5.0}
                                 LocalOffset: {X: 0.0, Y: 1.0, Z: -1.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   BaseId: 496dab69-b03b-4272-a196-8e81329ce249
+        -   BaseId: 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
             BasePartInstanceId: 5c3be470-a26a-4a4a-9d0d-583f32ab944c
             Entity:
                 Id: 8b0f6a3e-37c2-44b1-b3b8-bddb0c8629cd
@@ -1208,7 +1208,7 @@ Hierarchy:
                                 Size: {X: 2.0, Y: 0.05, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   BaseId: 1067d427-d2bf-41dc-a6a9-edec00e56c37
+        -   BaseId: b7714728-e14c-4905-8c02-6e657d62f341
             BasePartInstanceId: 2bdba35d-3de3-4bf1-8556-b671966ef09f
             Entity:
                 Id: 96784167-2595-4c49-a3ae-582ae69b712d
@@ -2502,10 +2502,10 @@ Hierarchy:
             Hierarchy:
                 ~Id: 8dd3ec1b-e863-43b2-a6ab-6413ec1ab96e
                 RootPartIds:
-                    - 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                    - b7b6a519-2edb-4e90-88ef-1426d0feac16
                 Parts:
                     -   Entity:
-                            Id: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                            Id: b7b6a519-2edb-4e90-88ef-1426d0feac16
                             Name: Stairs1x1x2
                             Components:
                                 - !TransformComponent
@@ -2939,10 +2939,10 @@ Hierarchy:
             Hierarchy:
                 ~Id: 65f3e7dd-9f10-4e0a-9b6b-56e77369f021
                 RootPartIds:
-                    - 496dab69-b03b-4272-a196-8e81329ce249
+                    - fa9df93c-3b86-4404-96ca-decbb2f4171a
                 Parts:
                     -   Entity:
-                            Id: 496dab69-b03b-4272-a196-8e81329ce249
+                            Id: fa9df93c-3b86-4404-96ca-decbb2f4171a
                             Name: Box3x3x3
                             Components:
                                 - !TransformComponent
@@ -2980,10 +2980,10 @@ Hierarchy:
             Hierarchy:
                 ~Id: 65f3e7dd-9f10-4e0a-9b6b-56e77369f021
                 RootPartIds:
-                    - 496dab69-b03b-4272-a196-8e81329ce249
+                    - 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
                 Parts:
                     -   Entity:
-                            Id: 496dab69-b03b-4272-a196-8e81329ce249
+                            Id: 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
                             Name: Box4x2x1
                             Components:
                                 - !TransformComponent
@@ -3021,10 +3021,10 @@ Hierarchy:
             Hierarchy:
                 ~Id: 1e54fe9f-ddd1-46d0-8255-c576ced3ea7c
                 RootPartIds:
-                    - 1067d427-d2bf-41dc-a6a9-edec00e56c37
+                    - b7714728-e14c-4905-8c02-6e657d62f341
                 Parts:
                     -   Entity:
-                            Id: 1067d427-d2bf-41dc-a6a9-edec00e56c37
+                            Id: b7714728-e14c-4905-8c02-6e657d62f341
                             Name: Floor5x0x2
                             Components:
                                 - !TransformComponent

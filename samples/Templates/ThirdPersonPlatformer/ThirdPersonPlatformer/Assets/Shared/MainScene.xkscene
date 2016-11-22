@@ -2227,7 +2227,7 @@ Hierarchy:
                         Position: {X: -10.0, Y: -9.536743E-07, Z: 10.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   BaseId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        -   BaseId: b7b6a519-2edb-4e90-88ef-1426d0feac16
             BasePartInstanceId: 1b0ae547-3aeb-483b-8b0a-6d4707d05859
             Entity:
                 Id: 40b46b79-3e8a-4ce6-8365-8bda51a139e7
@@ -3422,7 +3422,7 @@ Hierarchy:
                                 Size: {X: 0.1, Y: 2.0, Z: 5.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   BaseId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        -   BaseId: b7b6a519-2edb-4e90-88ef-1426d0feac16
             BasePartInstanceId: e35b1300-d9f3-41b6-bfed-85435f01ed50
             Entity:
                 Id: 6b8f5bec-76df-4d51-a4f7-7e6705618f05
@@ -6271,7 +6271,7 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 0.05, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   BaseId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        -   BaseId: b7b6a519-2edb-4e90-88ef-1426d0feac16
             BasePartInstanceId: 0d1701d5-b013-4643-aab6-22fa2cccd7fb
             Entity:
                 Id: bfcc6cf6-3179-4298-b3e6-44fe328382ef
@@ -7123,7 +7123,7 @@ Hierarchy:
                         Position: {X: 0.0, Y: 2.0, Z: 5.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-        -   BaseId: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+        -   BaseId: b7b6a519-2edb-4e90-88ef-1426d0feac16
             BasePartInstanceId: ff423348-dcd4-452b-b23b-814200e8a255
             Entity:
                 Id: ef0dba52-533d-4cd2-8d7b-ab4438cdd900
@@ -8057,10 +8057,10 @@ Hierarchy:
             Hierarchy:
                 ~Id: 8dd3ec1b-e863-43b2-a6ab-6413ec1ab96e
                 RootPartIds:
-                    - 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                    - b7b6a519-2edb-4e90-88ef-1426d0feac16
                 Parts:
                     -   Entity:
-                            Id: 1c50115c-c05d-4cb6-ab0e-53e44178a7e6
+                            Id: b7b6a519-2edb-4e90-88ef-1426d0feac16
                             Name: Stairs1x1x2
                             Components:
                                 - !TransformComponent
