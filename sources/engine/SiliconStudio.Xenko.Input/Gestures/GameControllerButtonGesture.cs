@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.GameController.Id == controllerId)
+            if (inputEvent.GameController.Id == controllerId || controllerId == Guid.Empty)
             {
                 if (inputEvent.Index == ButtonIndex)
                     UpdateButton(inputEvent.State, inputEvent.Device);

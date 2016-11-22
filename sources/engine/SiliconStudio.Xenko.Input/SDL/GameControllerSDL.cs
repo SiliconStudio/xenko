@@ -21,19 +21,19 @@ namespace SiliconStudio.Xenko.Input
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
             Id = Guid.NewGuid(); // Should be unique
             ProductId = SDL.SDL_JoystickGetGUID(joystick); // Will identify the type of controller
-            DeviceName = SDL.SDL_JoystickName(joystick);
+            Name = SDL.SDL_JoystickName(joystick);
             
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
-                buttonInfos.Add(new GameControllerButtonInfo { Index = i, Name = $"Button {i}" });
+                buttonInfos.Add(new GameControllerButtonInfo { Name = $"Button {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumAxes(joystick); i++)
             {
-                axisInfos.Add(new GameControllerAxisInfo { Index = i, Name = $"Axis {i}" });
+                axisInfos.Add(new GameControllerAxisInfo { Name = $"Axis {i}" });
             }
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
-                povControllerInfos.Add(new PovControllerInfo { Index = i, Name = $"Hat {i}" });
+                povControllerInfos.Add(new PovControllerInfo { Name = $"Hat {i}" });
             }
 
             InitializeButtonStates();
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Input
             Disconnected.Invoke(this, null);
         }
 
-        public override string DeviceName { get; }
+        public override string Name { get; }
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 

@@ -52,13 +52,12 @@ namespace SiliconStudio.Xenko.Input
 
         private void Touched(NSSet touchesSet, UIEvent evt)
         {
-            var touches = touchesSet.ToArray<UITouch>();
-
-            if (touches != null)
+            if (touchesSet != null)
             {
                 // Convert touches to pointer events
-                foreach (var uitouch in touches)
+                foreach (var item in touchesSet)
                 {
+                    var uitouch = (UITouch)item;
                     var pointerEvent = new PointerInputEvent();
                     var touchId = uitouch.Handle.ToInt32();
                     

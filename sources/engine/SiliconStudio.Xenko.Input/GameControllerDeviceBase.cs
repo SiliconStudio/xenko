@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
         protected bool[] PovEnabledStates;
         private readonly List<InputEvent> eventQueue = new List<InputEvent>();
 
-        public abstract string DeviceName { get; }
+        public abstract string Name { get; }
 
         public abstract Guid Id { get; }
 

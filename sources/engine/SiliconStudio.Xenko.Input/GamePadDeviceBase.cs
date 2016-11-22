@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Input
 {
     public abstract class GamePadDeviceBase : IGamePadDevice
     {
-        public abstract string DeviceName { get; }
+        public abstract string Name { get; }
         public abstract Guid Id { get; }
         public abstract Guid ProductId { get; }
         public abstract GamePadState State { get; }
@@ -69,9 +69,16 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Apply events to gamepad state
-            for (int i = eventStart; i < inputEvents.Count; i++)
+            for (int i = eventStart; i < inputEvents.Count;)
             {
-                state.Update(inputEvents[i]);
+                if (!state.Update(inputEvents[i]))
+                {
+                    // Discard event, since it didn't affect the state
+                    InputManager.PoolInputEvent(inputEvents[i]); // Put event back into event pool
+                    inputEvents.RemoveAt(i);
+                }
+                else
+                    i++;
             }
         }
     }

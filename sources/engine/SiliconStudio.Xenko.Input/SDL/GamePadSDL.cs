@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 
 namespace SiliconStudio.Xenko.Input
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
         public GamePadSDL(InputManager inputManager, GameControllerSDL controller, GamePadLayout layout)
             : base(inputManager, controller, layout)
         {
-            DeviceName = controller.DeviceName;
+            Name = controller.Name;
             Id = controller.Id;
             ProductId = controller.ProductId;
         }
@@ -24,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
             set { SetIndexInternal(value, false); }
         }
 
-        public override string DeviceName { get; }
+        public override string Name { get; }
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 
@@ -34,3 +35,4 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 }
+#endif

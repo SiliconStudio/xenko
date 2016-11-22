@@ -4,38 +4,51 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SharpDX;
 using SharpDX.DirectInput;
+using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input
 {
     public class GameControllerDirectInput : GameControllerDeviceBase, IDisposable
     {
-        private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
-        private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
-        private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
+        private static readonly Dictionary<Guid, int> GuidToAxisOffsets =new Dictionary<Guid, int>
+        {
+            [ObjectGuid.XAxis] = 0,
+            [ObjectGuid.YAxis] = 1,
+            [ObjectGuid.ZAxis] = 2,
+            [ObjectGuid.RxAxis] = 3,
+            [ObjectGuid.RyAxis] = 4,
+            [ObjectGuid.RzAxis] = 5,
+            [ObjectGuid.Slider] = 6,
+        };
 
-        private CustomGamePad gamepad;
-        private CustomGamePadState state = new CustomGamePadState();
+        private readonly List<GameControllerButtonInfo> buttonInfos = new List<GameControllerButtonInfo>();
+        private readonly List<DirectInputAxisInfo> axisInfos = new List<DirectInputAxisInfo>();
+        private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
+        
+        //private DirectInputGameController gamepad;
+        private DirectInputJoystick joystick;
+        private DirectInputState state = new DirectInputState();
 
         public GameControllerDirectInput(DirectInput directInput, DeviceInstance instance)
         {
-            DeviceName = instance.InstanceName.TrimEnd('\0');
+            Name = instance.InstanceName.TrimEnd('\0');
             Id = instance.InstanceGuid;
             ProductId = instance.ProductGuid;
-            gamepad = new CustomGamePad(directInput, instance.InstanceGuid);
-            var objects = gamepad.GetObjects();
+            joystick = new DirectInputJoystick(directInput, instance.InstanceGuid);
+            var objects = joystick.GetObjects();
+
+            int sliderCount = 0;
             foreach (var obj in objects)
             {
                 var objectId = obj.ObjectId;
+                string objectName = obj.Name.TrimEnd('\0');
+                
                 GameControllerObjectInfo objInfo = null;
                 if (objectId.HasAnyFlag(DeviceObjectTypeFlags.Button | DeviceObjectTypeFlags.PushButton | DeviceObjectTypeFlags.ToggleButton))
                 {
-                    if (buttonInfos.Count == CustomGamePadStateRaw.MaxSupportedButtons)
-                    {
-                        // Maximum amount of supported buttons reached, don't register any more
-                        continue;
-                    }
                     var btn = new GameControllerButtonInfo();
                     btn.Type = objectId.HasFlags(DeviceObjectTypeFlags.ToggleButton) ? GameControllerButtonType.ToggleButton : GameControllerButtonType.PushButton;
                     objInfo = btn;
@@ -43,23 +56,22 @@ namespace SiliconStudio.Xenko.Input
                 }
                 else if (objectId.HasAnyFlag(DeviceObjectTypeFlags.Axis | DeviceObjectTypeFlags.AbsoluteAxis | DeviceObjectTypeFlags.RelativeAxis))
                 {
-                    if (axisInfos.Count == CustomGamePadStateRaw.MaxSupportedAxes)
+                    var axis = new DirectInputAxisInfo();
+                    if (!GuidToAxisOffsets.TryGetValue(obj.ObjectType, out axis.Offset))
                     {
-                        // Maximum amount of supported axes reached, don't register any more
+                        // Axis that should not be used, since it does not map to a valid object guid
                         continue;
                     }
 
-                    var axis = new GameControllerAxisInfo();
+                    // All objects after x/y/z and x/y/z rotation are sliders
+                    if (obj.ObjectType == ObjectGuid.Slider)
+                        axis.Offset += sliderCount++;
+                    
                     objInfo = axis;
                     axisInfos.Add(axis);
                 }
                 else if (objectId.HasFlags(DeviceObjectTypeFlags.PointOfViewController))
                 {
-                    if (povControllerInfos.Count == CustomGamePadStateRaw.MaxSupportedPovControllers)
-                    {
-                        // Maximum amount of supported pov controllers reached, don't register any more
-                        continue;
-                    }
                     var pov = new PovControllerInfo();
                     objInfo = pov;
                     povControllerInfos.Add(pov);
@@ -67,60 +79,55 @@ namespace SiliconStudio.Xenko.Input
 
                 if (objInfo != null)
                 {
-                    objInfo.Index = obj.ObjectId.InstanceNumber;
-                    objInfo.Name = obj.Name.TrimEnd('\0');
+                    objInfo.Name = objectName;
                 }
             }
-
-            buttonInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
-            axisInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
-            povControllerInfos.Sort((a, b) => a.Index.CompareTo(b.Index));
-
-            // Allocate storage on state
-            state.Buttons = new bool[buttonInfos.Count];
-            state.Axes = new float[axisInfos.Count];
-            state.PovControllers = new int[povControllerInfos.Count];
             
+            // Sort objects
+            axisInfos.Sort((a, b) => a.Offset.CompareTo(b.Offset));
+
             InitializeButtonStates();
         }
-        
+
         public void Dispose()
         {
-            gamepad.Dispose();
-            if(Disconnected == null)
+            joystick.Dispose();
+            if (Disconnected == null)
                 throw new InvalidOperationException("Something should handle controller disconnect");
             Disconnected.Invoke(this, null);
         }
 
-        public override string DeviceName { get; }
+        public override string Name { get; }
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
-        
+
         public event EventHandler Disconnected;
 
         public override void Update(List<InputEvent> inputEvents)
         {
             try
             {
-                gamepad.Acquire();
-                gamepad.Poll();
-                gamepad.GetCurrentState(ref state);
+                joystick.Acquire();
+                joystick.Poll();
+                joystick.GetCurrentState(ref state);
                 for (int i = 0; i < buttonInfos.Count; i++)
                 {
                     HandleButton(i, state.Buttons[i]);
                 }
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
-                    HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[i] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
+                    HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[axisInfos[i].Offset] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));
                 }
+
                 for (int i = 0; i < povControllerInfos.Count; i++)
                 {
-                    float v = state.PovControllers[i]/36000.0f;
-                    HandlePovController(i, v, state.PovControllers[i] >= 0);
+                    int povController = state.PovControllers[i];
+                    float v = povController / 36000.0f;
+                    HandlePovController(i, v, povController >= 0);
                 }
             }
             catch (SharpDXException)
@@ -130,6 +137,12 @@ namespace SiliconStudio.Xenko.Input
 
             base.Update(inputEvents);
         }
+
+        public class DirectInputAxisInfo : GameControllerAxisInfo
+        {
+            public int Offset;
+        }
     }
 }
+
 #endif

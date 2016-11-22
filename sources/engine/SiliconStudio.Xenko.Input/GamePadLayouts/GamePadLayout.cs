@@ -18,7 +18,9 @@ namespace SiliconStudio.Xenko.Input
         protected bool MapFirstPovToPad = true;
 
         private List<GamePadButton> buttonMap = new List<GamePadButton>();
+        private List<GamePadButton> axisToButtonMap = new List<GamePadButton>();
         private List<MappedAxis> axisMap = new List<MappedAxis>();
+        private List<MappedAxis> buttonsToTriggerMap = new List<MappedAxis>();
 
         /// <summary>
         /// Compares a product id
@@ -68,15 +70,26 @@ namespace SiliconStudio.Xenko.Input
             var buttonEvent = controllerEvent as GameControllerButtonEvent;
             if (buttonEvent != null)
             {
-                if (buttonEvent.Index < buttonMap.Count)
+                if (buttonEvent.Index < buttonMap.Count && 
+                    buttonMap[buttonEvent.Index] != GamePadButton.None)
                 {
-                    if (buttonMap[buttonEvent.Index] == GamePadButton.None)
-                        return;
-
                     GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
                     buttonEvent1.Button = buttonMap[buttonEvent.Index];
                     buttonEvent1.State = buttonEvent.State;
                     target.Add(buttonEvent1);
+                }
+
+                if (buttonEvent.Index < buttonsToTriggerMap.Count && 
+                    buttonsToTriggerMap[buttonEvent.Index].Axis != GamePadAxis.None)
+                {
+                    var mappedAxis = buttonsToTriggerMap[buttonEvent.Index];
+
+                    GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(targetDevice);
+                    axisEvent1.Axis = mappedAxis.Axis;
+                    axisEvent1.Value = buttonEvent.State == ButtonState.Down ? 1.0f : 0.0f;
+                    if (mappedAxis.Invert)
+                        axisEvent1.Value = -axisEvent1.Value;
+                    target.Add(axisEvent1);
                 }
             }
             else
@@ -84,14 +97,12 @@ namespace SiliconStudio.Xenko.Input
                 var axisEvent = controllerEvent as GameControllerAxisEvent;
                 if (axisEvent != null)
                 {
-                    if (axisEvent.Index < axisMap.Count)
+                    if (axisEvent.Index < axisMap.Count && 
+                        axisMap[axisEvent.Index].Axis != GamePadAxis.None)
                     {
                         var mappedAxis = axisMap[axisEvent.Index];
-                        if (mappedAxis.Axis == GamePadAxis.None)
-                            return;
 
                         GamePadAxisEvent axisEvent1 = InputEventPool<GamePadAxisEvent>.GetOrCreate(targetDevice);
-
                         axisEvent1.Axis = mappedAxis.Axis;
                         if (mappedAxis.Invert)
                             axisEvent1.Value = -axisEvent.Value;
@@ -105,6 +116,14 @@ namespace SiliconStudio.Xenko.Input
                         }
 
                         target.Add(axisEvent1);
+                    }
+                    if (axisEvent.Index < axisToButtonMap.Count &&
+                        axisToButtonMap[axisEvent.Index] != GamePadButton.None)
+                    {
+                        GamePadButtonEvent buttonEvent1 = InputEventPool<GamePadButtonEvent>.GetOrCreate(targetDevice);
+                        buttonEvent1.Button = axisToButtonMap[axisEvent.Index];
+                        buttonEvent1.State = axisEvent.Value > 0.5f ? ButtonState.Down : ButtonState.Up;
+                        target.Add(buttonEvent1);
                     }
                 }
                 else if (MapFirstPovToPad)
@@ -136,20 +155,43 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <param name="index">The button index of the button on this device</param>
         /// <param name="button">The button(s) to map to</param>
-        protected void AddButtonMapping(int index, GamePadButton button)
+        protected void AddButtonToButton(int index, GamePadButton button)
         {
             while (buttonMap.Count <= index) buttonMap.Add(GamePadButton.None);
             buttonMap[index] = button;
         }
 
         /// <summary>
+        /// Adds a mapping from an axis index to <see cref="GamePadButton"/>
+        /// </summary>
+        /// <param name="index">The axis index of the axis on this device</param>
+        /// <param name="button">The button(s) to map to</param>
+        protected void AddAxisToButton(int index, GamePadButton button)
+        {
+            while (axisToButtonMap.Count <= index) axisToButtonMap.Add(GamePadButton.None);
+            axisToButtonMap[index] = button;
+        }
+        
+        /// <summary>
+        /// Adds a mapping from a button index to <see cref="GamePadAxis"/>
+        /// </summary>
+        /// <param name="index">The button index of the button on this device</param>
+        /// <param name="axis">The axi to map to</param>
+        /// <param name="invert">Should axis be inverted, output -1 instead of 1 on press</param>
+        protected void AddButtonToAxis(int index, GamePadAxis axis, bool invert = false)
+        {
+            while (buttonsToTriggerMap.Count <= index) buttonsToTriggerMap.Add(new MappedAxis { Axis = GamePadAxis.None });
+            buttonsToTriggerMap[index] = new MappedAxis { Axis = axis, Invert = invert, Remap = false };
+        }
+
+        /// <summary>
         /// Adds a mapping from an axis index to <see cref="GamePadAxis"/>
         /// </summary>
         /// <param name="index">The axis index of the axis on this device</param>
-        /// <param name="axis">The axis/axes to map to</param>
+        /// <param name="axis">The axis to map to</param>
         /// <param name="invert">Should axis be inverted</param>
         /// <param name="remap">Remap this axis from (-1,1) to (0,1)</param>
-        protected void AddAxisMapping(int index, GamePadAxis axis, bool invert = false, bool remap = false)
+        protected void AddAxisToAxis(int index, GamePadAxis axis, bool invert = false, bool remap = false)
         {
             while (axisMap.Count <= index) axisMap.Add(new MappedAxis { Axis = GamePadAxis.None });
             axisMap[index] = new MappedAxis { Axis = axis, Invert = invert, Remap = remap };

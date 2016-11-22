@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index} ({GameController.PovControllerInfos[Index].Name}), {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GameController)}: {GameController.DeviceName}";
+            return $"{nameof(Index)}: {Index} ({GameController.PovControllerInfos[Index].Name}), {nameof(Value)}: {Value}, {nameof(Enabled)}: {Enabled}, {nameof(GameController)}: {GameController.Name}";
         }
     }
 }

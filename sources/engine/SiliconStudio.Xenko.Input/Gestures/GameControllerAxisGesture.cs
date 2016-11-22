@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public void ProcessEvent(GameControllerAxisEvent inputEvent)
         {
-            if (inputEvent.GameController.Id == controllerId)
+            if (inputEvent.GameController.Id == controllerId || controllerId == Guid.Empty)
             {
                 if (inputEvent.Index == Index)
                     UpdateAxis(inputEvent.Value, inputEvent.Device);

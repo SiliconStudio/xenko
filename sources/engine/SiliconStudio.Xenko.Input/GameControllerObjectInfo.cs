@@ -9,12 +9,6 @@ namespace SiliconStudio.Xenko.Input
     public class GameControllerObjectInfo
     {
         /// <summary>
-        /// The index of this type of object, as reported by the device
-        /// </summary>
-        /// <remarks>Each category (button,axis,pov) has it's own index counter</remarks>
-        public int Index;
-
-        /// <summary>
         /// The name of the object, reported by the device
         /// </summary>
         public string Name;

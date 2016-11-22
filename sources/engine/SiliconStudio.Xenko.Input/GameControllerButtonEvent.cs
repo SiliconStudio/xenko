@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(Index)}: {Index} ({GameController.ButtonInfos[Index].Name}), {nameof(State)}: {State}, {nameof(GameController)}: {GameController.DeviceName}";
+            return $"{nameof(Index)}: {Index} ({GameController.ButtonInfos[Index].Name}), {nameof(State)}: {State}, {nameof(GameController)}: {GameController.Name}";
         }
     }
 }

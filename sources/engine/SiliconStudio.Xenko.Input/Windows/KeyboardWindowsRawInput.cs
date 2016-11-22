@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
             Priority = 100;
         }
 
-        public override string DeviceName => "Windows Keyboard (Raw Input)";
+        public override string Name => "Windows Keyboard (Raw Input)";
         public override Guid Id => new Guid("d7437ff5-d14f-4491-9673-377b6d0e241c");
     }
 }

@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
         public override string ToString()
         {
             return
-                $"Pointer {PointerId} {EventType}, {Position}, Delta: {DeltaPosition}/{AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.DeviceName}";
+                $"Pointer {PointerId} {EventType}, {Position}, Delta: {DeltaPosition}/{AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(PointerType)}: {PointerType}, {nameof(Pointer)}: {Pointer.Name}";
         }
 
         /// <summary>

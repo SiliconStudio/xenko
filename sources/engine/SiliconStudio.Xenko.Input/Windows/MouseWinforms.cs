@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.SizeChanged -= OnSizeChanged;
         }
 
-        public override string DeviceName => "Windows Mouse";
+        public override string Name => "Windows Mouse";
         public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
         public override bool IsPositionLocked => isMousePositionLocked;
         public override PointerType Type => PointerType.Mouse;

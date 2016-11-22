@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         private List<Keys> downKeys = new List<Keys>();
 
         public IReadOnlyList<Keys> DownKeys => downKeys;
-        public abstract string DeviceName { get; }
+        public abstract string Name { get; }
         public abstract Guid Id { get; }
         public int Priority { get; set; }
         

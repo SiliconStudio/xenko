@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
         private Vector2 invSurfaceSize;
         private float aspectRatio;
         
-        public abstract string DeviceName { get; }
+        public abstract string Name { get; }
         public abstract Guid Id { get; }
         public abstract PointerType Type { get; }
         public int Priority { get; set; }

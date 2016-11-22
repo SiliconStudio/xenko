@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Input
             richTextBox?.Dispose();
         }
 
-        public override string DeviceName => "Windows Keyboard";
+        public override string Name => "Windows Keyboard";
         public override Guid Id => new Guid("027cf994-681f-4ed5-b38f-ce34fc295b8f");
 
         public override void Update(List<InputEvent> inputEvents)

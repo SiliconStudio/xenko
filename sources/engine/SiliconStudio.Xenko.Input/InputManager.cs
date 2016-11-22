@@ -555,7 +555,7 @@ namespace SiliconStudio.Xenko.Input
         {
             inputDevices.Add(device, source);
             if (inputDevicesById.ContainsKey(device.Id))
-                throw new InvalidOperationException($"Device with Id {device.Id}({device.DeviceName}) already registered to {inputDevicesById[device.Id].DeviceName}");
+                throw new InvalidOperationException($"Device with Id {device.Id}({device.Name}) already registered to {inputDevicesById[device.Id].Name}");
             inputDevicesById.Add(device.Id, device);
 
             if (device is IKeyboardDevice)

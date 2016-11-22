@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
                 Priority = -1000;
             }
 
-            public override string DeviceName => "Simulated Keyboard";
+            public override string Name => "Simulated Keyboard";
             public override Guid Id => new Guid(10, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
             public void SimulateDown(Keys key)
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Input
                 SetSurfaceSize(Vector2.One);
             }
 
-            public override string DeviceName => "Simulated Mouse";
+            public override string Name => "Simulated Mouse";
             public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
             public override bool IsPositionLocked => false;
             

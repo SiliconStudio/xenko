@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Input
@@ -15,9 +14,8 @@ namespace SiliconStudio.Xenko.Input
 
         static GamePadLayouts()
         {
-            // Add default layouts
-            AddLayout(new GamePadLayoutDS4());
-            AddLayout(new GamePadLayoutXInput());
+            // Register layouts from the mapping database
+            GameControllerDb.RegisterLayouts();
         }
 
         /// <summary>

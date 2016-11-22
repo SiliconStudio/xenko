@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Name for this device
         /// </summary>
-        string DeviceName { get; }
+        string Name { get; }
 
         /// <summary>
         /// Unique Id for this device

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Input
     {
         public NamedSensor(string systemName, string sensorName)
         {
-            DeviceName = $"{systemName} {sensorName} Sensor";
+            Name = $"{systemName} {sensorName} Sensor";
             Id = InputDeviceUtils.DeviceNameToGuid(systemName + sensorName);
         }
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <inheritdoc />
-        public string DeviceName { get; }
+        public string Name { get; }
 
         /// <inheritdoc />
         public Guid Id { get; }

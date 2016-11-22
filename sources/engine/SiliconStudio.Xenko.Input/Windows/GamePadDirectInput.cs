@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Input
         public GamePadDirectInput(InputManager inputManager, GameControllerDirectInput controller, GamePadLayout layout)
             : base(inputManager, controller, layout)
         {
-            DeviceName = controller.DeviceName;
+            Name = controller.Name;
             Id = controller.Id;
             ProductId = controller.ProductId;
         }
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
             set { SetIndexInternal(value, false); }
         }
 
-        public override string DeviceName { get; }
+        public override string Name { get; }
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 

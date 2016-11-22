@@ -59,9 +59,8 @@ namespace SiliconStudio.Xenko.Input
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gameController = InputDevices[deviceIdToRemove] as GameControllerSDL;
+                var gameController = InputDevices[deviceIdToRemove];
                 UnregisterDevice(gameController);
-                gameController.Dispose();
             }
             devicesToRemove.Clear();
         }

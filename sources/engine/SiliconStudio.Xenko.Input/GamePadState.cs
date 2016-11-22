@@ -101,66 +101,81 @@ namespace SiliconStudio.Xenko.Input
         {
             return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
         }
-        
+
         /// <summary>
         /// Updates the state from any gamepad events received that have mapped buttons
         /// </summary>
         /// <param name="evt">The gamepad event to process</param>
-        public void Update(InputEvent evt)
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(InputEvent evt)
         {
             var buttonEvent = evt as GamePadButtonEvent;
             if (buttonEvent != null)
             {
-                Update(buttonEvent);
-                return;
+                return Update(buttonEvent);
             }
             var axisEvent = evt as GamePadAxisEvent;
             if (axisEvent != null)
             {
-                Update(axisEvent);
-                return;
+                return Update(axisEvent);
             }
+            return false;
         }
 
         /// <summary>
         /// Updates the state from any gamepad events received that have mapped buttons
         /// </summary>
         /// <param name="buttonEvent">The gamepad event to process</param>
-        public void Update(GamePadButtonEvent buttonEvent)
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(GamePadButtonEvent buttonEvent)
         {
             if (buttonEvent.State == ButtonState.Down)
+            {
+                if ((Buttons & buttonEvent.Button) != 0)
+                    return false;
                 Buttons |= buttonEvent.Button; // Set bits
+            }
             else
+            {
+                if ((Buttons & buttonEvent.Button) == 0)
+                    return false;
                 Buttons &= ~buttonEvent.Button; // Clear bits
+            }
+            return true;
         }
 
         /// <summary>
         /// Updates the state from any gamepad events received that have mapped buttons
         /// </summary>
         /// <param name="axisEvent">The gamepad event to process</param>
-        public void Update(GamePadAxisEvent axisEvent)
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(GamePadAxisEvent axisEvent)
         {
             switch (axisEvent.Axis)
             {
                 case GamePadAxis.LeftThumbX:
-                    LeftThumb.X = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref LeftThumb.X, axisEvent);
                 case GamePadAxis.LeftThumbY:
-                    LeftThumb.Y = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref LeftThumb.Y, axisEvent);
                 case GamePadAxis.RightThumbX:
-                    RightThumb.X = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref RightThumb.X, axisEvent);
                 case GamePadAxis.RightThumbY:
-                    RightThumb.Y = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref RightThumb.Y, axisEvent);
                 case GamePadAxis.LeftTrigger:
-                    LeftTrigger = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref LeftTrigger, axisEvent);
                 case GamePadAxis.RightTrigger:
-                    RightTrigger = axisEvent.Value;
-                    break;
+                    return UpdateFloat(ref RightTrigger, axisEvent);
             }
+            return false;
+        }
+
+        private bool UpdateFloat(ref float a, GamePadAxisEvent evt)
+        {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (a == evt.Value)
+                return false;
+            a = evt.Value;
+            return true;
         }
     }
 }

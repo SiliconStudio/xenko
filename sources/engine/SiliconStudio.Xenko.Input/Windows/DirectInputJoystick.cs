@@ -7,12 +7,12 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class CustomGamePad : CustomDevice<CustomGamePadState, CustomGamePadStateRaw, JoystickUpdate>
+    public class DirectInputJoystick : CustomDevice<DirectInputState, RawJoystickState, JoystickUpdate>
     {
-        public CustomGamePad(IntPtr nativePtr) : base(nativePtr)
+        public DirectInputJoystick(IntPtr nativePtr) : base(nativePtr)
         {
         }
-        public CustomGamePad(DirectInput directInput, Guid deviceGuid) : base(directInput, deviceGuid)
+        public DirectInputJoystick(DirectInput directInput, Guid deviceGuid) : base(directInput, deviceGuid)
         {
         }
     }

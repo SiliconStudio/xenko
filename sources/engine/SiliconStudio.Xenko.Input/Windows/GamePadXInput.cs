@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
             Disconnected.Invoke(this, null);
         }
 
-        public override string DeviceName => $"XInput GamePad {Index}";
+        public override string Name => $"XInput GamePad {Index}";
         public override Guid Id { get; }
         public override Guid ProductId { get; }
 

@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             WriteLine("Game Controllers:");
             foreach(var controller in Input.GameControllers)
             {
-                WriteLine($"Name: \"{controller.DeviceName}\"", 1);
+                WriteLine($"Name: \"{controller.Name}\"", 1);
                 WriteLine($"ID: {controller.Id}", 2);
                 WriteLine($"PID: {controller.ProductId}", 2);
                 var gamePad = controller as IGamePadDevice;

@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return $"{nameof(Button)}: {Button}, {nameof(State)}: {State}, {nameof(Mouse)}: {Mouse.DeviceName}";
+            return $"{nameof(Button)}: {Button}, {nameof(State)}: {State}, {nameof(Mouse)}: {Mouse.Name}";
         }
     }
 }
