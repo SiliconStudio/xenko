@@ -55,6 +55,9 @@ namespace SiliconStudio.Xenko.Input
         
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputManager"/> class.
+        /// </summary>
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;

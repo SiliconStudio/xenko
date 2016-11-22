@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Clones the pointer event, this is usefull if you intend to use it after this frame, since otherwise it would be recycled by the input manager the next frame
+        /// Clones the pointer event, this is useful if you intend to use it after this frame, since otherwise it would be recycled by the input manager the next frame
         /// </summary>
         /// <returns>The cloned event</returns>
         public PointerEvent Clone()

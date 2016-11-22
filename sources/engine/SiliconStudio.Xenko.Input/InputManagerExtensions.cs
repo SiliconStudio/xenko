@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Input
     public static class InputManagerExtensions
     {
         /// <summary>
-        /// Injects a Key down event into the events stack, requires SimulatedInputSource to be enabled
+        /// Injects a Key down event into the events stack, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Injects a Key up (release) event into the events stack, requires SimulatedInputSource to be enabled
+        /// Injects a Key up (release) event into the events stack, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="key">the key you want to simulate</param>
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Simulate mouse button presses, requires SimulatedInputSource to be enabled
+        /// Simulate mouse button presses, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="button">the mouse button</param>
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Simulate mouse button releases, requires SimulatedInputSource to be enabled
+        /// Simulate mouse button releases, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="button">the mouse button</param>
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Simulates pointer down events, requires SimulatedInputSource to be enabled
+        /// Simulates pointer down events, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Simulates pointer move events, requires SimulatedInputSource to be enabled
+        /// Simulates pointer move events, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Simulates pointer up events, requires SimulatedInputSource to be enabled
+        /// Simulates pointer up events, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
         /// <param name="coords">the coordinates (0.0 -> 1.0) on the screen</param>

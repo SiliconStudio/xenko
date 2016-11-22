@@ -9,32 +9,26 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Describes a sensor that implements Enabled/Disable and provides a name/guid set from constructor
     /// </summary>
-    public class NamedSensor : ISensorDevice
+    internal class NamedSensor : ISensorDevice
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedSensor"/> class.
+        /// </summary>
         public NamedSensor(string systemName, string sensorName)
         {
             Name = $"{systemName} {sensorName} Sensor";
             Id = InputDeviceUtils.DeviceNameToGuid(systemName + sensorName);
         }
 
-        /// <inheritdoc />
         public void Dispose()
         {
         }
 
-        /// <inheritdoc />
         public string Name { get; }
-
-        /// <inheritdoc />
         public Guid Id { get; }
-
-        /// <inheritdoc />
         public int Priority { get; set; }
-
-        /// <inheritdoc />
         public bool IsEnabled { get; set; }
-        
-        /// <inheritdoc />
+
         public virtual void Update(List<InputEvent> inputEvents)
         {
         }

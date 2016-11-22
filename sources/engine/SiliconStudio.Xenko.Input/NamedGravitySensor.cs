@@ -5,14 +5,16 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class NamedGravitySensor : NamedSensor, IGravitySensor
+    internal class NamedGravitySensor : NamedSensor, IGravitySensor
     {
         public Vector3 Vector => VectorInternal;
         internal Vector3 VectorInternal;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedGravitySensor"/> class.
+        /// </summary>
         public NamedGravitySensor(string systemName) : base(systemName, "Gravity")
         {
         }
-
     }
 }

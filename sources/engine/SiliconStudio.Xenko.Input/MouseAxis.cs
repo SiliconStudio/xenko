@@ -12,10 +12,12 @@ namespace SiliconStudio.Xenko.Input
         /// The horizontal mouse movement
         /// </summary>
         X = 0,
+
         /// <summary>
         /// The vertical mouse movement
         /// </summary>
         Y = 1,
+
         /// <summary>
         /// The scroll wheel
         /// </summary>

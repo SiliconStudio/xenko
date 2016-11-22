@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Does not listen to any event but is used to pass around type that might potentially listen for input events
+    /// Does not listen to any event but is used to pass around a type that might potentially listen for input events
     /// </summary>
     public interface IInputEventListener
     {

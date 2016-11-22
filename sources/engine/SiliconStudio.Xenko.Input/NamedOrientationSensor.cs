@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class NamedOrientationSensor : NamedSensor, IOrientationSensor
+    internal class NamedOrientationSensor : NamedSensor, IOrientationSensor
     {
         public float Yaw => yaw;
         public float Pitch => pitch;
@@ -20,11 +20,14 @@ namespace SiliconStudio.Xenko.Input
         private Quaternion quaternion;
         private Matrix rotationMatrix;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedOrientationSensor"/> class.
+        /// </summary>
         public NamedOrientationSensor(string systemName) : base(systemName, "Orientation")
         {
         }
 
-        internal void FromQuaternion(Quaternion q)
+        public void FromQuaternion(Quaternion q)
         {
             quaternion = q;
             rotationMatrix = Matrix.RotationQuaternion(quaternion);
@@ -34,7 +37,7 @@ namespace SiliconStudio.Xenko.Input
             roll = (float)Math.Atan2(2 * (q.W * q.Z + q.X * q.Y), 1 - 2 * (q.Y * q.Y + q.Z * q.Z));
         }
 
-        internal void Reset()
+        public void Reset()
         {
             yaw = 0;
             pitch = 0;

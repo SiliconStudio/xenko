@@ -5,11 +5,14 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class NamedGyroscopeSensor : NamedSensor, IGyroscopeSensor
+    internal class NamedGyroscopeSensor : NamedSensor, IGyroscopeSensor
     {
         public Vector3 RotationRate => RotationRateInternal;
         internal Vector3 RotationRateInternal;
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedGyroscopeSensor"/> class.
+        /// </summary>
         public NamedGyroscopeSensor(string systemName) : base(systemName, "Gyroscope")
         {
         }

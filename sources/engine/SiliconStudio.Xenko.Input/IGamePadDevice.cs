@@ -6,7 +6,7 @@ using System;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// A more specific type of <see cref="IGameControllerDevice"/> that has a fixed button mapping and supports vibration
+    /// A gamepad is a game controller that has a fixed button mapping, stored in <see cref="State"/>
     /// </summary>
     public interface IGamePadDevice : IInputDevice
     {
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Input
         int Index { get; }
 
         /// <summary>
-        /// Raised if the device changed it's assigned index
+        /// Raised if the index assigned to this gamepad changed
         /// </summary>
         event EventHandler<GamePadIndexChangedEventArgs> IndexChanged;
 
@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="largeLeft">The large left side motor</param>
         /// <param name="largeRight">The large right side motor</param>
         /// <remarks>Values range from 0 to 1, where 0 is off and 1 is maximum vibration</remarks>
+        /// <remarks>Currently vibration is only supported on windows for XInput devices and UWP supported gamepads</remarks>
         void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight);
     }
 }
