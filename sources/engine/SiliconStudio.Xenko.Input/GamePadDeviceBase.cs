@@ -43,6 +43,9 @@ namespace SiliconStudio.Xenko.Input
 
         private GamePadState state = new GamePadState();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GamePadFromLayout"/> class.
+        /// </summary>
         protected GamePadFromLayout(InputManager inputManager, IGameControllerDevice controller, GamePadLayout layout)
         {
             InputManager = inputManager;
