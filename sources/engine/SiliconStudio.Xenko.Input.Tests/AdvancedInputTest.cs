@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.ActivatedGestures.Add(longPressGesture);
             Input.ActivatedGestures.Add(compositeGesture);
             Input.ActivatedGestures.Add(tapGesture);
-            
+
             compositeGesture.Changed += (sender, args) =>
             {
                 lastCompositeEvent = Tuple.Create(args, DrawTime.Total);

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -18,16 +19,26 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private readonly List<ButtonGestureEventArgs> events = new List<ButtonGestureEventArgs>();
         private ButtonState lastState;
 
+        public ButtonAction()
+        {
+            Gestures.CollectionChanged += Gestures_CollectionChanged;
+        }
+
         /// <summary>
         /// Last state of the button
         /// </summary>
         public ButtonState LastState => lastState;
 
+        public TrackingCollection<IButtonGesture> Gestures { get; } = new TrackingCollection<IButtonGesture>();
+
+        [DataMemberIgnore]
+        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
+
         /// <summary>
         /// Raised when the action was trigerred
         /// </summary>
         public event EventHandler<ButtonGestureEventArgs> Changed;
-        
+
         public override void Update(TimeSpan deltaTime)
         {
             base.Update(deltaTime);
@@ -40,6 +51,27 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 Changed?.Invoke(this, evt);
             }
             events.Clear();
+        }
+
+        public override string ToString()
+        {
+            return $"Button Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
+        }
+
+        public override bool TryAddGesture(IInputGesture gesture)
+        {
+            var item = gesture as IButtonGesture;
+            if (item != null)
+            {
+                Gestures.Add(item);
+                return true;
+            }
+            return false;
+        }
+
+        public override void Clear()
+        {
+            Gestures.Clear();
         }
 
         protected override void OnGestureAdded(InputGestureBase gesture)
@@ -57,11 +89,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private void ButtonOnChanged(object sender, ButtonGestureEventArgs args)
         {
             events.Add(new ButtonGestureEventArgs(args.Device, args.State));
-        }
-        
-        public override string ToString()
-        {
-            return $"Button Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

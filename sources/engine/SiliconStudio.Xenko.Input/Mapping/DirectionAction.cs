@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input.Gestures;
 
@@ -19,10 +20,20 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private readonly List<DirectionGestureEventArgs> events = new List<DirectionGestureEventArgs>();
         private Vector2 lastState;
 
+        public DirectionAction()
+        {
+            Gestures.CollectionChanged += Gestures_CollectionChanged;
+        }
+
         /// <summary>
         /// Last direction
         /// </summary>
         public Vector2 LastState => lastState;
+        
+        public TrackingCollection<IDirectionGesture> Gestures { get; } = new TrackingCollection<IDirectionGesture>();
+
+        [DataMemberIgnore]
+        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
 
         /// <summary>
         /// Raised when the direction state changed
@@ -43,6 +54,27 @@ namespace SiliconStudio.Xenko.Input.Mapping
             events.Clear();
         }
 
+        public override string ToString()
+        {
+            return $"Direction Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
+        }
+
+        public override bool TryAddGesture(IInputGesture gesture)
+        {
+            var item = gesture as IDirectionGesture;
+            if (item != null)
+            {
+                Gestures.Add(item);
+                return true;
+            }
+            return false;
+        }
+
+        public override void Clear()
+        {
+            Gestures.Clear();
+        }
+
         protected override void OnGestureAdded(InputGestureBase gesture)
         {
             var direction = gesture as IDirectionGesture;
@@ -58,11 +90,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private void DirectionOnChanged(object sender, DirectionGestureEventArgs args)
         {
             events.Add(new DirectionGestureEventArgs(args.Device, args.State));
-        }
-
-        public override string ToString()
-        {
-            return $"Direction Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

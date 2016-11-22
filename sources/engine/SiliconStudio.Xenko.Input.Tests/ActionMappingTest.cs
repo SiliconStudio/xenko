@@ -194,7 +194,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
                 // Print out the tree of gestures, some gestures like TwoWay and FourWay have childrens so expand those using a stack with a gesture/indentation amount pair
                 Stack<Tuple<IInputGesture, int>> gestures = new Stack<Tuple<IInputGesture, int>>();
-                actions[i].Gestures.ForEach(x => gestures.Push(new Tuple<IInputGesture, int>(x, 2)));
+                actions[i].ReadOnlyGestures.ForEach(x => gestures.Push(new Tuple<IInputGesture, int>(x, 2)));
 
                 while (gestures.Count > 0)
                 {
@@ -269,8 +269,8 @@ namespace SiliconStudio.Xenko.Input.Tests
             {
                 if (actionBinder.Done)
                 {
-                    if (resetBindingsOnBind) currentlyBindingAction.Gestures.Clear();
-                    currentlyBindingAction.Gestures.Add(actionBinder.TargetGesture);
+                    if (resetBindingsOnBind) currentlyBindingAction.Clear();
+                    currentlyBindingAction.TryAddGesture(actionBinder.TargetGesture);
                     currentlyBindingAction = null;
                     actionBinder.Dispose();
                     actionBinder = null;
@@ -339,7 +339,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 };
                 clear.Click += (sender, args) =>
                 {
-                    actions[i1].Gestures.Clear();
+                    actions[i1].Clear();
                 };
 
                 stackPanel.Children.Add(new StackPanel
@@ -421,8 +421,9 @@ namespace SiliconStudio.Xenko.Input.Tests
                 //  this will leave all bindings to actions intact and just restore default gesture bindings
                 var action = actionMapping.TryGetAction(defaultAction.MappingName);
                 //var defaultGestures = defaultAction.CloneGestures();
-                action.Gestures.Clear();
-                action.Gestures.AddRange(defaultAction.Gestures);
+                action.Clear();
+                foreach(var gesture in defaultAction.ReadOnlyGestures)
+                    action.TryAddGesture(gesture);
             }
         }
 

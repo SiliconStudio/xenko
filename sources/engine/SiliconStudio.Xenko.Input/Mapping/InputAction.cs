@@ -21,11 +21,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
     {
         internal InputActionMapping ActionMapping;
         private string mappingName;
-        
-        protected InputAction()
-        {
-            Gestures.CollectionChanged += Gestures_CollectionChanged;
-        }
 
         /// <summary>
         /// The name of the action, as registered in the action mapping
@@ -47,8 +42,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// The gestures that are used for this action
         /// </summary>
-        // TODO: Show only respective types of gestures
-        public TrackingCollection<IInputGesture> Gestures { get; } = new TrackingCollection<IInputGesture>();
+        [DataMemberIgnore]
+        public abstract IReadOnlyList<IInputGesture> ReadOnlyGestures { get; }
 
         /// <summary>
         /// Pre update of the input action
@@ -64,6 +59,22 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
         }
 
+        /// <summary>
+        /// Tries to add a gesture to this action
+        /// </summary>
+        /// <param name="gesture">A gesture to add</param>
+        /// <returns><c>true</c> if successful; <c>false</c> if the gesture was not of the correct type for this action</returns>
+        public abstract bool TryAddGesture(IInputGesture gesture);
+
+        /// <summary>
+        /// Removes all the gestures from this action
+        /// </summary>
+        public abstract void Clear();
+
+        /// <summary>
+        /// Creates a copy of this action and all gestures with it
+        /// </summary>
+        /// <returns></returns>
         public InputAction Clone()
         {
             using (var memoryStream = new MemoryStream(4096))
@@ -92,12 +103,16 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <returns>A copy of this input action</returns>
         public List<IInputGesture> CloneGestures()
         {
-            return Clone().Gestures.ToList();
+            return Clone().ReadOnlyGestures.ToList();
         }
 
+        /// <summary>
+        /// Performs a foreach operation on every gesture on this action recursively
+        /// </summary>
+        /// <param name="action"></param>
         public void GestureForEach(Action<IInputGesture> action)
         {
-            foreach (var rootGesture in Gestures)
+            foreach (var rootGesture in ReadOnlyGestures)
             {
                 List<IInputGesture> gestures = new List<IInputGesture>();
                 ((InputGestureBase)rootGesture).GetGesturesRecursive(gestures);
@@ -120,7 +135,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <param name="gesture"></param>
         protected abstract void OnGestureRemoved(InputGestureBase gesture);
 
-        private void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        protected void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var inputManager = ActionMapping?.InputManager;
 

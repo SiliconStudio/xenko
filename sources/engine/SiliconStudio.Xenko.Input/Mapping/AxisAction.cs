@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Input.Gestures;
 
 namespace SiliconStudio.Xenko.Input.Mapping
@@ -17,11 +18,21 @@ namespace SiliconStudio.Xenko.Input.Mapping
     {
         private readonly List<AxisGestureEventArgs> events = new List<AxisGestureEventArgs>();
         private float lastState;
-        
+
+        public AxisAction()
+        {
+            Gestures.CollectionChanged += Gestures_CollectionChanged;
+        }
+
         /// <summary>
         /// Last state of the axis
         /// </summary>
         public float LastState => lastState;
+
+        public TrackingCollection<IAxisGesture> Gestures { get; } = new TrackingCollection<IAxisGesture>();
+
+        [DataMemberIgnore]
+        public override IReadOnlyList<IInputGesture> ReadOnlyGestures => Gestures;
 
         /// <summary>
         /// Raised when the axis state changed
@@ -42,6 +53,27 @@ namespace SiliconStudio.Xenko.Input.Mapping
             events.Clear();
         }
 
+        public override string ToString()
+        {
+            return $"Axis Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
+        }
+
+        public override bool TryAddGesture(IInputGesture gesture)
+        {
+            var item = gesture as IAxisGesture;
+            if (item != null)
+            {
+                Gestures.Add(item);
+                return true;
+            }
+            return false;
+        }
+
+        public override void Clear()
+        {
+            Gestures.Clear();
+        }
+
         protected override void OnGestureAdded(InputGestureBase gesture)
         {
             var axis = gesture as IAxisGesture;
@@ -57,11 +89,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         private void AxisOnChanged(object sender, AxisGestureEventArgs args)
         {
             events.Add(new AxisGestureEventArgs(args.Device, args.State));
-        }
-
-        public override string ToString()
-        {
-            return $"Axis Action \"{MappingName}\", {nameof(LastState)}: {LastState}";
         }
     }
 }

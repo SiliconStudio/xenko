@@ -85,8 +85,9 @@ namespace SiliconStudio.Xenko.Engine
                 //  this will leave all bindings to actions intact and just restore default gesture bindings
                 var action = ActionMappingInternal.TryGetAction(defaultAction.MappingName);
                 var defaultGestures = defaultAction.CloneGestures();
-                action.Gestures.Clear();
-                action.Gestures.AddRange(defaultGestures);
+                action.Clear();
+                foreach(var gesture in defaultGestures)
+                    action.TryAddGesture(gesture);
             }
         }
 
