@@ -223,7 +223,7 @@
     </ItemGroup>
 
     <!-- Read current state -->
-    <ReadLinesFromFile File="$(IntermediateOutputPath)XenkoDir.cache">
+    <ReadLinesFromFile Condition="Exists('$(IntermediateOutputPath)XenkoDir.cache')" File="$(IntermediateOutputPath)XenkoDir.cache">
       <Output TaskParameter="Lines" PropertyName="SiliconStudioXenkoPreviousDir"/>
     </ReadLinesFromFile>
 
