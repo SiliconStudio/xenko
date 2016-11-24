@@ -23,7 +23,8 @@ Hierarchy:
                             90d9553b3c94da408c6e74641aca864b~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0

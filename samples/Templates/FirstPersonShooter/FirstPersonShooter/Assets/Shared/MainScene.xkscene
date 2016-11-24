@@ -9,9 +9,6 @@ SceneSettings:
             9695c8b9c497374cab99958fc24636bf:
                 Name: null
                 Camera: 49a3257d-dfbc-4a64-a8eb-cb4dfe647e67/79c1cebd-d690-4e7f-b9d1-d3a9197c95a2
-            b5441fa7cf7c904fac768f5ad81b5038:
-                Name: null
-                Camera: 3e1c23f8-cb70-4fe4-ba44-044e132cac95/bfc0298f-66a0-4734-a097-2b4493472b4a
         Layers:
             b7e4f82df64eca408bccbad32790b13b:
                 Name: SceneGraphicsLayer
@@ -28,17 +25,6 @@ SceneSettings:
                             Index: 0
                         Output: !CurrentRenderFrameProvider {}
                         Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                        ForceAspectRatio: false
-                    ae5dec08ef63ba4dbb6e1550d401b6b9: !ClearRenderFrameRenderer
-                        ClearFlags: DepthOnly
-                        Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    a047d567e8233f4498616f81bd27c772: !SceneCameraRenderer
-                        Mode: !CameraRendererModeForward {}
-                        Camera:
-                            Index: 1
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 25.0, Height: 25.0}
                         ForceAspectRatio: false
         Master:
             Name: SceneGraphicsLayer
@@ -177,7 +163,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -278,7 +265,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -343,7 +331,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -377,7 +366,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -410,7 +400,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -466,7 +457,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -512,7 +504,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -557,7 +550,8 @@ Hierarchy:
                             ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     87e4f56b172adb4f897ce1addcb0ec93: !StaticColliderComponent
                         Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -623,7 +617,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -694,7 +689,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -725,7 +721,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -759,7 +756,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -826,7 +824,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -860,7 +859,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -891,7 +891,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -999,7 +1000,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1033,7 +1035,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1067,7 +1070,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1101,7 +1105,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1146,7 +1151,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1191,7 +1197,8 @@ Hierarchy:
                             ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     87e4f56b172adb4f897ce1addcb0ec93: !StaticColliderComponent
                         Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1265,7 +1272,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1346,7 +1354,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1380,7 +1389,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1434,7 +1444,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1487,7 +1498,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1521,7 +1533,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1592,7 +1605,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1680,7 +1694,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1737,7 +1752,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1771,7 +1787,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1858,7 +1875,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1914,7 +1932,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1944,7 +1963,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -1978,7 +1998,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2012,7 +2033,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2046,7 +2068,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2080,7 +2103,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2098,19 +2122,6 @@ Hierarchy:
                 BasePartId: 496dab69-b03b-4272-a196-8e81329ce249
                 InstanceId: 897b3e25-eee8-46ca-94a6-f56f230067f1
         -   Entity:
-                Id: 3e1c23f8-cb70-4fe4-ba44-044e132cac95
-                Name: AuxiliaryCamera
-                Components:
-                    eb600f52b1cefe4bbe829c7e6dcd818a: !TransformComponent
-                        Id: 520f60eb-ceb1-4bfe-be82-9c7e6dcd818a
-                        Position: {X: 0.0, Y: 7.0, Z: 2.0}
-                        Rotation: {X: -0.5, Y: 0.0, Z: 0.0, W: 0.8660254}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    8f29c0bfa0663447a0972b4493472b4a: !CameraComponent
-                        Id: bfc0298f-66a0-4734-a097-2b4493472b4a
-                        Projection: Perspective
-        -   Entity:
                 Id: 3e6faf10-53aa-47e5-bf66-f9c63665bdda
                 Name: Wall0x2x5Window
                 Components:
@@ -2127,7 +2138,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2192,7 +2204,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2265,7 +2278,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     899e27d0eeff3143885ea8f5ece8b6bd: !StaticColliderComponent
                         Id: d0279e89-ffee-4331-885e-a8f5ece8b6bd
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2307,7 +2321,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2341,7 +2356,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2375,7 +2391,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2441,7 +2458,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2512,7 +2530,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2579,7 +2598,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2613,7 +2633,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2669,7 +2690,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2702,7 +2724,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2735,7 +2758,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2780,7 +2804,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2825,7 +2850,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2859,7 +2885,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2893,7 +2920,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2939,7 +2967,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -2973,7 +3002,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3043,7 +3073,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3121,7 +3152,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3243,7 +3275,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3287,7 +3320,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3321,7 +3355,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3355,7 +3390,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3389,7 +3425,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3443,7 +3480,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3477,7 +3515,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3525,7 +3564,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3559,7 +3599,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3641,7 +3682,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3675,7 +3717,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3709,7 +3752,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3766,7 +3810,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3800,7 +3845,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3834,7 +3880,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3868,7 +3915,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -3922,7 +3970,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4012,7 +4061,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4046,7 +4096,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4080,7 +4131,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4150,7 +4202,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4218,7 +4271,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4263,7 +4317,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4330,7 +4385,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4364,7 +4420,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4449,7 +4506,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4483,7 +4541,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4578,7 +4637,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4624,7 +4684,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4658,7 +4719,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4868,7 +4930,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     3f1956df049c7a4ea6bb02ca241d9c1e: !StaticColliderComponent
                         Id: df56193f-9c04-4e7a-a6bb-02ca241d9c1e
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4921,7 +4984,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -4964,7 +5028,6 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             e7530b9a6be27e47b405f3991f670c13: 49a3257d-dfbc-4a64-a8eb-cb4dfe647e67/9a0b53e7-e26b-477e-b405-f3991f670c13
-                            eb600f52b1cefe4bbe829c7e6dcd818a: 3e1c23f8-cb70-4fe4-ba44-044e132cac95/520f60eb-ceb1-4bfe-be82-9c7e6dcd818a
                     87c25277a58ea44f81710ca69284e1dd: !CharacterComponent
                         Id: 7752c287-8ea5-4fa4-8171-0ca69284e1dd
                         CollisionGroup: KinematicFilter
@@ -5024,7 +5087,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5104,7 +5168,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5138,7 +5203,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5187,7 +5253,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5262,7 +5329,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5333,7 +5401,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     899e27d0eeff3143885ea8f5ece8b6bd: !StaticColliderComponent
                         Id: d0279e89-ffee-4331-885e-a8f5ece8b6bd
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5376,7 +5445,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5432,7 +5502,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5497,7 +5568,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5531,7 +5603,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5565,7 +5638,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5619,7 +5693,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5691,7 +5766,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5769,7 +5845,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     899e27d0eeff3143885ea8f5ece8b6bd: !StaticColliderComponent
                         Id: d0279e89-ffee-4331-885e-a8f5ece8b6bd
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -5918,7 +5995,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6048,7 +6126,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6082,7 +6161,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6116,7 +6196,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6218,7 +6299,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6307,7 +6389,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6363,7 +6446,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6397,7 +6481,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6519,7 +6604,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6553,7 +6639,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6616,7 +6703,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6687,7 +6775,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6747,7 +6836,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6801,7 +6891,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6835,7 +6926,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     3f1956df049c7a4ea6bb02ca241d9c1e: !StaticColliderComponent
                         Id: df56193f-9c04-4e7a-a6bb-02ca241d9c1e
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6866,7 +6958,8 @@ Hierarchy:
                             74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     899e27d0eeff3143885ea8f5ece8b6bd: !StaticColliderComponent
                         Id: d0279e89-ffee-4331-885e-a8f5ece8b6bd
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6897,7 +6990,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     d85b2b6e072fba4f9eac30a89cde96ea: !StaticColliderComponent
                         Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6931,7 +7025,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -6998,7 +7093,8 @@ Hierarchy:
                             1f66d7610cd6dc4c9b32d800d312e162~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7088,7 +7184,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7137,7 +7234,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7199,7 +7297,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     7788b92a4ec3be43bb9617ff231cfb59: !StaticColliderComponent
                         Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7259,7 +7358,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7341,7 +7441,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     74299af04257e746be4dcca2e071c23f: !StaticColliderComponent
                         Id: f09a2974-5742-46e7-be4d-cca2e071c23f
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7397,7 +7498,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7491,7 +7593,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7554,7 +7657,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7587,7 +7691,8 @@ Hierarchy:
                         Materials: {}
                     e892de73aae78041aa74ca19b0b9f867: !StaticColliderComponent
                         Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7665,7 +7770,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     666529545735244ba050097255e092f8: !StaticColliderComponent
                         Id: 54296566-3557-4b24-a050-097255e092f8
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
@@ -7719,7 +7825,8 @@ Hierarchy:
                             ec9522ed2e91694abd8663b5b8ada228~0: af6015d0-0e5d-4189-b6e0-96810ff58e48:Materials/GridMTWall
                     e15b531c136aed41902227e77c631556: !StaticColliderComponent
                         Id: 1c535be1-6a13-41ed-9022-27e77c631556
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0
