@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,10 +26,8 @@ namespace SiliconStudio.Core
     /// An cool feature of this system is that if a property doesn't exist, it could be generated during first access from a delegate or come from a default value.
     /// </remarks>
     [DataContract]
-    //[DataSerializer(typeof(PropertyContainer.Serializer))]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
-    [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
-    public partial struct PropertyContainer : IDictionary<PropertyKey, object>
+    public struct PropertyContainer : IDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> AccessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
@@ -590,12 +589,13 @@ namespace SiliconStudio.Core
 
         void ICollection<KeyValuePair<PropertyKey, object>>.Add(KeyValuePair<PropertyKey, object> item)
         {
-            ((IDictionary<PropertyKey, object>)this).Add(item.Key, item.Value);
+            SetObject(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Contains(KeyValuePair<PropertyKey, object> item)
         {
-            return properties.ContainsValue(item);
+            object temp;
+            return properties.TryGetValue(item.Key, out temp) && Equals(temp, item.Value);
         }
 
         void ICollection<KeyValuePair<PropertyKey, object>>.CopyTo(KeyValuePair<PropertyKey, object>[] array, int arrayIndex)

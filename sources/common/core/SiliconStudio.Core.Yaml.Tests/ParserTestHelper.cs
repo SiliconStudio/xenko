@@ -130,25 +130,25 @@ namespace SiliconStudio.Core.Yaml.Tests
             return new Scalar(null, null, text, ScalarStyle.Folded, false, true);
         }
 
-        protected SequenceStart BlockSequenceStart { get { return new SequenceStart(null, null, true, YamlStyle.Block); } }
+        protected SequenceStart BlockSequenceStart { get { return new SequenceStart(null, null, true, DataStyle.Normal); } }
 
-        protected SequenceStart FlowSequenceStart { get { return new SequenceStart(null, null, true, YamlStyle.Flow); } }
+        protected SequenceStart FlowSequenceStart { get { return new SequenceStart(null, null, true, DataStyle.Compact); } }
 
         protected SequenceStart AnchoredFlowSequenceStart(string anchor)
         {
-            return new SequenceStart(anchor, null, true, YamlStyle.Flow);
+            return new SequenceStart(anchor, null, true, DataStyle.Compact);
         }
 
         protected SequenceEnd SequenceEnd { get { return new SequenceEnd(); } }
 
-        protected MappingStart BlockMappingStart { get { return new MappingStart(null, null, true, YamlStyle.Block); } }
+        protected MappingStart BlockMappingStart { get { return new MappingStart(null, null, true, DataStyle.Normal); } }
 
         protected MappingStart TaggedBlockMappingStart(string tag)
         {
-            return new MappingStart(null, tag, false, YamlStyle.Block);
+            return new MappingStart(null, tag, false, DataStyle.Normal);
         }
 
-        protected MappingStart FlowMappingStart { get { return new MappingStart(null, null, true, YamlStyle.Flow); } }
+        protected MappingStart FlowMappingStart { get { return new MappingStart(null, null, true, DataStyle.Compact); } }
 
         protected MappingEnd MappingEnd { get { return new MappingEnd(); } }
 

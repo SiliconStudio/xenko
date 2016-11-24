@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.UI
         protected UIElement()
         {
             Id = Guid.NewGuid();
-            DependencyProperties = new PropertyContainer(this);
+            DependencyProperties = new PropertyContainerClass(this);
             VisualChildrenCollection = new UIElementCollection();
         }
         
@@ -92,6 +92,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>A unique ID defining the UI element.</userdoc>
         [DataMember]
         [Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The list of the dependency properties attached to the UI element.</userdoc>
         [DataMember]
-        public PropertyContainer DependencyProperties;
+        public PropertyContainerClass DependencyProperties;
 
         /// <summary>
         /// Gets or sets the LocalMatrix of this element.

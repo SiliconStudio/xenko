@@ -105,12 +105,12 @@ namespace SiliconStudio.Presentation.Quantum
         MemberInfo MemberInfo { get; }
 
         /// <summary>
-        /// Gets whether this node contains a list
+        /// Gets whether this node contains a collection.
         /// </summary>
-        bool HasList { get; }
+        bool HasCollection { get; }
 
         /// <summary>
-        /// Gets whether this node contains a dictionary
+        /// Gets whether this node contains a dictionary.
         /// </summary>
         bool HasDictionary { get; }
 

@@ -1,6 +1,6 @@
 !UILibraryAsset
 Id: 44a9ed4d-847f-4577-8cb1-eabf455799a7
-SerializedVersion: {Xenko: 0.0.0}
+SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
@@ -11,7 +11,6 @@ PublicUIElements:
     dab3aa68-8d2a-4ca6-98d1-2d105b28679f: StatusButton
     efdc3200-c774-4cea-a94d-e0e706bd7c4d: WelcomePopup
 Hierarchy:
-    ~Id: f67153d5-a74e-4414-8f65-220252b45da1
     RootPartIds:
         - 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
         - 3f43a337-c8d0-4d80-830f-dd1621f717cd
@@ -27,13 +26,12 @@ Hierarchy:
                 Margin: {}
                 Name: powerImage
                 Source: !SpriteFromSheet
-                    ~Id: 5bae7c91-b216-4778-88e5-7efc936b46d5
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ModalElement
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
+                    696af3b8f93a6ab92934f3aa98257a3e~Panel.ZIndexPropertyKey: 1
                 Id: 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -52,11 +50,11 @@ Hierarchy:
                 Margin: {}
                 Name: validateText
                 Text: Validate
-                Font: 01cefb45-36c9-48f4-81bd-590e47114e96/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Button
                 DependencyProperties:
-                    GridBase.ColumnPropertyKey: 1
+                    d7d0d5432abcbf7e3a64f7b31109541d~GridBase.ColumnPropertyKey: 1
                 Id: 14f2fc6b-320f-48e3-bfc6-121d8a6e3cfb
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -66,20 +64,17 @@ Hierarchy:
                 Padding: {Left: 90.0, Top: 30.0, Right: 25.0, Bottom: 35.0}
                 Content: !TextBlock ab061694-a406-4e39-b174-c95e023d1b66
                 PressedImage: !SpriteFromSheet
-                    ~Id: c7054327-9ea9-4ed2-956a-d7bcd8f5b133
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
                 NotPressedImage: !SpriteFromSheet
-                    ~Id: 21dcafd7-649d-4999-b262-808300d893b5
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
                 MouseOverImage: !SpriteFromSheet
-                    ~Id: 42807528-9ac5-480d-a40b-bf358ba8f405
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
         -   UIElement: !EditText
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 1
+                    9693d21c8b1a2f328399f7058d38ae76~GridBase.RowPropertyKey: 1
                 Id: 17e65222-cb1c-4e25-9a7e-e8f8807d3d09
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 5
@@ -90,21 +85,18 @@ Hierarchy:
                 MinimumWidth: 340.0
                 Name: nameEditText
                 Padding: {Left: 30.0, Top: 30.0, Right: 30.0, Bottom: 40.0}
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 32.0
                 TextColor: {R: 240, G: 240, B: 240, A: 255}
                 TextAlignment: Center
                 ActiveImage: !SpriteFromSheet
-                    ~Id: c23d4d48-7b44-485c-8222-cc0d4b7adff2
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 17
                 InactiveImage: !SpriteFromSheet
-                    ~Id: d751ddac-8f26-4e81-900a-f8876aafaa4f
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 18
                 MouseOverImage: !SpriteFromSheet
-                    ~Id: cee4350c-22e3-484b-9032-54b91abc64ee
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 18
                 CaretColor: {R: 240, G: 240, B: 240, A: 255}
                 CaretWidth: 1.0
@@ -119,13 +111,13 @@ Hierarchy:
                 Margin: {Left: 5.0, Top: -6.0}
                 Name: statusTextGrid
                 Children:
-                    - !TextBlock a3861d95-b39e-42e4-93ac-a2c26ccbb95f
-                    - !TextBlock 53b7f194-0ab8-4deb-805a-e44f2e64eaff
-                    - !TextBlock 84261ef7-397f-47dd-8504-5dfcc0a11fef
+                    951d86a39eb3e44293aca2c26ccbb95f: !TextBlock a3861d95-b39e-42e4-93ac-a2c26ccbb95f
+                    94f1b753b80aeb4d805ae44f2e64eaff: !TextBlock 53b7f194-0ab8-4deb-805a-e44f2e64eaff
+                    f71e26847f39dd4785045dfcc0a11fef: !TextBlock 84261ef7-397f-47dd-8504-5dfcc0a11fef
                 Rows: 3
         -   UIElement: !ContentDecorator
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 2
+                    e13905c7f34f77e1d58e34cd7c192f99~GridBase.RowPropertyKey: 2
                 Id: 325d3ab0-71eb-4833-9d05-b71f932044b8
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -134,8 +126,7 @@ Hierarchy:
                 Padding: {}
                 Content: !ScrollViewer b271da7f-5529-4149-90a0-6da7b8a8e2e6
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: 3883698d-dbc1-4299-9dc7-bcb53462a058
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 9
         -   UIElement: !Grid
                 DependencyProperties: {}
@@ -144,30 +135,29 @@ Hierarchy:
                 Margin: {}
                 Name: layoutGrid
                 Children:
-                    - !TextBlock a23a1e40-bdc2-417a-8cb0-df68dc17cd06
-                    - !ContentDecorator 325d3ab0-71eb-4833-9d05-b71f932044b8
+                    401e3aa2c2bd7a418cb0df68dc17cd06: !TextBlock a23a1e40-bdc2-417a-8cb0-df68dc17cd06
+                    b03a5d32eb7133489d05b71f932044b8: !ContentDecorator 325d3ab0-71eb-4833-9d05-b71f932044b8
                 RowDefinitions:
-                    -   ~Id: 5fadd1ec-f55f-442e-8c9d-a213ed919518
+                    ecd1ad5f5ff52e448c9da213ed919518:
                         Type: Auto
-                    -   ~Id: 358f1de9-c91f-4c93-b2fc-d434ba13febe
+                    e91d8f351fc9934cb2fcd434ba13febe:
                         Type: Fixed
                         SizeValue: 10.0
-                    -   ~Id: 842d5ea0-3ac5-48f0-969f-5f711ff4ab59
+                    a05e2d84c53af048969f5f711ff4ab59: {}
                 ColumnDefinitions:
-                    -   ~Id: 6856bcd3-31d8-4a1e-89a2-0131e5643935
+                    d3bc5668d8311e4a89a20131e5643935: {}
                 LayerDefinitions:
-                    -   ~Id: d453c92e-4893-4553-95d5-cca95ba2cd7a
+                    2ec953d49348534595d5cca95ba2cd7a: {}
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
+                    2e61848fc0361e45d70c279cd74aacde~Panel.ZIndexPropertyKey: 1
                 Id: 3df05212-2ebb-4b80-b63d-82c8c5181fc0
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Visibility: Hidden
                 Margin: {}
                 Name: lockIcon
                 Source: !SpriteFromSheet
-                    ~Id: a15c1b6c-94a7-4490-ab2a-1c68723cb425
-                    Sheet: f914aa94-46ab-418b-bae0-77ba35744f07/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 4
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchType: Fill
@@ -179,8 +169,8 @@ Hierarchy:
                 MaximumHeight: 100.0
                 Name: ShipButton
                 Children:
-                    - !Button be001fe1-6608-4bfe-b639-702029d9ffa1
-                    - !ImageElement 3df05212-2ebb-4b80-b63d-82c8c5181fc0
+                    e11f00be0866fe4bb639702029d9ffa1: !Button be001fe1-6608-4bfe-b639-702029d9ffa1
+                    1252f03dbb2e804bb63d82c8c5181fc0: !ImageElement 3df05212-2ebb-4b80-b63d-82c8c5181fc0
         -   UIElement: !ContentDecorator
                 DependencyProperties: {}
                 Id: 4a091c2c-0978-404f-99b3-dbf13f6468f5
@@ -193,12 +183,11 @@ Hierarchy:
                 Padding: {}
                 Content: !ImageElement bb0e5ff1-a42a-4aba-aae0-c000d6098595
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: 4a71f299-4e0f-443b-ae7f-4fdaed3418c0
-                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 7
         -   UIElement: !TextBlock
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 1
+                    f75185e943650326cb016ad28fab1cb9~GridBase.RowPropertyKey: 1
                 Id: 53b7f194-0ab8-4deb-805a-e44f2e64eaff
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Left
@@ -206,12 +195,12 @@ Hierarchy:
                 Margin: {}
                 Name: controlText
                 Text: Control
-                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !Button
                 DependencyProperties:
-                    GridBase.ColumnPropertyKey: 3
+                    4bb09791328ed5b45cb57ed818b51dcb~GridBase.ColumnPropertyKey: 3
                 Id: 54f5ff1d-4e87-4ba9-9fd5-e585f02f4ac1
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -221,39 +210,36 @@ Hierarchy:
                 Padding: {Left: 90.0, Top: 30.0, Right: 25.0, Bottom: 35.0}
                 Content: !TextBlock 0ef632cb-94ee-4836-b983-05975c6b6e62
                 PressedImage: !SpriteFromSheet
-                    ~Id: c7054327-9ea9-4ed2-956a-d7bcd8f5b133
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
                 NotPressedImage: !SpriteFromSheet
-                    ~Id: 21dcafd7-649d-4999-b262-808300d893b5
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
                 MouseOverImage: !SpriteFromSheet
-                    ~Id: 42807528-9ac5-480d-a40b-bf358ba8f405
-                    Sheet: 1e3398df-dd15-4813-9b81-0a1defd66a85/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
         -   UIElement: !Grid
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 2
+                    1d677c4788c9341114ccb130e5982762~GridBase.RowPropertyKey: 2
                 Id: 56441c6b-3ffd-49d3-afa7-3e6d3498a682
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: buttonPanel
                 Children:
-                    - !Button 14f2fc6b-320f-48e3-bfc6-121d8a6e3cfb
-                    - !Button 54f5ff1d-4e87-4ba9-9fd5-e585f02f4ac1
+                    6bfcf2140f32e348bfc6121d8a6e3cfb: !Button 14f2fc6b-320f-48e3-bfc6-121d8a6e3cfb
+                    1dfff554874ea94b9fd5e585f02f4ac1: !Button 54f5ff1d-4e87-4ba9-9fd5-e585f02f4ac1
                 RowDefinitions:
-                    -   ~Id: f9e132ff-33fc-4a50-a59c-11f6418d3e5e
+                    ff32e1f9fc33504aa59c11f6418d3e5e: {}
                 ColumnDefinitions:
-                    -   ~Id: d7ead41f-3f57-4dc5-9e47-a3ec5d6bff9e
-                    -   ~Id: b651dbe0-bb60-4c91-b9a0-42fa175a5e9f
+                    1fd4ead7573fc54d9e47a3ec5d6bff9e: {}
+                    e0db51b660bb914cb9a042fa175a5e9f:
                         Type: Auto
-                    -   ~Id: b3a64662-3ba6-4636-a1dc-00002f1df3fd
-                    -   ~Id: 642633dd-3ed6-4500-aa1f-8a2534cc47aa
+                    6246a6b3a63b3646a1dc00002f1df3fd: {}
+                    dd332664d63e0045aa1f8a2534cc47aa:
                         Type: Auto
-                    -   ~Id: 71588206-3657-4709-8994-9a6c7adcbbce
+                    068258715736094789949a6c7adcbbce: {}
                 LayerDefinitions:
-                    -   ~Id: 4ec0157c-5b39-4400-bee7-a47f78cb0c07
+                    7c15c04e395b0044bee7a47f78cb0c07: {}
         -   UIElement: !Grid
                 DependencyProperties: {}
                 Id: 58768f72-7962-4070-a314-ff9947177867
@@ -265,55 +251,53 @@ Hierarchy:
                 MaximumHeight: 900.0
                 Name: popupContentPanel
                 Children:
-                    - !TextBlock 67958be9-efe8-40bf-9ff5-6f41765b4d16
-                    - !EditText 17e65222-cb1c-4e25-9a7e-e8f8807d3d09
-                    - !Grid 56441c6b-3ffd-49d3-afa7-3e6d3498a682
+                    e98b9567e8efbf409ff56f41765b4d16: !TextBlock 67958be9-efe8-40bf-9ff5-6f41765b4d16
+                    2252e6171ccb254e9a7ee8f8807d3d09: !EditText 17e65222-cb1c-4e25-9a7e-e8f8807d3d09
+                    6b1c4456fd3fd349afa73e6d3498a682: !Grid 56441c6b-3ffd-49d3-afa7-3e6d3498a682
                 RowDefinitions:
-                    -   ~Id: fd7de2d1-aae3-4ea8-8443-ad00d3d689da
+                    d1e27dfde3aaa84e8443ad00d3d689da:
                         Type: Auto
-                    -   ~Id: 70dfc3f1-9527-4d21-93ee-c25822e72273
-                    -   ~Id: d698a08f-fa8c-46c4-8ea2-d826d82ce51e
+                    f1c3df702795214d93eec25822e72273: {}
+                    8fa098d68cfac4468ea2d826d82ce51e:
                         Type: Auto
                 ColumnDefinitions:
-                    -   ~Id: d0f9d0a6-3d4a-47e3-ab4f-d29f3e493511
+                    a6d0f9d04a3de347ab4fd29f3e493511: {}
                 LayerDefinitions:
-                    -   ~Id: cc8c1659-7851-4d67-b547-d16372d006f4
+                    59168ccc5178674db547d16372d006f4: {}
         -   UIElement: !TextBlock
                 DependencyProperties:
-                    GridBase.RowSpanPropertyKey: 1
+                    a5887c4db6325a1e7f27d3d62db2ca9f~GridBase.RowSpanPropertyKey: 1
                 Id: 67958be9-efe8-40bf-9ff5-6f41765b4d16
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {Left: 20.0, Right: 20.0}
                 Name: welcomeText
                 Text: Welcome to xenko UI sample. Please name your character
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 42.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
                 TextAlignment: Center
                 WrapText: true
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 1
+                    17fd5c810670a4e6f6759de2bc0de5bb~GridBase.RowPropertyKey: 1
                 Id: 6bdf70ec-8db2-4205-956f-f359f0a6261c
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 VerticalAlignment: Center
                 Margin: {}
                 Name: controlImage
                 Source: !SpriteFromSheet
-                    ~Id: 0015844e-d5e0-4e82-98a4-077e6129fb1d
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    GridBase.ColumnPropertyKey: 4
+                    a280ffa9d6756c87f23abe3c9bd76a47~GridBase.ColumnPropertyKey: 4
                 Id: 726bd73e-ee28-4b91-a4d2-9f4ef1708737
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: shipImage
                 Source: !SpriteFromSheet
-                    ~Id: 5eb6f9b9-019f-4d1e-b89f-0f84b25eb7ec
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 2
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Grid
@@ -323,25 +307,25 @@ Hierarchy:
                 Margin: {}
                 Name: shipContent
                 Children:
-                    - !UniformGrid 194a62d8-9ddd-497a-b893-521523c283aa
-                    - !UniformGrid 8af7f84b-6c1b-4ce3-b274-f264077682df
-                    - !ImageElement 726bd73e-ee28-4b91-a4d2-9f4ef1708737
+                    d8624a19dd9d7a49b893521523c283aa: !UniformGrid 194a62d8-9ddd-497a-b893-521523c283aa
+                    4bf8f78a1b6ce34cb274f264077682df: !UniformGrid 8af7f84b-6c1b-4ce3-b274-f264077682df
+                    3ed76b7228ee914ba4d29f4ef1708737: !ImageElement 726bd73e-ee28-4b91-a4d2-9f4ef1708737
                 RowDefinitions:
-                    -   ~Id: e2e14dd1-3228-434f-93bb-a19e880696b9
+                    d14de1e228324f4393bba19e880696b9: {}
                 ColumnDefinitions:
-                    -   ~Id: a7ad1ce9-1cbb-4a6e-b4ae-16febf75ca0a
+                    e91cada7bb1c6e4ab4ae16febf75ca0a:
                         Type: Auto
-                    -   ~Id: cd49b5e9-2df6-4eca-a554-893af78e0ea3
-                    -   ~Id: ba2b8e95-fcc8-4594-9d8c-755fa5113267
+                    e9b549cdf62dca4ea554893af78e0ea3: {}
+                    958e2bbac8fc94459d8c755fa5113267:
                         Type: Auto
-                    -   ~Id: 6d907324-e402-4710-8f3f-2a3e496ef23c
-                    -   ~Id: fa3fa3d0-95ee-4225-a2ec-d19d3abe7219
+                    2473906d02e410478f3f2a3e496ef23c: {}
+                    d0a33ffaee952542a2ecd19d3abe7219:
                         Type: Auto
                 LayerDefinitions:
-                    -   ~Id: 9755c20c-c379-49be-92a9-07f942d2eaca
+                    0cc2559779c3be4992a907f942d2eaca: {}
         -   UIElement: !TextBlock
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 2
+                    1dc256e64da6d059c11627efcb52364c~GridBase.RowPropertyKey: 2
                 Id: 84261ef7-397f-47dd-8504-5dfcc0a11fef
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Left
@@ -349,7 +333,7 @@ Hierarchy:
                 Margin: {}
                 Name: speedText
                 Text: Speed
-                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !StackPanel
@@ -358,18 +342,18 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: contentStackPanel
-                Children: []
+                Children: {}
         -   UIElement: !UniformGrid
                 DependencyProperties:
-                    GridBase.ColumnPropertyKey: 2
+                    06a3841a046849349fb44e1254e67444~GridBase.ColumnPropertyKey: 2
                 Id: 8af7f84b-6c1b-4ce3-b274-f264077682df
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: starGrid
                 Children:
-                    - !ImageElement 04d990bf-c229-4e3b-b9a8-79a4e58a8a0c
-                    - !ImageElement 6bdf70ec-8db2-4205-956f-f359f0a6261c
-                    - !ImageElement f91c8c6d-d701-49c9-ae1d-de28fb949b2f
+                    bf90d90429c23b4eb9a879a4e58a8a0c: !ImageElement 04d990bf-c229-4e3b-b9a8-79a4e58a8a0c
+                    ec70df6bb28d0542956ff359f0a6261c: !ImageElement 6bdf70ec-8db2-4205-956f-f359f0a6261c
+                    6d8c1cf901d7c949ae1dde28fb949b2f: !ImageElement f91c8c6d-d701-49c9-ae1d-de28fb949b2f
                 Rows: 3
         -   UIElement: !ContentDecorator
                 DependencyProperties: {}
@@ -381,8 +365,7 @@ Hierarchy:
                 Padding: {Left: 85.0, Top: 130.0, Right: 85.0, Bottom: 110.0}
                 Content: !Grid 58768f72-7962-4070-a314-ff9947177867
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: b48424c8-1347-43bc-84c0-792df8e85dc2
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 6
         -   UIElement: !TextBlock
                 DependencyProperties: {}
@@ -391,7 +374,7 @@ Hierarchy:
                 Margin: {}
                 Name: pleaseSelectText
                 Text: Please select your ship
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 48.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
                 TextAlignment: Center
@@ -405,7 +388,7 @@ Hierarchy:
                 Margin: {}
                 Name: powerText
                 Text: Power
-                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !ContentDecorator
@@ -418,8 +401,7 @@ Hierarchy:
                 Padding: {Left: 110.0, Top: 120.0, Right: 100.0, Bottom: 140.0}
                 Content: !Grid 3ceb61bc-9411-4a67-a034-572310ad2719
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: f438f332-f318-44f4-a14c-323923816f6f
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 6
         -   UIElement: !TextBlock
                 DependencyProperties: {}
@@ -428,7 +410,7 @@ Hierarchy:
                 Margin: {}
                 Name: cancelText
                 Text: Cancel
-                Font: 01cefb45-36c9-48f4-81bd-590e47114e96/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ScrollViewer
                 DependencyProperties: {}
@@ -450,14 +432,13 @@ Hierarchy:
                 Margin: {}
                 Name: statusStar
                 Source: !SpriteFromSheet
-                    ~Id: 7466246a-149c-42b9-acdc-3053b7c5947f
-                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchDirection: DownOnly
         -   UIElement: !Button
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 0
+                    5b7f4429dada50f0f023d8dc7cc527ea~Panel.ZIndexPropertyKey: 0
                 Id: be001fe1-6608-4bfe-b639-702029d9ffa1
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -467,16 +448,13 @@ Hierarchy:
                 Padding: {Left: 60.0, Top: 20.0, Right: 20.0, Bottom: 20.0}
                 Content: !Grid 7765f331-7994-4bc8-91d4-58dd12426bbe
                 PressedImage: !SpriteFromSheet
-                    ~Id: e477fd59-a66c-45e0-8f5b-c679c98aa5f7
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 21
                 NotPressedImage: !SpriteFromSheet
-                    ~Id: 8896fb0d-0bda-4616-a369-08a28f79c3ec
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 21
                 MouseOverImage: !SpriteFromSheet
-                    ~Id: b7ebed14-cdd7-4aeb-a3b7-062a0eb3fd23
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 21
         -   UIElement: !Button
                 DependencyProperties: {}
@@ -492,20 +470,17 @@ Hierarchy:
                 Padding: {Left: 22.0, Top: 11.0, Right: 22.0, Bottom: 15.0}
                 Content: !TextBlock ff603298-54a0-4d64-9efa-3a855e759809
                 PressedImage: !SpriteFromSheet
-                    ~Id: fc73ab3c-dbc9-4b02-9f2b-3c8ad0116ff2
-                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 11
                 NotPressedImage: !SpriteFromSheet
-                    ~Id: 6d7c67d7-ee15-4c9e-b86b-4082945f56fd
-                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 10
                 MouseOverImage: !SpriteFromSheet
-                    ~Id: 1cb2d11c-7b49-4565-b418-bdb034bec506
-                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 10
         -   UIElement: !ModalElement
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
+                    54511eca2781b2e7769881b06427b539~Panel.ZIndexPropertyKey: 1
                 Id: efdc3200-c774-4cea-a94d-e0e706bd7c4d
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -520,15 +495,14 @@ Hierarchy:
                 OverlayColor: {R: 0, G: 0, B: 0, A: 153}
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 2
+                    858f9a6fc4089925f087a94a4e9996e2~GridBase.RowPropertyKey: 2
                 Id: f91c8c6d-d701-49c9-ae1d-de28fb949b2f
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 VerticalAlignment: Center
                 Margin: {}
                 Name: speedImage
                 Source: !SpriteFromSheet
-                    ~Id: d8089534-e29a-4c5d-ae47-5d794bd9b834
-                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                    Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !TextBlock
@@ -540,6 +514,6 @@ Hierarchy:
                 Margin: {}
                 Name: statusText
                 Text: A
-                Font: 7dcf8509-6946-4d47-8dce-c67f49425a9d/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 54.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}

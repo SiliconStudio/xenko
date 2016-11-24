@@ -121,6 +121,12 @@ namespace SiliconStudio.Presentation.Interop
         [DllImport("user32.dll")]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
+
         #endregion // Methods
 
         #region Structures
@@ -373,6 +379,7 @@ namespace SiliconStudio.Presentation.Interop
         public const int WM_CHARTOITEM = 0x002F;
         public const int WM_CHILDACTIVATE = 0x0022;
         public const int WM_CLEAR = 0x0303;
+        public const int WM_CLIPBOARDUPDATE = 0x031D;
         public const int WM_CLOSE = 0x0010;
         public const int WM_COMMAND = 0x0111;
         public const int WM_COMPACTING = 0x0041;

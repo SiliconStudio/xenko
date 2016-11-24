@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Tracking
         /// <param name="assetId">The id of the asset affected by this change.</param>
         /// <param name="files">The list of files that changed.</param>
         /// <param name="needUpdate">Indicate whether the asset needs to be updated from its sources due to this change.</param>
-        public SourceFileChangedData(SourceFileChangeType type, Guid assetId, IReadOnlyList<UFile> files, bool needUpdate)
+        public SourceFileChangedData(SourceFileChangeType type, AssetId assetId, IReadOnlyList<UFile> files, bool needUpdate)
         {
             Type = type;
             AssetId = assetId;
@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Tracking
         /// <summary>
         /// Gets the id of the asset affected by this change.
         /// </summary>
-        public Guid AssetId { get; }
+        public AssetId AssetId { get; }
 
         /// <summary>
         /// Gets the list of files that changed

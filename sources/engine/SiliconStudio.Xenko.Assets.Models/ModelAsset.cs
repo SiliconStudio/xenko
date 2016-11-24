@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Model")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(1900, "Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
@@ -86,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
                 if (reference != null)
                 {
-                    yield return new AssetReference<Asset>(reference.Id, reference.Url);
+                    yield return new AssetReference(reference.Id, reference.Url);
                 }
             }
         }

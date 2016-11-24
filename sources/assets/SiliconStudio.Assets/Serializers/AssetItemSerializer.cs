@@ -8,7 +8,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.Assets.Serializers
     /// A Yaml Serializer for <see cref="AssetBase"/>. Because this type is immutable
     /// we need to implement a special serializer.
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class AssetItemSerializer : ObjectSerializer, IDataCustomVisitor
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)

@@ -23,7 +23,7 @@ namespace SiliconStudio.Quantum.Contents
         Type Type { get; }
 
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets the value.
         /// </summary>
         object Value { get; }
 

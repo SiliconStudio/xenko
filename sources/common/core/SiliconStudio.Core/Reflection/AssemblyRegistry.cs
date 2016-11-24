@@ -60,8 +60,11 @@ namespace SiliconStudio.Core.Reflection
         /// Gets a type by its typename already loaded in the assembly registry.
         /// </summary>
         /// <param name="fullyQualifiedTypeName">The typename</param>
+        /// <param name="throwOnError"></param>
         /// <returns>The type instance or null if not found.</returns>
-        public static Type GetType(string fullyQualifiedTypeName)
+        /// <seealso cref="Type.GetType(string,bool)"/>
+        /// <seealso cref="Assembly.GetType(string,bool)"/>
+        public static Type GetType(string fullyQualifiedTypeName, bool throwOnError = true)
         {
             if (fullyQualifiedTypeName == null) throw new ArgumentNullException(nameof(fullyQualifiedTypeName));
             var assemblyIndex = fullyQualifiedTypeName.IndexOf(",");
@@ -76,12 +79,12 @@ namespace SiliconStudio.Core.Reflection
                 Assembly assembly;
                 if (AssemblyNameToAssembly.TryGetValue(assemblyName.Name, out assembly))
                 {
-                    return assembly.GetType(typeName);
+                    return assembly.GetType(typeName, throwOnError, false);
                 }
             }
 
             // Fallback to default lookup
-            return Type.GetType(fullyQualifiedTypeName);
+            return Type.GetType(fullyQualifiedTypeName, throwOnError, false);
         }
 
         /// <summary>

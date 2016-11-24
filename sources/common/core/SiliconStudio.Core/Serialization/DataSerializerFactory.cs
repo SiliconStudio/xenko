@@ -75,6 +75,7 @@ namespace SiliconStudio.Core.Serialization
     public static class DataSerializerFactory
     {
         internal static object Lock = new object();
+        internal static int Version;
 
         // List of all the factories
         private static readonly List<WeakReference<SerializerSelector>> SerializerSelectors = new List<WeakReference<SerializerSelector>>();
@@ -142,15 +143,17 @@ namespace SiliconStudio.Core.Serialization
             lock (Lock)
             {
                 RegisterSerializers(assemblySerializers);
-            }
 
-            // Invalidate each serializer selector (to force them to rebuild combined list of serializers)
-            foreach (var weakSerializerSelector in SerializerSelectors)
-            {
-                SerializerSelector serializerSelector;
-                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
+                ++Version;
+
+                // Invalidate each serializer selector (to force them to rebuild combined list of serializers)
+                foreach (var weakSerializerSelector in SerializerSelectors)
                 {
-                    serializerSelector.Invalidate();
+                    SerializerSelector serializerSelector;
+                    if (weakSerializerSelector.TryGetTarget(out serializerSelector))
+                    {
+                        serializerSelector.Invalidate();
+                    }
                 }
             }
         }
@@ -193,14 +196,16 @@ namespace SiliconStudio.Core.Serialization
                 {
                     RegisterSerializers(assemblySerializer);
                 }
-            }
 
-            foreach (var weakSerializerSelector in SerializerSelectors)
-            {
-                SerializerSelector serializerSelector;
-                if (weakSerializerSelector.TryGetTarget(out serializerSelector))
+                ++Version;
+
+                foreach (var weakSerializerSelector in SerializerSelectors)
                 {
-                    serializerSelector.Invalidate();
+                    SerializerSelector serializerSelector;
+                    if (weakSerializerSelector.TryGetTarget(out serializerSelector))
+                    {
+                        serializerSelector.Invalidate();
+                    }
                 }
             }
         }

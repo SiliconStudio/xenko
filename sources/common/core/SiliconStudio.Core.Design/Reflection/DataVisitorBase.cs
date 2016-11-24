@@ -172,7 +172,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (!obj.GetType().IsArray && visitMembers)
             {
-                foreach (var member in descriptor.Members)
+                foreach (var member in descriptor.Members.Cast<IMemberDescriptor>())
                 {
                     CurrentPath.Push(member);
                     VisitObjectMember(obj, descriptor, member, member.Get(obj));
@@ -196,7 +196,7 @@ namespace SiliconStudio.Core.Reflection
 
         public virtual void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            Visit(value, member.TypeDescriptor);
+            Visit(value, (ITypeDescriptor)member.TypeDescriptor);
         }
 
         public virtual void VisitArray(Array array, ArrayDescriptor descriptor)
@@ -268,12 +268,8 @@ namespace SiliconStudio.Core.Reflection
                 return true;
             }
 
-            if (visitedObjects.Contains(obj))
-            {
-                return false;
-            }
-            visitedObjects.Add(obj);
-            return true;
+            // true if not visited yet; otherwise, false
+            return visitedObjects.Add(obj);
         }
     }
 }

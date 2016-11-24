@@ -84,14 +84,14 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public override void Emit(MappingStartEventInfo eventInfo)
         {
-            eventInfo.Style = YamlStyle.Flow;
+            eventInfo.Style = DataStyle.Compact;
 
             base.Emit(eventInfo);
         }
 
         public override void Emit(SequenceStartEventInfo eventInfo)
         {
-            eventInfo.Style = YamlStyle.Flow;
+            eventInfo.Style = DataStyle.Compact;
 
             base.Emit(eventInfo);
         }

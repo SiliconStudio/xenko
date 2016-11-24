@@ -1,15 +1,10 @@
 !SpriteFont
 Id: c90f3988-0544-4cbe-993f-13af7d9c23c6
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion:
+    Xenko: 1.7.0-beta04
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: cacdf86c-090f-4043-a198-f480569aab63
     FontName: Courier New
     Style: Bold
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 00105340-3b9d-4dc7-8601-36302460cf1c
-    AntiAlias: Grayscale
     Size: 10.66666
-DefaultCharacter: ' '
-Spacing: 0.0
-LineSpacing: 0.0

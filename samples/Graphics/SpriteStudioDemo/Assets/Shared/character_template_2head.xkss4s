@@ -3,17 +3,15 @@ Id: 7595b1d1-3f94-4cc5-bbfc-ec51687b96d6
 Tags: []
 Source: ../../Resources/character_template_2head.ssae
 NodeNames:
-    - root
-    - body
-    - head
-    - hair
-    - leg_l
-    - leg_r
-    - arm_l
-    - object3
-    - arm_r
-    - object1
-    - object2
-    - shadow
-~SourceHashes:
-    ../../Resources/character_template_2head.ssae: 7bbed142c2c2aca394cccf062b9891b2
+    0ce1a93960be6d5db340ea7af859b26e: root
+    4a7cc743c2a40dba5307242356245a5a: body
+    1d5cfd0b527c35dd661a7058b24318a2: head
+    aa34eaa4fe3e01a0e4f9a9150f140854: hair
+    2e8c0f7e92222221f977ee22c16462c6: leg_l
+    f211f014070c95d72f085914e6ad4ab2: leg_r
+    e0f56407f72cbdef84f9798621a7c8ec: arm_l
+    b4a8eb6efb61d62f8aa271f4bc00605b: object3
+    0d1dbeda05894bb4e8ad8b1e4bd96b9f: arm_r
+    cbcfb55b6e4480d13e10f7136a989bb1: object1
+    b724d20f9f659861b698112bdfaff50a: object2
+    9695dadcaef0e8cafc1c41a92a16be66: shadow

@@ -22,13 +22,13 @@ namespace SiliconStudio.Assets
         private object syncRoot;
 
         // Maps Asset.Location to Asset.Id
-        private readonly Dictionary<string, Guid> mapPathToId;
+        private readonly Dictionary<string, AssetId> mapPathToId;
 
         // Maps Asset.Id to Asset.Location
-        private readonly Dictionary<Guid, string> mapIdToPath;
+        private readonly Dictionary<AssetId, string> mapIdToPath;
 
         // Maps Id to AssetItem
-        private readonly Dictionary<Guid, AssetItem> mapIdToAsset;
+        private readonly Dictionary<AssetId, AssetItem> mapIdToAsset;
 
         // All registered items
         private readonly HashSet<AssetItem> registeredItems;
@@ -48,9 +48,9 @@ namespace SiliconStudio.Assets
         {
             if (package == null) throw new ArgumentNullException("package");
             this.package = package;
-            mapPathToId = new Dictionary<string, Guid>();
-            mapIdToPath = new Dictionary<Guid, string>();
-            mapIdToAsset = new Dictionary<Guid, AssetItem>();
+            mapPathToId = new Dictionary<string, AssetId>();
+            mapIdToPath = new Dictionary<AssetId, string>();
+            mapIdToAsset = new Dictionary<AssetId, AssetItem>();
             registeredItems = new HashSet<AssetItem>(new ReferenceEqualityComparer<AssetItem>());
         }
 
@@ -78,7 +78,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetId">The asset identifier.</param>
         /// <returns><c>true</c> if this instance contains an asset with the specified identifier; otherwise, <c>false</c>.</returns>
-        public bool ContainsById(Guid assetId)
+        public bool ContainsById(AssetId assetId)
         {
             return mapIdToAsset.ContainsKey(assetId);
         }
@@ -90,7 +90,7 @@ namespace SiliconStudio.Assets
         /// <returns>AssetItem.</returns>
         public AssetItem Find(string location)
         {
-            Guid id;
+            AssetId id;
             if (!mapPathToId.TryGetValue(location, out id))
             {
                 return null;
@@ -103,7 +103,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetId">The asset unique identifier.</param>
         /// <returns>AssetItem.</returns>
-        public AssetItem Find(Guid assetId)
+        public AssetItem Find(AssetId assetId)
         {
             AssetItem value;
             mapIdToAsset.TryGetValue(assetId, out value);
@@ -223,7 +223,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="itemId">The item identifier.</param>
         /// <returns>true if <paramref name="itemId" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-        public bool RemoveById(Guid itemId)
+        public bool RemoveById(AssetId itemId)
         {
             var item = Find(itemId);
             if (item == null)
@@ -318,7 +318,7 @@ namespace SiliconStudio.Assets
                 throw new ArgumentException("Asset already exist in this collection", "item");
             }
 
-            if (item.Id == Guid.Empty)
+            if (item.Id == AssetId.Empty)
             {
                 throw new ArgumentException("Cannot add an asset with an empty Id", "item");
             }

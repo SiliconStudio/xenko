@@ -1,26 +1,25 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("NodeInformation")]
     [DataStyle(DataStyle.Compact)]
-    public class NodeInformation : IDiffKey
+    public class NodeInformation
     {
         /// <summary>
         /// The name of the node.
         /// </summary>
         /// <userdoc>The name of the node (as it is written in the imported file).</userdoc>
-        [DataMember(10), DiffMember(Diff3ChangeType.MergeFromAsset2)]
+        [DataMember(10)]
         public string Name { get; set; }
 
         /// <summary>
         ///  The index of the parent.
         /// </summary>
-        [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
+        [DataMember(20)]
         public int Depth { get; set; }
 
         /// <summary>
@@ -43,11 +42,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             Name = name;
             Depth = depth;
             Preserve = preserve;
-        }
-
-        object IDiffKey.GetDiffKey()
-        {
-            return Name;
         }
     }
 }

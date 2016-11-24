@@ -11,15 +11,16 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets.Tracking
 {
+    // TODO: Inherit from AssetTracker
     public sealed class AssetSourceTracker : IDisposable
     {
         private readonly PackageSession session;
         internal readonly object ThisLock = new object();
         internal readonly HashSet<Package> Packages;
-        private readonly Dictionary<Guid, TrackedAsset> trackedAssets = new Dictionary<Guid, TrackedAsset>();
+        private readonly Dictionary<AssetId, TrackedAsset> trackedAssets = new Dictionary<AssetId, TrackedAsset>();
         // Objects used to track directories
         internal DirectoryWatcher DirectoryWatcher;
-        private readonly Dictionary<string, HashSet<Guid>> mapSourceFilesToAssets = new Dictionary<string, HashSet<Guid>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, HashSet<AssetId>> mapSourceFilesToAssets = new Dictionary<string, HashSet<AssetId>>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ObjectId> currentHashes = new Dictionary<string, ObjectId>(StringComparer.OrdinalIgnoreCase);
         private readonly List<FileEvent> fileEvents = new List<FileEvent>();
         private readonly ManualResetEvent threadWatcherEvent;
@@ -244,7 +245,7 @@ namespace SiliconStudio.Assets.Tracking
         /// This method is called when an asset needs to be tracked
         /// </summary>
         /// <returns>AssetDependencies.</returns>
-        private void TrackAsset(Guid assetId)
+        private void TrackAsset(AssetId assetId)
         {
             lock (ThisLock)
             {
@@ -263,7 +264,7 @@ namespace SiliconStudio.Assets.Tracking
                 // TODO: This is not handling shadow registry
 
                 // No need to clone assets from readonly package 
-                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases);
+                var clonedAsset = assetItem.Package.IsSystem ? assetItem.Asset : AssetCloner.Clone(assetItem.Asset);
                 var trackedAsset = new TrackedAsset(this, assetItem.Asset, clonedAsset);
 
                 // Adds to global list
@@ -271,7 +272,7 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        private void UnTrackAsset(Guid assetId)
+        private void UnTrackAsset(AssetId assetId)
         {
             lock (ThisLock)
             {
@@ -286,14 +287,14 @@ namespace SiliconStudio.Assets.Tracking
             }
         }
 
-        internal void TrackAssetImportInput(Guid assetId, string inputPath)
+        internal void TrackAssetImportInput(AssetId assetId, string inputPath)
         {
             lock (ThisLock)
             {
-                HashSet<Guid> assetsTrackedByPath;
+                HashSet<AssetId> assetsTrackedByPath;
                 if (!mapSourceFilesToAssets.TryGetValue(inputPath, out assetsTrackedByPath))
                 {
-                    assetsTrackedByPath = new HashSet<Guid>();
+                    assetsTrackedByPath = new HashSet<AssetId>();
                     mapSourceFilesToAssets.Add(inputPath, assetsTrackedByPath);
                     DirectoryWatcher?.Track(inputPath);
                 }
@@ -304,11 +305,11 @@ namespace SiliconStudio.Assets.Tracking
             FileVersionManager.Instance.ComputeFileHashAsync(inputPath, SourceImportFileHashCallback, tokenSourceForImportHash.Token);
         }
 
-        internal void UnTrackAssetImportInput(Guid assetId, string inputPath)
+        internal void UnTrackAssetImportInput(AssetId assetId, string inputPath)
         {
             lock (ThisLock)
             {
-                HashSet<Guid> assetsTrackedByPath;
+                HashSet<AssetId> assetsTrackedByPath;
                 if (mapSourceFilesToAssets.TryGetValue(inputPath, out assetsTrackedByPath))
                 {
                     assetsTrackedByPath.Remove(assetId);
@@ -457,7 +458,7 @@ namespace SiliconStudio.Assets.Tracking
         {
             lock (ThisLock)
             {
-                HashSet<Guid> items;
+                HashSet<AssetId> items;
                 if (!mapSourceFilesToAssets.TryGetValue(sourceFile, out items))
                     return;
 
