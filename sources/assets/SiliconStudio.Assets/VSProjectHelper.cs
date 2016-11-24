@@ -68,7 +68,7 @@ namespace SiliconStudio.Assets
             return (T)Enum.Parse(typeof(T), value);
         }
 
-        public static string GetOrCompileProjectAssembly(string solutionFullPath, string fullProjectLocation, ILogger logger, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
+        public static string GetOrCompileProjectAssembly(string solutionFullPath, string fullProjectLocation, ILogger logger, string targets, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
         {
             if (fullProjectLocation == null) throw new ArgumentNullException("fullProjectLocation");
             if (logger == null) throw new ArgumentNullException("logger");

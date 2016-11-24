@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.View;
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.Tests
         {
             var dispatcher = CreateDispatcher();
             int count = 1;
-            dispatcher.BeginInvoke(async () => { await Task.Delay(100); count = count + 1; });
+            dispatcher.InvokeAsync(async () => { await Task.Delay(100); count = count + 1; }).Forget();
             Assert.AreEqual(1, count);
             Thread.Sleep(200);
             Assert.AreEqual(2, count);
