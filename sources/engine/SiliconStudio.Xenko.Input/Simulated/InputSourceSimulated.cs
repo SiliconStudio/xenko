@@ -92,6 +92,8 @@ namespace SiliconStudio.Xenko.Input
         public class MouseSimulated : MouseDeviceBase
         {
             private readonly List<PointerEvent> injectedPointerEvents = new List<PointerEvent>();
+            private bool positionLocked = false;
+            private Vector2 capturedPosition;
 
             public MouseSimulated()
             {
@@ -101,13 +103,19 @@ namespace SiliconStudio.Xenko.Input
 
             public override string Name => "Simulated Mouse";
             public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
-            public override bool IsPositionLocked => false;
+            public override bool IsPositionLocked => positionLocked;
             
             public override void Update(List<InputEvent> inputEvents)
             {
                 base.Update(inputEvents);
                 inputEvents.AddRange(injectedPointerEvents);
                 injectedPointerEvents.Clear();
+
+                if (positionLocked)
+                {
+                    Position = capturedPosition;
+                    GetPointerData(0).Position = capturedPosition;
+                }
             }
 
             public void SimulateMouseDown(MouseButton button)
@@ -122,7 +130,14 @@ namespace SiliconStudio.Xenko.Input
 
             public override void SetPosition(Vector2 position)
             {
-                HandleMove(position);
+                if (IsPositionLocked)
+                {
+                    HandleMouseDelta(position * SurfaceSize - capturedPosition);
+                }
+                else
+                {
+                    HandleMove(position * SurfaceSize);
+                }
             }
             
             public void SimulatePointer(PointerEventType pointerEventType, Vector2 position, int id = 0)
@@ -146,10 +161,13 @@ namespace SiliconStudio.Xenko.Input
 
             public override void LockPosition(bool forceCenter = false)
             {
+                positionLocked = true;
+                capturedPosition = forceCenter ? new Vector2(0.5f) : Position;
             }
 
             public override void UnlockPosition()
             {
+                positionLocked = false;
             }
         }
     }

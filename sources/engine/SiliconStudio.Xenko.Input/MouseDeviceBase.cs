@@ -14,23 +14,18 @@ namespace SiliconStudio.Xenko.Input
     {
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
         protected readonly List<InputEvent> EventQueue = new List<InputEvent>();
+        private Vector2 nextDelta = Vector2.Zero;
         
         public abstract bool IsPositionLocked { get; }
         
-        public Vector2 Position { get; set; }
-        public Vector2 Delta { get; set; }
+        public Vector2 Position { get; protected set; }
+        public Vector2 Delta { get; protected set; }
 
         public override PointerType Type => PointerType.Mouse;
         
         public override void Update(List<InputEvent> inputEvents)
         {
             base.Update(inputEvents);
-
-            if (PointerDatas.Count > 0)
-            {
-                // Update delta
-                Delta = PointerDatas[0].Delta;
-            }
             
             // Collect events from queue
             foreach (var evt in EventQueue)
@@ -38,6 +33,10 @@ namespace SiliconStudio.Xenko.Input
                 inputEvents.Add(evt);
             }
             EventQueue.Clear();
+
+            // Reset mouse delta
+            Delta = nextDelta;
+            nextDelta = Vector2.Zero;
         }
         
         public virtual bool IsButtonDown(MouseButton button)
@@ -68,6 +67,7 @@ namespace SiliconStudio.Xenko.Input
             // Update pointer position + delta
             // Update delta
             data.Delta = delta;
+            nextDelta += delta;
             
             data.Clock.Restart();
 
@@ -153,6 +153,7 @@ namespace SiliconStudio.Xenko.Input
 
             if (newPosition != Position)
             {
+                nextDelta += newPosition - Position;
                 Position = newPosition;
 
                 // Generate Event

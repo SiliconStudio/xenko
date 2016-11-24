@@ -16,13 +16,13 @@ namespace SiliconStudio.Xenko.Input
     {
         private readonly GameBase game;
         private readonly Control uiControl;
-        private bool isMousePositionLocked;
-        private bool wasMouseVisibleBeforeCapture;
+        private bool isPositionLocked;
+        private bool wasVisibleBeforeCapture;
         private Point capturedPosition;
 
         // Stored position for SetPosition
-        private Point targetMousePosition;
-        private bool shouldSetMousePosition;
+        private Point targetPosition;
+        private bool shouldSetPosition;
 
         public MouseWinforms(GameBase game, Control uiControl)
         {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string Name => "Windows Mouse";
         public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
-        public override bool IsPositionLocked => isMousePositionLocked;
+        public override bool IsPositionLocked => isPositionLocked;
         public override PointerType Type => PointerType.Mouse;
 
         public override void Update(List<InputEvent> inputEvents)
@@ -59,10 +59,10 @@ namespace SiliconStudio.Xenko.Input
             base.Update(inputEvents);
 
             // Set mouse position
-            if (shouldSetMousePosition)
+            if (shouldSetPosition)
             {
-                Cursor.Position = targetMousePosition;
-                shouldSetMousePosition = false;
+                Cursor.Position = targetPosition;
+                shouldSetPosition = false;
             }
         }
 
@@ -72,43 +72,43 @@ namespace SiliconStudio.Xenko.Input
 
             // Store setting of mouse position since it will keep the message loop goining infinitely otherwise
             var targetPoint = new Point((int)position.X, (int)position.Y);
-            targetMousePosition = uiControl.PointToScreen(targetPoint);
-            shouldSetMousePosition = true;
+            targetPosition = uiControl.PointToScreen(targetPoint);
+            shouldSetPosition = true;
         }
 
         public override void LockPosition(bool forceCenter = false)
         {
-            if (!isMousePositionLocked)
+            if (!isPositionLocked)
             {
-                wasMouseVisibleBeforeCapture = game.IsMouseVisible;
+                wasVisibleBeforeCapture = game.IsMouseVisible;
                 game.IsMouseVisible = false;
                 if (forceCenter)
                 {
                     capturedPosition = uiControl.PointToScreen(new Point(uiControl.ClientSize.Width/2, uiControl.ClientSize.Height/2));
                 }
                 capturedPosition = Cursor.Position;
-                isMousePositionLocked = true;
+                isPositionLocked = true;
             }
         }
 
         public override void UnlockPosition()
         {
-            if (isMousePositionLocked)
+            if (isPositionLocked)
             {
-                isMousePositionLocked = false;
+                isPositionLocked = false;
                 capturedPosition = System.Drawing.Point.Empty;
-                game.IsMouseVisible = wasMouseVisibleBeforeCapture;
+                game.IsMouseVisible = wasVisibleBeforeCapture;
             }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (isMousePositionLocked)
+            if (isPositionLocked)
             {
                 // Register mouse delta and reset
                 HandleMouseDelta(new Vector2(Cursor.Position.X - capturedPosition.X, Cursor.Position.Y - capturedPosition.Y));
-                targetMousePosition = capturedPosition;
-                shouldSetMousePosition = true;
+                targetPosition = capturedPosition;
+                shouldSetPosition = true;
             }
             else
             {

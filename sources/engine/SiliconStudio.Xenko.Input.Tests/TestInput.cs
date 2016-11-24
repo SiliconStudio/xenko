@@ -303,6 +303,34 @@ namespace SiliconStudio.Xenko.Input.Tests
             InputSourceSimulated.Instance.SetMouseConnected(true);
         }
 
+        void TestLockedMousePosition()
+        {
+            var mouse = InputSourceSimulated.Instance.Mouse;
+            mouse.LockPosition(true);
+            Input.Update(DrawTime);
+            
+            Assert.AreEqual(new Vector2(0.5f), mouse.Position);
+            Input.Update(DrawTime);
+
+            Assert.AreEqual(new Vector2(0.0f), mouse.Delta);
+
+            // Validate mouse delta with locked position
+            mouse.SetPosition(new Vector2(0.6f, 0.5f));
+            Input.Update(DrawTime);
+            Assert.AreEqual(new Vector2(0.1f, 0.0f), mouse.Delta);
+            Input.Update(DrawTime);
+            Assert.AreEqual(new Vector2(0.0f, 0.0f), mouse.Delta);
+            Assert.AreEqual(new Vector2(0.5f, 0.5f), mouse.Position);
+
+            mouse.UnlockPosition();
+            
+            // Validate mouse delta with unlocked position
+            mouse.SetPosition(new Vector2(0.6f, 0.5f));
+            Input.Update(DrawTime);
+            Assert.AreEqual(new Vector2(0.1f, 0.0f), mouse.Delta);
+            Assert.AreEqual(new Vector2(0.6f, 0.5f), mouse.Position);
+        }
+
         protected override void RegisterTests()
         {
             base.RegisterTests();
@@ -311,6 +339,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             FrameGameSystem.Update(TestPressRelease);
             FrameGameSystem.Update(TestRepeat);
             FrameGameSystem.Update(TestMouse);
+            FrameGameSystem.Update(TestLockedMousePosition);
             FrameGameSystem.Update(TestSingleFrameStates);
             FrameGameSystem.Update(TestTapGesture);
             FrameGameSystem.Update(TestCompositeGesture);
