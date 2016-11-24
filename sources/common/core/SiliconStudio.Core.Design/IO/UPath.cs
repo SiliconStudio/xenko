@@ -455,22 +455,8 @@ namespace SiliconStudio.Core.IO
         public static bool IsValid(string path)
         {
             string error;
-            var normalized = Normalize(path, out error);
-            bool isValid = error == null;
-            if (isValid)
-            {
-                try
-                {
-                    var result = System.IO.Path.GetFullPath(normalized.ToString());
-                    if (result.StartsWith("\\\\.\\"))
-                        isValid = false;   // that's a device name (pipe, CON, NUL, COM1...)
-                }
-                catch (Exception e)
-                {
-                    isValid = false;
-                }
-            }
-            return isValid;
+            Normalize(path, out error);
+            return error == null;
         }
 
         /// <summary>
