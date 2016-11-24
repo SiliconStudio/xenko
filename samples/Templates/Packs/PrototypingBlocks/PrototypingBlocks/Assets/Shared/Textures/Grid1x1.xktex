@@ -5,4 +5,5 @@ Tags: []
 Source: ../../../Resources/Textures/Grid1x1.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color16Bits
+Alpha: None
 PremultiplyAlpha: false
