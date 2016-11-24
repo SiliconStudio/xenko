@@ -26,13 +26,46 @@ namespace SiliconStudio.Xenko.Input
         public KeyboardSimulated Keyboard;
         public MouseSimulated Mouse;
 
+        private bool keyboardConnected = false;
+        private bool mouseConnected = false;
+
         public override void Initialize(InputManager inputManager)
         {
             Keyboard = new KeyboardSimulated();
             Mouse = new MouseSimulated();
-            RegisterDevice(Keyboard);
-            RegisterDevice(Mouse);
+            SetKeyboardConnected(true);
+            SetMouseConnected(true);
             Instance = this;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            Instance = null;
+        }
+
+        public void SetKeyboardConnected(bool connected)
+        {
+            if (connected != keyboardConnected)
+            {
+                if (connected)
+                    RegisterDevice(Keyboard);
+                else
+                    UnregisterDevice(Keyboard);
+                keyboardConnected = connected;
+            }
+        }
+
+        public void SetMouseConnected(bool connected)
+        {
+            if (connected != mouseConnected)
+            {
+                if (connected)
+                    RegisterDevice(Mouse);
+                else
+                    UnregisterDevice(Mouse);
+                mouseConnected = connected;
+            }
         }
 
         public class KeyboardSimulated : KeyboardDeviceBase

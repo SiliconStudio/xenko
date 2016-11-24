@@ -250,50 +250,7 @@ namespace SiliconStudio.Xenko.Input
             Game.Activated += OnApplicationResumed;
             Game.Deactivated += OnApplicationPaused;
 
-            // Create input sources
-            switch (Game.Context.ContextType)
-            {
-#if SILICONSTUDIO_XENKO_UI_SDL
-                case AppContextType.DesktopSDL:
-                    AddInputSource(new InputSourceSDL());
-                    break;
-#endif
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                case AppContextType.Android:
-                    AddInputSource(new InputSourceAndroid());
-                    break;
-#endif
-#if SILICONSTUDIO_PLATFORM_IOS
-                case AppContextType.iOS:
-                    AddInputSource(new InputSourceiOS());
-                    break;
-#endif
-#if SILICONSTUDIO_UI_OPENTK
-                case AppContextType.DesktopOpenTK:
-                    AddInputSource(new InputSourceOpenTK());
-                    break;
-#endif
-#if SILICONSTUDIO_PLATFORM_UWP
-                case  AppContextType.UWP:
-                    AddInputSource(new InputSourceUWP());
-                    break;
-#endif
-#if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-                case AppContextType.Desktop:
-                    AddInputSource(new InputSourceWinforms());
-                    AddInputSource(new InputSourceWindowsDirectInput());
-                    if(InputSourceWindowsXInput.IsSupported())
-                        AddInputSource(new InputSourceWindowsXInput());
-                    if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
-                    break;
-#endif
-                default:
-                    throw new InvalidOperationException("Unsupported InputManager-GameContext combination");
-            }
-
-            // Simulated input, if enabled
-            if (InputSourceSimulated.Enabled)
-                AddInputSource(new InputSourceSimulated());
+            InitializeSources();
 
             // Register event types
             RegisterEventType<KeyEvent>();
@@ -491,6 +448,73 @@ namespace SiliconStudio.Xenko.Input
         public void PoolInputEvent(InputEvent inputEvent)
         {
             eventRouters[inputEvent.GetType()].PoolEvent(inputEvent);
+        }
+
+        /// <summary>
+        /// Reinitializes the input sources, useful if you want to add or remove simulated input
+        /// </summary>
+        public void ReinitializeSources()
+        {
+            // Destroy all input sources
+            foreach (var source in inputSources)
+            {
+                source.Dispose();
+            }
+            inputSources.Clear();
+
+            InitializeSources();
+        }
+
+        private void InitializeSources()
+        {
+            // Don't create any other device when using simulated input
+            if (!InputSourceSimulated.Enabled)
+            {
+                // Create input sources
+                switch (Game.Context.ContextType)
+                {
+#if SILICONSTUDIO_XENKO_UI_SDL
+                    case AppContextType.DesktopSDL:
+                        AddInputSource(new InputSourceSDL());
+                        break;
+#endif
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                case AppContextType.Android:
+                    AddInputSource(new InputSourceAndroid());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_IOS
+                case AppContextType.iOS:
+                    AddInputSource(new InputSourceiOS());
+                    break;
+#endif
+#if SILICONSTUDIO_UI_OPENTK
+                case AppContextType.DesktopOpenTK:
+                    AddInputSource(new InputSourceOpenTK());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_UWP
+                case  AppContextType.UWP:
+                    AddInputSource(new InputSourceUWP());
+                    break;
+#endif
+#if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+                    case AppContextType.Desktop:
+                        AddInputSource(new InputSourceWinforms());
+                        AddInputSource(new InputSourceWindowsDirectInput());
+                        if (InputSourceWindowsXInput.IsSupported())
+                            AddInputSource(new InputSourceWindowsXInput());
+                        if (UseRawInput) AddInputSource(new InputSourceWindowsRawInput());
+                        break;
+#endif
+                    default:
+                        throw new InvalidOperationException("Unsupported InputManager-GameContext combination");
+                }
+            }
+
+            // Simulated input, if enabled
+            if (InputSourceSimulated.Enabled)
+                AddInputSource(new InputSourceSimulated());
         }
 
         protected override void Destroy()

@@ -33,11 +33,11 @@ namespace SiliconStudio.Xenko.Games.Testing
             DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
-
+            
+            // Switch to simulated input
             InputManager input = (InputManager)registry.GetService(typeof(InputManager));
-            // Add simulated input source
-            if (InputSourceSimulated.Instance == null)
-                input.AddInputSource(new InputSourceSimulated());
+            InputSourceSimulated.Enabled = true;
+            input.ReinitializeSources();
         }
 
         public override async void Initialize()

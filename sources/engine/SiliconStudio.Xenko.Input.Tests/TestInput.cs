@@ -253,10 +253,61 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.ActivatedGestures.Remove(composite);
         }
 
+        void TestConnectedDevices()
+        {
+            Assert.IsTrue(Input.HasMouse);
+            Assert.NotNull(Input.Mouse);
+            Assert.IsTrue(Input.HasPointer);
+            Assert.NotNull(Input.Pointer);
+            Assert.IsTrue(Input.HasKeyboard);
+            Assert.NotNull(Input.Keyboard);
+            Assert.IsFalse(Input.HasGamePad);
+            Assert.IsFalse(Input.HasGameController);
+
+            bool keyboardAdded = false;
+            bool keyboardRemoved = false;
+
+            Input.DeviceRemoved += (sender, args) =>
+            {
+                if (args.Device == InputSourceSimulated.Instance.Keyboard)
+                    keyboardRemoved = true;
+            };
+            Input.DeviceAdded += (sender, args) =>
+            {
+                if (args.Device == InputSourceSimulated.Instance.Keyboard)
+                    keyboardAdded = true;
+            };
+
+            // Check keyboard removal
+            InputSourceSimulated.Instance.SetKeyboardConnected(false);
+            Assert.IsTrue(keyboardRemoved);
+            Assert.IsFalse(keyboardAdded);
+            Assert.IsNull(Input.Keyboard);
+            Assert.IsFalse(Input.HasKeyboard);
+
+            // Check keyboard addition
+            InputSourceSimulated.Instance.SetKeyboardConnected(true);
+            Assert.IsTrue(keyboardAdded);
+            Assert.IsNotNull(Input.Keyboard);
+            Assert.IsTrue(Input.HasKeyboard);
+
+            // Test not crashing with no keyboard/mouse
+            InputSourceSimulated.Instance.SetKeyboardConnected(false);
+            InputSourceSimulated.Instance.SetMouseConnected(false);
+
+            Input.Update(DrawTime);
+            Input.Update(DrawTime);
+            Input.Update(DrawTime);
+
+            InputSourceSimulated.Instance.SetKeyboardConnected(true);
+            InputSourceSimulated.Instance.SetMouseConnected(true);
+        }
+
         protected override void RegisterTests()
         {
             base.RegisterTests();
 
+            FrameGameSystem.Update(TestConnectedDevices);
             FrameGameSystem.Update(TestPressRelease);
             FrameGameSystem.Update(TestRepeat);
             FrameGameSystem.Update(TestMouse);

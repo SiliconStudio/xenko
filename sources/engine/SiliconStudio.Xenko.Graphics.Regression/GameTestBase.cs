@@ -49,9 +49,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected GameTestBase()
         {
-            // Enabled simulated input
-            InputSourceSimulated.Enabled = true;
-
             // Override the default graphic device manager
             GraphicsDeviceManager.Dispose();
             GraphicsDeviceManager = new TestGraphicsDeviceManager(this)
@@ -305,6 +302,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected static void RunGameTest(GameTestBase game)
         {
+            // Enabled simulated input
+            InputSourceSimulated.Enabled = true;
+
             game.CurrentTestContext = TestContext.CurrentContext;
 
             game.ScreenShotAutomationEnabled = !ForceInteractiveMode;
