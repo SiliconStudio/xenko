@@ -64,7 +64,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
-        public ISceneGraphicsCompositor GraphicsCompositor => SceneInstance.Scene?.Settings.GraphicsCompositor;
+        public string InitialGraphicsCompositorUrl { get; set; }
+
+        public ISceneGraphicsCompositor GraphicsCompositor => graphicsCompositor?.Instance ?? SceneInstance.Scene?.Settings.GraphicsCompositor;
+
+        private GraphicsCompositor graphicsCompositor;
 
         protected override void LoadContent()
         {
@@ -76,6 +80,11 @@ namespace SiliconStudio.Xenko.Engine
             {
                 SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(InitialSceneUrl));
             }
+
+            //if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
+            //{
+            //    graphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+            //}
 
             if (MainRenderFrame == null)
             {

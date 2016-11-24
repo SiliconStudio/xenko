@@ -323,12 +323,14 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />

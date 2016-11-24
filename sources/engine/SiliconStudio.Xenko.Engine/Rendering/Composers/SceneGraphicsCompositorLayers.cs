@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
@@ -14,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// </summary>
     [DataContract("SceneGraphicsCompositorLayers")]
     [Display("Layers")]
-    public sealed class SceneGraphicsCompositorLayers : PipelineCompositorLayers, ISceneGraphicsCompositor, IPipeline
+    public class SceneGraphicsCompositorLayers : PipelineCompositorLayers, ISceneGraphicsCompositor, IPipeline
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneGraphicsCompositorLayers"/> class.

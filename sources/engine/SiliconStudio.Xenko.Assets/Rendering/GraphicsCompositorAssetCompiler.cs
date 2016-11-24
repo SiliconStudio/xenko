@@ -1,0 +1,37 @@
+using System.Threading.Tasks;
+using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
+using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Rendering.Composers;
+
+namespace SiliconStudio.Xenko.Assets.Rendering
+{
+    public class GraphicsCompositorAssetCompiler : AssetCompilerBase
+    {
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        {
+            var asset = (GraphicsCompositorAsset)assetItem.Asset;
+            // TODO: We should ignore game settings stored in dependencies
+            result.BuildSteps = new AssetBuildStep(assetItem)
+            {
+                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset),
+            };
+        }
+
+        internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>
+        {
+            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset) : base(url, asset)
+            {
+            }
+
+            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            {
+                var assetManager = new ContentManager();
+                assetManager.Save(Url, new GraphicsCompositor { Instance = Parameters.GraphicsCompositor });
+
+                return Task.FromResult(ResultStatus.Successful);
+            }
+        }
+    }
+}
