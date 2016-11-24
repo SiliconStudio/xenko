@@ -21,22 +21,22 @@ namespace SiliconStudio.Assets.Quantum
         public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
-            // Connect the entities to their base that can be entities from a prefab
+            // Connect the parts to their base if any.
             var part = sourceNode.Content.Value as TAssetPart;
             if (part != null && sourceNode.Content is ObjectContent)
             {
                 TAssetPartDesign partDesign;
-                // The entity might be being moved and could possibly be currently not into the Parts collection.
+                // The part might be being moved and could possibly be currently not into the Parts collection.
                 if (AssetHierarchy.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
                 {
-                    var basePrefab = Container.GetAssetById(partDesign.Base.BasePartAsset.Id);
+                    var baseAsset = Container.GetAssetById(partDesign.Base.BasePartAsset.Id);
                     // Base prefab might have been deleted
-                    if (basePrefab == null)
+                    if (baseAsset == null)
                         return base.FindTarget(sourceNode, target);
 
-                    // Entity might have been deleted in base prefab
+                    // Part might have been deleted in base asset
                     TAssetPartDesign basePart;
-                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)basePrefab.Asset).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out basePart);
+                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)baseAsset.Asset).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out basePart);
                     return basePart != null ? Container.NodeContainer.GetOrCreateNode(basePart.Part) : base.FindTarget(sourceNode, target);
                 }
             }
