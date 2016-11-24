@@ -300,7 +300,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="obj">boxed numeric value</param>
         /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
-        internal static double CastToDouble(object obj)
+        public static double CastToDouble(object obj)
         {
             var result = double.NaN;
             var type = obj?.GetType();
@@ -326,6 +326,31 @@ namespace SiliconStudio.Core.Reflection
                 result = (double)obj;
             if (type == typeof(decimal))
                 result = (double)(decimal)obj;
+            return result;
+        }
+
+        /// <summary>
+        /// Convert a collection of objects or primitives, and convert (or unbox) each element to a double.
+        /// Incompatible elements are not added to the list, therefore the resulting collection Count might differ.
+        /// </summary>
+        /// <param name="collection">source enumerable, can be a system array of primitives, or a collection of boxed numeric types</param>
+        /// <returns>Converted collection</returns>
+        public static System.Collections.Generic.List<double> ToListOfDoubles(System.Collections.IEnumerable collection)
+        {
+            if (collection == null)
+                return null;
+            var result = new System.Collections.Generic.List<double>();
+            foreach (var v in collection)
+            {
+                if (v.GetType().IsPrimitive)
+                    result.Add((double)v);
+                else
+                {
+                    var unboxed = CastToDouble(v);
+                    if (!double.IsNaN(unboxed))
+                        result.Add(unboxed);
+                }
+            }
             return result;
         }
     }
