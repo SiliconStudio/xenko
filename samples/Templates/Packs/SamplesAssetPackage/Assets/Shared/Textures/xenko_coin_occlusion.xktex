@@ -5,4 +5,3 @@ Tags: []
 Source: ../../../Resources/Textures/xenko_coin_occlusion.tga
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color16Bits
-Alpha: None

@@ -70,8 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 DesiredAlpha = asset.Alpha;
                 TextureHint = asset.Hint;
                 GenerateMipmaps = asset.GenerateMipmaps;
-                if (asset.Alpha != AlphaFormat.None)
-                    PremultiplyAlpha = asset.PremultiplyAlpha;
+                PremultiplyAlpha = asset.PremultiplyAlpha;
                 ColorKeyColor  = asset.ColorKeyColor;
                 ColorKeyEnabled = asset.ColorKeyEnabled;
                 TextureQuality = textureParameters.TextureQuality;
@@ -377,10 +376,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     }
                     break;
                 case TextureFormat.Color16Bits:
-                    if (parameters.GraphicsPlatform == GraphicsPlatform.OpenGL || parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
-                    {
-                        goto case TextureFormat.Color32Bits;
-                    }
                     if (parameters.IsSRgb)
                     {
                         outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
