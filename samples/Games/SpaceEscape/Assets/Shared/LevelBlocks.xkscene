@@ -1,6 +1,6 @@
 !SceneAsset
 Id: d5969c6e-1456-4aac-a656-598bf1e16c2d
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
@@ -49,10 +49,7 @@ Hierarchy:
                     2d6848c6e1f2544fa5391aea5ebb194e: !ModelComponent
                         Id: c648682d-f2e1-4f54-a539-1aea5ebb194e
                         Model: c8901469-88c0-43e1-bffe-f1fe2dc02aea:bg_b02
-                        Materials:
-                            415fb98444a5694ba68bdaca16b10241: null
-                            569675ddaa3a4e4a989a9d1a511095d4: null
-                            2cbafb3000404f43939e37bac273e69c: null
+                        Materials: {}
         -   Entity:
                 Id: 375a70a7-8bd1-42c8-ba80-db8ccd698c28
                 Name: Background_b00
@@ -70,10 +67,7 @@ Hierarchy:
                     662cbdd81ade2647a3000f466a57be4f: !ModelComponent
                         Id: d8bd2c66-de1a-4726-a300-0f466a57be4f
                         Model: 82360e61-196c-4c07-9fae-af7ee4f265a1:bg_b00
-                        Materials:
-                            51e469b191c6f7499f7723d6b1ba6df3: null
-                            747568325d237645991ddf00099eaf5c: null
-                            e86ded7d0fcef14185e94df051a9116d: null
+                        Materials: {}
         -   Entity:
                 Id: 422d91bc-cfe1-439e-a2d1-631886e95537
                 Name: Obstacle1
@@ -90,8 +84,7 @@ Hierarchy:
                     b45612be88b0cc4aada8d30b58cc85ea: !ModelComponent
                         Id: be1256b4-b088-4acc-ada8-d30b58cc85ea
                         Model: e19ec8c3-699e-4a5f-ad09-9f5e750b9b0d:obj00
-                        Materials:
-                            1ce1f0769cf4ee48a045b7a2470ddc36: null
+                        Materials: {}
         -   Entity:
                 Id: 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
                 Name: Background_b01
@@ -112,10 +105,7 @@ Hierarchy:
                     c3aea1c7bdb9134c9e74a68360b9d3d9: !ModelComponent
                         Id: c7a1aec3-b9bd-4c13-9e74-a68360b9d3d9
                         Model: f0088b04-5990-4dd4-9824-77fcf8a8a62c:bg_b01
-                        Materials:
-                            1d5068f057811f4b8a0ee88933560241: null
-                            7174f8a235ef724ab09fd9a4eb647bb0: null
-                            b59985c6317b6846838c89810055cb98: null
+                        Materials: {}
         -   Entity:
                 Id: 732ee867-c723-4583-9f6a-b071c59a7fab
                 Name: LevelBlocks
@@ -159,10 +149,7 @@ Hierarchy:
                     445aa2431d5ed648b78f81a1ea4a3af4: !ModelComponent
                         Id: 43a25a44-5e1d-48d6-b78f-81a1ea4a3af4
                         Model: a966e37f-0bb7-4a02-9630-d871321a615d:bg_b03
-                        Materials:
-                            6b22caeecebcc443ab56675204e19fd4: null
-                            cc707753f55a8447a38d508f9e63c248: null
-                            a5890a3aa7648a4ba081f8162da3759c: null
+                        Materials: {}
         -   Entity:
                 Id: be0f7749-0809-4e50-931b-13570ea885ca
                 Name: Ambient light
@@ -198,10 +185,7 @@ Hierarchy:
                     f0139009701da04ca5ec13ca1c1fe3eb: !ModelComponent
                         Id: 099013f0-1d70-4ca0-a5ec-13ca1c1fe3eb
                         Model: b731fd7d-df09-4059-9cc5-57ba50d0f3f6:bg_b04
-                        Materials:
-                            1084b9d918830043b7686767cf1359b3: null
-                            1c0baefec830a949920403bb6f26de25: null
-                            3f22f391c6fded4195d2d5de2cdcda51: null
+                        Materials: {}
         -   Entity:
                 Id: d594e60f-c93c-4ae2-add6-8f2fa6b7c170
                 Name: Background_a00
@@ -219,11 +203,7 @@ Hierarchy:
                     d060acdcd2b2f343b50af03c4aa5e47e: !ModelComponent
                         Id: dcac60d0-b2d2-43f3-b50a-f03c4aa5e47e
                         Model: 3047da8a-bf85-4cdd-99ef-89c2b19c3c04:bg_a00
-                        Materials:
-                            04400112ea513d499f08b974beea9c46: null
-                            1e91b0b8579054428636c13d765007ea: null
-                            84392d75e1dc674ebeb00cf15defef45: null
-                            37425ec31a68a84db9f65c79bc1e23ae: null
+                        Materials: {}
         -   Entity:
                 Id: e322652e-175e-4563-9135-82ddef7c8973
                 Name: Obstacle2
@@ -237,7 +217,7 @@ Hierarchy:
                     8f64f5877c99444091e3eb7bb5b39f1c: !AnimationComponent
                         Id: 87f5648f-997c-4044-91e3-eb7bb5b39f1c
                         Animations:
-                            d229ea340d32da459a8a44343bed1b92~Idle: 8949a37d-83d4-4f0d-911d-bb15b79fe7b2:obj01_Anim
+                            dc2307ebe85ea9469bf44ecb5ac1d541~Idle: 8949a37d-83d4-4f0d-911d-bb15b79fe7b2:obj01_Anim
                         PlayingAnimations: {}
                     f292fa10f4b3ce4999368d96538f7ed2: !SpaceEscape.PlayAnimationScript,SpaceEscape.Game
                         Id: 10fa92f2-b3f4-49ce-9936-8d96538f7ed2
@@ -248,5 +228,4 @@ Hierarchy:
                     b59dfbc736e9c249b7e006243640beb6: !ModelComponent
                         Id: c7fb9db5-e936-49c2-b7e0-06243640beb6
                         Model: f81db4ee-5929-42c9-9008-2cd624296caa:obj01
-                        Materials:
-                            3048a38a831f8545b3640f7e4c85237c: null
+                        Materials: {}

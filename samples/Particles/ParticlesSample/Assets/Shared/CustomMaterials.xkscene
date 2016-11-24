@@ -1,6 +1,6 @@
 !SceneAsset
 Id: d18360d9-08c6-41e6-a8f0-dcc78e9a723d
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: e1d2d1a7-b350-4e3b-9f30-b4e3aef30a2b
@@ -400,5 +400,4 @@ Hierarchy:
                     bfbbb742d2fe1742b38957dd3f1b20e8: !ModelComponent
                         Id: 42b7bbbf-fed2-4217-b389-57dd3f1b20e8
                         Model: 0fb6c306-2953-47bc-86ff-3e79cfec1836:Models/GridBase10x10
-                        Materials:
-                            7dba235567251c44812f7eb0143559a2: null
+                        Materials: {}

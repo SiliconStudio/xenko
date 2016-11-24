@@ -52,7 +52,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -60,7 +62,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -68,7 +72,9 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (CanOverride)
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -77,6 +83,7 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdentifiers ids;
             if (CanOverride && TryGetCollectionItemIds(Content.Retrieve(), out ids))
             {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, deletedId, itemOverrides);
                 if (isOverridden)
                 {
@@ -86,6 +93,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     ids.UnmarkAsDeleted(deletedId);
                 }
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -482,14 +490,13 @@ namespace SiliconStudio.Assets.Quantum
             }
 
 
-            // TODO FIXME
-            //if (SessionViewModel.Instance.IsInFixupAssetContext)
-            //    return;
+            // Don't update override if propagation from base is disabled.
+            if (PropertyGraph?.Container?.PropagateChangesFromBase == false)
+                return;
 
             // Mark it as New if it does not come from the base
             if (!baseNode?.contentUpdating == true && !ResettingOverride)
             {
-                OverrideChanging?.Invoke(this, EventArgs.Empty);
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
                 {
                     if (e.Index == Index.Empty)
@@ -503,9 +510,8 @@ namespace SiliconStudio.Assets.Quantum
                 }
                 else
                 {
-                    SetOverride(OverrideType.New, removedId, itemOverrides);
+                    OverrideDeletedItem(true, removedId);
                 }
-                OverrideChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -677,6 +683,10 @@ namespace SiliconStudio.Assets.Quantum
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+                // Something wrong happen, the node is unreachable.
+                if (currentNode == null)
+                    return null;
             }
 
             return currentNode;

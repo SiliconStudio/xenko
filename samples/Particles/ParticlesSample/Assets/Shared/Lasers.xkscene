@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 8eb3fe28-2a08-441a-a015-a428d2e17bef
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 2b632eac-33e9-4d59-91cd-410162839997
@@ -104,8 +104,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: 0d98021f-5421-4515-a538-bab192369f8d/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: 563b9e5b-b362-4482-b75a-4b4d77986652/968448c5-e6f3-4323-81c7-620bea800bdb
-                            7ec4e8d2c83c0d6d0dd2f9f7d2c2bc5c: 914164cc-a0e2-441c-9993-78dbff5dcfe1/968448c5-e6f3-4323-81c7-620bea800bdb
-                            13899e71dd37cd9312293cfe35f1cef2: 69bd096f-60ae-4a37-ab95-a47ae2ebc560/968448c5-e6f3-4323-81c7-620bea800bdb
+                            e8aff458f614530e1bdb3dfe6ea90c4c: 914164cc-a0e2-441c-9993-78dbff5dcfe1/968448c5-e6f3-4323-81c7-620bea800bdb
+                            d3cc28f40b60a9653d1d09e4456fcb36: 69bd096f-60ae-4a37-ab95-a47ae2ebc560/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 9ec084d7-f72c-4d7e-b7e1-c971b424fbd6/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: c7c16bcf-f4dc-431c-a127-b9f6a2ab08f5/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -138,7 +138,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             b9cca0bb6d732b4a880171348f616a77: 8697e719-8369-441f-a1e8-271dc4dd5688/bba0ccb9-736d-4a2b-8801-71348f616a77
-                            f84e31fb05a903c1e6fe46da61177d23: 04cdc8a2-7dac-459c-9f03-2bb75f0ad5dc/bba0ccb9-736d-4a2b-8801-71348f616a77
+                            8250107a1787032ccda11bbcad8527d5: 04cdc8a2-7dac-459c-9f03-2bb75f0ad5dc/bba0ccb9-736d-4a2b-8801-71348f616a77
                     071bc949330718449c0b5162f1738f12: !ParticlesSample.LaserOrientationScript,ParticlesSample.Game
                         Id: 49c91b07-0733-4418-9c0b-5162f1738f12
                         Target: 7e68edec-db66-4e4e-9b4b-1609f750e348/0092eadc-6e4f-4295-b138-a52d7b0fc079
@@ -157,8 +157,7 @@ Hierarchy:
                     f7740c0672f2fe4f8c0682955d99d22e: !ModelComponent
                         Id: 060c74f7-f272-4ffe-8c06-82955d99d22e
                         Model: 3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
-                        Materials:
-                            40bd9d72a2df630e9cf1b7b4e963ec52: null
+                        Materials: {}
             Base:
                 BasePartAsset: 74316bd3-3393-4654-850c-00837f64bac9:LaserAssets/LaserPrefab
                 BasePartId: a3ccc846-034e-409a-ac44-0626a1898680
@@ -351,8 +350,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            1637be11f574f52df4dba9472120cba2: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 1f576934-655a-4878-8388-3ff907555fdb
@@ -402,8 +400,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            3e7adc1c8f79dfb2d36cb99cf6dc1ddc: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -434,8 +431,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            45125b492994d53b7dd512ffde6070b1: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -456,8 +452,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            116c395013e0f01266984a8f32765d3f: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -478,8 +473,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            88ba66e20d0e1f23bce7a9126dcb43f4: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -649,8 +643,8 @@ Hierarchy:
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                         Children:
                             c5488496f3e6234381c7620bea800bdb: 9180ff40-09ef-43d9-b38e-c9d3f751ae56/968448c5-e6f3-4323-81c7-620bea800bdb
-                            bf6267b9c5ad315d09303c4e9fe65501: 5ac873be-fd16-4593-a59e-ed80ab2940a8/968448c5-e6f3-4323-81c7-620bea800bdb
-                            6d095a710a354684789e463e74e12145: 38736a85-2851-4d07-86a2-2894285daad4/968448c5-e6f3-4323-81c7-620bea800bdb
+                            27bee3b930688656ae98dd29b683a592: 5ac873be-fd16-4593-a59e-ed80ab2940a8/968448c5-e6f3-4323-81c7-620bea800bdb
+                            7ab120de1b078f861c9cc1b8752eb820: 38736a85-2851-4d07-86a2-2894285daad4/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: b76fb8ba-820d-4697-9e6b-79273b8d4cbb/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: e1a54d99-c4d0-4ec0-8e0f-f74f2e594628/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -668,7 +662,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             b9cca0bb6d732b4a880171348f616a77: ffb230b5-c726-4eb1-a7e2-b87a8873d541/bba0ccb9-736d-4a2b-8801-71348f616a77
-                            e42d4bc271176df71d9163be5f433564: ed9f0cc7-4aed-46ba-9f15-3b31504c5868/bba0ccb9-736d-4a2b-8801-71348f616a77
+                            e8c2f5be8c642ea1a2d2b8335c55ce69: ed9f0cc7-4aed-46ba-9f15-3b31504c5868/bba0ccb9-736d-4a2b-8801-71348f616a77
                     071bc949330718449c0b5162f1738f12: !ParticlesSample.LaserOrientationScript,ParticlesSample.Game
                         Id: 49c91b07-0733-4418-9c0b-5162f1738f12
                         Target: 9d4caca8-ad54-4a29-9185-2e76a2fb1e9e/0092eadc-6e4f-4295-b138-a52d7b0fc079
@@ -717,8 +711,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            5de9a60b1d55b5a0b21e86e8960a8361: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -884,8 +877,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            5bbb102049fea7f5058e8f56b73f369e: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -906,9 +898,7 @@ Hierarchy:
                     86baff0c3398a94cba729ae03b4e8b7c: !ModelComponent
                         Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            52210821e4a5e3428c43e9f603643919: null
-                            c1a2856a811c174eb8eb4f5a3e9bcf17: null
+                        Materials: {}
         -   Entity:
                 Id: 3ff67fb4-5b1d-4f59-814a-366e12ce3146
                 Name: Sphere
@@ -922,8 +912,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            df05dd8d692392a69fa2f1a990e9e1b8: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -956,8 +945,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            dab75918d4ced33f9ac0d198ba0e6d65: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -989,8 +977,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            1ff2f459fcb9c3ab67e45ffa937d34ff: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1167,8 +1154,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: d8f56f17-dcc6-419f-bfb3-0bf30679b60f/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: fded4faa-08b0-41cb-a852-d0325659bc37/968448c5-e6f3-4323-81c7-620bea800bdb
-                            8d161dd1e2d1d2e37223d428583680e3: dc4e7661-1156-4225-b333-f5b510333c89/968448c5-e6f3-4323-81c7-620bea800bdb
-                            79ef77ab80fd1fef09e8c671b4268920: fc6b7e06-15eb-4f10-b274-a0ac12f1bba5/968448c5-e6f3-4323-81c7-620bea800bdb
+                            fb00839427e543703017974b2d8e3f1b: dc4e7661-1156-4225-b333-f5b510333c89/968448c5-e6f3-4323-81c7-620bea800bdb
+                            94a414642e7f017c983851583e705626: fc6b7e06-15eb-4f10-b274-a0ac12f1bba5/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: c0676271-27fd-4915-8275-0abc44797330/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: 5ca072b4-bde8-4766-a8c2-1117127009cd/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -1188,8 +1175,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            6fb5d9d453e8329978f6d05019e91b2a: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1401,8 +1387,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            172425d31a3a1c55b2a97611a3015e24: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1423,9 +1408,7 @@ Hierarchy:
                     86baff0c3398a94cba729ae03b4e8b7c: !ModelComponent
                         Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            adc54f20377a7a44bd2608cb28969685: null
-                            34292b4ff5aaf747b790f0f36952340d: null
+                        Materials: {}
         -   Entity:
                 Id: 5ac873be-fd16-4593-a59e-ed80ab2940a8
                 Name: Entity (2)
@@ -1468,8 +1451,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            75c7314f732397ee3370f6131030109a: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -1490,8 +1472,7 @@ Hierarchy:
                     7af00b276f8c5549a07a63ca77db6023: !ModelComponent
                         Id: 270bf07a-8c6f-4955-a07a-63ca77db6023
                         Model: e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
-                        Materials:
-                            22ca63c96c412520cf99d27758d8116e: null
+                        Materials: {}
             Base:
                 BasePartAsset: 74316bd3-3393-4654-850c-00837f64bac9:LaserAssets/LaserPrefab
                 BasePartId: 1fa0ec17-12a1-4c34-ae03-423318c62744
@@ -1630,8 +1611,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            148f0a5837e614d0ac94fc8e55842de5: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -1652,8 +1632,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            c5185a5dc010dad7562c19d1e4fb994e: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1689,8 +1668,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            ab31ef0c3c039ded5f5cb66c87678f36: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -1724,8 +1702,8 @@ Hierarchy:
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                         Children:
                             c5488496f3e6234381c7620bea800bdb: 9f559b0c-597d-45f7-80a5-8185c0ac574d/968448c5-e6f3-4323-81c7-620bea800bdb
-                            ac66477e3afc71494a030af07775e832: 70609731-acb0-4ca9-868a-be5561d333df/968448c5-e6f3-4323-81c7-620bea800bdb
-                            8b735e2677c74fcb47810b35999a610f: 404fd366-02fc-4e24-b570-80f2e910cfc4/968448c5-e6f3-4323-81c7-620bea800bdb
+                            03e23bc95979ddf07c28c2c87d08533f: 70609731-acb0-4ca9-868a-be5561d333df/968448c5-e6f3-4323-81c7-620bea800bdb
+                            8e62f6e81a24a0ba5391bfc16213bebd: 404fd366-02fc-4e24-b570-80f2e910cfc4/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: a4da17e2-9bdc-4193-befc-5d92d165d6d1/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: 7e68edec-db66-4e4e-9b4b-1609f750e348/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -1745,8 +1723,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            787d90a16d251a07c509167be4c7a7f7: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -1823,8 +1800,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: ab463087-b33c-42bd-b4b4-77e67bb7c985/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: 0b87ac2a-cbe7-426a-b56f-fb34ce009a50/968448c5-e6f3-4323-81c7-620bea800bdb
-                            188e3ec22c43a22becca4dbb623c118b: 7d079577-1ea9-4b1b-879c-30c2d0a608da/968448c5-e6f3-4323-81c7-620bea800bdb
-                            cd30fd2e6cced79fedd16324259ca1ca: cb3c41dd-387d-49f9-b1b7-ba4c0a6d4f33/968448c5-e6f3-4323-81c7-620bea800bdb
+                            e69c241c9287f16a2b10be39f5d769b4: 7d079577-1ea9-4b1b-879c-30c2d0a608da/968448c5-e6f3-4323-81c7-620bea800bdb
+                            3d201e0ee6151a1346095050b475a18a: cb3c41dd-387d-49f9-b1b7-ba4c0a6d4f33/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 809609d0-1bd2-4cb3-934f-feab9cbbda7c/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: dfa51ac7-23f6-486f-8e13-7e8f302607a6/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -2115,8 +2092,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            375f51a0184c9a31ed694b97056fdc4b: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2133,8 +2109,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: bf8be57e-4b30-44bc-ab8d-0214495e407e/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: 642638ad-316b-4811-8917-f74ed6d1a9b2/968448c5-e6f3-4323-81c7-620bea800bdb
-                            484e1561294f392fbb314e96d57b70cf: 47b4643f-7851-496a-a63e-70497387ea56/968448c5-e6f3-4323-81c7-620bea800bdb
-                            24db295d057df2967de084af8627e86f: cd4aedc4-6615-4388-977b-591f7fc61d55/968448c5-e6f3-4323-81c7-620bea800bdb
+                            511fc83fa7e8468a10c733e43fd73918: 47b4643f-7851-496a-a63e-70497387ea56/968448c5-e6f3-4323-81c7-620bea800bdb
+                            d7ccb39b30ae2fbf622f814a04fc78de: cd4aedc4-6615-4388-977b-591f7fc61d55/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: ad12f0f5-57fb-4df0-be3e-1f9f6f8018fc/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: d8dbcce4-a59e-4352-8608-d6afb0574950/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -2154,9 +2130,7 @@ Hierarchy:
                     86baff0c3398a94cba729ae03b4e8b7c: !ModelComponent
                         Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            555c511870838445a614cb8279423045: null
-                            a0d20068d38ed342a56efa3645e39723: null
+                        Materials: {}
         -   Entity:
                 Id: 8697e719-8369-441f-a1e8-271dc4dd5688
                 Name: Laser Beam
@@ -2362,8 +2336,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            7fb4cc319383c58b474b8bc8b7d94e2f: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2384,8 +2357,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            b79bf686c289d25a095258ffc74ec57f: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2435,8 +2407,8 @@ Hierarchy:
                         Children:
                             a894a8ad36fe9347b6b79270face9828: d4ed3dbd-1a81-41e8-b3e8-6e7027951281/ada894a8-fe36-4793-b6b7-9270face9828
                             c5488496f3e6234381c7620bea800bdb: 34a9f547-1db9-4411-bf2f-eebf950f900e/968448c5-e6f3-4323-81c7-620bea800bdb
-                            1db0edcbafd64c36b330ae67a25bc559: a5133108-c718-41a0-9e79-e945dca2fcac/968448c5-e6f3-4323-81c7-620bea800bdb
-                            9ec7bb753e69413d06325fe0abf3f2e3: 028db2e4-fdf0-4900-abd7-86451b2a387f/968448c5-e6f3-4323-81c7-620bea800bdb
+                            3be21c6df44c1440b6f44f318ea4a7b0: a5133108-c718-41a0-9e79-e945dca2fcac/968448c5-e6f3-4323-81c7-620bea800bdb
+                            610f8ac40e7a3c1d245ecd9c970d525a: 028db2e4-fdf0-4900-abd7-86451b2a387f/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 3ff67fb4-5b1d-4f59-814a-366e12ce3146/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: fd0455b0-9843-41fe-9286-60aa2b2b8e96/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -2456,8 +2428,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            714d49a6324a22c5a8410ca7cdd34447: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -2492,8 +2463,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            14bbb2a35981e490a6d3755397bd60bb: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2514,8 +2484,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            2640160526b97bd01d59a83160ef2a66: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2548,8 +2517,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            bd3b1fd4a1e56423b5911ef1c12a5a87: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
@@ -2570,8 +2538,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            9005fa1526834a86855d9a149038fb44: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2619,8 +2586,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            72afa6ed16310d0408e6aa164cd4002c: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2805,8 +2771,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            3483d379e510a2f5fb4242fd32def7c8: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 1f576934-655a-4878-8388-3ff907555fdb
@@ -2824,8 +2789,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            b95650f85d8ec5e1e803c61dbb4e15a6: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2843,8 +2807,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            20757ac2679667b156b18de5dc12874a: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -2880,8 +2843,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            80ed83b19f1c9beb814fa707aaf63ab5: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -2927,8 +2889,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            33d9d50b927418ac492d91c0741cc4e5: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -2946,8 +2907,7 @@ Hierarchy:
                     3e4b24e57117c74f9b5523c9086fe363: !ModelComponent
                         Id: e5244b3e-1771-4fc7-9b55-23c9086fe363
                         Model: 0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
-                        Materials:
-                            30257ba89583e04e79160410b5cb4ddc: null
+                        Materials: {}
             Base:
                 BasePartAsset: 74316bd3-3393-4654-850c-00837f64bac9:LaserAssets/LaserPrefab
                 BasePartId: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
@@ -3098,8 +3058,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            4571ef9770e38514d15f49819d772db8: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 1f576934-655a-4878-8388-3ff907555fdb
@@ -3117,8 +3076,7 @@ Hierarchy:
                     62a518bb8ba7b64dad17a646b90e3045: !ModelComponent
                         Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: d49979c4-92be-430c-bb5a-294bdc6b1665:Materials/Sphere
-                        Materials:
-                            595ca9081c9101916a073c98bc90d0ba: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
@@ -3136,9 +3094,7 @@ Hierarchy:
                     86baff0c3398a94cba729ae03b4e8b7c: !ModelComponent
                         Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            dfdcf872e66fb84da92dc350c311b8ad: null
-                            76b8d19735643249b064166a2c7bbb1a: null
+                        Materials: {}
         -   Entity:
                 Id: c7c16bcf-f4dc-431c-a127-b9f6a2ab08f5
                 Name: ArcTarget
@@ -3197,9 +3153,7 @@ Hierarchy:
                     86baff0c3398a94cba729ae03b4e8b7c: !ModelComponent
                         Id: 0cffba86-9833-4ca9-ba72-9ae03b4e8b7c
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            e9b209f3c8cd1040b902dcdd1585c72d: null
-                            e0f5befbc35bc14fbbc1ce20b016cd28: null
+                        Materials: {}
         -   Entity:
                 Id: cebe733a-e4ab-4aae-92a6-a2ab2edf6145
                 Name: NextScene
@@ -3247,8 +3201,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            0d9df43c41b24b850a07cb67401a3e63: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 1f576934-655a-4878-8388-3ff907555fdb
@@ -3264,8 +3217,8 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             e9988c5a25da9246892027c02f3b087a: 7f777979-e60c-4e8a-b559-feb4faf81362/5a8c98e9-da25-4692-8920-27c02f3b087a
-                            44cce0d54eb79f488f231d345427aea8: ba79f2d8-8d35-4d79-8abf-b4b11ed0bb10/5a8c98e9-da25-4692-8920-27c02f3b087a
-                            19c6f026bcae5af4a6c049e9f9b7dab1: eb37c63d-f3a4-4c5d-b5c4-b9a8bd04e17f/5a8c98e9-da25-4692-8920-27c02f3b087a
+                            b06137dc5b65468241b4ba808b65e066: ba79f2d8-8d35-4d79-8abf-b4b11ed0bb10/5a8c98e9-da25-4692-8920-27c02f3b087a
+                            93b295074aab1ac777069e790be91050: eb37c63d-f3a4-4c5d-b5c4-b9a8bd04e17f/5a8c98e9-da25-4692-8920-27c02f3b087a
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
@@ -3283,8 +3236,7 @@ Hierarchy:
                     b396081b6abe974ba7518fad96ed31ae: !ModelComponent
                         Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: 476b6aa7-94ee-468a-84df-93877dbdb88e:Models/ProceduralModel
-                        Materials:
-                            439f6be5cd246f51df8e0df3209c3653: null
+                        Materials: {}
             Base:
                 BasePartAsset: 311ff46f-bf71-4dd0-aa39-230dbf355536:Prefab
                 BasePartId: 1f576934-655a-4878-8388-3ff907555fdb
@@ -3302,8 +3254,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            a64e3ce442957cc8ed93b8091067add5: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3324,8 +3275,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            e26b63647f1f746cda595d19fa0ab733: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -3346,8 +3296,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            563b25da35bdcb8ee62987c0633815e6: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -3383,8 +3332,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            08a6a67a56163f1a37402c062547e560: null
+                        Materials: {}
                     e479bb1aeeefad42b8d6c82c459c0472: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
@@ -3403,8 +3351,8 @@ Hierarchy:
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                         Children:
                             c5488496f3e6234381c7620bea800bdb: afeca1fc-0133-4a12-82a9-929e5d59c909/968448c5-e6f3-4323-81c7-620bea800bdb
-                            19a4095345a4a0b69adac15fda355e12: 73d2c2a7-03c7-4bf6-bd38-1188cc286ce2/968448c5-e6f3-4323-81c7-620bea800bdb
-                            d996e9d074a2e34a283ed9a19588c341: ea82ce9f-41ed-40bf-a442-2f21c4bb8dbf/968448c5-e6f3-4323-81c7-620bea800bdb
+                            9f331b80b6d67ec565f03cf00acbc729: 73d2c2a7-03c7-4bf6-bd38-1188cc286ce2/968448c5-e6f3-4323-81c7-620bea800bdb
+                            b9c1a9bf5c53a5c1735412bf2dba1d37: ea82ce9f-41ed-40bf-a442-2f21c4bb8dbf/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 9d4b5289-9fa2-40e0-8787-5df76764be04/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: 9d4caca8-ad54-4a29-9185-2e76a2fb1e9e/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -3422,8 +3370,8 @@ Hierarchy:
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                         Children:
                             c5488496f3e6234381c7620bea800bdb: 198da05e-b43d-4679-8b1c-1d2f82bff93c/968448c5-e6f3-4323-81c7-620bea800bdb
-                            4336175e00de6a30bb1968ffd12e0769: 65359c63-b2bc-4dec-a7f3-81f7d4d90a26/968448c5-e6f3-4323-81c7-620bea800bdb
-                            af3dc2c301dc2e7d7d62c0d731085c04: f19da5d1-7c1b-4b2b-b35a-005f684f91fb/968448c5-e6f3-4323-81c7-620bea800bdb
+                            9dbdd9d89d69cb6303a2dedc0615024f: 65359c63-b2bc-4dec-a7f3-81f7d4d90a26/968448c5-e6f3-4323-81c7-620bea800bdb
+                            800db7e0b76708b24c39d8348d11e8b6: f19da5d1-7c1b-4b2b-b35a-005f684f91fb/968448c5-e6f3-4323-81c7-620bea800bdb
                             570439de20c4b84999a86528b5971e83: 2995cfaf-ce91-4b68-ac3f-9052c4ddadcc/de390457-c420-49b8-99a8-6528b5971e83
                             dcea92004f6e9542b138a52d7b0fc079: 87f295c4-4430-4eeb-ae43-b8dd9d40d1ba/0092eadc-6e4f-4295-b138-a52d7b0fc079
             Base:
@@ -4077,8 +4025,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            8a2bf7138472fa909e564dcd29f43773: null
+                        Materials: {}
                     f8123cfc0fcc2948afd19f08fadd32c8: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
@@ -4114,8 +4061,7 @@ Hierarchy:
                     3fef3702a7dcd4448b8458b2ee51b8c0: !ModelComponent
                         Id: 0237ef3f-dca7-44d4-8b84-58b2ee51b8c0
                         Model: 38020c21-659c-4fce-8738-8c55b1622152:Models/MetalRing
-                        Materials:
-                            0f4e950cb67538af53295be35542c022: null
+                        Materials: {}
                     e4801ae0073f02418593e38382cafa83: !ParticlesSample.RotationScript,ParticlesSample.Game
                         Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65

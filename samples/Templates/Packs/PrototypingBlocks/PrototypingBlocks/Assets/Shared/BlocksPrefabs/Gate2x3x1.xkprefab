@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 59ad96a2-d7b6-4353-9564-4223fe886b46
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: 59a5defc-5133-4381-9cb3-52a95df34140
                         Model: 924c9ca7-d8b3-4966-bc05-086bb500ff85:Models/Gate2x3x1
                         Materials:
-                            09ca84d6c3d0524eb3bc6865b8cd852e: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     87e4f56b172adb4f897ce1addcb0ec93: !StaticColliderComponent
                         Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
                         CanSleep: false

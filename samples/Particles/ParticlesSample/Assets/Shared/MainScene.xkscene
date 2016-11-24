@@ -1,6 +1,6 @@
 !SceneAsset
 Id: b4210f42-14a3-4917-80b6-006d7f81b1c6
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 2b632eac-33e9-4d59-91cd-410162839997
@@ -128,8 +128,7 @@ Hierarchy:
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
                         Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            22944cd467efa840a3cb05fa9406bfd7: null
+                        Materials: {}
         -   Entity:
                 Id: 3f4d0e44-8345-4836-a0e2-9e4156568ec6
                 Name: Burning Fire
@@ -478,8 +477,7 @@ Hierarchy:
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
                         Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            230f0b453437fa498b6fd2fa6f74e0a9: null
+                        Materials: {}
         -   Entity:
                 Id: 7698999c-4c4d-43e0-ac5d-5e2360bafde7
                 Name: AmbientLight
@@ -533,8 +531,7 @@ Hierarchy:
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
                         Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            07e7a612baf33b4b8db3274aed01e32d: null
+                        Materials: {}
         -   Entity:
                 Id: a41aa685-3271-4e96-a72c-639c52070011
                 Name: Camera
@@ -563,8 +560,7 @@ Hierarchy:
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
                         Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            93037ff542d0bb43a8558153f923f8e5: null
+                        Materials: {}
         -   Entity:
                 Id: c4a50eb2-a870-4c4b-858a-e09cc7d1a8b3
                 Name: Big Fire
@@ -1049,8 +1045,7 @@ Hierarchy:
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
                         Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            9c824aa7fd4265489353e44eb1b756f4: null
+                        Materials: {}
         -   Entity:
                 Id: e94c89a6-2c01-4b18-bc9b-cca5c3e1a3ae
                 Name: Simple Fountain

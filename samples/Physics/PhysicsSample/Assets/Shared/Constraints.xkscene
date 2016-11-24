@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 45f5d521-b83c-4608-937d-64f93812fba7
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 149f50ac-ff22-47de-9fef-74012dd59eaa
@@ -85,8 +85,7 @@ Hierarchy:
                     6f9fc84a4b763c45abf067d063c01c0d: !ModelComponent
                         Id: 4ac89f6f-764b-453c-abf0-67d063c01c0d
                         Model: bbff2b2d-985f-4986-9c34-f08cdeff8669:Models/Sphere
-                        Materials:
-                            6102acc750412f478725c6cf82691e18: null
+                        Materials: {}
         -   Entity:
                 Id: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0
                 Name: cube
@@ -119,8 +118,7 @@ Hierarchy:
                     dc85964ef8f8a345a77001253a1194aa: !ModelComponent
                         Id: 4e9685dc-f8f8-45a3-a770-01253a1194aa
                         Model: 140faeee-f1b9-4f29-91a2-14b11ae22718:Models/Cube
-                        Materials:
-                            b5433375bddd654f90baadccfee4aafa: null
+                        Materials: {}
         -   Entity:
                 Id: a47eeb82-2121-4fd6-b28a-8ec906ba83e1
                 Name: Directional light

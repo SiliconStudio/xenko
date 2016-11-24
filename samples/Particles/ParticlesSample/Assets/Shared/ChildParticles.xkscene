@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 71292a97-5a05-4865-9ac8-e113ffad9561
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 2b632eac-33e9-4d59-91cd-410162839997
@@ -96,9 +96,7 @@ Hierarchy:
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
                         Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            09bd7c6a77280642816d75244a576fda: null
-                            61c6e6648fc1ba4d8123a2caa5901f54: null
+                        Materials: {}
         -   Entity:
                 Id: 2d712fb9-648d-418a-a5de-54d72c35271b
                 Name: Background
@@ -125,9 +123,7 @@ Hierarchy:
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
                         Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            35f10f2f9d239e4aa4691e56481c5b3a: null
-                            b21f565d6d7a45488f7dfdfc92a31994: null
+                        Materials: {}
         -   Entity:
                 Id: 5e301371-56f7-4e2a-8da8-fd2c34cbe11f
                 Name: NextScene
@@ -689,9 +685,7 @@ Hierarchy:
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
                         Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            132010f3311b4c4d832771b9aca5472d: null
-                            6b9a3f6a25427e478b80d3d0409632cc: null
+                        Materials: {}
         -   Entity:
                 Id: 7698999c-4c4d-43e0-ac5d-5e2360bafde7
                 Name: AmbientLight
@@ -745,9 +739,7 @@ Hierarchy:
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
                         Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
-                        Materials:
-                            87d35bb28fccdc4694bd1983a3994084: null
-                            b1025a1cec83a34e87bcecef2deb3834: null
+                        Materials: {}
         -   Entity:
                 Id: a41aa685-3271-4e96-a72c-639c52070011
                 Name: Camera

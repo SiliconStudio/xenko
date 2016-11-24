@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 5a32965c-893e-4f1c-acd5-9eeceb4ebddd
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
                         Model: 898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
                         Materials:
-                            177b6f511ba29f4ea7119eff5b77981e: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
+                            74dc3e7c6e633f46a3801edd86a197dd~0: 08b6f010-a274-4180-83c4-0f2c0920774b:Materials/GridMTStairs
                     dc14c0a2cfc23c4888d690b32f62969d: !StaticColliderComponent
                         Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
                         CanSleep: false

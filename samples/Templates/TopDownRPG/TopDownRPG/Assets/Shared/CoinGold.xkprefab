@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: e8a0251a-6555-494e-a875-08492e9988e8
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,8 +20,7 @@ Hierarchy:
                     76eeb34856ae80488daf19410ab51cf5: !ModelComponent
                         Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
                         Model: 43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
-                        Materials:
-                            faad3f0ef82352419fb8ca3711d23fb8: null
+                        Materials: {}
                     2bdedf2b36b5ac47a5ddb46bc1d762f5: !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin

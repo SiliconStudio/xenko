@@ -28,5 +28,5 @@ Materials:
     e3befa98ad23d3cfa84708dda84708dd:
         Name: lambert1
         MaterialInstance:
-            Material: ed1d1531-6a3d-4ffb-a3a1-bf6897d7bda9/dbf44423-b639-4e84-8eca-fcea83343296:Materials/LambertMT
+            Material: dbf44423-b639-4e84-8eca-fcea83343296:Materials/LambertMT
 Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton

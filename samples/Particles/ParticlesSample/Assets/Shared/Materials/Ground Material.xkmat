@@ -5,13 +5,13 @@ Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 9c3bd4d2-63fd-4f91-a5e4-c901db983d0d/53d52841-b695-4d71-af85-4f665f0705bc:Textures/XenkoLogoGray
+            Texture: 53d52841-b695-4d71-af85-4f665f0705bc:Textures/XenkoLogoGray
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

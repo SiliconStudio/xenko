@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 95b713fb-b86a-4bdf-90c7-603c78e4e7b5
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,9 +20,7 @@ Hierarchy:
                     92a01d27b6aa2e49b6f4555de61f78e4: !ModelComponent
                         Id: 271da092-aab6-492e-b6f4-555de61f78e4
                         Model: e288f24b-258b-4875-85bb-a696a7445a7c:Models/BoxF
-                        Materials:
-                            e1d39cedf8fe4e408acec76bd8abf4e1: null
-                            93bdd8a83a777548b8c6d301d6a8ed38: null
+                        Materials: {}
                     9ff39e9a53a90d49bb7faec06f6d32ca: !StaticColliderComponent
                         Id: 9a9ef39f-a953-490d-bb7f-aec06f6d32ca
                         CollisionGroup: CustomFilter2

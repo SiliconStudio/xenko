@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 2195e36c-46ec-496b-8072-098c114f4a7f
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 4b073557-2d1c-42db-b4ca-c8d80e648f92
@@ -619,8 +619,7 @@ Hierarchy:
                     7641294411c56b40aa5d0798967ef1d4: !ModelComponent
                         Id: 44294176-c511-406b-aa5d-0798967ef1d4
                         Model: 0fb6c306-2953-47bc-86ff-3e79cfec1836:Models/GridBase10x10
-                        Materials:
-                            669d54f7342da24a8652c71c719ad471: null
+                        Materials: {}
         -   Entity:
                 Id: 8be4d1c8-abc9-4afe-8117-a4489f4e88d6
                 Name: Camera

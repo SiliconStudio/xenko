@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 4cc0c9b8-9f5c-4302-96a5-30d85ad9180e
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: d7b6abff-9404-4935-990d-166941f486fb
                         Model: ed73e3e6-dbc9-400e-981d-6c378466fcd9:Models/Table1x1x1
                         Materials:
-                            bbc65f98c2fe7c40a20eb9b9978fe942: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
+                            ecd1b81c86e9114d86fcdf436455648f~0: c1d40f25-8760-420b-8e26-ef8a2b999678:Materials/GridMTArc
                     d5323b00a362314f8b4b66ccb85a7088: !StaticColliderComponent
                         Id: 003b32d5-62a3-4f31-8b4b-66ccb85a7088
                         CollisionGroup: StaticFilter

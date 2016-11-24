@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 30b03965-6c58-4211-8cbf-ba37de0fc135
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: f5110fc2-edb2-4cac-985e-72d07f0772b5
                         Model: a4db3eeb-2715-4e8f-bba0-452eb7ca2d47:Models/Pendilum0x2x0Ball
                         Materials:
-                            b7f126378275ad49befb489e086e3625: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
+                            375be21b17b931489b7075f15158cba7~0: ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     15332955af647b4bbc35c45c75d70935: !StaticColliderComponent
                         Id: 55293315-64af-4b7b-bc35-c45c75d70935
                         CollisionGroup: StaticFilter

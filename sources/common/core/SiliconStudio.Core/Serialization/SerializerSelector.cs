@@ -66,6 +66,7 @@ namespace SiliconStudio.Core.Serialization
         public SerializerSelector SelectorOverride;
 
         private bool invalidated;
+        private int dataSerializerFactoryVersion;
 
         static SerializerSelector()
         {
@@ -243,62 +244,76 @@ namespace SiliconStudio.Core.Serialization
 
         internal void Invalidate()
         {
-            lock (Lock)
-            {
-                invalidated = true;
-            }
+            invalidated = true;
         }
 
         private void UpdateDataSerializers()
         {
-            lock (Lock)
+            if (invalidated)
             {
-                if (invalidated)
+                var newDataSerializersByType = new Dictionary<Type, DataSerializer>();
+                var newDataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
+
+                // Create list of combined serializers
+                var combinedSerializers = new Dictionary<Type, AssemblySerializerEntry>();
+
+                int capturedVersion;
+
+                lock (DataSerializerFactory.Lock)
                 {
-                    var newDataSerializersByType = new Dictionary<Type, DataSerializer>();
-                    var newDataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
-
-                    // Create list of combined serializers
-                    var combinedSerializers = new Dictionary<Type, AssemblySerializerEntry>();
-
-                    lock (DataSerializerFactory.Lock)
+                    foreach (var profile in profiles)
                     {
-                        foreach (var profile in profiles)
+                        Dictionary<Type, AssemblySerializerEntry> serializersPerProfile;
+                        if (DataSerializerFactory.DataSerializersPerProfile.TryGetValue(profile, out serializersPerProfile))
                         {
-                            Dictionary<Type, AssemblySerializerEntry> serializersPerProfile;
-                            if (DataSerializerFactory.DataSerializersPerProfile.TryGetValue(profile, out serializersPerProfile))
+                            foreach (var serializer in serializersPerProfile)
                             {
-                                foreach (var serializer in serializersPerProfile)
-                                {
-                                    combinedSerializers[serializer.Key] = serializer.Value;
-                                }
+                                combinedSerializers[serializer.Key] = serializer.Value;
                             }
                         }
                     }
 
-                    // Create new list of serializers (it will create new ones, and remove unused ones)
-                    foreach (var serializer in combinedSerializers)
+                    // Due to multithreading, maybe the current version is already that one, or better
+                    // In this case, we can stop right there
+                    capturedVersion = DataSerializerFactory.Version;
+                    if (dataSerializerFactoryVersion >= capturedVersion)
                     {
-                        DataSerializer dataSerializer;
-                        if (!dataSerializersByType.TryGetValue(serializer.Key, out dataSerializer))
+                        invalidated = false;
+                        return;
+                    }
+                }
+
+                // Create new list of serializers (it will create new ones, and remove unused ones)
+                foreach (var serializer in combinedSerializers)
+                {
+                    DataSerializer dataSerializer;
+                    if (!dataSerializersByType.TryGetValue(serializer.Key, out dataSerializer))
+                    {
+                        if (serializer.Value.SerializerType != null)
                         {
-                            if (serializer.Value.SerializerType != null)
-                            {
-                                // New serializer, let's create it
-                                dataSerializer = (DataSerializer)Activator.CreateInstance(serializer.Value.SerializerType);
-                                dataSerializer.SerializationTypeId = serializer.Value.Id;
+                            // New serializer, let's create it
+                            dataSerializer = (DataSerializer)Activator.CreateInstance(serializer.Value.SerializerType);
+                            dataSerializer.SerializationTypeId = serializer.Value.Id;
 
-                                // Ensure a serialization type ID has been generated (otherwise do so now)
-                                EnsureSerializationTypeId(dataSerializer);
-                            }
+                            // Ensure a serialization type ID has been generated (otherwise do so now)
+                            EnsureSerializationTypeId(dataSerializer);
                         }
-
-                        newDataSerializersByType[serializer.Key] = dataSerializer;
-                        newDataSerializersByTypeId[serializer.Value.Id] = dataSerializer;
                     }
 
-                    dataSerializersByType = newDataSerializersByType;
-                    dataSerializersByTypeId = newDataSerializersByTypeId;
+                    newDataSerializersByType[serializer.Key] = dataSerializer;
+                    newDataSerializersByTypeId[serializer.Value.Id] = dataSerializer;
+                }
+
+                // Do the actual state switch inside a lock
+                lock (Lock)
+                {
+                    // Due to multithreading, make sure we really still need to update
+                    if (dataSerializerFactoryVersion < capturedVersion)
+                    {
+                        dataSerializerFactoryVersion = capturedVersion;
+                        dataSerializersByType = newDataSerializersByType;
+                        dataSerializersByTypeId = newDataSerializersByTypeId;
+                    }
 
                     invalidated = false;
                 }

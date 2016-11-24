@@ -3,7 +3,8 @@ Id: 4fc92370-763a-4adc-b117-1874582a31d6
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
 Source: ../../../Resources/Knight/he03_run.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
-Skeleton: ebdddec7-7532-49a0-a72e-7fd0e182d634/1e2af2c8-b557-4f60-88b5-bbe764539fd4:Knight/knight Skeleton
+Skeleton: 1e2af2c8-b557-4f60-88b5-bbe764539fd4:Knight/knight Skeleton
 RootMotion: false
-PreviewModel: 6cbe2eda-e519-4e6c-902d-8dc8519bd9c4/55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
+PreviewModel: 55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight

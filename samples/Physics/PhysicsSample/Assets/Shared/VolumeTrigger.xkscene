@@ -1,6 +1,6 @@
 !SceneAsset
 Id: a5a4f13e-6366-43de-b071-a87c1dfff115
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 5e74f5af-2766-44b5-8e0c-b362a3b3590d
@@ -119,9 +119,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            e13034f7964353343595a5cbb771c99a: null
-                            a6d31d1d05121add851086c8cd95c11f: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -219,9 +217,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            c7df5f7c3b9cbc3ebeb9379a0828ba56: null
-                            7d7c8b124cd6ad7c1e19eb2370b35766: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -262,8 +258,7 @@ Hierarchy:
                     d408915c8d62ba4abc3009fb941ef880: !ModelComponent
                         Id: 5c9108d4-628d-4aba-bc30-09fb941ef880
                         Model: 9fab8da2-f2c8-4586-9435-20d8fad479e2:Player
-                        Materials:
-                            bdfeb5687f86c54296ffc6f58f43d1a8: null
+                        Materials: {}
         -   Entity:
                 Id: 506132c5-335d-4bdf-87ea-6048269cdfbe
                 Name: KinematicCrate (5)
@@ -311,9 +306,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            3564742d9183eec3f1dd0081c5e64118: null
-                            11a60b509671bb13848316923cceb6fc: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -403,9 +396,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            6b5469904f437048a20c1f9be0322f4c: null
-                            e07305ad09835409f1d8cc6afd9e3c93: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -445,9 +436,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            3ef20a247178f7809371d65cb8d6bb64: null
-                            1c60e57f524e59fc8b7c548e19acfa1a: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -556,8 +545,7 @@ Hierarchy:
                     99a4b625c60911438f882cfb1100888d: !ModelComponent
                         Id: 25b6a499-09c6-4311-8f88-2cfb1100888d
                         Model: ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Models/Ball
-                        Materials:
-                            f78ab04f9807294a23cf9534667f35e4: null
+                        Materials: {}
             Base:
                 BasePartAsset: 2603278e-1a16-4d57-a24c-563472a5b86b:BallPrefab
                 BasePartId: c016fcd8-5ab1-4212-9784-954709ca481d
@@ -625,9 +613,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            1af97bf385a4e305973013e74ecd0c73: null
-                            488d1c7c2e321b36f80706bc719211e1: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -667,7 +653,7 @@ Hierarchy:
                         Id: 2e2aa22e-4ab5-41fd-ac11-b9dbcd9be00f
                         Model: bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:Models/ProceduralModel
                         Materials:
-                            7b35c47fdf426e4a85dc65ce2539281e: cf9193b2-993a-4329-b6de-983ae136628a:Materials/TriggerMat
+                            9ce0cdb239a6ac4992e9428e0988691e~0: cf9193b2-993a-4329-b6de-983ae136628a:Materials/TriggerMat
         -   Entity:
                 Id: dbc36769-8ddf-4bbe-9fdb-1ee586963d23
                 Name: crate
@@ -700,9 +686,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            32fad514af2577160547d3922f2d0247: null
-                            68e7f0ec8833bf78bc1e4546971f7b3b: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -742,9 +726,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            2ffc8c28bdf9d40191a532f1a553f6da: null
-                            8206fe35305b7e36317701168dbd07a0: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -784,9 +766,7 @@ Hierarchy:
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
                         Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
-                        Materials:
-                            b1fdbc80b0caa527542999bb89a47dac: null
-                            298d93910bd7df82c355f6de1a52e790: null
+                        Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
                         Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
@@ -836,5 +816,4 @@ Hierarchy:
                     7e137400e2eda7499b8235359ec18a1a: !ModelComponent
                         Id: 0074137e-ede2-49a7-9b82-35359ec18a1a
                         Model: 6993a85b-a9ab-4c74-89d3-5643c2d48cba:Models/Ground
-                        Materials:
-                            d76c3191effbdd48884958d80d46e002: null
+                        Materials: {}

@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 35bdf1bb-0eaa-4c45-8b95-7e55108786aa
@@ -54,11 +54,11 @@ Hierarchy:
                     41458ad07634a647a7b80f9eb9ad1b22: !AnimationComponent
                         Id: d08a4541-3476-47a6-a7b8-0f9eb9ad1b22
                         Animations:
-                            cf2914adddf3e8438ec86a28825be172~Active: ebbd2b1f-cbb4-4016-bcc8-2a7cc09c48c9:ma00_1
-                            28dc46aac326cb479939d2322c7f90aa~Crash: 31a903e0-ede6-429d-920f-6e4e1c4b662a:ma04
-                            ea4da1d0fec8e3419286ce81a415009f~DodgeLeft: be1d7fd2-aee5-401f-b89d-833c53174a72:ma01
-                            3c2278c72e6e1d40995fcd4bcdcc3a51~DodgeRight: baf0bcc6-2468-46e9-81cc-ff976395d938:ma02
-                            c1942b85bdca52449e3b9fcecc0635a9~Slide: 6784fa36-34e7-4990-baf6-7a854e5caaa9:ma03
+                            171f260f778ea04bb722def563003c1a~Active: ebbd2b1f-cbb4-4016-bcc8-2a7cc09c48c9:ma00_1
+                            9498fb37c5bd8c4297e3848ff30d3fcf~Crash: 31a903e0-ede6-429d-920f-6e4e1c4b662a:ma04
+                            b0229b5da72a214e9efb8cc658dcc84e~DodgeLeft: be1d7fd2-aee5-401f-b89d-833c53174a72:ma01
+                            fcadcd94fb2bca4a9b42a86d938f171c~DodgeRight: baf0bcc6-2468-46e9-81cc-ff976395d938:ma02
+                            aeaba29dd186c447aae5cc653cec9096~Slide: 6784fa36-34e7-4990-baf6-7a854e5caaa9:ma03
                         PlayingAnimations: {}
                     6da46dd186e87048a8a27ac30c0034ea: !SpaceEscape.CharacterScript,SpaceEscape.Game
                         Id: d16da46d-e886-4870-a8a2-7ac30c0034ea
@@ -66,10 +66,7 @@ Hierarchy:
                     b5a68281b53dfc4b8735831133e03931: !ModelComponent
                         Id: 8182a6b5-3db5-4bfc-8735-831133e03931
                         Model: 920f4445-c00d-474f-b8c0-33b385d58b8f:character_00
-                        Materials:
-                            87d383372bb12040ad57f6f966894d35: null
-                            e213855343d71b4b991a5ad71b51b2d8: null
-                            38cef85e3d05ea478669ae44b6507d3c: null
+                        Materials: {}
         -   Entity:
                 Id: 2ff8aac2-706b-4d4e-b6c9-22e2f8f2c31f
                 Name: Ambient light

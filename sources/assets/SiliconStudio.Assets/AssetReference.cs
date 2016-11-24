@@ -169,14 +169,14 @@ namespace SiliconStudio.Assets
         /// <param name="assetReferenceText">The asset reference.</param>
         /// <param name="assetReference">The reference.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static bool TryParse(string assetReferenceText, out AssetReference assetReference)
+        public static bool TryParse(string assetReferenceText, out AssetReference assetReference, out Guid referenceId)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             assetReference = null;
             AssetId assetId;
             UFile location;
-            if (!TryParse(assetReferenceText, out assetId, out location))
+            if (!TryParse(assetReferenceText, out assetId, out location, out referenceId))
             {
                 return false;
             }

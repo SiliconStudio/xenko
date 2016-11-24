@@ -1,13 +1,13 @@
 !PrefabAsset
 Id: c7730809-5eec-4b26-8750-2a8ce75992c5
-SerializedVersion: {Xenko: 1.9.0-beta03}
+SerializedVersion: {Xenko: 1.9.0-beta04}
 Tags: []
 Hierarchy:
     RootPartIds:
-        - 496dab69-b03b-4272-a196-8e81329ce249
+        - 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
     Parts:
         -   Entity:
-                Id: 496dab69-b03b-4272-a196-8e81329ce249
+                Id: 4d6499da-edbb-4e5e-b914-03e6a89a0dcd
                 Name: Box4x2x1
                 Components:
                     cafed28ac2678c4e84c546d7570eabd3: !TransformComponent
@@ -20,7 +20,7 @@ Hierarchy:
                         Id: f8e40778-5987-40f5-8bc7-13431dfc8978
                         Model: 8716437c-7a19-4a59-840a-3f3e91214205:Models/Box4x2x1
                         Materials:
-                            28a41077199bc14cbee62d1f7e4502fb: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
+                            97cb539b4d6079458c5ef344e58d8e55~0: 9366d8fb-3605-4070-abaa-7bb7f1cdfbc1:Materials/GridMTPlatform
                     793d2ad2924e3a48a2a869b11f5df718: !StaticColliderComponent
                         Id: d22a3d79-4e92-483a-a2a8-69b11f5df718
                         CanSleep: false

@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 2ae86742-ad72-46d3-a6b6-4358ea99b7a6
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: 22af20a7-9082-4801-9f21-b943e3647b4d
@@ -79,8 +79,7 @@ Hierarchy:
                     09d142ea4398464fa426c3bb02c1415c: !ModelComponent
                         Id: ea42d109-9843-4f46-a426-c3bb02c1415c
                         Model: af7e984a-ef27-4ea5-85a8-fafa2243c412:Sphere
-                        Materials:
-                            d8e7058dcc52254b9d8e7882e16112d6: null
+                        Materials: {}
         -   Entity:
                 Id: 97979df6-8f67-41dc-b0e3-e433b586212b
                 Name: Background

@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 6736d805-6194-40bf-8056-7c52758e2e4b
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 SceneSettings:
     Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
@@ -53,8 +53,8 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             6e0ccb3914376044b5f47d0b8f04ddf9: 9b590d0c-a428-42ca-a839-cce3e6b98479/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            c5948f0cb0aecca0f1b4e36f4455120e: 2aea2699-19ec-4610-83de-b34d01da6596/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            1eebcf18b5296768ccafa7aff76f70db: e5bf4202-a2c0-4fca-a9be-72e94817c531/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            c0b67ea6d33c7540364cee785d7a1ddc: 2aea2699-19ec-4610-83de-b34d01da6596/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            c7fabdfd8c024184ac043f7fbd3c2357: e5bf4202-a2c0-4fca-a9be-72e94817c531/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
         -   Entity:
                 Id: 073732dc-d6ae-4279-8789-d246ea9683b0
                 Name: SwooshRed
@@ -236,13 +236,7 @@ Hierarchy:
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
-                        Materials:
-                            efdf31d89f93304db3d66c53d60093ca: null
-                            791b226f695ca14fa5552a9e482f2b51: null
-                            70f84b318bf4f64ca9b4d7f88960ee4a: null
-                            9e721249f8a7574f8ebdbf61e46e50a6: null
-                            c51aea9d4a6fae41b62a220cbe2f724f: null
-                            817049c39dc07c4b8e2e3159cee39c1c: null
+                        Materials: {}
         -   Entity:
                 Id: 129c81f3-ab34-4783-a889-557620d798d9
                 Name: curvedStand
@@ -256,8 +250,7 @@ Hierarchy:
                     b89451588eaa8e4ab2eff91d3c039ea6: !ModelComponent
                         Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            407af58d410ca043bf30c2cd4630414a: null
+                        Materials: {}
         -   Entity:
                 Id: 1b92f0e7-d75d-4623-826d-c7c1c14489f8
                 Name: Entity
@@ -471,8 +464,7 @@ Hierarchy:
                     6c2161688e88594d95209b237962d0fd: !ModelComponent
                         Id: 6861216c-888e-4d59-9520-9b237962d0fd
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            4a1d86d7ad323746a14194482e637416: null
+                        Materials: {}
         -   Entity:
                 Id: 3aedbca9-d0a2-4833-a577-22f967ba13ee
                 Name: Ambient light
@@ -506,8 +498,7 @@ Hierarchy:
                     b89451588eaa8e4ab2eff91d3c039ea6: !ModelComponent
                         Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            60c33aeaa157ce4e9dad101e0e0bff23: null
+                        Materials: {}
         -   Entity:
                 Id: 5acf4055-9e3a-4c1b-98aa-5d8bd93884c8
                 Name: PrefabRibbon
@@ -519,8 +510,8 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             6e0ccb3914376044b5f47d0b8f04ddf9: 073732dc-d6ae-4279-8789-d246ea9683b0/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            5844cf5c1f382346639d8006531aa627: af7180fc-0e8e-4f31-961c-320dec6f9aa0/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            632c3bb2f476b12e31220ad7da49ad8f: 8ff313e5-2282-4955-961f-e6ee746dbfdd/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            87e8a3fc9815135e6c1d9ed295e2c2fb: af7180fc-0e8e-4f31-961c-320dec6f9aa0/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            62b5bbe5995e6fb67c9e1902fb80da0c: 8ff313e5-2282-4955-961f-e6ee746dbfdd/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
         -   Entity:
                 Id: 64c9cb43-825d-4501-9977-5cc91bbe09ef
                 Name: SwordModel
@@ -535,11 +526,7 @@ Hierarchy:
                     a2340729023ac54b87644b8d8a2423db: !ModelComponent
                         Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
                         Model: dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
-                        Materials:
-                            68eacc6aa2323248a7c94c694af8e5f9: null
-                            3c65b1dd9f669b42bc1651d97bb71de5: null
-                            73b5872d2f90164b86c6b0b2c93c9e66: null
-                            fa74f549df89e449aba66c987de66210: null
+                        Materials: {}
                     3484b61b27bf614ab0b977eb151c6e42: !ModelNodeLinkComponent
                         Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
                         Target: null
@@ -571,13 +558,7 @@ Hierarchy:
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
-                        Materials:
-                            bc377f0cae04594e85ff9ff5ffee4bae: null
-                            728e911468e8cf409b97706b31e4da57: null
-                            a0cb10e4dc91cf43b3c44454e770b6d6: null
-                            f5955b24c2b000428a1c12cc53a32e65: null
-                            9fb6cf08d8ade34e9bfd7e769932aa6b: null
-                            afc79e672e26d14893993a274884cfbe: null
+                        Materials: {}
         -   Entity:
                 Id: 6b65e133-4d5e-49ed-9af9-8949cfe883ce
                 Name: Directional light
@@ -611,8 +592,7 @@ Hierarchy:
                     b89451588eaa8e4ab2eff91d3c039ea6: !ModelComponent
                         Id: 585194b8-aa8e-4a8e-b2ef-f91d3c039ea6
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
-                        Materials:
-                            227f551db90b2a498191c732b739654d: null
+                        Materials: {}
         -   Entity:
                 Id: 8a3b8daa-0d73-4522-beea-89bcd38b6c7a
                 Name: LeftShoulder
@@ -1119,11 +1099,7 @@ Hierarchy:
                     a2340729023ac54b87644b8d8a2423db: !ModelComponent
                         Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
                         Model: dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
-                        Materials:
-                            fa1baf74d720854cbc4aa5d0a81fa14d: null
-                            257a0b3fb1926f43826faccf3922c0bd: null
-                            3885744ef1faae47b41da0ca0eaf039b: null
-                            53a2f1174e5eed4584b98e3e9097c017: null
+                        Materials: {}
                     3484b61b27bf614ab0b977eb151c6e42: !ModelNodeLinkComponent
                         Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
                         Target: null
@@ -1155,13 +1131,7 @@ Hierarchy:
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
-                        Materials:
-                            7dce2f14768c434fb4faa7104b5aa60b: null
-                            14f343287d7e1a47a204b9fb1c51798d: null
-                            8eb6c2887b0522429595123282cc26bc: null
-                            336d1df8cce22b41a6f84e77a70bbb1d: null
-                            d206e87da7f74041a000aca9027b2ba5: null
-                            2686f5d5cdaf054cb0599e0a2671286f: null
+                        Materials: {}
         -   Entity:
                 Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
                 Name: LoopingRibbons
@@ -1173,7 +1143,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             6e0ccb3914376044b5f47d0b8f04ddf9: ca05946c-cce2-4970-8d8b-56b28c19e01e/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-                            4248bcf673b1be20447b2a75007926d6: 8a3b8daa-0d73-4522-beea-89bcd38b6c7a/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
+                            26d21f09d320c484e809f3a6ad67bea1: 8a3b8daa-0d73-4522-beea-89bcd38b6c7a/39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                             6b78b2a313719848ad271a3b950e7b74: 2de708ed-8a1a-40ac-9d6d-849ea3205f82/a3b2786b-7113-4898-ad27-1a3b950e7b74
                     566f060bf906e54f9319be71331e8664: !AnimationComponent
                         Id: 0b066f56-06f9-4fe5-9319-be71331e8664
@@ -1190,13 +1160,7 @@ Hierarchy:
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
-                        Materials:
-                            8431b636f5d96b41b17ee82980cc014f: null
-                            a412db7188d2204490ab3a1138b58de0: null
-                            16514478cd971045bfad56ae1194ad89: null
-                            b5e66d4676a6c8458e91bf9c5e03c482: null
-                            32ec43afc0d3864685abdc5fef300ea2: null
-                            b1fe3f623b17f746acf903e2d60a58d6: null
+                        Materials: {}
         -   Entity:
                 Id: ca05946c-cce2-4970-8d8b-56b28c19e01e
                 Name: RightShoulder
@@ -1259,11 +1223,7 @@ Hierarchy:
                     a2340729023ac54b87644b8d8a2423db: !ModelComponent
                         Id: 290734a2-3a02-4bc5-8764-4b8d8a2423db
                         Model: dc419cbf-4eb2-4983-b5c7-305511f0399f:Models/SwordModel
-                        Materials:
-                            5df6b2db59f67b4f832a35f771446315: null
-                            8e08a356c1854548b890f7725045e724: null
-                            df137a024eecbd4892ec72d7b3fc06c5: null
-                            c96bef92d4754043bc51e8eefc4fa44c: null
+                        Materials: {}
                     3484b61b27bf614ab0b977eb151c6e42: !ModelNodeLinkComponent
                         Id: 1bb68434-bf27-4a61-b0b9-77eb151c6e42
                         Target: null

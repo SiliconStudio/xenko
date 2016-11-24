@@ -307,12 +307,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             {
                                 var materials = component.Value.Materials;
                                 var node = ((DynamicYamlMapping)materials).Node;
-                                var i = 0;
+                                var i = -1;
                                 foreach (var material in node.Children.ToList())
                                 {
-                                    node.Children.Remove(material.Key);
-                                    node.Children.Add(new YamlScalarNode(((YamlScalarNode)material.Key).Value + '~' + i), material.Value);
                                     ++i;
+                                    node.Children.Remove(material.Key);
+                                    if (((YamlScalarNode)material.Value).Value == "null")
+                                        continue;
+
+                                    node.Children.Add(new YamlScalarNode(((YamlScalarNode)material.Key).Value + '~' + i), material.Value);
                                 }
                             }
                         }
@@ -340,7 +343,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                                         AssetId assetReference;
                                         if (AssetReference.TryParse(reference.Value, out assetReference, out location, out referenceId) && referenceId != Guid.Empty)
                                         {
-                                            var itemId = ItemId.New();
+                                            var itemId = new ItemId(referenceId.ToByteArray());
                                             newMaterial[itemId + "~" + i] = new AssetReference(assetReference, location);
                                         }
                                     }
