@@ -3,7 +3,7 @@
 
 #if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 using System;
-using System.Drawing;
+using OpenTK;
 using OpenTK.Input;
 using SiliconStudio.Xenko.Games;
 using GameWindow = OpenTK.GameWindow;
