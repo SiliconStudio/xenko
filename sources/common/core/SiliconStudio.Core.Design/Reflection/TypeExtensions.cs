@@ -306,25 +306,25 @@ namespace SiliconStudio.Core.Reflection
             var type = obj?.GetType();
             if (type == typeof(sbyte))
                 result = (sbyte)obj;
-            if (type == typeof(byte))
+            else if (type == typeof(byte))
                 result = (byte)obj;
-            if (type == typeof(short))
+            else if (type == typeof(short))
                 result = (short)obj;
-            if (type == typeof(ushort))
+            else if (type == typeof(ushort))
                 result = (ushort)obj;
-            if (type == typeof(int))
+            else if (type == typeof(int))
                 result = (int)obj;
-            if (type == typeof(uint))
+            else if (type == typeof(uint))
                 result = (uint)obj;
-            if (type == typeof(long))
+            else if (type == typeof(long))
                 result = (long)obj;
-            if (type == typeof(ulong))
+            else if (type == typeof(ulong))
                 result = (ulong)obj;
-            if (type == typeof(float))
+            else if (type == typeof(float))
                 result = (float)obj;
-            if (type == typeof(double))
+            else if (type == typeof(double))
                 result = (double)obj;
-            if (type == typeof(decimal))
+            else if (type == typeof(decimal))
                 result = (double)(decimal)obj;
             return result;
         }
