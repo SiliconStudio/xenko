@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under Apache 2.0 License. See LICENSE.md for details.
 //
 // TouchRunner.cs: MonoTouch.Dialog-based driver to run unit tests
@@ -500,7 +500,7 @@ namespace SiliconStudio.Xenko.UnitTesting.UI {
 		        //current.Listener = this; // Internal on Android
 		        current.GetType().GetField("listener", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(current, this);
                 current.TestObject = test is TestSuite ? null : Reflect.Construct((test as TestMethod).Method.ReflectedType, null);
-		        WorkItem wi = test.CreateWorkItem(filter, new FinallyDelegate());
+		        WorkItem wi = test.CreateWorkItem(filter);
 		        wi.Execute(current);
 		        Result = wi.Result;
 		        return Result;
