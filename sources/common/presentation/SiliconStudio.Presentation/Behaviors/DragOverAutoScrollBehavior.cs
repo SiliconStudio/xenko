@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void DragOver(object sender, DragEventArgs e)
         {
-            var position = GetMousePosition();
+            var position = AssociatedObject.GetCursorRelativePosition();
             lock (lockObject)
             {
                 edgeUnderMouse = GetEdgeUnderMouse(position);
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void DragLeave(object sender, DragEventArgs e)
         {
-            var position = GetMousePosition();
+            var position = AssociatedObject.GetCursorRelativePosition();
             if (position.X <= 0 || position.Y <= 0 || position.X >= AssociatedObject.ActualWidth || position.Y >= AssociatedObject.ActualHeight)
             {
                 edgeUnderMouse = null;
@@ -102,13 +102,6 @@ namespace SiliconStudio.Presentation.Behaviors
                 scrollStarted = true;
                 Task.Run(() => ScrollTask(scrollViewer, delaySeconds), cancellationTokenSource.Token);
             }
-        }
-
-        private Point GetMousePosition()
-        {
-            NativeHelper.POINT position;
-            NativeHelper.GetCursorPos(out position);
-            return AssociatedObject.PointFromScreen(new Point(position.X, position.Y));
         }
 
         private async Task ScrollTask(ScrollViewer scrollViewer, double delaySeconds)

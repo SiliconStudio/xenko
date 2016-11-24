@@ -7,8 +7,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-
+using System.Windows.Media;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -123,8 +124,7 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             switch (msg)
             {
-                /* WM_GETMINMAXINFO */
-                case 0x0024:
+                case NativeHelper.WM_GETMINMAXINFO:
                     var monitorInfo = WindowHelper.GetMonitorInfo(hwnd);
                     if (monitorInfo == null)
                         break;
@@ -135,13 +135,17 @@ namespace SiliconStudio.Presentation.Behaviors
 
                     mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                     mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    // Get dpi scale
+                    var dpiScale = VisualTreeHelper.GetDpi(window);
                     // Get maximum width and height from WPF
-                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
-                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxHeight;
+                    var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)(window.MaxWidth*dpiScale.DpiScaleX);
+                    var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)(window.MaxHeight*dpiScale.DpiScaleY);
+                    // Constrain the size when the window is maximized to the work area so that the taskbar is not covered
                     mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
                     mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
-                    mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
-                    mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
+                    // Uncomment the following lines to also constraint the maximum size that the user can manually resize the window when draggin the tracking side
+                    //mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                    //mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
 
                     Marshal.StructureToPtr(mmi, lparam, true);
                     handled = true;
