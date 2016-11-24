@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.GameView.Resize -= OnResize;
         }
         
-        public override string DeviceName => "iOS Pointer";
+        public override string Name => "iOS Pointer";
         public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
         public override PointerType Type => PointerType.Touch;
 

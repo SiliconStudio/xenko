@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Input
             uiControl.SetOnTouchListener(null);
         }
 
-        public override string DeviceName => "Android Pointer";
+        public override string Name => "Android Pointer";
         public override Guid Id => new Guid("21370b00-aaf9-4ecf-afb2-575dde6c6c56");
         public override PointerType Type => PointerType.Touch;
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Input
                         actionType = PointerEventType.Pressed;
                         break;
                     case MotionEventActions.Outside:
-                    case MotionEventActions.Canceled:
+                    case MotionEventActions.Cancel:
                         actionType = PointerEventType.Canceled;
                         break;
                     case MotionEventActions.Up:
