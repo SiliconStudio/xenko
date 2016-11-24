@@ -24,7 +24,8 @@ Hierarchy:
                     15332955af647b4bbc35c45c75d70935: !StaticColliderComponent
                         Id: 55293315-64af-4b7b-bc35-c45c75d70935
                         CollisionGroup: StaticFilter
-                        CanSleep: false
+                        ProcessCollisions: false
+                        CanSleep: true
                         Restitution: 0.0
                         Friction: 0.5
                         RollingFriction: 0.0

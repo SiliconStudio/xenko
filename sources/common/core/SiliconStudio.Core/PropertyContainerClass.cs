@@ -13,7 +13,6 @@ namespace SiliconStudio.Core
     /// </summary>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainerClass, PropertyKey, object>))]
-    [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
     public class PropertyContainerClass : IDictionary<PropertyKey, object>
     {
         private PropertyContainer inner;

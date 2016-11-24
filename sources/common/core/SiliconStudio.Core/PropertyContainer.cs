@@ -27,7 +27,6 @@ namespace SiliconStudio.Core
     /// </remarks>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainer, PropertyKey, object>))]
-    [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
     public struct PropertyContainer : IDictionary<PropertyKey, object>
     {
         private static readonly Dictionary<Type, List<PropertyKey>> AccessorProperties = new Dictionary<Type, List<PropertyKey>>();
