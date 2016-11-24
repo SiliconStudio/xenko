@@ -89,11 +89,6 @@ namespace SiliconStudio.Assets
         public AssetReference Archetype { get; set; }
 
         /// <summary>
-        /// The YAML serialized name of the <see cref="Base"/> property.
-        /// </summary>
-        public const string BaseProperty = "~Base";
-
-        /// <summary>
         /// Gets or sets the build order for this asset.
         /// </summary>
         /// <value>The build order.</value>
