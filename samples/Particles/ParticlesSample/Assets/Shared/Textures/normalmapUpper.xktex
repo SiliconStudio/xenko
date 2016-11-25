@@ -1,7 +1,8 @@
 !Texture
-Id: 3549db6f-3a53-4c69-b882-5b6c72bdcf74
+Id: cb35266d-79fe-490e-b2e4-232a5206475f
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../Resources/Textures/CheckerGrid1x1.png
+Source: ../../../Resources/Textures/normalmapUpper.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Hint: NormalMap
 Alpha: None
