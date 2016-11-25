@@ -1,6 +1,6 @@
 !Package
 Id: ec64fd24-824f-4da4-b077-3661cf988027
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.4}
 Tags: []
 Meta:
     Name: mannequinModel
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.8.4-beta
+            Version: 1.9.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -19,7 +19,6 @@ Profiles:
         AssetFolders:
             -   Path: Assets/Shared
         OutputGroupDirectories: {}
-        Properties: {}
         ProjectReferences: []
 ExplicitFolders: []
 Bundles: []

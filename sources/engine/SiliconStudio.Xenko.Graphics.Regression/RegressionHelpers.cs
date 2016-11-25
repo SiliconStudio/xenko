@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SiliconStudio.Core.LZ4;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_UWP
 using Windows.Security.Cryptography;
 using Windows.Security.Cryptography.Core;
 using Windows.System.Profile;
@@ -67,14 +67,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             result.Platform = "iOS";
             result.DeviceName = iOSDeviceType.Version.ToString();
             result.Serial = UIKit.UIDevice.CurrentDevice.Name;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-    #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-            result.Platform = "WindowsPhone";
-    #elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-            result.Platform = "WindowsStore";
-    #else
-            result.Platform = "Windows10";
-    #endif
+#elif SILICONSTUDIO_PLATFORM_UWP
+            result.Platform = "UWP";
             var deviceInfo = new EasClientDeviceInformation();
             result.DeviceName = deviceInfo.SystemManufacturer + " " + deviceInfo.SystemProductName;
             try
@@ -83,17 +77,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
             catch (Exception)
             {
-    #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-                var token = HardwareIdentification.GetPackageSpecificToken(null);
-                var hardwareId = token.Id;
-
-                var hasher = HashAlgorithmProvider.OpenAlgorithm("MD5");
-                var hashed = hasher.HashData(hardwareId);
-
-                result.Serial = CryptographicBuffer.EncodeToHexString(hashed);
-    #else
-                // Ignored on Windows 10
-    #endif
+                // Ignored on UWP
             }
 #endif
 
@@ -119,10 +103,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     return "Android";
                 case TestPlatform.Ios:
                     return "IOS";
-                case TestPlatform.WindowsPhone:
-                    return "Windows_Phone";
-                case TestPlatform.WindowsStore:
-                    return "Windows_Store";
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -134,10 +114,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             return TestPlatform.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
             return TestPlatform.Ios;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-            return TestPlatform.WindowsPhone;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
-            return TestPlatform.WindowsStore;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
             return TestPlatform.WindowsDx;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -205,8 +181,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         WindowsOgl,
         WindowsOgles,
         WindowsVulkan,
-        WindowsStore,
-        WindowsPhone,
         Android,
         Ios
     }

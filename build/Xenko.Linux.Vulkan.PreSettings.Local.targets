@@ -7,7 +7,7 @@
     <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == '' ">Vulkan</XenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
 
-    <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
+    <!-- Defines the platform used by Xenko - Values are Windows/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Linux</SiliconStudioPlatform>
     <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL</SiliconStudioUI>
   </PropertyGroup>

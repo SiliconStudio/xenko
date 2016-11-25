@@ -1,4 +1,4 @@
-using SiliconStudio.Core.Yaml.Serialization.Logging;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -14,7 +14,17 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         public SerializerContextSettings()
         {
-            MemberMask = YamlMemberAttribute.DefaultMask;
+            MemberMask = DataMemberAttribute.DefaultMask;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerializerContextSettings"/> class.
+        /// </summary>
+        /// <param name="logger">The logger to use during serialization.</param>
+        public SerializerContextSettings(ILogger logger)
+            : this()
+        {
+            Logger = logger;
         }
 
         /// <summary>
@@ -26,11 +36,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ILogger Logger { get; set; }
 
         /// <summary>
-        /// Gets or sets the member mask that will be used to filter <see cref="YamlMemberAttribute.Mask"/>.
+        /// Gets or sets the member mask that will be used to filter <see cref="DataMemberAttribute.Mask"/>.
         /// </summary>
         /// <value>
         /// The member mask.
         /// </value>
         public uint MemberMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets a property container to provide to the <see cref="SerializerContext.Properties"/>.
+        /// </summary>
+        public PropertyContainer Properties;
     }
 }

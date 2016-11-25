@@ -17,9 +17,9 @@ namespace SiliconStudio.Assets
     internal partial class PackageSessionHelper
     {
         private const string SolutionHeader = @"Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
-MinimumVisualStudioVersion = 10.0.40219.1";
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 14.0.23107.0";
 
         public static bool IsPackageFile(string filePath)
         {
@@ -161,14 +161,14 @@ MinimumVisualStudioVersion = 10.0.40219.1";
                         continue;
                     }
 
-                    var packageFolder = solution.Projects.FindByGuid(package.Id);
+                    var packageFolder = solution.Projects.FindByGuid((Guid)package.Id);
 
                     // Packages are created as solution folders in VisualStudio
                     if (packageFolder == null)
                     {
                         // Create this package as a Solution Folder 
                         packageFolder = new Project(solution,
-                            package.Id,
+                            (Guid)package.Id,
                             KnownProjectTypeGuid.SolutionFolder,
                             package.Meta.Name,
                             package.Meta.Name,

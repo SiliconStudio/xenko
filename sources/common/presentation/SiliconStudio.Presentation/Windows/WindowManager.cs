@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Presentation.View;
 
 namespace SiliconStudio.Presentation.Windows
@@ -200,16 +201,19 @@ namespace SiliconStudio.Presentation.Windows
         private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
         {
             var window = (Window)sender;
-            NativeHelper.POINT mousePosition;
-            NativeHelper.GetCursorPos(out mousePosition);
-            var monitor = WindowHelper.GetMonitorInfo(WindowInfo.ToHwnd(window));
-            if (monitor != null)
+            // dispatch with one frame delay to make sure WPF layout passes are completed (if not, actual width and height might be incorrect)
+            window.Dispatcher.InvokeAsync(() =>
             {
-                bool expandRight = monitor.rcWork.Right > mousePosition.X + window.ActualWidth;
-                bool expandBottom = monitor.rcWork.Bottom > mousePosition.Y + window.ActualHeight;
-                window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
-                window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
-            }
+                var area = window.GetWorkArea();
+                if (area != Rect.Empty)
+                {
+                    var mousePosition = window.GetCursorScreenPosition();
+                    var expandRight = area.Right > mousePosition.X + window.ActualWidth;
+                    var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
+                    window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
+                    window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
+                }
+            });
 
             window.Loaded -= PositionWindowToMouseCursor;
         }

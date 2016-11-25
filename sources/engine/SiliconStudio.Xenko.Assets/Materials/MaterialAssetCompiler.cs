@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 };
                 materialContext.AddLoadingFromSession(package);
 
-                var materialClone = (MaterialAsset)AssetCloner.Clone(Parameters);
+                var materialClone = AssetCloner.Clone(Parameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)

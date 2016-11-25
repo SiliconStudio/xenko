@@ -28,7 +28,11 @@ namespace SiliconStudio.Presentation.Commands
         }
 
         /// <inheritdoc/>
-        public bool IsEnabled { get { return false; } set { if (value == false) throw new InvalidOperationException("The IsEnabled property of the DisabledCommand cannot be modified"); } }
+        public bool IsEnabled
+        {
+            get { return false; }
+            set { if (value == false) throw new InvalidOperationException($"The {nameof(IsEnabled)} property of the {nameof(DisabledCommand)} cannot be modified"); }
+        }
 
         /// <inheritdoc/>
         public event EventHandler CanExecuteChanged
@@ -46,13 +50,13 @@ namespace SiliconStudio.Presentation.Commands
         /// <inheritdoc/>
         public void Execute(object parameter)
         {
-            throw new InvalidOperationException("The DisabledCommand cannot be executed.");
+            throw new InvalidOperationException($"The {nameof(DisabledCommand)} cannot be executed.");
         }
 
         /// <inheritdoc/>
         public void Execute()
         {
-            throw new InvalidOperationException("The DisabledCommand cannot be executed.");
+            throw new InvalidOperationException($"The {nameof(DisabledCommand)} cannot be executed.");
         }
     }
 }

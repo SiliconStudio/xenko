@@ -6,13 +6,15 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Audio;
 
 namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract("Sound")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Sound))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [Display(120, "Sound")]
+    [Display(1200, "Sound")]
     public class SoundAsset : AssetWithSource
     {
         /// <summary>

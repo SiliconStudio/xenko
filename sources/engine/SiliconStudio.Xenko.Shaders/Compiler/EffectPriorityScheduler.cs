@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -138,7 +138,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                                     {
                                         // High priority task (<0) gets an above normal thread priority
 #if !SILICONSTUDIO_RUNTIME_CORECLR
-                                        if (t.Scheduler.Priority < 0)
+                                        var priority = t.Scheduler?.Priority ?? 0;
+                                        if (priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 
                                         if (t.Scheduler != null)
@@ -146,7 +147,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                                         else
                                             TryExecuteTask(t.Task);
 
-                                        if (t.Scheduler.Priority < 0)
+                                        if (priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.Normal;
 #endif
                                     }
@@ -199,17 +200,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         class PriorityGroupScheduler : TaskScheduler
         {
             private readonly EffectPriorityScheduler parent;
-            private int priority;
 
-            public int Priority
-            {
-                get { return priority; }
-            }
+            public int Priority { get; }
 
             public PriorityGroupScheduler(EffectPriorityScheduler parent, int priority)
             {
                 this.parent = parent;
-                this.priority = priority;
+                this.Priority = priority;
             }
 
             protected override void QueueTask(Task task)

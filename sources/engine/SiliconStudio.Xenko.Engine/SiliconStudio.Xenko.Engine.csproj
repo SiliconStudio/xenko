@@ -89,6 +89,7 @@
     <Compile Include="Animations\ComputeConstCurve.cs" />
     <Compile Include="Animations\ComputeCurveSampler.cs" />
     <Compile Include="Animations\ComputeCurveContracts.cs" />
+    <Compile Include="Animations\ComputeFunctionCurve.cs" />
     <Compile Include="Animations\ComputeSeparateCurveVector3.cs" />
     <Compile Include="Animations\ComputeSeparateCurveVector4.cs" />
     <Compile Include="Animations\IComputeCurve.cs" />
@@ -133,9 +134,18 @@
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
+    <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
+    <Compile Include="Engine\NavigationComponent.cs" />
+    <Compile Include="Engine\NavigationMesh.cs" />
+    <Compile Include="Engine\NavigationAgentSettings.cs" />
+    <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
+    <Compile Include="Engine\NavigationMeshlayer.cs" />
+    <Compile Include="Engine\NavigationMeshTile.cs" />
+    <Compile Include="Engine\NavigationQuerySettings.cs" />
+    <Compile Include="Engine\NavigationRaycastResult.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
@@ -159,6 +169,7 @@
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\PrefabBase.cs" />
+    <Compile Include="Engine\Processors\NavigationProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -244,7 +255,6 @@
       <LastGenOutput>AmbientOcclusionRawAOShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
-
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientOcclusionBlurEffect1.cs</LastGenOutput>
     </None>
@@ -367,7 +377,6 @@
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\LogicalGroup.cs" />
     <Compile Include="Rendering\LogicalGroupReference.cs" />
-    <Compile Include="Rendering\MaterialNull.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -3592,6 +3601,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
@@ -3881,6 +3891,10 @@
       <Name>SiliconStudio.Xenko.Input</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
@@ -3893,14 +3907,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.25.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <None Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

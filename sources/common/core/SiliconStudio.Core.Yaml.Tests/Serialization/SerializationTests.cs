@@ -53,6 +53,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -336,7 +337,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var buffer = new StringWriter();
             var x = new SomeCustomType("Yo");
             var settings = new SerializerSettings();
-            settings.RegisterSerializerFactory(new CustomTypeConverter());
+            settings.SerializerFactorySelector.TryAddFactory(new CustomTypeConverter());
             var serializer = new Serializer(settings);
             serializer.Serialize(buffer, x);
 
@@ -514,7 +515,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
 
         class ContainsIgnore
         {
-            [YamlIgnore]
+            [DataMemberIgnore]
             public String IgnoreMe { get { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } set { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } }
         }
 
@@ -582,10 +583,10 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             [DefaultValue(null)]
             public string ThirdTest { get; set; }
 
-            [YamlMember("fourthTest")]
+            [DataMember("fourthTest")]
             public string AliasTest { get; set; }
 
-            [YamlIgnore]
+            [DataMemberIgnore]
             public string fourthTest { get; set; }
         }
 

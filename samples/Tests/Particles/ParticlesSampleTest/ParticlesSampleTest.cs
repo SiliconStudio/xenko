@@ -10,7 +10,7 @@ namespace ParticlesSampleTest
     [TestFixture]
     public class ParticlesSampleTest
     {
-        private const string Path = "samples\\Particles\\ParticlesSample\\Bin\\Windows\\Debug\\ParticlesSample.exe";
+        private const string Path = "samplesGenerated\\ParticlesSample\\Bin\\Windows\\Debug\\ParticlesSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

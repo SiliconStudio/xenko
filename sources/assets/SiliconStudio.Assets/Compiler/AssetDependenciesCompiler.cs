@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -20,14 +23,6 @@ namespace SiliconStudio.Assets.Compiler
 
             var compilerResult = new AssetCompilerResult();
 
-            var dependencySet = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id);
-            if (dependencySet == null)
-            {
-                compilerResult.Warning("Could not find dependency for asset [{0}]", assetItem);
-                return compilerResult;
-            }
-            assetItem = dependencySet.Item;
-
             if (assetItem.Package == null)
             {
                 compilerResult.Warning("Asset [{0}] is not attached to a package", assetItem);
@@ -41,6 +36,43 @@ namespace SiliconStudio.Assets.Compiler
             var clonedAsset = dependenciesCompilePackage.FindAsset(assetItem.Id);
 
             CompileWithDependencies(assetCompilerContext, clonedAsset, assetItem, compilerResult);
+
+            // Check unloadable items
+            foreach (var currentAssetItem in dependenciesCompilePackage.Assets)
+            {
+                var unloadableItems = UnloadableObjectRemover.Run(currentAssetItem.Asset);
+                foreach (var unloadableItem in unloadableItems)
+                {
+                    compilerResult.Log(new AssetLogMessage(dependenciesCompilePackage, currentAssetItem.ToReference(), LogMessageType.Warning, $"Unable to load the object of type {unloadableItem.UnloadableObject.TypeName} which is located at [{unloadableItem.MemberPath}] in the asset"));
+                }
+            }
+
+            // Find AssetBuildStep
+            var assetBuildSteps = new Dictionary<AssetId, AssetBuildStep>();
+            foreach (var step in compilerResult.BuildSteps.EnumerateRecursively())
+            {
+                var assetStep = step as AssetBuildStep;
+                if (assetStep != null)
+                {
+                    assetBuildSteps[assetStep.AssetItem.Id] = assetStep;
+                }
+            }
+
+            // TODO: Refactor logging of CompilerApp and BuildEngine
+            // Copy log top-level to proper asset build steps
+            foreach (var message in compilerResult.Messages)
+            {
+                var assetMessage = message as AssetLogMessage;
+
+                // Find asset (if nothing found, default to main asset)
+                var assetId = assetMessage?.AssetReference.Id ?? assetItem.Id;
+                AssetBuildStep assetBuildStep;
+                if (assetBuildSteps.TryGetValue(assetId, out assetBuildStep))
+                {
+                    // Log to AssetBuildStep
+                    assetBuildStep.Logger?.Log(message);
+                }
+            }
 
             return compilerResult;
         }

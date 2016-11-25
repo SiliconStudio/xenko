@@ -10,7 +10,7 @@ namespace GameMenuTest
     [TestFixture]
     public class GameMenuTest
     {
-        private const string Path = "samples\\UI\\GameMenu\\Bin\\Windows-Direct3D11\\Debug\\GameMenu.exe";
+        private const string Path = "samplesGenerated\\GameMenu\\Bin\\Windows\\Debug\\GameMenu.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

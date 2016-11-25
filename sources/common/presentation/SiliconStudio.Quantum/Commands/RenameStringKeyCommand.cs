@@ -32,9 +32,9 @@ namespace SiliconStudio.Quantum.Commands
         protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
             var oldName = index;
-            var newName = new Index(parameter);
             var renamedObject = content.Retrieve(oldName);
             content.Remove(renamedObject, oldName);
+            var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Value, content.Descriptor, (string)parameter);
             content.Add(renamedObject, newName);
         }
     }

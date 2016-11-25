@@ -10,7 +10,7 @@ namespace FPSTest
     [TestFixture]
     public class FPSTest
     {
-        private const string Path = "samples\\Templates\\FirstPersonShooter\\FirstPersonShooter\\Bin\\Windows\\Debug\\FirstPersonShooter.exe";
+        private const string Path = "samplesGenerated\\FirstPersonShooter\\Bin\\Windows\\Debug\\FirstPersonShooter.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

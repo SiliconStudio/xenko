@@ -12,7 +12,7 @@ using System.ServiceModel;
 using System.Text;
 
 using Mono.Options;
-
+using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -286,7 +286,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 VSProjectHelper.Reset();
 
                 // Reset cache hold by YamlSerializer
-                YamlSerializer.ResetCache();
+                YamlSerializer.Default.ResetCache();
             }
             return (int)exitCode;
         }
@@ -301,11 +301,15 @@ namespace SiliconStudio.Assets.CompilerApp
             //$filename($row,$column): $error_type $error_code: $error_message
             //C:\Code\Xenko\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
             var builder = new StringBuilder();
-            builder.Append(message.Module ?? "AssetCompiler");
-            builder.Append(": ");
+            var assetLogMessage = message as AssetLogMessage;
+            // Location
+            if (assetLogMessage != null)
+                builder.Append($"{assetLogMessage.File}({assetLogMessage.Line + 1},{assetLogMessage.Character + 1}): ");
+            // Message type
             builder.Append(message.Type.ToString().ToLowerInvariant()).Append(" ");
             builder.Append((clock.ElapsedMilliseconds * 0.001).ToString("0.000"));
             builder.Append("s: ");
+            builder.Append($"[{message.Module ?? "AssetCompiler"}] ");
             builder.Append(message.Text);
             var exceptionInfo = message.ExceptionInfo;
             if (exceptionInfo != null)

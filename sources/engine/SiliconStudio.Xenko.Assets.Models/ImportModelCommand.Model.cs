@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -40,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 if (modelMaterial.MaterialInstance?.Material == null)
                 {
-                    commandContext.Logger.Warning($"The material [{modelMaterial.Name}] is null in the list of materials.");
+                    commandContext.Logger.Verbose($"The material [{modelMaterial.Name}] is null in the list of materials.");
                 }
                 model.Materials.Add(modelMaterial.MaterialInstance);
             }
@@ -65,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 skeleton = contentManager.Load<Skeleton>(SkeletonUrl);
 
                 // Assign skeleton to model
-                model.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(Guid.Empty, SkeletonUrl);
+                model.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(AssetId.Empty, SkeletonUrl);
             }
             else
             {

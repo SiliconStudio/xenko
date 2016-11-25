@@ -74,7 +74,7 @@ namespace SiliconStudio.Quantum.Commands
             return Activator.CreateInstance(type);
         }
 
-        private static Index GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
+        internal static Index GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
         {
             // TODO: use a dialog service and popup a message when the given key is invalid
             var baseName = GenerateBaseName(baseValue);
@@ -96,7 +96,7 @@ namespace SiliconStudio.Quantum.Commands
             if (string.IsNullOrWhiteSpace(baseName))
                 return defaultKey;
 
-            if (baseName.Any(x => !char.IsLetterOrDigit(x) && x == ' ' && x == '_'))
+            if (baseName.Any(x => !char.IsLetterOrDigit(x) && x != ' ' && x != '_'))
                 return defaultKey;
 
             return baseName;

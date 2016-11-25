@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
@@ -30,6 +32,13 @@ namespace SiliconStudio.Assets
         private const string SiliconStudioPlatform = "SiliconStudioPlatform";
 
         private static BuildManager mainBuildManager = new BuildManager();
+        private static readonly string NugetPath;
+
+        static VSProjectHelper()
+        {
+            var currentAssemblyLocation = typeof(VSProjectHelper).Assembly.Location;
+            NugetPath = Path.Combine(Path.GetDirectoryName(currentAssemblyLocation), "NuGet.exe");
+        }
 
         public static Guid GetProjectGuid(Microsoft.Build.Evaluation.Project project)
         {
@@ -59,7 +68,7 @@ namespace SiliconStudio.Assets
             return (T)Enum.Parse(typeof(T), value);
         }
 
-        public static string GetOrCompileProjectAssembly(string fullProjectLocation, ILogger logger, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
+        public static string GetOrCompileProjectAssembly(string solutionFullPath, string fullProjectLocation, ILogger logger, string targets, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
         {
             if (fullProjectLocation == null) throw new ArgumentNullException("fullProjectLocation");
             if (logger == null) throw new ArgumentNullException("logger");
@@ -72,8 +81,13 @@ namespace SiliconStudio.Assets
                 {
                     if (autoCompileProject)
                     {
+                        // NuGet restore
+                        // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
+                        // Probably not worth bothering since it might be part of MSBuild with VS15
+                        var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project);
+
                         var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
-                        asyncBuild.Build(project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
+                        asyncBuild.Build(restoreNugetTask, project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
                         var buildResult = asyncBuild.BuildTask.Result;
                     }
                 }
@@ -87,7 +101,7 @@ namespace SiliconStudio.Assets
             return assemblyPath;
         }
 
-        public static ICancellableAsyncBuild CompileProjectAssemblyAsync(string fullProjectLocation, ILogger logger, string targets = "Build", string configuration = "Debug", string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
+        public static ICancellableAsyncBuild CompileProjectAssemblyAsync(string solutionFullPath, string fullProjectLocation, ILogger logger, string targets = "Build", string configuration = "Debug", string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
         {
             if (fullProjectLocation == null) throw new ArgumentNullException("fullProjectLocation");
             if (logger == null) throw new ArgumentNullException("logger");
@@ -98,8 +112,13 @@ namespace SiliconStudio.Assets
             {
                 if (!string.IsNullOrWhiteSpace(assemblyPath))
                 {
+                    // NuGet restore
+                    // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
+                    // Probably not worth bothering since it might be part of MSBuild with VS15
+                    var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project);
+
                     var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
-                    asyncBuild.Build(project, targets, flags, new LoggerRedirect(logger));
+                    asyncBuild.Build(restoreNugetTask, project, targets, flags, new LoggerRedirect(logger));
                     return asyncBuild;
                 }
             }
@@ -111,6 +130,49 @@ namespace SiliconStudio.Assets
             }
 
             return null;
+        }
+
+        public static async Task RestoreNugetPackages(ILogger logger, string solutionFullPath, Project project)
+        {
+            var addedProjs = new HashSet<string>(); //to avoid worst case circular dependencies.
+            var allProjs = Utilities.IterateTree(project, project1 =>
+            {
+                var projs = new List<Project>();
+                foreach (var item in project1.AllEvaluatedItems.Where(x => x.ItemType == "ProjectReference"))
+                {
+                    var path = Path.Combine(project.DirectoryPath, item.EvaluatedInclude);
+                    if (!File.Exists(path)) continue;
+
+                    if (addedProjs.Add(path))
+                    {
+                        projs.Add(project.ProjectCollection.LoadProject(path));
+                    }
+                }
+                return projs;
+            });
+
+            foreach (var proj in allProjs)
+            {
+                // TODO: We directly find the project.json rather than the solution file (otherwise NuGet reports an error if the solution didn't contain a project.json or if solution is not saved yet)
+                // However, the problem is that if Game was referencing another assembly with a project.json, it won't be updated
+                // At some point we should find all project.json of the full solution, and keep regenerating them if any of them changed
+                var projectJson = Path.Combine(proj.DirectoryPath, "project.json");
+
+                // Nothing to do if there is no project.json
+                if (!File.Exists(projectJson)) continue;
+
+                // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
+                var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
+                if (File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
+                {
+                    // Check if it needs to be regenerated
+                    // Run NuGet.exe restore
+                    var parameters = $"restore \"{projectJson}\"";
+                    if (solutionFullPath != null)
+                        parameters += $" -solutiondirectory \"{Path.GetDirectoryName(solutionFullPath)}\"";
+                    await ShellHelper.RunProcessAndGetOutputAsync(NugetPath, parameters, logger);
+                }
+            }
         }
 
         public static Microsoft.Build.Evaluation.Project LoadProject(string fullProjectLocation, string configuration = "Debug", string platform = "AnyCPU", Dictionary<string, string> extraProperties = null)
@@ -226,7 +288,7 @@ namespace SiliconStudio.Assets
 
             public bool IsCanceled { get; private set; }
 
-            internal void Build(Microsoft.Build.Evaluation.Project project, string targets, BuildRequestDataFlags flags, Microsoft.Build.Utilities.Logger logger)
+            internal void Build(Task previousTask, Microsoft.Build.Evaluation.Project project, string targets, BuildRequestDataFlags flags, Microsoft.Build.Utilities.Logger logger)
             {
                 if (project == null) throw new ArgumentNullException("project");
                 if (logger == null) throw new ArgumentNullException("logger");
@@ -235,7 +297,7 @@ namespace SiliconStudio.Assets
                 // weird cache behavior with the msbuild system
                 var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, null, project.ProjectCollection);
 
-                BuildTask = Task.Run(() =>
+                BuildTask = previousTask.ContinueWith(completedPreviousTask =>
                 {
                     var buildResult = mainBuildManager.Build(
                         new BuildParameters(project.ProjectCollection)

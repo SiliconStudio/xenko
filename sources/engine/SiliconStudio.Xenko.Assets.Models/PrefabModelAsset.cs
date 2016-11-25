@@ -8,6 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -16,8 +17,9 @@ namespace SiliconStudio.Xenko.Assets.Models
     /// </summary>
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(PrefabModelAssetCompiler))]
-    [Display(185, "Prefab Model")]
+    [Display(1855, "Prefab Model")]
     public sealed class PrefabModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
         protected override int InternalBuildOrder => 0xFFFF; //make sure we build after Models
@@ -31,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         [DataMember]
-        public AssetReference<PrefabAsset> Prefab { get; set; }
+        public AssetReference Prefab { get; set; }
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 if (prefab != null)
                 {
                     // Use a dictionary to ensure each reference is yielded only once
-                    var references = new Dictionary<Guid, IReference>();
+                    var references = new Dictionary<AssetId, IReference>();
                     foreach (var entity in prefab.Hierarchy.Parts)
                     {
                         // Gather all entities with a model component and a valid model
@@ -58,11 +60,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                                 // Build the list of material for this model
                                 var materialList = model.Materials.Select(x => x.MaterialInstance.Material).ToList();
                                 for (var i = 0; i < modelComponent.Materials.Count && i < materialList.Count; i++)
+                                foreach (var material in modelComponent.Materials)
                                 {
                                     // Apply any material override from the model component
-                                    var material = modelComponent.Materials[i];
-                                    if (material != null)
-                                        materialList[i] = material;
+                                    materialList[material.Key] = material.Value;
                                 }
 
                                 // Add the model and the related materials to the list of reference

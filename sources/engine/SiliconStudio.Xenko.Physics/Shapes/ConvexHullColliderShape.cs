@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Physics
     public class ConvexHullColliderShape : ColliderShape
     {
         private readonly IReadOnlyList<Vector3> pointsList;
-        private readonly IReadOnlyCollection<uint> indicesList; 
+        private readonly IReadOnlyList<uint> indicesList; 
 
         public ConvexHullColliderShape(IReadOnlyList<Vector3> points, IReadOnlyList<uint> indices, Vector3 scaling)
         {
@@ -31,6 +31,15 @@ namespace SiliconStudio.Xenko.Physics
 
             pointsList = points;
             indicesList = indices;
+        }
+
+        public IReadOnlyList<Vector3> Points
+        {
+            get { return pointsList; }
+        }
+        public IReadOnlyList<uint> Indices
+        {
+            get { return indicesList; }
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)

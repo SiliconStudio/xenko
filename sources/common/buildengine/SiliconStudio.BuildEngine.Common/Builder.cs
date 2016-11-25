@@ -215,9 +215,9 @@ namespace SiliconStudio.BuildEngine
             private readonly BuildTransaction buildTransaction;
             private readonly Builder builder;
 
-            public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep)
+            public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep, Logger logger)
             {
-                Logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
+                Logger = logger;
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
@@ -320,7 +320,15 @@ namespace SiliconStudio.BuildEngine
                 // Compute content dependencies before scheduling the build
                 GenerateDependencies(buildStep);
 
-                var executeContext = new ExecuteContext(this, builderContext, buildStep) { Variables = new Dictionary<string, string>(variables) };
+                // TODO: Big review of the log infrastructure of CompilerApp & BuildEngine!
+                // Create a logger that redirects to various places (BuildStep.Logger, timestampped log, global log, etc...)
+                var buildStepLogger = new BuildStepLogger(buildStep, Logger, startTime);
+                var logger = (Logger)buildStepLogger;
+                // Apply user-registered callbacks to the logger
+                buildStep.TransformExecuteContextLogger?.Invoke(ref logger);
+
+                // Create execute context
+                var executeContext = new ExecuteContext(this, builderContext, buildStep, logger) { Variables = new Dictionary<string, string>(variables) };
                 //buildStep.ExpandStrings(executeContext);
 
                 if (runMode == Mode.Build)
@@ -344,7 +352,7 @@ namespace SiliconStudio.BuildEngine
 
                     foreach (var threadMonitor in threadMonitors)
                     {
-                        threadMonitor.RegisterBuildStep(buildStep, ((BuildStepLogger)executeContext.Logger).StepLogger);
+                        threadMonitor.RegisterBuildStep(buildStep, buildStepLogger.StepLogger);
                     }
 
                     microThread.Name = buildStep.ToString();
@@ -438,8 +446,8 @@ namespace SiliconStudio.BuildEngine
                         }
                         if (logText != null)
                         {
-                            var logMessage = new LogMessage(buildStep.Module, logType, logText);
-                            Logger.Log(logMessage);
+                            var logMessage = new LogMessage(null, logType, logText);
+                            executeContext.Logger.Log(logMessage);
                         }
 
                         buildStep.RegisterResult(executeContext, status);

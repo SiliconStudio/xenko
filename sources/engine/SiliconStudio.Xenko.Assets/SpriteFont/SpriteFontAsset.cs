@@ -15,13 +15,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     /// </summary>
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Graphics.SpriteFont))]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta04")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontClassUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(FontSizeUpgrader))]
-    [Display(140, "Sprite Font")]
+    [Display(1400, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
     public partial class SpriteFontAsset : Asset

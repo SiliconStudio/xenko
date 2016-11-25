@@ -39,14 +39,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 writer.Write($"{entityEntry.Entity.Id} => {entityEntry.Entity}");
 
-                if (entityEntry.BaseId != null)
+                if (entityEntry.Base != null)
                 {
-                    writer.Write($" Base: {entityEntry.BaseId}");
+                    writer.Write($" Base.BasePartId: {entityEntry.Base.BasePartId}");
                 }
 
-                if (entityEntry.BasePartInstanceId != null)
+                if (entityEntry.Base != null)
                 {
-                    writer.Write($" BasePartInstanceId: {entityEntry.BasePartInstanceId}");
+                    writer.Write($" Base.InstanceId: {entityEntry.Base.InstanceId}");
                 }
                 writer.WriteLine();
 

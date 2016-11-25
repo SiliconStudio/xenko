@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -225,7 +226,7 @@ namespace SiliconStudio.Xenko.Physics
 
             return shape;
         }
-
+        
         public void Dispose()
         {
             if (Shape == null) return;
@@ -235,6 +236,11 @@ namespace SiliconStudio.Xenko.Physics
 
             Shape.Dispose();
             Shape = null;
+        }
+
+        public override int GetHashCode()
+        {
+            return Descriptions?.ComputeHash() ?? 0;
         }
     }
 }

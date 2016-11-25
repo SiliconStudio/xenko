@@ -1,6 +1,6 @@
 !Package
 Id: 32bb115e-8773-42e2-9e63-77d495e70d98
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: GeometricPrimitives
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.8.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

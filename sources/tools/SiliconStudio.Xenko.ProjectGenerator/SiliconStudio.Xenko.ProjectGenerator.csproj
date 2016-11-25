@@ -63,6 +63,16 @@
       <Name>SiliconStudio.Core.Design</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -102,15 +112,11 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Templates\Common.PropertyGroups.targets.t4" />
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.WindowsPhone.csproj.t4" />
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.WindowsStore.csproj.t4" />
     <None Include="Templates\Xenko.UnitTests\MainPage.xaml.cs.t4" />
     <None Include="Templates\Xenko.UnitTests\MainPage.xaml.t4" />
     <None Include="Templates\Xenko.UnitTests\App.xaml.cs.t4" />
     <None Include="Templates\Xenko.UnitTests\App.xaml.t4" />
     <None Include="Templates\Xenko.UnitTests\Info.plist.t4" />
-    <None Include="Templates\Xenko.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
-    <None Include="Templates\Xenko.UnitTests\PackageWindowsStore.appxmanifest.t4" />
     <None Include="Templates\Xenko.UnitTests\readme.md.t4" />
     <None Include="Templates\Xenko.UnitTests\Xenko.UnitTests.ttproj" />
     <None Include="Templates\Xenko.UnitTests\Properties\AndroidManifest.xml.t4">

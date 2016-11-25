@@ -91,7 +91,7 @@ namespace SiliconStudio.Core
             var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "local");
             Directory.CreateDirectory(directory);
             return directory;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             return Windows.Storage.ApplicationData.Current.LocalFolder.Path;
 #elif SILICONSTUDIO_PLATFORM_IOS
             var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Local");
@@ -111,7 +111,7 @@ namespace SiliconStudio.Core
             var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "roaming");
             Directory.CreateDirectory(directory);
             return directory;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             return Windows.Storage.ApplicationData.Current.RoamingFolder.Path;
 #elif SILICONSTUDIO_PLATFORM_IOS
             var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Roaming");
@@ -131,12 +131,10 @@ namespace SiliconStudio.Core
             var directory = Path.Combine(PlatformAndroid.Context.FilesDir.AbsolutePath, "cache");
             Directory.CreateDirectory(directory);
             return directory;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE || SILICONSTUDIO_PLATFORM_WINDOWS_10
+#elif SILICONSTUDIO_PLATFORM_UWP
             var directory = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, "cache");
             IO.NativeFile.DirectoryCreate(directory);
             return directory;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
-            return Windows.Storage.ApplicationData.Current.LocalCacheFolder.Path;
 #elif SILICONSTUDIO_PLATFORM_IOS
             var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "Library", "Caches");
             Directory.CreateDirectory(directory);
@@ -165,7 +163,7 @@ namespace SiliconStudio.Core
             }
             return currentAssembly.Location;
 
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             return Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "XenkoGame.exe"); // Use generic name workaround
 #else
             throw new NotImplementedException();
@@ -181,7 +179,7 @@ namespace SiliconStudio.Core
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
             return PlatformAndroid.Context.CacheDir.AbsolutePath;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             return Windows.Storage.ApplicationData.Current.TemporaryFolder.Path;
 #elif SILICONSTUDIO_PLATFORM_IOS
             return Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "..", "tmp");
@@ -206,7 +204,7 @@ namespace SiliconStudio.Core
             return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/Android/data/" + PlatformAndroid.Context.PackageName + "/data";
 #elif SILICONSTUDIO_PLATFORM_IOS
             return Foundation.NSBundle.MainBundle.BundlePath + "/data";
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#elif SILICONSTUDIO_PLATFORM_UWP
             return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
 #else
             return Path.Combine(GetApplicationBinaryDirectory(), "data");

@@ -16,18 +16,18 @@ namespace SiliconStudio.Assets
         None,
 
         /// <summary>
-        /// Remove all attached overrides information when cloning (equivalent to revert everything to <see cref="SiliconStudio.Core.Reflection.OverrideType.Base"/>)
-        /// </summary>
-        RemoveOverrides = 1,
-
-        /// <summary>
         /// Attached references will be cloned as <c>null</c>
         /// </summary>
-        ReferenceAsNull = 2,
+        ReferenceAsNull = 1,
 
         /// <summary>
-        /// Keep cloned bases.
+        /// Remove ids attached to item of collections when cloning
         /// </summary>
-        KeepBases = 4,
+        RemoveItemIds = 2,
+
+        /// <summary>
+        /// Removes invalid objects
+        /// </summary>
+        RemoveUnloadableObjects = 4,
     }
 }

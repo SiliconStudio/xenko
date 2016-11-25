@@ -1,6 +1,6 @@
 !Package
 Id: 5c3b20c3-522a-4637-a7b2-661cac6c7724
-SerializedVersion: {Assets: 0.0.2}
+SerializedVersion: {Assets: 0.0.3}
 Tags: []
 Meta:
     Name: SimpleSprite
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.8.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

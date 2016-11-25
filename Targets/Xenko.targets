@@ -1,4 +1,4 @@
-<Project InitialTargets="SiliconStudioXenkoCheckRequirements" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project InitialTargets="SiliconStudioXenkoCheckRequirements" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--Check requirements when running this build file -->
   <Target Name="SiliconStudioXenkoCheckRequirements">
     <Error Condition="'$(SiliconStudioPlatform)' == ''" Text="The property %24(SiliconStudioPlatform) must be defined by the project"/>
@@ -14,11 +14,11 @@
   </Target>
 
   <PropertyGroup>
+    <!-- Windows10 was renammed into UWP -->
+    <SiliconStudioPlatform Condition="'$(SiliconStudioPlatform)' == 'Windows10'">UWP</SiliconStudioPlatform>
     <!-- Defaults for CPU and GraphicsApi based on platform-->
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsStore'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsPhone'">Direct3D11</SiliconStudioXenkoGraphicsApi>
-    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'UWP'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoGraphicsApi>
@@ -183,6 +183,7 @@
   -->
   <PropertyGroup Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <ResolveReferencesDependsOn>
+      SiliconStudioUpdateXenkoPreviousDir;
       SiliconStudioUpdateGraphicsPlatform;
       $(ResolveReferencesDependsOn);
     </ResolveReferencesDependsOn>
@@ -213,6 +214,24 @@
     <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\AudioAssets\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
     <SiliconStudioXenkoGameSettings Condition="'$(SiliconStudioXenkoGameSettings)' == '' and '$([System.IO.File]::Exists($([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings))' == 'true' ">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Shaders.Bytecodes\GameSettings.xkgamesettings</SiliconStudioXenkoGameSettings>
   </PropertyGroup>
+
+  <!-- Detect if Xenko path changed -->
+  <Target Name="SiliconStudioUpdateXenkoPreviousDir">
+    <!--Add XenkoDir cache to list of inputs-->
+    <ItemGroup>
+      <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)XenkoDir.cache" />
+    </ItemGroup>
+
+    <!-- Read current state -->
+    <ReadLinesFromFile Condition="Exists('$(IntermediateOutputPath)XenkoDir.cache')" File="$(IntermediateOutputPath)XenkoDir.cache">
+      <Output TaskParameter="Lines" PropertyName="SiliconStudioXenkoPreviousDir"/>
+    </ReadLinesFromFile>
+
+    <!-- Write result back to disk if it changed -->
+    <Message Importance="Normal" Condition=" '$(SiliconStudioXenkoPreviousDir)' != '$(SiliconStudioXenkoDir)' " Text="Detected a change in Xenko directory: '$(SiliconStudioXenkoDir)' (previous build: '$(SiliconStudioXenkoPreviousDir)')"/>
+    <WriteLinesToFile Condition=" '$(SiliconStudioXenkoPreviousDir)' != '$(SiliconStudioXenkoDir)' " File="$(IntermediateOutputPath)XenkoDir.cache" Lines="$(SiliconStudioXenkoDir)" Overwrite="true" />
+  </Target>
+
 
   <!-- Compute graphics platform from game settings asset -->
   <Target Name="SiliconStudioComputeGraphicsPlatformFromGameSettings" Inputs="$(SiliconStudioXenkoGameSettings)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">

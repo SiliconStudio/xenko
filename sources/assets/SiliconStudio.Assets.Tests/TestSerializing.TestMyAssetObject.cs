@@ -14,16 +14,19 @@ namespace SiliconStudio.Assets.Tests
         {
             public MyAsset()
             {
-                CustomReferences = new List<AssetReference<Asset>>();
+                CustomReferences = new List<AssetReference>();
                 SeqItemsEmpty = new List<string>();
                 SeqItems1 = new List<string>();
-                SeqItems2 = new MyCollection();
+                // TODO: Re-enable non-pure collections here once we support them for serialization!
+                //SeqItems2 = new MyCollection();
                 SeqItems3 = new MyCollectionPure();
                 SeqItems4 = new List<string>();
-                SeqItems5 = new MyCollection();
+                // TODO: Re-enable non-pure collections here once we support them for serialization!
+                //SeqItems5 = new MyCollection();
                 MapItemsEmpty = new Dictionary<object, object>();
                 MapItems1 = new Dictionary<object, object>();
-                MapItems2 = new MyDictionary();
+                // TODO: Re-enable non-pure collections here once we support them for serialization!
+                //MapItems2 = new MyDictionary();
                 MapItems3 = new MyDictionaryPure();
                 CustomObjectWithProtectedSet = new CustomObject { Name = "customObject" };
             }
@@ -35,35 +38,37 @@ namespace SiliconStudio.Assets.Tests
 
             public object AssetUrl { get; set; }
 
-            public AssetReference<Asset> CustomReference2 { get; set; }
+            public AssetReference CustomReference2 { get; set; }
 
-            public List<AssetReference<Asset>> CustomReferences { get; set; }
+            public List<AssetReference> CustomReferences { get; set; }
 
             public List<string> SeqItemsEmpty { get; set; }
 
             public List<string> SeqItems1 { get; set; }
 
-            public MyCollection SeqItems2 { get; set; }
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //public MyCollection SeqItems2 { get; set; }
 
             public MyCollectionPure SeqItems3 { get; set; }
 
-            public IList SeqItems4 { get; private set; }
+            public IList SeqItems4 { get; }
 
-            public IList SeqItems5 { get; set; }
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //public IList SeqItems5 { get; set; }
 
             public Dictionary<object, object> MapItemsEmpty { get; set; }
 
             public Dictionary<object, object> MapItems1 { get; set; }
 
-            public MyDictionary MapItems2 { get; set; }
-            
+            // TODO: Re-enable non-pure collections here once we support them for serialization!
+            //public MyDictionary MapItems2 { get; set; }
+
             public MyDictionaryPure MapItems3 { get; set; }
 
             public object CustomObjectWithProtectedSet { get; protected set; }
         }
 
         [DataContract("CustomObject")]
-        [NonIdentifiable]
         public class CustomObject
         {
             public string Name { get; set; }
