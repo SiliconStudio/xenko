@@ -4,8 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
@@ -17,8 +16,8 @@ namespace SiliconStudio.Quantum.References
     public sealed class ReferenceEnumerable : IReference, IEnumerable<ObjectReference>
     {
         private readonly Type elementType;
-        private List<ObjectReference> references;
-        private List<Index> indices;
+
+        private HybridDictionary<Index, ObjectReference> items;
 
         internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
         {
@@ -56,30 +55,20 @@ namespace SiliconStudio.Quantum.References
         public bool IsDictionary => ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>));
 
         /// <inheritdoc/>
-        public int Count => references?.Count ?? 0;
+        public int Count => items?.Count ?? 0;
 
         /// <summary>
         /// Gets the indices of each reference in this instance.
         /// </summary>
-        public IReadOnlyList<Index> Indices => indices;
+        public IReadOnlyCollection<Index> Indices { get; private set; }
 
         /// <inheritdoc/>
-        public ObjectReference this[Index index] { get { return references.Single(x => Equals(x.Index, index)); } }
+        public ObjectReference this[Index index] => items[index];
 
         /// <inheritdoc/>
         public bool HasIndex(Index index)
         {
-            return indices?.Any(x => x.Equals(index)) ?? false;
-        }
-
-        /// <summary>
-        /// Indicates whether this instance of <see cref="ReferenceEnumerable"/> contains an element which as the given index.
-        /// </summary>
-        /// <param name="index">The index to look for.</param>
-        /// <returns><c>true</c> if an object with the given index exists in this instance, <c>false</c> otherwise.</returns>
-        public bool ContainsIndex(object index)
-        {
-            return references != null && references.Any(x => Equals(x.Index, index));
+            return items?.ContainsKey(index) ?? false;
         }
 
         public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
@@ -89,36 +78,68 @@ namespace SiliconStudio.Quantum.References
 
             ObjectValue = newObjectValue;
 
-            // First, let's build a new list of uninitialized references
-            var newReferences = new List<ObjectReference>(IsDictionary
-                ? ((IEnumerable)ObjectValue).Cast<object>().Select(x => (ObjectReference)Reference.CreateReference(GetValue(x), elementType, GetKey(x)))
-                : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, new Index(i))));
+            var newReferences = new HybridDictionary<Index, ObjectReference>();
+            if (IsDictionary)
+            {
+                foreach (var item in (IEnumerable)ObjectValue)
+                {
+                    var key = GetKey(item);
+                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), elementType, key);
+                    newReferences.Add(key, value);
+                }
+            }
+            else
+            {
+                var i = 0;
+                foreach (var item in (IEnumerable)ObjectValue)
+                {
+                    var key = new Index(i);
+                    var value = (ObjectReference)Reference.CreateReference(item, elementType, key);
+                    newReferences.Add(key, value);
+                    ++i;
+                }
+            }
 
             // The reference need to be updated if it has never been initialized, if the number of items is different, or if any index or any value is different.
-            var needUpdate = references == null || newReferences.Count != references.Count || newReferences.Zip(references).Any(x => !x.Item1.Index.Equals(x.Item2.Index) || !Equals(x.Item1.ObjectValue, x.Item2.ObjectValue));
+            var needUpdate = items == null || newReferences.Count != items.Count || !AreItemsEqual(items, newReferences);
             if (needUpdate)
             {
-                // We create a dictionary that maps values of the old list of references to their corresponding target node.
-                var dictionary = references?.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).ToDictionary(x => x.ObjectValue) ?? new Dictionary<object, ObjectReference>();
+                // We create a mapping values of the old list of references to their corresponding target node. We use a list because we can have multiple times the same target in items.
+                var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
+                if (items != null)
+                {
+                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                }
+
                 foreach (var newReference in newReferences)
                 {
-                    if (newReference.ObjectValue != null)
+                    if (newReference.Value.ObjectValue != null)
                     {
-                        ObjectReference oldReference;
-                        if (dictionary.TryGetValue(newReference.ObjectValue, out oldReference))
+                        var found = false;
+                        var i = 0;
+                        foreach (var item in oldReferenceMapping)
                         {
-                            // If this value was already present in the old list of reference, just use the same target node in the new list.
-                            newReference.SetTarget(oldReference.TargetNode);
+                            if (Equals(newReference.Value.ObjectValue, item.Key))
+                            {
+                                // If this value was already present in the old list of reference, just use the same target node in the new list.
+                                newReference.Value.SetTarget(item.Value.TargetNode);
+                                // Remove consumed existing reference so if there is a second entry with the same "key", it will be the other reference that will be used.
+                                oldReferenceMapping.RemoveAt(i);
+                                found = true;
+                                break;
+                            }
+                            ++i;
                         }
-                        else
+                        if (!found)
                         {
                             // Otherwise, do a full update that will properly initialize the new reference.
-                            newReference.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Index);
+                            newReference.Value.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Key);
                         }
                     }
                 }
-                references = newReferences;
-                indices = newReferences.Select(x => x.Index).ToList();
+                items = newReferences;
+                // Remark: this works because both KeyCollection and List implements IReadOnlyCollection. Any internal change to HybridDictionary might break this!
+                Indices = (IReadOnlyCollection<Index>)newReferences.Keys;
             }
         }
 
@@ -131,30 +152,58 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public IEnumerator<ObjectReference> GetEnumerator()
         {
-            return references.GetEnumerator();
+            return new ReferenceEnumerator(this);
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return references.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <inheritdoc/>
         public bool Equals(IReference other)
         {
             var otherEnumerable = other as ReferenceEnumerable;
-            return otherEnumerable != null && DesignExtensions.Equals<IReference>(references, otherEnumerable.references);
+            if (otherEnumerable == null)
+                return false;
+
+            return ReferenceEquals(this, otherEnumerable) || AreItemsEqual(items, otherEnumerable.items);
+        }
+
+        private static bool AreItemsEqual(HybridDictionary<Index, ObjectReference> items1, HybridDictionary<Index, ObjectReference> items2)
+        {
+            if (ReferenceEquals(items1, items2))
+                return true;
+
+            if (items1 == null || items2 == null)
+                return false;
+
+            if (items1.Count != items2.Count)
+                return false;
+
+            foreach (var item in items1)
+            {
+                ObjectReference otherItem;
+                if (!items2.TryGetValue(item.Key, out otherItem))
+                    return false;
+
+                if (!otherItem.Equals(item.Value))
+                    return false;
+            }
+
+            return true;
+
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            string text = "(" + references.Count + " references";
-            if (references.Count > 0)
+            string text = "(" + items.Count + " references";
+            if (items.Count > 0)
             {
                 text += ": ";
-                text += string.Join(", ", references);
+                text += string.Join(", ", items.Values);
             }
             text += ")";
             return text;
@@ -174,6 +223,41 @@ namespace SiliconStudio.Quantum.References
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(KeyValuePair<,>)) throw new ArgumentException("The given object is not a KeyValuePair.");
             var valueProperty = type.GetProperty(nameof(KeyValuePair<object, object>.Value));
             return valueProperty.GetValue(keyValuePair);
+        }
+
+        /// <summary>
+        /// An enumerator for <see cref="ReferenceEnumerable"/> that enumerates in proper item order.
+        /// </summary>
+        private class ReferenceEnumerator : IEnumerator<ObjectReference>
+        {
+            private readonly IEnumerator<Index> indexEnumerator;
+            private ReferenceEnumerable obj;
+
+            public ReferenceEnumerator(ReferenceEnumerable obj)
+            {
+                this.obj = obj;
+                indexEnumerator = obj.Indices.GetEnumerator();
+            }
+
+            public void Dispose()
+            {
+                obj = null;
+                indexEnumerator.Dispose();
+            }
+
+            public bool MoveNext()
+            {
+                return indexEnumerator.MoveNext();
+            }
+
+            public void Reset()
+            {
+                indexEnumerator.Reset();
+            }
+
+            public ObjectReference Current => obj.items[indexEnumerator.Current];
+
+            object IEnumerator.Current => obj.items[indexEnumerator.Current];
         }
     }
 }

@@ -45,7 +45,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.IsFalse(result.HasErrors);
 
             // Reload the raw package and if UFile and UDirectory were saved relative
-            var rawPackage = (Package)AssetSerializer.Load(testGenerated1);
+            var rawPackage = AssetFileSerializer.Load<Package>(testGenerated1).Asset;
             var rawPackageSharedProfile = rawPackage.Profiles.FirstOrDefault();
             Assert.IsNotNull(rawPackageSharedProfile);
             var rawSourceFolder = rawPackage.Profiles.First().AssetFolders.FirstOrDefault();
@@ -88,12 +88,12 @@ namespace SiliconStudio.Assets.Tests
             project.Assets.Add(assetItem);
 
             // Can't change an asset id once it is loaded into a project
-            Assert.Throws<InvalidOperationException>(() => asset.Id = Guid.Empty);
+            Assert.Throws<InvalidOperationException>(() => asset.Id = AssetId.Empty);
 
             project.Assets.Remove(assetItem);
 
             // Can change Id once the asset was removed from the project
-            Assert.DoesNotThrow(() => asset.Id = Guid.Empty);
+            Assert.DoesNotThrow(() => asset.Id = AssetId.Empty);
         }
 
         [Test, Ignore("Need check")]
@@ -144,7 +144,7 @@ namespace SiliconStudio.Assets.Tests
             var projectPath = Path.Combine(basePath, "TestPackageLoadingWithAssets.xkpkg");
 
             var rootPackageId = new Guid("4102BF96-796D-4800-9983-9C227FAB7BBD");
-            var testAssetId = new Guid("C2D80EF9-2160-43B2-9FEE-A19A903A0BE0");
+            var testAssetId = new AssetId("C2D80EF9-2160-43B2-9FEE-A19A903A0BE0");
 
             // Load the project from the original location
             var sessionResult1 = PackageSession.Load(projectPath);
@@ -180,7 +180,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(3, project.Assets.Count, "Invalid number of assets loaded");
 
                 // Move asset into a different directory
-                var assetItem = project.Assets.Find(new Guid("28D0DE9C-8913-41B1-B50E-848DD8A7AF65"));
+                var assetItem = project.Assets.Find(new AssetId("28D0DE9C-8913-41B1-B50E-848DD8A7AF65"));
                 Assert.NotNull(assetItem);
                 project.Assets.Remove(assetItem);
 

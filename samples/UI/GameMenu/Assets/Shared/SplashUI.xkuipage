@@ -1,17 +1,16 @@
 !UIPageAsset
 Id: 62c493c2-13ea-4fac-bbaf-578afafac104
-SerializedVersion: {Xenko: 0.0.0}
+SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
 Hierarchy:
-    ~Id: 6dd9a8f9-4fe8-4250-9860-e89f5d82d71e
     RootPartIds:
         - 93334aeb-cfe0-44a2-ab96-b95caab78745
     Parts:
         -   UIElement: !ContentDecorator
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
+                    6692e757eb20e17910661fabd17b423c~Panel.ZIndexPropertyKey: 1
                 Id: 0a85da82-3399-4f86-8e7c-cccae6c6e799
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -20,8 +19,7 @@ Hierarchy:
                 Padding: {Left: 35.0, Top: 15.0, Right: 35.0, Bottom: 25.0}
                 Content: !TextBlock 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: eea808f0-6167-40f9-b3e8-48c09e0a4d2a
-                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                    Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 1
         -   UIElement: !TextBlock
                 DependencyProperties: {}
@@ -31,7 +29,7 @@ Hierarchy:
                 Margin: {}
                 Name: UI
                 Text: UI
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 60.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !TextBlock
@@ -41,7 +39,7 @@ Hierarchy:
                 Margin: {}
                 Name: TouchStart
                 Text: Touch Screen to Start
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 42.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Grid
@@ -54,31 +52,31 @@ Hierarchy:
                 MaximumWidth: 600.0
                 MaximumHeight: 900.0
                 Children:
-                    - !ContentDecorator 0a85da82-3399-4f86-8e7c-cccae6c6e799
-                    - !ContentDecorator 48d6ea9a-399c-4df7-a625-43db690bf6d2
-                    - !ImageElement 65999106-6f97-4836-9160-c7d0fd2192c8
-                    - !ContentDecorator d7b366d4-7efc-44bc-8df9-a0e938b7febc
+                    82da850a9933864f8e7ccccae6c6e799: !ContentDecorator 0a85da82-3399-4f86-8e7c-cccae6c6e799
+                    9aead6489c39f74da62543db690bf6d2: !ContentDecorator 48d6ea9a-399c-4df7-a625-43db690bf6d2
+                    06919965976f36489160c7d0fd2192c8: !ImageElement 65999106-6f97-4836-9160-c7d0fd2192c8
+                    d466b3d7fc7ebc448df9a0e938b7febc: !ContentDecorator d7b366d4-7efc-44bc-8df9-a0e938b7febc
                 RowDefinitions:
-                    -   ~Id: cbddc9c6-8cd9-4c1e-868d-9f0de7dad89a
+                    c6c9ddcbd98c1e4c868d9f0de7dad89a:
                         Type: Auto
-                    -   ~Id: 98f710b1-44e9-4035-9f1a-93d6cb28ef1f
+                    b110f798e94435409f1a93d6cb28ef1f:
                         Type: Auto
-                    -   ~Id: ecbb7755-5343-443e-9ec0-24beec9884d7
+                    5577bbec43533e449ec024beec9884d7:
                         SizeValue: 2.0
-                    -   ~Id: 7537d31a-d091-42ae-8a0a-b36c2b76251c
+                    1ad3377591d0ae428a0ab36c2b76251c:
                         SizeValue: 2.0
-                    -   ~Id: 0388eee2-8b37-49b9-a197-b9ac3c885e2f
+                    e2ee8803378bb949a197b9ac3c885e2f:
                         SizeValue: 2.0
-                    -   ~Id: 266ef1b4-f554-4573-9287-c799290c3d7a
+                    b4f16e2654f573459287c799290c3d7a:
                         Type: Auto
                 ColumnDefinitions:
-                    -   ~Id: 682a3ffd-b8ea-40ac-b1df-e0d691269fb9
+                    fd3f2a68eab8ac40b1dfe0d691269fb9: {}
                 LayerDefinitions:
-                    -   ~Id: 20e9dc78-3821-419a-a4f1-b271dad259f0
+                    78dce92021389a41a4f1b271dad259f0: {}
         -   UIElement: !ContentDecorator
                 DependencyProperties:
-                    GridBase.RowPropertyKey: 1
-                    Panel.ZIndexPropertyKey: 1
+                    5b5de4e0cd7dd4c4fe747f869eaec1ba~GridBase.RowPropertyKey: 1
+                    c3585ce727290778c89396a365beaa19~Panel.ZIndexPropertyKey: 1
                 Id: 48d6ea9a-399c-4df7-a625-43db690bf6d2
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -87,28 +85,26 @@ Hierarchy:
                 Padding: {Left: 15.0, Top: 4.0, Right: 15.0, Bottom: 7.0}
                 Content: !TextBlock 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: 61b7b7e3-751b-4333-9641-d1d124ba62ca
-                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                    Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 2
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: -1
-                    GridBase.ColumnSpanPropertyKey: 1
-                    GridBase.LayerPropertyKey: 0
-                    GridBase.LayerSpanPropertyKey: 1
+                    701d35efffce8423067cf70a4ad44d73~Panel.ZIndexPropertyKey: -1
+                    5a009995419f25cc6c01901351607242~GridBase.ColumnSpanPropertyKey: 1
+                    8e3edd20355b37221ab1d0b25b0c5512~GridBase.LayerPropertyKey: 0
+                    496861f32469c6690b7dc547da0a4428~GridBase.LayerSpanPropertyKey: 1
                 Id: 6315d86e-f687-4d51-ab90-19a73d34dd7e
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: Wallpaper
                 Source: !SpriteFromSheet
-                    ~Id: 21a510a4-f995-440c-a0eb-37e8edebcbd2
-                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                    Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchType: Fill
         -   UIElement: !ImageElement
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
-                    GridBase.RowPropertyKey: 3
+                    3588035b866590c25a1a1f03b26a4fb2~Panel.ZIndexPropertyKey: 1
+                    179093faf61328b5bd78179b0d74326b~GridBase.RowPropertyKey: 3
                 Id: 65999106-6f97-4836-9160-c7d0fd2192c8
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
@@ -116,8 +112,7 @@ Hierarchy:
                 Margin: {}
                 Name: Space Escape
                 Source: !SpriteFromSheet
-                    ~Id: 1065de3a-6290-4e4c-b28b-cd197164d416
-                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                    Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 3
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !UniformGrid
@@ -126,8 +121,8 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Children:
-                    - !ImageElement 6315d86e-f687-4d51-ab90-19a73d34dd7e
-                    - !Grid 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
+                    6ed8156387f6514dab9019a73d34dd7e: !ImageElement 6315d86e-f687-4d51-ab90-19a73d34dd7e
+                    6797a846c14ec741b7c0a12cd0fac7a1: !Grid 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
@@ -136,13 +131,13 @@ Hierarchy:
                 Margin: {}
                 Name: XenkoSamples
                 Text: Xenko Samples
-                Font: 95e02c0f-de8b-496c-b9a0-b39589a52af6/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextSize: 60.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ContentDecorator
                 DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
-                    GridBase.RowPropertyKey: 5
+                    729b2621dd664b00698473136ff420c0~Panel.ZIndexPropertyKey: 1
+                    173e14e188ff42607974186bdeaafdba~GridBase.RowPropertyKey: 5
                 Id: d7b366d4-7efc-44bc-8df9-a0e938b7febc
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
@@ -151,6 +146,5 @@ Hierarchy:
                 Padding: {Left: 30.0, Top: 20.0, Right: 30.0, Bottom: 25.0}
                 Content: !TextBlock 3d15fe1b-2814-43de-95b4-67dc1d49ceef
                 BackgroundImage: !SpriteFromSheet
-                    ~Id: 34b73d3e-3b21-43c9-8011-4164849062c8
-                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                    Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 4

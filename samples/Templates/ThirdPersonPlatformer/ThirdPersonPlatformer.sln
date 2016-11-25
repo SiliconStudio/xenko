@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPersonPlatformer", "ThirdPersonPlatformer", "{1ADF36A6-5E90-4DA5-9E31-2C9FE29CAD18}"
-	ProjectSection(SiliconStudioPackage) = preProject
-		ThirdPersonPlatformer/ThirdPersonPlatformer.xkpkg = ThirdPersonPlatformer/ThirdPersonPlatformer.xkpkg
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThirdPersonPlatformer.Windows", "ThirdPersonPlatformer\ThirdPersonPlatformer.Windows\ThirdPersonPlatformer.Windows.csproj", "{436E0287-CC11-4E08-BD1B-C7AB4B20B0DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThirdPersonPlatformer.Game", "ThirdPersonPlatformer\ThirdPersonPlatformer.Game\ThirdPersonPlatformer.Game.csproj", "{92B5077F-3D0D-4043-A3B4-25A32C9D64AA}"
@@ -20,6 +15,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PrototypingBlocks", "PrototypingBlocks", "{C9B4F26A-E7BA-4201-A6E0-0C0EEDFE9DE2}"
 	ProjectSection(SiliconStudioPackage) = preProject
 		../Packs/PrototypingBlocks/PrototypingBlocks/PrototypingBlocks.xkpkg = ../Packs/PrototypingBlocks/PrototypingBlocks/PrototypingBlocks.xkpkg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPersonPlatformer", "ThirdPersonPlatformer", "{AFAE975A-E8BC-4B00-82B3-7D9C67DD6A41}"
+	ProjectSection(SiliconStudioPackage) = preProject
+		ThirdPersonPlatformer/ThirdPersonPlatformer.xkpkg = ThirdPersonPlatformer/ThirdPersonPlatformer.xkpkg
 	EndProjectSection
 EndProject
 Global
@@ -136,7 +136,7 @@ Global
 		{92B5077F-3D0D-4043-A3B4-25A32C9D64AA}.Testing|Windows.Build.0 = Testing|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{436E0287-CC11-4E08-BD1B-C7AB4B20B0DD} = {1ADF36A6-5E90-4DA5-9E31-2C9FE29CAD18}
-		{92B5077F-3D0D-4043-A3B4-25A32C9D64AA} = {1ADF36A6-5E90-4DA5-9E31-2C9FE29CAD18}
+		{436E0287-CC11-4E08-BD1B-C7AB4B20B0DD} = {AFAE975A-E8BC-4B00-82B3-7D9C67DD6A41}
+		{92B5077F-3D0D-4043-A3B4-25A32C9D64AA} = {AFAE975A-E8BC-4B00-82B3-7D9C67DD6A41}
 	EndGlobalSection
 EndGlobal

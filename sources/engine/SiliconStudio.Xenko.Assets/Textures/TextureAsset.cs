@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
@@ -18,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// </summary>
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Texture))]
     [AssetCompiler(typeof(TextureAssetCompiler))]
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
@@ -179,7 +181,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
             if (gameSettings != null)
             {
-                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
             }
         }
 

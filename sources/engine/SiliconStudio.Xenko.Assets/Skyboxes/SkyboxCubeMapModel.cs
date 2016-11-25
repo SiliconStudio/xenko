@@ -7,7 +7,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
@@ -46,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             if (CubeMap != null)
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(CubeMap);
-                yield return new AssetReference<TextureAsset>(reference.Id, reference.Url);
+                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

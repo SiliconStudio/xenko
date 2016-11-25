@@ -31,12 +31,6 @@ namespace SiliconStudio.Assets.Tracking
 
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            // Don't visit base parts as they are visited at the top level.
-            if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == Asset.BasePartsProperty))
-            {
-                return;
-            }
-
             if (sourceFiles != null)
             {
                 if (member.Type == typeof(UFile) && value != null)

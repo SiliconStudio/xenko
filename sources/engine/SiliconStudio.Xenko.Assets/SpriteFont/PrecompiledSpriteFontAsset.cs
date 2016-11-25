@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     [DataContract("PregeneratedSpriteFont")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Graphics.SpriteFont))]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
@@ -53,7 +54,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         /// <userdoc>The sprite font asset that has been used to generate this precompiled font.</userdoc>
         [DataMember(0)]
-        public AssetReference<SpriteFontAsset> OriginalFont;
+        public AssetReference OriginalFont;
 
         /// <summary>
         /// The file containing the font data.

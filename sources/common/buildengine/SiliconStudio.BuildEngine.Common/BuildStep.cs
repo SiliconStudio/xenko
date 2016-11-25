@@ -17,16 +17,18 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ProcessedDependencies = false;
 
+        public delegate void TransformExecuteContextLoggerDelegate(ref Logger logger);
+
         protected BuildStep(ResultStatus status = ResultStatus.NotProcessed)
         {
             Status = status;
         }
 
         /// <summary>
-        /// Gets or sets the module associated with this build step, used when logging error/information.
+        /// Callback that can transform the <see cref="IExecuteContext.Logger"/>.
         /// </summary>
         /// <value>The module.</value>
-        public string Module { get; set; }
+        public TransformExecuteContextLoggerDelegate TransformExecuteContextLogger { get; set; }
 
         /// <summary>
         /// Gets or sets the priority amongst other build steps.

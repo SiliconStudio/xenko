@@ -241,7 +241,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 var instance = new MaterialInstance
                 {
-                    Material = modelComponent.Materials.GetItemOrNull(index) ?? baseInstance.Material ?? fallbackMaterial,
+                    Material = modelComponent.Materials.SafeGet(index) ?? baseInstance.Material ?? fallbackMaterial,
                     IsShadowCaster = modelComponent.IsShadowCaster,
                     IsShadowReceiver = modelComponent.IsShadowReceiver
                 };
@@ -325,8 +325,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         if (modelAsset == null ||
                             modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
                             modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
-                            modelComponent.Materials.Any(x => x != null && x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
-
+                            modelComponent.Materials.Values.Any(x => x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
                         {
                             commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
                             continue;

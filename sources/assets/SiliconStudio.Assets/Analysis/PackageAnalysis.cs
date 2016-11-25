@@ -94,16 +94,6 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
-            if (Parameters.AssetTemplatingMergeModifiedAssets || Parameters.AssetTemplatingRemoveUnusedBaseParts)
-            {
-                var packageTemplating = new PackageAssetTemplatingAnalysis(package, log)
-                {
-                    MergeModifiedAssets = Parameters.AssetTemplatingMergeModifiedAssets,
-                    RemoveUnusedBaseParts = Parameters.AssetTemplatingRemoveUnusedBaseParts
-                };
-                packageTemplating.Run();
-            }
-
             ProcessAssets().CopyTo(log);
         }
 
@@ -229,7 +219,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (newLocationWithoutExtension != rootAsset.Location || newItemReference.Id != rootAsset.Id)
                 {
                     rootAssets.Remove(rootAsset.Id);
-                    rootAssets.Add(new AssetReference<Asset>(newItemReference.Id, newLocationWithoutExtension));
+                    rootAssets.Add(new AssetReference(newItemReference.Id, newLocationWithoutExtension));
                     package.IsDirty = true;
                 }
             }

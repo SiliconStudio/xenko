@@ -4,11 +4,13 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioSheetAsset")] // Name of the Asset serialized in YAML
     [AssetCompiler(typeof(SpriteStudioModelAssetCompiler))] // The compiler used to transform this asset to RangeValues
+    [AssetContentType(typeof(SpriteStudioSheet))]
     [AssetDescription(".xkss4s;.pdxss4s")] // A description used to display in the asset editor
     [Display("Sprite Studio Sheet")]
     public class SpriteStudioModelAsset : Asset

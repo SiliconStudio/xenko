@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Assets;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// Gets the asset unique identifier.
         /// </summary>
         /// <value>The identifier.</value>
-        Guid Id { get; }
+        AssetId Id { get; }
 
         /// <summary>
         /// Gets the location.

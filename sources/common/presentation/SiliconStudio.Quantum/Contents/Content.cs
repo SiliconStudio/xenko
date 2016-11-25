@@ -17,22 +17,30 @@ namespace SiliconStudio.Quantum.Contents
         /// <returns>The value itself or the value of one of its item.</returns>
         public static object Retrieve(object value, Index index, ITypeDescriptor descriptor)
         {
-            if (!index.IsEmpty)
-            {
-                var collectionDescriptor = descriptor as CollectionDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    return collectionDescriptor.GetValue(value, index.Int);
-                }
-                var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-                if (dictionaryDescriptor != null)
-                {
-                    return dictionaryDescriptor.GetValue(value, index.Value);
-                }
+            if (index.IsEmpty)
+                return value;
 
-                throw new NotSupportedException("Unable to retrieve the value at the given index, this collection is unsupported");
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            var collectionDescriptor = descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                return collectionDescriptor.GetValue(value, index.Int);
             }
-            return value;
+            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+            if (dictionaryDescriptor != null)
+            {
+                return dictionaryDescriptor.GetValue(value, index.Value);
+            }
+
+            // Try with the concrete type descriptor
+            var objectDescriptor = TypeDescriptorFactory.Default.Find(value.GetType());
+            if (objectDescriptor != descriptor)
+            {
+                return Retrieve(value, index, objectDescriptor);
+            }
+
+            throw new NotSupportedException("Unable to retrieve the value at the given index, this collection is unsupported");
         }
     }
 }

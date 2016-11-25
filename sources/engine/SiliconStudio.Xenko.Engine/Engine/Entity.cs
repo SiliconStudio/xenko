@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMember(-10), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         [DataMember(0)] // Name is serialized
@@ -290,7 +291,7 @@ namespace SiliconStudio.Xenko.Engine
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
                 stringSerializer = MemberSerializer<string>.Create(serializerSelector);
                 entityGroupSerializer = MemberSerializer<EntityGroup>.Create(serializerSelector);
-                componentCollectionSerializer = serializerSelector.GetSerializer<EntityComponentCollection>();
+                componentCollectionSerializer = MemberSerializer<EntityComponentCollection>.Create(serializerSelector);
             }
 
             public override void PreSerialize(ref Entity obj, ArchiveMode mode, SerializationStream stream)

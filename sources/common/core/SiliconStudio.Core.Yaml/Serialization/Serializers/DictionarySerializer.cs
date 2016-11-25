@@ -46,9 +46,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
@@ -56,15 +56,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// <summary>
     /// Class for serializing a <see cref="IDictionary{TKey,TValue}"/> or <see cref="System.Collections.IDictionary"/>
     /// </summary>
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     public class DictionarySerializer : ObjectSerializer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DictionarySerializer"/> class.
-        /// </summary>
-        public DictionarySerializer()
-        {
-        }
-
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -73,7 +67,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
         protected override void ReadMember(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor) objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
             if (dictionaryDescriptor.IsPureDictionary)
             {
@@ -109,7 +103,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
         protected override void WriteMembers(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor) objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
             if (dictionaryDescriptor.IsPureDictionary)
             {
                 WriteDictionaryItems(ref objectContext);
@@ -133,7 +127,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
                 WriteMemberName(ref objectContext, null, objectContext.Settings.SpecialCollectionMember);
 
-                objectContext.Writer.Emit(new MappingStartEventInfo(objectContext.Instance, objectContext.Instance.GetType()) {Style = objectContext.Style});
+                objectContext.Writer.Emit(new MappingStartEventInfo(objectContext.Instance, objectContext.Instance.GetType()) { Style = objectContext.Style });
                 WriteDictionaryItems(ref objectContext);
                 objectContext.Writer.Emit(new MappingEndEventInfo(objectContext.Instance, objectContext.Instance.GetType()));
             }
@@ -145,34 +139,28 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         protected virtual void ReadDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor) objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
             var reader = objectContext.Reader;
             while (!reader.Accept<MappingEnd>())
             {
-                if (objectContext.SerializerContext.AllowErrors)
-                {
-                    var currentDepth = objectContext.Reader.CurrentDepth;
+                var currentDepth = objectContext.Reader.CurrentDepth;
 
-                    try
-                    {
-                        // Read key and value
-                        var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
-                        dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
-                    }
-                    catch (YamlException ex)
-                    {
-                        var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                        if (logger != null)
-                            logger.Log(LogLevel.Warning, ex, "Ignored dictionary item that could not be deserialized");
-                        objectContext.Reader.Skip(currentDepth);
-                    }
-                }
-                else
+                try
                 {
                     // Read key and value
                     var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
                     dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
+                }
+                catch (YamlException ex)
+                {
+                    if (objectContext.SerializerContext.AllowErrors)
+                    {
+                        var logger = objectContext.SerializerContext.Logger;
+                        logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
+                        objectContext.Reader.Skip(currentDepth);
+                    }
+                    else throw;
                 }
             }
         }
@@ -181,10 +169,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// Reads a dictionary item key-value.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
-        /// <returns>KeyValuePair{System.ObjectSystem.Object}.</returns>
-        protected virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+        /// <param name="keyValueTypes">The types corresponding to the key and the value.</param>
+        /// <returns>A <see cref="KeyValuePair{Object, Object}"/> representing the dictionary item.</returns>
+        protected virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
-            return objectContext.ObjectSerializerBackend.ReadDictionaryItem(ref objectContext, keyValueType);
+            var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value, keyResult);
+            return new KeyValuePair<object, object>(keyResult, valueResult);
         }
 
         /// <summary>
@@ -216,9 +207,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// </summary>
         /// <param name="objectContext">The object context.</param>
         /// <param name="keyValue">The key value.</param>
-        protected virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        /// <param name="keyValueTypes">The types corresponding to the key and the value.</param>
+        protected virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
-            objectContext.ObjectSerializerBackend.WriteDictionaryItem(ref objectContext, keyValue, types);
+            objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, keyValueTypes.Key);
+            objectContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Key, keyValue.Value, keyValueTypes.Value);
         }
     }
 }

@@ -44,7 +44,6 @@ namespace SiliconStudio.Assets
     /// Describes buld parameters used when building assets.
     /// </summary>
     [DataContract("PackageProfile")]
-    [NonIdentifiable]
     public sealed class PackageProfile
     {
         public static SettingsContainer SettingsContainer = new SettingsContainer();
@@ -60,7 +59,6 @@ namespace SiliconStudio.Assets
         {
             assetFolders = new AssetFolderCollection();
             InheritProfiles = new List<string>();
-            Properties = SettingsContainer.CreateSettingsProfile(false);
             OutputGroupDirectories = new Dictionary<string, UDirectory>();
             ProjectReferences = new List<ProjectReference>();
         }
@@ -134,13 +132,6 @@ namespace SiliconStudio.Assets
         /// <value>The output group directories.</value>
         [DataMember(50)]
         public Dictionary<string, UDirectory> OutputGroupDirectories { get; private set; }
-
-        /// <summary>
-        /// Gets the dynamic properties associated with this profile.
-        /// </summary>
-        /// <value>The properties.</value>
-        [DataMember(60)]
-        public SettingsProfile Properties { get; private set; }
 
         /// <summary>
         /// Gets the assembly references to load when compiling this package.

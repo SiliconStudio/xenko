@@ -10,7 +10,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Associate an <see cref="Entity"/> with design-time data.
     /// </summary>
     [DataContract("EntityDesign")]
-    [NonIdentifiable]
     public class EntityDesign : IAssetPartDesign<Entity>
     {
         /// <summary>
@@ -38,24 +37,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public string Folder { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the base entity in case of prefabs. If null, the entity is not a prefab.
-        /// </summary>
-        [DataMember(20)]
-        [DefaultValue(null)]
-        public Guid? BaseId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the part group in case of prefabs. If null, the entity doesn't belong to a part.
-        /// </summary>
-        [DataMember(30)]
-        [DefaultValue(null)]
-        public Guid? BasePartInstanceId { get; set; }
-
-        /// <summary>
         /// Gets or sets the entity
         /// </summary>
-        [DataMember(40)]
+        [DataMember(10)]
         public Entity Entity { get; set; }
+
+        /// <inheritdoc/>
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public BasePart Base { get; set; }
 
         /// <inheritdoc/>
         Entity IAssetPartDesign<Entity>.Part => Entity;

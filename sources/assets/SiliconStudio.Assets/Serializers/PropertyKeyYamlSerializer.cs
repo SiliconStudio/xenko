@@ -10,7 +10,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlSerializerFactoryAttribute.Default)]
     internal class PropertyKeyYamlSerializer : AssetScalarSerializerBase
     {
         public override bool CanVisit(Type type)
@@ -68,7 +68,7 @@ namespace SiliconStudio.Assets.Serializers
         {
             var propertyKey = (PropertyKey)objectContext.Instance;
 
-            return AssetPropertyKeyNameResolver.ComputePropertyKeyName(objectContext.SerializerContext, propertyKey);
+            return PropertyKeyNameResolver.ComputePropertyKeyName(objectContext.SerializerContext, propertyKey);
         }
 
         

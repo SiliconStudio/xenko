@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(AnimationClip))]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [Display(1805, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
@@ -86,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
             if (reference != null)
             {
-                yield return new AssetReference<Asset>(reference.Id, reference.Url);
+                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

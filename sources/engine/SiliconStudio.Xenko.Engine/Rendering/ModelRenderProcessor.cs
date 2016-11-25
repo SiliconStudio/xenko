@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     // Update material
                     var materialIndex = mesh.MaterialIndex;
-                    var materialOverride = modelComponentMaterials.GetItemOrNull(materialIndex);
+                    var materialOverride = modelComponentMaterials.SafeGet(materialIndex);
                     var modelMaterialInstance = modelMaterials.GetItemOrNull(materialIndex);
                     UpdateMaterial(renderMesh, materialOverride, modelMaterialInstance, modelComponent);
 
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Rendering
                 };
 
                 // Update material
-                UpdateMaterial(renderMeshes[index], modelComponent.Materials.GetItemOrNull(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
+                UpdateMaterial(renderMeshes[index], modelComponent.Materials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
             }
 
             renderModel.Model = model;
