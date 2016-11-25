@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Texture: 5e7a5dcf-d029-4c1c-9980-4e852dc371fe:Textures/Lower [Normal]
+            Texture: 5e7a5dcf-d029-4c1c-9980-4e852dc371fe:Textures/normalmapLower
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}

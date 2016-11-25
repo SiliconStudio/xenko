@@ -10,7 +10,7 @@ Defaults:
         AdaptBackBufferToScreen: false
         DefaultGraphicsProfile: Level_9_3
         ColorSpace: Linear
-        DisplayOrientation: Portrait
+        DisplayOrientation: LandscapeRight
         PreferredGraphicsPlatform: Default
     - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
         RenderingMode: HDR

@@ -201,15 +201,19 @@ namespace SiliconStudio.Presentation.Windows
         private static void PositionWindowToMouseCursor(object sender, RoutedEventArgs e)
         {
             var window = (Window)sender;
-            var area = window.GetWorkArea();
-            if (area != Rect.Empty)
+            // dispatch with one frame delay to make sure WPF layout passes are completed (if not, actual width and height might be incorrect)
+            window.Dispatcher.InvokeAsync(() =>
             {
-                var mousePosition = window.GetCursorScreenPosition();
-                var expandRight = area.Right > mousePosition.X + window.ActualWidth;
-                var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
-                window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
-                window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
-            }
+                var area = window.GetWorkArea();
+                if (area != Rect.Empty)
+                {
+                    var mousePosition = window.GetCursorScreenPosition();
+                    var expandRight = area.Right > mousePosition.X + window.ActualWidth;
+                    var expandBottom = area.Bottom > mousePosition.Y + window.ActualHeight;
+                    window.Left = expandRight ? mousePosition.X : mousePosition.X - window.ActualWidth;
+                    window.Top = expandBottom ? mousePosition.Y : mousePosition.Y - window.ActualHeight;
+                }
+            });
 
             window.Loaded -= PositionWindowToMouseCursor;
         }

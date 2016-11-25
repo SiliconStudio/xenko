@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 if (modelMaterial.MaterialInstance?.Material == null)
                 {
-                    commandContext.Logger.Warning($"The material [{modelMaterial.Name}] is null in the list of materials.");
+                    commandContext.Logger.Verbose($"The material [{modelMaterial.Name}] is null in the list of materials.");
                 }
                 model.Materials.Add(modelMaterial.MaterialInstance);
             }

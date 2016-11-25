@@ -28,5 +28,5 @@ Materials:
     e3befa98ad23d3cfa84708dda84708dd:
         Name: lambert1
         MaterialInstance:
-            Material: null
+            Material: dd76a5f4-d28a-470e-9bca-e3231a52d132:Materials/BodyGray
 Skeleton: 4807ba4e-c278-4af3-859b-ca76cc0652a4:Models/ModelSkeleton
