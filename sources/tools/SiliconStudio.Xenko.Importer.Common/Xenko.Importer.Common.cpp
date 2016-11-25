@@ -5,6 +5,7 @@
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::IO;
+using namespace SiliconStudio::Assets;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
@@ -123,7 +124,7 @@ public:
 		auto uvScaling = textureUVscaling;
 		auto textureName = textureFileName;
 	
-		auto texture = AttachedReferenceManager::CreateProxyObject<Texture^>(System::Guid(), textureName);
+		auto texture = AttachedReferenceManager::CreateProxyObject<Texture^>(AssetId::Empty, textureName);
 
 		auto currentTexture = gcnew ComputeTextureColor(texture, (TextureCoordinate)textureUVSetIndex, uvScaling, Vector2::Zero);
 		currentTexture->AddressModeU = addressModeU;

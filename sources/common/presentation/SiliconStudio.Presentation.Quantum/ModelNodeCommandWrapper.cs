@@ -12,7 +12,6 @@ namespace SiliconStudio.Presentation.Quantum
     {
         public readonly GraphNodePath NodePath;
         public readonly Index Index;
-        protected readonly ObservableViewModelService Service;
 
         public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, GraphNodePath nodePath, Index index)
             : base(serviceProvider)
@@ -21,7 +20,6 @@ namespace SiliconStudio.Presentation.Quantum
             NodePath = nodePath;
             Index = index;
             NodeCommand = nodeCommand;
-            Service = serviceProvider.Get<ObservableViewModelService>();
         }
 
         public override string Name => NodeCommand.Name;

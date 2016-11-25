@@ -28,6 +28,11 @@ namespace SiliconStudio.Xenko.Rendering
             set { effectName = value; }
         }
 
+        /// <summary>
+        /// Defines the effect parameters used when compiling this effect.
+        /// </summary>
+        public EffectCompilerParameters EffectCompilerParameters = EffectCompilerParameters.Default;
+
         public void Initialize(IServiceRegistry services)
         {
             this.effectSystem = services.GetSafeServiceAs<EffectSystem>();
@@ -38,7 +43,11 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Free previous descriptor sets and layouts?
 
             // Looks like the effect changed, it needs a recompilation
-            var compilerParameters = new CompilerParameters();
+            var compilerParameters = new CompilerParameters
+            {
+                EffectParameters = EffectCompilerParameters
+            };
+
             foreach (var effectParameterKey in Parameters.ParameterKeyInfos)
             {
                 if (effectParameterKey.Key.Type == ParameterKeyType.Permutation)

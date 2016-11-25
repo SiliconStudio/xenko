@@ -6,7 +6,7 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Serialization.Serializers
 {
-    public class KeyedSortedListSerializer<TKeyedList, TKey, T> : DataSerializer<TKeyedList>, IDataSerializerInitializer, IDataSerializerGenericInstantiation where TKeyedList : KeyedSortedList<TKey, T>
+    public class KeyedSortedListSerializer<TKeyedList, TKey, T> : DataSerializer<TKeyedList>, IDataSerializerGenericInstantiation where TKeyedList : KeyedSortedList<TKey, T>
     {
         private DataSerializer<T> itemDataSerializer;
 
@@ -22,7 +22,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }

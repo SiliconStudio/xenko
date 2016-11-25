@@ -108,6 +108,11 @@ namespace SiliconStudio.Assets
         public bool GenerateNewAssetIds { get; set; }
 
         /// <summary>
+        /// If <c>true</c>, unloadable objects will be removed, similar to <see cref="AssetClonerFlags.RemoveUnloadableObjects"/>.
+        /// </summary>
+        public bool RemoveUnloadableObjects { get; set; }
+
+        /// <summary>
         /// Occurs when one or more package upgrades are required for a single package. Returning false will cancel upgrades on this package.
         /// </summary>
         public Func<Package, IList<PackageSession.PendingPackageUpgrade>, bool> PackageUpgradeRequested;

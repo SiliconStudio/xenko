@@ -34,6 +34,16 @@ namespace SiliconStudio.Xenko.Animations
     public class ComputeConstCurveVector4 : ComputeConstCurve<Vector4> { }
 
     /// <summary>
+    /// Function Vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeFunctionCurveVector4")]
+    [Display("Function")]
+    public class ComputeFunctionCurveVector4 : ComputeFunctionCurve<Vector4>
+    {
+        protected override Vector4 GetElementFrom(float value) { return new Vector4(value, value, value, value); }
+    }
+
+    /// <summary>
     /// Constant Vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector4")]
@@ -107,6 +117,16 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract("ComputeConstCurveVector3")]
     [Display("Constant")]
     public class ComputeConstCurveVector3 : ComputeConstCurve<Vector3> { }
+
+    /// <summary>
+    /// Function Vector3 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeFunctionCurveVector3")]
+    [Display("Function")]
+    public class ComputeFunctionCurveVector3 : ComputeFunctionCurve<Vector3>
+    {
+        protected override Vector3 GetElementFrom(float value) { return new Vector3(value, value, value); }
+    }
 
     /// <summary>
     /// Constant Vector3 value for the IComputeCurve interface
@@ -184,6 +204,16 @@ namespace SiliconStudio.Xenko.Animations
     public class ComputeConstCurveVector2 : ComputeConstCurve<Vector2> { }
 
     /// <summary>
+    /// Function Vector2 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeFunctionCurveVector2")]
+    [Display("Function")]
+    public class ComputeFunctionCurveVector2 : ComputeFunctionCurve<Vector2>
+    {
+        protected override Vector2 GetElementFrom(float value) { return new Vector2(value, value); }
+    }
+
+    /// <summary>
     /// Constant Vector2 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeAnimationCurveVector2")]
@@ -257,6 +287,16 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract("ComputeConstCurveFloat")]
     [Display("Constant")]
     public class ComputeConstCurveFloat : ComputeConstCurve<float> { }
+
+    /// <summary>
+    /// Function float value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeFunctionCurveFloat")]
+    [Display("Function")]
+    public class ComputeFunctionCurveFloat : ComputeFunctionCurve<float>
+    {
+        protected override float GetElementFrom(float value) { return value; }
+    }
 
     /// <summary>
     /// Binary operator float value for the IComputeCurve interface
@@ -407,6 +447,16 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract("ComputeConstCurveColor4")]
     [Display("Constant")]
     public class ComputeConstCurveColor4 : ComputeConstCurve<Color4> { }
+
+    /// <summary>
+    /// Function Color4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeFunctionCurveColor4")]
+    [Display("Function")]
+    public class ComputeFunctionCurveColor4 : ComputeFunctionCurve<Color4>
+    {
+        protected override Color4 GetElementFrom(float value) { return new Color4(value, value, value, value); }
+    }
 
     /// <summary>
     /// Constant Color4 value for the IComputeCurve interface

@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -39,7 +40,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// A structure that represents an element of the path.
         /// </summary>
-        private struct NodePathElement : IEquatable<NodePathElement>
+        public struct NodePathElement : IEquatable<NodePathElement>
         {
             public readonly ElementType Type;
             public readonly object Value;
@@ -230,6 +231,11 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public int Count => path.Count;
 
+        /// <summary>
+        /// Gets the items composing this path.
+        /// </summary>
+        public IReadOnlyList<NodePathElement> Path => path;
+
         /// <inheritdoc/>
         public IEnumerator<IGraphNode> GetEnumerator()
         {
@@ -301,7 +307,7 @@ namespace SiliconStudio.Quantum
         /// Retrieve the node targeted by this path.
         /// </summary>
         /// <returns></returns>
-        [Pure]
+        [Pure, NotNull]
         public IGraphNode GetNode() => this.Last();
 
         /// <summary>
@@ -325,14 +331,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="newRoot">The root node for the cloned path.</param>
         /// <returns>A copy of this path with the given node as root node.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath Clone(IGraphNode newRoot) => Clone(newRoot, IsEmpty);
 
         /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/>.
         /// </summary>
         /// <returns>A copy of this path with the same root node.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
 
         // TODO: re-implement each of the method below in an optimized way.
@@ -349,7 +355,7 @@ namespace SiliconStudio.Quantum
         /// Creates a new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.
         /// </summary>
         /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target of the reference contained in the node represented by this path.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath PushTarget() => PushElement(null, ElementType.Target);
 
         /// <summary>
@@ -357,10 +363,67 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="index">The index of the target node.</param>
         /// <returns>A new <see cref="GraphNodePath"/> instance accessing the target at a given index of the enumerable reference contained in the node represented by this path.</returns>
-        [Pure]
+        [Pure, NotNull]
         public GraphNodePath PushIndex(Index index) => PushElement(index, ElementType.Index);
 
-        [Pure]
+        [Pure, NotNull]
+        public GraphNodePath PushChildPath(GraphNodePath childPath)
+        {
+            if (childPath.IsEmpty)
+                return Clone();
+
+            var result = Clone(RootNode, false);
+            result.path.AddRange(childPath.path);
+            return result;
+        }
+
+        // TODO: Switch to tuple return as soon as we have C# 7.0
+        [NotNull]
+        public static GraphNodePath From(IGraphNode root, MemberPath memberPath, out Index index)
+        {
+            var result = new GraphNodePath(root);
+            index = Index.Empty;
+            var memberPathItems = memberPath.Decompose();
+            for (int i = 0; i < memberPathItems.Count; i++)
+            {
+                var memberPathItem = memberPathItems[i];
+                bool lastItem = i == memberPathItems.Count - 1;
+                if (memberPathItem.MemberDescriptor != null)
+                {
+                    result = result.PushMember(memberPathItem.MemberDescriptor.Name);
+                }
+                else if (memberPathItem.GetIndex() != null)
+                {
+                    var localIndex = new Index(memberPathItem.GetIndex());
+
+                    if (lastItem)
+                    {
+                        // If last item, we directly return the index rather than add it to the path
+                        index = localIndex;
+                    }
+                    else
+                    {
+                        result = result.PushIndex(localIndex);
+                    }
+                }
+
+                // Don't apply Target on last item
+                if (!lastItem)
+                {
+                    // If this is a reference, add a target element to the path
+                    var node = result.GetNode();
+                    var objectReference = node.Content.Reference as ObjectReference;
+                    if (objectReference?.TargetNode != null)
+                    {
+                        result = result.PushTarget();
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        [Pure, NotNull]
         public MemberPath ToMemberPath()
         {
             if (!IsValid)
@@ -368,8 +431,9 @@ namespace SiliconStudio.Quantum
 
             var memberPath = new MemberPath();
             var node = RootNode;
-            foreach (var itemPath in path)
+            for (var i = 0; i < path.Count; i++)
             {
+                var itemPath = path[i];
                 switch (itemPath.Type)
                 {
                     case ElementType.Member:
@@ -378,25 +442,26 @@ namespace SiliconStudio.Quantum
                         memberPath.Push(((MemberContent)node.Content).Member);
                         break;
                     case ElementType.Target:
-                        if (itemPath != path[path.Count - 1])
+                        if (i != path.Count - 1)
                         {
                             var objectRefererence = (ObjectReference)node.Content.Reference;
                             node = objectRefererence.TargetNode;
                         }
                         break;
                     case ElementType.Index:
-                        if (itemPath != path[path.Count - 1])
-                        {
-                            var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
-                            var descriptor = node.Content.Descriptor;
-                            var collectionDescriptor = descriptor as CollectionDescriptor;
-                            if (collectionDescriptor != null)
-                                memberPath.Push(collectionDescriptor, (int)itemPath.Value);
-                            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-                            if (dictionaryDescriptor != null)
-                                memberPath.Push(dictionaryDescriptor, itemPath.Value);
+                        var index = (Index)itemPath.Value;
+                        var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
+                        var descriptor = node.Content.Descriptor;
+                        var collectionDescriptor = descriptor as CollectionDescriptor;
+                        if (collectionDescriptor != null)
+                            memberPath.Push(collectionDescriptor, index.Int);
+                        var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+                        if (dictionaryDescriptor != null)
+                            memberPath.Push(dictionaryDescriptor, index.Value);
 
-                            var objectRefererence = enumerableReference.Single(x => Equals(x.Index, itemPath.Value));
+                        if (i != path.Count - 1)
+                        {
+                            var objectRefererence = enumerableReference.Single(x => Equals(x.Index, index));
                             node = objectRefererence.TargetNode;
                         }
                         break;

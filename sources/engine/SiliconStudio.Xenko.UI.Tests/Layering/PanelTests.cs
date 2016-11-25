@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     {
         private void ResetState()
         {
-            DependencyProperties = new PropertyContainer(this);
+            DependencyProperties = new PropertyContainerClass(this);
             LocalMatrix = Matrix.Identity;
             Children.Clear();
         }

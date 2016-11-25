@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
         private void ResetState()
         {
-            DependencyProperties = new PropertyContainer();
+            DependencyProperties = new PropertyContainerClass();
             InvalidateArrange();
             InvalidateMeasure();
             Content = null;

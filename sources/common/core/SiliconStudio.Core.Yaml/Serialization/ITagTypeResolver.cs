@@ -28,5 +28,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="typeName">Name of the type.</param>
         /// <returns>Type found for this typeName</returns>
         Type ResolveType(string typeName);
+
+        void ParseType(string typeName, out string type, out string assembly);
     }
 }

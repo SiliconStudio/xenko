@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             var staticFont = (OfflineRasterizedSpriteFont)OfflineRasterizedFontCompiler.Compile(FontDataFactory, asset, srgb);
 
-            var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
+            var referenceToSourceFont = new AssetReference(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
             var textures = staticFont.Textures;
             
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             // TODO create PrecompiledSDFSpriteFontAsset
             var scalableFont = (SignedDistanceFieldSpriteFont)SignedDistanceFieldFontCompiler.Compile(FontDataFactory, asset);
 
-            var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
+            var referenceToSourceFont = new AssetReference(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(scalableFont.CharacterToGlyph.Values);
             var textures = scalableFont.Textures;
 

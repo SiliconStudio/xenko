@@ -44,6 +44,7 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
+    <Compile Include="Extensions\ClipboardMonitor.cs" />
     <Compile Include="MarkupExtensions\GuidExtension.cs" />
     <Compile Include="Resources\KeyGestures.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -241,7 +242,7 @@
     <Compile Include="Interactivity\Interaction.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
-    <Compile Include="Extensions\NativeHelper.cs" />
+    <Compile Include="Interop\NativeHelper.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Core\CancelRoutedEvent.cs" />
     <Compile Include="Commands\AnonymousCommand.cs" />
@@ -342,6 +343,10 @@
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

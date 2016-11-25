@@ -33,11 +33,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Serializes individually build tiles inside navigation meshes
         /// </summary>
-        internal class NavigationMeshTileSerializer : DataSerializer<NavigationMeshTile>, IDataSerializerInitializer
+        internal class NavigationMeshTileSerializer : DataSerializer<NavigationMeshTile>
         {
             private DataSerializer<Vector3> pointSerializer;
 
-            public void Initialize(SerializerSelector serializerSelector)
+            public override void Initialize(SerializerSelector serializerSelector)
             {
                 pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
             }

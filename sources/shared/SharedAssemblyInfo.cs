@@ -6,7 +6,7 @@ using System.Reflection;
 using SiliconStudio;
 
 [assembly:AssemblyCompany("Silicon Studio")]
-[assembly:AssemblyCopyright("Copyright © 2011 Silicon Studio")]
+[assembly:AssemblyCopyright("Copyright © 2011-2016 Silicon Studio")]
 
 [assembly:AssemblyTrademark("")]
 [assembly:AssemblyCulture("")]

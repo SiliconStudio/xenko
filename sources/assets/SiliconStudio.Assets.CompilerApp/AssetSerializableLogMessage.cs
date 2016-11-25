@@ -27,15 +27,26 @@ namespace SiliconStudio.Assets.CompilerApp
             }
         }
 
-        public AssetSerializableLogMessage(Guid assetId, UFile assetUrl, LogMessageType type, string text, ExceptionInfo exceptionInfo = null)
+        public AssetSerializableLogMessage(AssetId assetId, UFile assetUrl, LogMessageType type, string text, ExceptionInfo exceptionInfo = null)
             : base("", type, text, exceptionInfo)
         {
             AssetId = assetId;
             AssetUrl = assetUrl;
         }
 
-        public Guid AssetId { get; set; }
+        public AssetId AssetId { get; set; }
 
         public UFile AssetUrl { get; set; }
+
+        public string File { get; set; }
+
+        public int Line { get; set; }
+
+        public int Character { get; set; }
+
+        public override string ToString()
+        {
+            return $"{AssetUrl}({Line},{Character}): {base.ToString()}";
+        }
     }
 }

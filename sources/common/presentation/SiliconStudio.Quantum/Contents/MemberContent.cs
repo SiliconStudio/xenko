@@ -106,7 +106,7 @@ namespace SiliconStudio.Quantum.Contents
                 var args = new ContentChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 var value = Value;
-                dictionaryDescriptor.SetValue(value, itemIndex.Value, newItem);
+                dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
                     var containerValue = Container.Value;
@@ -138,7 +138,7 @@ namespace SiliconStudio.Quantum.Contents
                 else
                 {
                     collectionDescriptor.Remove(value, item);
-                }               
+                }
             }
             else if (dictionaryDescriptor != null)
             {

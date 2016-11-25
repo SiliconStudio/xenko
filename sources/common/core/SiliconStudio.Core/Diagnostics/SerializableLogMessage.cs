@@ -72,7 +72,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("[{0}]: {1}: {2}{3}", Module, Type, Text, ExceptionInfo != null ? string.Format(" Exception: {0}", ExceptionInfo.Message) : "");
+            return $"{(Module != null ? $"[{Module}]: " : string.Empty)}{Type}: {Text}{(ExceptionInfo != null ? $". {ExceptionInfo.Message}" : string.Empty)}";
         }
     }
 }

@@ -15,7 +15,6 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableModelNode : SingleObservableNode
     {
         public readonly IGraphNode SourceNode;
-        protected readonly GraphNodePath SourceNodePath;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -106,7 +105,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (!isPrimitive && targetNode != null)
             {
-                var targetNodePath = GetTargetNodePath(SourceNode, Index, SourceNodePath);
+                var targetNodePath = GetTargetNodePath();
                 if (targetNodePath == null || !targetNodePath.IsValid)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
@@ -121,6 +120,8 @@ namespace SiliconStudio.Presentation.Quantum
 
             CheckDynamicMemberConsistency();
         }
+        
+        public GraphNodePath SourceNodePath { get; }
 
         /// <inheritdoc/>
         public override int? Order
@@ -159,7 +160,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool IsPrimitive => isPrimitive;
 
         /// <inheritdoc/>
-        public sealed override bool HasList => CollectionDescriptor.IsCollection(Type);
+        public sealed override bool HasCollection => CollectionDescriptor.IsCollection(Type);
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
@@ -173,7 +174,7 @@ namespace SiliconStudio.Presentation.Quantum
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
         internal Guid ModelGuid => SourceNode.Guid;
-   
+
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>
@@ -205,7 +206,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 if (referenceEnumerable != null && !Index.IsEmpty)
                 {
-                    if (!referenceEnumerable.ContainsIndex(Index))
+                    if (!referenceEnumerable.HasIndex(Index))
                         throw new ObservableViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
 
                     if (targetNode != referenceEnumerable[Index].TargetNode)
@@ -240,6 +241,16 @@ namespace SiliconStudio.Presentation.Quantum
         public new void ClearCommands()
         {
             base.ClearCommands();
+        }
+        
+        /// <summary>
+        /// Retrieves the path of the target node if the source node content holds a reference or a sequence of references, or the source node path otherwise.
+        /// </summary>
+        /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
+        /// <remarks>This method can return null if the target node is null.</remarks>
+        public GraphNodePath GetTargetNodePath()
+        {
+            return GetTargetNodePath(SourceNode, Index, SourceNodePath);
         }
 
         protected void AssertInit()
@@ -283,13 +294,24 @@ namespace SiliconStudio.Presentation.Quantum
                 // Discard the children of the referenced object if requested by the property provider
                 if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
                     return;
+
+                var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
+                if (refEnum != null)
+                {
+                    foreach (var reference in refEnum)
+                    {
+                        // Discard the children of the referenced object if requested by the property provider
+                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
+                            return;
+                    }
+                }
             }
 
             var dictionary = targetNode.Content.Descriptor as DictionaryDescriptor;
             var list = targetNode.Content.Descriptor as CollectionDescriptor;
 
             // Node containing a collection of references to other objects
-            if (targetNode.Content.IsReference)
+            if (SourceNode == targetNode && targetNode.Content.IsReference)
             {
                 var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
@@ -301,13 +323,9 @@ namespace SiliconStudio.Presentation.Quantum
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                        var actualPath = targetNodePath.PushIndex(reference.Index);
-                        if (Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
-                        {
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
-                            AddChild(observableNode);
-                            observableNode.Initialize();
-                        }
+                        var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                        AddChild(observableNode);
+                        observableNode.Initialize();
                     }
                 }
             }
@@ -367,7 +385,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
-            OnPropertyChanging(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanging(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
@@ -390,7 +408,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 DisplayName = DisplayNameProvider();
             }
-            OnPropertyChanged(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanged(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
         }
 
         /// <summary>
@@ -523,7 +541,7 @@ namespace SiliconStudio.Presentation.Quantum
                     return Equals(e.Index, Index);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:
-                    return HasList || HasDictionary; // TODO: probably not sufficent
+                    return HasCollection || HasDictionary; // TODO: probably not sufficent
                 default:
                     throw new ArgumentOutOfRangeException();
             }

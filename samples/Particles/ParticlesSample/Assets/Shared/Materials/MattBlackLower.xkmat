@@ -5,12 +5,12 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: c7b3433f-254a-4137-bec4-e700537fc0a1/5e7a5dcf-d029-4c1c-9980-4e852dc371fe:Textures/Lower [Normal]
+            Texture: 5e7a5dcf-d029-4c1c-9980-4e852dc371fe:Textures/normalmapLower
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.5
@@ -22,12 +22,9 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 0.386792
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: f6806d22-efd7-4925-9310-416031934145
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 25ab9af3-bc68-4c85-9334-272de0225c69
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 6d6bacc8-ecb8-4188-8f39-57fe966b0d6e
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

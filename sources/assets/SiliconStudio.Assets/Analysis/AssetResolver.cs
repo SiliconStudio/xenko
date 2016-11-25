@@ -16,9 +16,9 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Delegate to test if an asset id is already used.
         /// </summary>
-        /// <param name="guid">The unique identifier.</param>
+        /// <param name="id">The unique identifier.</param>
         /// <returns><c>true</c> if an asset id is already used, <c>false</c> otherwise.</returns>
-        public delegate bool ContainsAssetWithIdDelegate(Guid guid);
+        public delegate bool ContainsAssetWithIdDelegate(AssetId id);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetResolver"/> class.
@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="containsAssetWithId">The delegate used to check if an asset identifier is already used.</param>
         public AssetResolver(NamingHelper.ContainsLocationDelegate containsLocation, ContainsAssetWithIdDelegate containsAssetWithId)
         {
-            ExistingIds = new HashSet<Guid>();
+            ExistingIds = new HashSet<AssetId>();
             ExistingLocations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             ContainsLocation = containsLocation;
             ContainsAssetWithId = containsAssetWithId;
@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Analysis
         /// Gets the asset ids already used.
         /// </summary>
         /// <value>The existing ids.</value>
-        public HashSet<Guid> ExistingIds { get; }
+        public HashSet<AssetId> ExistingIds { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to always generate a new id on <see cref="RegisterId"/>.
@@ -94,13 +94,13 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="assetId">The asset identifier.</param>
         /// <param name="newGuid">The new unique identifier if an asset has already been registered with the same id.</param>
         /// <returns><c>true</c> if the asset id is already in used. <paramref name="newGuid" /> contains a new guid, <c>false</c> otherwise.</returns>
-        public bool RegisterId(Guid assetId, out Guid newGuid)
+        public bool RegisterId(AssetId assetId, out AssetId newGuid)
         {
             newGuid = assetId;
             var result = AlwaysCreateNewId || IsContainingId(assetId);
             if (result)
             {
-                newGuid = Guid.NewGuid();
+                newGuid = AssetId.New();
             }
             ExistingIds.Add(newGuid);
             return result;
@@ -135,15 +135,15 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Checks whether the <paramref name="guid"/> is already contained.
+        /// Checks whether the <paramref name="id"/> is already contained.
         /// </summary>
-        private bool IsContainingId(Guid guid)
+        private bool IsContainingId(AssetId id)
         {
-            if (ExistingIds.Contains(guid))
+            if (ExistingIds.Contains(id))
             {
                 return true;
             }
-            return ContainsAssetWithId?.Invoke(guid) ?? false;
+            return ContainsAssetWithId?.Invoke(id) ?? false;
         }
 
         /// <summary>

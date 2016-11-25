@@ -3,22 +3,20 @@ Id: ed4d6771-9481-4867-b85a-9d04280baba5
 Tags: []
 Source: ../../Resources/character_template_3head.ssae
 NodeNames:
-    - root
-    - hip
-    - body
-    - head
-    - hair
-    - upperarm_r
-    - arm_r
-    - object1
-    - object2
-    - upperarm_l
-    - arm_l
-    - object3
-    - tight_l
-    - leg_l
-    - tight_r
-    - leg_r
-    - shadow
-~SourceHashes:
-    ../../Resources/character_template_3head.ssae: 59c2c164cb9719b29d02cf9a8254b204
+    821b71fda8e75ada747b8a0057a8d766: root
+    e8207708d543f7d1bdef8c04d0d305a7: hip
+    314dffc5fac019a597a83c00b44225a1: body
+    7a5670e29eb536a49c25f2200be1851d: head
+    744d8cf6b57348f768cea329ddea871f: hair
+    bb192fa5886c77dfdcf585cffa3631d3: upperarm_r
+    f67dece42a66cf49b7153c507bedc8b9: arm_r
+    11c89d1477f24167578bea2b96c5b7b2: object1
+    cf0ac131f8596eebf141e9563d744396: object2
+    76d150d3c873e2132b58638218df289a: upperarm_l
+    589a86a6236a3d7c84444fbef20df255: arm_l
+    4f4390444f7a0ca55c72b22364049021: object3
+    2c42ff226e7766f7198a5e30805db848: tight_l
+    05b5dfb1df628f4ea115a3410d8cc001: leg_l
+    78529358c99597382fa842949f692c50: tight_r
+    0432bf2d22407df184db97fc432da41a: leg_r
+    db20d3b2e466e51962df5b94fd2d37dc: shadow

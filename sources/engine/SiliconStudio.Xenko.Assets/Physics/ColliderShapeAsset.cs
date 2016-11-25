@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 {
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(PhysicsColliderShape))]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
@@ -113,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             foreach (var shapeDesc in ColliderShapes.OfType<ConvexHullColliderShapeDesc>())
             {
                 var reference = AttachedReferenceManager.GetAttachedReference(shapeDesc.Model);
-                yield return new AssetReference<Asset>(reference.Id, reference.Url);
+                yield return new AssetReference(reference.Id, reference.Url);
             }
         }
     }

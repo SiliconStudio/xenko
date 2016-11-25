@@ -31,9 +31,9 @@ namespace SiliconStudio.Presentation.Services
 
         public bool UndoRedoInProgress { get; private set; }
 
-        public Task UndoRedoCompletion => undoRedoCompletion?.Task ?? Task.FromResult(0);
+        public Task UndoRedoCompletion => undoRedoCompletion?.Task ?? Task.CompletedTask;
 
-        public Task TransactionCompletion => transactionCompletion?.Task ?? Task.FromResult(0);
+        public Task TransactionCompletion => transactionCompletion?.Task ?? Task.CompletedTask;
 
         public event EventHandler<TransactionEventArgs> Done { add { stack.TransactionCompleted += value; } remove { stack.TransactionCompleted -= value; } }
 

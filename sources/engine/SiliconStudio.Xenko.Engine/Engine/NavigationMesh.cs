@@ -120,12 +120,12 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
+        internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>
         {
             private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
             private DataSerializer<BoundingBox> boundingBoxSerializer;
 
-            public void Initialize(SerializerSelector serializerSelector)
+            public override void Initialize(SerializerSelector serializerSelector)
             {
                 boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
                 tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();

@@ -16,7 +16,7 @@ Example of use:
     <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
     <SiliconStudioStoreUrl Condition="'$(SiliconStudioStoreUrl)' == ''">https://store.xenko.com</SiliconStudioStoreUrl>
-    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe</AdvancedInstallerPath>
+    <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 13.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
   <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />

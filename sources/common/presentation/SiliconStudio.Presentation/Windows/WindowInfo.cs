@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Windows
 {

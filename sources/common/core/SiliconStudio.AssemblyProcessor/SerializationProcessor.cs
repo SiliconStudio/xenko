@@ -5,9 +5,10 @@ namespace SiliconStudio.AssemblyProcessor
 {
     internal class SerializationProcessor : IAssemblyDefinitionProcessor
     {
-        private Action<string> sourceCodeRegisterAction;
+        public delegate void RegisterSourceCode(string code, string name = null);
+        private RegisterSourceCode sourceCodeRegisterAction;
 
-        public SerializationProcessor(Action<string> sourceCodeRegisterAction)
+        public SerializationProcessor(RegisterSourceCode sourceCodeRegisterAction)
         {
             this.sourceCodeRegisterAction = sourceCodeRegisterAction;
         }
@@ -15,7 +16,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             var serializerSourceCode = ComplexSerializerGenerator.GenerateSerializationAssembly(context.AssemblyResolver, context.Assembly, context.Log);
-            sourceCodeRegisterAction(serializerSourceCode);
+            sourceCodeRegisterAction(serializerSourceCode, "DataSerializers");
 
             return true;
         }

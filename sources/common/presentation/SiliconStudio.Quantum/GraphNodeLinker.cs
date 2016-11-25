@@ -41,7 +41,7 @@ namespace SiliconStudio.Quantum
                 base.VisitNode(node, currentPath);
             }
 
-            public override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
             {
                 IGraphNode targetNodeParent;
                 if (VisitedLinks.TryGetValue(node, out targetNodeParent))
@@ -50,7 +50,8 @@ namespace SiliconStudio.Quantum
                     {
                         if (ShouldVisitNode(child.Content as MemberContent, child))
                         {
-                            VisitedLinks.Add(child, targetNodeParent?.GetChild(child.Name));
+                            string name = child.Name;
+                            VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));
                         }
                     }
                 }
@@ -166,7 +167,7 @@ namespace SiliconStudio.Quantum
                 return targetNode.Content.Reference as ObjectReference;
 
             var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
-            return targetReference != null && targetReference.Indices.Contains(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
+            return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }
 }

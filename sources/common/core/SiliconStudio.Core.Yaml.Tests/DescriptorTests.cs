@@ -50,8 +50,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Tests
 {
@@ -79,10 +79,10 @@ namespace SiliconStudio.Core.Yaml.Tests
 
             public ICollection<string> CollectionReadOnly { get; private set; }
 
-            [YamlIgnore]
+            [DataMemberIgnore]
             public string DontSerialize { get; set; }
 
-            [YamlMember("Item1")]
+            [DataMember("Item1")]
             public string ItemRenamed1 { get; set; }
 
             // This property is renamed to Item2 by an external attribute
@@ -101,17 +101,16 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestObjectDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
+            var factory = new TypeDescriptorFactory(attributeRegistry);
 
             // Rename ItemRenamed2 to Item2
-            attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new YamlMemberAttribute("Item2"));
+            attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new DataMemberAttribute("Item2"));
 
-            var descriptor = new ObjectDescriptor(attributeRegistry, typeof(TestObject), false, new DefaultNamingConvention());
-            descriptor.Initialize();
+            var descriptor = new ObjectDescriptor(factory, typeof(TestObject), false, new DefaultNamingConvention());
+            descriptor.Initialize(new DefaultKeyComparer());
 
             // Verify members
             Assert.AreEqual(8, descriptor.Count);
-
-            descriptor.SortMembers(new DefaultKeyComparer());
 
             // Check names and their orders
             Assert.AreEqual(descriptor.Members.Select(memberDescriptor => memberDescriptor.Name), new[]
@@ -129,29 +128,29 @@ namespace SiliconStudio.Core.Yaml.Tests
             var instance = new TestObject {Name = "Yes", Property = "property"};
 
             // Check field accessor
-            Assert.AreEqual("Yes", descriptor["Name"].Get(instance));
-            descriptor["Name"].Set(instance, "No");
+            Assert.AreEqual("Yes", descriptor[nameof(TestObject.Name)].Get(instance));
+            descriptor[nameof(TestObject.Name)].Set(instance, "No");
             Assert.AreEqual("No", instance.Name);
 
             // Check property accessor
-            Assert.AreEqual("property", descriptor["Property"].Get(instance));
-            descriptor["Property"].Set(instance, "property1");
+            Assert.AreEqual("property", descriptor[nameof(TestObject.Property)].Get(instance));
+            descriptor[nameof(TestObject.Property)].Set(instance, "property1");
             Assert.AreEqual("property1", instance.Property);
 
             // Check ShouldSerialize
-            Assert.True(descriptor["Name"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.Name)].ShouldSerialize(instance));
 
-            Assert.False(descriptor["Value"].ShouldSerialize(instance));
+            Assert.False(descriptor[nameof(TestObject.Value)].ShouldSerialize(instance));
             instance.Value = 1;
-            Assert.True(descriptor["Value"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.Value)].ShouldSerialize(instance));
 
-            Assert.False(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.False(descriptor[nameof(TestObject.DefaultValue)].ShouldSerialize(instance));
             instance.DefaultValue++;
-            Assert.True(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.True(descriptor[nameof(TestObject.DefaultValue)].ShouldSerialize(instance));
 
             // Check HasSet
-            Assert.True(descriptor["Collection"].HasSet);
-            Assert.False(descriptor["CollectionReadOnly"].HasSet);
+            Assert.True(descriptor[nameof(TestObject.Collection)].HasSet);
+            Assert.False(descriptor[nameof(TestObject.CollectionReadOnly)].HasSet);
         }
 
         public class TestObjectNamingConvention
@@ -160,7 +159,7 @@ namespace SiliconStudio.Core.Yaml.Tests
 
             public string ThisIsCamelName { get; set; }
 
-            [YamlMember("myname")]
+            [DataMember("myname")]
             public string CustomName { get; set; }
         }
 
@@ -168,10 +167,9 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestObjectWithCustomNamingConvention()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new ObjectDescriptor(attributeRegistry, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
-            descriptor.Initialize();
-
-            descriptor.SortMembers(new DefaultKeyComparer());
+            var factory = new TypeDescriptorFactory(attributeRegistry);
+            var descriptor = new ObjectDescriptor(factory, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
+            descriptor.Initialize(new DefaultKeyComparer());
 
             // Check names and their orders
             Assert.AreEqual(descriptor.Members.Select(memberDescriptor => memberDescriptor.Name), new[]
@@ -194,25 +192,26 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestCollectionDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new CollectionDescriptor(attributeRegistry, typeof(List<string>), false, new DefaultNamingConvention());
-            descriptor.Initialize();
+            var factory = new TypeDescriptorFactory(attributeRegistry);
+            var descriptor = new CollectionDescriptor(factory, typeof(List<string>), false, new DefaultNamingConvention());
+            descriptor.Initialize(new DefaultKeyComparer());
 
             // No Capacity as a member
             Assert.AreEqual(0, descriptor.Count);
             Assert.True(descriptor.IsPureCollection);
             Assert.AreEqual(typeof(string), descriptor.ElementType);
 
-            descriptor = new CollectionDescriptor(attributeRegistry, typeof(NonPureCollection), false,
+            descriptor = new CollectionDescriptor(factory, typeof(NonPureCollection), false,
                 new DefaultNamingConvention());
-            descriptor.Initialize();
+            descriptor.Initialize(new DefaultKeyComparer());
 
             // Has name as a member
             Assert.AreEqual(1, descriptor.Count);
             Assert.False(descriptor.IsPureCollection);
             Assert.AreEqual(typeof(int), descriptor.ElementType);
 
-            descriptor = new CollectionDescriptor(attributeRegistry, typeof(ArrayList), false, new DefaultNamingConvention());
-            descriptor.Initialize();
+            descriptor = new CollectionDescriptor(factory, typeof(ArrayList), false, new DefaultNamingConvention());
+            descriptor.Initialize(new DefaultKeyComparer());
 
             // No Capacity
             Assert.AreEqual(0, descriptor.Count);
@@ -232,18 +231,19 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestDictionaryDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new DictionaryDescriptor(attributeRegistry, typeof(Dictionary<int, string>), false,
+            var factory = new TypeDescriptorFactory(attributeRegistry);
+            var descriptor = new DictionaryDescriptor(factory, typeof(Dictionary<int, string>), false,
                 new DefaultNamingConvention());
-            descriptor.Initialize();
+            descriptor.Initialize(new DefaultKeyComparer());
 
             Assert.AreEqual(0, descriptor.Count);
             Assert.True(descriptor.IsPureDictionary);
             Assert.AreEqual(typeof(int), descriptor.KeyType);
             Assert.AreEqual(typeof(string), descriptor.ValueType);
 
-            descriptor = new DictionaryDescriptor(attributeRegistry, typeof(NonPureDictionary), false,
+            descriptor = new DictionaryDescriptor(factory, typeof(NonPureDictionary), false,
                 new DefaultNamingConvention());
-            descriptor.Initialize();
+            descriptor.Initialize(new DefaultKeyComparer());
             Assert.AreEqual(1, descriptor.Count);
             Assert.False(descriptor.IsPureDictionary);
             Assert.AreEqual(typeof(float), descriptor.KeyType);
@@ -254,8 +254,9 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestArrayDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new ArrayDescriptor(attributeRegistry, typeof(int[]), new DefaultNamingConvention());
-            descriptor.Initialize();
+            var factory = new TypeDescriptorFactory(attributeRegistry);
+            var descriptor = new ArrayDescriptor(factory, typeof(int[]), false, new DefaultNamingConvention());
+            descriptor.Initialize(new DefaultKeyComparer());
 
             Assert.AreEqual(0, descriptor.Count);
             Assert.AreEqual(typeof(int), descriptor.ElementType);
@@ -271,7 +272,8 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestPrimitiveDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new PrimitiveDescriptor(attributeRegistry, typeof(int), new DefaultNamingConvention());
+            var factory = new TypeDescriptorFactory(attributeRegistry);
+            var descriptor = new PrimitiveDescriptor(factory, typeof(int), false, new DefaultNamingConvention());
             Assert.AreEqual(0, descriptor.Count);
 
             Assert.True(PrimitiveDescriptor.IsPrimitive(typeof(MyEnum)));

@@ -30,9 +30,27 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 BoundingBox.Merge(ref BoundingBox, ref point, out BoundingBox);
             }
 
-            // Send indices
+            // Copy indices with offset applied
             foreach (int index in other.Indices)
                 Indices.Add(index + vbase);
+        }
+
+        public void AppendArrays(Vector3[] vertices, int[] indices, Matrix objectTransform)
+        {
+            // Copy vertices
+            int vbase = Points.Count;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var vertex = Vector3.Transform(vertices[i], objectTransform).XYZ();
+                Points.Add(vertex);
+                BoundingBox.Merge(ref BoundingBox, ref vertex, out BoundingBox);
+            }
+
+            // Copy indices with offset applied
+            foreach (int index in indices)
+            {
+                Indices.Add(index + vbase);
+            }
         }
 
         public void AppendArrays(Vector3[] vertices, int[] indices)
@@ -45,7 +63,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 BoundingBox.Merge(ref BoundingBox, ref vertices[i], out BoundingBox);
             }
 
-            // Send indices
+            // Copy indices with offset applied
             foreach (int index in indices)
             {
                 Indices.Add(index + vbase);
@@ -69,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 BoundingBox.Merge(ref BoundingBox, ref point.Position, out BoundingBox);
             }
 
-            // Send indices
+            // Copy indices with offset applied
             for (int i = 0; i < meshData.Indices.Length; i++)
             {
                 Indices.Add(meshData.Indices[i] + vbase);

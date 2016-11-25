@@ -116,7 +116,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     var outputBuffer = new byte[target];
                     var buffer = new float[frameSize];
                     var count = 0;
-                    for (;;)
+                    var length = reader.BaseStream.Length; // Cache the length, because this getter is expensive to use
+                    for (var position = 0; position < length; position += sizeof(float))
                     {
                         if (count == frameSize) //flush
                         {
@@ -133,8 +134,6 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
                         buffer[count] = reader.ReadSingle();
                         count++;
-
-                        if (reader.BaseStream.Position == reader.BaseStream.Length) break;
                     }
 
                     if (count > 0) //flush

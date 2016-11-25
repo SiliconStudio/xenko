@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Reflection
 {
     public static class TypeHelper
     {
-        public static bool IsCollection(Type type)
+        public static bool IsCollection(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();
@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             }
 
-            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(typeInfo))
+            if (typeof(IList).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Reflection
             return false;
         }
 
-        public static bool IsDictionary(Type type)
+        public static bool IsDictionary(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();

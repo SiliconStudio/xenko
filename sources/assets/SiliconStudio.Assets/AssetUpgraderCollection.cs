@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets
         public AssetUpgraderCollection(Type assetType, PackageVersion currentVersion)
         {
             this.currentVersion = currentVersion;
-            AssetRegistry.IsAssetType(assetType, true);
+            AssetRegistry.IsAssetOrPackageType(assetType, true);
             AssetType = assetType;
         }
 

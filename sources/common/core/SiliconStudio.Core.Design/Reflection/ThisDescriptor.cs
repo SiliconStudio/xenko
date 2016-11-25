@@ -12,14 +12,14 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class ThisDescriptor : MemberDescriptorBase
     {
-        public static readonly ThisDescriptor Default = new ThisDescriptor(TypeDescriptorFactory.Default, "this");
+        public static readonly ThisDescriptor Default = new ThisDescriptor("this");
 
-        public ThisDescriptor(ITypeDescriptorFactory factory, string name)
-            : base(factory, name)
+        public ThisDescriptor(string name)
+            : base(name)
         {
         }
 
-        public override Type Type { get { return typeof(Object); } }
+        public override Type Type => typeof(object);
 
         public override object Get(object thisObject)
         {
@@ -31,7 +31,9 @@ namespace SiliconStudio.Core.Reflection
             throw new NotSupportedException();
         }
 
-        public override bool HasSet { get { return false; } }
+        public override bool IsPublic => false;
+
+        public override bool HasSet => false;
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
         {

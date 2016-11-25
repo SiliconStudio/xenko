@@ -255,11 +255,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <summary>
     /// Data serializer for typed enum.
     /// </summary>
-    public unsafe class EnumSerializer<T> : DataSerializer<T>, IDataSerializerInitializer where T : struct
+    public unsafe class EnumSerializer<T> : DataSerializer<T> where T : struct
     {
         private int EnumSize;
 
-        public void Initialize(SerializerSelector serializerSelector)
+        public override void Initialize(SerializerSelector serializerSelector)
         {
             // Use Marshal SizeOf to avoid AOT issues on iOS
             EnumSize = Marshal.SizeOf(Enum.GetUnderlyingType(typeof(T)));

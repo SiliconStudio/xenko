@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     // create an texture asset.
                     var textureAsset = new TextureAsset
                     {
-                        Id = Guid.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
+                        Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
                         Alpha = asset.Alpha,
                         Format = asset.Format,
                         GenerateMipmaps = asset.GenerateMipmaps,
@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     Texture texture = null;
                     if (textureUrl != null)
                     {
-                        texture = AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, textureUrl);
+                        texture = AttachedReferenceManager.CreateProxyObject<Texture>(AssetId.Empty, textureUrl);
                     }
                     else
                     {
