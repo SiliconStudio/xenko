@@ -257,10 +257,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public VisualScriptCompilerResult Compile(AssetItem assetItem)
         {
-            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath();
+            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
 
             var compilerOptions = new VisualScriptCompilerOptions
             {
+                FilePath = generatedAbsolutePath,
                 Class = Path.GetFileNameWithoutExtension(generatedAbsolutePath),
             };
 

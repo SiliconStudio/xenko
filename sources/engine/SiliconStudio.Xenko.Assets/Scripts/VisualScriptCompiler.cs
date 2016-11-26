@@ -484,6 +484,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public class VisualScriptCompilerOptions
     {
+        public string FilePath { get; set; }
+
         public string DefaultNamespace { get; set; }
 
         public string Class { get; set; }
@@ -606,7 +608,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             // Generate actual source code
             result.GeneratedSource = compilationUnit.ToFullString();
-            result.SyntaxTree = SyntaxTree(compilationUnit);
+            result.SyntaxTree = SyntaxTree(compilationUnit, path: options.FilePath);
 
             return result;
         }
