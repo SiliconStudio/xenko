@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.TextureConverter.TexLibraries
 {
@@ -22,7 +23,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </summary>
         public ArrayTexLib() { }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request)
         {
             switch (request.Type)
             {

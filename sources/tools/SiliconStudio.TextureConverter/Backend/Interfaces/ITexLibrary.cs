@@ -19,6 +19,16 @@ namespace SiliconStudio.TextureConverter
         /// </returns>
         bool CanHandleRequest(TexImage image, IRequest request);
 
+        /// <summary>
+        /// Determines whether this instance can handle the request on the specified image format.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="request">The request.</param>
+        /// <returns>
+        ///   <c>true</c> if this instance [can handle request] the specified image; otherwise, <c>false</c>.
+        /// </returns>
+        bool CanHandleRequest(PixelFormat format, IRequest request);
+
 
         /// <summary>
         /// Executes the specified request on the specified image.

@@ -124,7 +124,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             UpdateImage(image, (DxtTextureLibraryData)image.LibraryData[this]);
         }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request)
         {
             switch (request.Type)
             {
@@ -134,14 +136,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Compressing:
                     CompressingRequest compress = (CompressingRequest)request;
-                    return SupportFormat(compress.Format) && SupportFormat(image.Format);
+                    return SupportFormat(compress.Format) && SupportFormat(format);
 
                 case RequestType.Converting:
                     ConvertingRequest converting = (ConvertingRequest)request;
-                    return SupportFormat(converting.Format) && SupportFormat(image.Format);
+                    return SupportFormat(converting.Format) && SupportFormat(format);
 
                 case RequestType.Export:
-                    return SupportFormat(image.Format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
+                    return SupportFormat(format) && Path.GetExtension(((ExportRequest)request).FilePath).Equals(".dds");
 
                 case RequestType.Rescaling:
                     RescalingRequest rescale = (RescalingRequest)request;
@@ -151,7 +153,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         rescale.Filter == Filter.Rescaling.Nearest;
 
                 case RequestType.Decompressing:
-                    return SupportFormat(image.Format);
+                    return SupportFormat(format);
 
                 case RequestType.PreMultiplyAlpha:
                 case RequestType.MipMapsGeneration:
