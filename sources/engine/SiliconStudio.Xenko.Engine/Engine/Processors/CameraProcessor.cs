@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
@@ -55,6 +56,26 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 }
 
                 Cameras.Add(camera);
+            }
+
+            // Assign cameras to camera slots based on name
+            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor as SceneGraphicsCompositorLayers;
+            if (graphicsCompositor != null)
+            {
+                foreach (var cameraSlot in graphicsCompositor.Cameras)
+                {
+                    cameraSlot.Camera = null;
+
+                    // Select the first matching camera
+                    foreach (var camera in Cameras)
+                    {
+                        if (cameraSlot.Name == camera.Name)
+                        {
+                            cameraSlot.Camera = camera;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

@@ -81,10 +81,10 @@ namespace SiliconStudio.Xenko.Engine
                 SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(InitialSceneUrl));
             }
 
-            //if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
-            //{
-            //    graphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
-            //}
+            if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
+            {
+                graphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+            }
 
             if (MainRenderFrame == null)
             {
