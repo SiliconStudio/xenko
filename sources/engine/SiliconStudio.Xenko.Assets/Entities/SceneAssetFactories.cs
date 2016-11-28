@@ -49,20 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             lightEntity.Transform.Position = new Vector3(0, 2.0f, 0);
             lightEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(-70)) * Quaternion.RotationY(MathUtil.DegreesToRadians(30));
 
-            var sceneAsset = new SceneAsset
-            {
-                SceneSettings =
-                {
-                    // Setup Graphics Compositor
-                    GraphicsCompositor = new SceneGraphicsCompositorLayers
-                    {
-                        Cameras =
-                        {
-                            cameraEntity.Get<CameraComponent>(),
-                        },
-                    }
-                }
-            };
+            var sceneAsset = new SceneAsset();
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(cameraEntity));
             sceneAsset.Hierarchy.RootPartIds.Add(cameraEntity.Id);
@@ -102,11 +89,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(ambientLight));
             sceneAsset.Hierarchy.RootPartIds.Add(ambientLight.Id);
 
-            // Clear and render scene
-            var graphicsCompositorLayers = (SceneGraphicsCompositorLayers)sceneAsset.SceneSettings.GraphicsCompositor;
-            graphicsCompositorLayers.Master.Add(new ClearRenderFrameRenderer());
-            graphicsCompositorLayers.Master.Add(new SceneCameraRenderer());
-
             return sceneAsset;
         }
 
@@ -143,39 +125,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new FilmGrain { Enabled = false });
             hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new Vignetting { Enabled = false });
             sceneAsset.SceneSettings.EditorSettings.Mode = hdrSettings;
-
-            // Add separate layer for rendering to HDR
-            var graphicsCompositorLayers = (SceneGraphicsCompositorLayers)sceneAsset.SceneSettings.GraphicsCompositor;
-            graphicsCompositorLayers.Layers.Add(new SceneGraphicsLayer
-            {
-                Output = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR } },
-                Renderers =
-                    {
-                        new ClearRenderFrameRenderer(),
-                        new SceneCameraRenderer(),
-                    }
-            });
-
-            // Also add post effects
-            graphicsCompositorLayers.Master.Add(new SceneEffectRenderer
-            {
-                Effect = new PostProcessingEffects
-                {
-                    // Disable DoF and setup default tone mapping
-                    AmbientOcclusion = { Enabled = false },
-                    DepthOfField = { Enabled = false },
-                    ColorTransforms =
-                        {
-                            Transforms =
-                            {
-                                new ToneMap(),
-                                new FilmGrain { Enabled = false },
-                                new Vignetting { Enabled =  false },
-                            }
-                        }
-                }
-            });
-
+            
             return sceneAsset;
         }
 

@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
 
             // Use this graphics compositor
-            scene.Settings.GraphicsCompositor = compositor;
+            SceneSystem.GraphicsCompositor = compositor;
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

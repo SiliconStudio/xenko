@@ -285,8 +285,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     }
                 }
             };
-            var scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            var scene = new Scene();
             game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+            game.SceneSystem.GraphicsCompositor = graphicsCompositor;
 
             RunGameTest(game);
         }

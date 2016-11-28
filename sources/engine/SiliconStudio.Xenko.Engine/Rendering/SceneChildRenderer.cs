@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine
             using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, output))
             {
                 // Draw scene recursively
-                var graphicsCompositor = GraphicsCompositorOverride ?? sceneInstance.Scene.Settings.GraphicsCompositor;
+                var graphicsCompositor = GraphicsCompositorOverride;
                 graphicsCompositor.Draw(context);
             }
         }

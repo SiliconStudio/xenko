@@ -101,7 +101,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     }
                 }
             };
-            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            Scene = new Scene();
+            SceneSystem.GraphicsCompositor = graphicsCompositor;
 
             Scene.Entities.Add(UIRoot);
             Scene.Entities.Add(Camera);

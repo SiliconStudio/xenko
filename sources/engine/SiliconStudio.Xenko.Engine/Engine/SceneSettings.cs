@@ -24,36 +24,14 @@ namespace SiliconStudio.Xenko.Engine
         public SceneSettings()
         {
             Id = Guid.NewGuid();
-            GraphicsCompositor = new SceneGraphicsCompositorLayers();
+            //GraphicsCompositor = new SceneGraphicsCompositorLayers();
             EditorSettings = new SceneEditorSettings();
-        }
-
-        protected override void Destroy()
-        {
-            if (GraphicsCompositor != null)
-            {
-                GraphicsCompositor.Dispose();
-                GraphicsCompositor = null;
-            }
-
-            base.Destroy();
         }
 
         [DataMember(10)]
         [Display(Browsable = false)]
         [NonOverridable]
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the graphics composer for this scene.
-        /// </summary>
-        /// <value>The graphics composer.</value>
-        /// <userdoc>The compositor in charge of creating the graphic pipeline</userdoc>
-        [DataMember(20)]
-        [Display("Graphics Composition", Expand = ExpandRule.Always)]
-        [NotNull]
-        [Category]
-        public ISceneGraphicsCompositor GraphicsCompositor { get; set; }   // TODO: Should we move this to a special component?
 
         /// <summary>
         /// Gets or sets the editor settings.

@@ -116,29 +116,24 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var multipleRenderFrames = new DirectRenderFrameProvider(RenderFrame.FromTexture(textures, depthBuffer));
 
             // Setup the default rendering pipeline
-            scene = new Scene
+            scene = new Scene();
+            SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+
+            SceneSystem.GraphicsCompositor = new SceneGraphicsCompositorLayers
             {
-                Settings =
+                Cameras = { mainCamera.Get<CameraComponent>() },
+                ModelEffect = "MultipleRenderTargetsEffect",
+                Master =
                 {
-                    GraphicsCompositor = new SceneGraphicsCompositorLayers
+                    Renderers =
                     {
-                        Cameras = { mainCamera.Get<CameraComponent>() },
-                        ModelEffect = "MultipleRenderTargetsEffect",
-                        Master =
-                        {
-                            Renderers =
-                            {
-                                new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                                new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames}, 
-                                new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
-                                new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
-                            }
-                        }
+                        new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
+                        new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames },
+                        new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
+                        new SceneDelegateRenderer(DisplayGBuffer) { Name = "DisplayGBuffer" },
                     }
                 }
             };
-
-            SceneSystem.SceneInstance = new SceneInstance(Services, scene);
         }
 
         private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)

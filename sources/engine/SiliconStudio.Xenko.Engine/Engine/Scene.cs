@@ -32,13 +32,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The settings.</value>
         public SceneSettings Settings { get; }
 
-        protected override void Destroy()
-        {
-            Settings.Dispose();
-
-            base.Destroy();
-        }
-
         public override string ToString()
         {
             return $"Scene {Name}";

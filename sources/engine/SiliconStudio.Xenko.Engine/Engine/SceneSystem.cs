@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Engine
             registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
+            graphicsCompositor = new GraphicsCompositor();
         }
 
         /// <summary>
@@ -66,7 +67,11 @@ namespace SiliconStudio.Xenko.Engine
 
         public string InitialGraphicsCompositorUrl { get; set; }
 
-        public ISceneGraphicsCompositor GraphicsCompositor => graphicsCompositor?.Instance ?? SceneInstance.Scene?.Settings.GraphicsCompositor;
+        public ISceneGraphicsCompositor GraphicsCompositor
+        {
+            get { return graphicsCompositor.Instance; }
+            set { graphicsCompositor.Instance = value; }
+        }
 
         private GraphicsCompositor graphicsCompositor;
 
