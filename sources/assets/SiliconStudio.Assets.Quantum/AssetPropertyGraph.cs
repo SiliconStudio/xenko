@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<IContentNode, OverrideType> previousOverrides = new Dictionary<IContentNode, OverrideType>();
         private readonly Dictionary<IContentNode, ItemId> removedItemIds = new Dictionary<IContentNode, ItemId>();
 
-        protected readonly AssetItem AssetItem;
+        protected readonly Asset Asset;
         private readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
@@ -30,14 +30,14 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
-            if (assetItem == null)
-                throw new ArgumentNullException(nameof(assetItem));
-            AssetItem = assetItem;
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
             Container = container;
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
+            Asset = assetItem.Asset;
             RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
-            ApplyOverrides(RootNode, AssetItem.Overrides);
+            ApplyOverrides(RootNode, assetItem.Overrides);
             nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
@@ -130,11 +130,12 @@ namespace SiliconStudio.Assets.Quantum
             return target;
         }
 
-        public void PrepareForSave(ILogger logger)
+        public void PrepareForSave(ILogger logger, AssetItem assetItem)
         {
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(AssetItem.Asset);
-            CollectionItemIdsAnalysis.FixupItemIds(AssetItem, logger);
-            AssetItem.Overrides = GenerateOverridesForSerialization(RootNode);
+            if (assetItem.Asset != Asset) throw new ArgumentException($@"The given {nameof(AssetItem)} does not match the asset associated with this instance", nameof(assetItem));
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
+            CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
+            assetItem.Overrides = GenerateOverridesForSerialization(RootNode);
         }
 
         public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
