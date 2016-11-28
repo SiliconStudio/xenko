@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)AssetItem.Asset;
+        public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Asset;
 
         public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
         {

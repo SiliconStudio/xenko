@@ -43,7 +43,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            CurrentVersion = 3;
+            //CurrentVersion = 3;
+            CurrentVersion = 4; // Fix normal maps
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 

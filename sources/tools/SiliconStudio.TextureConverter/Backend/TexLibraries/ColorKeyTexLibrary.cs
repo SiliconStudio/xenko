@@ -22,10 +22,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </summary>
         public ColorKeyTexLibrary() { }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
-        {
-            return request.Type == RequestType.ColorKey;
-        }
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request) => request.Type == RequestType.ColorKey;
 
         public void Execute(TexImage image, IRequest request)
         {
