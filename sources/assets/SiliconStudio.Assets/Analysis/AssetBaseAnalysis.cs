@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="log">The log to output the result of the validation.</param>
         public override void Run(ILogger log)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             ValidateAssetBase(log);
         }
@@ -43,7 +44,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns>A collection that contains all valid assets.</returns>
         public HashSet<Asset> ValidateAssetBase(ILogger log)
         {
-            var invalidAssets = new HashSet<Guid>();
+            var invalidAssets = new HashSet<AssetId>();
             var validAssets = new HashSet<Asset>();
 
             foreach (var package in Session.Packages)
@@ -110,8 +111,8 @@ namespace SiliconStudio.Assets.Analysis
         /// log</exception>
         public List<Asset> ValidateAssetBase(AssetItem assetItem, ILogger log)
         {
-            if (assetItem == null) throw new ArgumentNullException("asset");
-            if (log == null) throw new ArgumentNullException("log");
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             var baseItems = new List<Asset>();
 
@@ -126,7 +127,7 @@ namespace SiliconStudio.Assets.Analysis
 
             // 2) Iterate on each base and perform validation
             var currentAsset = assetItem;
-            while (currentAsset.Asset.Base != null)
+            while (currentAsset.Asset.Archetype != null)
             {
                 // 2.1) Check that asset has not been already processed
                 if (baseItems.Contains(currentAsset.Asset))
@@ -140,18 +141,18 @@ namespace SiliconStudio.Assets.Analysis
                 // 
 
                 // 2.2) Check that base asset is existing
-                var baseAssetItem = Session.FindAsset(currentAsset.Asset.Base.Id);
+                var baseAssetItem = Session.FindAsset(currentAsset.Asset.Archetype.Id);
                 if (baseAssetItem == null)
                 {
                     AssetLogMessage error;
 
                     // If an asset with the same location is registered
                     // Add this asset as a reference in the error message
-                    var newBaseAsset = Session.FindAsset(currentAsset.Asset.Base.Location);
+                    var newBaseAsset = Session.FindAsset(currentAsset.Asset.Archetype.Location);
                     if (newBaseAsset != null)
                     {
                         // If asset location exist, log a message with the new location, but don't perform any automatic fix
-                        error = new AssetLogMessage(currentAsset.Package, currentAsset.ToReference(), LogMessageType.Error, AssetMessageCode.BaseChanged, currentAsset.Asset.Base.Location);
+                        error = new AssetLogMessage(currentAsset.Package, currentAsset.ToReference(), LogMessageType.Error, AssetMessageCode.BaseChanged, currentAsset.Asset.Archetype.Location);
                         error.Related.Add(newBaseAsset.ToReference());
                     }
                     else
@@ -161,7 +162,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
 
                     // Set the member to Base.
-                    error.Member = TypeDescriptorFactory.Default.Find(typeof(Asset))["Base"];
+                    error.Member = TypeDescriptorFactory.Default.Find(typeof(Asset)).TryGetMember("Base");
 
                     // Log the error
                     log.Log(error);
@@ -179,33 +180,6 @@ namespace SiliconStudio.Assets.Analysis
                 baseItems.Add(currentAsset.Asset);
             }
             return baseItems;
-        }
-
-        private class AssetVisitor : DataVisitorBase
-        {
-            private readonly Asset rootAsset;
-            private readonly List<Asset> assets = new List<Asset>();
-
-            public AssetVisitor(ITypeDescriptorFactory typeDescriptorFactory, Asset rootAsset)
-                : base(typeDescriptorFactory)
-            {
-                this.rootAsset = rootAsset;
-            }
-
-            public List<Asset> Collect()
-            {
-                Visit(rootAsset);
-                return assets;
-            }
-
-            public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
-            {
-                if (obj is Asset && !ReferenceEquals(obj, rootAsset))
-                {
-                    assets.Add((Asset)obj);
-                }
-                base.VisitObject(obj, descriptor, visitMembers);
-            }
         }
     }
 }

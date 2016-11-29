@@ -132,12 +132,12 @@ namespace SiliconStudio.Assets.Tests
 
         public void TestUpgrade(MyUpgradedAsset asset, bool needMigration)
         {
-            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), "");
+            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), DirectoryTestBase);
             var outputFilePath = loadingFilePath.FilePath.FullPath;
-            AssetSerializer.Save(outputFilePath, asset, null);
+            AssetFileSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
-            var context = new AssetMigrationContext(null, logger);
+            var context = new AssetMigrationContext(null, loadingFilePath.ToReference(), loadingFilePath.FilePath.ToWindowsPath(), logger);
             Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(context, loadingFilePath, "TestPackage"), needMigration);
 
             if (needMigration)
@@ -148,7 +148,7 @@ namespace SiliconStudio.Assets.Tests
 
             Console.WriteLine(File.ReadAllText(outputFilePath).Trim());
 
-            var upgradedAsset = AssetSerializer.Load<MyUpgradedAsset>(outputFilePath);
+            var upgradedAsset = AssetFileSerializer.Load<MyUpgradedAsset>(outputFilePath).Asset;
             AssertUpgrade(upgradedAsset);
         }
 

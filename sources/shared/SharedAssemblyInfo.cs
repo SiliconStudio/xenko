@@ -6,7 +6,7 @@ using System.Reflection;
 using SiliconStudio;
 
 [assembly:AssemblyCompany("Silicon Studio")]
-[assembly:AssemblyCopyright("Copyright © 2011 Silicon Studio")]
+[assembly:AssemblyCopyright("Copyright © 2011-2016 Silicon Studio")]
 
 [assembly:AssemblyTrademark("")]
 [assembly:AssemblyCulture("")]
@@ -35,7 +35,7 @@ namespace SiliconStudio
         /// <summary>
         /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.
         /// </summary>
-        public const string CurrentAssemblyAsText = "1.9.0";
+        public const string CurrentAssemblyAsText = "1.9.1";
 
         /// <summary>
         /// The Store current version as text, including pre-release (alpha, beta...) information

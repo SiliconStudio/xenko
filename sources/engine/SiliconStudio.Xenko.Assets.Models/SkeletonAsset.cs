@@ -3,17 +3,18 @@ using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(Skeleton))]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
-    [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
+    [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
     public class SkeletonAsset : Asset
@@ -59,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Otherwise, all the meshes of model are merged and the node information is lost.
         /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
-        [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
+        [DataMember(20)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
         [DataMemberIgnore]

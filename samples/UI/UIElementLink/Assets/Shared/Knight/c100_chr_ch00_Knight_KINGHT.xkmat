@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Texture: c4f96823-f75d-492a-9c52-bd2712b7ada4/1974967c-aebc-4377-ac67-4c2b3feb9a1a:Knight/c100_body_nm
+            Texture: 1974967c-aebc-4377-ac67-4c2b3feb9a1a:Knight/c100_body_nm
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -13,7 +13,7 @@ Attributes:
             Swizzle: null
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 00a65a3b-090e-4f1c-8dfd-8436b09afb06/2b1a0db0-cbee-4059-bebc-db8e0e1f0b4e:Knight/c100_body_cm
+            Texture: 2b1a0db0-cbee-4059-bebc-db8e0e1f0b4e:Knight/c100_body_cm
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -26,12 +26,9 @@ Attributes:
         Intensity: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 92b99bfc-a6a4-4789-ae93-bf434503f054
-        Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
-            ~Id: 3db10614-25a6-45eb-bce8-918b46ca4127
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
-            ~Id: e6a70a15-8c0d-4ac6-a075-fd3ffe9e48b4
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilityImplicit {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

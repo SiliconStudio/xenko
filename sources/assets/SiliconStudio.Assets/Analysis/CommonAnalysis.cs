@@ -7,7 +7,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Analysis
 {
-    internal class CommonAnalysis
+    internal static class CommonAnalysis
     {
         internal static void UpdatePaths(IFileSynchronizable parentFileSync, IEnumerable<AssetReferenceLink> paths, AssetAnalysisParameters parameters)
         {

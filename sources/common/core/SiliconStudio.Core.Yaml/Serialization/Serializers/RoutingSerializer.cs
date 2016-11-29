@@ -44,7 +44,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -53,21 +52,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     internal class RoutingSerializer : IYamlSerializable
     {
-        private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
-        private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
+        private readonly ISerializerFactorySelector serializerSelector;
 
-        public RoutingSerializer()
+        public RoutingSerializer(ISerializerFactorySelector serializerSelector)
         {
-        }
-
-        public void AddSerializer(Type type, IYamlSerializable serializer)
-        {
-            serializers[type] = serializer;
-        }
-
-        public void AddSerializerFactory(IYamlSerializableFactory factory)
-        {
-            factories.Add(factory);
+            if (serializerSelector == null) throw new ArgumentNullException(nameof(serializerSelector));
+            this.serializerSelector = serializerSelector;
         }
 
         public object ReadYaml(ref ObjectContext objectContext)
@@ -76,37 +66,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var instance = objectContext.Instance;
             var typeDescriptorOfValue = instance != null ? objectContext.SerializerContext.FindTypeDescriptor(instance.GetType()) : objectContext.Descriptor;
 
-            var serializer = GetSerializer(objectContext.SerializerContext, typeDescriptorOfValue);
+            var serializer = serializerSelector.GetSerializer(objectContext.SerializerContext, typeDescriptorOfValue);
             return serializer.ReadYaml(ref objectContext);
         }
 
         public void WriteYaml(ref ObjectContext objectContext)
         {
-            var serializer = GetSerializer(objectContext.SerializerContext, objectContext.Descriptor);
+            var serializer = serializerSelector.GetSerializer(objectContext.SerializerContext, objectContext.Descriptor);
             serializer.WriteYaml(ref objectContext);
-        }
-
-        private IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            IYamlSerializable serializer;
-            if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
-            {
-                foreach (var factory in factories)
-                {
-                    serializer = factory.TryCreate(context, typeDescriptor);
-                    if (serializer != null)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (serializer == null)
-            {
-                throw new InvalidOperationException("Unable to find a serializer for the type [{0}]".DoFormat(typeDescriptor.Type));
-            }
-
-            return serializer;
         }
     }
 }

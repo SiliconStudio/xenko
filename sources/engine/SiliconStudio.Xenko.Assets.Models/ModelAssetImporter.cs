@@ -3,16 +3,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
@@ -110,29 +107,9 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             if (entityInfo.Nodes != null)
             {
-                for (int i = 0; i < entityInfo.Nodes.Count; i++)
+                foreach (var node in entityInfo.Nodes)
                 {
-                    var node = entityInfo.Nodes[i];
                     var nodeInfo = new NodeInformation(node.Name, node.Depth, node.Preserve);
-
-                    // Try to keep identifier id consistent
-                    // TODO: We might remove this as we don't expect Skeleton asset to be inherited, but they could
-                    int sameNameAndDepthCount = 0;
-                    for (int j = 0; j < i; j++)
-                    {
-                        var againstNode = entityInfo.Nodes[i];
-                        // If we found a node with the same name and depth, we use a increment a counter
-                        if (againstNode.Name == node.Name && againstNode.Depth == node.Depth)
-                        {
-                            sameNameAndDepthCount++;
-                        }
-                    }
-
-                    var nodeNameKey = nodeInfo.Name + nodeInfo.Depth + ((sameNameAndDepthCount > 0) ? "_" + sameNameAndDepthCount : string.Empty);
-                    var nodeId = ObjectId.FromBytes(Encoding.UTF8.GetBytes(nodeNameKey)).ToGuid();
-
-                    IdentifiableHelper.SetId(nodeInfo, nodeId);
-
                     asset.Nodes.Add(nodeInfo);
                 }
             }
@@ -162,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
         }
 
-        private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo, bool shouldPostFixName, AssetItem skeletonAsset)
+        private static void ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo, bool shouldPostFixName, AssetItem skeletonAsset)
         {
             var asset = new ModelAsset { Source = assetSource };
 
@@ -182,15 +159,13 @@ namespace SiliconStudio.Xenko.Assets.Models
                         var reference = AttachedReferenceManager.CreateProxyObject<Material>(foundMaterial.Id, foundMaterial.Location);
                         modelMaterial.MaterialInstance.Material = reference;
                     }
-                    //todo Instead of null material add a default xenko material
-                    asset.Materials.Add(AttachId(modelMaterial));
+                    asset.Materials.Add(modelMaterial);
                 }
                 //handle the case where during import we imported no materials at all
-                //todo Instead of null material add a default xenko material
                 if (entityInfo.Materials.Count == 0)
                 {
                     var modelMaterial = new ModelMaterial { Name = "Material", MaterialInstance = new MaterialInstance() };
-                    asset.Materials.Add(AttachId(modelMaterial));
+                    asset.Materials.Add(modelMaterial);
                 }
             }
 
@@ -200,17 +175,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""));
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
-            return assetItem;
-        }
-
-        private static ModelMaterial AttachId(ModelMaterial modelMaterial)
-        {
-            // Compute an id for the list item based on the name of the material
-            var materialNameKey = modelMaterial.Name;
-            var modelMaterialId = ObjectId.FromBytes(Encoding.UTF8.GetBytes(materialNameKey)).ToGuid();
-
-            IdentifiableHelper.SetId(modelMaterial, modelMaterialId);
-            return modelMaterial;
         }
 
         private static void ImportMaterials(List<AssetItem> assetReferences, Dictionary<string, MaterialAsset> materials)

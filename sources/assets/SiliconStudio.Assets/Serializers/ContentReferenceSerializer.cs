@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -13,7 +12,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class ContentReferenceSerializer : AssetScalarSerializerBase
     {
         public static readonly ContentReferenceSerializer Default = new ContentReferenceSerializer();
@@ -25,23 +24,16 @@ namespace SiliconStudio.Assets.Serializers
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
-            Guid guid;
+            AssetId guid;
             UFile location;
             Guid referenceId;
-            if (!AssetReference.TryParse(fromScalar.Value, out referenceId, out guid, out location))
+            if (!AssetReference.TryParse(fromScalar.Value, out guid, out location, out referenceId))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
             var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
-
-            // If the referenceId is empty, force its creation, else attach it to the reference
-            if (referenceId == Guid.Empty)
-            {
-
-                IdentifiableHelper.GetId(instance);
-            }
-            else
+            if (referenceId != Guid.Empty)
             {
                 IdentifiableHelper.SetId(instance, referenceId);
             }
@@ -53,8 +45,7 @@ namespace SiliconStudio.Assets.Serializers
             if (attachedReference == null)
                 throw new YamlException($"Unable to extract asset reference from object [{objectContext.Instance}]");
 
-            var referenceId = IdentifiableHelper.GetId(objectContext.Instance);
-            return $"{referenceId}/{attachedReference.Id}:{attachedReference.Url}";
+            return $"{attachedReference.Id}:{attachedReference.Url}";
         }
     }
 }

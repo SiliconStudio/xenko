@@ -3,21 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetContentType(typeof(UILibrary))]
     [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Library")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]    
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "0.0.0";
+        private const string CurrentVersion = "1.9.0-beta01";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.
@@ -28,6 +34,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// Gets the dictionary of publicly exposed controls.
         /// </summary>
         [DataMember(20)]
+        [NonIdentifiableCollectionItems]
         public Dictionary<Guid, string> PublicUIElements { get; } = new Dictionary<Guid, string>();
 
         /// <summary>
@@ -57,18 +64,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             // TODO: make a common base method in AssetCompositeHierarchy - the beginning of the method is similar to CreatePrefabInstance
             var idRemapping = new Dictionary<Guid, Guid>();
-            var instance = (UILibraryAsset)CreateChildAsset(targetLocation, idRemapping);
+            var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, idRemapping);
 
             var rootElementId = idRemapping[elementId];
             if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
-            targetContainer.AddBasePart(instance.Base);
-            instanceId = Guid.NewGuid();
-            foreach (var elementEntry in instance.Hierarchy.Parts)
-            {
-                elementEntry.BasePartInstanceId = instanceId;
-            }
+            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
             result.RootPartIds.Add(rootElementId);

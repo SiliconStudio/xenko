@@ -7,6 +7,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
@@ -15,9 +16,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     /// </summary>
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
-    //[ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true)]
+    [AssetContentType(typeof(Skybox))]
     [AssetCompiler(typeof(SkyboxAssetCompiler))]
-    [Display(100, "Skybox")]
+    [Display(1000, "Skybox")]
     public sealed class SkyboxAsset : Asset
     {
         /// <summary>

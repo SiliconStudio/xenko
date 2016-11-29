@@ -149,13 +149,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             }
         }
 
-        internal class Serializer : DataSerializer<ComputeColorParameters>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
+        internal class Serializer : DataSerializer<ComputeColorParameters>, IDataSerializerGenericInstantiation
         {
 
             private DataSerializer<KeyValuePair<string, IComputeColorParameter>> itemDataSerializer;
 
             /// <inheritdoc/>
-            public void Initialize(SerializerSelector serializerSelector)
+            public override void Initialize(SerializerSelector serializerSelector)
             {
                 itemDataSerializer = serializerSelector.GetSerializer<KeyValuePair<string, IComputeColorParameter>>();
             }

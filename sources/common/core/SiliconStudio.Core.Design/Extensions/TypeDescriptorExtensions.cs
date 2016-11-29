@@ -28,17 +28,6 @@ namespace SiliconStudio.Core.Extensions
             return type.IsAssignableFrom(descriptor.Type);
         }
 
-        public static T GetAttribute<T>(this ITypeDescriptor descriptor, MemberInfo memberInfo) where T : Attribute
-        {
-            return descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberInfo);
-        }
-
-        public static T GetAttribute<T>(this ITypeDescriptor descriptor, IMemberDescriptor memberDescriptor) where T : Attribute
-        {
-            var memberDescriptorBase = memberDescriptor as MemberDescriptorBase;
-            return memberDescriptorBase?.MemberInfo != null ? descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberDescriptorBase.MemberInfo) : null;
-        }
-
         public static IEnumerable<Type> GetInheritedInstantiableTypes(this Type type)
         {
             lock (AllAssemblies)

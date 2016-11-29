@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
 
@@ -42,8 +43,13 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the origin along the X axis. The X side is twice as big.
         /// </userdoc>
         [DataMember(10)]
+        [DataMemberRange(0f, float.MaxValue)]
         [Display("Half X")]
-        public float HalfSideX { get {return halfSideX; } set { halfSideX = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float HalfSideX
+        {
+            get { return halfSideX > MathUtil.ZeroTolerance ? halfSideX : 0; }
+            set { halfSideX = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float halfSideX = 1f;
 
         /// <summary>
@@ -53,8 +59,13 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the origin along the Y axis. The Y side is twice as big.
         /// </userdoc>
         [DataMember(20)]
+        [DataMemberRange(0, float.MaxValue)]
         [Display("Half Y")]
-        public float HalfSideY { get { return halfSideY; } set { halfSideY = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float HalfSideY
+        {
+            get { return halfSideY > MathUtil.ZeroTolerance ? halfSideY : 0; }
+            set { halfSideY = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float halfSideY = 1f;
 
         /// <summary>
@@ -64,8 +75,13 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the origin along the Z axis. The Z side is twice as big.
         /// </userdoc>
         [DataMember(30)]
+        [DataMemberRange(0, float.MaxValue)]
         [Display("Half Z")]
-        public float HalfSideZ { get { return halfSideZ; } set { halfSideZ = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
+        public float HalfSideZ
+        {
+            get { return halfSideZ > MathUtil.ZeroTolerance ? halfSideZ : 0; }
+            set { halfSideZ = value > MathUtil.ZeroTolerance ? value : MathUtil.ZeroTolerance; }
+        }
         private float halfSideZ = 1f;
 
         public override void PreUpdateField(Vector3 position, Quaternion rotation, Vector3 size)
@@ -119,9 +135,9 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
             var isOutside = (Math.Abs(particlePosition.X) > halfSize.X) || (Math.Abs(particlePosition.Y) > halfSize.Y) || (Math.Abs(particlePosition.Z) > halfSize.Z);
 
-            var surfaceX = (particlePosition.X >= 0) ? halfSize.X : -halfSize.X;
-            var surfaceY = (particlePosition.Y >= 0) ? halfSize.Y : -halfSize.Y;
-            var surfaceZ = (particlePosition.Z >= 0) ? halfSize.Z : -halfSize.Z;
+            var surfaceX = particlePosition.X >= 0 ? halfSize.X : -halfSize.X;
+            var surfaceY = particlePosition.Y >= 0 ? halfSize.Y : -halfSize.Y;
+            var surfaceZ = particlePosition.Z >= 0 ? halfSize.Z : -halfSize.Z;
 
             var distX = Math.Abs(particlePosition.X - surfaceX);
             var distY = Math.Abs(particlePosition.Y - surfaceY);
@@ -136,7 +152,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
                 surfaceNormal = new Vector3(surfacePoint.X, 0, 0);
             }
             else
-            if ((distY <= distZ))
+            if (distY <= distZ)
             {
                 // Biggest distance is on the Y axis
                 surfacePoint.Y = surfaceY;

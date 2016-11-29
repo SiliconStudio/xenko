@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets
         /// <param name="package">The package.</param>
         /// <param name="assetId">The assetId of the asset.</param>
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this Package package, Guid assetId)
+        public static AssetItem FindAsset(this Package package, AssetId assetId)
         {
             var packages = package.GetPackagesWithDependencies();
             return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
@@ -167,11 +167,11 @@ namespace SiliconStudio.Assets
         /// Determines whether the specified packages contains an asset by its guid.
         /// </summary>
         /// <param name="packages">The packages.</param>
-        /// <param name="assetGuid">The asset unique identifier.</param>
+        /// <param name="assetId">The asset unique identifier.</param>
         /// <returns><c>true</c> if the specified packages contains asset; otherwise, <c>false</c>.</returns>
-        public static bool ContainsAsset(this IEnumerable<Package> packages, Guid assetGuid)
+        public static bool ContainsAsset(this IEnumerable<Package> packages, AssetId assetId)
         {
-            return packages.Any(package => package.Assets.ContainsById(assetGuid));
+            return packages.Any(package => package.Assets.ContainsById(assetId));
         }
 
         /// <summary>

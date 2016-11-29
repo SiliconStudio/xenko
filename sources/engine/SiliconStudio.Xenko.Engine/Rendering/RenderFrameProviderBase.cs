@@ -8,7 +8,6 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Abstract implementation of <see cref="IRenderFrameProvider"/>.
     /// </summary>
-    [NonIdentifiable] // For now, we disable identifiable for all this class of objects, but we may renable it if they are used in lists
     public abstract class RenderFrameProviderBase : IRenderFrameProvider
     {
         public abstract RenderFrame GetRenderFrame(RenderContext context);

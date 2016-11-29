@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets
     [DataContract("RawAsset")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(RawAssetCompiler))]
-    [Display(105, "Raw Asset")]
+    [Display(1050, "Raw Asset")]
     public sealed class RawAsset : AssetWithSource
     {
         public const string FileExtension = ".xkraw;.pdxraw";

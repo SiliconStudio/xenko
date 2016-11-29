@@ -12,8 +12,11 @@ namespace SiliconStudio.Core.Serialization
     {
         /// <summary>
         /// Enumerates required <see cref="DataSerializer"/> required by this instance of DataSerializer.
-        /// Null is authorized in enumeration (for now).
         /// </summary>
+        /// <remarks>
+        /// The code won't be executed, it will only be scanned for typeof() operands by the assembly processor.
+        /// Null is authorized in enumeration (for now).
+        /// </remarks>
         /// <param name="serializerSelector"></param>
         /// <param name="genericInstantiations"></param>
         /// <returns></returns>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Serialization
@@ -85,7 +86,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns></returns>
-        public static T CreateProxyObject<T>(Guid id, string location) where T : class, new()
+        public static T CreateProxyObject<T>(AssetId id, string location) where T : class, new()
         {
             var result = new T();
             var attachedReference = GetOrCreateAttachedReference(result);
@@ -102,7 +103,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns></returns>
-        public static object CreateProxyObject(Type type, Guid id, string location)
+        public static object CreateProxyObject(Type type, AssetId id, string location)
         {
             ConstructorInfo emptyCtor;
             lock (EmptyCtorCache)

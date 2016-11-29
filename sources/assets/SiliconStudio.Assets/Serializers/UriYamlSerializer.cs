@@ -10,7 +10,7 @@ namespace SiliconStudio.Assets.Serializers
     /// <summary>
     /// A Yaml serializer for <see cref="PackageVersion"/>
     /// </summary>
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     internal class UriYamlSerializer : AssetScalarSerializerBase
     {
         public override bool CanVisit(Type type)

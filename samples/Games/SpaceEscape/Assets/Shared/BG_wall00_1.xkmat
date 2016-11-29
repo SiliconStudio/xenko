@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 8b86aa44-451f-4eb0-94b7-23c23fa28dc3/9cdb2d8a-325e-45d1-ab38-ea1812d7fde3:BG_wall00
+            Texture: 9cdb2d8a-325e-45d1-ab38-ea1812d7fde3:BG_wall00
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -14,4 +14,4 @@ Attributes:
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}
