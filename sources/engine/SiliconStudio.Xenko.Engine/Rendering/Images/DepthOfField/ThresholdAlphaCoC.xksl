@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         float CoCCurrent;
 
         // the epsilon is 0.5% of the -1;1 range of the CoC, which is enough to fix the problem of largely foreground objects getting selected as background.
-        const float CoCCompareEpsilon = 0.01;
+        static const float CoCCompareEpsilon = 0.01;
 
         stage override float4 Shading()
         {
