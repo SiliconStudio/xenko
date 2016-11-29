@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Engine
         public SceneSettings()
         {
             Id = Guid.NewGuid();
-            //GraphicsCompositor = new SceneGraphicsCompositorLayers();
             EditorSettings = new SceneEditorSettings();
         }
 

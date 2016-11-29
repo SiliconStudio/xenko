@@ -20,26 +20,8 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// </summary>
         public SceneEditorSettings()
         {
-            GridColor = (Color3)new Color(180, 180, 180);
-            SceneUnit = 1.0f;
             Mode = new SceneEditorGraphicsModeLDRSettings();
         }
-
-        /// <summary>
-        /// Gets or sets the color of the grid.
-        /// </summary>
-        /// <value>The color of the grid.</value>
-        /// <userdoc>The color of the grid used in scene editor</userdoc>
-        [DataMember(5)]
-        public Color3 GridColor { get; set; }
-
-        /// <summary>
-        /// Gets or sets the scene unit, used to scale entity gizmos and camera speed.
-        /// </summary>
-        /// <value>The color of the background.</value>
-        /// <userdoc>The scene unit, used to scale gizmos and camera speed.</userdoc>
-        [DataMember(7)]
-        public float SceneUnit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use HDR when displaying a scene in the editor.
