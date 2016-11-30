@@ -41,6 +41,7 @@
 
   <ItemGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary)"/>
+    <AndroidJavaLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.jar" />
   </ItemGroup>
 
   <!-- Target to get signed .apk name -->
