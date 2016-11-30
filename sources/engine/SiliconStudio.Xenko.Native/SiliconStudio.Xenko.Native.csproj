@@ -32,7 +32,6 @@
     </Compile>
     <Compile Include="Audio\Celt.cs" />
     <Compile Include="DirectInput\XInputChecker.cs" />
-    <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Navigation\Navigation.cs" />
@@ -89,9 +88,6 @@
     <None Include="Navigation\NavigationBuilder.hpp" />
     <None Include="Navigation\NavigationMesh.cpp" />
     <None Include="Navigation\NavigationMesh.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="GoogleVR\GoogleVR.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
