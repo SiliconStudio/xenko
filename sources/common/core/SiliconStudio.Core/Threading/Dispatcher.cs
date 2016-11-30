@@ -18,6 +18,25 @@ namespace SiliconStudio.Core.Threading
 
         public delegate void ValueAction<T>(ref T obj);
 
+        public class Foo<TItem, TLocal> : IPooledClosure
+        {
+            private int referenceCount;
+            private static ConcurrentPool<Foo<TItem, TLocal>> pool;
+
+            public void AddReference()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Release()
+            {
+                if (Interlocked.Decrement(ref referenceCount) == 0)
+                {
+                    pool.Release(this);
+                }
+            }
+        }
+
         public static void For(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
         {
             using (Profile(action))
