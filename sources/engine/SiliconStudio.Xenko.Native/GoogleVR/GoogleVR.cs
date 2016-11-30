@@ -11,34 +11,21 @@ namespace SiliconStudio.Xenko.Native
 {
     public static class GoogleVr
     {
-//        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-//        delegate void ManagedLogDelegate(string log);
-//
-//        private static ManagedLogDelegate managedLogDelegateSingleton;
-//
-//        private static void ManagedLog(string log)
-//        {
-//            Debug.WriteLine(log);
-//        }
-//
-//        public static void Setup()
-//        {
-//            managedLogDelegateSingleton = ManagedLog;
-//            var ptr = Marshal.GetFunctionPointerForDelegate(managedLogDelegateSingleton);
-//            NativeSetup(ptr);
-//        }
-//
-//        [SuppressUnmanagedCodeSecurity]
-//        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrSetup", CallingConvention = CallingConvention.Cdecl)]
-//        private static extern void NativeSetup(IntPtr logger);
-
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrStartup", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Startup(IntPtr ctx, out int width, out int height);
+        public static extern int Startup(IntPtr ctx);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrGetMaxRenderSize", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetMaxRenderSize(out int width, out int height);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrInit", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Init();
+        public static extern bool Init(int width, int height);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrGetPerspectiveMatrix", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetPerspectiveMatrix(int eyeIndex, float near, float far, out Matrix headMatrix);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrGetHeadMatrix", CallingConvention = CallingConvention.Cdecl)]
@@ -53,12 +40,8 @@ namespace SiliconStudio.Xenko.Native
         public static extern IntPtr GetNextFrame();
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrBindBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void BindFrame(IntPtr frame, int index);
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrUnbindBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void UnbindFrame(IntPtr frame);
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrGetFBOIndex", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetFBOIndex(IntPtr frame, int index);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnGvrSubmitFrame", CallingConvention = CallingConvention.Cdecl)]

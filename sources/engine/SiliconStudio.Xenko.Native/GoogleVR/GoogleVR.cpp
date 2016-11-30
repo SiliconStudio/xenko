@@ -11,6 +11,7 @@
 #define NP_STATIC_LINKING
 #endif
 
+#include "../../../common/core/SiliconStudio.Core.Native/CoreNative.h"
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativePath.h"
 
@@ -19,7 +20,6 @@
 #include "../../../../deps/GoogleVR/vr/gvr/capi/include/gvr.h"
 
 extern "C" {
-
 	void* gGvrLibrary = NULL;
 	void* gGvrGLESv2 = NULL;
 	gvr_context* gGvrContext = NULL;
@@ -35,11 +35,25 @@ extern "C" {
 #define GL_BLEND_SRC_RGB 0x80C9
 #define GL_BLEND_DST_ALPHA 0x80CA
 #define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_VIEWPORT 0x0BA2
+#define GL_VERTEX_ATTRIB_ARRAY_ENABLED 0x8622
+#define GL_VERTEX_ATTRIB_ARRAY_SIZE 0x8623
+#define GL_VERTEX_ATTRIB_ARRAY_STRIDE 0x8624
+#define GL_VERTEX_ATTRIB_ARRAY_TYPE 0x8625
+#define GL_VERTEX_ATTRIB_ARRAY_NORMALIZED 0x886A
+#define GL_VERTEX_ATTRIB_ARRAY_POINTER 0x8645
+#define GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING 0x889F
+#define GL_ELEMENT_ARRAY_BUFFER_BINDING 0x8895
+#define GL_ELEMENT_ARRAY_BUFFER 0x8893
+
+#define M_PI 3.14159265358979323846
 
 	typedef unsigned char GLboolean;
 	typedef unsigned int GLenum;
 	typedef unsigned int GLuint;
 	typedef int GLint;
+	typedef int GLsizei;
+	typedef void GLvoid;
 
 	NP_IMPORT(void, glColorMask, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 	NP_IMPORT(void, glDisable, GLenum cap);
@@ -48,6 +62,13 @@ extern "C" {
 	NP_IMPORT(void, glGetIntegerv, GLenum pname, GLint* data);
 	NP_IMPORT(void, glBlendEquationSeparate, GLenum modeRGB, GLenum modeAlpha);
 	NP_IMPORT(void, glBlendFuncSeparate, GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+	NP_IMPORT(void, glViewport, GLint x, GLint y, GLsizei width, GLsizei height);
+	NP_IMPORT(void, glDisableVertexAttribArray, GLuint index);
+	NP_IMPORT(void, glGetVertexAttribiv, GLuint index, GLenum pname, GLint *params);
+	NP_IMPORT(void, glVertexAttribPointer, GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
+	NP_IMPORT(void, glGetVertexAttribPointerv, GLuint index, GLenum pname, GLvoid** pointer);
+	NP_IMPORT(void, glBindBuffer, GLenum target, GLuint buffer);
+
 	NP_IMPORT(void, gvr_initialize_gl, gvr_context* gvr);
 	NP_IMPORT(int32_t, gvr_clear_error, gvr_context* gvr);
 	NP_IMPORT(int32_t, gvr_get_error, gvr_context* gvr);
@@ -76,6 +97,7 @@ extern "C" {
 	NP_IMPORT(void, gvr_buffer_spec_set_depth_stencil_format, gvr_buffer_spec* spec, int32_t depth_stencil_format);
 	NP_IMPORT(gvr_swap_chain*, gvr_swap_chain_create, gvr_context* gvr, const gvr_buffer_spec** buffers, int32_t count);
 	NP_IMPORT(gvr_mat4f, gvr_get_eye_from_head_matrix, const gvr_context* gvr, const int32_t eye);
+	NP_IMPORT(gvr_rectf, gvr_buffer_viewport_get_source_fov, const gvr_buffer_viewport* viewport);
 
 	gvr_buffer_viewport_list* xnGvr_ViewportsList = NULL;
 	gvr_buffer_viewport* xnGvr_LeftVieport = NULL;
@@ -87,8 +109,10 @@ extern "C" {
 
 	uint64_t kPredictionTimeWithoutVsyncNanos = 50000000;
 
-	int xnGvrStartup(gvr_context* context, int* width, int* height)
+	int xnGvrStartup(gvr_context* context)
 	{
+		cnDebugPrintLine("xnGvrStartup");
+
 		if (!gGvrLibrary)
 		{
 #if defined(ANDROID)
@@ -115,6 +139,18 @@ extern "C" {
 			NP_CHECK(glBlendEquationSeparate, return false);
 			NP_LOAD(gGvrGLESv2, glBlendFuncSeparate);
 			NP_CHECK(glBlendFuncSeparate, return false);
+			NP_LOAD(gGvrGLESv2, glViewport);
+			NP_CHECK(glViewport, return false);
+			NP_LOAD(gGvrGLESv2, glDisableVertexAttribArray);
+			NP_CHECK(glDisableVertexAttribArray, return false);
+			NP_LOAD(gGvrGLESv2, glGetVertexAttribiv);
+			NP_CHECK(glGetVertexAttribiv, return false);
+			NP_LOAD(gGvrGLESv2, glVertexAttribPointer);
+			NP_CHECK(glVertexAttribPointer, return false);
+			NP_LOAD(gGvrGLESv2, glGetVertexAttribPointerv);
+			NP_CHECK(glGetVertexAttribPointerv, return false);
+			NP_LOAD(gGvrGLESv2, glBindBuffer);
+			NP_CHECK(glBindBuffer, return false);
 
 			NP_LOAD(gGvrLibrary, gvr_refresh_viewer_profile);
 			NP_CHECK(gvr_refresh_viewer_profile, return 2);
@@ -138,28 +174,39 @@ extern "C" {
 
 		NP_CALL(gvr_refresh_viewer_profile, gGvrContext);
 
-		///       gvr_sizei render_target_size =
-		///           gvr_get_maximum_effective_render_target_size(gvr);
-		///       // The maximum effective render target size can be very large, most
-		///       // applications need to scale down to compensate.
-		///       render_target_size.width /= 2;
-		///       render_target_size.height /= 2;
-
-		xnGvr_size = NP_CALL(gvr_get_maximum_effective_render_target_size, gGvrContext);
-		xnGvr_size.height = (xnGvr_size.height >> 1) - ((xnGvr_size.height >> 1) % 2);
-		xnGvr_size.width = (xnGvr_size.width >> 1) - ((xnGvr_size.width >> 1) % 2);
-		*width = xnGvr_size.width;
-		*height = xnGvr_size.height;
-
+//		xnGvr_size = NP_CALL(gvr_get_maximum_effective_render_target_size, gGvrContext);
+//		xnGvr_size.height = (xnGvr_size.height >> 1) - ((xnGvr_size.height >> 1) % 2);
+//		xnGvr_size.width = (xnGvr_size.width >> 1) - ((xnGvr_size.width >> 1) % 2);
+//		//auto scaledSize = xnGvr_size;
+//		//xnGvr_size.height = static_cast<int>(static_cast<float>(xnGvr_size.height) * scaling);
+//		//xnGvr_size.width = static_cast<int>(static_cast<float>(xnGvr_size.width) * scaling);
+//		*width = xnGvr_size.width;
+//		*height = xnGvr_size.height;
+//
+//		auto scaledSize = xnGvr_size;		
+//		scaledSize.height = static_cast<int>(static_cast<float>(scaledSize.height) * scaling);
+//		scaledSize.width = static_cast<int>(static_cast<float>(scaledSize.width) * scaling);
+//
 		NP_LOAD(gGvrLibrary, gvr_set_surface_size);
 		NP_CHECK(gvr_set_surface_size, return 6);
-		NP_CALL(gvr_set_surface_size, gGvrContext, xnGvr_size);
 
 		return 0;
 	}
 
-	npBool xnGvrInit()
+	void xnGvrGetMaxRenderSize(int* outWidth, int* outHeight)
 	{
+		auto maxSize = NP_CALL(gvr_get_maximum_effective_render_target_size, gGvrContext);
+		*outHeight = maxSize.height;
+		*outWidth = maxSize.width;
+	}
+
+	npBool xnGvrInit(int width, int height)
+	{
+		xnGvr_size.width = width;
+		xnGvr_size.height = height;
+
+		NP_CALL(gvr_set_surface_size, gGvrContext, xnGvr_size);
+
 		NP_LOAD(gGvrLibrary, gvr_initialize_gl);
 		NP_CHECK(gvr_initialize_gl, return false);
 		NP_LOAD(gGvrLibrary, gvr_clear_error);
@@ -208,6 +255,8 @@ extern "C" {
 		NP_CHECK(gvr_buffer_spec_set_samples, return false);
 		NP_LOAD(gGvrLibrary, gvr_get_eye_from_head_matrix);
 		NP_CHECK(gvr_get_eye_from_head_matrix, return false);
+		NP_LOAD(gGvrLibrary, gvr_buffer_viewport_get_source_fov);
+		NP_CHECK(gvr_buffer_viewport_get_source_fov, return false);
 
 		NP_CALL(gvr_clear_error, gGvrContext);
 		NP_CALL(gvr_initialize_gl, gGvrContext);
@@ -257,9 +306,38 @@ extern "C" {
 
 		NP_CALL(gvr_clear_error, gGvrContext);
 		NP_CALL(gvr_swap_chain_resize_buffer, xnGvr_swap_chain, 0, xnGvr_size);
-		if (NP_CALL(gvr_get_error, gGvrContext)) return false;		
+		if (NP_CALL(gvr_get_error, gGvrContext)) return false;
 
 		return true;
+	}
+
+	void xnGvrGetPerspectiveMatrix(int eyeIndex, float near_clip, float far_clip, gvr_mat4f* outResult)
+	{
+		auto fov = NP_CALL(gvr_buffer_viewport_get_source_fov, eyeIndex == 0 ? xnGvr_LeftVieport : xnGvr_RightVieport);
+		const float x_left = -tan(fov.left * M_PI / 180.0f) * near_clip;
+		const float x_right = tan(fov.right * M_PI / 180.0f) * near_clip;
+		const float y_bottom = -tan(fov.bottom * M_PI / 180.0f) * near_clip;
+		const float y_top = tan(fov.top * M_PI / 180.0f) * near_clip;
+
+		const auto X = (2 * near_clip) / (x_right - x_left);
+		const auto Y = (2 * near_clip) / (y_top - y_bottom);
+		const auto A = (x_right + x_left) / (x_right - x_left);
+		const auto B = (y_top + y_bottom) / (y_top - y_bottom);
+		const auto C = (near_clip + far_clip) / (near_clip - far_clip);
+		const auto D = (2 * near_clip * far_clip) / (near_clip - far_clip);
+
+		for (auto i = 0; i < 4; ++i) {
+			for (auto j = 0; j < 4; ++j) {
+				outResult->m[i][j] = 0.0f;
+			}
+		}
+		outResult->m[0][0] = X;
+		outResult->m[0][2] = A;
+		outResult->m[1][1] = Y;
+		outResult->m[1][2] = B;
+		outResult->m[2][2] = C;
+		outResult->m[2][3] = D;
+		outResult->m[3][2] = -1;
 	}
 
 	void xnGvrGetHeadMatrix(float* outMatrix)
@@ -284,14 +362,9 @@ extern "C" {
 		return err == GVR_ERROR_NONE ? frame : NULL;
 	}
 
-	void xnGvrBindBuffer(gvr_frame* frame, int index)
+	int xnGvrGetFBOIndex(gvr_frame* frame, int index)
 	{
-		NP_CALL(gvr_frame_bind_buffer, frame, index);
-	}
-
-	void xnGvrUnbindBuffer(gvr_frame* frame)
-	{
-		NP_CALL(gvr_frame_unbind, frame);
+		return NP_CALL(gvr_frame_get_framebuffer_object, frame, index);
 	}
 
 	npBool xnGvrSubmitFrame(gvr_frame* frame, float* headMatrix)
@@ -326,13 +399,45 @@ extern "C" {
 		GLint srcAlpha;
 		NP_CALL(glGetIntegerv, GL_BLEND_SRC_ALPHA, &srcAlpha);
 
-		NP_CALL(gvr_clear_error, gGvrContext);
-		
+		GLint viewport[4];
+		NP_CALL(glGetIntegerv, GL_VIEWPORT, viewport);
+
+		GLint index0Vert, index1Vert;
+		NP_CALL(glGetVertexAttribiv, 0, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &index0Vert);
+		NP_CALL(glGetVertexAttribiv, 1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &index1Vert);
+
+		GLint index0Size, index1Size;
+		NP_CALL(glGetVertexAttribiv, 0, GL_VERTEX_ATTRIB_ARRAY_SIZE, &index0Size);
+		NP_CALL(glGetVertexAttribiv, 1, GL_VERTEX_ATTRIB_ARRAY_SIZE, &index1Size);
+
+		GLint index0Type, index1Type;
+		NP_CALL(glGetVertexAttribiv, 0, GL_VERTEX_ATTRIB_ARRAY_TYPE, &index0Type);
+		NP_CALL(glGetVertexAttribiv, 1, GL_VERTEX_ATTRIB_ARRAY_TYPE, &index1Type);
+
+		GLint index0Normalized, index1Normalized;
+		NP_CALL(glGetVertexAttribiv, 0, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &index0Normalized);
+		NP_CALL(glGetVertexAttribiv, 1, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &index1Normalized);
+
+		GLint index0Stride, index1Stride;
+		NP_CALL(glGetVertexAttribiv, 0, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &index0Stride);
+		NP_CALL(glGetVertexAttribiv, 1, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &index1Stride);
+
+		GLvoid* index0Ptr;
+		GLvoid* index1Ptr;
+		NP_CALL(glGetVertexAttribPointerv, 0, GL_VERTEX_ATTRIB_ARRAY_POINTER, &index0Ptr);
+		NP_CALL(glGetVertexAttribPointerv, 1, GL_VERTEX_ATTRIB_ARRAY_POINTER, &index1Ptr);
+
+		GLint indexBuffer;
+		NP_CALL(glGetIntegerv, GL_ELEMENT_ARRAY_BUFFER_BINDING, &indexBuffer);
+
+		NP_CALL(gvr_clear_error, gGvrContext);		
 		gvr_mat4f* gvrMat4 = reinterpret_cast<gvr_mat4f*>(headMatrix);
 		NP_CALL(gvr_frame_submit, &frame, xnGvr_ViewportsList, *gvrMat4);
 		auto err = NP_CALL(gvr_get_error, gGvrContext);
 
-		NP_CALL(glColorMask, masks[0], masks[1], masks[2], masks[3]); // This was the super major headache and it's needed
+		NP_CALL(glViewport, viewport[0], viewport[1], viewport[2], viewport[3]);
+
+		NP_CALL(glColorMask, masks[0], masks[1], masks[2], masks[3]);
 		
 		if (scissor)
 		{
@@ -357,6 +462,21 @@ extern "C" {
 		NP_CALL(glBlendEquationSeparate, eqRgb, eqAlpha);
 
 		NP_CALL(glBlendFuncSeparate, srcRgb, dstRgb, srcAlpha, dstAlpha);
+
+		NP_CALL(glVertexAttribPointer, 0, index0Size, index0Type, index0Normalized, index0Stride, index0Ptr);
+		NP_CALL(glVertexAttribPointer, 1, index1Size, index1Type, index1Normalized, index1Stride, index1Ptr);
+
+		if(!index0Vert)
+		{
+			NP_CALL(glDisableVertexAttribArray, 0);
+		}
+
+		if (!index1Vert)
+		{
+			NP_CALL(glDisableVertexAttribArray, 1);
+		}
+
+		NP_CALL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 		return err == GVR_ERROR_NONE;
 	}
