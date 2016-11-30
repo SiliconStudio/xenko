@@ -24,6 +24,13 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <ItemGroup>
+        <Reference Include="Xamarin.iOS" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
@@ -47,9 +54,6 @@
     <None Include="LZ4\lz4hc.h" />
     <None Include="CoreNative.c" />
     <None Include="CoreNative.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Condition="'$(Platform)' == 'iPhone'" Include="Xamarin.iOS" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
