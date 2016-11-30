@@ -42,10 +42,10 @@
 	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
 	</SiliconStudioEmbeddedNativeLibrary>
     
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko.dll">
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko*.dll">
 	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
 	</SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libxenko.dll">
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libxenko*.dll">
 	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
 	</SiliconStudioEmbeddedNativeLibrary>
     
