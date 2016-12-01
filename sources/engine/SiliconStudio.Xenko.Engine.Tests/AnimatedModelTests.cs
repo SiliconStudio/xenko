@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public AnimatedModelTests()
         {
             // CurrentVersion = 3;
-            CurrentVersion = 4; // Changed FBX importer to allow ByEdge mapping
+            //CurrentVersion = 4; // Changed FBX importer to allow ByEdge mapping
+            CurrentVersion = 5; // Fix normal maps
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
         }

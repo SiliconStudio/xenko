@@ -65,7 +65,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             return false;
         }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request)
         {
             switch (request.Type)
             {
@@ -76,14 +78,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Compressing:
                     CompressingRequest compress = (CompressingRequest)request;
-                    return SupportFormat(compress.Format) && SupportFormat(image.Format);
+                    return SupportFormat(compress.Format) && SupportFormat(format);
 
                 case RequestType.Export:
                     ExportRequest export = (ExportRequest)request;
-                    return SupportFormat(image.Format) && (Path.GetExtension(export.FilePath).Equals(".pvr") || Path.GetExtension(export.FilePath).Equals(".ktx"));
+                    return SupportFormat(format) && (Path.GetExtension(export.FilePath).Equals(".pvr") || Path.GetExtension(export.FilePath).Equals(".ktx"));
 
                 case RequestType.Decompressing:
-                    return SupportFormat(image.Format);
+                    return SupportFormat(format);
 
                 case RequestType.MipMapsGeneration:
                     return ((MipMapsGenerationRequest)request).Filter != Filter.MipMapGeneration.Box;

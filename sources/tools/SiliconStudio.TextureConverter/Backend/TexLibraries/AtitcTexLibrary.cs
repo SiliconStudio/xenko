@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.AtitcWrapper;
 using SiliconStudio.TextureConverter.Requests;
+using SiliconStudio.Xenko.Graphics;
+using Texture = SiliconStudio.TextureConverter.AtitcWrapper.Texture;
 
 
 namespace SiliconStudio.TextureConverter.TexLibraries
@@ -22,7 +24,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         public IntPtr Data;
 
         /// <summary>
-        /// An array of <see cref="Texture" />, one for each mip map level and / or array member
+        /// An array of <see cref="AtitcWrapper.Texture" />, one for each mip map level and / or array member
         /// </summary>
         public Texture[] Textures;
 
@@ -61,14 +63,16 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             return false;
         }
 
-        public bool CanHandleRequest(TexImage image, IRequest request)
+        public bool CanHandleRequest(TexImage image, IRequest request) => CanHandleRequest(image.Format, request);
+
+        public bool CanHandleRequest(PixelFormat format, IRequest request)
         {
             switch (request.Type)
             {
                 case RequestType.Compressing:
-                    return SupportFormat(((CompressingRequest)request).Format) && SupportFormat(image.Format);
+                    return SupportFormat(((CompressingRequest)request).Format) && SupportFormat(format);
                 case RequestType.Decompressing:
-                    return SupportFormat(image.Format);
+                    return SupportFormat(format);
 
                 default:
                     return false;
