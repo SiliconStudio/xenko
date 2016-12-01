@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
@@ -18,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         void Reset();
     }
 
+
     /// <summary>
     /// Interface to render a shadow map.
     /// </summary>
@@ -27,8 +29,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
-        void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+        void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
 
-        void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
+        void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup);
+
+        void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
+
+        LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize);
     }
 }

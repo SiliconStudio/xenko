@@ -2,13 +2,23 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
+        public LightShadowMapRendererBase(ShadowMapRenderer parent)
+        {
+            ShadowMapRenderer = parent;
+        }
+
+        public ShadowMapRenderer ShadowMapRenderer { get; private set; }
+
         public abstract void Reset();
 
         public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)
@@ -54,7 +64,50 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
-        public abstract void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+        public abstract void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
+
+        public abstract void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup);
+
+        public virtual void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
+        {
+        }
+
+        public virtual LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        {
+            var shadowMapTexture = ShadowMapRenderer.ShadowMapTextures.Add();
+            shadowMapTexture.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
+            shadowMapTexture.CascadeCount = light.Shadow.GetCascadeCount();
+            return shadowMapTexture;
+        }
+    }
+
+    public abstract class CascadeShadowMapRendererBase : LightShadowMapRendererBase
+    {
+        public CascadeShadowMapRendererBase(ShadowMapRenderer parent) : base(parent)
+        {
+        }
+
+        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        {
+            for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
+            {
+                // Allocate shadow render view
+                var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
+                shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
+                shadowRenderView.ShadowMapTexture = shadowMapTexture;
+                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
+
+                // Compute view parameters
+                GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+
+                // Add the render view for the current frame
+                ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
+
+                // Collect objects in shadow views
+                visibilityGroup.Collect(shadowRenderView);
+            }
+        }
 
         public abstract void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
     }

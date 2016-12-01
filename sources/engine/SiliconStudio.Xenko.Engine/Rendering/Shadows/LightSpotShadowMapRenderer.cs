@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Renders a shadow map from a directional light.
     /// </summary>
-    public class LightSpotShadowMapRenderer : LightShadowMapRendererBase
+    public class LightSpotShadowMapRenderer : CascadeShadowMapRendererBase
     {
         /// <summary>
         /// The various UP vectors to try.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Initializes a new instance of the <see cref="LightSpotShadowMapRenderer"/> class.
         /// </summary>
-        public LightSpotShadowMapRenderer()
+        public LightSpotShadowMapRenderer(ShadowMapRenderer parent) : base(parent)
         {
             shaderDataPool = new PoolListStruct<LightSpotShadowMapShaderData>(8, CreateLightSpotShadowMapShaderData);
         }
@@ -39,8 +39,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             return new LightSpotShadowMapGroupShaderData(shadowType);
         }
-        
-        public override void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+
+        public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
         {
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;

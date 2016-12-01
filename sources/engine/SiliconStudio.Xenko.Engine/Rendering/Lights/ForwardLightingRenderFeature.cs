@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -82,10 +85,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
+        private LightClusteredPointGroupRenderer clusteredPointGroupRenderer;
 
         public ShadowMapRenderer ShadowMapRenderer { get; private set; }
 
-        public RenderStage ShadowMapRenderStage { get; set; }
+        public List<RenderStage> StagesToIgnore { get; set; }
 
         static ForwardLightingRenderFeature()
         {
@@ -119,10 +123,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
             {
                 // Note: this renderer supports both Point and Spot lights
-                var clusteredLightRenderer = new LightClusteredPointGroupRenderer();
-
-                RegisterLightGroupRenderer(typeof(LightPoint), clusteredLightRenderer);
-                RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredLightRenderer.SpotRenderer });
+                clusteredPointGroupRenderer = new LightClusteredPointGroupRenderer();
+                clusteredPointGroupRenderer.Initialize(Context);
+                
+                RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer() { NonShadowRenderer = clusteredPointGroupRenderer });
+                RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointGroupRenderer.SpotRenderer });
             }
             else
             {
@@ -147,6 +152,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightRenderer.Value.Unload();
             }
+            clusteredPointGroupRenderer.Unload();
 
             base.Unload();
         }
@@ -154,16 +160,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public override void Collect()
         {
             // Initialize shadow map renderer
-            if (!isShadowMapRendererSetUp && ShadowMapRenderStage != null)
+            if (!isShadowMapRendererSetUp)
             {
                 // TODO: Shadow mapping is currently disabled in new render system
                 // TODO: Make this pluggable
                 // TODO: Shadows should work on mobile platforms
                 if (RenderSystem.RenderContextOld.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
                 {
-                    ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowMapRenderStage);
-                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
-                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+                    ShadowMapRenderer = new ShadowMapRenderer(RenderSystem);
+                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(typeof(LightPoint), new LightPointShadowMapRenderer(ShadowMapRenderer));
                 }
 
                 isShadowMapRendererSetUp = true;
@@ -191,7 +198,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            var shadowMapEffectSlot = ShadowMapRenderStage != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderStage) : EffectPermutationSlot.Invalid;
+            HashSet<int> shadowMapEffectSlots = new HashSet<int>();
+            foreach (var shadowMapRenderStage in StagesToIgnore)
+            {
+                var shadowMapEffectSlot = shadowMapRenderStage != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(shadowMapRenderStage) : EffectPermutationSlot.Invalid;
+                shadowMapEffectSlots.Add(shadowMapEffectSlot.Index);
+            }
 
             // Counter number of RenderView to process
             renderViews.Clear();
@@ -215,6 +227,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightRenderer.Value.Reset();
                 lightRenderer.Value.SetViews(renderViews);
             }
+            clusteredPointGroupRenderer.Reset();
+            clusteredPointGroupRenderer.SetViews(renderViews);
 
             // Cleanup shader group data
             // TODO: Cleanup end of frame instead of beginning of next one
@@ -279,7 +293,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     // Don't apply lighting for shadow casters
-                    if (i == shadowMapEffectSlot.Index)
+                    if (shadowMapEffectSlots.Contains(i))
                         continue;
 
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;

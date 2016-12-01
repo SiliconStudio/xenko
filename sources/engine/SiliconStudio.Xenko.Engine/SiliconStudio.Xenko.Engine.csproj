@@ -461,6 +461,26 @@
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowCasterRenderFeature.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCasterParabola.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterParabola.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapCasterParabolaProjection.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterParabolaProjection.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverPoint.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapReceiverPoint.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
@@ -528,6 +548,18 @@
     <None Include="Rendering\Lights\LightClusteredPointGroup.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterParabola.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterParabola.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterParabolaProjection.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterParabolaProjection.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapReceiverPoint.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverPoint.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

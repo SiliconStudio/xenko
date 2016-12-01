@@ -1,0 +1,49 @@
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Selects the shadow map and computes the shadow factor.
+    /// </summary>
+    internal shader ShadowMapReceiverPoint<int TLightCount> : ShadowMapReceiverBase<PerView.Lighting, 1, TLightCount>
+    {
+        cbuffer PerView.Lighting // TODO: Use a proper cbuffer for this?
+        {
+            float2 LightOffsets[TLightCount];
+            float2 LightBackfaceOffsets[TLightCount];
+            float2 LightFaceSize[TLightCount];
+            float2 LightDepthParameters[TLightCount];
+        };
+        
+        override void ComputeShadow(int lightIndex)
+        {
+            float4 lightSpace = mul(float4(streams.PositionWS.xyz,1), WorldToShadowCascadeUV[lightIndex]);
+            
+            // Store length and normalize
+            float z = length(lightSpace.xyz);
+            float3 intermediate = lightSpace.xyz / z;
+            
+            // Project x/y coordinates on parabola
+            intermediate.xy /= 1.0f + abs(intermediate.z);
+            
+            float2 depthParameters = LightDepthParameters[lightIndex];
+            float projectedDepth = z * depthParameters.y;
+
+            // Map from (-1,1) to (0,1)
+            intermediate.xy = intermediate.xy * 0.5 + float2(0.5,0.5);
+
+            // Apply offset into atlas and size of a single face in the atlas
+            float2 samplePosition = intermediate.xy * LightFaceSize[lightIndex] + LightOffsets[lightIndex];
+
+            [flatten]
+            if(lightSpace.z < 0)
+            {
+                samplePosition += LightBackfaceOffsets[lightIndex];
+            }
+            
+            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - 0.003f);
+            //streams.shadowColor = float3(lightSpace.z, 0, 0) * 20.0;
+        }
+    };
+}

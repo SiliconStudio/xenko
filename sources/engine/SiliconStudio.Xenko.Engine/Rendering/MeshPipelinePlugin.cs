@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ForwardLightingRenderFeature ForwardLightingRenderFeature { get; private set; }
 
+        public ShadowCasterRenderFeature ShadowCasterRenderFeature { get; private set; }
+
         protected override MeshRenderFeature CreateRenderFeature(PipelinePluginContext context)
         {
             var meshRenderFeature = new MeshRenderFeature
@@ -34,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering
                     new TransformRenderFeature(),
                     new SkinningRenderFeature(),
                     new MaterialRenderFeature(),
+                    (ShadowCasterRenderFeature = new ShadowCasterRenderFeature()),
                     (ForwardLightingRenderFeature = new ForwardLightingRenderFeature()),
                 },
             };
@@ -154,9 +157,11 @@ namespace SiliconStudio.Xenko.Rendering
             base.Load(context);
 
             var shadowMapRenderStage = context.RenderSystem.GetRenderStage("ShadowMapCaster");
+            var shadowMapRenderStageParabola = context.RenderSystem.GetRenderStage("ShadowMapCasterParabola");
 
+            // Add a list of render stages to ignore to the forward lighting renderer
             var forwardLightingRenderFeature = RenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().First();
-            forwardLightingRenderFeature.ShadowMapRenderStage = shadowMapRenderStage;
+            forwardLightingRenderFeature.StagesToIgnore = new List<RenderStage> {shadowMapRenderStage, shadowMapRenderStageParabola};
 
             RegisterPostProcessPipelineState((RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
@@ -164,12 +169,22 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
                 }
+                else if (renderNode.RenderStage == shadowMapRenderStageParabola)
+                {
+                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = true };
+                }
             });
 
             RegisterRenderStageSelector(new ShadowMapRenderStageSelector
             {
                 EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCaster",
                 ShadowMapRenderStage = shadowMapRenderStage,
+            });
+
+            RegisterRenderStageSelector(new ShadowMapRenderStageSelector
+            {
+                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCasterParabola",
+                ShadowMapRenderStage = shadowMapRenderStageParabola,
             });
         }
     }

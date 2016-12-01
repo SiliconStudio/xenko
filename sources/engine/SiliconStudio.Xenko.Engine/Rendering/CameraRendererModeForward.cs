@@ -1,8 +1,9 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -27,6 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
+        [DataMemberIgnore] public RenderStage ShadowMapRenderStageParabola { get; set; }
 
         [DefaultValue(true)]
         [DataMemberIgnore]
@@ -63,6 +65,11 @@ namespace SiliconStudio.Xenko.Rendering
                     ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
                     ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
                 }
+                if (ShadowMapRenderStageParabola == null)
+                {
+                    ShadowMapRenderStageParabola = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterParabola", "ShadowMapRenderStageParabola", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageParabola.SortMode = new FrontToBackSortMode();
+                }
 
                 // Mark this view as requiring shadows
                 var shadowPipelinePlugin = RenderSystem.PipelinePlugins.InstantiatePlugin<ShadowPipelinePlugin>();
@@ -81,8 +88,10 @@ namespace SiliconStudio.Xenko.Rendering
             var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
             shadowPipelinePlugin?.RenderViewsWithShadows.Remove(MainRenderView);
 
-            base.Unload();
+            base.Unload();  
         }
+
+
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -100,8 +109,8 @@ namespace SiliconStudio.Xenko.Rendering
             //
             //    context.PopRenderTargets();
             //}
-
-            // Shadow maps
+            
+            // Draw [shadow views]
             var shadowMapRenderer = meshPipelinePlugin?.ForwardLightingRenderFeature?.ShadowMapRenderer;
             if (Shadows && shadowMapRenderer != null)
             {
@@ -116,12 +125,18 @@ namespace SiliconStudio.Xenko.Rendering
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == MainRenderView)
                     {
+                        if(Profiling)
+                            context.CommandList.BeginProfile(Color4.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
+
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
                         shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                         context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                        RenderSystem.Draw(context, shadowmapRenderView, ShadowMapRenderStage);
+                        RenderSystem.Draw(context, shadowmapRenderView, shadowmapRenderView.RenderStages[0].RenderStage);
+
+                        if (Profiling)
+                            context.CommandList.EndProfile();
                     }
                 }
 
@@ -131,13 +146,30 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Draw [main view | main stage]
-            RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+            {
+                if (Profiling)
+                    context.CommandList.BeginProfile(Color4.Black, $"Main Stage");
+
+                RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+
+                if(Profiling)
+                    context.CommandList.EndProfile();
+            }
 
             // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
             Texture depthStencilSRV = ResolveDepthAsSRV(context);
 
+
             // Draw [main view | transparent stage]
-            RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
+            {
+                if (Profiling)
+                    context.CommandList.BeginProfile(Color4.Black, $"Transparent Stage");
+
+                RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
+
+                if (Profiling)
+                    context.CommandList.EndProfile();
+            }
 
             // Free the depth texture since we won't need it anymore
             if (depthStencilSRV != null)

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -636,7 +636,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public override void ProcessLights(ProcessLightsParameters parameters)
             {
-                pointGroupRenderer.spotGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
+                 pointGroupRenderer.spotGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
 
                 for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
                 {

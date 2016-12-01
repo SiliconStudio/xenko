@@ -57,27 +57,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightShadowMapTexture
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
-        /// </summary>
-        /// <param name="lightComponent">The light component.</param>
-        /// <param name="light">The light component.</param>
-        /// <param name="shadowMap">The light.</param>
-        /// <param name="size">The shadow map.</param>
-        /// <param name="renderer">The renderer.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// lightComponent
-        /// or
-        /// light
-        /// or
-        /// shadowMap
-        /// or
-        /// renderer
-        /// </exception>
-        public LightShadowMapTexture()
-        {
-        }
-
         public LightComponent LightComponent { get; private set; }
 
         public IDirectLight Light { get; private set; }
