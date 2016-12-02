@@ -28,7 +28,8 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
         //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
         [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
-        [DataMemberIgnore] public RenderStage ShadowMapRenderStageParabola { get; set; }
+        [DataMemberIgnore] public RenderStage ShadowMapRenderStageDp { get; set; }
+        [DataMemberIgnore] public RenderStage ShadowMapRenderStageCubeMap { get; set; }
 
         [DefaultValue(true)]
         [DataMemberIgnore]
@@ -65,10 +66,15 @@ namespace SiliconStudio.Xenko.Rendering
                     ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
                     ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
                 }
-                if (ShadowMapRenderStageParabola == null)
+                if (ShadowMapRenderStageDp == null)
                 {
-                    ShadowMapRenderStageParabola = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterParabola", "ShadowMapRenderStageParabola", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
-                    ShadowMapRenderStageParabola.SortMode = new FrontToBackSortMode();
+                    ShadowMapRenderStageDp = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterDp", "ShadowMapCasterDp", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageDp.SortMode = new FrontToBackSortMode();
+                }
+                if (ShadowMapRenderStageCubeMap == null)
+                {
+                    ShadowMapRenderStageCubeMap = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterCubeMap", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageCubeMap.SortMode = new FrontToBackSortMode();
                 }
 
                 // Mark this view as requiring shadows

@@ -219,6 +219,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
+    <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
@@ -461,25 +463,31 @@
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
-    <Compile Include="Rendering\Shadows\LightPointShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRendererDp.cs" />
     <Compile Include="Rendering\Shadows\ShadowCasterRenderFeature.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapCasterParabola.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapCasterDp.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterParabola.xkfx</DependentUpon>
+      <DependentUpon>ShadowMapCasterDp.xkfx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCasterParabolaProjection.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapCasterDpProjection.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterParabolaProjection.xksl</DependentUpon>
+      <DependentUpon>ShadowMapCasterDpProjection.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapReceiverPoint.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapReceiverPoint.xksl</DependentUpon>
+      <DependentUpon>ShadowMapReceiverPointCubeMap.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverPointDp1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapReceiverPointDp.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
@@ -492,6 +500,7 @@
     <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderViewDp.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />
@@ -549,17 +558,18 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterParabola.xkfx">
+    <Compile Include="Rendering\Shadows\LightPointCubeMapShadowMapRenderer.cs" />
+    <None Include="Rendering\Shadows\ShadowMapCasterDp.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterParabola.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCasterDp.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterParabolaProjection.xksl">
+    <None Include="Rendering\Shadows\ShadowMapCasterDpProjection.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterParabolaProjection.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCasterDpProjection.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapReceiverPoint.xksl">
+    <None Include="Rendering\Shadows\ShadowMapReceiverPointDp.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapReceiverPoint.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapReceiverPointDp1.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3949,6 +3959,12 @@
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverPointCubeMap1.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

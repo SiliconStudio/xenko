@@ -4,8 +4,8 @@
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     // Spawn a sub-effect for the shadow map caster pass
-    partial effect ShadowMapCasterParabola
+    partial effect ShadowMapCasterDp
     {
-        mixin ShadowMapCasterParabolaProjection;
+        mixin ShadowMapCasterDpProjection;
     };
 }

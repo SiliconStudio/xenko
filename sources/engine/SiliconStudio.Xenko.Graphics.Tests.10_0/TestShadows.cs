@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Colors;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
@@ -30,6 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private Entity lightEntity;
         private Entity lightEntity1;
         private Entity cameraEntity;
+        private List<LightComponent> pointLights = new List<LightComponent>();
 
         public TestShadows()
         {
@@ -162,33 +165,37 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             cube1.Transform.Scale = new Vector3(1.0f);
             scene.Entities.Add(cube1);
 
-            //var planeRight = GeneratePlane();
-            //planeRight.Transform.RotationEulerXYZ = new Vector3(0,0,MathUtil.PiOverTwo);
-            //planeRight.Transform.Position = new Vector3(HalfPlaneSize, HalfPlaneSize, 0.0f);
-            //scene.Entities.Add(planeRight);
+            {
+                var planeLeft = GeneratePlane();
+                planeLeft.Transform.RotationEulerXYZ = new Vector3(0, 0, -MathUtil.PiOverTwo);
+                planeLeft.Transform.Position = new Vector3(-HalfPlaneSize, HalfPlaneSize, 0.0f);
+                scene.Entities.Add(planeLeft);
 
-            var planeLeft = GeneratePlane();
-            planeLeft.Transform.RotationEulerXYZ = new Vector3(0, 0, -MathUtil.PiOverTwo);
-            planeLeft.Transform.Position = new Vector3(-HalfPlaneSize, HalfPlaneSize, 0.0f);
-            scene.Entities.Add(planeLeft);
+                var planeBack = GeneratePlane();
+                planeBack.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverTwo, MathUtil.Pi, 0);
+                planeBack.Transform.Position = new Vector3(0.0f, HalfPlaneSize, -HalfPlaneSize);
+                scene.Entities.Add(planeBack);
 
-            var planeBack = GeneratePlane();
-            planeBack.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverTwo, 0, MathUtil.PiOverTwo);
-            planeBack.Transform.Position = new Vector3(0.0f, HalfPlaneSize, HalfPlaneSize);
-            scene.Entities.Add(planeBack);
+                var planeBottom = GeneratePlane();
+                scene.Entities.Add(planeBottom);
+            }
 
-            //var planeFront = GeneratePlane();
-            //planeFront.Transform.RotationEulerXYZ = new Vector3(MathUtil.PiOverTwo, 0, 0);
-            //planeFront.Transform.Position = new Vector3(0.0f, HalfPlaneSize, -HalfPlaneSize);
-            //scene.Entities.Add(planeFront);
+            {
+                var planeRight = GeneratePlane();
+                planeRight.Transform.RotationEulerXYZ = new Vector3(0,0,MathUtil.PiOverTwo);
+                planeRight.Transform.Position = new Vector3(HalfPlaneSize, HalfPlaneSize, 0.0f);
+                scene.Entities.Add(planeRight);
 
-            var planeBottom = GeneratePlane();
-            scene.Entities.Add(planeBottom);
+                var planeFront = GeneratePlane();
+                planeFront.Transform.RotationEulerXYZ = new Vector3(MathUtil.PiOverTwo, MathUtil.Pi, 0);
+                planeFront.Transform.Position = new Vector3(0.0f, HalfPlaneSize, HalfPlaneSize);
+                scene.Entities.Add(planeFront);
 
-            //var planeTop = GeneratePlane();
-            //planeTop.Transform.RotationEulerXYZ = new Vector3(MathUtil.Pi, 0, 0);
-            //planeTop.Transform.Position = new Vector3(0.0f, PlaneSize, 0.0f);
-            //scene.Entities.Add(planeTop);
+                var planeTop = GeneratePlane();
+                planeTop.Transform.RotationEulerXYZ = new Vector3(MathUtil.Pi, 0, 0);
+                planeTop.Transform.Position = new Vector3(0.0f, PlaneSize, 0.0f);
+                scene.Entities.Add(planeTop);
+            }
 
             // Create a camera entity and add it to the scene
             cameraEntity = new Entity { new CameraComponent() };
@@ -218,12 +225,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
+                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
                 lightType.Shadow.Size = LightShadowMapSize.Large;
-                lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
+                //lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
                 lightType.Color = new ColorRgbProvider(Color.White);
                 lightType.Radius = PlaneSize*2.0f;
 
-                var lightSubEntity = new Entity { new LightComponent { Type = lightType, Intensity = 15.0f } };
+                var lightComponent = new LightComponent { Type = lightType, Intensity = 15.0f };
+                var lightSubEntity = new Entity { lightComponent };
+                pointLights.Add(lightComponent);
                 lightEntity1 = GenerateSphere();
                 lightEntity1.AddChild(lightSubEntity);
                 lightEntity1.Get<ModelComponent>().IsShadowCaster = false;
@@ -240,7 +250,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //
             //    var lightEntity = new Entity { new LightComponent { Type = lightType, Intensity = 0.2f } };
             //    lightEntity.Transform.Position = new Vector3(0, 2, 0);
-            //    lightEntity.Transform.RotationEulerXYZ = new Vector3(MathUtil.DegreesToRadians(-85.0f), MathUtil.DegreesToRadians(45), 0.0f);
+            //    lightEntity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverFour, MathUtil.PiOverFour, 0.0f);
+            //    lightEntity.Transform.UpdateWorldMatrix();
             //    scene.Entities.Add(lightEntity);
             //}
 
@@ -285,6 +296,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         Stopwatch lightTimer = new Stopwatch();
         private float lightRotationOffset = 0.0f;
+        private float lightDistance = 4.0f;
 
         protected override void Draw(GameTime gameTime)
         {
@@ -301,11 +313,74 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 else
                     lightTimer.Start();
 
+            // Toggle shadow map type
+            if (Input.IsKeyPressed(Keys.F4))
+            {
+                foreach (var lc in pointLights)
+                {
+                    var point = lc.Type as LightPoint;
+                    var shadow = point.Shadow as LightPointShadowMap;
+                    if(shadow.Type == LightPointShadowMapType.Cubemap)
+                        shadow.Type = LightPointShadowMapType.DualParaboloid;
+                    else
+                        shadow.Type = LightPointShadowMapType.Cubemap;
+                }
+            }
+
+            // Adjust bias 
+            float adjustBias = 0.0f;
+            if (Input.IsKeyDown(Keys.NumPad2))
+                adjustBias = 0.01f;
+            else if (Input.IsKeyDown(Keys.NumPad1))
+                adjustBias = -0.01f;
+            if(adjustBias != 0.0f)
+            {
+                adjustBias *= (float)UpdateTime.Elapsed.TotalSeconds;
+                foreach (var lc in pointLights)
+                {
+                    var point = lc.Type as LightPoint;
+                    var shadow = point.Shadow as LightPointShadowMap;
+                    shadow.BiasParameters.DepthBias += adjustBias;
+                    if (shadow.BiasParameters.DepthBias < 0.0f)
+                        shadow.BiasParameters.DepthBias = 0.0f;
+                }
+            }
+
+            // Adjust filter 
+            int adjustFilter = 0;
+            if (Input.IsKeyPressed(Keys.NumPad5))
+                adjustFilter = 1;
+            else if (Input.IsKeyPressed(Keys.NumPad4))
+                adjustFilter = -1;
+            if (adjustFilter != 0)
+            {
+                foreach (var lc in pointLights)
+                {
+                    var point = lc.Type as LightPoint;
+                    var shadow = point.Shadow as LightPointShadowMap;
+                    int current = 0;
+                    var pcf = shadow.Filter as LightShadowMapFilterTypePcf;
+                    if (pcf != null)
+                        current = 1 + (int)pcf.FilterSize;
+
+                    current = MathUtil.Clamp(current+adjustFilter, 0, 3);
+
+                    if (current == 0)
+                        shadow.Filter = null;
+                    else
+                    {
+                        shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = (LightShadowMapFilterTypePcfSize)(current - 1) };
+                    }
+                }
+            }
+
+            // TODO INPUT MANAGER: Remove 120
+            lightDistance += Input.MouseWheelDelta/120.0f*0.25f;
+
             // Rotate the light on the timer + offset
             {
-                float lightMoveRadius = 4.0f;
-                float lightX = (float)Math.Cos(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)*lightMoveRadius;
-                float lightZ = (float)Math.Sin(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)*lightMoveRadius;
+                float lightX = (float)Math.Cos(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)* lightDistance;
+                float lightZ = (float)Math.Sin(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)* lightDistance;
                 lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
             }
         }

@@ -39,6 +39,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             return new LightSpotShadowMapGroupShaderData(shadowType);
         }
+        
+        public override bool CanRenderLight(IDirectLight light)
+        {
+            return light is LightSpot;
+        }
 
         public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
         {

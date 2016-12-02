@@ -16,11 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    internal static partial class ShadowMapReceiverPointKeys
+    public static partial class ShadowMapCasterDpProjectionKeys
     {
-        public static readonly ValueParameterKey<Vector2> LightOffsets = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<Vector2> LightBackfaceOffsets = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<Vector2> LightFaceSize = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<Vector2> LightDepthParameters = ParameterKeys.NewValue<Vector2>();
     }
 }

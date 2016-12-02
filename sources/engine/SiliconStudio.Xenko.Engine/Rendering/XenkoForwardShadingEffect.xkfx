@@ -69,6 +69,6 @@ namespace SiliconStudio.Xenko.Rendering
         mixin XenkoLighting;
 
         mixin child ShadowMapCaster;
-        mixin child ShadowMapCasterParabola;
+        mixin child ShadowMapCasterDp;
     };
 }

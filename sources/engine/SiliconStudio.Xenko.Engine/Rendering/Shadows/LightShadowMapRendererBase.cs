@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -63,6 +64,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         }
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
+
+        public abstract bool CanRenderLight(IDirectLight light);
 
         public abstract void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
 

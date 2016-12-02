@@ -168,9 +168,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (RenderSystem.RenderContextOld.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
                 {
                     ShadowMapRenderer = new ShadowMapRenderer(RenderSystem);
-                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer(ShadowMapRenderer));
-                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer(ShadowMapRenderer));
-                    ShadowMapRenderer.Renderers.Add(typeof(LightPoint), new LightPointShadowMapRenderer(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(new LightDirectionalShadowMapRenderer(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(new LightSpotShadowMapRenderer(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(new LightPointShadowMapRendererDp(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(new LightPointCubeMapShadowMapRenderer(ShadowMapRenderer));
                 }
 
                 isShadowMapRendererSetUp = true;

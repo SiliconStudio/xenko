@@ -105,9 +105,9 @@ namespace SiliconStudio.Xenko.Rendering
                     context.Mixin(mixin, "ShadowMapCaster");
                     return;
                 }
-                if (context.ChildEffectName == "ShadowMapCasterParabola")
+                if (context.ChildEffectName == "ShadowMapCasterDp")
                 {
-                    context.Mixin(mixin, "ShadowMapCasterParabola");
+                    context.Mixin(mixin, "ShadowMapCasterDp");
                     return;
                 }
             }

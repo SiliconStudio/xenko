@@ -98,9 +98,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public Rectangle GetRectangle(int i)
         {
-            if (i < 0 || i > CascadeCount)
+            if (i < 0 || i > CascadeCount || i > MaxRectangles)
             {
-                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount[");
+                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount]");
             }
             unsafe
             {
@@ -113,9 +113,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public void SetRectangle(int i, Rectangle value)
         {
-            if (i < 0 || i > CascadeCount)
+            if (i < 0 || i > CascadeCount || i > MaxRectangles)
             {
-                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount[");
+                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount]");
             }
             unsafe
             {
@@ -129,11 +129,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         // Even if C# things Rectangle1, Rectangle2 and Rectangle3 are not used,
         // they are indirectly in `GetRectangle' and `SetRectangle' through pointer
         // arithmetics.
+        // MaxRectangles should be updated to match the actual number of rectangles to detected out of range errors
+        public const int MaxRectangles = 6;
         private Rectangle Rectangle0;
 #pragma warning disable 169
         private Rectangle Rectangle1;
         private Rectangle Rectangle2;
         private Rectangle Rectangle3;
+        private Rectangle Rectangle4;
+        private Rectangle Rectangle5;
 #pragma warning restore 169
 
     }

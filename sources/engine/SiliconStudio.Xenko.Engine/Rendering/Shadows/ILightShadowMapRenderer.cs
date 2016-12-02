@@ -29,6 +29,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
+        /// <summary>
+        /// Test if this renderer can render this kind of light
+        /// </summary>
+        bool CanRenderLight(IDirectLight light);
+
         void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
 
         void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup);

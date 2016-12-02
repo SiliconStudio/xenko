@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    shader ShadowMapCasterParabolaProjection : ShaderBase, PositionStream4, Texturing
+    shader ShadowMapCasterDpProjection : ShaderBase, PositionStream4, Texturing
     {
         static const float ClippingEpsilon = 0.03;
 

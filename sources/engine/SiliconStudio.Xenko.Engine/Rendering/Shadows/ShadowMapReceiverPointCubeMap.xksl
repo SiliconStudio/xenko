@@ -1,0 +1,78 @@
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Selects the shadow map and computes the shadow factor.
+    /// </summary>
+    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : ShadowMapReceiverBase<PerDraw.Lighting, 1, TLightCount>
+    {
+        cbuffer PerDraw.Lighting
+        {
+			float4 LightPosition[TLightCount];
+			// Offsets for every light, for every face
+            float2 LightFaceOffsets[TLightCount*6];
+            float2 LightFaceSize[TLightCount];
+            float2 LightDepthParameters[TLightCount];
+        };
+		
+		// Projects depth into the depth buffer space
+		stage float ProjectDepth(int lightIndex, float depth)
+        {
+            return LightDepthParameters[lightIndex].y / depth + LightDepthParameters[lightIndex].x;
+        }
+
+		// Reconstruct linear depth
+		stage float ReconstructCSZ(int lightIndex, float depth)
+        {
+            return LightDepthParameters[lightIndex].y / (depth - LightDepthParameters[lightIndex].x);
+        }
+
+        override void ComputeShadow(int lightIndex)
+        {
+            float3 delta = streams.PositionWS.xyz - LightPosition[lightIndex].xyz;
+			float3 direction = normalize(delta);
+			float3 dirAbs = abs(direction);
+			
+			float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
+
+			int faceIndex;
+			float3 str;
+
+			[flatten]
+			if(dirAbs.x == longestAxis)
+			{
+				str = float3(direction.z, direction.y, delta.x);
+				faceIndex = 2;
+				streams.shadowColor = float3(1, 0, 0);
+			}
+			else if(dirAbs.y == longestAxis)
+			{
+				str = float3(direction.x, direction.z, delta.y);
+				faceIndex = 4;
+				streams.shadowColor = float3(0, 1, 0);
+			}
+			else // direction.z == longestAxis
+			{
+				str = float3(direction.x, direction.y, delta.z);
+				faceIndex = 0;
+				streams.shadowColor = float3(0, 0, 1);
+			}
+			
+			// Offset the negative side of a direction
+			faceIndex += int(max(0, -sign(str.z)));
+			str.z = abs(str.z);
+
+			float absLongest = abs(longestAxis);
+			str.xy = str.xy / float2(absLongest, absLongest);
+			str.xy += float2(1, 1);
+			str.xy *= 0.5;
+
+			float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
+
+			float projectedDepth = ProjectDepth(lightIndex, str.z - DepthBiases[lightIndex]);
+            streams.shadowColor = FilterShadow(textureOffset, projectedDepth);
+        }
+    };
+}

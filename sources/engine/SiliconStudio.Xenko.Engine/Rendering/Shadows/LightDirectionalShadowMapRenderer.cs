@@ -86,6 +86,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return new LightDirectionalShadowMapGroupShaderData(shadowType);
         }
 
+        public override bool CanRenderLight(IDirectLight light)
+        {
+            return light is LightDirectional;
+        }
+
         public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
