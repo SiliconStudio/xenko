@@ -14,8 +14,8 @@ namespace SiliconStudio.Assets.Tracking
     {
         public const string MemberName = "~SourceHashes";
 
-        private static readonly ShadowObjectPropertyKey AbsoluteSourceHashesKey = new ShadowObjectPropertyKey(new object());
-        private static readonly ShadowObjectPropertyKey RelativeSourceHashesKey = new ShadowObjectPropertyKey(new object());
+        private static readonly ShadowObjectPropertyKey AbsoluteSourceHashesKey = new ShadowObjectPropertyKey(new object(), true);
+        private static readonly ShadowObjectPropertyKey RelativeSourceHashesKey = new ShadowObjectPropertyKey(new object(), true);
         private static readonly object LockObj = new object();
 
         public static void UpdateHashes(Asset asset, IReadOnlyDictionary<UFile, ObjectId> newHashes)

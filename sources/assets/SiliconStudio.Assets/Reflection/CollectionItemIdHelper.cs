@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Reflection
         public static readonly object DeletedKey = new object();
 
         // TODO: do we really need to pass an object to this constructor?
-        public static ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object());
+        public static ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object(), false);
 
         public static bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {
