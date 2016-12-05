@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
@@ -19,7 +18,6 @@ namespace SiliconStudio.Core.Yaml
         private event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         private Serializer globalSerializer;
-        private Serializer globalSerializerWithoutId;
 
         public static AssetYamlSerializer Default { get; set; } = new AssetYamlSerializer();
 
@@ -61,10 +59,11 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <param name="aliasOccurred">if set to <c>true</c> a class/field/property/enum name has been renamed during deserialization.</param>
+        /// <param name="contextProperties">A dictionary or properties that were generated during deserialization.</param>
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred, out PropertyContainer contextProperties)
         {
-            var serializer = GetYamlSerializer(true);
+            var serializer = GetYamlSerializer();
             SerializerContext context;
             var result = serializer.Deserialize(stream, expectedType, contextSettings, out context);
             aliasOccurred = context.HasRemapOccurred;
@@ -78,6 +77,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="eventReader">A YAML event reader.</param>
         /// <param name="value">The value.</param>
         /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextProperties">A dictionary or properties that were generated during deserialization.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(EventReader eventReader, object value, Type expectedType, out PropertyContainer contextProperties, SerializerContextSettings contextSettings = null)
@@ -155,18 +155,17 @@ namespace SiliconStudio.Core.Yaml
             {
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
-                globalSerializerWithoutId = null;
             }
         }
 
-        private Serializer GetYamlSerializer(bool generateIds = false)
+        private Serializer GetYamlSerializer()
         {
             // Cache serializer to improve performance
-            var localSerializer = generateIds ? CreateSerializer(ref globalSerializer, true) : CreateSerializer(ref globalSerializerWithoutId, false);
+            var localSerializer = CreateSerializer(ref globalSerializer);
             return localSerializer;
         }
 
-        private Serializer CreateSerializer(ref Serializer localSerializer, bool generateIds)
+        private Serializer CreateSerializer(ref Serializer localSerializer)
         {
             // Early exit if already initialized
             if (localSerializer != null)
@@ -191,8 +190,7 @@ namespace SiliconStudio.Core.Yaml
                         SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets")
                     };
 
-                    if (generateIds)
-                        config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                    config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                     {
@@ -217,19 +215,19 @@ namespace SiliconStudio.Core.Yaml
 
             if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
             {
-                memberDescriptors.Add(customDynamicMemberDescriptor);
+                memberDescriptors.Add(legacyIdDynamicMemberDescriptor);
             }
 
             // Call custom callbacks to prepare members
             PrepareMembersEvent?.Invoke(objDesc, memberDescriptors);
         }
 
-        private readonly CustomDynamicMember customDynamicMemberDescriptor = new CustomDynamicMember();
+        private readonly LegacyIdDynamicMember legacyIdDynamicMemberDescriptor = new LegacyIdDynamicMember();
 
         // This class exists only for backward compatibility with previous ~Id. It can be removed once we drop backward support
-        private class CustomDynamicMember : DynamicMemberDescriptorBase
+        private class LegacyIdDynamicMember : DynamicMemberDescriptorBase
         {
-            public CustomDynamicMember() : base(ShadowId.YamlSpecialId, typeof(Guid), typeof(object))
+            public LegacyIdDynamicMember() : base(ShadowId.YamlSpecialId, typeof(Guid), typeof(object))
             {
                 Order = -int.MaxValue;
             }
