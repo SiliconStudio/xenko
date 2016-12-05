@@ -18,36 +18,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ImageScalerEffect  : IShaderMixinBuilder
+        internal partial class RangeDecompressorShaderEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ImageScalerShader");
+                context.Mixin(mixin, "RangeDecompressorShader");
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ImageScalerEffect", new ImageScalerEffect());
-            }
-        }
-    }
-    internal static partial class ShaderMixins
-    {
-        internal partial class ImageSuperSamplerScalerEffect  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "ImageScalerShader");
-                context.Mixin(mixin, "SpriteSuperSampler");
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("ImageSuperSamplerScalerEffect", new ImageSuperSamplerScalerEffect());
+                ShaderMixinManager.Register("RangeDecompressorShaderEffect", new RangeDecompressorShaderEffect());
             }
         }
     }

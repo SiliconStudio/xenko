@@ -1,0 +1,27 @@
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    shader RangeDecompressorShader : ImageEffectShader
+    {
+        stage override float4 Shading()
+        {
+            float3 color = Texture0.Sample(PointSampler, streams.TexCoord).rgb;
+			
+			// reverse gamma to linear:
+			//float3 linearclr = sqrt(max(color, float3(1e-6, 1e-6, 1e-6)));
+			float3 linearclr = color;
+			//float3 linearclr = pow(color, 2.2);
+
+			// reverse karis tone map:
+			float targetRange = 1.0;
+			float maxComponent = max(max(linearclr.r, linearclr.g), linearclr.b);
+			float3 reverseKaris = linearclr / (1 - maxComponent / targetRange);
+			
+			// write output for the rest of the post effects:
+			return float4(reverseKaris, 1.0);
+        }
+    };
+}
+

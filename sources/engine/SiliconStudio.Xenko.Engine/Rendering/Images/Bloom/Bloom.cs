@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
         public Bloom()
+            : base(null, true)
         {
             Radius = 10;
             Amount = 0.3f;
@@ -119,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            multiScaler = ToLoadAndUnload(new ImageMultiScaler());
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler(true));
             blur = ToLoadAndUnload(new GaussianBlur());
             afterimage = ToLoadAndUnload(afterimage);
         }

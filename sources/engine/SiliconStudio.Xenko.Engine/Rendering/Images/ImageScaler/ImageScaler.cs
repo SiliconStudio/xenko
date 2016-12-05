@@ -16,10 +16,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
-        public ImageScaler()
+        /// <param name="samplingPattern">9 taps multi-sampler (Cross9) or 1-tap Point sampling (Box)</param>
+        public ImageScaler(SamplingPattern samplingPattern)
         {
-            EffectName = "ImageScalerEffect";
+            EffectName = samplingPattern == SamplingPattern.Cross9 ? "ImageSuperSamplerScalerEffect" : "ImageScalerEffect";
         }
+
+        public ImageScaler()
+            : this(SamplingPattern.Box)
+        {}
+
+        public enum SamplingPattern
+        {
+            Cross9,  // tilted square gather, 9 taps, weights inverse to distance to center. (inspired by "Next Generation Post Processing in Call of Duty Advanced Warfare")
+            Box      // simple unique sampling at the center
+        };
+
+        public SamplingPattern FilterPattern => EffectName == "ImageScalerEffect" ? SamplingPattern.Box : SamplingPattern.Cross9;
 
         /// <summary>
         /// Gets or sets the color multiplier. Default is <see cref="SiliconStudio.Core.Mathematics.Color.White"/>
