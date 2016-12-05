@@ -73,7 +73,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowType |= LightShadowType.DepthRangeAuto;
             }
-            else if (shadowMap.DepthRange.IsBlendingCascades)
+
+            if (shadowMap.DepthRange.IsBlendingCascades)
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
@@ -552,7 +553,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowShader = new ShaderMixinSource();
                 var isDepthRangeAuto = (this.shadowType & LightShadowType.DepthRangeAuto) != 0;
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0 && !isDepthRangeAuto, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
+                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)
