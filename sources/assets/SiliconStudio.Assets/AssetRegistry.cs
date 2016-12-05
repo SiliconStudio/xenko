@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +9,6 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -239,18 +237,6 @@ namespace SiliconStudio.Assets
             lock (RegistryLock)
             {
                 return RegisteredAssetFactories.Values.ToList();
-            }
-        }
-
-        /// <summary>
-        /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="Type"/> elements.</returns>
-        public static Type[] GetInstantiableTypes()
-        {
-            lock (RegistryLock)
-            {
-                return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
             }
         }
 

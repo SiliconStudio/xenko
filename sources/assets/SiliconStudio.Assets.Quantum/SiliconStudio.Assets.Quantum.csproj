@@ -55,6 +55,12 @@
     <Compile Include="AssetPropertyGraph.cs" />
     <Compile Include="AssetQuantumRegistry.cs" />
     <Compile Include="AssetToBaseNodeLinker.cs" />
+    <Compile Include="Commands\AddNewItemCommand.cs" />
+    <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
+    <Compile Include="Commands\CreateNewInstanceCommand.cs" />
+    <Compile Include="Commands\MoveItemCommand.cs" />
+    <Compile Include="Commands\RemoveItemCommand.cs" />
+    <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="MultiContentNode.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
@@ -129,9 +135,7 @@
     <None Include="packages.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

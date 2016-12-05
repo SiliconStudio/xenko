@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     public class RemoveItemCommand : SyncNodeCommandBase
     {
