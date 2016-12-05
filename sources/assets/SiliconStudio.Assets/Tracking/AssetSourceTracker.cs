@@ -47,11 +47,6 @@ namespace SiliconStudio.Assets.Tracking
             TrackingSleepTime = 100;
             tokenSourceForImportHash = new CancellationTokenSource();
             threadWatcherEvent = new ManualResetEvent(false);
-
-            foreach (var package in session.Packages)
-            {
-                TrackPackage(package);
-            }
         }
 
         /// <summary>
@@ -98,6 +93,11 @@ namespace SiliconStudio.Assets.Tracking
                         {
                             ActivateTracking();
                         }
+
+                        foreach (var package in session.Packages)
+                        {
+                            TrackPackage(package);
+                        }
                     }
                     else
                     {
@@ -112,6 +112,11 @@ namespace SiliconStudio.Assets.Tracking
                             threadWatcherEvent.Set();
                             fileEventThreadHandler.Join();
                             fileEventThreadHandler = null;
+                        }
+
+                        foreach (var package in session.Packages)
+                        {
+                            UnTrackPackage(package);
                         }
                     }
                 }
@@ -354,47 +359,59 @@ namespace SiliconStudio.Assets.Tracking
 
         private void Packages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            lock (ThisLock)
             {
-                case NotifyCollectionChangedAction.Add:
-                    TrackPackage((Package)e.NewItems[0]);
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    UnTrackPackage((Package)e.OldItems[0]);
-                    break;
-
-                case NotifyCollectionChangedAction.Replace:
-                    foreach (var oldPackage in e.OldItems.OfType<Package>())
+                if (EnableTracking)
+                {
+                    switch (e.Action)
                     {
-                        UnTrackPackage(oldPackage);
-                    }
+                        case NotifyCollectionChangedAction.Add:
+                            TrackPackage((Package)e.NewItems[0]);
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            UnTrackPackage((Package)e.OldItems[0]);
+                            break;
 
-                    foreach (var package in session.Packages)
-                    {
-                        TrackPackage(package);
+                        case NotifyCollectionChangedAction.Replace:
+                            foreach (var oldPackage in e.OldItems.OfType<Package>())
+                            {
+                                UnTrackPackage(oldPackage);
+                            }
+
+                            foreach (var package in session.Packages)
+                            {
+                                TrackPackage(package);
+                            }
+                            break;
                     }
-                    break;
+                }
             }
         }
 
         private void Assets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            switch (e.Action)
+            lock (ThisLock)
             {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (AssetItem assetItem in e.NewItems)
+                if (EnableTracking)
+                {
+                    switch (e.Action)
                     {
-                        TrackAsset(assetItem.Id);
+                        case NotifyCollectionChangedAction.Add:
+                            foreach (AssetItem assetItem in e.NewItems)
+                            {
+                                TrackAsset(assetItem.Id);
+                            }
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            foreach (AssetItem assetItem in e.OldItems)
+                            {
+                                UnTrackAsset(assetItem.Id);
+                            }
+                            break;
+                        default:
+                            throw new NotSupportedException("Reset is not supported by the source tracker.");
                     }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (AssetItem assetItem in e.OldItems)
-                    {
-                        UnTrackAsset(assetItem.Id);
-                    }
-                    break;
-                default:
-                    throw new NotSupportedException("Reset is not supported by the source tracker.");
+                }
             }
         }
 

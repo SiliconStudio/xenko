@@ -247,16 +247,7 @@
     </Compile>
     <Compile Include="AssetReference.cs" />
     <Compile Include="AssetAliasAttribute.cs" />
-    <Compile Include="Visitors\DataVisitArrayItem.cs" />
-    <Compile Include="Visitors\DataVisitNodeExtensions.cs" />
-    <Compile Include="Visitors\DataVisitNodeBuilder.cs" />
-    <Compile Include="Visitors\DataVisitDictionaryItem.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Visitors\DataVisitNode.cs" />
-    <Compile Include="Visitors\DataVisitListItem.cs" />
-    <Compile Include="Visitors\DataVisitMember.cs" />
-    <Compile Include="Visitors\DataVisitObject.cs" />
-    <Compile Include="Visitors\IDataVisitNode.cs" />
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
     <Compile Include="AssetItem.cs" />

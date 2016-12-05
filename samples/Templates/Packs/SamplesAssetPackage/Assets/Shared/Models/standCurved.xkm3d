@@ -5,8 +5,10 @@ Tags: []
 Source: ../../../Resources/Stand/standCurved.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    e274a7dc94edc1896586423665864236:
+    8dcf09f62c2931a1ca04e1b59b5c09e5:
         Name: blinn1
         MaterialInstance:
             Material: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
 Skeleton: null
+~SourceHashes:
+    afa3d34c4574ecbbae8f695fe4526e7c~../../../Resources/Stand/standCurved.fbx: 4de6d17c7a13eb0dc0cfcda7302d8671

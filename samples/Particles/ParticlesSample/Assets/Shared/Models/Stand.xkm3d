@@ -5,12 +5,14 @@ Tags: []
 Source: ../../../Resources/Stand/Pd_ground.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    444959dcd07ef6c7e59c8d0ee59c8d0e:
+    be3ac659bee92059122c55f8cc6a2ab4:
         Name: ground_0
         MaterialInstance:
             Material: 642b4cea-dc0f-449f-8bfa-88f535a6aba2:Materials/DullSilver
-    7100a7c491e7cc898821031e8821031e:
+    c925f322851e96d93b3182efee35ba98:
         Name: ground_1
         MaterialInstance:
             Material: 8b1ed8cc-665d-4740-a903-95b2badeac14:Materials/RedCoating
 Skeleton: null
+~SourceHashes:
+    bf478a231431b84236032db817555789~../../../Resources/Stand/Pd_ground.FBX: c170a2977ef51a92b83f375a71be5f26

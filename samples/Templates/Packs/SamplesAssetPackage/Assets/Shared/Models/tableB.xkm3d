@@ -5,16 +5,18 @@ Tags: []
 Source: ../../../Resources/Models/tableB.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    a3b76aad37d511efb4aea277b4aea277:
+    7d87437a9b2ca20c3798a98b529c0d5c:
         Name: partsA1
         MaterialInstance:
             Material: ba13e600-e1c8-4ba7-b66d-aa0e1489e02e:Materials/board1B
-    c0d612c9f00932374c5a75564c5a7556:
+    0a9df145ecd79525a11f94ad46b03657:
         Name: board1
         MaterialInstance:
             Material: ba13e600-e1c8-4ba7-b66d-aa0e1489e02e:Materials/board1B
-    0303d2fe323802f6323802f6323802f6:
+    f6e83d4a699f272a80014559f9b35a70:
         Name: pole
         MaterialInstance:
             Material: ba13e600-e1c8-4ba7-b66d-aa0e1489e02e:Materials/board1B
 Skeleton: null
+~SourceHashes:
+    4b22da6e67880be0a9ddd90a2efe6464~../../../Resources/Models/tableB.fbx: f4739af3b3a5eee04b8f16c84110a638
