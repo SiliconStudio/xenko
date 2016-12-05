@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
                 {
-                    var insatanceCreateInfo = new InstanceCreateInfo
+                    var instanceCreateInfo = new InstanceCreateInfo
                     {
                         StructureType = StructureType.InstanceCreateInfo,
                         ApplicationInfo = new IntPtr(&applicationInfo),
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Graphics
                         EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer)
                     };
 
-                    NativeInstance = Vulkan.CreateInstance(ref insatanceCreateInfo);
+                    NativeInstance = Vulkan.CreateInstance(ref instanceCreateInfo);
                 }
 
                 if (enableDebugReport)
