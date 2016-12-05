@@ -298,10 +298,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return projectionMatrix.M43 / denominator;
         }
 
-        private static float LogSnap(float value)
+        private static float LogFloor(float value)
         {
             var log = (float)Math.Log(value, 1.5);
             log = (float)Math.Floor(log);
+            log = (float)Math.Pow(1.5, log);
+            return log;
+        }
+
+        private static float LogCeiling(float value)
+        {
+            var log = (float)Math.Log(value, 1.5);
+            log = (float)Math.Ceiling(log);
             log = (float)Math.Pow(1.5, log);
             return log;
         }
@@ -337,13 +345,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
-                minDistance = LogSnap(minDistance);
+                minDistance = LogFloor(minDistance);
 
                 // Reserve 2/3 of the guard distance for the max distance
                 var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
                 maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
                 // snap to a 'closest floor' of sorts, to improve stability:
-                maxDistance = LogSnap(maxDistance);
+                maxDistance = LogCeiling(maxDistance);
             }
             else
             {
