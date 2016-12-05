@@ -1,10 +1,11 @@
 using System;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     // TODO: this command is very similar to RenameStringKeyCommand - try to factorize them
     public class MoveItemCommand : SyncNodeCommandBase

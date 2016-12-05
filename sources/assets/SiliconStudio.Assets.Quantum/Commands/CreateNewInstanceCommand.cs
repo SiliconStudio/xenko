@@ -1,11 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
+using System;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     public class CreateNewInstanceCommand : ChangeValueCommand
     {
@@ -41,7 +43,7 @@ namespace SiliconStudio.Quantum.Commands
                 return null;
 
             var type = parameter as Type;
-            return type != null && (currentValue == null || currentValue.GetType() != type) ? ObjectFactory.NewInstance(type) : currentValue;
+            return type != null && (currentValue == null || currentValue.GetType() != type) ? ObjectFactoryRegistry.NewInstance(type) : currentValue;
         }
     }
 }

@@ -92,8 +92,8 @@
     <Compile Include="IO\NativeFile.UWP.cs" />
     <Compile Include="PlatformFolders.cs" />
     <Compile Include="Reflection\IObjectFactory.cs" />
-    <Compile Include="Reflection\ObjectFactory.cs" />
-    <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
+    <Compile Include="Reflection\ObjectFactoryRegistry.cs" />
+    <Compile Include="Annotations\ObjectFactoryAttribute.cs" />
     <Compile Include="Serialization\GenericSerializerFactory.cs" />
     <Compile Include="Serialization\NullSerializer.cs" />
     <Compile Include="Serialization\SerializerFactory.cs" />

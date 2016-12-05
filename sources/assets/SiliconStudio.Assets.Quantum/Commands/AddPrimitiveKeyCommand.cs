@@ -6,9 +6,11 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     public class AddPrimitiveKeyCommand : SyncNodeCommandBase
     {
