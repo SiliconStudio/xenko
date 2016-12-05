@@ -639,7 +639,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public override void ProcessLights(ProcessLightsParameters parameters)
             {
-                 pointGroupRenderer.spotGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
+                pointGroupRenderer.spotGroup.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
 
                 for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
                 {

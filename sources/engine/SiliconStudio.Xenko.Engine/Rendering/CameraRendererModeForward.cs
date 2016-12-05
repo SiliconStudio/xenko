@@ -24,12 +24,23 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO This should be exposed to the user at some point
         private bool enableDepthAsShaderResource = true;
 
-        [DataMemberIgnore] public RenderStage MainRenderStage { get; set; }
-        [DataMemberIgnore] public RenderStage TransparentRenderStage { get; set; }
-        //[DataMemberIgnore] public RenderStage GBufferRenderStage { get; set; }
-        [DataMemberIgnore] public RenderStage ShadowMapRenderStage { get; set; }
-        [DataMemberIgnore] public RenderStage ShadowMapRenderStageDp { get; set; }
-        [DataMemberIgnore] public RenderStage ShadowMapRenderStageCubeMap { get; set; }
+        [DataMemberIgnore]
+        public RenderStage MainRenderStage { get; set; }
+
+        [DataMemberIgnore]
+        public RenderStage TransparentRenderStage { get; set; }
+
+        //[DataMemberIgnore]
+        //public RenderStage GBufferRenderStage { get; set; }
+
+        [DataMemberIgnore]
+        public RenderStage ShadowMapRenderStage { get; set; }
+
+        [DataMemberIgnore]
+        public RenderStage ShadowMapRenderStageDp { get; set; }
+
+        [DataMemberIgnore]
+        public RenderStage ShadowMapRenderStageCubeMap { get; set; }
 
         [DefaultValue(true)]
         [DataMemberIgnore]
@@ -43,10 +54,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Create mandatory render stages that don't exist yet
             if (MainRenderStage == null)
-                MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+                MainRenderStage = RenderSystem.GetOrCreateRenderStage("Main", "Main",
+                    new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
             if (TransparentRenderStage == null)
-                TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main", new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
-           
+                TransparentRenderStage = RenderSystem.GetOrCreateRenderStage("Transparent", "Main",
+                    new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat));
+
             // Setup stage RenderOutputDescription (since we have the render frame bound)
             var output = Context.Tags.Get(RenderFrame.Current);
             MainRenderStage.Output = output.GetRenderOutputDescription();
@@ -94,11 +107,9 @@ namespace SiliconStudio.Xenko.Rendering
             var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
             shadowPipelinePlugin?.RenderViewsWithShadows.Remove(MainRenderView);
 
-            base.Unload();  
+            base.Unload();
         }
-
-
-
+        
         protected override void DrawCore(RenderDrawContext context)
         {
             var currentViewport = context.CommandList.Viewport;
@@ -115,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering
             //
             //    context.PopRenderTargets();
             //}
-            
+
             // Draw [shadow views]
             var shadowMapRenderer = meshPipelinePlugin?.ForwardLightingRenderFeature?.ShadowMapRenderer;
             if (Shadows && shadowMapRenderer != null)
@@ -131,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == MainRenderView)
                     {
-                        if(Profiling)
+                        if (Profiling)
                             context.CommandList.BeginProfile(Color.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
 
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
@@ -158,7 +169,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
-                if(Profiling)
+                if (Profiling)
                     context.CommandList.EndProfile();
             }
 
