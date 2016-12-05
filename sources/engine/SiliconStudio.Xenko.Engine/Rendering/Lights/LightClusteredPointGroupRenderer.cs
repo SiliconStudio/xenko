@@ -297,6 +297,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var light = Lights[i].Light;
                     var pointLight = (LightPoint)light.Type;
 
+                    if (pointLight.Shadow != null && pointLight.Shadow.Enabled)
+                        continue;
+
                     // Create point light data
                     var pointLightData = new PointLightData
                     {
