@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
@@ -18,6 +19,7 @@ namespace SiliconStudio.Core.Yaml
         private event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         private Serializer globalSerializer;
+        private Serializer globalSerializerWithoutId;
 
         public static AssetYamlSerializer Default { get; set; } = new AssetYamlSerializer();
 
@@ -63,7 +65,7 @@ namespace SiliconStudio.Core.Yaml
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred, out PropertyContainer contextProperties)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(true);
             SerializerContext context;
             var result = serializer.Deserialize(stream, expectedType, contextSettings, out context);
             aliasOccurred = context.HasRemapOccurred;
@@ -155,17 +157,18 @@ namespace SiliconStudio.Core.Yaml
             {
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
+                globalSerializerWithoutId = null;
             }
         }
 
-        private Serializer GetYamlSerializer()
+        private Serializer GetYamlSerializer(bool generateIds = false)
         {
             // Cache serializer to improve performance
-            var localSerializer = CreateSerializer(ref globalSerializer);
+            var localSerializer = generateIds ? CreateSerializer(ref globalSerializer, true) : CreateSerializer(ref globalSerializerWithoutId, false);
             return localSerializer;
         }
 
-        private Serializer CreateSerializer(ref Serializer localSerializer)
+        private Serializer CreateSerializer(ref Serializer localSerializer, bool generateIds)
         {
             // Early exit if already initialized
             if (localSerializer != null)
@@ -190,7 +193,7 @@ namespace SiliconStudio.Core.Yaml
                         SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets")
                     };
 
-                    config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                    config.Attributes.PrepareMembersCallback += (objDesc, members) => PrepareMembersCallback(generateIds, objDesc, members);
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                     {
@@ -209,25 +212,28 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private void PrepareMembersCallback(ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        private void PrepareMembersCallback(bool generateIds, ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objDesc.Type;
 
-            if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
+            if (generateIds)
             {
-                memberDescriptors.Add(legacyIdDynamicMemberDescriptor);
+                if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
+                {
+                    memberDescriptors.Add(customDynamicMemberDescriptor);
+                }
             }
 
             // Call custom callbacks to prepare members
             PrepareMembersEvent?.Invoke(objDesc, memberDescriptors);
         }
 
-        private readonly LegacyIdDynamicMember legacyIdDynamicMemberDescriptor = new LegacyIdDynamicMember();
+        private readonly CustomDynamicMember customDynamicMemberDescriptor = new CustomDynamicMember();
 
         // This class exists only for backward compatibility with previous ~Id. It can be removed once we drop backward support
-        private class LegacyIdDynamicMember : DynamicMemberDescriptorBase
+        private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
-            public LegacyIdDynamicMember() : base(ShadowId.YamlSpecialId, typeof(Guid), typeof(object))
+            public CustomDynamicMember() : base(ShadowId.YamlSpecialId, typeof(Guid), typeof(object))
             {
                 Order = -int.MaxValue;
             }
