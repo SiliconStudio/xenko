@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             intermediate.xy = intermediate.xy * 0.5 + float2(0.5, 0.5);
 
             // Apply offset into atlas and size of a single face in the atlas
-            float2 samplePosition = intermediate.xy * LightFaceSize[lightIndex] + LightOffset[lightIndex];
+            float2 samplePosition = intermediate.xy * LightFaceSize[lightIndex] + LightFaceOffset[lightIndex];
 
             [flatten]
             if(lightSpace.z < 0)

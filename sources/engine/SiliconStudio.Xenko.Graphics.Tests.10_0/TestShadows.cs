@@ -104,6 +104,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
             ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
             ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
+            ProfilerSystem.EnableProfiling(false, ProfilingKeys.Visibility);
 
             Window.AllowUserResizing = true;
 
@@ -221,7 +222,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //}
 
             // Create a light
-            for(int i = 0; i < 64; i++)
+            int lightCount = 256;
+            for(int i = 0; i < lightCount; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
@@ -232,7 +234,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
                 lightType.Radius = PlaneSize;
 
-                var lightComponent = new LightComponent { Type = lightType, Intensity = 15.0f };
+                var lightComponent = new LightComponent { Type = lightType, Intensity = 60.0f / lightCount };
                 var lightSubEntity = new Entity { lightComponent };
                 pointLights.Add(lightComponent);
                 lightEntity1 = GenerateSphere();
