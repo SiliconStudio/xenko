@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         cbuffer PerDraw.Lighting
         {
-            float2 LightOffset[TLightCount];
+            float2 LightFaceOffset[TLightCount];
             float2 LightBackfaceOffset[TLightCount];
             float2 LightFaceSize[TLightCount];
             float2 LightDepthParameters[TLightCount];

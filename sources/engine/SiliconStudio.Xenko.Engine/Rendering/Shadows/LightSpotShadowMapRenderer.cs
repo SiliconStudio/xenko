@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Renders a shadow map from a directional light.
     /// </summary>
-    public class LightSpotShadowMapRenderer : CascadeShadowMapRendererBase
+    public class LightSpotShadowMapRenderer : LightShadowMapRendererBase
     {
         /// <summary>
         /// The various UP vectors to try.
@@ -118,14 +118,26 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.ProjectionMatrix = projectionMatrix;
         }
 
-        public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
-        {
-            if (cascadeIndex > 0)
-                throw new ArgumentException("Spot lights do not use multiple shadow cascades", nameof(cascadeIndex));
+        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        {  
+            // Allocate shadow render view
+            var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
+            shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
+            shadowRenderView.ShadowMapTexture = shadowMapTexture;
+            shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(0);
 
+            // Compute view parameters
             var shaderData = (LightSpotShadowMapShaderData)shadowMapTexture.ShaderData;
-            view = shaderData.ViewMatrix;
-            projection = shaderData.ProjectionMatrix;
+            shadowRenderView.View = shaderData.ViewMatrix;
+            shadowRenderView.Projection = shaderData.ProjectionMatrix;
+
+            Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+
+            // Add the render view for the current frame
+            ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
+
+            // Collect objects in shadow views
+            visibilityGroup.Collect(shadowRenderView);
         }
 
         private class LightSpotShadowMapShaderData : ILightShadowMapShaderData

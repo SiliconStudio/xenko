@@ -267,7 +267,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
-                lightOffsetsKey = ShadowMapReceiverPointDpKeys.LightOffset.ComposeWith(compositionName);
+                lightOffsetsKey = ShadowMapReceiverPointDpKeys.LightFaceOffset.ComposeWith(compositionName);
                 lightBackfaceOffsetsKey = ShadowMapReceiverPointDpKeys.LightBackfaceOffset.ComposeWith(compositionName);
                 lightFaceSizeKey = ShadowMapReceiverPointDpKeys.LightFaceSize.ComposeWith(compositionName);
                 lightDepthParametersKey = ShadowMapReceiverPointDpKeys.LightDepthParameters.ComposeWith(compositionName);

@@ -102,6 +102,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
+            ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
 
             Window.AllowUserResizing = true;
 
@@ -122,10 +124,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             Random random = new Random(11324);
             for (int i = 0; i < 16; i++)
             {
-                // Add the cube to the scene
                 var cube = GenerateTeapot();
                 cube.Transform.Position = new Vector3((float)random.NextDouble()*PlaneSize - HalfPlaneSize,
-                    (float)random.NextDouble()*2.0f + 0.2f,
+                    (float)random.NextDouble()*3.0f + 0.2f,
                     (float)random.NextDouble()*PlaneSize - HalfPlaneSize);
                 cube.Transform.Rotation = Quaternion.RotationYawPitchRoll((float)random.NextDouble()*MathUtil.TwoPi,
                     (float)random.NextDouble()*MathUtil.TwoPi,
@@ -135,10 +136,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             for (int i = 0; i < 32; i++)
             {
-                // Add the cube to the scene
                 var cube = GenerateTeapot();
                 cube.Transform.Position = new Vector3((float)random.NextDouble()*PlaneSize - HalfPlaneSize,
-                    (float)random.NextDouble()*-2.0f + PlaneSize - 0.2f,
+                    (float)random.NextDouble()*-3.0f + PlaneSize - 0.2f,
                     (float)random.NextDouble()*PlaneSize - HalfPlaneSize);
                 cube.Transform.Rotation = Quaternion.RotationYawPitchRoll((float)random.NextDouble()*MathUtil.TwoPi,
                     (float)random.NextDouble()*MathUtil.TwoPi,
@@ -148,11 +148,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             for (int i = 0; i < 16; i++)
             {
-                // Add the cube to the scene
                 var cube = GenerateTeapot();
-                cube.Transform.Position = new Vector3((float)random.NextDouble()*2.0f + -HalfPlaneSize + 0.2f,
+                cube.Transform.Position = new Vector3(((float)random.NextDouble() * 2.0f - 1.0f) * HalfPlaneSize,
                     (float)random.NextDouble()*PlaneSize,
-                    (float)random.NextDouble()*PlaneSize - HalfPlaneSize);
+                    ((float)random.NextDouble() * 2.0f - 1.0f) * HalfPlaneSize);
                 cube.Transform.Rotation = Quaternion.RotationYawPitchRoll((float)random.NextDouble()*MathUtil.TwoPi,
                     (float)random.NextDouble()*MathUtil.TwoPi,
                     (float)random.NextDouble()*MathUtil.TwoPi);
@@ -160,10 +159,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 scene.Entities.Add(cube);
             }
 
-            var cube1 = GenerateCube(2.0f);
-            cube1.Transform.Position = new Vector3(0.0f, HalfPlaneSize, 0.0f);
-            cube1.Transform.Scale = new Vector3(1.0f);
-            scene.Entities.Add(cube1);
+            //var cube1 = GenerateCube(2.0f);
+            //cube1.Transform.Position = new Vector3(0.0f, HalfPlaneSize, 0.0f);
+            //cube1.Transform.Scale = new Vector3(1.0f);
+            //scene.Entities.Add(cube1);
 
             {
                 var planeLeft = GeneratePlane();
@@ -222,14 +221,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //}
 
             // Create a light
+            for(int i = 0; i < 64; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
-                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
-                lightType.Shadow.Size = LightShadowMapSize.Large;
+                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.DualParaboloid;
+                lightType.Shadow.Size = LightShadowMapSize.XSmall;
                 //lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
-                lightType.Color = new ColorRgbProvider(Color.White);
-                lightType.Radius = PlaneSize*2.0f;
+                Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
+                lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
+                lightType.Radius = PlaneSize;
 
                 var lightComponent = new LightComponent { Type = lightType, Intensity = 15.0f };
                 var lightSubEntity = new Entity { lightComponent };
@@ -378,10 +379,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             lightDistance += Input.MouseWheelDelta/120.0f*0.25f;
 
             // Rotate the light on the timer + offset
+            for(int i = 0; i < pointLights.Count; i++)
             {
-                float lightX = (float)Math.Cos(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)* lightDistance;
-                float lightZ = (float)Math.Sin(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)* lightDistance;
-                lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
+                float phase = (i*-0.2f) + (float)lightTimer.Elapsed.TotalSeconds*(1.0f-i*0.3f);
+                float distMult = (float)Math.Cos(phase * 0.25f + lightRotationOffset) * 0.5f + 1.5f;
+                float lightX = (float)Math.Cos(phase + lightRotationOffset)* lightDistance * distMult;
+                float lightZ = (float)Math.Sin(phase + lightRotationOffset)* lightDistance * distMult;
+                float lightY = (float)-Math.Sin(phase * 0.5f + lightRotationOffset) * lightDistance * distMult;
+                pointLights[i].Entity.Transform.Position = new Vector3(lightX, lightY, lightZ);
+                //lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
             }
         }
 

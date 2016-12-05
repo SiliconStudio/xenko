@@ -1,12 +1,7 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
@@ -82,36 +77,5 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shadowMapTexture.CascadeCount = light.Shadow.GetCascadeCount();
             return shadowMapTexture;
         }
-    }
-
-    public abstract class CascadeShadowMapRendererBase : LightShadowMapRendererBase
-    {
-        public CascadeShadowMapRendererBase(ShadowMapRenderer parent) : base(parent)
-        {
-        }
-
-        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
-        {
-            for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
-            {
-                // Allocate shadow render view
-                var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
-                shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
-                shadowRenderView.ShadowMapTexture = shadowMapTexture;
-                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
-
-                // Compute view parameters
-                GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
-                Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
-
-                // Add the render view for the current frame
-                ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
-
-                // Collect objects in shadow views
-                visibilityGroup.Collect(shadowRenderView);
-            }
-        }
-
-        public abstract void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
     }
 }

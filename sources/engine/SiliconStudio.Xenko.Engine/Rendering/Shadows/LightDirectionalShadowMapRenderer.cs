@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Renders a shadow map from a directional light.
     /// </summary>
-    public class LightDirectionalShadowMapRenderer : CascadeShadowMapRendererBase
+    public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
         /// <summary>
         /// The various UP vectors to try.
@@ -272,7 +272,29 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
+        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        {
+            for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
+            {
+                // Allocate shadow render view
+                var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
+                shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
+                shadowRenderView.ShadowMapTexture = shadowMapTexture;
+                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
+
+                // Compute view parameters
+                GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+
+                // Add the render view for the current frame
+                ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
+
+                // Collect objects in shadow views
+                visibilityGroup.Collect(shadowRenderView);
+            }
+        }
+
+        private void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
         {
             var shaderData = (LightDirectionalShadowMapShaderData)shadowMapTexture.ShaderData;
             view = shaderData.ViewMatrix[cascadeIndex];
