@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == MainRenderView)
                     {
                         if(Profiling)
-                            context.CommandList.BeginProfile(Color4.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
+                            context.CommandList.BeginProfile(Color.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
 
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | main stage]
             {
                 if (Profiling)
-                    context.CommandList.BeginProfile(Color4.Black, $"Main Stage");
+                    context.CommandList.BeginProfile(Color.Black, $"Main Stage");
 
                 RenderSystem.Draw(context, MainRenderView, MainRenderStage);
 
@@ -169,7 +169,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Draw [main view | transparent stage]
             {
                 if (Profiling)
-                    context.CommandList.BeginProfile(Color4.Black, $"Transparent Stage");
+                    context.CommandList.BeginProfile(Color.Black, $"Transparent Stage");
 
                 RenderSystem.Draw(context, MainRenderView, TransparentRenderStage);
 

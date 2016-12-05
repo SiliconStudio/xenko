@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.FarClipPlane = GetShadowMapFarPlane(shadowMapTexture);
 
                 // Compute view parameters
-                // Note: we only need view here since we are doing paraboloid projection in the shaders
+                // Note: we only need view here since we are doing paraboloid projection in the vertex shader
                 GetViewParameters(shadowMapTexture, i, out shadowRenderView.View, true);
 
                 Matrix virtualProjectionMatrix = shadowRenderView.View;
@@ -177,49 +177,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         }
 
         /// <summary>
-        /// Calculates the direction of the split between the shadow maps based on which object is closest to the light
+        /// Calculates the direction of the split between the shadow maps
         /// </summary>
-        /// <param name="visibilityGroup"></param>
-        /// <param name="shadowMapTexture"></param>
         private void CalculateViewDirection(VisibilityGroup visibilityGroup, LightShadowMapTexture shadowMapTexture)
         {
             var pointShadowMapTexture = shadowMapTexture as ShadowMapTexture;
-
-            // Find closest object to the light
-            float closestObjectDistance = float.MaxValue;
-            Vector3 closestObjectDelta = Vector3.Zero;
-            Vector3 lightPosition = shadowMapTexture.LightComponent.Position;
-            foreach (var obj in visibilityGroup.RenderObjects)
-            {
-                var renderMesh = obj as RenderMesh;
-                if (renderMesh == null || !renderMesh.IsShadowCaster)
-                    continue;
-
-                Vector3 delta = obj.BoundingBox.Center - lightPosition;
-                float length = delta.LengthSquared();
-                if (length < closestObjectDistance)
-                {
-                    closestObjectDelta = delta;
-                    closestObjectDistance = length;
-                }
-            }
-
-            closestObjectDelta.Normalize();
-
-            Vector3 forward = closestObjectDelta;
-            Vector3 up;
-            //if (Math.Abs(forward.X) > 0.1)
-            //    up = new Vector3(forward.Y, -forward.X, forward.Z);
-            //else
-            //    up = new Vector3(forward.X, -forward.Z, forward.Y);
-            up = Vector3.UnitY;
-            Vector3 right = Vector3.Cross(up, forward);
-            right.Normalize();
-            up = Vector3.Cross(right, forward);
-            pointShadowMapTexture.ForwardMatrix = Matrix.Identity;
-            pointShadowMapTexture.ForwardMatrix.Right = right;
-            pointShadowMapTexture.ForwardMatrix.Up = up;
-            pointShadowMapTexture.ForwardMatrix.Forward = forward;
+            Matrix lower;
+            shadowMapTexture.LightComponent.Entity.Transform.WorldMatrix.DecomposeLQ(out lower, out pointShadowMapTexture.ForwardMatrix);
+            pointShadowMapTexture.ForwardMatrix.Invert();
         }
 
         private class ShadowMapTexture : LightShadowMapTexture

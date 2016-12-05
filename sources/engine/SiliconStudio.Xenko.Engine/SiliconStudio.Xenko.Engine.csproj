@@ -558,7 +558,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
     </None>
-    <Compile Include="Rendering\Shadows\LightPointCubeMapShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRendererCubeMap.cs" />
     <None Include="Rendering\Shadows\ShadowMapCasterDp.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterDp.cs</LastGenOutput>

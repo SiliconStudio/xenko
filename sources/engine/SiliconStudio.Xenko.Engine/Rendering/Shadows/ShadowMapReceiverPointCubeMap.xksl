@@ -31,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         override void ComputeShadow(int lightIndex)
         {
+            // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
             float3 delta = streams.PositionWS.xyz - LightPosition[lightIndex].xyz;
 			float3 direction = normalize(delta);
 			float3 dirAbs = abs(direction);

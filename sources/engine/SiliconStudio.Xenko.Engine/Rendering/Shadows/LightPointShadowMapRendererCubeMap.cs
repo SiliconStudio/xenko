@@ -16,13 +16,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Renders point light shadow maps using a cubemap
     /// </summary>
-    public class LightPointCubeMapShadowMapRenderer : LightShadowMapRendererBase
+    public class LightPointShadowMapRendererCubeMap : LightShadowMapRendererBase
     {
-        public readonly RenderStage ShadowMapRenderStageCubeMap;
+        // Number of border pixels to add to the cube map in order to allow filtering
+        public const int BorderPixels = 8;
 
+        public readonly RenderStage ShadowMapRenderStageCubeMap;
+        
         private PoolListStruct<ShaderData> shaderDataPool;
 
-        public LightPointCubeMapShadowMapRenderer(ShadowMapRenderer parent) : base(parent)
+        public LightPointShadowMapRendererCubeMap(ShadowMapRenderer parent) : base(parent)
         {
             ShadowMapRenderStageCubeMap = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterCubeMap");
 
@@ -72,7 +75,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Note: we only need view here since we are doing paraboloid projection in the shaders
                 GetViewParameters(shadowMapTexture, i, out shadowRenderView.View, true);
 
-                shadowRenderView.Projection = Matrix.PerspectiveFovRH(MathUtil.PiOverTwo, 1.0f, shadowRenderView.NearClipPlane, shadowRenderView.FarClipPlane);
+                // Calculate angle of the projection with border pixels taken into account to allow filtering
+                float halfMapSize = shadowRenderView.Rectangle.Width/2;
+                float halfFov = (float)Math.Atan((halfMapSize + BorderPixels)/ halfMapSize);
+
+                shadowRenderView.Projection = Matrix.PerspectiveFovRH(halfFov*2, 1.0f, shadowRenderView.NearClipPlane, shadowRenderView.FarClipPlane);
                 shadowRenderView.ViewProjection = shadowRenderView.View * shadowRenderView.Projection;
 
                 shadowRenderView.VisiblityIgnoreDepthPlanes = false;
@@ -159,17 +166,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             Vector2 atlasSize = new Vector2(lightShadowMap.Atlas.Width, lightShadowMap.Atlas.Height);
 
             Rectangle frontRectangle = lightShadowMap.GetRectangle(0);
-
-            int borderPixels = 1;
-            int borderBothSides = borderPixels*2;
+            
+            int borderPixels2 = BorderPixels * 2;
 
             // Coordinates have 1 border pixel so that the shadow receivers don't accidentally sample outside of the texture area
-            shaderData.FaceSize = new Vector2(frontRectangle.Width - borderBothSides, frontRectangle.Height - borderBothSides) / atlasSize;
+            shaderData.FaceSize = new Vector2(frontRectangle.Width - borderPixels2, frontRectangle.Height - borderPixels2) / atlasSize;
 
             for (int i = 0; i < 6; i++)
             {
                 Rectangle faceRectangle = lightShadowMap.GetRectangle(i);
-                shaderData.FaceOffsets[i] = new Vector2(faceRectangle.Left + borderPixels, faceRectangle.Top + borderPixels) /atlasSize;
+                shaderData.FaceOffsets[i] = new Vector2(faceRectangle.Left + BorderPixels, faceRectangle.Top + BorderPixels) /atlasSize;
             }
 
             var clippingPlanes = GetLightClippingPlanes((LightPoint)lightShadowMap.Light);
