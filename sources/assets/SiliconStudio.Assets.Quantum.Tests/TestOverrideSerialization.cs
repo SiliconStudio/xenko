@@ -109,8 +109,8 @@ MyString: MyBaseString
 ";
         private const string SimplePropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyString*: MyDerivedString
 ";
         private const string SimpleCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
@@ -124,8 +124,8 @@ MyStrings:
 ";
         private const string SimpleCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings: {}
 MyStrings:
@@ -141,8 +141,8 @@ MyDictionary:
 ";
         private const string SimpleDictionaryUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyDictionary:
     0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
@@ -158,8 +158,8 @@ MyStrings: {}
 ";
         private const string CollectionInStructDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings:
         0a0000000a0000000a0000000a000000*: MyDerivedString
@@ -178,8 +178,8 @@ MyStrings:
 ";
         private const string SimpleCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings: {}
 MyStrings:
@@ -198,8 +198,8 @@ MyDictionary:
 ";
         private const string SimpleDictionaryAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
@@ -217,8 +217,8 @@ MyObjects:
 ";
         private const string ObjectCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000*:
         Value: MyDerivedString
@@ -238,8 +238,8 @@ MyObjects:
 ";
         private const string ObjectCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000:
         Value: String1
@@ -261,8 +261,8 @@ MyObjects:
 ";
         private const string ObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000:
         Value*: MyDerivedString
@@ -278,13 +278,12 @@ MyObjects:
 ";
         private const string NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     -   Value*: MyDerivedString
     -   Value: MyBaseString
 ";
-
 
         [Test]
         public void TestSimplePropertySerialization()
