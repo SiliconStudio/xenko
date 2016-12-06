@@ -11,6 +11,8 @@ Attributes:
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
+        ScaleAndBias: false
+        IsXYNormal: true
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: 2952540d-e165-44f6-bdd8-87b1322e99d0:Materials/brick/brick_dif
