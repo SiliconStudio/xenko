@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 samplePosition += LightBackfaceOffset[lightIndex];
             }
             
-            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex]);
+            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex], float2(0,0));
         }
     };
 }

@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
 
 			float projectedDepth = ProjectDepth(lightIndex, str.z - DepthBiases[lightIndex]);
-            streams.shadowColor = FilterShadow(textureOffset, projectedDepth);
+            streams.shadowColor = FilterShadow(textureOffset, projectedDepth, float2(0,0));
         }
     };
 }
