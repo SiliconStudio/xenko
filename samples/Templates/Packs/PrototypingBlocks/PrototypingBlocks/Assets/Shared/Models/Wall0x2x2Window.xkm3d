@@ -5,8 +5,10 @@ Tags: []
 Source: ../../../Resources/Models/Wall0x2x2Window.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    2a4c62502d84612cd0bc56d6d0bc56d6:
+    b19f2620a0d94f2e895b6d9b068b1c69:
         Name: GridMT
         MaterialInstance:
             Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
+~SourceHashes:
+    138f8ede1a98fc679aa0a14654d2ea03~../../../Resources/Models/Wall0x2x2Window.fbx: 91f14428325fa4d499490e6a3a5e3a1c

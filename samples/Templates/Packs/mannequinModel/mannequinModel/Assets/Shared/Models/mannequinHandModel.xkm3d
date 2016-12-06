@@ -5,20 +5,22 @@ Tags: []
 Source: ../../../Resources/Models/mannequinHandModel.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    7b8394fb681bf353e28097d3e28097d3:
+    0ea66a58944e63e2fcd9d727bd292e65:
         Name: glowMT
         MaterialInstance:
             Material: 0f499298-b91f-4273-9bf6-002dede230de:Materials/Emissive
-    98c4d20c91aa1618068f92bf068f92bf:
+    710dcf89d33179da90e505099addf21f:
         Name: glossMT
         MaterialInstance:
             Material: 1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
-    b158ca41e15b46f8b2746c0a97fdd6ee:
+    f3d5a396e21f42c37cfecc8e7741bc95:
         Name: semiGlossMT
         MaterialInstance:
             Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
-    faa4a3f8305ed27cc904838a9cc19a82:
+    22cd8047b37cc17814610c44c9973cdf:
         Name: upperMatteMT
         MaterialInstance:
             Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
 Skeleton: 64401578-294c-4eb2-b92f-4c0a805d7314:Models/mannequinHandModel Skeleton
+~SourceHashes:
+    90c22fb4f3d8c4da55f0beea663435f5~../../../Resources/Models/mannequinHandModel.fbx: db1befd09793cb26baaafc47576b4e4f

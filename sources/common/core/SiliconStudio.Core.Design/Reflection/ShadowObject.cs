@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Reflection
                 return;
 
             var newShadow = Shadows.GetValue(toInstance, key => new ShadowObject());
-            foreach (var keyValue in shadow.Where(x => x.Value?.GetType().IsValueType ?? true))
+            foreach (var keyValue in shadow.Where(x => x.Key.CopyValueOnClone))
             {
                 newShadow.Add(keyValue.Key, keyValue.Value);
             }
