@@ -104,7 +104,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
             ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
             ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
-            ProfilerSystem.EnableProfiling(false, ProfilingKeys.Visibility);
 
             Window.AllowUserResizing = true;
 
