@@ -32,7 +32,8 @@ namespace SiliconStudio.Assets.Quantum.Commands
             if (memberDescriptor != null)
             {
                 var attrib = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<MemberCollectionAttribute>(memberDescriptor.MemberInfo);
-                if (attrib?.ReadOnly == true) return false;
+                if (attrib?.ReadOnly == true)
+                    return false;
             }
             
             var collectionDescriptor = typeDescriptor as CollectionDescriptor;
@@ -49,8 +50,6 @@ namespace SiliconStudio.Assets.Quantum.Commands
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd = null;
-            // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
-            // TODO: Fix this for asset part types that are also references
             var elementType = collectionDescriptor.ElementType;
             if (CanAddNull(elementType) || IsReferenceType(elementType))
             {
