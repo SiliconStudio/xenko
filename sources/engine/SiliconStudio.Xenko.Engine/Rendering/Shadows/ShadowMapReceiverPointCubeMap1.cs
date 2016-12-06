@@ -22,5 +22,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public static readonly ValueParameterKey<Vector2> LightFaceOffsets = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<Vector2> LightFaceSize = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<Vector2> LightDepthParameters = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> DepthBiases = ParameterKeys.NewValue<float>();
     }
 }

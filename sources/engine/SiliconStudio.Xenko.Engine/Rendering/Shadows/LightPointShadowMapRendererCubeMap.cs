@@ -254,7 +254,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 lightFaceOffsetsKey = ShadowMapReceiverPointCubeMapKeys.LightFaceOffsets.ComposeWith(compositionName);
                 lightFaceSizeKey = ShadowMapReceiverPointCubeMapKeys.LightFaceSize.ComposeWith(compositionName);
                 lightDepthParametersKey = ShadowMapReceiverPointCubeMapKeys.LightDepthParameters.ComposeWith(compositionName);
-                depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionName);
+                depthBiasesKey = ShadowMapReceiverPointCubeMapKeys.DepthBiases.ComposeWith(compositionName);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)

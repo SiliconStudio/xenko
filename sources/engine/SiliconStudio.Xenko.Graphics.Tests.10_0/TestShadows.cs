@@ -221,7 +221,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //}
 
             // Create a light
-            int lightCount = 256;
+            int lightCount = 32;
             for(int i = 0; i < lightCount; i++)
             {
                 var lightType = new LightPoint();

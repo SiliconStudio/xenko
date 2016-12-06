@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Selects the shadow map and computes the shadow factor.
     /// </summary>
-    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : ShadowMapReceiverBase<PerDraw.Lighting, 1, TLightCount>
+    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : MaterialPixelShadingStream, ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4
     {
         cbuffer PerDraw.Lighting
         {
@@ -15,18 +15,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float2 LightFaceOffsets[TLightCount*6];
             float2 LightFaceSize[TLightCount];
             float2 LightDepthParameters[TLightCount];
+            float DepthBiases[TLightCount];
         };
 		
 		// Projects depth into the depth buffer space
 		stage float ProjectDepth(int lightIndex, float depth)
         {
             return LightDepthParameters[lightIndex].y / depth + LightDepthParameters[lightIndex].x;
-        }
-
-		// Reconstruct linear depth
-		stage float ReconstructCSZ(int lightIndex, float depth)
-        {
-            return LightDepthParameters[lightIndex].y / (depth - LightDepthParameters[lightIndex].x);
         }
 
         override void ComputeShadow(int lightIndex)
@@ -72,8 +67,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
 			float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
 
-			float projectedDepth = ProjectDepth(lightIndex, str.z - DepthBiases[lightIndex]);
+		    float projectedDepth = ProjectDepth(lightIndex, str.z - DepthBiases[lightIndex]);
             streams.shadowColor = FilterShadow(textureOffset, projectedDepth, float2(0,0));
+
+            //streams.shadowColor = float3(textureOffset.x,0,0);
         }
     };
 }
