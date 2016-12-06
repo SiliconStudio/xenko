@@ -14,8 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         cbuffer PerLighting // TODO: Use a proper cbuffer for this?
         {
             float4x4 WorldToShadowCascadeUV[TCascadeCountBase * TLightCountBase];
+            float4x4 WorldToShadowCascadeUVInverse[TCascadeCountBase * TLightCountBase];
             float DepthBiases[TLightCountBase];
             float OffsetScales[TLightCountBase];
+            bool GradientShadowMap[TLightCountBase];
         };
 
         float3 GetShadowPositionOffset(float offsetScale, float nDotL, float3 normal)
@@ -24,16 +26,59 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return 2.0f * ShadowMapTextureTexelSize.x * offsetScale * normalOffsetScale * normal;
         }
 
-        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex)
+        float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex, float3 normal)
         {
-            //float3 shadowPositionWSddx = ddx_fine(shadowPositionWS);
-            //float3 shadowPositionWSddy = ddy_fine(shadowPositionWS);
+            float2 gradient = 0;
+            float4x4 world2shadowUV = WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase];
 
-            float4 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase]);
+            if (GradientShadowMap[lightIndex])
+            {
+                float4 leftUV = float4(1, 0, 0, 0);
+                float4 upUV =   float4(0, 1, 0, 0);
+                float4 ldirUV = float4(0, 0, 1, 0);
+
+                float4x4 invmat = WorldToShadowCascadeUVInverse[cascadeIndex + lightIndex * TCascadeCountBase];
+
+                float3 upWS   = mul(upUV,   invmat).xyz;
+                float3 leftWS = mul(leftUV, invmat).xyz;
+                float3 ldirWS = mul(ldirUV, invmat).xyz;
+
+                float3 pstart2 = upWS /* + p0*/;  // but we say p0=(000) to simplify
+
+                // intersect light dir ray to geometry:
+                float t2 = -dot(normal, pstart2) / dot(normal, ldirWS);
+                float3 p2 = pstart2 + ldirWS * t2;
+
+                float3 pstart1 = leftWS /* + p0*/;
+                float t1 = -dot(normal, pstart1) / dot(normal, ldirWS);
+                float3 p1 = pstart1 + ldirWS * t1;
+
+                // rexpress in UV space:
+                float4 p2UV = mul(float4(p2, 1), world2shadowUV);
+                //p2UV /= p2UV.w;
+
+                float4 p1UV = mul(float4(p1, 1), world2shadowUV);
+                //p1UV /= p1UV.w;
+
+                float4 p0UV = mul(float4(0, 0, 0, 1), world2shadowUV);
+                //p0UV /= p0UV.w;
+
+                gradient = float2(p1UV.z - p0UV.z, p2UV.z - p0UV.z);
+
+                // limit problems of degenerate cases (vertical walls when light is vertical):
+                gradient = min(float2(0.1, 0.1), gradient);
+
+                // adapt to size of occupied space in the atlas:
+                if (TCascadeCountBase == 1)
+                    gradient *= 0.5;
+            }
+
+            // world pos to shadow map pos:
+            float4 shadowPosition = mul(float4(shadowPositionWS, 1), world2shadowUV);
             shadowPosition.z -= DepthBiases[lightIndex];
             shadowPosition.xyz /= shadowPosition.w;
 
-            return FilterShadow(shadowPosition.xy, shadowPosition.z);
+            return FilterShadow(shadowPosition.xy, shadowPosition.z, gradient);
         }
     };
 }
