@@ -5,10 +5,8 @@ Tags: []
 Source: ../../Resources/SampleBox.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    7a39766c5ddd8e908441950951371c63:
+    dcf6575f2b37e44a8b065375a2187c83:
         Name: m_a_0
         MaterialInstance:
             Material: 25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
 Skeleton: null
-~SourceHashes:
-    d58488f253b4736f6f67dd1614b8a90e~../../Resources/SampleBox.FBX: b5f389bd04fd3ea2cf5333d4c74d12d3

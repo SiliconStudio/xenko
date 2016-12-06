@@ -5,22 +5,20 @@ Tags: []
 Source: ../../../Resources/Models/HandModelRight.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    1f6307db374cc05ba07177f60f42baac:
+    6a70d88729ca6a32a5bb95c95bade139:
         Name: SemiglossMT
         MaterialInstance:
             Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
-    49bb145fa8e8954ea542c409c0908d48:
+    320080a3133b85e84f5c5af64f5c5af6:
         Name: GlossMT
         MaterialInstance:
             Material: 1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
-    a29e7b389dc223ad71c0ba576ef49cbb:
+    faa4a3f8305ed27cc904838a9cc19a82:
         Name: upperMatteMT
         MaterialInstance:
             Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
-    d619a2e71c35c63906366cae8deac8e5:
+    e3befa98ad23d3cfa84708dda84708dd:
         Name: lambert1
         MaterialInstance:
             Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
 Skeleton: 81c9644d-cf07-4cfe-a3dd-5836202ba647:Models/HandModelRight Skeleton
-~SourceHashes:
-    047f5efc9c14323d9ba8db37554a14f7~../../../Resources/Models/HandModelRight.fbx: a3d72d9e3c4237ebc9cade426869f4f6

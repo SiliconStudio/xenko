@@ -5,10 +5,8 @@ Tags: []
 Source: ../../../Resources/Models/XenkoCoin.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    cf2f5622cf774fb7ddae26ae65764f9e:
+    580b7cbe828207e8828207e8828207e8:
         Name: Coin
         MaterialInstance:
             Material: 3f0137f3-e26b-4913-a475-756e20c3ff79:Materials/coin
 Skeleton: null
-~SourceHashes:
-    250ea2f118bcd75968333c7a46cda912~../../../Resources/Models/XenkoCoin.fbx: f00d518ee22cd1edef712f91c53faceb

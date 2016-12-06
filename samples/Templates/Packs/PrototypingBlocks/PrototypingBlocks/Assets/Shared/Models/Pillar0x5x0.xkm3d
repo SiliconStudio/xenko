@@ -5,10 +5,8 @@ Tags: []
 Source: ../../../Resources/Models/Pillar0x5x0.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    78892629490f3aaa1448f66e8d902af9:
+    2a4c62502d84612cd0bc56d6d0bc56d6:
         Name: GridMT
         MaterialInstance:
             Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
-~SourceHashes:
-    a4f0dc3e07175e6fb369af2a6ea97fad~../../../Resources/Models/Pillar0x5x0.fbx: ad5812b5b7ebdc239a99f5bb30b223c4

@@ -5,10 +5,8 @@ Tags: []
 Source: ../../../Resources/Models/Stairs1x1x2.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    19b4ff2030fea9f1ea743808bf0f4036:
+    2a4c62502d84612cd0bc56d6d0bc56d6:
         Name: GridMT
         MaterialInstance:
             Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
-~SourceHashes:
-    76e490fd1c2df4dbc26b1f877c569d14~../../../Resources/Models/Stairs1x1x2.fbx: eca2cc3b230370e156300d5a569950e8

@@ -3,22 +3,20 @@ Id: ed4d6771-9481-4867-b85a-9d04280baba5
 Tags: []
 Source: ../../Resources/character_template_3head.ssae
 NodeNames:
-    1555f9d83d2a7fb14a99f66765244d30: root
-    bb6907f5db236cd1b984a63ea3b2b02e: hip
-    366dec2288764d08e724820b83d162c5: body
-    bd93506773be5cb6c43dbd19276208e8: head
-    aa2e66b0b72d5a682c9a641592afcf80: hair
-    030a14f87d27983043a891cc202af07f: upperarm_r
-    77be609b10a564edfa1335ab6c5d0253: arm_r
-    c2986e0d68eb22f7c04f943781d7fb3a: object1
-    b77690c531d200ee6a97aeae10bfc6ff: object2
-    2ede3af25c40286782fc17459315e452: upperarm_l
-    1cf294c5bbd9502906ccfc7d531010f1: arm_l
-    ec5c40c316a4728c654303fd36147b14: object3
-    275bd5241ba26892b920b8756443f163: tight_l
-    cf2461fb75d8dd28d43ab8bdc04326ab: leg_l
-    e68e04afb5b17c5e07968dbb1dfa6474: tight_r
-    d28af049b14fbf93d3d33f6b2a68b741: leg_r
-    4b10a98bc8aea7792773f9e01717b85b: shadow
-~SourceHashes:
-    b1e9c6c80e36e4a146e897d5d2e864dd~../../Resources/character_template_3head.ssae: 59c2c164cb9719b29d02cf9a8254b204
+    821b71fda8e75ada747b8a0057a8d766: root
+    e8207708d543f7d1bdef8c04d0d305a7: hip
+    314dffc5fac019a597a83c00b44225a1: body
+    7a5670e29eb536a49c25f2200be1851d: head
+    744d8cf6b57348f768cea329ddea871f: hair
+    bb192fa5886c77dfdcf585cffa3631d3: upperarm_r
+    f67dece42a66cf49b7153c507bedc8b9: arm_r
+    11c89d1477f24167578bea2b96c5b7b2: object1
+    cf0ac131f8596eebf141e9563d744396: object2
+    76d150d3c873e2132b58638218df289a: upperarm_l
+    589a86a6236a3d7c84444fbef20df255: arm_l
+    4f4390444f7a0ca55c72b22364049021: object3
+    2c42ff226e7766f7198a5e30805db848: tight_l
+    05b5dfb1df628f4ea115a3410d8cc001: leg_l
+    78529358c99597382fa842949f692c50: tight_r
+    0432bf2d22407df184db97fc432da41a: leg_r
+    db20d3b2e466e51962df5b94fd2d37dc: shadow
