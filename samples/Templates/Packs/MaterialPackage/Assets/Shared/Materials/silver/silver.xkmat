@@ -7,7 +7,7 @@ Attributes:
         GlossinessMap: !ComputeBinaryScalar
             Operator: Add
             LeftChild: !ComputeTextureScalar
-                Texture: bde371a3-f784-411d-b9d6-a9dbddc67d47/8fbd4a45-dc52-4ae2-b251-a99a37092949:Materials/silver/silver_mtl
+                Texture: 8fbd4a45-dc52-4ae2-b251-a99a37092949:Materials/silver/silver_mtl
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -16,27 +16,24 @@ Attributes:
                 Value: 0.3
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 312e7f8a-9080-405c-8847-f664a410ffd9/099a944a-1052-470d-8511-db64b77f1614:Materials/silver/silver_dif
+            Texture: 099a944a-1052-470d-8511-db64b77f1614:Materials/silver/silver_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 72fcea96-a76c-4f63-8998-67a3da0a8d81/8fbd4a45-dc52-4ae2-b251-a99a37092949:Materials/silver/silver_mtl
+            Texture: 8fbd4a45-dc52-4ae2-b251-a99a37092949:Materials/silver/silver_mtl
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 9d42fc43-3772-4f26-aa24-bacc8df93296
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 2877ed37-a9ea-4b9f-be8f-5b51ef3d7c85
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: aa4a7cd5-2288-420b-a007-2fd0e102bfe3
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}
