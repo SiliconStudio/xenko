@@ -55,6 +55,10 @@
     <Compile Include="AssetPropertyGraph.cs" />
     <Compile Include="AssetQuantumRegistry.cs" />
     <Compile Include="AssetToBaseNodeLinker.cs" />
+    <Compile Include="Commands\AbstractNodeDifferentValues.cs" />
+    <Compile Include="Commands\AbstractNodeEntry.cs" />
+    <Compile Include="Commands\AbstractNodeType.cs" />
+    <Compile Include="Commands\AbstractNodeValue.cs" />
     <Compile Include="Commands\AddNewItemCommand.cs" />
     <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
