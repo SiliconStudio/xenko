@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // For unsigned textures we need to convert (0, 1) to (-1, 1) range
             if (TScaleAndBias)
             {
-                normal.xy = (2.0f * normal.xy) - 1.0f;
+                normal = (2.0f * normal) - 1.0f;
             }
 
             // Flip along bitangent, if the normal map was generated as left-handed,

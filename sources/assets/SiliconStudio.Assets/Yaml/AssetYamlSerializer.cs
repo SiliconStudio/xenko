@@ -61,6 +61,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="expectedType">The expected type.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <param name="aliasOccurred">if set to <c>true</c> a class/field/property/enum name has been renamed during deserialization.</param>
+        /// <param name="contextProperties">A dictionary or properties that were generated during deserialization.</param>
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(Stream stream, Type expectedType, SerializerContextSettings contextSettings, out bool aliasOccurred, out PropertyContainer contextProperties)
         {
@@ -78,6 +79,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="eventReader">A YAML event reader.</param>
         /// <param name="value">The value.</param>
         /// <param name="expectedType">The expected type.</param>
+        /// <param name="contextProperties">A dictionary or properties that were generated during deserialization.</param>
         /// <param name="contextSettings">The context settings.</param>
         /// <returns>An instance of the YAML data.</returns>
         public object Deserialize(EventReader eventReader, object value, Type expectedType, out PropertyContainer contextProperties, SerializerContextSettings contextSettings = null)
@@ -191,8 +193,7 @@ namespace SiliconStudio.Core.Yaml
                         SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets")
                     };
 
-                    if (generateIds)
-                        config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                    config.Attributes.PrepareMembersCallback += (objDesc, members) => PrepareMembersCallback(generateIds, objDesc, members);
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                     {
@@ -211,13 +212,16 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private void PrepareMembersCallback(ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        private void PrepareMembersCallback(bool generateIds, ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objDesc.Type;
 
-            if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
+            if (generateIds)
             {
-                memberDescriptors.Add(customDynamicMemberDescriptor);
+                if (ShadowId.IsTypeIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
+                {
+                    memberDescriptors.Add(customDynamicMemberDescriptor);
+                }
             }
 
             // Call custom callbacks to prepare members

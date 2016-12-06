@@ -22,3 +22,5 @@ Materials:
         MaterialInstance:
             Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
 Skeleton: null
+~SourceHashes:
+    10b47b21e557752fe8ffbec31774bca1~../../../Resources/Models/MachinegunModel.fbx: f681403f434781ff4a4b3139aa4f6471

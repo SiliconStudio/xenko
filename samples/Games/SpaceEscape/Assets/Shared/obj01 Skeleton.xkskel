@@ -13,3 +13,5 @@ Nodes:
     ee4f1aec15c3374caa33a6be1d393f47: {Name: obj01_B, Depth: 3}
     41d4ef0bb9d33140b6bd69a93b725897: {Name: obj01_02, Depth: 4}
     f4bb6b174aed0041b6679dcf44830023: {Name: obj01_00, Depth: 3}
+~SourceHashes:
+    3945f939d4e82e9d93932951ff213d05~../../Resources/model/BG/scene/obj01.FBX: 9207feb70ceb80973a90773b634d213e
