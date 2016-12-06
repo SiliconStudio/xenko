@@ -166,6 +166,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private ValueParameterKey<float> offsetScalesKey;
 
+            private ValueParameterKey<bool> gradientSamplingKey;
+
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
@@ -188,6 +190,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
                 depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
+                gradientSamplingKey = ShadowMapReceiverBaseKeys.GradientShadowMap.ComposeWith(compositionKey);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -261,6 +264,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
                 parameters.Set(depthBiasesKey, depthBiases);
                 parameters.Set(offsetScalesKey, offsetScales);
+                parameters.Set(gradientSamplingKey, false);
             }
         }
 

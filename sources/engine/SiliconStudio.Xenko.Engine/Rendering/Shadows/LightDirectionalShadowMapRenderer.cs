@@ -139,6 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
+            shaderData.GradientSampling = shadow.GradientSampling;
 
             float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
@@ -264,6 +265,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
+                Matrix.Invert(ref shaderData.WorldToShadowCascadeUV[cascadeLevel], out shaderData.WorldToShadowCascadeUVInverse[cascadeLevel]);
             }
         }
 
@@ -461,6 +463,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 CascadeSplits = new float[cascadeCount];
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
+                WorldToShadowCascadeUVInverse = new Matrix[cascadeCount];
                 ViewMatrix = new Matrix[cascadeCount];
                 ProjectionMatrix = new Matrix[cascadeCount];
             }
@@ -473,7 +476,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public float OffsetScale;
 
+            public bool GradientSampling;
+
             public readonly Matrix[] WorldToShadowCascadeUV;
+
+            public readonly Matrix[] WorldToShadowCascadeUVInverse;
 
             public readonly Matrix[] ViewMatrix;
 
@@ -492,9 +499,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private Matrix[] worldToShadowCascadeUV;
 
+            private Matrix[] worldToShadowCascadeUVInverse;
+
             private float[] depthBiases;
 
             private float[] offsetScales;
+
+            private bool[] useGradientSampling;
 
             private Texture shadowMapTexture;
 
@@ -510,9 +521,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
+            private ValueParameterKey<Matrix> WorldToShadowCascadeUVInverseKey;
+
             private ValueParameterKey<float> depthBiasesKey;
 
             private ValueParameterKey<float> offsetScalesKey;
+
+            private ValueParameterKey<bool> gradientSamplingKey;
 
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
@@ -536,8 +551,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapReceiverDirectionalKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
+                WorldToShadowCascadeUVInverseKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUVInverse.ComposeWith(compositionKey);
                 depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
+                gradientSamplingKey = ShadowMapReceiverBaseKeys.GradientShadowMap.ComposeWith(compositionKey);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -565,8 +582,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 Array.Resize(ref cascadeSplits, cascadeCount * lightCurrentCount);
                 Array.Resize(ref worldToShadowCascadeUV, cascadeCount * lightCurrentCount);
+                Array.Resize(ref worldToShadowCascadeUVInverse, cascadeCount * lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref offsetScales, lightCurrentCount);
+                Array.Resize(ref useGradientSampling, lightCurrentCount);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)
@@ -588,10 +607,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     {
                         cascadeSplits[splitIndex + i] = splits[i];
                         worldToShadowCascadeUV[splitIndex + i] = matrices[i];
+                        worldToShadowCascadeUVInverse[splitIndex + i] = singleLightData.WorldToShadowCascadeUVInverse[i];
                     }
 
                     depthBiases[lightIndex] = singleLightData.DepthBias;
                     offsetScales[lightIndex] = singleLightData.OffsetScale;
+                    useGradientSampling[lightIndex] = singleLightData.GradientSampling;
 
                     // TODO: should be setup just once at creation time
                     if (lightIndex == 0)
@@ -610,8 +631,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
+                parameters.Set(WorldToShadowCascadeUVInverseKey, worldToShadowCascadeUVInverse);
                 parameters.Set(depthBiasesKey, depthBiases);
                 parameters.Set(offsetScalesKey, offsetScales);
+                parameters.Set(gradientSamplingKey, useGradientSampling);
             }
 
             public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)

@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4x4 WorldToShadowCascadeUVInverse[TCascadeCountBase * TLightCountBase];
             float DepthBiases[TLightCountBase];
             float OffsetScales[TLightCountBase];
+            bool GradientShadowMap[TLightCountBase];
         };
 
         float3 GetShadowPositionOffset(float offsetScale, float nDotL, float3 normal)
@@ -25,14 +26,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return 2.0f * ShadowMapTextureTexelSize.x * offsetScale * normalOffsetScale * normal;
         }
 
-        bool GradientShadowMap = true;
-
         float ComputeShadowFromCascade(float3 shadowPositionWS, int cascadeIndex, int lightIndex, float3 normal)
         {
             float2 gradient = 0;
             float4x4 world2shadowUV = WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase];
 
-            if (GradientShadowMap)
+            if (GradientShadowMap[lightIndex])
             {
                 float4 leftUV = float4(1, 0, 0, 0);
                 float4 upUV =   float4(0, 1, 0, 0);
@@ -64,7 +63,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float4 p0UV = mul(float4(0, 0, 0, 1), world2shadowUV);
                 //p0UV /= p0UV.w;
 
-                gradient = float2(min(0.1, p1UV.z - p0UV.z), min(0.1, p2UV.z - p0UV.z));
+                gradient = float2(p1UV.z - p0UV.z, p2UV.z - p0UV.z);
+
+                // limit problems of degenerate cases (vertical walls when light is vertical):
+                gradient = min(float2(0.1, 0.1), gradient);
 
                 // adapt to size of occupied space in the atlas:
                 if (TCascadeCountBase == 1)
