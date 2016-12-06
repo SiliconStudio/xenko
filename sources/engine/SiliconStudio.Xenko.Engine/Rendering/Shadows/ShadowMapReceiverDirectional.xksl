@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     }
                     else if (TBlendCascades)
                     {
-                        float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex);
+                        float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex, streams.normalWS);
                         shadow = lerp(nextShadow, shadow, lerpAmt);
                     }
                 }
