@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // If we are within the cascades
             if (cascadeIndex < TCascadeCount)
             {
-                shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex, lightIndex);
+                shadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex, lightIndex, streams.normalWS);
 
                 float nextSplit = CascadeDepthSplits[cascadeIndexBase + cascadeIndex];
                 float splitSize = cascadeIndex == 0 ? nextSplit : nextSplit - CascadeDepthSplits[cascadeIndexBase + cascadeIndex - 1];
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
                 else if (TBlendCascades)
                 {
-                    float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex);
+                    float nextShadow = ComputeShadowFromCascade(shadowPosition, cascadeIndex + 1, lightIndex, streams.normalWS);
                     shadow = lerp(nextShadow, shadow, lerpAmt);
                 }
             }
