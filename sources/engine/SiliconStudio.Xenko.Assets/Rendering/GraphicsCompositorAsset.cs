@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(RootRenderFeature))]
-    [AssetPartReference(typeof(GraphicsCompositorCode))]
+    [AssetPartReference(typeof(IGraphicsCompositorSharedPart))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     public class GraphicsCompositorAsset : AssetComposite
     {
@@ -57,13 +57,22 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public GraphicsCompositorCode Code { get; set; }
+        public IGraphicsCompositorTopPart TopLevel { get; set; }
+
+        /// <summary>
+        /// The list of graphics compositors.
+        /// </summary>
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
+        public List<IGraphicsCompositorSharedPart> Parts { get; } = new List<IGraphicsCompositorSharedPart>();
 
         /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var renderStage in RenderStages)
                 yield return new AssetPart(renderStage.Id, null, newBase => {});
+            foreach (var part in Parts)
+                yield return new AssetPart(part.Id, null, newBase => { });
         }
 
         /// <inheritdoc/>
@@ -75,6 +84,12 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                     return renderStage;
             }
 
+            foreach (var part in Parts)
+            {
+                if (part.Id == partId)
+                    return part;
+            }
+
             return null;
         }
 
@@ -84,6 +99,11 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             foreach (var renderStage in RenderStages)
             {
                 if (renderStage.Id == partId)
+                    return true;
+            }
+            foreach (var part in Parts)
+            {
+                if (part.Id == partId)
                     return true;
             }
 
@@ -100,6 +120,17 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                 {
                     if (renderStage.Id == renderStageReference.Id)
                         return renderStage;
+                }
+                return null;
+            }
+
+            var partReference = referencedObject as GraphicsCompositorPart;
+            if (partReference != null)
+            {
+                foreach (var part in Parts)
+                {
+                    if (part.Id == partReference.Id)
+                        return part;
                 }
                 return null;
             }

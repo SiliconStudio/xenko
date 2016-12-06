@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private ShadowMapRenderView CreateShadowRenderView()
         {
-            return new ShadowMapRenderView { RenderStages = { ShadowMapRenderStage }};
+            return new ShadowMapRenderView();
         }
 
         /// <summary>
@@ -141,6 +141,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     {
                         // Allocate shadow render view
                         var shadowRenderView = shadowRenderViews.Add();
+                        shadowRenderView.RenderStages.Add(ShadowMapRenderStage);
                         shadowRenderView.RenderView = renderViewData.Key;
                         shadowRenderView.ShadowMapTexture = shadowMapTexture;
                         shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);

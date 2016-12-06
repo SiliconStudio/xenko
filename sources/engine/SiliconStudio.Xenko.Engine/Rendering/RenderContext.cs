@@ -74,6 +74,11 @@ namespace SiliconStudio.Xenko.Rendering
         public GraphicsResourceAllocator Allocator { get; }
 
         /// <summary>
+        /// The current render system.
+        /// </summary>
+        public RenderSystem RenderSystem { get; set; }
+
+        /// <summary>
         /// Gets a global shared context.
         /// </summary>
         /// <param name="services">The services.</param>

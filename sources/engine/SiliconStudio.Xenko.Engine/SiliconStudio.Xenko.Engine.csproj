@@ -220,7 +220,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\GraphicsCompositor.cs" />
-    <Compile Include="Rendering\GraphicsCompositorCode.cs" />
+    <Compile Include="Rendering\GraphicsCompositorPart.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />

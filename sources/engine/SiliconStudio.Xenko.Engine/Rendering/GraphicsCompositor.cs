@@ -23,6 +23,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public GraphicsCompositorCode Code { get; set; }
+        public IGraphicsCompositorTopPart TopLevel { get; set; }
     }
 }
