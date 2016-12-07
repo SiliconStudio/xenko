@@ -62,18 +62,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = textureParameters.Texture.ColorSpace.ToColorSpace(textureParameters.ColorSpace, asset.Hint) == ColorSpace.Linear;
+                IsSRgb = textureParameters.Texture.Description.ColorSpace.ToColorSpace(textureParameters.ColorSpace) == ColorSpace.Linear;
 
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;
-                DesiredAlpha = asset.Alpha;
-                TextureHint = asset.Hint;
+                DesiredAlpha = asset.Description.Alpha;
+                TextureHint = asset.Description.Hint;
                 GenerateMipmaps = asset.GenerateMipmaps;
-                if (asset.Alpha != AlphaFormat.None)
-                    PremultiplyAlpha = asset.PremultiplyAlpha;
-                ColorKeyColor  = asset.ColorKeyColor;
-                ColorKeyEnabled = asset.ColorKeyEnabled;
+                if (asset.Description.Alpha != AlphaFormat.None)
+                    PremultiplyAlpha = asset.Description.PremultiplyAlpha;
+                ColorKeyColor  = asset.Description.ColorKeyColor;
+                ColorKeyEnabled = asset.Description.ColorKeyEnabled;
                 TextureQuality = textureParameters.TextureQuality;
                 GraphicsPlatform = textureParameters.GraphicsPlatform;
                 GraphicsProfile = textureParameters.GraphicsProfile;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = asset.ColorSpace.ToColorSpace(spriteSheetParameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                IsSRgb = asset.ColorSpace.ToColorSpace(spriteSheetParameters.ColorSpace) == ColorSpace.Linear;
 
                 DesiredSize = new Size2(100, 100);
                 IsSizeInPercentage = true;

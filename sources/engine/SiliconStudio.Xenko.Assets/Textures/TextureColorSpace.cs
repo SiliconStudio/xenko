@@ -14,12 +14,12 @@ namespace SiliconStudio.Xenko.Assets.Textures
     public enum TextureColorSpace
     {
         /// <summary>
-        /// Depending on the <see cref="GameSettingsAsset.ColorSpace"/>, the texture will be imported in <see cref="Linear"/> or <see cref="Gamma"/> space.
+        /// Depending on the <see cref="RenderingSettings.ColorSpace"/>, the texture will be imported in <see cref="Linear"/> or <see cref="Gamma"/> space.
         /// </summary>
         Auto,
 
         /// <summary>
-        /// The texture will be used in linear space with a gamma correct rendering, applying the gamma correction automatically at compile time and when sampling the texture at runtime.
+        /// The texture will be used in linear space for gamma correct rendering, applying the gamma correction automatically at compile time and when sampling the texture at runtime.
         /// </summary>
         Linear,
 
@@ -31,22 +31,17 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
     public static class TextureColorSpaceHelper
     {
-        public static ColorSpace ToColorSpace(this TextureColorSpace textureColorSpace, ColorSpace colorSpaceReference, TextureHint textureHint)
+        public static ColorSpace ToColorSpace(this TextureColorSpace textureColorSpace, ColorSpace colorSpaceReference)
         {
-            var colorSpace = ColorSpace.Gamma;
-            if (textureHint == TextureHint.Color)
+            switch (textureColorSpace)
             {
-                colorSpace = colorSpaceReference;
-                if (textureColorSpace == TextureColorSpace.Linear)
-                {
-                    colorSpace = ColorSpace.Linear;
-                }
-                else if (textureColorSpace == TextureColorSpace.Gamma)
-                {
-                    colorSpace = ColorSpace.Gamma;
-                }
+                case TextureColorSpace.Linear:
+                    return ColorSpace.Linear;
+                case TextureColorSpace.Gamma:
+                    return ColorSpace.Gamma;
+                default:
+                    return colorSpaceReference;
             }
-            return colorSpace;
         }
     }
 }

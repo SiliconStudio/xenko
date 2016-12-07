@@ -11,6 +11,8 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Textures
@@ -29,9 +31,10 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
     public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
-        private const string TextureAssetVersion = "1.4.0-beta";
+        private const string TextureAssetVersion = "1.10.0-alpha01";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
@@ -82,6 +85,158 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the texture format.
+        /// </summary>
+        /// <value>The texture format.</value>
+        /// <userdoc>
+        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
+        /// </userdoc>
+        [DataMember(50)]
+        [DefaultValue(TextureFormat.Compressed)]
+        [Display(null, "Format")]
+        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to generate mipmaps.
+        /// </summary>
+        /// <value><c>true</c> if mipmaps are generated; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// If checked, Mipmaps will be pre-generated for this texture.
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(true)]
+        [Display(null, "Format")]
+        public bool GenerateMipmaps { get; set; } = true;
+
+        /// <summary>
+        /// The description of the data contained in the texture. See remarks.
+        /// </summary>
+        /// <remarks>This description helps the texture compressor to select the appropriate format based on the HW Level and 
+        /// platform.</remarks>
+        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
+        /// appropriate format based on the HW Level and platform.</userdoc>
+        [DataMember(60)]
+        [NotNull]
+        [Display(null, "Format", Expand = ExpandRule.Always)]
+        public ITextureDescription Description { get; set; } = new ColorTextureDescription();
+
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
+        {
+            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettings != null)
+            {
+                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
+            }
+        }
+
+        private class TransformSRgbToColorSpace : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.SRgb != null)
+                {
+                    // By default transform to auto
+                    asset.ColorSpace = TextureColorSpace.Auto;
+                    asset.RemoveChild("SRgb");
+                }
+            }
+        }
+
+        private class DescriptionUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.Hint == "NormalMap")
+                {
+                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
+                    description.Node.Tag = "!NormalMapDescription";
+                }
+                else
+                {
+                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
+                    description.Node.Tag = "!ColorTextureDescription";
+                    description.ColorSpace = asset.ColorSpace;
+                    description.ColorKeyEnabled = asset.ColorKeyEnabled;
+                    description.ColorKeyColor = asset.ColorKeyColor;
+                    description.Alpha = asset.Alpha;
+                    description.PremultiplyAlpha = asset.PremultiplyAlpha;
+                    if (asset.Hint == "Grayscale")
+                        description.IsGrayscale = true;
+                }
+
+                asset.RemoveChild("ColorSpace");
+                asset.RemoveChild("ColorKeyEnabled");
+                asset.RemoveChild("ColorKeyColor");
+                asset.RemoveChild("Alpha");
+                asset.RemoveChild("PremultiplyAlpha");
+                asset.RemoveChild("Hint");
+            }
+        }
+    }
+
+    public interface ITextureDescription
+    {
+        TextureColorSpace ColorSpace { get; }
+
+        bool ColorKeyEnabled { get; }
+
+        Color ColorKeyColor { get; }
+
+        AlphaFormat Alpha { get; }
+
+        bool PremultiplyAlpha { get; }
+
+        TextureHint Hint { get; }
+    }
+
+    [DataContract("NormalMapDescription")]
+    [Display("Normal Map")]
+    public class NormapMapDescription : ITextureDescription
+    {
+        /// <summary>
+        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent-space.
+        /// </summary>
+        /// <userdoc>
+        /// Indicates that a positive Y-component (green) faces up in tangent space. This options depends on your normal maps generation tools.
+        /// </userdoc>
+        [DataMember(10)]
+        [DefaultValue(true)]
+        public bool InvertY { get; set; } = true;
+
+        TextureColorSpace ITextureDescription.ColorSpace => TextureColorSpace.Gamma;
+
+        bool ITextureDescription.ColorKeyEnabled => false;
+
+        Color ITextureDescription.ColorKeyColor => new Color();
+
+        AlphaFormat ITextureDescription.Alpha => AlphaFormat.None;
+
+        bool ITextureDescription.PremultiplyAlpha => false;
+
+        TextureHint ITextureDescription.Hint => TextureHint.NormalMap;
+    }
+
+    [DataContract("ColorTextureDescription")]
+    [Display("Color")]
+    public class ColorTextureDescription : ITextureDescription
+    {
+        [DataMember(60)]
+        [Display("Is Grayscale", "Format")]
+        public bool IsGrayscale { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// </summary>
+        /// <userdoc>
+        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
+        /// with a HDR/gamma correct rendering.
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(TextureColorSpace.Auto)]
+        [Display("ColorSpace", "Format")]
+        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
+
+        /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
         /// </summary>
         /// <value><c>true</c> to enable color key; otherwise, <c>false</c>.</value>
@@ -105,31 +260,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
 
         /// <summary>
-        /// Gets or sets the texture format.
-        /// </summary>
-        /// <value>The texture format.</value>
-        /// <userdoc>
-        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
-        /// </userdoc>
-        [DataMember(50)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(null, "Format")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
-
-        /// <summary>
-        /// Gets or sets the hint to indicate the type of texture. See remarks.
-        /// </summary>
-        /// <value>The hint.</value>
-        /// <remarks>This hint helps the texture compressor to select the appropriate format based on the HW Level and 
-        /// platform.</remarks>
-        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
-        /// appropriate format based on the HW Level and platform.</userdoc>
-        [DataMember(51)]
-        [DefaultValue(TextureHint.Color)]
-        [Display(null, "Format")]
-        public TextureHint Hint { get; set; } = TextureHint.Color;
-
-        /// <summary>
         /// Gets or sets the alpha format.
         /// </summary>
         /// <value>The alpha format.</value>
@@ -140,30 +270,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(AlphaFormat.Auto)]
         [Display(null, "Transparency")]
         public AlphaFormat Alpha { get; set; } = AlphaFormat.Auto;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to generate mipmaps.
-        /// </summary>
-        /// <value><c>true</c> if mipmaps are generated; otherwise, <c>false</c>.</value>
-        /// <userdoc>
-        /// If checked, Mipmaps will be pre-generated for this texture.
-        /// </userdoc>
-        [DataMember(60)]
-        [DefaultValue(true)]
-        [Display(null, "Format")]
-        public bool GenerateMipmaps { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
-        /// </userdoc>
-        [DataMember(70)]
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Format")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
 
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in premultiply alpha.
@@ -177,27 +283,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [Display(null, "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
 
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
-        {
-            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettings != null)
-            {
-                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
-        }
-
-        private class TransformSRgbToColorSpace : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.SRgb != null)
-                {
-                    // By default transform to auto
-                    asset.ColorSpace = TextureColorSpace.Auto;
-                    asset.RemoveChild("SRgb");
-                }
-            }
-        }
- 
+        TextureHint ITextureDescription.Hint => IsGrayscale ? TextureHint.Grayscale : TextureHint.Color;
     }
 }
