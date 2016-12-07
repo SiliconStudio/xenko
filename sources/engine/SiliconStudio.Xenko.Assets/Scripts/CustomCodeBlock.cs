@@ -13,9 +13,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         private const int CodeAsTitleMaxLength = 40;
 
+        [RegenerateTitle]
         public string Name { get; set; }
 
-        [RegenerateSlots, RegenerateTitle, ScriptCodeAttribute]
+        [RegenerateSlots, RegenerateTitle, ScriptCode]
         public string Code { get; set; }
 
         public override string Title => !string.IsNullOrEmpty(Name) ? Name : GetTitleFromCode();

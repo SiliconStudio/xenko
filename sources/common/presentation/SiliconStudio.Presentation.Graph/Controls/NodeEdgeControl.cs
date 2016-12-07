@@ -17,6 +17,7 @@ using GraphX.Controls.Models;
 using SiliconStudio.Presentation.Graph.Helper;
 using SiliconStudio.Presentation.Extensions;
 using System.Windows.Input;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Presentation.Graph.Controls
 {
@@ -72,6 +73,15 @@ namespace SiliconStudio.Presentation.Graph.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+
+            if (Template != null)
+            {
+                path = Template.FindName("PART_edgePath", this) as Path;
+                arrow = Template.FindName("PART_edgeArrowPath", this) as Path;
+
+                //
+                UpdateEdge();
+            }
         }
         /// <summary>
         /// 
@@ -80,16 +90,9 @@ namespace SiliconStudio.Presentation.Graph.Controls
         /// <param name="e"></param>
         public void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (Template != null)
-            {
-                path = Template.FindName("PART_edgePath", this) as Path;
-                arrow = Template.FindName("PART_edgeArrowPath", this) as Path;
-
-                //
-                UpdateEdge();                               
-            }
+            this.ApplyTemplate();
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -99,7 +102,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         {
             if (RootArea != null && Visibility == Visibility.Visible)
             {
-                (RootArea as NodeGraphArea).OnLinkSelected(sender as FrameworkElement);
+                ((NodeGraphArea)RootArea).OnLinkSelected(sender as FrameworkElement);
             }
             e.Handled = true;
         }
@@ -125,44 +128,65 @@ namespace SiliconStudio.Presentation.Graph.Controls
             var figure = new PathFigure();
 
             figure.Segments.Add(bezier);
-            geometry.Figures.Add(figure);                
+            geometry.Figures.Add(figure);
 
             // Find the output slot 
             DependencyObject slot = null;
-            if (SourceSlot != null && (Source as NodeVertexControl).Connectors.TryGetValue(SourceSlot, out slot))
+            if (SourceSlot != null)
             {
-                var container = VisualTreeHelper.GetChild(Source, 0) as UIElement;
-                var offset = (slot as UIElement).TransformToAncestor(container).Transform(new Point(0, 0));
-                var location = Source.GetPosition() + (Vector)offset;                      
-                var halfsize = new Vector((double)slot.GetValue(FrameworkElement.WidthProperty) * 0.8,
-                                                (double)slot.GetValue(FrameworkElement.HeightProperty) / 2.0);
+                if (((NodeVertexControl)Source).Connectors.TryGetValue(SourceSlot, out slot))
+                {
+                    var container = (UIElement)VisualTreeHelper.GetChild(Source, 0);
+                    var offset = ((UIElement)slot).TransformToAncestor(container).Transform(new Point(0, 0));
+                    var location = Source.GetPosition() + (Vector)offset;
+                    var halfsize = new Vector((double)slot.GetValue(FrameworkElement.WidthProperty)*0.8,
+                        (double)slot.GetValue(FrameworkElement.HeightProperty)/2.0);
 
-                figure.SetCurrentValue(PathFigure.StartPointProperty, location + halfsize);
-                //figure.StartPoint = location + halfsize;                        
+                    figure.SetCurrentValue(PathFigure.StartPointProperty, location + halfsize);
+                    //figure.StartPoint = location + halfsize;                        
+                }
+                else
+                {
+                    // Somehow the slot is not loaded yet
+                    // Let's wait for a change in the Connectors collection and trigger UpdateEdge() again
+                    ((NodeVertexControl)Source).Connectors.CollectionChanged += UpdateSourceConnectors;
+                    Visibility = Visibility.Collapsed;
+                    return;
+                }
             }
 
             // Find input slot
-            if (TargetSlot != null && (Target as NodeVertexControl).Connectors.TryGetValue(TargetSlot, out slot))
+            if (TargetSlot != null)
             {
-                var container = VisualTreeHelper.GetChild(Target, 0) as UIElement;
-                var offset = (slot as UIElement).TransformToAncestor(container).Transform(new Point(0, 0));
-                var location = Target.GetPosition() + (Vector)offset;
+                if (((NodeVertexControl)Target).Connectors.TryGetValue(TargetSlot, out slot))
+                {
+                    var container = (UIElement)VisualTreeHelper.GetChild(Target, 0);
+                    var offset = ((UIElement)slot).TransformToAncestor(container).Transform(new Point(0, 0));
+                    var location = Target.GetPosition() + (Vector)offset;
 
-                //
-                var halfsize = new Vector((double)slot.GetValue(FrameworkElement.WidthProperty)*0.2,
-                    (double)slot.GetValue(FrameworkElement.HeightProperty)/2.0);
+                    //
+                    var halfsize = new Vector((double)slot.GetValue(FrameworkElement.WidthProperty)*0.2,
+                        (double)slot.GetValue(FrameworkElement.HeightProperty)/2.0);
 
-                bezier.SetCurrentValue(BezierSegment.Point3Property, location + halfsize);
-                //bezier.Point3 = location + halfsize;   
+                    bezier.SetCurrentValue(BezierSegment.Point3Property, location + halfsize);
+                    //bezier.Point3 = location + halfsize;   
+                }
+                else
+                {
+                    ((NodeVertexControl)Target).Connectors.CollectionChanged += UpdateTargetConnectors;
+                    Visibility = Visibility.Collapsed;
+                    return;
+                }
             }
 
+            // Make sure that even if link is going backward, it still goes out of the block in the proper direction
             var length = Math.Max(Math.Abs(bezier.Point3.X - figure.StartPoint.X), 120.0f);
             var curvature = length * 0.4;
 
             bezier.SetCurrentValue(BezierSegment.Point1Property, new Point(figure.StartPoint.X + curvature, figure.StartPoint.Y));
-            //bezier.Point1 = new Point(figure.StartPoint.X + curvage, figure.StartPoint.Y);
+            //bezier.Point1 = new Point(figure.StartPoint.X + curvature, figure.StartPoint.Y);
             bezier.SetCurrentValue(BezierSegment.Point2Property, new Point(bezier.Point3.X - curvature, bezier.Point3.Y));
-            //bezier.Point2 = new Point(bezier.Point3.X - curvage, bezier.Point3.Y);
+            //bezier.Point2 = new Point(bezier.Point3.X - curvature, bezier.Point3.Y);
 
             //
             path.Data = geometry;
@@ -172,6 +196,25 @@ namespace SiliconStudio.Presentation.Graph.Controls
             // TODO Should I be doing this here??? should I be uing setcurrentvalue??
             Visibility = Visibility.Visible;
         }
+
+        private void UpdateSourceConnectors(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            // Unregister ourselves
+            ((NodeVertexControl)Source).Connectors.CollectionChanged -= UpdateSourceConnectors;
+
+            // Update edge
+            UpdateEdge();
+        }
+
+        private void UpdateTargetConnectors(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            // Unregister ourselves
+            ((NodeVertexControl)Target).Connectors.CollectionChanged -= UpdateTargetConnectors;
+
+            // Update edge
+            UpdateEdge();
+        }
+
         #endregion
 
         #region Properties
@@ -191,10 +234,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         /// <param name="propertyName"></param>
         public void NotifyPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

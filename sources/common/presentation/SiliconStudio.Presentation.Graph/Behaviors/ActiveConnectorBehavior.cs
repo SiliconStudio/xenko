@@ -7,7 +7,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
     /// <summary>
     /// This behavior is mandatory on slots so that edges start/end positions can be computed.
     /// </summary>
-    public sealed class ActiveConnectorBehavior : Behavior<FrameworkElement>
+    public sealed class ActiveConnectorBehavior : DeferredBehaviorBase<FrameworkElement>
     {
         #region IDropHandler Interface
         /// <summary>
@@ -25,18 +25,18 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         public static DependencyProperty SlotProperty = DependencyProperty.Register("Slot", typeof(object), typeof(ActiveConnectorBehavior));
         #endregion
 
-        protected override void OnAttached()
+        protected override void OnAttachedAndLoaded()
         {
-            base.OnAttached();
+            base.OnAttachedAndLoaded();
 
             ActiveConnectorHandler?.OnAttached(AssociatedObject);
         }
 
-        protected override void OnDetaching()
+        protected override void OnDetachingAndUnloaded()
         {
             ActiveConnectorHandler?.OnDetached(AssociatedObject);
 
-            base.OnDetaching();
+            base.OnDetachingAndUnloaded();
         }
 
         private static void OnActiveConnectorHandlerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -44,7 +44,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             var behavior = (ActiveConnectorBehavior)d;
 
             // Was it already loaded?
-            if (behavior.AssociatedObject != null)
+            if (behavior.AssociatedObject != null && behavior.AssociatedObject.IsLoaded)
             {
                 // If yes, update
                 ((IActiveConnectorHandler)e.OldValue)?.OnDetached(behavior.AssociatedObject);

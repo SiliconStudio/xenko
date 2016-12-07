@@ -18,6 +18,7 @@ using SiliconStudio.Presentation.Graph.Behaviors;
 using SiliconStudio.Presentation.Graph.ViewModel;
 using SiliconStudio.Presentation.Graph.Helper;
 using System.Windows.Media;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Presentation.Graph.Controls
 {
@@ -53,7 +54,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         #endregion
 
         #region Members
-        private Dictionary<object, DependencyObject> connectors_ = new Dictionary<object, DependencyObject>();
+        private TrackingDictionary<object, DependencyObject> connectors_ = new TrackingDictionary<object, DependencyObject>();
         #endregion
 
         #region Static Dependency Property Event Handler
@@ -184,7 +185,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         public Brush ConnectorFill { get { return (Brush)GetValue(ConnectorFillProperty); } set { SetValue(ConnectorFillProperty, value); } }
         public Brush MouseOverConnectorFill { get { return (Brush)GetValue(MouseOverConnectorFillProperty); } set { SetValue(MouseOverConnectorFillProperty, value); } }
 
-        public Dictionary<object, DependencyObject> Connectors { get { return connectors_; } }
+        public TrackingDictionary<object, DependencyObject> Connectors { get { return connectors_; } }
         #endregion
 
         #region Notify Property Changed Callbacks

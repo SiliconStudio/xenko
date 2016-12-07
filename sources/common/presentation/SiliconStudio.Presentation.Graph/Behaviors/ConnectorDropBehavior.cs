@@ -7,13 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Presentation.Behaviors;
 
 namespace SiliconStudio.Presentation.Graph.Behaviors
 {
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ConnectorDropBehavior : Behavior<FrameworkElement>
+    public sealed class ConnectorDropBehavior : DeferredBehaviorBase<FrameworkElement>
     {
         #region IDropHandler Interface
         /// <summary>
@@ -44,9 +45,9 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <summary>
         /// 
         /// </summary>
-        protected override void OnAttached()
+        protected override void OnAttachedAndLoaded()
         {
-            base.OnAttached();
+            base.OnAttachedAndLoaded();
             
             AssociatedObject.Drop += OnDropEvent;
             AssociatedObject.DragOver += OnDragOverEvent;
@@ -55,11 +56,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <summary>
         /// 
         /// </summary>
-        protected override void OnDetaching()
+        protected override void OnDetachingAndUnloaded()
         {
             AssociatedObject.Drop -= OnDropEvent;
             AssociatedObject.DragOver -= OnDragOverEvent;
-            base.OnDetaching();
+            base.OnDetachingAndUnloaded();
         }
         #endregion
 
