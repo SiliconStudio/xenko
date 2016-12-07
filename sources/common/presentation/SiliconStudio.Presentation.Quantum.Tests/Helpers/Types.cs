@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Presentation.Quantum;
+﻿using SiliconStudio.Presentation.Quantum;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Presentation.Tests
+namespace SiliconStudio.Presentation.Tests.Helpers
 {
     public static class Types
     {
@@ -39,7 +34,7 @@ namespace SiliconStudio.Presentation.Tests
 
         public class DependentPropertyContainer
         {
-            public string Title => Instance.Name;
+            public string Title { get; set; }
 
             public SimpleObject Instance { get; set; }
         }

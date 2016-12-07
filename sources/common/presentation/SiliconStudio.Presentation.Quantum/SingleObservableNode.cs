@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Quantum;
 
@@ -15,6 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
+        private List<Tuple<string, bool>> dependencies;
 
         static SingleObservableNode()
         {
@@ -45,6 +45,52 @@ namespace SiliconStudio.Presentation.Quantum
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        /// <summary>
+        /// Adds a dependency to the node represented by the given path.
+        /// </summary>
+        /// <param name="nodePath">The path to the node that should be a dependency of this node.</param>
+        /// <param name="refreshOnNestedNodeChanges">If true, this node will also be refreshed when one of the child node of the dependency node changes.</param>
+        /// <remarks>A node that is a dependency to this node will trigger a refresh of this node each time its value is modified (or the value of one of its parent).</remarks>
+        public void AddDependency(string nodePath, bool refreshOnNestedNodeChanges)
+        {
+            if (dependencies == null)
+            {
+                dependencies = new List<Tuple<string, bool>>();
+                Owner.NodeValueChanged += DependencyNodeValueChanged;
+            }
+
+            dependencies.Add(Tuple.Create(nodePath, refreshOnNestedNodeChanges));
+        }
+
+        private void DependencyNodeValueChanged(object sender, ObservableViewModelNodeValueChangedArgs e)
+        {
+            if (dependencies == null)
+                return;
+
+            bool shouldRefresh = false;
+            foreach (var dependency in dependencies)
+            {
+                if (dependency.Item1.StartsWith(e.NodePath))
+                {
+                    // The node that has changed is the dependent node or one of its parent, let's refresh
+                    shouldRefresh = true;
+                }
+                else if (dependency.Item2 && e.NodePath.StartsWith(dependency.Item1))
+                {
+                    // The node that has changed is a child of the dependent node, and we asked for recursive dependencies, let's refresh
+                    shouldRefresh = true;
+                }
+
+                if (shouldRefresh)
+                    break;
+            }
+
+            if (shouldRefresh)
+            {
+                Refresh();
+            }
         }
 
         /// <summary>

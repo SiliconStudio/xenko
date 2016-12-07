@@ -55,9 +55,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helper.cs" />
+    <Compile Include="Helpers\TestInstanceContext.cs" />
+    <Compile Include="Helpers\TestContext.cs" />
     <Compile Include="TestDependentProperties.cs" />
-    <Compile Include="Types.cs" />
+    <Compile Include="Helpers\Types.cs" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
