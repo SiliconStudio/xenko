@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly Action<object> Setter;
         private IContent associatedContent;
         private bool updatingValue;
+        private bool initialized;
 
         static VirtualObservableNode()
         {
@@ -77,6 +78,14 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent.Changed += ContentChanged;
         }
 
+        public void CompleteInitialization()
+        {
+            // Safety check
+            if (initialized) throw new InvalidOperationException("This node has already been initialized.");
+            Owner.ObservableViewModelService.NotifyNodeInitialized(this);
+            initialized = true;
+        }
+
         protected virtual void SetTypedValue(object value)
         {
             updatingValue = true;
@@ -114,6 +123,6 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }
