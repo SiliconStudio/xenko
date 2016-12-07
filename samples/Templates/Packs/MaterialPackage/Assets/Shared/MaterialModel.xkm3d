@@ -5,14 +5,14 @@ Tags: []
 Source: ../../Resources/Models/MaterialModel.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: eccfc0eb-6f02-47fd-0b81-9cfcb1ca2cbf
+    ebc0cfec026ffd470b819cfcb1ca2cbf:
         Name: MaterialA
         MaterialInstance:
-            ~Id: c7d0c36c-c7c0-422c-9b3a-9042bbcc22f0
-            Material: d2a9a114-6cfa-4bda-a976-5aac90acdd85/f34d47ea-f392-4085-b92e-73b87e82f7f9:MaterialTestA
-    -   ~Id: a54cd807-783b-d823-fcdf-7c46dab24576
+            Material: f34d47ea-f392-4085-b92e-73b87e82f7f9:MaterialTestA
+    07d84ca53b7823d8fcdf7c46dab24576:
         Name: MaterialB
         MaterialInstance:
-            ~Id: 5fa0d167-7395-43e6-8f1c-3d2a265762e9
-            Material: 6dd098bd-425b-4ded-8ecb-b39e3c8f37a2/ea4fff51-27a0-499f-bedd-5c7842939559:MaterialTestB
+            Material: ea4fff51-27a0-499f-bedd-5c7842939559:MaterialTestB
 Skeleton: null
+~SourceHashes:
+    737831bc5baaf1d6938c1fe31d62878d~../../Resources/Models/MaterialModel.fbx: 4319635001be9223fc39f7dc91fd3f2d

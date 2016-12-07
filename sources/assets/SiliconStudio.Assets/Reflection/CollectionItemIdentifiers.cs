@@ -15,17 +15,27 @@ namespace SiliconStudio.Core.Reflection
 
         private readonly HashSet<ItemId> deletedItems = new HashSet<ItemId>();
 
+        /// <summary>
+        /// Gets or sets the <see cref="ItemId"/> corresponding to the given key.
+        /// </summary>
+        /// <param name="key">The key for which to retrieve the <see cref="ItemId"/>.</param>
+        /// <returns>The <see cref="ItemId"/> corresponding to the given key.</returns>
         public ItemId this[object key] { get { return keyToIdMap[key]; } set { Set(key, value); } }
 
+        /// <summary>
+        /// Gets the list of <see cref="ItemId"/> corresponding to deleted items that are being kept in this <see cref="CollectionItemIdentifiers"/>.
+        /// </summary>
         public IEnumerable<ItemId> DeletedItems => deletedItems;
 
+        /// <summary>
+        /// Gets the number of keys/identifiers in this <see cref="CollectionItemIdentifiers"/>.
+        /// </summary>
         public int KeyCount => keyToIdMap.Count;
 
+        /// <summary>
+        /// Gets the number of deleted identifiers that are being kept in this <see cref="CollectionItemIdentifiers"/>.
+        /// </summary>
         public int DeletedCount => deletedItems.Count;
-
-        // This property is unsafe to use, better rely only on KeyCount and DeletedCount
-        [Obsolete("This property will be removed soon")]
-        public int Count => KeyCount + DeletedCount;
 
         public void Add(object key, ItemId id)
         {
@@ -40,7 +50,6 @@ namespace SiliconStudio.Core.Reflection
             if (deletedItems.Contains(id))
                 UnmarkAsDeleted(id);
         }
-
 
         public void Insert(int index, ItemId id)
         {

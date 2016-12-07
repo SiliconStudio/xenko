@@ -1,20 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
 
+using System;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     public class CreateNewInstanceCommand : ChangeValueCommand
     {
         public const string CommandName = "CreateNewInstance";
-
-        /// <summary>
-        /// An object that can be passed as parameter to the command, in order to set the value of the node to <c>null</c>.
-        /// </summary>
-        public static object SetToNull { get; } = new object();
 
         /// <inheritdoc/>
         public override string Name => CommandName;
@@ -37,11 +34,13 @@ namespace SiliconStudio.Quantum.Commands
 
         protected override object ChangeValue(object currentValue, object parameter)
         {
-            if (parameter == SetToNull)
-                return null;
+            var entry = (AbstractNodeEntry)parameter;
 
-            var type = parameter as Type;
-            return type != null && (currentValue == null || currentValue.GetType() != type) ? ObjectFactory.NewInstance(type) : currentValue;
+            // If value is already OK, keep it
+            if (entry.IsMatchingValue(currentValue))
+                return currentValue;
+
+            return entry.GenerateValue(currentValue);
         }
     }
 }

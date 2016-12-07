@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.TextureConverter.TexLibraries
 {
@@ -22,14 +23,15 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </summary>
         public AtlasTexLibrary() { }
 
+        // Use the CanHandleRequest(TexImage image, IRequest request) inquiry
+        public bool CanHandleRequest(PixelFormat format, IRequest request) => false;
+
         public bool CanHandleRequest(TexImage image, IRequest request)
         {
             if (image.GetType() != typeof(TexAtlas))
             {
                 return false;
             }
-
-            TexAtlas atlas = (TexAtlas)image;
 
             switch (request.Type)
             {

@@ -26,3 +26,5 @@ Materials:
         MaterialInstance:
             Material: 0dc0f6d0-607c-42b7-ba89-7704dfedb6d1:Models/LambertMT
 Skeleton: null
+~SourceHashes:
+    db0477852e7747342370c2de27455d34~../../../Resources/Models/Gun.fbx: 12d1681ba554a9b1c1ad16bc405de6c7

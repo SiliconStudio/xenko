@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2016, assimp team
 
 All rights reserved.
 
@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file  vector3.inl
  *  @brief Inline implementation of aiVector3t<TReal> operators
  */
+#pragma once
 #ifndef AI_VECTOR3D_INL_INC
 #define AI_VECTOR3D_INL_INC
 
@@ -98,6 +99,14 @@ AI_FORCE_INLINE TReal aiVector3t<TReal>::Length() const {
 template <typename TReal>
 AI_FORCE_INLINE aiVector3t<TReal>& aiVector3t<TReal>::Normalize() {
     *this /= Length(); return *this;
+}
+// ------------------------------------------------------------------------------------------------
+template <typename TReal>
+AI_FORCE_INLINE aiVector3t<TReal>& aiVector3t<TReal>::NormalizeSafe() {
+    TReal len = Length();
+    if (len > static_cast<TReal>(0))
+        *this /= len;
+    return *this;
 }
 // ------------------------------------------------------------------------------------------------
 template <typename TReal>

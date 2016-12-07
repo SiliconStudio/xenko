@@ -83,7 +83,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(isDerived, assetItem.Asset.Archetype != null);
             if (isDerived)
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
-            graph.PrepareForSave(null);
+            graph.PrepareForSave(null, assetItem);
             var stream = new MemoryStream();
             AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<YamlAssetPath, OverrideType>)assetItem.Overrides);
             stream.Position = 0;
@@ -109,8 +109,8 @@ MyString: MyBaseString
 ";
         private const string SimplePropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyString*: MyDerivedString
 ";
         private const string SimpleCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
@@ -124,8 +124,8 @@ MyStrings:
 ";
         private const string SimpleCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings: {}
 MyStrings:
@@ -141,8 +141,8 @@ MyDictionary:
 ";
         private const string SimpleDictionaryUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyDictionary:
     0a0000000a0000000a0000000a000000*~Key1: MyDerivedString
     14000000140000001400000014000000~Key2: MyBaseString
@@ -158,8 +158,8 @@ MyStrings: {}
 ";
         private const string CollectionInStructDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings:
         0a0000000a0000000a0000000a000000*: MyDerivedString
@@ -178,8 +178,8 @@ MyStrings:
 ";
         private const string SimpleCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Struct:
     MyStrings: {}
 MyStrings:
@@ -198,8 +198,8 @@ MyDictionary:
 ";
         private const string SimpleDictionaryAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset3,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyDictionary:
     0a0000000a0000000a0000000a000000~Key1: String1
     14000000140000001400000014000000~Key2: String2
@@ -217,8 +217,8 @@ MyObjects:
 ";
         private const string ObjectCollectionUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000*:
         Value: MyDerivedString
@@ -238,8 +238,8 @@ MyObjects:
 ";
         private const string ObjectCollectionAddDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000:
         Value: String1
@@ -261,8 +261,8 @@ MyObjects:
 ";
         private const string ObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset4,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     0a0000000a0000000a0000000a000000:
         Value*: MyDerivedString
@@ -278,13 +278,12 @@ MyObjects:
 ";
         private const string NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset8,SiliconStudio.Assets.Quantum.Tests
 Id: 00000002-0002-0000-0200-000002000000
-Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyObjects:
     -   Value*: MyDerivedString
     -   Value: MyBaseString
 ";
-
 
         [Test]
         public void TestSimplePropertySerialization()
@@ -361,8 +360,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
         }
@@ -402,8 +403,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key1")));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
             Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
         }
@@ -430,8 +433,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key1")));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
             Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
         }
@@ -477,8 +482,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
         }
@@ -532,8 +539,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(2)));
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(3)));
-            Assert.AreEqual(3, baseIds.Count);
-            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(4, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
             Assert.AreEqual(baseIds[2], derivedIds[2]);
@@ -591,8 +600,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key3")));
             Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(3, baseIds.Count);
-            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(4, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds["Key1"], derivedIds["Key1"]);
             Assert.AreEqual(baseIds["Key2"], derivedIds["Key2"]);
             Assert.AreEqual(baseIds["Key4"], derivedIds["Key4"]);
@@ -643,8 +654,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
         }
@@ -705,8 +718,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(3)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(3, baseIds.Count);
-            Assert.AreEqual(4, derivedIds.Count);
+            Assert.AreEqual(3, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(4, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
             Assert.AreEqual(baseIds[2], derivedIds[2]);
@@ -755,8 +770,10 @@ MyObjects:
             Assert.AreEqual(OverrideType.New, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Content.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
             Assert.AreNotSame(baseIds, derivedIds);
-            Assert.AreEqual(2, baseIds.Count);
-            Assert.AreEqual(2, derivedIds.Count);
+            Assert.AreEqual(2, baseIds.KeyCount);
+            Assert.AreEqual(0, baseIds.DeletedCount);
+            Assert.AreEqual(2, derivedIds.KeyCount);
+            Assert.AreEqual(0, derivedIds.DeletedCount);
             Assert.AreEqual(baseIds[0], derivedIds[0]);
             Assert.AreEqual(baseIds[1], derivedIds[1]);
         }
@@ -835,7 +852,7 @@ Value*: OverriddenString
             // Test deserialization
             SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
             bool aliasOccurred;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTest<Types.MyAsset9>.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
             Assert.AreEqual("OverriddenString", instance.Value);
             Assert.AreEqual(1, overrides.Count);
             Assert.True(overrides.ContainsKey(expectedPath));
