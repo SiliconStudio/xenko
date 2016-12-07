@@ -48,7 +48,8 @@ namespace SiliconStudio.Presentation.Quantum
         private ObservableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
+            ObservableViewModelService = serviceProvider.TryGet<ObservableViewModelService>();
+            if (ObservableViewModelService == null) throw new InvalidOperationException($"{nameof(ObservableViewModel)} requires a {nameof(ObservableViewModelService)} in the service provider.");
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
