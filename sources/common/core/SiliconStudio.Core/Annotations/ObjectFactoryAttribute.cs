@@ -25,8 +25,10 @@ namespace SiliconStudio.Core.Annotations
         public ObjectFactoryAttribute(Type factoryType)
         {
             if (factoryType == null) throw new ArgumentNullException(nameof(factoryType));
-            if (!typeof(IObjectFactory).GetTypeInfo().IsAssignableFrom(factoryType)) throw new ArgumentException($@"The given type does not implement {nameof(IObjectFactory)}/", nameof(factoryType));
-            if (factoryType.GetTypeInfo().GetConstructor(Type.EmptyTypes) == null) throw new ArgumentException(@"The given type does have a public parameterless constructor.", nameof(factoryType));
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            if (!typeof(IObjectFactory).IsAssignableFrom(factoryType)) throw new ArgumentException($@"The given type does not implement {nameof(IObjectFactory)}/", nameof(factoryType));
+            if (factoryType.GetConstructor(Type.EmptyTypes) == null) throw new ArgumentException(@"The given type does have a public parameterless constructor.", nameof(factoryType));
+#endif
             FactoryType = factoryType;
         }
     }
