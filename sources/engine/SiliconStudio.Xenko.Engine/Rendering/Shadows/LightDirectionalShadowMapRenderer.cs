@@ -271,7 +271,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
-                Matrix.Invert(ref shaderData.WorldToShadowCascadeUV[cascadeLevel], out shaderData.WorldToShadowCascadeUVInverse[cascadeLevel]);
+                Matrix shadowToWorld;
+                Matrix.Invert(ref shaderData.WorldToShadowCascadeUV[cascadeLevel], out shadowToWorld);
+
+                var leftUv = new Vector4(1, 0, 0, 0);
+                var upUv = new Vector4(0, 1, 0, 0);
+                var ldirUv = new Vector4(0, 0, 1, 0);
+                shaderData.ShadowUpWS[cascadeLevel] = Vector4.Transform(upUv, shadowToWorld).XYZ();
+                shaderData.ShadowLeftWS[cascadeLevel] = Vector4.Transform(leftUv, shadowToWorld).XYZ();
+                shaderData.ShadowLDirWS[cascadeLevel] = Vector4.Transform(ldirUv, shadowToWorld).XYZ();
             }
         }
 
@@ -445,7 +453,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 CascadeSplits = new float[cascadeCount];
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
-                WorldToShadowCascadeUVInverse = new Matrix[cascadeCount];
+                ShadowUpWS = new Vector3[cascadeCount];
+                ShadowLeftWS = new Vector3[cascadeCount];
+                ShadowLDirWS = new Vector3[cascadeCount];
                 ViewMatrix = new Matrix[cascadeCount];
                 ProjectionMatrix = new Matrix[cascadeCount];
             }
@@ -462,7 +472,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public readonly Matrix[] WorldToShadowCascadeUV;
 
-            public readonly Matrix[] WorldToShadowCascadeUVInverse;
+            // shader internals: shadow base vectors retroprojected in worldspace
+            public Vector3[] ShadowUpWS;
+            public Vector3[] ShadowLeftWS;
+            public Vector3[] ShadowLDirWS;
 
             public readonly Matrix[] ViewMatrix;
 
@@ -481,7 +494,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private Matrix[] worldToShadowCascadeUV;
 
-            private Matrix[] worldToShadowCascadeUVInverse;
+            private Vector3[] ShadowUpWS;
+            private Vector3[] ShadowLeftWS;
+            private Vector3[] ShadowLDirWS;
 
             private float[] depthBiases;
 
@@ -503,7 +518,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
-            private ValueParameterKey<Matrix> WorldToShadowCascadeUVInverseKey;
+            private ValueParameterKey<Vector3> ShadowUpWsKey;
+            private ValueParameterKey<Vector3> ShadowLeftWsKey;
+            private ValueParameterKey<Vector3> ShadowLDirWsKey;
 
             private ValueParameterKey<float> depthBiasesKey;
 
@@ -533,7 +550,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapReceiverDirectionalKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
-                WorldToShadowCascadeUVInverseKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUVInverse.ComposeWith(compositionKey);
+                ShadowUpWsKey = ShadowMapReceiverBaseKeys.ShadowUpWs.ComposeWith(compositionKey);
+                ShadowLeftWsKey = ShadowMapReceiverBaseKeys.ShadowLeftWs.ComposeWith(compositionKey);
+                ShadowLDirWsKey = ShadowMapReceiverBaseKeys.LightDirWS.ComposeWith(compositionKey);
                 depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
                 gradientSamplingKey = ShadowMapReceiverBaseKeys.GradientShadowMap.ComposeWith(compositionKey);
@@ -564,7 +583,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 Array.Resize(ref cascadeSplits, cascadeCount * lightCurrentCount);
                 Array.Resize(ref worldToShadowCascadeUV, cascadeCount * lightCurrentCount);
-                Array.Resize(ref worldToShadowCascadeUVInverse, cascadeCount * lightCurrentCount);
+                Array.Resize(ref ShadowUpWS, cascadeCount * lightCurrentCount);
+                Array.Resize(ref ShadowLeftWS, cascadeCount * lightCurrentCount);
+                Array.Resize(ref ShadowLDirWS, cascadeCount * lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref offsetScales, lightCurrentCount);
                 Array.Resize(ref useGradientSampling, lightCurrentCount);
@@ -589,7 +610,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     {
                         cascadeSplits[splitIndex + i] = splits[i];
                         worldToShadowCascadeUV[splitIndex + i] = matrices[i];
-                        worldToShadowCascadeUVInverse[splitIndex + i] = singleLightData.WorldToShadowCascadeUVInverse[i];
+                        ShadowUpWS[splitIndex + i] = singleLightData.ShadowUpWS[i];
+                        ShadowLeftWS[splitIndex + i] = singleLightData.ShadowLeftWS[i];
+                        ShadowLDirWS[splitIndex + i] = singleLightData.ShadowLDirWS[i];
                     }
 
                     depthBiases[lightIndex] = singleLightData.DepthBias;
@@ -613,7 +636,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
-                parameters.Set(WorldToShadowCascadeUVInverseKey, worldToShadowCascadeUVInverse);
+                parameters.Set(ShadowUpWsKey, ShadowUpWS);
+                parameters.Set(ShadowLeftWsKey, ShadowLeftWS);
+                parameters.Set(ShadowLDirWsKey, ShadowLDirWS);
                 parameters.Set(depthBiasesKey, depthBiases);
                 parameters.Set(offsetScalesKey, offsetScales);
                 parameters.Set(gradientSamplingKey, useGradientSampling);

@@ -14,7 +14,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         cbuffer PerLighting // TODO: Use a proper cbuffer for this?
         {
             float4x4 WorldToShadowCascadeUV[TCascadeCountBase * TLightCountBase];
-            float4x4 WorldToShadowCascadeUVInverse[TCascadeCountBase * TLightCountBase];
+            float3 ShadowUpWs[TCascadeCountBase * TLightCountBase];
+            float3 ShadowLeftWs[TCascadeCountBase * TLightCountBase];
+            float3 LightDirWS[TCascadeCountBase * TLightCountBase];
             float DepthBiases[TLightCountBase];
             float OffsetScales[TLightCountBase];
             bool GradientShadowMap[TLightCountBase];
@@ -33,18 +35,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (GradientShadowMap[lightIndex])
             {
-                float4 leftUV = float4(1, 0, 0, 0);
-                float4 upUV =   float4(0, 1, 0, 0);
-                float4 ldirUV = float4(0, 0, 1, 0);
-
-                float4x4 invmat = WorldToShadowCascadeUVInverse[cascadeIndex + lightIndex * TCascadeCountBase];
-
-                float3 upWS   = mul(upUV,   invmat).xyz;
-                float3 leftWS = mul(leftUV, invmat).xyz;
-                float3 ldirWS = mul(ldirUV, invmat).xyz;
+                float3 upWS   = ShadowUpWs[cascadeIndex + lightIndex * TCascadeCountBase];
+                float3 leftWS = ShadowLeftWs[cascadeIndex + lightIndex * TCascadeCountBase];
+                float3 ldirWS = LightDirWS[cascadeIndex + lightIndex * TCascadeCountBase];
 
                 float3 pstart2 = upWS /* + p0*/;  // but we say p0=(000) to simplify
-
                 // intersect light dir ray to geometry:
                 float t2 = -dot(normal, pstart2) / dot(normal, ldirWS);
                 float3 p2 = pstart2 + ldirWS * t2;
