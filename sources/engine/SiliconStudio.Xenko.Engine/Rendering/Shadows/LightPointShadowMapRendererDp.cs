@@ -182,8 +182,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private void CalculateViewDirection(VisibilityGroup visibilityGroup, LightShadowMapTexture shadowMapTexture)
         {
             var pointShadowMapTexture = shadowMapTexture as ShadowMapTexture;
-            Matrix lower;
-            shadowMapTexture.LightComponent.Entity.Transform.WorldMatrix.DecomposeLQ(out lower, out pointShadowMapTexture.ForwardMatrix);
+            Matrix.Orthonormalize(ref shadowMapTexture.LightComponent.Entity.Transform.WorldMatrix, out pointShadowMapTexture.ForwardMatrix);
             pointShadowMapTexture.ForwardMatrix.Invert();
         }
 

@@ -221,23 +221,23 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //}
 
             // Create a light
-            int lightCount = 32;
+            int lightCount = 1;
             for(int i = 0; i < lightCount; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
-                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.DualParaboloid;
-                lightType.Shadow.Size = LightShadowMapSize.XSmall;
-                //lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
+                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
+                lightType.Shadow.Size = LightShadowMapSize.Medium;
+                lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
                 Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
-                lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
+                //lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
+                lightType.Color = new ColorRgbProvider(Color.White);
                 lightType.Radius = PlaneSize;
 
                 var lightComponent = new LightComponent { Type = lightType, Intensity = 60.0f / lightCount };
-                var lightSubEntity = new Entity { lightComponent };
                 pointLights.Add(lightComponent);
                 lightEntity1 = GenerateSphere();
-                lightEntity1.AddChild(lightSubEntity);
+                lightEntity1.Add(lightComponent);
                 lightEntity1.Get<ModelComponent>().IsShadowCaster = false;
                 lightEntity1.Get<ModelComponent>().IsShadowReceiver = false;
                 lightEntity1.Transform.Position = new Vector3(0, HalfPlaneSize, 0);
@@ -386,7 +386,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 float distMult = (float)Math.Cos(phase * 0.25f + lightRotationOffset) * 0.5f + 1.5f;
                 float lightX = (float)Math.Cos(phase + lightRotationOffset)* lightDistance * distMult;
                 float lightZ = (float)Math.Sin(phase + lightRotationOffset)* lightDistance * distMult;
-                float lightY = (float)-Math.Sin(phase * 0.5f + lightRotationOffset) * lightDistance * distMult;
+                float lightY = (float)-Math.Sin(phase * 0.5f + lightRotationOffset) * lightDistance * distMult + HalfPlaneSize;
                 pointLights[i].Entity.Transform.Position = new Vector3(lightX, lightY, lightZ);
                 //lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
             }

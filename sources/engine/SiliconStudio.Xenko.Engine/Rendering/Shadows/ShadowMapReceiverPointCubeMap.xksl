@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         cbuffer PerDraw.Lighting
         {
+            float4x4 WorldUvMatrices[TLightCount*6];
 			float4 LightPosition[TLightCount];
 			// Offsets for every light, for every face
             float2 LightFaceOffsets[TLightCount*6];
@@ -41,19 +42,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			{
 				str = float3(direction.z, direction.y, delta.x);
 				faceIndex = 2;
-				streams.shadowColor = float3(1, 0, 0);
 			}
 			else if(dirAbs.y == longestAxis)
 			{
 				str = float3(direction.x, direction.z, delta.y);
 				faceIndex = 4;
-				streams.shadowColor = float3(0, 1, 0);
 			}
 			else // direction.z == longestAxis
 			{
 				str = float3(direction.x, direction.y, delta.z);
 				faceIndex = 0;
-				streams.shadowColor = float3(0, 0, 1);
 			}
 			
 			// Offset the negative side of a direction
@@ -66,11 +64,36 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			str.xy *= 0.5;
 
 			float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
+            
+			float projectedDepth = ProjectDepth(lightIndex, str.z);
 
-		    float projectedDepth = ProjectDepth(lightIndex, str.z - DepthBiases[lightIndex]);
-            streams.shadowColor = FilterShadow(textureOffset, projectedDepth, float2(0,0));
+            float2 gradient = 0;
+            if (false /*TODO: if GradientShadowMap*/)
+            {
+                float4x4 worldUv = WorldUvMatrices[lightIndex*6+faceIndex];
+                float3 normal = streams.normalWS;
 
-            //streams.shadowColor = float3(textureOffset.x,0,0);
+                float3 pstart1 = worldUv[0].xyz;
+                float3 pstart2 = worldUv[1].xyz;
+                float3 ldirWS = worldUv[2].xyz;
+
+                // intersect light dir ray to geometry:
+                float t2 = -dot(normal, pstart2) / dot(normal, ldirWS);
+                float3 p2 = pstart2 + ldirWS * t2;
+                
+                float t1 = -dot(normal, pstart1) / dot(normal, ldirWS);
+                float3 p1 = pstart1 + ldirWS * t1;
+                
+                // Project new depths
+                float z2 = ProjectDepth(lightIndex, t2);
+                float z1 = ProjectDepth(lightIndex, t1);
+                gradient = float2(z1 - projectedDepth, z2 - projectedDepth);
+                
+                // limit problems of degenerate cases (vertical walls when light is vertical):
+                //gradient = min(float2(0.1, 0.1), gradient);
+            }
+
+            streams.shadowColor = FilterShadow(textureOffset, projectedDepth, gradient);
         }
     };
 }
