@@ -11,11 +11,14 @@ namespace SiliconStudio.Presentation.Tests
         private const string Title = nameof(Types.DependentPropertyContainer.Title);
         private const string Instance = nameof(Types.DependentPropertyContainer.Instance);
         private const string Name = nameof(Types.SimpleObject.Name);
+        private const string Nam = nameof(Types.SimpleObject.Nam);
 
         private const string TestDataKey = "TestData";
+        private const string UpdateCountKey = "UpdateCount";
 
         private abstract class DependentPropertiesUpdater : IPropertyNodeUpdater
         {
+            private int count;
             public void UpdateNode(SingleObservableNode node)
             {
                 if (node.Name == nameof(Types.DependentPropertyContainer.Title))
@@ -25,6 +28,8 @@ namespace SiliconStudio.Presentation.Tests
 
                     var dependencyPath = GetDependencyPath(node.Owner);
                     node.AddDependency(dependencyPath, IsRecursive);
+
+                    node.AddAssociatedData(UpdateCountKey, count++);
                 }
             }
 
@@ -66,14 +71,17 @@ namespace SiliconStudio.Presentation.Tests
 
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
         }
 
         [Test]
@@ -89,14 +97,17 @@ namespace SiliconStudio.Presentation.Tests
 
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
         }
 
         [Test]
@@ -112,14 +123,17 @@ namespace SiliconStudio.Presentation.Tests
 
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
         }
 
         [Test]
@@ -135,14 +149,17 @@ namespace SiliconStudio.Presentation.Tests
 
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue2";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
         }
 
         [Test]
@@ -159,24 +176,65 @@ namespace SiliconStudio.Presentation.Tests
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue2" };
             nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
 
             nameNode.Value = "NewValue3";
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue3", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(3, titleNode.AssociatedData[UpdateCountKey]);
 
             instanceNode.Value = new Types.SimpleObject { Name = "NewValue4" };
             Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
             Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(4, titleNode.AssociatedData[UpdateCountKey]);
         }
 
+        [Test]
+        public void TestChangeDifferentPropertyWithSameStart()
+        {
+            var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
+            var testContext = new TestContext();
+            var instanceContext = testContext.CreateInstanceContext(container);
+            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            var viewModel = instanceContext.CreateViewModel();
+            var titleNode = viewModel.RootNode.GetChild(Title);
+            var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
+            var namNode = viewModel.RootNode.GetChild(Instance).GetChild(Nam);
+
+            Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
+            Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
+
+            namNode.Value = "NewValue";
+            Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
+            Assert.AreEqual("Test", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(0, titleNode.AssociatedData[UpdateCountKey]);
+
+            nameNode.Value = "NewValue2";
+            Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
+            Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
+
+            namNode.Value = "NewValue3";
+            Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
+            Assert.AreEqual("NewValue2", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(1, titleNode.AssociatedData[UpdateCountKey]);
+
+            nameNode.Value = "NewValue4";
+            Assert.AreEqual(true, titleNode.AssociatedData.ContainsKey(TestDataKey));
+            Assert.AreEqual("NewValue4", titleNode.AssociatedData[TestDataKey]);
+            Assert.AreEqual(2, titleNode.AssociatedData[UpdateCountKey]);
+        }
     }
 }

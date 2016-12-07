@@ -30,6 +30,8 @@ namespace SiliconStudio.Presentation.Tests.Helpers
         public class SimpleObject
         {
             public string Name { get; set; }
+
+            public string Nam { get; set; } // To test scenario when Name.StartsWith(Nam) is true
         }
 
         public class DependentPropertyContainer
