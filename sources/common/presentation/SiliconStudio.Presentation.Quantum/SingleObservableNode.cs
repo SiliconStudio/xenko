@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
-        private List<Tuple<string, bool>> dependencies;
+        private List<DependencyPath> dependencies;
 
         static SingleObservableNode()
         {
@@ -55,42 +55,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>A node that is a dependency to this node will trigger a refresh of this node each time its value is modified (or the value of one of its parent).</remarks>
         public void AddDependency(string nodePath, bool refreshOnNestedNodeChanges)
         {
+            if (string.IsNullOrEmpty(nodePath)) throw new ArgumentNullException(nameof(nodePath));
+
             if (dependencies == null)
             {
-                dependencies = new List<Tuple<string, bool>>();
+                dependencies = new List<DependencyPath>();
                 Owner.NodeValueChanged += DependencyNodeValueChanged;
             }
 
-            dependencies.Add(Tuple.Create(nodePath, refreshOnNestedNodeChanges));
-        }
-
-        private void DependencyNodeValueChanged(object sender, ObservableViewModelNodeValueChangedArgs e)
-        {
-            if (dependencies == null)
-                return;
-
-            bool shouldRefresh = false;
-            foreach (var dependency in dependencies)
-            {
-                if (dependency.Item1.StartsWith(e.NodePath))
-                {
-                    // The node that has changed is the dependent node or one of its parent, let's refresh
-                    shouldRefresh = true;
-                }
-                else if (dependency.Item2 && e.NodePath.StartsWith(dependency.Item1))
-                {
-                    // The node that has changed is a child of the dependent node, and we asked for recursive dependencies, let's refresh
-                    shouldRefresh = true;
-                }
-
-                if (shouldRefresh)
-                    break;
-            }
-
-            if (shouldRefresh)
-            {
-                Refresh();
-            }
+            dependencies.Add(new DependencyPath(nodePath, refreshOnNestedNodeChanges));
         }
 
         /// <summary>
@@ -165,6 +138,53 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             Name = EscapeName(Name);
+        }
+
+        private void DependencyNodeValueChanged(object sender, ObservableViewModelNodeValueChangedArgs e)
+        {
+            if (dependencies?.Any(x => x.ShouldRefresh(e.NodePath)) ?? false)
+            {
+                Refresh();
+            }
+        }
+
+        private struct DependencyPath
+        {
+            private readonly string path;
+            private readonly bool refreshOnNestedNodeChanges;
+
+            public DependencyPath(string path, bool refreshOnNestedNodeChanges)
+            {
+                this.path = path;
+                this.refreshOnNestedNodeChanges = refreshOnNestedNodeChanges;
+            }
+
+            public bool ShouldRefresh(string modifiedNodePath)
+            {
+                if (IsContainingPath(modifiedNodePath, path))
+                {
+                    // The node that has changed is the dependent node or one of its parent, let's refresh
+                    return true;
+                }
+                if (refreshOnNestedNodeChanges && IsContainingPath(path, modifiedNodePath))
+                {
+                    // The node that has changed is a child of the dependent node, and we asked for recursive dependencies, let's refresh
+                    return true;
+                }
+
+                return false;
+
+            }
+
+            private static bool IsContainingPath(string containerPath, string containedPath)
+            {
+                if (!containedPath.StartsWith(containerPath))
+                    return false;
+
+                // Check if the strings are actually identical, or if the next character in the contained path is a property separator ('.')
+                return containedPath.Length == containerPath.Length || containedPath[containerPath.Length] == '.';
+            }
+
         }
     }
 }
