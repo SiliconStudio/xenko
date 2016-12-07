@@ -10,25 +10,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         cbuffer PerDraw.Lighting
         {
-            float4x4 WorldUvMatrices[TLightCount*6];
+            float4x4 ViewProjection[TLightCount*6];
+            float4x4 InverseViewProjection[TLightCount*6];
+            float4x4 ProjectionToShadow[TLightCount*6];
 			float4 LightPosition[TLightCount];
-			// Offsets for every light, for every face
-            float2 LightFaceOffsets[TLightCount*6];
-            float2 LightFaceSize[TLightCount];
-            float2 LightDepthParameters[TLightCount];
             float DepthBiases[TLightCount];
+            float DirectionOffset[TLightCount];
         };
-		
-		// Projects depth into the depth buffer space
-		stage float ProjectDepth(int lightIndex, float depth)
-        {
-            return LightDepthParameters[lightIndex].y / depth + LightDepthParameters[lightIndex].x;
-        }
 
         override void ComputeShadow(int lightIndex)
         {
             // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
-            float3 delta = streams.PositionWS.xyz - LightPosition[lightIndex].xyz;
+            float3 lightPosition = LightPosition[lightIndex].xyz;
+            float3 delta = streams.PositionWS.xyz - lightPosition;
 			float3 direction = normalize(delta);
 			float3 dirAbs = abs(direction);
 			
@@ -56,44 +50,68 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			
 			// Offset the negative side of a direction
 			faceIndex += int(max(0, -sign(str.z)));
-			str.z = abs(str.z);
 
-			float absLongest = abs(longestAxis);
-			str.xy = str.xy / float2(absLongest, absLongest);
-			str.xy += float2(1, 1);
-			str.xy *= 0.5;
+            float4x4 viewProjection = ViewProjection[lightIndex*6+faceIndex];
+            float4x4 invViewProjection = InverseViewProjection[lightIndex*6+faceIndex];
+            float4x4 toShadow = ProjectionToShadow[lightIndex*6+faceIndex];
 
-			float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
+            float4 projectedPosition = mul(streams.PositionWS, viewProjection);
+            projectedPosition /= projectedPosition.w;
+
+			//str.z = abs(str.z);
+			//float absLongest = abs(longestAxis);
+			//str.xy = str.xy / float2(absLongest, absLongest);
+			//str.xy += float2(1, 1);
+			//str.xy *= 0.5;
+
+			//float projectedDepth = ProjectDepth(lightIndex, str.z);
+			//float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
             
-			float projectedDepth = ProjectDepth(lightIndex, str.z);
-
             float2 gradient = 0;
-            if (false /*TODO: if GradientShadowMap*/)
+            if (true /*TODO: if GradientShadowMap*/)
             {
-                float4x4 worldUv = WorldUvMatrices[lightIndex*6+faceIndex];
+                float projectedOffset = DirectionOffset[lightIndex];
+                float4 pointRight = float4(projectedPosition.x + projectedOffset, projectedPosition.y, 0, 1);
+                pointRight = mul(pointRight, invViewProjection);
+                float3 rayRight = normalize(pointRight.xyz / pointRight.w - lightPosition);
+
+                float4 pointUp = float4(projectedPosition.x, projectedPosition.y - projectedOffset, 0, 1);
+                pointUp = mul(pointUp, invViewProjection);
+                float3 rayUp = normalize(pointUp.xyz / pointUp.w - lightPosition);
+                
                 float3 normal = streams.normalWS;
 
-                float3 pstart1 = worldUv[0].xyz;
-                float3 pstart2 = worldUv[1].xyz;
-                float3 ldirWS = worldUv[2].xyz;
-
+                float t1 = dot(delta, normal) / dot(normal, rayRight);
+                float3 p1 = lightPosition + rayRight * t1;
+                
                 // intersect light dir ray to geometry:
-                float t2 = -dot(normal, pstart2) / dot(normal, ldirWS);
-                float3 p2 = pstart2 + ldirWS * t2;
+                float t2 = dot(delta, normal) / dot(normal, rayUp);
+                float3 p2 = lightPosition + rayUp * t2;
                 
-                float t1 = -dot(normal, pstart1) / dot(normal, ldirWS);
-                float3 p1 = pstart1 + ldirWS * t1;
-                
+                float4 z1 = mul(float4(p1,1), viewProjection);
+                z1 /= z1.w;
+                float4 z2 = mul(float4(p2,1), viewProjection);
+                z2 /= z2.w;
+
                 // Project new depths
-                float z2 = ProjectDepth(lightIndex, t2);
-                float z1 = ProjectDepth(lightIndex, t1);
-                gradient = float2(z1 - projectedDepth, z2 - projectedDepth);
+                // * ShadowMapTextureSize
+                gradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
                 
                 // limit problems of degenerate cases (vertical walls when light is vertical):
                 //gradient = min(float2(0.1, 0.1), gradient);
+                streams.shadowColor = float3(gradient.xy,0);
             }
 
-            streams.shadowColor = FilterShadow(textureOffset, projectedDepth, gradient);
+            // Reproject world position but with bias
+            float3 biasedWorldPosition = streams.PositionWS + direction * -DepthBiases[lightIndex];
+            projectedPosition = mul(float4(biasedWorldPosition, 1), viewProjection);
+            projectedPosition /= projectedPosition.w;
+
+            float4 uvPos = mul(projectedPosition, toShadow);
+            streams.shadowColor = FilterShadow(uvPos.xy, uvPos.z, gradient);
+            //float2 n = (uvPos.xy-LightFaceOffsets[faceIndex])/LightFaceSize[faceIndex];
+            //streams.shadowColor = float3(gradient.xy, 0);
+            //streams.shadowColor = invViewMatrix[2].xyz;
         }
     };
 }

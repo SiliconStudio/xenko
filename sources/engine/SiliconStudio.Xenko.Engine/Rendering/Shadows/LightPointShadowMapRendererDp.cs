@@ -63,21 +63,21 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return shadowMap;
         }
 
-        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
         {
             for (int i = 0; i < 2; i++)
             {
                 // Allocate shadow render view
                 var shadowRenderView = shadowRenderViews.Add();
                 shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
-                shadowRenderView.ShadowMapTexture = shadowMapTexture;
-                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(i);
+                shadowRenderView.ShadowMapTexture = lightShadowMap;
+                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
                 shadowRenderView.NearClipPlane = 0.0f;
-                shadowRenderView.FarClipPlane = GetShadowMapFarPlane(shadowMapTexture);
+                shadowRenderView.FarClipPlane = GetShadowMapFarPlane(lightShadowMap);
 
                 // Compute view parameters
                 // Note: we only need view here since we are doing paraboloid projection in the vertex shader
-                GetViewParameters(shadowMapTexture, i, out shadowRenderView.View, true);
+                GetViewParameters(lightShadowMap, i, out shadowRenderView.View, true);
 
                 Matrix virtualProjectionMatrix = shadowRenderView.View;
                 virtualProjectionMatrix *= Matrix.Scaling(1.0f/shadowRenderView.FarClipPlane);

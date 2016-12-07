@@ -57,38 +57,53 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return shadowMap;
         }
 
-        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
         {
-            var clippingPlanes = GetLightClippingPlanes((LightPoint)shadowMapTexture.Light);
-            var shaderData = (ShaderData)shadowMapTexture.ShaderData;
+            var clippingPlanes = GetLightClippingPlanes((LightPoint)lightShadowMap.Light);
+            var shaderData = (ShaderData)lightShadowMap.ShaderData;
 
-            var textureMapSize = shadowMapTexture.GetRectangle(0).Size;
+            var textureMapSize = lightShadowMap.GetRectangle(0).Size;
 
             // Calculate angle of the projection with border pixels taken into account to allow filtering
             float halfMapSize = (float)textureMapSize.Width/2;
             float halfFov = (float)Math.Atan((halfMapSize + BorderPixels)/halfMapSize);
             var projectionMatrix = Matrix.PerspectiveFovRH(halfFov*2, 1.0f, clippingPlanes.X, clippingPlanes.Y);
 
+            // Get the local xy offset for a single pixel by deprojecting a a screen space point, offset by 1 pixel
+            shaderData.DirectionOffset = 1/halfMapSize;// Vector3.TransformCoordinate(new Vector3(1/halfMapSize, 0, 0), Matrix.Invert(projectionMatrix)).X;
+
+            //float test = 2/shaderData.DirectionOffset;
+
             for (int i = 0; i < 6; i++)
             {
                 // Allocate shadow render view
                 var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
                 shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
-                shadowRenderView.ShadowMapTexture = shadowMapTexture;
-                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(i);
+                shadowRenderView.ShadowMapTexture = lightShadowMap;
+                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
 
                 shadowRenderView.NearClipPlane = clippingPlanes.X;
                 shadowRenderView.FarClipPlane = clippingPlanes.Y;
 
-                shadowRenderView.View = shaderData.ViewMatrices[i];
+                shadowRenderView.View = shaderData.View[i];
                 shadowRenderView.Projection = projectionMatrix;
                 shadowRenderView.ViewProjection = shadowRenderView.View*shadowRenderView.Projection;
-                var inverseViewProjection = Matrix.Invert(shadowRenderView.ViewProjection);
-                Matrix test = new Matrix();
-                test.Column1 = Vector4.Transform(Vector4.UnitX, inverseViewProjection);
-                test.Column2 = Vector4.Transform(Vector4.UnitY, inverseViewProjection);
-                test.Column3 = Vector4.Transform(Vector4.UnitZ, inverseViewProjection);
-                shaderData.WorldUvMatrices[i] = test;
+
+                // Create projection matrix with adjustment
+                var textureCoords = new Vector4((float)shadowRenderView.Rectangle.Left / lightShadowMap.Atlas.Width,
+                    (float)shadowRenderView.Rectangle.Top / lightShadowMap.Atlas.Height,
+                    (float)shadowRenderView.Rectangle.Right / lightShadowMap.Atlas.Width,
+                    (float)shadowRenderView.Rectangle.Bottom / lightShadowMap.Atlas.Height);
+                float leftX = (float)lightShadowMap.Size / lightShadowMap.Atlas.Width * 0.5f;
+                float leftY = (float)lightShadowMap.Size / lightShadowMap.Atlas.Height * 0.5f;
+                float centerX = 0.5f * (textureCoords.X + textureCoords.Z);
+                float centerY = 0.5f * (textureCoords.Y + textureCoords.W);
+
+                shaderData.ViewProjection[i] = shadowRenderView.ViewProjection;
+                shaderData.ProjectionToShadow[i] = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
+                shaderData.InverseViewProjection[i] = Matrix.Invert(shadowRenderView.ViewProjection);
+                
+                var invViewProj = Matrix.Invert(shadowRenderView.ViewProjection);
 
                 shadowRenderView.VisiblityIgnoreDepthPlanes = false;
 
@@ -109,9 +124,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             Matrix rotation = Matrix.Identity;
             Matrix flipping = Matrix.Identity;
-
-            // Render upside down, so reading doesn't need any modification
-            flipping.Up = -flipping.Up;
 
             // Apply light position
             view = Matrix.Translation(-shadowMapTexture.LightComponent.Position);
@@ -171,13 +183,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shaderData.FaceOffsets[i] = new Vector2(faceRectangle.Left + BorderPixels, faceRectangle.Top + BorderPixels)/atlasSize;
 
                 // Compute view parameters
-                // Note: we only need view here since we are doing paraboloid projection in the shaders
-                GetViewParameters(lightShadowMap, i, out shaderData.ViewMatrices[i]);
-
-                // Calculate orthonormal base of this view
-                var viewInverse = shaderData.ViewMatrices[i];
-                viewInverse.Invert();
-                Matrix.Orthonormalize(ref viewInverse, out shaderData.WorldUvMatrices[i]);
+                GetViewParameters(lightShadowMap, i, out shaderData.View[i]);
             }
 
             var clippingPlanes = GetLightClippingPlanes((LightPoint)lightShadowMap.Light);
@@ -211,12 +217,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// <summary>
             /// View matrices for all the faces
             /// </summary>
-            public Matrix[] ViewMatrices = new Matrix[6];
+            public Matrix[] View = new Matrix[6];
+            
+            public Matrix[] ViewProjection = new Matrix[6];
+            
+            public Matrix[] InverseViewProjection = new Matrix[6];
 
-            /// <summary>
-            /// Orthonormal matrix for every face
-            /// </summary>
-            public Matrix[] WorldUvMatrices = new Matrix[6];
+            public Matrix[] ProjectionToShadow = new Matrix[6];
+
+            public float DirectionOffset;
 
             public float DepthBias;
         }
@@ -231,23 +240,23 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Texture shadowMapTexture;
             private Vector2 shadowMapTextureSize;
             private Vector2 shadowMapTextureTexelSize;
-
-            private Vector2[] lightFaceOffsets;
-            private Vector2[] lightFaceSize;
-            private Vector2[] lightDepthParameters;
+            
             private Vector4[] lightPosition;
-            private Matrix[] worldUvMatrices;
+            private Matrix[] viewProjection;
+            private Matrix[] inverseViewProjection;
+            private Matrix[] projectionToShadow;
             private float[] depthBiases;
-            private ValueParameterKey<Vector2> lightFaceOffsetsKey;
-            private ValueParameterKey<Vector2> lightFaceSizeKey;
-            private ValueParameterKey<Vector2> lightDepthParametersKey;
+            private float[] directionOffset;
             private ValueParameterKey<Vector4> lightPositionKey;
 
             private ObjectParameterKey<Texture> shadowMapTextureKey;
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
             private ValueParameterKey<float> depthBiasesKey;
-            private ValueParameterKey<Matrix> worldUvMatricesKey;
+            private ValueParameterKey<float> directionOffsetKey;
+            private ValueParameterKey<Matrix> viewProjectionKey;
+            private ValueParameterKey<Matrix> inverseViewProjectionKey;
+            private ValueParameterKey<Matrix> projectionToShadowKey;
 
             public ShaderGroupData(LightShadowType shadowType)
             {
@@ -264,12 +273,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
-                worldUvMatricesKey = ShadowMapReceiverPointCubeMapKeys.WorldUvMatrices.ComposeWith(compositionName);
+                viewProjectionKey = ShadowMapReceiverPointCubeMapKeys.ViewProjection.ComposeWith(compositionName);
+                inverseViewProjectionKey = ShadowMapReceiverPointCubeMapKeys.InverseViewProjection.ComposeWith(compositionName);
+                projectionToShadowKey = ShadowMapReceiverPointCubeMapKeys.ProjectionToShadow.ComposeWith(compositionName);
                 lightPositionKey = ShadowMapReceiverPointCubeMapKeys.LightPosition.ComposeWith(compositionName);
-                lightFaceOffsetsKey = ShadowMapReceiverPointCubeMapKeys.LightFaceOffsets.ComposeWith(compositionName);
-                lightFaceSizeKey = ShadowMapReceiverPointCubeMapKeys.LightFaceSize.ComposeWith(compositionName);
-                lightDepthParametersKey = ShadowMapReceiverPointCubeMapKeys.LightDepthParameters.ComposeWith(compositionName);
                 depthBiasesKey = ShadowMapReceiverPointCubeMapKeys.DepthBiases.ComposeWith(compositionName);
+                directionOffsetKey = ShadowMapReceiverPointCubeMapKeys.DirectionOffset.ComposeWith(compositionName);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -293,12 +302,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         break;
                 }
 
-                Array.Resize(ref worldUvMatrices, lightCurrentCount*6);
-                Array.Resize(ref lightFaceOffsets, lightCurrentCount*6);
-                Array.Resize(ref lightFaceSize, lightCurrentCount);
-                Array.Resize(ref lightDepthParameters, lightCurrentCount);
+                Array.Resize(ref viewProjection, lightCurrentCount*6);
+                Array.Resize(ref inverseViewProjection, lightCurrentCount*6);
+                Array.Resize(ref projectionToShadow, lightCurrentCount * 6);
                 Array.Resize(ref lightPosition, lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
+                Array.Resize(ref directionOffset, lightCurrentCount);
             }
 
             public void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights)
@@ -315,14 +324,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     // Copy per-face data
                     for (int i = 0; i < 6; i++)
                     {
-                        lightFaceOffsets[lightIndex*6 + i] = shaderData.FaceOffsets[i];
-                        worldUvMatrices[lightIndex*6 + i] = shaderData.WorldUvMatrices[i];
+                        viewProjection[lightIndex*6 + i] = shaderData.ViewProjection[i];
+                        inverseViewProjection[lightIndex*6 + i] = shaderData.InverseViewProjection[i];
+                        projectionToShadow[lightIndex * 6 + i] = shaderData.ProjectionToShadow[i];
                     }
 
                     lightPosition[lightIndex] = new Vector4(shaderData.Position, 1);
-                    lightFaceSize[lightIndex] = shaderData.FaceSize;
                     depthBiases[lightIndex] = shaderData.DepthBias;
-                    lightDepthParameters[lightIndex] = shaderData.LightDepthParameters;
+                    directionOffset[lightIndex] = shaderData.DirectionOffset;
 
                     // TODO: should be setup just once at creation time
                     if (lightIndex == 0)
@@ -340,14 +349,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
 
-                parameters.Set(worldUvMatricesKey, worldUvMatrices);
+                parameters.Set(projectionToShadowKey, projectionToShadow);
+                parameters.Set(viewProjectionKey, viewProjection);
+                parameters.Set(inverseViewProjectionKey, inverseViewProjection);
 
                 parameters.Set(lightPositionKey, lightPosition);
-                parameters.Set(lightFaceOffsetsKey, lightFaceOffsets);
-                parameters.Set(lightFaceSizeKey, lightFaceSize);
-                parameters.Set(lightDepthParametersKey, lightDepthParameters);
-
                 parameters.Set(depthBiasesKey, depthBiases);
+                parameters.Set(directionOffsetKey, directionOffset);
             }
         }
     }

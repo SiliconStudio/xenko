@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Create a graphics compositor
             var compositor = new SceneGraphicsCompositorLayers();
 
-            bool isLDR = false;
+            bool isLDR = true;
             if (isLDR)
             {
                 compositor.Master.Renderers.Add(new ClearRenderFrameRenderer() { Color = Color4.Black });
@@ -382,11 +382,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Rotate the light on the timer + offset
             for(int i = 0; i < pointLights.Count; i++)
             {
-                float phase = (i*-0.2f) + (float)lightTimer.Elapsed.TotalSeconds*(1.0f-i*0.3f);
-                float distMult = (float)Math.Cos(phase * 0.25f + lightRotationOffset) * 0.5f + 1.5f;
-                float lightX = (float)Math.Cos(phase + lightRotationOffset)* lightDistance * distMult;
-                float lightZ = (float)Math.Sin(phase + lightRotationOffset)* lightDistance * distMult;
-                float lightY = (float)-Math.Sin(phase * 0.5f + lightRotationOffset) * lightDistance * distMult + HalfPlaneSize;
+                float phase = (i*-0.2f) + (float)lightTimer.Elapsed.TotalSeconds*(1.0f-i*0.3f) + lightRotationOffset;
+                float distMult = (float)Math.Cos(phase * 0.25f) * 0.5f + 1.5f;
+                float lightX = (float)Math.Cos(phase)* lightDistance * distMult;
+                float lightZ = (float)Math.Sin(phase)* lightDistance * distMult;
+                float lightY = (float)-Math.Sin(phase * 0.5f) * lightDistance * distMult + HalfPlaneSize;
                 pointLights[i].Entity.Transform.Position = new Vector3(lightX, lightY, lightZ);
                 //lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
             }

@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
 
-        void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup);
+        void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup);
 
         void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
 

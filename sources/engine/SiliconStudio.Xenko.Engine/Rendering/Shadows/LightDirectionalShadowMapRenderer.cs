@@ -283,18 +283,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        public override void CreateRenderViews(LightShadowMapTexture shadowMapTexture, VisibilityGroup visibilityGroup)
+        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
         {
-            for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
+            for (int cascadeIndex = 0; cascadeIndex < lightShadowMap.CascadeCount; cascadeIndex++)
             {
                 // Allocate shadow render view
                 var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
                 shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
-                shadowRenderView.ShadowMapTexture = shadowMapTexture;
-                shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
+                shadowRenderView.ShadowMapTexture = lightShadowMap;
+                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(cascadeIndex);
 
                 // Compute view parameters
-                GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                GetCascadeViewParameters(lightShadowMap, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
                 Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
 
                 // Add the render view for the current frame
