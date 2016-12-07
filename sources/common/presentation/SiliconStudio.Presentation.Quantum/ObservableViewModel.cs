@@ -65,8 +65,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
             var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
-            node.Initialize();
             RootNode = node;
+            node.Initialize();
             node.CheckConsistency();
         }
 
@@ -119,8 +119,8 @@ namespace SiliconStudio.Presentation.Quantum
                 rootNodeType = typeof(object);
 
             CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, Index.Empty);
-            rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
+            rootCombinedNode.Initialize();
             return combinedViewModel;
         }
 
