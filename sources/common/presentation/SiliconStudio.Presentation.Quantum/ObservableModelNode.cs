@@ -381,7 +381,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        protected void Refresh()
+        protected override void Refresh()
         {
             //if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
