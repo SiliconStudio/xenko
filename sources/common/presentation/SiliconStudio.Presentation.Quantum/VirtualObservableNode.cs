@@ -86,6 +86,11 @@ namespace SiliconStudio.Presentation.Quantum
             initialized = true;
         }
 
+        protected override void Refresh()
+        {
+            // TODO: what do we want to do for virtual nodes? They are constructed completely externally...
+        }
+
         protected virtual void SetTypedValue(object value)
         {
             updatingValue = true;
