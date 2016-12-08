@@ -32,6 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             //CurrentVersion = 2;
             CurrentVersion = 3; // Fix normal maps
+            CurrentVersion = 4; // Fix normal maps again
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
