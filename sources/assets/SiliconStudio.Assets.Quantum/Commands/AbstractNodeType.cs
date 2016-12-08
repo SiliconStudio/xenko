@@ -19,7 +19,14 @@ namespace SiliconStudio.Assets.Quantum.Commands
         public override string DisplayValue => Type.GetDisplayName();
 
         /// <inheritdoc/>
-        public override object GenerateValue(object currentValue) => ObjectFactoryRegistry.NewInstance(Type);
+        public override object GenerateValue(object currentValue)
+        {
+            // Check if this type can be created first to avoid exceptions
+            if (!ObjectFactoryRegistry.CanCreateInstance(Type))
+                return null;
+
+            return ObjectFactoryRegistry.NewInstance(Type);
+        }
 
         /// <inheritdoc/>
         public override bool IsMatchingValue(object value) => value?.GetType() == Type;
