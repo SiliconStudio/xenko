@@ -42,6 +42,17 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
+        /// <inheritdoc/>
+        public override void Destroy()
+        {
+            if (dependencies != null)
+            {
+                Owner.NodeValueChanged -= DependencyNodeValueChanged;
+                dependencies = null;
+            }
+            base.Destroy();
+        }
+
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
