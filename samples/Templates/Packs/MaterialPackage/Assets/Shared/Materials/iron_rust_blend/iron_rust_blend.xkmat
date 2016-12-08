@@ -7,7 +7,7 @@ Attributes:
         GlossinessMap: !ComputeBinaryScalar
             Operator: Add
             LeftChild: !ComputeTextureScalar
-                Texture: 4e1a9c17-3043-40c3-9936-88f4695a0045/05828528-798c-4fb2-9de1-96d6d6aaccc8:Materials/iron_rust_blend/iron_mtl
+                Texture: 05828528-798c-4fb2-9de1-96d6d6aaccc8:Materials/iron_rust_blend/iron_mtl
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -16,34 +16,31 @@ Attributes:
                 Value: 0.5
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 5b33301d-0b2d-4312-b554-f6cd466e3501/32bf0391-1ba2-43ab-af88-9a52e44e0e30:Materials/iron_rust_blend/iron_dif
+            Texture: 32bf0391-1ba2-43ab-af88-9a52e44e0e30:Materials/iron_rust_blend/iron_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 421df25e-7b6c-4c0b-9782-ea57cde292bc/05828528-798c-4fb2-9de1-96d6d6aaccc8:Materials/iron_rust_blend/iron_mtl
+            Texture: 05828528-798c-4fb2-9de1-96d6d6aaccc8:Materials/iron_rust_blend/iron_mtl
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 9d42fc43-3772-4f26-aa24-bacc8df93296
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 2877ed37-a9ea-4b9f-be8f-5b51ef3d7c85
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: aa4a7cd5-2288-420b-a007-2fd0e102bfe3
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers:
-    -   ~Id: 3eba4807-d7ff-4bb7-b9ce-7be7f4d60de0
-        Material: 0de746fc-6b2c-4fd0-bb87-4cdb71b79720/9ffbb401-e3ee-455a-93c2-25d9a8d7599d:Materials/iron_rust_blend/iron_rust
+    0748ba3effd7b74bb9ce7be7f4d60de0:
+        Material: 9ffbb401-e3ee-455a-93c2-25d9a8d7599d:Materials/iron_rust_blend/iron_rust
         BlendMap: !ComputeTextureScalar
-            Texture: 4282873d-0a37-4623-9501-80c0480750da/bd167860-2f1d-47c6-a550-8f0265e19e6c:Materials/iron_rust_blend/rust_msk
+            Texture: bd167860-2f1d-47c6-a550-8f0265e19e6c:Materials/iron_rust_blend/rust_msk
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}

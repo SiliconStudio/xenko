@@ -10,3 +10,5 @@ Materials:
         MaterialInstance:
             Material: 25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
 Skeleton: null
+~SourceHashes:
+    b54c670a88df70c793d6a4cd50864458~../../Resources/SampleBox.FBX: b5f389bd04fd3ea2cf5333d4c74d12d3

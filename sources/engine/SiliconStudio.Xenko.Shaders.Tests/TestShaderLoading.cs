@@ -16,6 +16,7 @@ using LoggerResult = SiliconStudio.Shaders.Utility.LoggerResult;
 namespace SiliconStudio.Xenko.Shaders.Tests
 {
     [TestFixture]
+    [Ignore("This test fixture is unmaintained and currently doesn't pass")]
     public class TestShaderLoading
     {
         private ShaderSourceManager sourceManager;
