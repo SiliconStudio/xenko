@@ -200,38 +200,20 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(0, 0.8f, HalfPlaneSize*0.75f);
             scene.Entities.Add(cameraEntity);
-
+            
             // Create a light
-            //{
-            //    var lightType = new LightDirectional();
-            //    lightType.Shadow.Enabled = true;
-            //    lightType.Shadow.Size = LightShadowMapSize.Large;
-            //    lightType.Color = new ColorRgbProvider(Color.PaleVioletRed);
-            //
-            //
-            //    var lightSubEntity = new Entity { new LightComponent { Type = lightType, Intensity = 0.5f } };
-            //    lightEntity = GenerateSphere();
-            //    lightEntity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverFour, MathUtil.PiOverTwo, 0);
-            //    lightEntity.Transform.UpdateWorldMatrix();
-            //    lightEntity.Transform.Position = -lightEntity.Transform.WorldMatrix.Forward*PlaneSize;
-            //    lightEntity.AddChild(lightSubEntity);
-            //    lightEntity.Get<ModelComponent>().IsShadowCaster = false;
-            //    lightEntity.Get<ModelComponent>().IsShadowReceiver = false;
-            //    scene.Entities.Add(lightEntity);
-            //}
-
-            // Create a light
-            int lightCount = 1;
+            int lightCount = 32;
             for(int i = 0; i < lightCount; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
                 (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
-                lightType.Shadow.Size = LightShadowMapSize.Medium;
+                lightType.Shadow.BiasParameters.DepthBias = 0.05f;
+                lightType.Shadow.Size = LightShadowMapSize.Small;
                 lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
                 Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
-                //lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
-                lightType.Color = new ColorRgbProvider(Color.White);
+                lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
+                //lightType.Color = new ColorRgbProvider(Color.White);
                 lightType.Radius = PlaneSize;
 
                 var lightComponent = new LightComponent { Type = lightType, Intensity = 60.0f / lightCount };
@@ -243,19 +225,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 lightEntity1.Transform.Position = new Vector3(0, HalfPlaneSize, 0);
                 scene.Entities.Add(lightEntity1);
             }
-
-            // Create a light
-            //{
-            //    var lightType = new LightDirectional();
-            //    lightType.Shadow.Enabled = true;
-            //    lightType.Color = new ColorRgbProvider(Color.White);
-            //
-            //    var lightEntity = new Entity { new LightComponent { Type = lightType, Intensity = 0.2f } };
-            //    lightEntity.Transform.Position = new Vector3(0, 2, 0);
-            //    lightEntity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverFour, MathUtil.PiOverFour, 0.0f);
-            //    lightEntity.Transform.UpdateWorldMatrix();
-            //    scene.Entities.Add(lightEntity);
-            //}
 
             // Create a graphics compositor
             var compositor = new SceneGraphicsCompositorLayers();

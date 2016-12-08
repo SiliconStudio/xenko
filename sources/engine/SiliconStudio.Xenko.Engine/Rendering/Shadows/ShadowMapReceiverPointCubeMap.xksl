@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Selects the shadow map and computes the shadow factor.
     /// </summary>
-    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : MaterialPixelShadingStream, ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4
+    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : MaterialPixelShadingStream, ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4, ShaderBaseStream
     {
         cbuffer PerDraw.Lighting
         {
@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			float4 LightPosition[TLightCount];
             float DepthBiases[TLightCount];
             float DirectionOffset[TLightCount];
+
+            // Should this be conditional or on by default?
+            //bool GradientShadowMap[TLightCount];
         };
 
         override void ComputeShadow(int lightIndex)
@@ -28,28 +31,29 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 			
 			float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
 
-			int faceIndex;
-			float3 str;
-
-			[flatten]
+            int faceIndex;
+            float z;
+            
+            // Select the base face index for either X,Y or Z facing
+            [flatten]
 			if(dirAbs.x == longestAxis)
 			{
-				str = float3(direction.z, direction.y, delta.x);
+				z = delta.x;
 				faceIndex = 2;
 			}
 			else if(dirAbs.y == longestAxis)
 			{
-				str = float3(direction.x, direction.z, delta.y);
+                z = delta.y;
 				faceIndex = 4;
 			}
 			else // direction.z == longestAxis
 			{
-				str = float3(direction.x, direction.y, delta.z);
+                z = delta.z;
 				faceIndex = 0;
 			}
 			
-			// Offset the negative side of a direction
-			faceIndex += int(max(0, -sign(str.z)));
+			// Apply offset the negative side of a direction (+1)
+			faceIndex += int(max(0, -sign(z)));
 
             float4x4 viewProjection = ViewProjection[lightIndex*6+faceIndex];
             float4x4 invViewProjection = InverseViewProjection[lightIndex*6+faceIndex];
@@ -58,18 +62,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4 projectedPosition = mul(streams.PositionWS, viewProjection);
             projectedPosition /= projectedPosition.w;
 
-			//str.z = abs(str.z);
-			//float absLongest = abs(longestAxis);
-			//str.xy = str.xy / float2(absLongest, absLongest);
-			//str.xy += float2(1, 1);
-			//str.xy *= 0.5;
-
-			//float projectedDepth = ProjectDepth(lightIndex, str.z);
-			//float2 textureOffset = LightFaceOffsets[lightIndex*6+faceIndex] + str.xy * LightFaceSize[lightIndex];
-            
             float2 gradient = 0;
-            if (true /*TODO: if GradientShadowMap*/)
+            //if (GradientShadowMap[lightIndex])
             {
+                // Customized implementation similar to ShadowMapReceiverBase but suitable for perspective projection
                 float projectedOffset = DirectionOffset[lightIndex];
                 float4 pointRight = float4(projectedPosition.x + projectedOffset, projectedPosition.y, 0, 1);
                 pointRight = mul(pointRight, invViewProjection);
@@ -81,37 +77,32 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 
                 float3 normal = streams.normalWS;
 
+                // intersect light dir ray to geometry:
                 float t1 = dot(delta, normal) / dot(normal, rayRight);
                 float3 p1 = lightPosition + rayRight * t1;
                 
-                // intersect light dir ray to geometry:
                 float t2 = dot(delta, normal) / dot(normal, rayUp);
                 float3 p2 = lightPosition + rayUp * t2;
                 
+                // rexpress in UV space:
                 float4 z1 = mul(float4(p1,1), viewProjection);
                 z1 /= z1.w;
                 float4 z2 = mul(float4(p2,1), viewProjection);
                 z2 /= z2.w;
 
-                // Project new depths
-                // * ShadowMapTextureSize
+                // Take depth diffence as gradient and scale it by the texture map size so it can be multiplied by offsets in the filter
                 gradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
-                
-                // limit problems of degenerate cases (vertical walls when light is vertical):
-                //gradient = min(float2(0.1, 0.1), gradient);
-                streams.shadowColor = float3(gradient.xy,0);
             }
 
-            // Reproject world position but with bias
-            float3 biasedWorldPosition = streams.PositionWS + direction * -DepthBiases[lightIndex];
+            // Reproject world position but with bias applied
+            float3 biasedWorldPosition = streams.PositionWS.xyz + direction * -DepthBiases[lightIndex];
             projectedPosition = mul(float4(biasedWorldPosition, 1), viewProjection);
             projectedPosition /= projectedPosition.w;
-
+            
+            // Convert from normalized coordinates to texture space
             float4 uvPos = mul(projectedPosition, toShadow);
+
             streams.shadowColor = FilterShadow(uvPos.xy, uvPos.z, gradient);
-            //float2 n = (uvPos.xy-LightFaceOffsets[faceIndex])/LightFaceSize[faceIndex];
-            //streams.shadowColor = float3(gradient.xy, 0);
-            //streams.shadowColor = invViewMatrix[2].xyz;
         }
     };
 }

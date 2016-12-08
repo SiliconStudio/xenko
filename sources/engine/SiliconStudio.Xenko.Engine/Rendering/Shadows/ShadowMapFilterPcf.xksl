@@ -12,8 +12,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float Bias;
         }
 
-        float SampleTextureAndCompare(float2 position, float positionDepth)
+        float CalculateSlopeBias(float2 atlasOffset, float2 gradient)
         {
+            float slopeBias = dot(atlasOffset, gradient);
+            float m = 2; // Bias on the bias, to prevent the exact bias from being applied, but just a bit more
+            if(slopeBias > 0)
+                m = 1/m;
+            return slopeBias * m;
+        }
+
+        float SampleTextureAndCompare(float2 position, float2 offset, float positionDepth, float2 gradient)
+        {
+            offset *= ShadowMapTextureTexelSize;
+            position += offset;
+            positionDepth += CalculateSlopeBias(offset, gradient);
             return ShadowMapTexture.SampleCmp(LinearClampCompareLessEqualSampler, position, positionDepth);
         }
 
@@ -33,11 +45,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             base_uv -= float2(0.5, 0.5);
             base_uv *= ShadowMapTextureTexelSize;
 
-            if (TFilterSize == 2)
-            {
-                shadow = SampleTextureAndCompare(position, positionDepth);
-            }
-            else if (TFilterSize == 3)
+            // Take offset to pixel center into account according to the gradient
+            positionDepth += CalculateSlopeBias(-float2(0.5,0.5) * ShadowMapTextureTexelSize, gradient);
+
+            if (TFilterSize == 3)
             {
                 float uw0 = (3 - 2 * s);
                 float uw1 = (1 + 2 * s);
@@ -51,17 +62,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float u1 = s / uw1 + 1;
                 float v1 = t / vw1 + 1;
 
-                float2 off = float2(u0, v0) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v0) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v1) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v1) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
+                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv, float2(u0, v0), positionDepth, gradient);
+                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv, float2(u1, v0), positionDepth, gradient);
+                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv, float2(u0, v1), positionDepth, gradient);
+                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv, float2(u1, v1), positionDepth, gradient);
 
                 shadow /= 16.0f;
             }
@@ -83,32 +87,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float v1 = (3 + t) / vw1;
                 float v2 = t / vw2 + 2;
 
-                float2 off = float2(u0, v0) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
+                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv, float2(u0, v0), positionDepth, gradient);
+                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv, float2(u1, v0), positionDepth, gradient);
+                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv, float2(u0, v1), positionDepth, gradient);
+                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv, float2(u1, v1), positionDepth, gradient);
 
-                off = float2(u1, v0) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v0) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v1) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v1) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v1) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v2) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v2) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v2) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
+                shadow += uw2 * vw1 * SampleTextureAndCompare(base_uv, float2(u2, v1), positionDepth, gradient);
+                shadow += uw0 * vw2 * SampleTextureAndCompare(base_uv, float2(u0, v2), positionDepth, gradient);
+                shadow += uw1 * vw2 * SampleTextureAndCompare(base_uv, float2(u1, v2), positionDepth, gradient);
+                shadow += uw2 * vw2 * SampleTextureAndCompare(base_uv, float2(u2, v2), positionDepth, gradient);
 
                 shadow /= 144.0f;
             }
@@ -134,53 +121,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float v2 = -(7 * t + 5) / vw2 + 1;
                 float v3 = -t / vw3 + 3;
 
-                float2 off = float2(u0, v0) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v0) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v0) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u3, v0) * ShadowMapTextureTexelSize;
-                shadow += uw3 * vw0 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v1) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v1) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v1) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u3, v1) * ShadowMapTextureTexelSize;
-                shadow += uw3 * vw1 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v2) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v2) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v2) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u3, v2) * ShadowMapTextureTexelSize;
-                shadow += uw3 * vw2 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u0, v3) * ShadowMapTextureTexelSize;
-                shadow += uw0 * vw3 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u1, v3) * ShadowMapTextureTexelSize;
-                shadow += uw1 * vw3 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u2, v3) * ShadowMapTextureTexelSize;
-                shadow += uw2 * vw3 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
-
-                off = float2(u3, v3) * ShadowMapTextureTexelSize;
-                shadow += uw3 * vw3 * SampleTextureAndCompare(base_uv + off, positionDepth + dot(off, gradient));
+                shadow += uw0 * vw0 * SampleTextureAndCompare(base_uv, float2(u0, v0), positionDepth, gradient);
+                shadow += uw1 * vw0 * SampleTextureAndCompare(base_uv, float2(u1, v0), positionDepth, gradient);
+                shadow += uw2 * vw0 * SampleTextureAndCompare(base_uv, float2(u2, v0), positionDepth, gradient);
+                shadow += uw3 * vw0 * SampleTextureAndCompare(base_uv, float2(u3, v0), positionDepth, gradient);
+                shadow += uw0 * vw1 * SampleTextureAndCompare(base_uv, float2(u0, v1), positionDepth, gradient);
+                shadow += uw1 * vw1 * SampleTextureAndCompare(base_uv, float2(u1, v1), positionDepth, gradient);
+                shadow += uw2 * vw1 * SampleTextureAndCompare(base_uv, float2(u2, v1), positionDepth, gradient);
+                shadow += uw3 * vw1 * SampleTextureAndCompare(base_uv, float2(u3, v1), positionDepth, gradient);
+                shadow += uw0 * vw2 * SampleTextureAndCompare(base_uv, float2(u0, v2), positionDepth, gradient);
+                shadow += uw1 * vw2 * SampleTextureAndCompare(base_uv, float2(u1, v2), positionDepth, gradient);
+                shadow += uw2 * vw2 * SampleTextureAndCompare(base_uv, float2(u2, v2), positionDepth, gradient);
+                shadow += uw3 * vw2 * SampleTextureAndCompare(base_uv, float2(u3, v2), positionDepth, gradient);
+                shadow += uw0 * vw3 * SampleTextureAndCompare(base_uv, float2(u0, v3), positionDepth, gradient);
+                shadow += uw1 * vw3 * SampleTextureAndCompare(base_uv, float2(u1, v3), positionDepth, gradient);
+                shadow += uw2 * vw3 * SampleTextureAndCompare(base_uv, float2(u2, v3), positionDepth, gradient);
+                shadow += uw3 * vw3 * SampleTextureAndCompare(base_uv, float2(u3, v3), positionDepth, gradient);
 
                 shadow /=  2704.0f;
             }

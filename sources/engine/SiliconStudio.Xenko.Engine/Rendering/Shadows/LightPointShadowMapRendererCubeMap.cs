@@ -133,7 +133,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 case 0: // Front
                     rotation *= Matrix.RotationY(MathUtil.Pi);
-                    flipping.Right = -flipping.Right;
                     break;
                 case 1: // Back
                     break;
@@ -142,14 +141,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     break;
                 case 3: // Left
                     rotation *= Matrix.RotationY(-MathUtil.PiOverTwo);
-                    flipping.Right = -flipping.Right;
                     break;
                 case 4: // Up
                     rotation *= Matrix.RotationX(-MathUtil.PiOverTwo);
                     break;
                 case 5: // Down
                     rotation *= Matrix.RotationX(MathUtil.PiOverTwo);
-                    flipping.Up = -flipping.Up;
                     break;
             }
 
