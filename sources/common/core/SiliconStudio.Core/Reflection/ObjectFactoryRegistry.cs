@@ -15,6 +15,13 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, IObjectFactory> RegisteredFactories = new Dictionary<Type, IObjectFactory>();
 
+        static ObjectFactoryRegistry()
+        {
+            // Register factory for string
+            // TODO: We should remove that as soon as we can register attributes in registry for "string" type
+            RegisteredFactories.Add(typeof(string), new StringObjectFactory());
+        }
+
         /// <summary>
         /// Gets the factory corresponding to the given object type, if available.
         /// </summary>
@@ -43,11 +50,34 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Returns true if the object of the specific type can be created.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>True if it can be created, false otherwise.</returns>
+        public static bool CanCreateInstance(Type objectType)
+        {
+            var factory = FindFactory(objectType);
+            if (factory == null)
+                return true;
+
+            // No factory, check if there is a parameterless ctor for Activator.CreateInstance
+            return objectType.GetConstructor(Type.EmptyTypes) != null;
+        }
+
+        /// <summary>
         /// Creates a default instance for an object type.
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         /// <returns>A new default instance of an object.</returns>
         public static object NewInstance(Type objectType)
+        {
+            var factory = FindFactory(objectType);
+
+            // If no registered factory, creates directly the asset
+            return factory != null ? factory.New(objectType) : Activator.CreateInstance(objectType);
+        }
+
+        private static IObjectFactory FindFactory(Type objectType)
         {
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             IObjectFactory factory;
@@ -59,9 +89,7 @@ namespace SiliconStudio.Core.Reflection
                     factory = RegisterFactory(objectType);
                 }
             }
-
-            // If no registered factory, creates directly the asset
-            return factory != null ? factory.New(objectType) : Activator.CreateInstance(objectType);
+            return factory;
         }
 
         private static IObjectFactory RegisterFactory(Type objectType)
@@ -81,6 +109,11 @@ namespace SiliconStudio.Core.Reflection
             }
 
             return factory;
+        }
+
+        class StringObjectFactory : IObjectFactory
+        {
+            public object New(Type type) => string.Empty;
         }
     }
 }

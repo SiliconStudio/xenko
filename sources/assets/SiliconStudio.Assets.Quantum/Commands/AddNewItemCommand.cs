@@ -50,22 +50,19 @@ namespace SiliconStudio.Assets.Quantum.Commands
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd = null;
-            var elementType = collectionDescriptor.ElementType;
-            if (CanAddNull(elementType) || IsReferenceType(elementType))
+
+            // First, check if parameter is an AbstractNodeEntry
+            var abstractNodeEntry = parameter as AbstractNodeEntry;
+            if (abstractNodeEntry != null)
             {
-                // If the parameter is a type instead of an instance, try to construct an instance of this type
-                var type = parameter as Type;
-                if (type?.GetConstructor(Type.EmptyTypes) != null)
-                    itemToAdd = ObjectFactoryRegistry.NewInstance(type);
+                itemToAdd = abstractNodeEntry.GenerateValue(null);
             }
-            else if (collectionDescriptor.ElementType == typeof(string))
-            {
-                itemToAdd = parameter ?? "";
-            }
+            // Otherwise, assume it's an object
             else
             {
                 itemToAdd = parameter ?? ObjectFactoryRegistry.NewInstance(collectionDescriptor.ElementType);
             }
+
             if (index.IsEmpty)
             {
                 content.Add(itemToAdd);
