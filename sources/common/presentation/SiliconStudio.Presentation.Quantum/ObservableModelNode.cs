@@ -287,22 +287,33 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
         {
+            var expandReferenceResult = ExpandReferencePolicy.Full;
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.Content.IsReference)
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
-                    return;
+                if (objectReference != null)
+                {
+                    expandReferenceResult = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference);
+                    if (expandReferenceResult == ExpandReferencePolicy.None)
+                        return;
+                }
 
+                // TODO: This doesn't seem correct to filter list of ReferenceEnumerable and return on first failure
+                //       We might want a separate ShouldExpandItem?
                 var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
                 if (refEnum != null)
                 {
                     foreach (var reference in refEnum)
                     {
                         // Discard the children of the referenced object if requested by the property provider
-                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
-                            return;
+                        if (reference != null)
+                        {
+                            expandReferenceResult = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference);
+                            if (expandReferenceResult == ExpandReferencePolicy.None)
+                                return;
+                        }
                     }
                 }
             }
@@ -366,7 +377,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, expandReferenceResult))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);

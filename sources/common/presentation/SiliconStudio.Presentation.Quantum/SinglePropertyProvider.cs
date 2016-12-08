@@ -24,9 +24,9 @@ namespace SiliconStudio.Presentation.Quantum
         public IGraphNode GetRootNode() => rootNode;
 
         /// <inheritdoc/>
-        public bool ShouldExpandReference(MemberContent member, ObjectReference reference) => true;
+        public ExpandReferencePolicy ShouldExpandReference(MemberContent member, ObjectReference reference) => ExpandReferencePolicy.Full;
 
         /// <inheritdoc/>
-        public bool ShouldConstructMember(MemberContent content) => true;
+        public bool ShouldConstructMember(MemberContent content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
     }
 }
