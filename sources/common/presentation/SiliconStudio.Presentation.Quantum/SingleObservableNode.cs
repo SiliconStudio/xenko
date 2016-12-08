@@ -42,6 +42,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public CombineMode CombineMode { get; set; }
 
+        /// <summary>
+        /// The reference expansion policy chosen while generating children for this node.
+        /// </summary>
+        /// <remarks>
+        /// This can be customized by <see cref="IPropertiesProviderViewModel.ShouldExpandReference"/>.
+        /// </remarks>
+        public ExpandReferencePolicy ExpandReferencePolicy { get; protected set; } = ExpandReferencePolicy.None;
+
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
