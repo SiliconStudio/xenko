@@ -287,7 +287,9 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
         {
-            var expandReferenceResult = ExpandReferencePolicy.Full;
+            // Set the default policy for expanding reference children.
+            ExpandReferencePolicy = ExpandReferencePolicy.Full;
+
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.Content.IsReference)
             {
@@ -295,8 +297,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // Discard the children of the referenced object if requested by the property provider
                 if (objectReference != null)
                 {
-                    expandReferenceResult = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference);
-                    if (expandReferenceResult == ExpandReferencePolicy.None)
+                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference);
+                    if (ExpandReferencePolicy == ExpandReferencePolicy.None)
                         return;
                 }
 
@@ -310,8 +312,8 @@ namespace SiliconStudio.Presentation.Quantum
                         // Discard the children of the referenced object if requested by the property provider
                         if (reference != null)
                         {
-                            expandReferenceResult = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference);
-                            if (expandReferenceResult == ExpandReferencePolicy.None)
+                            ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference);
+                            if (ExpandReferencePolicy == ExpandReferencePolicy.None)
                                 return;
                         }
                     }
@@ -377,7 +379,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, expandReferenceResult))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
