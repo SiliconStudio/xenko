@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]
-        [Display("Scale & Bias")]
+        [Display("Scale & Offset")]
         public bool ScaleAndBias { get; set; }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
-        [Display("Polar Z")]
+        [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
         /// <summary>
