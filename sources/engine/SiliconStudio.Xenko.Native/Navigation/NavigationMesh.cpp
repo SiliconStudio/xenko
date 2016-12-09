@@ -128,7 +128,7 @@ void NavigationMesh::FindPath(NavMeshPathfindQuery query, NavMeshPathfindResult*
 	int pathPointCount = 0;
 	status = m_navQuery->findPath(startPoly, endPoly, &startPoint.X, &endPoint.X, 
 		&filter, polys.data(), &pathPointCount, polys.size());
-	if (dtStatusFailed(status))
+	if (dtStatusFailed(status) || (status & DT_PARTIAL_RESULT) != 0)
 		return;
 
 	tinystl::vector<Vector3> straightPath;
