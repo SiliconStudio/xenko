@@ -29,7 +29,7 @@
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="IObservableNode.cs" />
     <Compile Include="IPropertiesProviderViewModel.cs" />
-    <Compile Include="LCS.cs" />
+    <Compile Include="IPropertyNodeUpdater.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="ObservableViewModelNodeValueChangedArgs.cs" />
     <Compile Include="NodeInitializedEventArgs.cs" />
