@@ -5,26 +5,26 @@ Tags: []
 Source: ../../../Resources/Models/HandModelRight.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
-    234f722bcb80a72d6cc1fd0feafaa4a6: {Name: RootNode, Depth: 0}
-    4cc50560c27c847c82f13f68607af05a: {Name: HandModelRight, Depth: 1}
-    c7b83087c8d3bf20b3d3bc5c33c76e89: {Name: root, Depth: 2}
-    334b2c5622c6bec48352ab26004139cc: {Name: CATRigRArm, Depth: 3}
-    05222537c5953a1fdc760c2b5c3df341: {Name: CATRigRArmPalm, Depth: 4}
-    49affbb21f394771de51c428131e99dc: {Name: CATRigRArmDigit11, Depth: 5}
-    e33a8d09169bd17be7b000dbf3889a2a: {Name: CATRigRArmDigit12, Depth: 6}
-    ab91063024d781c7b8d1c60016b11d34: {Name: CATRigRArmDigit13, Depth: 7}
-    cd4c055f1769f9e9f0afd9ee1ddd6541: {Name: CATRigRArmDigit21, Depth: 5}
-    bb4b8a331d1b9247a58338e45690d9d4: {Name: CATRigRArmDigit22, Depth: 6}
-    798c7242601356413d6dace9f610f0fb: {Name: CATRigRArmDigit23, Depth: 7}
-    c54a217cb5258601c8c76cc08e6c621d: {Name: CATRigRArmDigit31, Depth: 5}
-    c492790cfa7661763570e9d19d411338: {Name: CATRigRArmDigit32, Depth: 6}
-    233bb15b7972526c51fe2d79b63e478d: {Name: CATRigRArmDigit33, Depth: 7}
-    2a00c3f7ef0dcf1f8fe97e28bc011236: {Name: CATRigRArmDigit41, Depth: 5}
-    086176e1e1cfb4e8bd37d0b23b60f581: {Name: CATRigRArmDigit42, Depth: 6}
-    44b279cabbb1c22c9c7622d9a428ecc4: {Name: CATRigRArmDigit43, Depth: 7}
-    f32a68cf7cf2ea3ff0417b55d55a2aab: {Name: CATRigRArmDigit51, Depth: 5}
-    e51f89d3ad8c484763163a923b2f624b: {Name: CATRigRArmDigit52, Depth: 6}
-    0ecb176ce49cc089cd3a0ea1dbec4fa8: {Name: CATRigRArmDigit53, Depth: 7}
-    054a5dd644de4fee16dc171f40a4a1d7: {Name: handRight, Depth: 2}
+    2b83a4a0d5dde6216f7c2fe8b32bbfe2: {Name: RootNode, Depth: 0}
+    b6649da7373cf6c8300a3efb9415ba14: {Name: HandModelRight, Depth: 1}
+    ecbced107fe349735afe2ba25afe2ba2: {Name: root, Depth: 2}
+    8d9b8149b4866be84041e3f7083f6d37: {Name: CATRigRArm, Depth: 3}
+    51f75421fba90cfb2836050347ba79fe: {Name: CATRigRArmPalm, Depth: 4}
+    6b6f62590b9978d90702320eb384b262: {Name: CATRigRArmDigit11, Depth: 5}
+    cfb678bff8535e9eb7e2c5c64c0745e7: {Name: CATRigRArmDigit12, Depth: 6}
+    50c404861292c27f3b75c31fbce5257d: {Name: CATRigRArmDigit13, Depth: 7}
+    de261753e6652051086e47ffae061135: {Name: CATRigRArmDigit21, Depth: 5}
+    8577b161ffe8c9af8272e3f43299eedf: {Name: CATRigRArmDigit22, Depth: 6}
+    d3b0d1869c2b7331163fe8d5b664d330: {Name: CATRigRArmDigit23, Depth: 7}
+    3cc1db383be7ba16d44f64a2ff3f8613: {Name: CATRigRArmDigit31, Depth: 5}
+    031c37b0e191fa9f570e16e6b2a854c2: {Name: CATRigRArmDigit32, Depth: 6}
+    21859576aae214500b2d14f644589f7a: {Name: CATRigRArmDigit33, Depth: 7}
+    b088806106de7df874b1ce9f1bcad674: {Name: CATRigRArmDigit41, Depth: 5}
+    cf4597045e95dba2ebcf16ee9d3d0f5d: {Name: CATRigRArmDigit42, Depth: 6}
+    5e8ba57dcfe2a7eb346af77086fd4807: {Name: CATRigRArmDigit43, Depth: 7}
+    0b3a7ca3874c61ba22c1cb00f7724e03: {Name: CATRigRArmDigit51, Depth: 5}
+    478eda19566c7df8752fd23d95937d9f: {Name: CATRigRArmDigit52, Depth: 6}
+    931686e7b41a5a9c074b34869f16bdca: {Name: CATRigRArmDigit53, Depth: 7}
+    56389656f58c3143ce999fcca215ed8d: {Name: handRight, Depth: 2}
 ~SourceHashes:
-    37a7b32fb2ae0294ea8739bde0ec1f74~../../../Resources/Models/HandModelRight.fbx: a3d72d9e3c4237ebc9cade426869f4f6
+    64896394e9c8a1cbb7e056bc854fbd80~../../../Resources/Models/HandModelRight.fbx: a3d72d9e3c4237ebc9cade426869f4f6

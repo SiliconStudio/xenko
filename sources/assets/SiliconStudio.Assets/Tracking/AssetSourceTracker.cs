@@ -408,8 +408,31 @@ namespace SiliconStudio.Assets.Tracking
                                 UnTrackAsset(assetItem.Id);
                             }
                             break;
+                        case NotifyCollectionChangedAction.Reset:
+                            {
+                                //var assets = (PackageAssetCollection)sender;
+                                var allAssetIds = new HashSet<AssetId>(session.Packages.SelectMany(x => x.Assets).Select(x => x.Id));
+                                var assetsToUntrack = new List<AssetId>();
+                                foreach (var asset in trackedAssets)
+                                {
+                                    // Untrack assets that are currently tracked, but absent from the package session.
+                                    if (!allAssetIds.Contains(asset.Key))
+                                        assetsToUntrack.Add(asset.Key);
+                                }
+                                foreach (var asset in assetsToUntrack)
+                                {
+                                    UnTrackAsset(asset);
+                                }
+                                // Track assets that are present in the package session, but not currently in the list of tracked assets.
+                                allAssetIds.ExceptWith(trackedAssets.Keys);
+                                foreach (var asset in allAssetIds)
+                                {
+                                    TrackAsset(asset);
+                                }
+                            }
+                            break;
                         default:
-                            throw new NotSupportedException("Reset is not supported by the source tracker.");
+                            throw new NotSupportedException("This operation is not supported by the source tracker.");
                     }
                 }
             }

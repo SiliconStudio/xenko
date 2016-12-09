@@ -20,14 +20,10 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\AddNewItemCommand.cs" />
-    <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
     <Compile Include="CombineMode.cs" />
-    <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ChangeValueCommand.cs" />
-    <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
-    <Compile Include="Commands\RenameStringKeyCommand.cs" />
+    <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Contents\Content.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
@@ -59,7 +55,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References\Reference.cs" />
     <Compile Include="References\ReferenceEnumerable.cs" />
-    <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="DefaultNodeBuilder.cs" />
     <Compile Include="NodeContainer.cs" />
     <Compile Include="DebugExtensions.cs" />

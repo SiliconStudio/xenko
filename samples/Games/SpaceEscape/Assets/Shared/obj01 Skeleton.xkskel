@@ -5,13 +5,13 @@ Tags: []
 Source: ../../Resources/model/BG/scene/obj01.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
-    9224bc82798c65600ede374ee6e21ac6: {Name: RootNode, Depth: 0}
-    5beaa5b952f4e2c75e605f1d7e2a1aa6: {Name: root, Depth: 1}
-    1fcaadb2bbb582d85b56a8a036a9b01c: {Name: part, Depth: 2}
-    4de5d7409e9da969e954f75fdba9065d: {Name: obj01_A, Depth: 3}
-    b3fe1b7e98efd04e20e17cf8501717a7: {Name: obj01_01, Depth: 4}
-    23e8eb103be4fb1d6de67c2109b10776: {Name: obj01_B, Depth: 3}
-    4b0781a2dfecea0813979af8d76d1e48: {Name: obj01_02, Depth: 4}
-    002a0193aabd6ef49ffb0f873e7630f1: {Name: obj01_00, Depth: 3}
+    31f5778da4ca914b994e288aa3e4a87a: {Name: RootNode, Depth: 0}
+    6e5e6633ea93c842aec3bc2bd64ca144: {Name: root, Depth: 1}
+    d96853714e8aa940b3f550648a4e4c95: {Name: part, Depth: 2}
+    7e06c03bd999844fae9e5dde22b62381: {Name: obj01_A, Depth: 3}
+    8fbed1451321b949a6cc17ebf4cc7a1e: {Name: obj01_01, Depth: 4}
+    ee4f1aec15c3374caa33a6be1d393f47: {Name: obj01_B, Depth: 3}
+    41d4ef0bb9d33140b6bd69a93b725897: {Name: obj01_02, Depth: 4}
+    f4bb6b174aed0041b6679dcf44830023: {Name: obj01_00, Depth: 3}
 ~SourceHashes:
-    84641ebb6e072687aabc7b120d3d085e~../../Resources/model/BG/scene/obj01.FBX: 9207feb70ceb80973a90773b634d213e
+    3945f939d4e82e9d93932951ff213d05~../../Resources/model/BG/scene/obj01.FBX: 9207feb70ceb80973a90773b634d213e
