@@ -202,14 +202,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(cameraEntity);
             
             // Create a light
-            int lightCount = 32;
+            int lightCount = 1;
             for(int i = 0; i < lightCount; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
                 (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
-                lightType.Shadow.BiasParameters.DepthBias = 0.05f;
-                lightType.Shadow.Size = LightShadowMapSize.Small;
+                lightType.Shadow.BiasParameters.DepthBias = 0.07f;
+                lightType.Shadow.Size = LightShadowMapSize.Large;
                 lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
                 Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
                 lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
@@ -351,7 +351,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Rotate the light on the timer + offset
             for(int i = 0; i < pointLights.Count; i++)
             {
-                float phase = (i*-0.2f) + (float)lightTimer.Elapsed.TotalSeconds*(1.0f-i*0.3f) + lightRotationOffset;
+                float phase = (i*-0.2f) + (float)(lightTimer.Elapsed.TotalSeconds+ lightRotationOffset) * (1.0f-i*0.3f);
                 float distMult = (float)Math.Cos(phase * 0.25f) * 0.5f + 1.5f;
                 float lightX = (float)Math.Cos(phase)* lightDistance * distMult;
                 float lightZ = (float)Math.Sin(phase)* lightDistance * distMult;

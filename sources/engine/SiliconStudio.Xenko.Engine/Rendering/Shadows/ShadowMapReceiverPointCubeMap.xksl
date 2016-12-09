@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4 projectedPosition = mul(streams.PositionWS, viewProjection);
             projectedPosition /= projectedPosition.w;
 
-            float2 gradient = 0;
+            float2 zgradient = 0;
             //if (GradientShadowMap[lightIndex])
             {
                 // Customized implementation similar to ShadowMapReceiverBase but suitable for perspective projection
@@ -90,8 +90,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 float4 z2 = mul(float4(p2,1), viewProjection);
                 z2 /= z2.w;
 
-                // Take depth diffence as gradient and scale it by the texture map size so it can be multiplied by offsets in the filter
-                gradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
+                // Take depth diffence as zgradient and scale it by the texture map size so it can be multiplied by offsets in the filter
+                zgradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
             }
 
             // Reproject world position but with bias applied
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Convert from normalized coordinates to texture space
             float4 uvPos = mul(projectedPosition, toShadow);
 
-            streams.shadowColor = FilterShadow(uvPos.xy, uvPos.z, gradient);
+            streams.shadowColor = FilterShadow(uvPos.xy, uvPos.z, zgradient);
         }
     };
 }
