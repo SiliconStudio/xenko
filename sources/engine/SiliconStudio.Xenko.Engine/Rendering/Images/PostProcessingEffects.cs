@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -247,8 +248,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 return;
             }
 
-            // Gets the current camera state 
             var camera = context.RenderContext.GetCameraFromSlot(Camera);
+            var depthStencil = InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil ? GetInput(1) : null;
+            Draw(context, input, depthStencil, output, camera);
+        }
+
+        public void Draw(RenderDrawContext context, Texture input, Texture depthStencil, Texture output, CameraComponent camera)
+        {
+            PreDrawCoreInternal(context);
+            DrawInternal(context, input, depthStencil, output, camera);
+            PostDrawCoreInternal(context);
+        }
+
+        private void DrawInternal(RenderDrawContext context, Texture input, Texture depthStencil, Texture output, CameraComponent camera)
+        {
+            // Gets the current camera state 
             using (context.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 // Update the parameters for this post effect
@@ -273,11 +287,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
                 var currentInput = input;
 
-                if (ambientOcclusion.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
+                if (ambientOcclusion.Enabled && depthStencil != null)
                 {
                     // Ambient Occlusion
                     var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                    var inputDepthTexture = GetInput(1); // Depth
+                    var inputDepthTexture = depthStencil; // Depth
                     ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                     ambientOcclusion.SetOutput(aoOutput);
                     ambientOcclusion.Draw(context);
@@ -288,7 +302,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     // DoF
                     var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                    var inputDepthTexture = GetInput(1); // Depth
+                    var inputDepthTexture = depthStencil; // Depth
                     depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                     depthOfField.SetOutput(dofOutput);
                     depthOfField.Draw(context);

@@ -6,6 +6,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -51,7 +52,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
     [Display(2000, "Scene")]
-    [AssetPartReference(typeof(SceneSettings))]
+    // TODO GFXCOMP: We temporarily expand IGraphicsCompositorSharedPart while Graphics Compositor is being migrated
+    [AssetPartReference(typeof(SceneSettings), typeof(IGraphicsCompositorSharedPart))]
+    [AssetPartReference(typeof(IGraphicsCompositorSharedPart), typeof(IGraphicsCompositorSharedPart))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
         private const string CurrentVersion = "1.9.0-beta05";

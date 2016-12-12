@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// An <see cref="IImageEffectRenderer"/> expect an input texture on slot 0, possibly a depth texture on slot 1 and a single
     /// output.
     /// </remarks>
-    public interface IImageEffectRenderer : IImageEffect
+    public interface IImageEffectRenderer : IImageEffect, IGraphicsCompositorSharedPart
     {
     }
 }

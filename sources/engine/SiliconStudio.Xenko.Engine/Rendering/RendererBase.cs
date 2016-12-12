@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -9,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Base implementation of <see cref="IGraphicsRenderer"/>
     /// </summary>
     [DataContract]
-    public abstract class RendererBase : RendererCoreBase, IGraphicsRenderer
+    public abstract class RendererBase : RendererCoreBase, IGraphicsRenderer, IGraphicsCompositorPart
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RendererBase"/> class.
@@ -26,6 +27,10 @@ namespace SiliconStudio.Xenko.Rendering
             : base(name)
         {
         }
+
+        /// <inheritdoc/>
+        [DataMember(-100), Display(Browsable = false)]
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Main drawing method for this renderer that must be implemented. 
