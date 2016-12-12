@@ -299,21 +299,6 @@ namespace SiliconStudio.Assets.Quantum
             return itemOverrides;
         }
 
-        private object RetrieveBaseContent(Index index)
-        {
-            object baseContent = null;
-
-            var baseNode = (AssetNode)BaseContent?.OwnerNode;
-            if (baseNode != null)
-            {
-                var id = IndexToId(index);
-                var baseIndex = baseNode.IdToIndex(id);
-                baseContent = baseNode.Content.Retrieve(baseIndex);
-            }
-
-            return baseContent;
-        }
-
         // TODO: move this in AssetPropertyGraph as a private method, it's the only usage (could also be inlined or split in 3 methods)
         internal Index RetrieveDerivedIndex(Index baseIndex, ContentChangeType changeType)
         {
@@ -545,41 +530,6 @@ namespace SiliconStudio.Assets.Quantum
 
             // TODO: we should reconcile directly only assetNode, not the whole asset
             PropertyGraph.ReconcileWithBase();
-        }
-
-        public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
-        {
-            if (BaseContent == null)
-                return;
-
-            if (changeType == ContentChangeType.ValueChange)
-            {
-                // Make sure that what we're trying to reset is actually overridden.
-                if ((index != Index.Empty && !IsItemOverridden(index)) || (index == Index.Empty && !IsContentOverridden()))
-                    return;
-            }
-
-            object baseValue;
-            object clonedValue;
-            ResettingOverride = true;
-            switch (changeType)
-            {
-                case ContentChangeType.ValueChange:
-                    baseValue = RetrieveBaseContent(index);
-                    clonedValue = Cloner(baseValue);
-                    Content.Update(clonedValue, index);
-                    break;
-                case ContentChangeType.CollectionRemove:
-                    baseValue = RetrieveBaseContent(index);
-                    clonedValue = Cloner(baseValue);
-                    Content.Add(clonedValue, index);
-                    break;
-                case ContentChangeType.CollectionAdd:
-                    var value = Content.Retrieve(index);
-                    Content.Remove(value, index);
-                    break;
-            }
-            ResettingOverride = false;
         }
 
         internal bool HasId(ItemId id)
