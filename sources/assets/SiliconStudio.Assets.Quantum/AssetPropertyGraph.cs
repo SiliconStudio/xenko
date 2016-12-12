@@ -391,7 +391,7 @@ namespace SiliconStudio.Assets.Quantum
                             // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
                             var keyCollision = assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x)));
                             // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
-                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, assetNode.Content.Retrieve(index));
+                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Content.Retrieve(index));
 
                             // We cannot add the item, let's mark it as deleted.
                             if (keyCollision || itemRejected)
