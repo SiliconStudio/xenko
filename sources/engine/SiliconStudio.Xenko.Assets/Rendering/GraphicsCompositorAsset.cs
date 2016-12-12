@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                 return null;
             }
 
-            var partReference = referencedObject as GraphicsCompositorPart;
+            var partReference = referencedObject as IGraphicsCompositorSharedPart;
             if (partReference != null)
             {
                 foreach (var part in Parts)
