@@ -440,6 +440,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
+        /// <inheritdoc/>
+        public override void Flush(RenderDrawContext context)
+        {
+            base.Flush(context);
+            ShadowMapRenderer?.Flush(context);
+        }
+
         protected void RegisterLightGroupRenderer(LightGroupRendererBase renderer)
         {
             if (renderer == null) throw new ArgumentNullException("renderer");

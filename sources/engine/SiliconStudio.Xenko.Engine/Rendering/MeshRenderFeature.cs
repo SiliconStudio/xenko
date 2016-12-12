@@ -189,6 +189,17 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <inheritdoc/>
+        public override void Flush(RenderDrawContext context)
+        {
+            base.Flush(context);
+
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Flush(context);
+            }
+        }
+
         private void RenderFeatures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var renderFeature = (SubRenderFeature)e.Item;

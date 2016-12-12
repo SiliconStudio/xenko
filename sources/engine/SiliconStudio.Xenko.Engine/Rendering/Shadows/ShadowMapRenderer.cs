@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         [DataMember]
         public RenderStage ShadowMapRenderStage { get; set; }
 
+        public HashSet<RenderView> RenderViewsWithShadows { get; } = new HashSet<RenderView>();
+
         private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
 
         private FastListStruct<ShadowMapAtlasTexture> atlases;
@@ -92,22 +94,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 renderViewData.Value.LightComponentsWithShadows.Clear();
 
                 // Collect shadows only if enabled on this view
-                if (!shadowPipelinePlugin.RenderViewsWithShadows.Contains(renderViewData.Key))
+                if (!RenderViewsWithShadows.Contains(renderViewData.Key))
                     continue;
 
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
 
-                // Check of there is any shadow receivers at all
+                // Check if there is any shadow receivers at all
                 if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
                 {
                     continue;
-                }
-
-                // Clear atlases
-                foreach (var atlas in atlases)
-                {
-                    atlas.Clear();
                 }
 
                 // Clear atlases
@@ -175,6 +171,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 atlas.PrepareAsShaderResourceView(commandList);
             }
+        }
+
+        public void Flush(RenderDrawContext context)
+        {
+            RenderViewsWithShadows.Clear();
         }
 
         private void AssignRectangle(LightShadowMapTexture lightShadowMapTexture)

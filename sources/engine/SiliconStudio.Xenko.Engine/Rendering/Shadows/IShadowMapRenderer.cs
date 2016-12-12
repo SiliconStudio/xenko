@@ -13,10 +13,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         RenderStage ShadowMapRenderStage { get; set; }
 
+        HashSet<RenderView> RenderViewsWithShadows { get; }
+
         void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas);
 
         void PrepareAtlasAsRenderTargets(CommandList commandList);
 
         void PrepareAtlasAsShaderResourceViews(CommandList commandList);
+
+        void Flush(RenderDrawContext context);
     }
 }
