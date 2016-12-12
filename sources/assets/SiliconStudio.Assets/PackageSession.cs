@@ -249,9 +249,6 @@ namespace SiliconStudio.Assets
                 // Load all missing references/dependencies
                 LoadMissingReferences(logger, loadParameters);
 
-                // Load assets
-                TryLoadAssets(this, logger, package, loadParameters);
-
                 // Run analysis after
                 foreach (var packageToAdd in packagesLoaded)
                 {

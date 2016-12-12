@@ -47,3 +47,5 @@ Nodes:
     436375063ccc2e48b1c711852403645d: {Name: cloth_B_2, Depth: 4}
     ba09975bc4cacb438acf696d655a47bf: {Name: cloth_a_1, Depth: 3}
     5972df8b5cdb804099ad426348535bf2: {Name: cloth_a_2, Depth: 4}
+~SourceHashes:
+    d6c885d92d2ed6217baf4c1b77628dcd~../../Resources/model/character/scene/character_00.FBX: 1a0b83c9b02b333469043d7a7a964b16

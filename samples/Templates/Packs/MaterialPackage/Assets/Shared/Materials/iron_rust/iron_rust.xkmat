@@ -5,17 +5,19 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 39193875-0a6e-4660-b538-e069158515e0/57a489f5-6606-4b13-ac28-8fc973e84ac5:Materials/iron_rust/iron_rust_nml
+            Texture: 57a489f5-6606-4b13-ac28-8fc973e84ac5:Materials/iron_rust/iron_rust_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeBinaryScalar
             Operator: Add
             LeftChild: !ComputeTextureScalar
-                Texture: a7f212dd-b681-49bf-9768-add49e405960/05d70855-62c6-4c0d-86f9-a4bfb9500d43:Materials/iron_rust/iron_rust_gls
+                Texture: 05d70855-62c6-4c0d-86f9-a4bfb9500d43:Materials/iron_rust/iron_rust_gls
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -24,27 +26,24 @@ Attributes:
                 Value: 0.9
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 026bf20e-2fe0-4505-8f62-31fda5e86f73/f3f2a35b-1b46-485d-8e94-63305ce6e1b4:Materials/iron_rust/iron_rust_dif
+            Texture: f3f2a35b-1b46-485d-8e94-63305ce6e1b4:Materials/iron_rust/iron_rust_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 26274295-e2a7-4ace-b397-43342ace0dbf/94963886-fde4-45ad-9bd2-4c33efb71ba1:Materials/iron_rust/iton_rust_mtl
+            Texture: 94963886-fde4-45ad-9bd2-4c33efb71ba1:Materials/iron_rust/iton_rust_mtl
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 9d42fc43-3772-4f26-aa24-bacc8df93296
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 2877ed37-a9ea-4b9f-be8f-5b51ef3d7c85
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: aa4a7cd5-2288-420b-a007-2fd0e102bfe3
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

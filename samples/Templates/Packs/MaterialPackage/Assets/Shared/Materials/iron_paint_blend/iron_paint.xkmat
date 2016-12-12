@@ -5,35 +5,34 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: e4406cdb-4808-4a43-b931-7eceb3eaad6a/ce4b6f22-59ce-4e6c-af89-5f55605c0de3:Materials/iron_paint_blend/iron_paint_nml
+            Texture: ce4b6f22-59ce-4e6c-af89-5f55605c0de3:Materials/iron_paint_blend/iron_paint_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 2a6b78ce-25cf-43f1-8bd4-31031d6da214/701a33e2-01a3-41ed-bb25-e1c6d8a883c8:Materials/iron_paint_blend/iron_paint_dif
+            Texture: 701a33e2-01a3-41ed-bb25-e1c6d8a883c8:Materials/iron_paint_blend/iron_paint_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 35847a55-3049-4e0b-8138-1a50865601dc/8eaa0471-2fad-46f9-8fb1-8b75ca21ba51:Materials/iron_paint_blend/iron_paint_mtl
+            Texture: 8eaa0471-2fad-46f9-8fb1-8b75ca21ba51:Materials/iron_paint_blend/iron_paint_mtl
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 9d42fc43-3772-4f26-aa24-bacc8df93296
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 2877ed37-a9ea-4b9f-be8f-5b51ef3d7c85
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: aa4a7cd5-2288-420b-a007-2fd0e102bfe3
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

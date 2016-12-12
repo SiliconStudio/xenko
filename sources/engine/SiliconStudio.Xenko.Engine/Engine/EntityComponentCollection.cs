@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
@@ -47,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Get<T>() where T : EntityComponent
         {
-            for (int i = 0; i < this.Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var item = this[i] as T;
                 if (item != null)
@@ -87,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine
             }
             else
             {
-                for (int i = 0; i < this.Count; i++)
+                for (int i = 0; i < Count; i++)
                 {
                     var item = this[i] as T;
                     if (item != null && index-- == 0)
@@ -106,7 +105,7 @@ namespace SiliconStudio.Xenko.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove<T>() where T : EntityComponent
         {
-            for (int i = 0; i < this.Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var item = this[i] as T;
                 if (item != null)
@@ -142,7 +141,7 @@ namespace SiliconStudio.Xenko.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAll<T>() where T : EntityComponent
         {
-            for (int i = 0; i < this.Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var item = this[i] as T;
                 if (item != null)
@@ -163,7 +162,7 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void InsertItem(int index, EntityComponent item)
         {
-            ValidateItem(index, item);
+            ValidateItem(index, item, false);
 
             base.InsertItem(index, item);
 
@@ -188,8 +187,9 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void SetItem(int index, EntityComponent item)
         {
+            var oldItem = ValidateItem(index, item, true);
+
             // Detach entity from previous item
-            var oldItem = ValidateItem(index, item);
             oldItem.Entity = null;
 
             base.SetItem(index, item);
@@ -198,11 +198,11 @@ namespace SiliconStudio.Xenko.Engine
             entity?.OnComponentChanged(index, oldItem, item);
         }
 
-        private EntityComponent ValidateItem(int index, EntityComponent item)
+        private EntityComponent ValidateItem(int index, EntityComponent item, bool isReplacing)
         {
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item), "Cannot add a null component");
+                throw new ArgumentNullException(nameof(item), @"Cannot add a null component");
             }
 
             var componentType = item.GetType();
@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.Engine
             for (int i = 0; i < Count; i++)
             {
                 var existingItem = this[i];
-                if (index == i)
+                if (index == i && isReplacing)
                 {
                     previousItem = existingItem;
                 }

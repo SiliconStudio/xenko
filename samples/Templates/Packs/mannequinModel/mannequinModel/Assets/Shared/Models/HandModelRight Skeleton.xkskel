@@ -26,3 +26,5 @@ Nodes:
     478eda19566c7df8752fd23d95937d9f: {Name: CATRigRArmDigit52, Depth: 6}
     931686e7b41a5a9c074b34869f16bdca: {Name: CATRigRArmDigit53, Depth: 7}
     56389656f58c3143ce999fcca215ed8d: {Name: handRight, Depth: 2}
+~SourceHashes:
+    64896394e9c8a1cbb7e056bc854fbd80~../../../Resources/Models/HandModelRight.fbx: a3d72d9e3c4237ebc9cade426869f4f6
