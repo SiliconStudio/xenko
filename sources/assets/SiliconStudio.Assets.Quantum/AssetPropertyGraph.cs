@@ -185,7 +185,12 @@ namespace SiliconStudio.Assets.Quantum
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
 
-        // TODO: turn protected
+        // TODO: this method is should be called in every scenario of ReconcileWithBase, it is not the case yet.
+        protected virtual bool CanUpdate(AssetNode node, ContentChangeType changeType, Index index, object value)
+        {
+            return true;
+        }
+
         protected virtual object CloneValueFromBase(object value, AssetNode node)
         {
             return AssetNode.CloneFromBase(value);
@@ -383,10 +388,14 @@ namespace SiliconStudio.Assets.Quantum
                         Index localIndex;
                         if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
-                            // We have an item in the base that is missing in the instance (not even marked as "override-deleted")
-                            if (assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x))))
+                            // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
+                            var keyCollision = assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x)));
+                            // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
+                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, assetNode.Content.Retrieve(index));
+
+                            // We cannot add the item, let's mark it as deleted.
+                            if (keyCollision || itemRejected)
                             {
-                                // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
                                 var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
                                 instanceIds.MarkAsDeleted(itemId);
                             }
@@ -452,7 +461,7 @@ namespace SiliconStudio.Assets.Quantum
 
                             // Initialize the target index to zero, in case we don't find any better index.
                             var localIndex = new Index(0);
-                            
+
                             // Find the first item of the base that also exists (in term of id) in the local node, iterating backward (from baseIndex to 0)
                             while (currentBaseIndex >= 0)
                             {
@@ -471,7 +480,7 @@ namespace SiliconStudio.Assets.Quantum
                                 currentBaseIndex--;
                             }
 
-                            assetNode.Restore(clonedValue, localIndex, item.Value);
+                                assetNode.Restore(clonedValue, localIndex, item.Value);
                         }
                         else
                         {
