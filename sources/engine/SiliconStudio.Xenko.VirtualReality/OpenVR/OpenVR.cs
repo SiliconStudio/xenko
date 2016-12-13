@@ -1,5 +1,6 @@
-﻿using System;
-using System.Diagnostics;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -339,3 +340,5 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
     }
 }
+
+#endif
