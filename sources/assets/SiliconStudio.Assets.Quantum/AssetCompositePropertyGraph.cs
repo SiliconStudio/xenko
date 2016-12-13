@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum
             return false;
         }
 
-        protected override GraphVisitorBase CreateReconcilierVisitor()
+        public override GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetCompositePartVisitor(this);
         }
