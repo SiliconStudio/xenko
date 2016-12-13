@@ -35,7 +35,6 @@
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Navigation\Navigation.cs" />
-    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +71,6 @@
     <None Include="Audio\OpenSLES.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="DirectInput\XInputChecker.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,21 @@
 
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativePath.h"
-#include "../XenkoNative.h"
+
+/*
+* Some platforms requires a special declaration before the function declaration to export them
+* in the shared library. Defining NEED_DLL_EXPORT will define DLL_EXPORT_API to do the right thing
+* for those platforms.
+*
+* To export void foo(int a), do:
+*
+*   DLL_EXPORT_API void foo (int a);
+*/
+#ifdef NEED_DLL_EXPORT
+#define DLL_EXPORT_API __declspec(dllexport)
+#else
+#define DLL_EXPORT_API
+#endif
 
 #ifndef __clang__
 //Make resharper work!

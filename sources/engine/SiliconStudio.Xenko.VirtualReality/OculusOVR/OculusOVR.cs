@@ -8,7 +8,7 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Native
+namespace SiliconStudio.Xenko.VirtualReality
 {
     public static class OculusOvr
     {

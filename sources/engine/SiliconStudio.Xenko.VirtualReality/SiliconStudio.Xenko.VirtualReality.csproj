@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="NativeInvoke.cs" />
+    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="OpenVR\OpenVR.cs" />
     <Compile Include="OpenVR\openvr_api.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GoogleVR\GoogleVR.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OculusOVR\OculusOVR.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
