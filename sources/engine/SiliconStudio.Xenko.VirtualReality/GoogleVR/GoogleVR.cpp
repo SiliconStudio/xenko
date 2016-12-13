@@ -118,6 +118,8 @@ extern "C" {
 #if defined(ANDROID)
 			gGvrLibrary = LoadDynamicLibrary("libgvr");
 			gGvrGLESv2 = LoadDynamicLibrary("libGLESv2");
+			auto core = LoadDynamicLibrary("libcore");
+			cnDebugPrintLine = (CnPrintDebugFunc)GetSymbolAddress(core, "cnDebugPrintLine");
 #else
 			gGvrLibrary = LoadDynamicLibrary(NULL);
 			gGvrGLESv2 = LoadDynamicLibrary(NULL);
@@ -300,11 +302,15 @@ extern "C" {
 
 	void xnGvrGetPerspectiveMatrix(int eyeIndex, float near_clip, float far_clip, gvr_mat4f* outResult)
 	{
+#ifdef IOS
+		//eyeIndex = eyeIndex == 0 ? 1 : 0;
+#endif
+
 		auto fov = NP_CALL(gvr_buffer_viewport_get_source_fov, eyeIndex == 0 ? xnGvr_LeftVieport : xnGvr_RightVieport);
-		const float x_left = -tan(fov.left * M_PI / 180.0f) * near_clip;
-		const float x_right = tan(fov.right * M_PI / 180.0f) * near_clip;
-		const float y_bottom = -tan(fov.bottom * M_PI / 180.0f) * near_clip;
-		const float y_top = tan(fov.top * M_PI / 180.0f) * near_clip;
+		float x_left = -tan(fov.left * M_PI / 180.0f) * near_clip;
+		float x_right = tan(fov.right * M_PI / 180.0f) * near_clip;
+		float y_bottom = -tan(fov.bottom * M_PI / 180.0f) * near_clip;
+		float y_top = tan(fov.top * M_PI / 180.0f) * near_clip;
 
 		const auto X = (2 * near_clip) / (x_right - x_left);
 		const auto Y = (2 * near_clip) / (y_top - y_bottom);
@@ -313,11 +319,14 @@ extern "C" {
 		const auto C = (near_clip + far_clip) / (near_clip - far_clip);
 		const auto D = (2 * near_clip * far_clip) / (near_clip - far_clip);
 
-		for (auto i = 0; i < 4; ++i) {
-			for (auto j = 0; j < 4; ++j) {
+		for (auto i = 0; i < 4; ++i) 
+		{
+			for (auto j = 0; j < 4; ++j) 
+			{
 				outResult->m[i][j] = 0.0f;
 			}
 		}
+
 		outResult->m[0][0] = X;
 		outResult->m[0][2] = A;
 		outResult->m[1][1] = Y;
@@ -337,6 +346,10 @@ extern "C" {
 
 	void xnGvrGetEyeMatrix(int eyeIndex, float* outMatrix)
 	{
+#ifdef IOS
+		//eyeIndex = eyeIndex == 0 ? 1 : 0;
+#endif
+
 		auto gvrMat4 = reinterpret_cast<gvr_mat4f*>(outMatrix);
 		*gvrMat4 = NP_CALL(gvr_get_eye_from_head_matrix, gGvrContext, eyeIndex);
 	}

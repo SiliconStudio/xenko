@@ -9,7 +9,7 @@ using System.Security;
 using OpenTK.Graphics.ES20;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Games;
+
 using SiliconStudio.Xenko.Graphics;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -17,6 +17,7 @@ using Java.Lang;
 using Android.App;
 using Android.Views;
 using Com.Google.VR.Ndk.Base;
+using SiliconStudio.Xenko.Games;
 #endif
 
 namespace SiliconStudio.Xenko.VirtualReality
@@ -109,12 +110,18 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public static void SubmitRenderTarget(GraphicsContext context, Texture renderTarget, IntPtr vrFrame, int index)
         {
+            int currentFrameBuffer;
+            GL.GetInteger(GetPName.FramebufferBinding, out currentFrameBuffer);
+
+            //TODO add proper destination values
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, GetFBOIndex(vrFrame, index));
             // The next call will write straight to the previously bound buffer
             context.CommandList.CopyScaler2D(renderTarget,
                 new Rectangle(0, 0, renderTarget.Width, renderTarget.Height),
                 new Rectangle(0, 0, renderTarget.Width, renderTarget.Height)
             );
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, currentFrameBuffer);
         }
 
         [SuppressUnmanagedCodeSecurity]
@@ -123,8 +130,16 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public static bool SubmitFrame(GraphicsDevice graphicsDevice, IntPtr frame, ref Matrix headMatrix)
         {
+            int currentFrameBuffer;
+            GL.GetInteger(GetPName.FramebufferBinding, out currentFrameBuffer);
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, graphicsDevice.FindOrCreateFBO(graphicsDevice.Presenter.BackBuffer));
-            return InternalSubmitFrame(frame, ref headMatrix);
+
+            var res = InternalSubmitFrame(frame, ref headMatrix);;
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, currentFrameBuffer);
+
+            return res;
         }
     }
 }
