@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (targetNodePath == null || !targetNodePath.IsValid)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
-                GenerateChildren(targetNode, targetNodePath, Index);
+                GenerateChildren(targetNode, targetNodePath);
             }
 
             isInitialized = true;
@@ -285,24 +285,25 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="targetNode"></param>
-        /// <param name="targetNodePath"></param>
-        /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references.</param>
-        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath, Index index)
+        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
         {
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.Content.IsReference)
             {
-                var objectReference = SourceNode.Content.Reference as ObjectReference ?? (SourceNode.Content.Reference as ReferenceEnumerable)?[index];
+                var objectReference = SourceNode.Content.Reference as ObjectReference;
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null)
+                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
+                    return;
+
+                var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
+                if (refEnum != null)
                 {
-                    var shouldExpand = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference);
-                    if (!shouldExpand)
-                        return;
+                    foreach (var reference in refEnum)
+                    {
+                        // Discard the children of the referenced object if requested by the property provider
+                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
+                            return;
+                    }
                 }
             }
 
@@ -315,7 +316,7 @@ namespace SiliconStudio.Presentation.Quantum
                 var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
-                    // We create one node per item of the collection, we will check later if the reference should be expanded.
+                    // We create one node per item of the collection, unless requested by the property provide to not expand the reference.
                     foreach (var reference in referenceEnumerable)
                     {
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
@@ -335,8 +336,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
                 {
-                    var newIndex = new Index(key);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
+                    var index = new Index(key);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
@@ -346,10 +347,10 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (var i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
                 {
-                    var newIndex = new Index(i);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
+                    var index = new Index(i);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
