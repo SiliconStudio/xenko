@@ -1,26 +1,11 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-
 #if defined(WINDOWS_DESKTOP) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativePath.h"
-
-/*
-* Some platforms requires a special declaration before the function declaration to export them
-* in the shared library. Defining NEED_DLL_EXPORT will define DLL_EXPORT_API to do the right thing
-* for those platforms.
-*
-* To export void foo(int a), do:
-*
-*   DLL_EXPORT_API void foo (int a);
-*/
-#ifdef NEED_DLL_EXPORT
-#define DLL_EXPORT_API __declspec(dllexport)
-#else
-#define DLL_EXPORT_API
-#endif
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 
 #ifndef __clang__
 //Make resharper work!
