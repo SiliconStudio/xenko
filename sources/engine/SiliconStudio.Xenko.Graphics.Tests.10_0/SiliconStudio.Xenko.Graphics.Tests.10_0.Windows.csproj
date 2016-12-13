@@ -145,6 +145,10 @@
       <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

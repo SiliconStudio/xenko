@@ -111,6 +111,7 @@
     <Reference Include="Xamarin.iOS" Label="Xenko.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestShadows.cs" />
     <None Label="Xenko.DoNotSync" Include="Info.plist" />
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Label="Xenko.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
@@ -187,6 +188,12 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
       <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
       <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

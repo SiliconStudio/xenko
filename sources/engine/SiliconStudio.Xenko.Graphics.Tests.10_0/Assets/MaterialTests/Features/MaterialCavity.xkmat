@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: d6ed0b30-47ec-45e3-861b-0d490b33e0b3/e8a73264-e909-4e38-943e-b8b5c7b6950a:MaterialTests/stone4_dif
+            Texture: e8a73264-e909-4e38-943e-b8b5c7b6950a:MaterialTests/stone4_dif
             FallbackValue:
                 Value: {R: 0.98, G: 0.9, B: 0.7, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -16,12 +16,9 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 0.8
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 4006ba01-3764-410a-9505-e998d10a36cd
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 9d45bcef-9b25-4dd8-8b0d-68ee28bbc440
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: fd366b0e-b538-4f91-b825-50ac57a70218
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeTextureScalar
             FallbackValue:
@@ -31,7 +28,7 @@ Attributes:
         DirectLightingFactor: !ComputeFloat
             Value: 0.0
         CavityMap: !ComputeTextureScalar
-            Texture: c10b4f2d-734b-486a-bccf-c1071ee793c9/63cb5503-4a49-4ceb-bc54-c98886a2017f:MaterialTests/stone4_cav
+            Texture: 63cb5503-4a49-4ceb-bc54-c98886a2017f:MaterialTests/stone4_cav
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
@@ -42,4 +39,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}
