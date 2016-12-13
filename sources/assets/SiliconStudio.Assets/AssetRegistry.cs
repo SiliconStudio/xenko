@@ -541,7 +541,7 @@ namespace SiliconStudio.Assets
 
                     // Asset types
                     var assetType = type;
-                    if (typeof(Asset).IsAssignableFrom(assetType) || assetType == typeof(Package) || !assetType.IsClass)
+                    if (typeof(Asset).IsAssignableFrom(assetType) || assetType == typeof(Package))
                     {
                         // Store in a list all asset types loaded
                         if (assetType.IsPublic && !assetType.IsAbstract)

@@ -319,7 +319,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                         //todo for now we collect everything with a model component
                         var modelComponent = subEntity.Get<ModelComponent>();
                         
-                        if (modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) continue;
+                        if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1))
+                            continue;
                         
                         var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||

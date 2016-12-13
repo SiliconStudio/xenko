@@ -5038,7 +5038,7 @@ Hierarchy:
                         CcdMotionThreshold: 0.0
                         CcdSweptSphereRadius: 0.0
                         FallSpeed: 10.0
-                        MaxSlope: {Radians: 0.0}
+                        MaxSlope: {Radians: 0.785398}
                         JumpSpeed: 0.0
                         Gravity: -20.0
                         ColliderShapes:
