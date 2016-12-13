@@ -52,12 +52,22 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+      <ItemGroup>
+        <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
+		<Reference Include="SharpDX.Direct3D11, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="NativeInvoke.cs" />
+    <Compile Include="OpenVR\OpenVR.cs" />
+    <Compile Include="OpenVR\openvr_api.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -86,10 +96,17 @@
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="SiliconStudio.Xenko.VirtualReality.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Xenko.Native.Libs.targets">
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
