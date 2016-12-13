@@ -338,6 +338,16 @@ namespace SiliconStudio.Xenko.VirtualReality
             var proj = Valve.VR.OpenVR.System.GetProjectionMatrix(eye, near, far, EGraphicsAPIConvention.API_DirectX);
             Utilities.CopyMemory((IntPtr)Interop.Fixed(ref projection), (IntPtr)Interop.Fixed(ref proj), Utilities.SizeOf<Matrix>());
         }
+
+        public static void ShowMirror()
+        {
+            Valve.VR.OpenVR.Compositor.ShowMirrorWindow();
+        }
+
+        public static void HideMirror()
+        {
+            Valve.VR.OpenVR.Compositor.HideMirrorWindow();
+        }
     }
 }
 
