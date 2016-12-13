@@ -93,15 +93,16 @@ private:
 	String^ vfsOutputFilename;
 	String^ vfsInputPath;
 
+	Vector3 rootScaling;
+	Quaternion rootOrientation;
 	Model^ modelData;
 	List<ModelNodeDefinition> nodes;
 	Dictionary<IntPtr, int> nodeMapping;
 	Dictionary<String^, int>^ textureNameCount;
+	HashSet<String^>^ topLevelNodeNames;
 
 	List<Mesh^>^ effectMeshes;	// array of EffectMeshes built from the aiMeshes (same order)
-	Dictionary<String^, List<Entity^ >^ >^ nodeNameToNodeData; // access to the built nodeData via their String ID (may not be unique)
-	Dictionary<IntPtr, Entity^>^ nodePtrToNodeData; // access to the built nodeData via their corresponding aiNode
-	Dictionary<int, List<Entity^>^ >^ meshIndexToReferingNodes; // access all the nodes that reference a Mesh Index
+
 
 public:
 	MeshConverter(Core::Diagnostics::Logger^ logger)
@@ -164,10 +165,8 @@ private:
 	void ResetConvertionData()
 	{
 		effectMeshes = gcnew List<Mesh^>();
-		nodeNameToNodeData = gcnew Dictionary<String^, List<Entity^ >^ >();
-		nodePtrToNodeData = gcnew Dictionary<IntPtr, Entity^>();
-		meshIndexToReferingNodes = gcnew Dictionary<int, List<Entity^>^ >();
 		textureNameCount = gcnew Dictionary<String^, int>();
+		topLevelNodeNames = gcnew HashSet<String^>();
 	}
 	
 	void ExtractEmbededTexture(aiTexture* texture)
@@ -484,25 +483,42 @@ private:
 			meshIndexToNodeIndex[meshIndex]->push_back(nodeIndex);
 		}
 
-		// get node transformation
-		aiVector3t<float> aiTranslation;
-		aiVector3t<float> aiScaling;
-		aiQuaterniont<float> aiOrientation;
-		fromNode->mTransformation.Decompose(aiScaling, aiOrientation, aiTranslation);
-
 		// Create node
 		ModelNodeDefinition modelNodeDefinition;
 		modelNodeDefinition.ParentIndex = parentIndex;
-		modelNodeDefinition.Transform.Position = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z);
-		modelNodeDefinition.Transform.Rotation = aiQuaternionToQuaternion(aiOrientation);
-		
-		if (parentIndex == -1)
-			modelNodeDefinition.Transform.Scale = Vector3::One;
-		else
-			modelNodeDefinition.Transform.Scale = Vector3(aiScaling.x, aiScaling.y, aiScaling.z);
-		
 		modelNodeDefinition.Name = gcnew String(nodeNames[fromNode].c_str());
 		modelNodeDefinition.Flags = ModelNodeFlags::Default;
+
+		// Get node transformation
+		aiVector3t<float> aiTranslation;
+		aiVector3t<float> aiScaling;
+		aiQuaterniont<float> aiOrientation;
+
+		if (parentIndex == -1)
+		{
+			fromNode->mTransformation.Decompose(aiScaling, aiOrientation, aiTranslation);
+
+			rootOrientation = aiQuaternionToQuaternion(aiOrientation);
+			rootScaling = modelNodeDefinition.Transform.Scale = aiVector3ToVector3(aiScaling);
+			modelNodeDefinition.Transform.Rotation = Quaternion::Identity;
+			modelNodeDefinition.Transform.Scale = Vector3::One;
+		}
+		else
+		{
+			aiMatrix4x4 transform = fromNode->mTransformation;
+			if (parentIndex == 0)
+			{
+				transform = fromNode->mParent->mTransformation * transform;
+				topLevelNodeNames->Add(modelNodeDefinition.Name);
+			}
+
+			transform.Decompose(aiScaling, aiOrientation, aiTranslation);
+
+			modelNodeDefinition.Transform.Position = aiVector3ToVector3(aiTranslation);
+			modelNodeDefinition.Transform.Rotation = aiQuaternionToQuaternion(aiOrientation);
+			modelNodeDefinition.Transform.Scale = aiVector3ToVector3(aiScaling);
+		}
+
 		nodes.Add(modelNodeDefinition);
 
 		// register the children
@@ -512,35 +528,7 @@ private:
 		}
 	}
 
-	// Register all the nodes in dictionnaries
-	void RegisterNodes_old(aiNode* fromNode)
-	{
-		auto curNode = gcnew Entity();
-
-		// the name
-		curNode->Name = aiStringToString(fromNode->mName);
-
-		// register the children
-		for(unsigned int child=0; child<fromNode->mNumChildren; ++child)
-			RegisterNodes_old(fromNode->mChildren[child]);
-
-		// add the current node to the hash tables in order to be able to find it easily when processing attributes 
-		if(!nodeNameToNodeData->ContainsKey(curNode->Name))
-			nodeNameToNodeData->Add(curNode->Name, gcnew List<Entity^>());
-		nodeNameToNodeData[curNode->Name]->Add(curNode);
-		nodePtrToNodeData->Add((IntPtr)fromNode, curNode); 
-
-		// add the meshes refered to the dictionnary (needed for bones animation in processMesh)
-		for(unsigned int m=0; m<fromNode->mNumMeshes; ++m)
-		{
-			int index = fromNode->mMeshes[m];
-			if(!meshIndexToReferingNodes->ContainsKey(index))
-				meshIndexToReferingNodes->Add(index, gcnew List<Entity^>());
-			meshIndexToReferingNodes[index]->Add(curNode);
-		}
-	}
-
-	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
+	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec, bool isTopLevel)
 	{
 		auto animationCurve = gcnew AnimationCurve<Vector3>();
 
@@ -554,15 +542,11 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Vector3> key;
 
-			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
-			auto value = aiVector3ToVector3(aiKey.mValue);
+			key.Time = lastKeyTime = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
+			key.Value = aiVector3ToVector3(aiKey.mValue);
 
-			key.Time = time;
-			lastKeyTime = time;
-			
-			key.Value.X = value.X;
-			key.Value.Y = value.Y;
-			key.Value.Z = value.Z;
+			if (isTopLevel)
+				key.Value = Vector3::Transform(key.Value * rootScaling, rootOrientation);
 
 			animationCurve->KeyFrames->Add(key);
 			if(keyId == 0 || keyId == nbKeys-1) // discontinuity at animation first and last frame
@@ -578,7 +562,7 @@ private:
 		}
 	}
 
-	void ProcessAnimationCurveQuaternion(AnimationClip^ animationClip, const aiQuatKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
+	void ProcessAnimationCurveQuaternion(AnimationClip^ animationClip, const aiQuatKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec, bool isTopLevel)
 	{
 		auto animationCurve = gcnew AnimationCurve<Quaternion>();
 
@@ -589,16 +573,11 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Quaternion> key;
 			
-			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
-			auto value = aiQuaternionToQuaternion(aiKey.mValue);
-			
-			key.Time = time;
-			lastKeyTime = time;
+			key.Time = lastKeyTime = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
+			key.Value = aiQuaternionToQuaternion(aiKey.mValue);
 
-			key.Value.X = value.X;
-			key.Value.Y = value.Y;
-			key.Value.Z = value.Z;
-			key.Value.W = value.W;
+			if (isTopLevel)
+				key.Value *= rootOrientation;
 			
 			animationCurve->KeyFrames->Add(key);
 		}
@@ -616,15 +595,16 @@ private:
 	{
 		// Find the nodes on which the animation is performed
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
+		bool isTopLevel = topLevelNodeNames->Contains(nodeName);
 
 		auto animationClip = gcnew AnimationClip();
 		
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, "Transform.Position", ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, "Transform.Position", ticksPerSec, isTopLevel);
 		// The rotation
-		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, "Transform.Rotation", ticksPerSec);
+		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, "Transform.Rotation", ticksPerSec, isTopLevel);
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, "Transform.Scale", ticksPerSec);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, "Transform.Scale", ticksPerSec, isTopLevel);
 
 		if (animationClip->Curves->Count > 0)
 			animationClips->Add(nodeName, animationClip);
@@ -1413,24 +1393,6 @@ private:
 		allNodes->Add(newNodeInfo);
 		for (uint32_t i = 0; i < node->mNumChildren; ++i)
 			GetNodes(node->mChildren[i], depth + 1, nodeNames, allNodes);
-	}
-
-	Vector3 GetUpAxis(aiNode* rootNode)
-	{
-		if (rootNode != 0)
-		{
-			// get node transformation
-			aiVector3t<float> aiTranslation;
-			aiVector3t<float> aiScaling;
-			aiQuaterniont<float> aiOrientation;
-			rootNode->mTransformation.Decompose(aiScaling, aiOrientation, aiTranslation);
-			if (aiOrientation.x != 0)
-				return Vector3::UnitZ;
-			if (aiOrientation.z != 0)
-				return Vector3::UnitX;
-			return Vector3::UnitY;
-		}
-		return Vector3::UnitZ;
 	}
 
 	List<NodeInfo^>^ ExtractNodeHierarchy(const aiScene *scene, std::map<aiNode*, std::string>& nodeNames)

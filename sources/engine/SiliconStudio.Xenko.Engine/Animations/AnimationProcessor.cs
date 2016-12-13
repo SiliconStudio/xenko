@@ -123,8 +123,7 @@ namespace SiliconStudio.Xenko.Animations
                         totalWeight += animationWeight;
                         float currentBlend = animationWeight/totalWeight;
 
-                        if (playingAnimation.BlendOperation == AnimationBlendOperation.Add
-                            || playingAnimation.BlendOperation == AnimationBlendOperation.Subtract)
+                        if (playingAnimation.BlendOperation == AnimationBlendOperation.Add)
                         {
                             // Additive or substractive blending will use the weight as is (and reset total weight with it)
                             currentBlend = animationWeight;
@@ -142,7 +141,7 @@ namespace SiliconStudio.Xenko.Animations
                         animationOperations.Add(CreatePushOperation(playingAnimation));
 
                         if (animationOperations.Count >= 2)
-                            animationOperations.Add(AnimationOperation.NewBlend(playingAnimation.BlendOperation, currentBlend));
+                            animationOperations.Add(AnimationOperation.NewBlend((CoreAnimationOperation)playingAnimation.BlendOperation, currentBlend));
                     }
                 }
 
