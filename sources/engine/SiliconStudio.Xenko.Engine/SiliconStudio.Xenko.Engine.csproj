@@ -292,6 +292,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AmbientOcclusionRawAOShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\MeshPipelineProcessor.cs" />
+    <Compile Include="Rendering\PipelineProcessor.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
@@ -462,6 +464,7 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
