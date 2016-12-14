@@ -46,7 +46,10 @@ namespace SiliconStudio.Core.Yaml
 
         public override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
-            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType))
+            {
+                ScalarStyle = memberDescriptor.ScalarStyle,
+            };
 
             bool nonIdentifiableItems;
             // We allow compact style only for collection with non-identifiable items

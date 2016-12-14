@@ -210,6 +210,7 @@
     <Compile Include="Serialization\DataSerializer.cs" />
     <Compile Include="DataStyle.cs" />
     <Compile Include="DataStyleAttribute.cs" />
+    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Serialization\DataSerializerFactory.cs" />
     <Compile Include="Serialization\IDataSerializerGenericInstantiation.cs" />
     <Compile Include="Serialization\MemberSerializer.cs" />
