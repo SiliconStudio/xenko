@@ -73,6 +73,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public DataStyle Style { get; set; }
 
+        public ScalarStyle ScalarStyle { get; set; }
+
         public Func<object, bool> ShouldSerialize { get; set; }
 
         public List<string> AlternativeNames { get; set; }
