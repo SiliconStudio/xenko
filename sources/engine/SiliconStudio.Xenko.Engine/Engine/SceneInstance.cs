@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Engine
         public static readonly PropertyKey<VisibilityGroup> CurrentVisibilityGroup = new PropertyKey<VisibilityGroup>("SceneInstance.CurrentVisibilityGroup", typeof(SceneInstance));
 
         private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
-        private Scene previousRootScene;
+
         private Scene rootScene;
 
         public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="services">The services.</param>
         /// <param name="rootScene">The scene entity root.</param>
-        /// <param name="enableScripting">if set to <c>true</c> [enable scripting].</param>
+        /// <param name="executionMode">The mode that determines which processors are executed.</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// rootScene</exception>
@@ -70,8 +70,8 @@ namespace SiliconStudio.Xenko.Engine
             ExecutionMode = executionMode;
             VisibilityGroups = new TrackingCollection<VisibilityGroup>();
             VisibilityGroups.CollectionChanged += VisibilityGroups_CollectionChanged;
+
             RootScene = rootScene;
-            Load();
         }
 
         /// <summary>
@@ -87,27 +87,33 @@ namespace SiliconStudio.Xenko.Engine
 
             set
             {
-                if (rootScene != value)
+                if (rootScene == value)
+                    return;
+
+                if (rootScene != null)
                 {
-                    previousRootScene = rootScene;
-                    rootScene = value;
+                    Remove(rootScene);
+                    RemoveRendererTypes();
                 }
+
+                if (value != null)
+                {
+                    Add(value);
+                    HandleRendererTypes();
+                }
+
+                rootScene = value;
+                OnSceneChanged();
             }
         }
 
         protected override void Destroy()
         {
-            Reset();
+            RootScene = null;
 
             // TODO: Dispose of Scene, graphics compositor...etc.
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
-
-            if (rootScene != null)
-            {
-                rootScene.ReleaseInternal();
-                rootScene = null;
-            }
 
             base.Destroy();
         }
@@ -140,59 +146,6 @@ namespace SiliconStudio.Xenko.Engine
                 VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(renderSystem));
 
             return visibilityGroup;
-        }
-
-        /// <summary>
-        /// Updates this scene at the specified time.
-        /// </summary>
-        /// <param name="time">The time.</param>
-        public override void Update(GameTime time)
-        {
-            UpdateFromChild();
-            base.Update(time);
-        }
-
-        internal override void Draw(RenderContext context)
-        {
-            UpdateFromChild();
-            base.Draw(context);
-        }
-
-        private void UpdateFromChild()
-        {
-            // If this scene instance is coming from a ChildSceneComponent, check that the Scene hasn't changed
-            // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (previousRootScene != RootScene)
-            {
-                Reset();
-                Load();
-            }
-        }
-
-        protected internal override void Reset()
-        {
-            if (previousRootScene != null)
-            {
-                Remove(previousRootScene);
-            }
-
-            RemoveRendererTypes();
-            base.Reset();
-        }
-
-        private void Load()
-        {
-            previousRootScene = RootScene;
-
-            OnSceneChanged();
-
-            // If Scene is null, early exit
-            if (RootScene != null)
-            {
-                Add(RootScene);
-
-                HandleRendererTypes();
-            }
         }
 
         private void Add(Scene scene)
