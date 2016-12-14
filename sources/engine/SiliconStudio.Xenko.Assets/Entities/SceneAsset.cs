@@ -57,5 +57,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private const string CurrentVersion = "2.0.0-alpha01";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
+
+        /// <summary>
+        /// The parent scene.
+        /// </summary>
+        [DataMember(10)]
+        public Scene Parent { get; set; }
     }
 }
