@@ -13,8 +13,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdditiveAnimationAsset.cs" />
+    <Compile Include="AdditiveAnimationBaseMode.cs" />
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
+    <Compile Include="AnimationAssetType.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="FbxAssetImporter.cs" />

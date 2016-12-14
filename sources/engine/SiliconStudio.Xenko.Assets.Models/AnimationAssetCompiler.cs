@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
             if (additiveAnimationAsset != null)
             {
+                // DEPRECATED
                 var baseUrlInStorage = targetUrlInStorage + "_animation_base";
                 var sourceUrlInStorage = targetUrlInStorage + "_animation_source";
 
@@ -86,8 +87,55 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
             else
             {
-                // Import the main animation
-                buildStep.Add(sourceBuildStep);
+                if (asset.Type.Type == AnimationAssetTypeEnum.AnimationClip)
+                {
+                    // Import the main animation
+                    buildStep.Add(sourceBuildStep);
+                }
+                else if (asset.Type.Type == AnimationAssetTypeEnum.DifferenceClip)
+                {
+                    var diffAnimationAsset = ((DifferenceAnimationAssetType)asset.Type);
+                    var referenceClip = diffAnimationAsset.BaseSource;
+                    var rebaseMode = diffAnimationAsset.Mode;
+
+                    var baseUrlInStorage = targetUrlInStorage + "_reference_clip";
+                    var sourceUrlInStorage = targetUrlInStorage + "_source_clip";
+
+                    var baseAssetSource = UPath.Combine(assetDirectory, referenceClip);
+                    var baseExtension = baseAssetSource.GetFileExtension();
+
+                    sourceBuildStep.Location = sourceUrlInStorage;
+
+                    var baseBuildStep = ImportModelCommand.Create(extension);
+                    if (baseBuildStep == null)
+                    {
+                        result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", baseExtension, baseAssetSource);
+                        return;
+                    }
+
+                    baseBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
+                    baseBuildStep.SourcePath = baseAssetSource;
+                    baseBuildStep.Location = baseUrlInStorage;
+                    baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
+                    baseBuildStep.AnimationRootMotion = asset.RootMotion;
+                    baseBuildStep.ScaleImport = asset.ScaleImport;
+                    baseBuildStep.PivotPosition = asset.PivotPosition;
+                    baseBuildStep.SkeletonUrl = skeleton?.Location;
+
+                    // Import base and main animation
+                    buildStep.Add(sourceBuildStep);
+                    buildStep.Add(baseBuildStep);
+
+                    // Wait for both import fbx commands to be completed
+                    buildStep.Add(new WaitBuildStep());
+
+                    // Generate the diff of those two animations
+                    buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode)));
+                }
+                else
+                {
+                    throw new NotImplementedException("This type of animation asset is not supported yet!");
+                }
             }
 
             result.BuildSteps = buildStep;
@@ -108,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var sourceAnimation = assetManager.Load<AnimationClip>(Parameters.SourceUrl);
 
                 // Generate diff animation
-                var animation = SubtractAnimations(baseAnimation, sourceAnimation);
+                var animation = (baseAnimation == null) ? sourceAnimation : SubtractAnimations(baseAnimation, sourceAnimation);
 
                 // Optimize animation
                 animation.Optimize();

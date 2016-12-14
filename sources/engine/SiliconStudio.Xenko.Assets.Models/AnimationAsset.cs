@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -52,6 +53,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <userdoc>Specifies how the animation should be played. That is played once and stop, infinitely loop, etc...</userdoc>
         [DataMember(20)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
+
+        /// <summary>
+        /// Determine the animation type of the asset, which will dictate in what blend mode we can use it
+        /// </summary>
+        /// <userdoc>
+        /// The animation type of the asset decides how we blend it - linear blending will be used for Animation Clip, additive blending for Difference Clip
+        /// </userdoc>
+        [NotNull]
+        [DataMember(30)]
+        public AnimationAssetType Type { get; set; } = new StandardAnimationAssetType();
 
         /// <summary>
         /// Gets or sets the Skeleton.

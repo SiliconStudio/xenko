@@ -26,21 +26,4 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; }
     }
-
-    [DataContract]
-    public enum AdditiveAnimationBaseMode
-    {
-        // TODO: Add support for reference pose (need to add the concept to AnimationClip?)
-        //ReferencePose = 0,
-
-        /// <summary>
-        /// Uses first frame of animation.
-        /// </summary>
-        FirstFrame = 1,
-
-        /// <summary>
-        /// Uses animation.
-        /// </summary>
-        Animation = 2,
-    }
 }
