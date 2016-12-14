@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        internal override void ConfirmRenderingSettings(bool gameCreation)
+        public override void ConfirmRenderingSettings(bool gameCreation)
         {
             if (!AutoLoadDefaultSettings) return;
 
