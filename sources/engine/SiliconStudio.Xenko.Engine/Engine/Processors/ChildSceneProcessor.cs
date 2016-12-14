@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             get
             {
                 var sceneInstance = EntityManager as SceneInstance;
-                return sceneInstance != null ? sceneInstance.Scene : null;
+                return sceneInstance != null ? sceneInstance.RootScene : null;
             }
         }
 
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var currentScene = ContainingScene != childComponent.Scene ? childComponent.Scene : null;
 
                 // Copy back the scene from the component to the instance
-                childComponent.SceneInstance.Scene = currentScene;
+                childComponent.SceneInstance.RootScene = currentScene;
             }
         }
     }

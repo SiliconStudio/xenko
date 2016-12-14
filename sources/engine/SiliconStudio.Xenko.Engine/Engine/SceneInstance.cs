@@ -16,7 +16,7 @@ using SiliconStudio.Core.ReferenceCounting;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Manage a collection of entities within a <see cref="Scene"/>.
+    /// Manage a collection of entities within a <see cref="RootScene"/>.
     /// </summary>
     public sealed class SceneInstance : EntityManager
     {
@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Engine
         public static readonly PropertyKey<VisibilityGroup> CurrentVisibilityGroup = new PropertyKey<VisibilityGroup>("SceneInstance.CurrentVisibilityGroup", typeof(SceneInstance));
 
         private readonly Dictionary<TypeInfo, RegisteredRenderProcessors> registeredRenderProcessorTypes = new Dictionary<TypeInfo, RegisteredRenderProcessors>();
-        private Scene previousScene;
-        private Scene scene;
+        private Scene previousRootScene;
+        private Scene rootScene;
 
         public TrackingCollection<VisibilityGroup> VisibilityGroups { get; }
 
@@ -58,19 +58,19 @@ namespace SiliconStudio.Xenko.Engine
         /// Initializes a new instance of the <see cref="SceneInstance" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="sceneEntityRoot">The scene entity root.</param>
+        /// <param name="rootScene">The scene entity root.</param>
         /// <param name="enableScripting">if set to <c>true</c> [enable scripting].</param>
         /// <exception cref="System.ArgumentNullException">services
         /// or
-        /// sceneEntityRoot</exception>
-        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot, ExecutionMode executionMode = ExecutionMode.Runtime) : base(services)
+        /// rootScene</exception>
+        public SceneInstance(IServiceRegistry services, Scene rootScene, ExecutionMode executionMode = ExecutionMode.Runtime) : base(services)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
 
             ExecutionMode = executionMode;
             VisibilityGroups = new TrackingCollection<VisibilityGroup>();
             VisibilityGroups.CollectionChanged += VisibilityGroups_CollectionChanged;
-            Scene = sceneEntityRoot;
+            RootScene = rootScene;
             Load();
         }
 
@@ -78,19 +78,19 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the scene.
         /// </summary>
         /// <value>The scene.</value>
-        public Scene Scene
+        public Scene RootScene
         {
             get
             {
-                return scene;
+                return rootScene;
             }
 
             set
             {
-                if (scene != value)
+                if (rootScene != value)
                 {
-                    previousScene = scene;
-                    scene = value;
+                    previousRootScene = rootScene;
+                    rootScene = value;
                 }
             }
         }
@@ -103,10 +103,10 @@ namespace SiliconStudio.Xenko.Engine
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
 
-            if (scene != null)
+            if (rootScene != null)
             {
-                scene.ReleaseInternal();
-                scene = null;
+                rootScene.ReleaseInternal();
+                rootScene = null;
             }
 
             base.Destroy();
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             // If this scene instance is coming from a ChildSceneComponent, check that the Scene hasn't changed
             // If the scene has changed, we need to recreate a new SceneInstance with the new scene
-            if (previousScene != Scene)
+            if (previousRootScene != RootScene)
             {
                 Reset();
                 Load();
@@ -171,34 +171,54 @@ namespace SiliconStudio.Xenko.Engine
 
         protected internal override void Reset()
         {
-            if (previousScene != null)
+            if (previousRootScene != null)
             {
-                previousScene.Entities.CollectionChanged -= Entities_CollectionChanged;
+                Remove(previousRootScene);
             }
+
             RemoveRendererTypes();
             base.Reset();
         }
 
         private void Load()
         {
-            previousScene = Scene;
+            previousRootScene = RootScene;
 
             OnSceneChanged();
 
             // If Scene is null, early exit
-            if (Scene == null)
+            if (RootScene != null)
             {
-                return;
-            }
+                Add(RootScene);
 
-            // Add Loaded entities
-            foreach (var entity in Scene.Entities)
+                HandleRendererTypes();
+            }
+        }
+
+        private void Add(Scene scene)
+        {
+            foreach (var entity in scene.Entities)
                 Add(entity);
 
             // Listen to future changes in Scene.Entities
-            Scene.Entities.CollectionChanged += Entities_CollectionChanged;
+            foreach (var childScene in scene.Children)
+                Add(childScene);
 
-            HandleRendererTypes();
+            // Listen to future changes in entities and child scenes
+            scene.Children.CollectionChanged += Children_CollectionChanged;
+            scene.Entities.CollectionChanged += Entities_CollectionChanged;
+        }
+
+        private void Remove(Scene scene)
+        {
+            scene.Entities.CollectionChanged -= Entities_CollectionChanged;
+            scene.Children.CollectionChanged -= Children_CollectionChanged;
+
+            foreach (var childScene in scene.Children)
+                Remove(childScene);
+
+            foreach (var entity in scene.Entities)
+                Remove(entity);
         }
 
         private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
@@ -210,6 +230,19 @@ namespace SiliconStudio.Xenko.Engine
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     Remove((Entity)e.Item);
+                    break;
+            }
+        }
+
+        private void Children_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    Add((Scene)e.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    Remove((Scene)e.Item);
                     break;
             }
         }

@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine
         protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             var sceneInstance = GetChildSceneInstance();
-            if (sceneInstance?.Scene == null)
+            if (sceneInstance?.RootScene == null)
                 return;
 
             // Draw scene recursively

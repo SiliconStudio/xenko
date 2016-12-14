@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Physics
                     element.RemoveDebugEntity(scene);
                 }
 
-                sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
                 mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Physics
                 debugSceneRenderer = new SceneChildRenderer(childComponent) { GraphicsCompositorOverride = graphicsCompositor };
 
                 mainCompositor.Master.Add(debugSceneRenderer);
-                sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);
 
                 foreach (var element in elements)
                 {

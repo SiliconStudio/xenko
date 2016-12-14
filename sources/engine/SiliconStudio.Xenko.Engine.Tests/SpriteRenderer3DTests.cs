@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // add all the entities to the scene
             foreach (var entity in entities)
-                SceneSystem.SceneInstance.Scene.Entities.Add(entity);
+                SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
 
             cameraScript = new TestCamera();
             CameraComponent = cameraScript.Camera;
