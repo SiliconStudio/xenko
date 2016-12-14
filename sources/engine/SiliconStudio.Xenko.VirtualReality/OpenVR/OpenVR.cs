@@ -8,13 +8,6 @@ using Valve.VR;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public enum ControllerState
-    {
-        Invalid,
-        OutOfRange,
-        Valid
-    }
-
     public static class OpenVR
     {
         public class Controller
@@ -22,84 +15,34 @@ namespace SiliconStudio.Xenko.VirtualReality
             // This helper can be used in a variety of ways.  Beware that indices may change
             // as new devices are dynamically added or removed, controllers are physically
             // swapped between hands, arms crossed, etc.
-            public enum DeviceRelation
+            public enum Hand
             {
-                First,
-                // radially
-                Leftmost,
-                Rightmost,
-                // distance
-                FarthestLeft,
-                FarthestRight,
+                Left,
+                Right
             }
 
-            public static int GetDeviceIndex(DeviceRelation relation) // use -1 for absolute tracking space
+            public static int GetDeviceIndex(Hand hand)
             {
-                var result = -1;
-
-                Matrix hmdPoseInvert;
-                GetHeadPose(out hmdPoseInvert);
-                hmdPoseInvert.Invert();
-                var invForm = hmdPoseInvert;
-
-                var system = Valve.VR.OpenVR.System;
-                if (system == null)
-                    return result;
-
-                var best = -float.MaxValue;
                 var currentIndex = 0;
-                for (var i = 0; i < Valve.VR.OpenVR.k_unMaxTrackedDeviceCount; i++)
+                for (uint index = 0; index < DevicePoses.Length; index++)
                 {
-                    if (system.GetTrackedDeviceClass((uint)i) != ETrackedDeviceClass.Controller)
-                        continue;
-
-                    var xenkoIndex = currentIndex;
-                    currentIndex++;
-
-                    if (relation == DeviceRelation.First)
-                        return i;
-
-                    float score;
-
-                    Matrix devicePose;
-                    if (GetControllerPose(xenkoIndex, out devicePose) != ControllerState.Valid)
+                    if (Valve.VR.OpenVR.System.GetTrackedDeviceClass(index) == ETrackedDeviceClass.Controller)
                     {
-                        return -1;
-                    }
-
-                    var pos = invForm * devicePose;
-                    if (relation == DeviceRelation.FarthestRight)
-                    {
-                        score = pos.TranslationVector.X;
-                    }
-                    else if (relation == DeviceRelation.FarthestLeft)
-                    {
-                        score = -pos.TranslationVector.X;
-                    }
-                    else
-                    {
-                        var dir = new Vector3(pos.TranslationVector.X, 0.0f, pos.TranslationVector.Z);
-                        dir.Normalize();
-                        var dot = Vector3.Dot(dir, -Vector3.UnitZ);
-                        var cross = Vector3.Cross(dir, -Vector3.UnitZ);
-                        if (relation == DeviceRelation.Leftmost)
+                        if (hand == Hand.Left && Valve.VR.OpenVR.System.GetControllerRoleForTrackedDeviceIndex(index) == ETrackedControllerRole.LeftHand)
                         {
-                            score = (cross.Y > 0.0f) ? 2.0f - dot : dot;
+                            return currentIndex;
                         }
-                        else
-                        {
-                            score = (cross.Y < 0.0f) ? 2.0f - dot : dot;
-                        }
-                    }
 
-                    if (score > best)
-                    {
-                        result = xenkoIndex;
-                        best = score;
+                        if (hand == Hand.Right && Valve.VR.OpenVR.System.GetControllerRoleForTrackedDeviceIndex(index) == ETrackedControllerRole.RightHand)
+                        {
+                            return currentIndex;
+                        }
+
+                        currentIndex++;
                     }
                 }
 
-                return result;
+                return -1;
             }
 
             public class ButtonMask
@@ -222,7 +165,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             }
         }
 
-        public static void Submit(int eyeIndex, Texture texture, RectangleF viewport)
+        public static bool Submit(int eyeIndex, Texture texture, ref RectangleF viewport)
         {
             var tex = new Texture_t
             {
@@ -238,7 +181,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 vMax = viewport.Height
             };
 
-            Valve.VR.OpenVR.Compositor.Submit(eyeIndex == 0 ? EVREye.Eye_Left : EVREye.Eye_Right, ref tex, ref bounds, EVRSubmitFlags.Submit_Default);
+            return Valve.VR.OpenVR.Compositor.Submit(eyeIndex == 0 ? EVREye.Eye_Left : EVREye.Eye_Right, ref tex, ref bounds, EVRSubmitFlags.Submit_Default) == EVRCompositorError.None;
         }
 
         public static void GetEyeToHead(int eyeIndex, out Matrix pose)
@@ -259,12 +202,12 @@ namespace SiliconStudio.Xenko.VirtualReality
             Valve.VR.OpenVR.Compositor.WaitGetPoses(DevicePoses, GamePoses);
         }
 
-        public static ControllerState GetControllerPose(int controllerIndex, out Matrix pose)
+        public static DeviceState GetControllerPose(int controllerIndex, out Matrix pose)
         {
             return GetControllerPoseUnsafe(controllerIndex, out pose);
         }
 
-        private static unsafe ControllerState GetControllerPoseUnsafe(int controllerIndex, out Matrix pose)
+        private static unsafe DeviceState GetControllerPoseUnsafe(int controllerIndex, out Matrix pose)
         {
             var currentIndex = 0;
             pose = Matrix.Identity;
@@ -276,14 +219,14 @@ namespace SiliconStudio.Xenko.VirtualReality
                     {
                         Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref DevicePoses[index].mDeviceToAbsoluteTracking), Utilities.SizeOf<HmdMatrix34_t>());
 
-                        var state = ControllerState.Invalid;
+                        var state = DeviceState.Invalid;
                         if (DevicePoses[index].bDeviceIsConnected && DevicePoses[index].bPoseIsValid)
                         {
-                            state = ControllerState.Valid;
+                            state = DeviceState.Valid;
                         }
                         else if (DevicePoses[index].bDeviceIsConnected && !DevicePoses[index].bPoseIsValid && DevicePoses[index].eTrackingResult == ETrackingResult.Running_OutOfRange)
                         {
-                            state = ControllerState.OutOfRange;
+                            state = DeviceState.OutOfRange;
                         }
 
                         return state;
@@ -292,15 +235,15 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
             }
 
-            return ControllerState.Invalid;
+            return DeviceState.Invalid;
         }
 
-        public static ControllerState GetHeadPose(out Matrix pose)
+        public static DeviceState GetHeadPose(out Matrix pose)
         {
             return GetHeadPoseUnsafe(out pose);
         }
 
-        private static unsafe ControllerState GetHeadPoseUnsafe(out Matrix pose)
+        private static unsafe DeviceState GetHeadPoseUnsafe(out Matrix pose)
         {
             pose = Matrix.Identity;
             for (uint index = 0; index < DevicePoses.Length; index++)
@@ -309,21 +252,21 @@ namespace SiliconStudio.Xenko.VirtualReality
                 {
                     Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref DevicePoses[index].mDeviceToAbsoluteTracking), Utilities.SizeOf<HmdMatrix34_t>());
 
-                    var state = ControllerState.Invalid;
+                    var state = DeviceState.Invalid;
                     if (DevicePoses[index].bDeviceIsConnected && DevicePoses[index].bPoseIsValid)
                     {
-                        state = ControllerState.Valid;
+                        state = DeviceState.Valid;
                     }
                     else if (DevicePoses[index].bDeviceIsConnected && !DevicePoses[index].bPoseIsValid && DevicePoses[index].eTrackingResult == ETrackingResult.Running_OutOfRange)
                     {
-                        state = ControllerState.OutOfRange;
+                        state = DeviceState.OutOfRange;
                     }
 
                     return state;
                 }
             }
 
-            return ControllerState.Invalid;
+            return DeviceState.Invalid;
         }
 
         public static void GetProjection(int eyeIndex, float near, float far, out Matrix projection)
