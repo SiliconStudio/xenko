@@ -102,6 +102,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
+            Input.ActivatedGestures.Add(new GestureConfigComposite
+            {
+                RequiredNumberOfFingers = 2,
+            });
+
             ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
             ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
 
@@ -332,7 +337,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         Stopwatch lightTimer = new Stopwatch();
         private float lightRotationOffset = 0.0f;
-        private float lightDistance = 4.0f;
+        private float lightDistance = 5.0f;
         private Random random = new Random(11324);
 
         void ToggleShadowMapType()
@@ -413,7 +418,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
                 lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
                 //lightType.Color = new ColorRgbProvider(Color.White);
-                lightType.Radius = HalfPlaneSize;
+                lightType.Radius = PlaneSize*1.5f;
 
                 var lightComponent = new LightComponent { Type = lightType, Intensity = 60.0f/amount };
                 pointLights.Add(lightComponent);
@@ -486,6 +491,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 ToggleShadowMapType();
             }
 
+            foreach (var g in Input.GestureEvents)
+            {
+                var c = g as GestureEventComposite;
+                if (c != null)
+                {
+                    lightRotationOffset += c.DeltaTranslation.X*1.5f;
+                    lightDistance += c.DeltaTranslation.Y*2.0f;
+                }
+            }
 
             // Adjust bias 
             float adjustBias = 0.0f;
@@ -494,8 +508,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             else if (Input.IsKeyDown(Keys.NumPad1))
                 adjustBias = -0.01f;
             AdjustBias(adjustBias);
-
-
+            
             // Adjust filter 
             int adjustFilter = 0;
             if (Input.IsKeyPressed(Keys.NumPad5))

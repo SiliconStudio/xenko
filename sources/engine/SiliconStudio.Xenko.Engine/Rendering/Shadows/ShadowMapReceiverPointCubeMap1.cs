@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public static readonly ValueParameterKey<Matrix> ProjectionToShadow = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Vector4> LightPosition = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<float> DepthBiases = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<float> DirectionOffset = ParameterKeys.NewValue<float>();
     }
 }

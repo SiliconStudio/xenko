@@ -13,8 +13,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4x4 ViewProjection[TLightCount*6];
             float4x4 InverseViewProjection[TLightCount*6];
             float4x4 ProjectionToShadow[TLightCount*6];
-			float4 LightPosition[TLightCount];
+            float4 LightPosition[TLightCount];
             float DepthBiases[TLightCount];
+            float2 DepthParameters[TLightCount];
             float DirectionOffset[TLightCount];
 
             // Should this be conditional or on by default?
@@ -26,34 +27,35 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
             float3 lightPosition = LightPosition[lightIndex].xyz;
             float3 delta = streams.PositionWS.xyz - lightPosition;
-			float3 direction = normalize(delta);
-			float3 dirAbs = abs(direction);
-			
-			float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
+            float3 direction = normalize(delta);
+            float3 dirAbs = abs(direction);
+            
+            float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
 
             int faceIndex;
             float z;
             
             // Select the base face index for either X,Y or Z facing
             [flatten]
-			if(dirAbs.x == longestAxis)
-			{
-				z = delta.x;
-				faceIndex = 2;
-			}
-			else if(dirAbs.y == longestAxis)
-			{
+            if(dirAbs.x == longestAxis)
+            {
+                z = delta.x;
+                faceIndex = 2;
+            }
+            else if(dirAbs.y == longestAxis)
+            {
                 z = delta.y;
-				faceIndex = 4;
-			}
-			else // direction.z == longestAxis
-			{
+                faceIndex = 4;
+            }
+            else // direction.z == longestAxis
+            {
                 z = delta.z;
-				faceIndex = 0;
-			}
-			
-			// Apply offset the negative side of a direction (+1)
-			faceIndex += int(max(0, -sign(z)));
+                faceIndex = 0;
+            }
+            
+            // Apply offset the negative side of a direction (+1)
+            float sz = sign(z);
+            faceIndex += int(-min(0.0, sz));
 
             float4x4 viewProjection = ViewProjection[lightIndex*6+faceIndex];
             float4x4 invViewProjection = InverseViewProjection[lightIndex*6+faceIndex];
@@ -89,20 +91,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 z1 /= z1.w;
                 float4 z2 = mul(float4(p2,1), viewProjection);
                 z2 /= z2.w;
-
+                
                 // Take depth diffence as zgradient and scale it by the texture map size so it can be multiplied by offsets in the filter
                 zgradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
             }
 
-            // Reproject world position but with bias applied
-            float3 biasedWorldPosition = streams.PositionWS.xyz + direction * -DepthBiases[lightIndex];
-            projectedPosition = mul(float4(biasedWorldPosition, 1), viewProjection);
-            projectedPosition /= projectedPosition.w;
+            // Apply bias on linear Z
+            float linearZ = DepthParameters[lightIndex].y / (projectedPosition.z + DepthParameters[lightIndex].x);
+            linearZ -= DepthBiases[lightIndex];
+            projectedPosition.z = DepthParameters[lightIndex].y / linearZ - DepthParameters[lightIndex].x;
             
             // Convert from normalized coordinates to texture space
             float4 uvPos = mul(projectedPosition, toShadow);
 
-            streams.shadowColor = FilterShadow(uvPos.xy, uvPos.z, zgradient);
+            streams.shadowColor = FilterShadow(uvPos.xy, projectedPosition.z, zgradient);
         }
     };
 }
