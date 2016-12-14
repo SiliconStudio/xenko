@@ -97,9 +97,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             // Apply bias on linear Z
-            float linearZ = DepthParameters[lightIndex].y / (projectedPosition.z + DepthParameters[lightIndex].x);
+            float linearZ = DepthParameters[lightIndex].y / (projectedPosition.z - DepthParameters[lightIndex].x);
             linearZ -= DepthBiases[lightIndex];
-            projectedPosition.z = DepthParameters[lightIndex].y / linearZ - DepthParameters[lightIndex].x;
+            projectedPosition.z = DepthParameters[lightIndex].y / linearZ + DepthParameters[lightIndex].x;
             
             // Convert from normalized coordinates to texture space
             float4 uvPos = mul(projectedPosition, toShadow);

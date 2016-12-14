@@ -333,7 +333,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     lightPosition[lightIndex] = new Vector4(shaderData.Position, 1);
                     depthBiases[lightIndex] = shaderData.DepthBias;
                     directionOffset[lightIndex] = shaderData.DirectionOffset;
-                    depthParameters[lightIndex] = new Vector2(shaderData.Projection.Column3.Z, shaderData.Projection.Column3.W);
+                    depthParameters[lightIndex] = shaderData.LightDepthParameters;
 
                     // TODO: should be setup just once at creation time
                     if (lightIndex == 0)
