@@ -207,7 +207,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     // First time?
                     pointGroupRenderer.lightClusters?.Dispose();
-                    pointGroupRenderer.lightClusters = Texture.New3D(context.GraphicsDevice, clusterCountX, clusterCountY, 8, PixelFormat.R32G32_UInt);
+                    pointGroupRenderer.lightClusters = Texture.New3D(context.GraphicsDevice, clusterCountX, clusterCountY, ClusterSlices, PixelFormat.R32G32_UInt);
                     lightClustersValues = new Int2[clusterCountX * clusterCountY * ClusterSlices];
                 }
 
