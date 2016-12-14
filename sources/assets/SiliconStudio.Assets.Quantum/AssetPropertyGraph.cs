@@ -105,9 +105,14 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ReconcileWithBase()
         {
+            ReconcileWithBase(RootNode);
+        }
+
+        public void ReconcileWithBase(AssetNode rootNode)
+        {
             var visitor = CreateReconcilierVisitor();
             visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
-            visitor.Visit(RootNode);
+            visitor.Visit(rootNode);
         }
 
         // TODO: turn protected
@@ -120,7 +125,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
-        protected virtual GraphVisitorBase CreateReconcilierVisitor()
+        public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
             return new GraphVisitorBase();
         }
@@ -191,7 +196,7 @@ namespace SiliconStudio.Assets.Quantum
             return true;
         }
 
-        protected virtual object CloneValueFromBase(object value, AssetNode node)
+        protected internal virtual object CloneValueFromBase(object value, AssetNode node)
         {
             return AssetNode.CloneFromBase(value);
         }
@@ -199,7 +204,6 @@ namespace SiliconStudio.Assets.Quantum
         private void LinkBaseNode(IGraphNode currentNode, IGraphNode baseNode)
         {
             var assetNode = (AssetNode)currentNode;
-            assetNode.Cloner = x => CloneValueFromBase(x, assetNode);
             assetNode.PropertyGraph = this;
             assetNode.SetBase(baseNode?.Content);
             if (!baseLinkedNodes.ContainsKey(assetNode))
@@ -326,7 +330,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     if (localValue == null && baseValue != null)
                     {
-                        var clonedValue = assetNode.Cloner(baseValue);
+                        var clonedValue = CloneValueFromBase(baseValue, assetNode);
                         assetNode.Content.Update(clonedValue);
                     }
                     else if (localValue != null /*&& baseValue == null*/)
@@ -417,7 +421,7 @@ namespace SiliconStudio.Assets.Quantum
                                 var baseItemValue = baseNode.Content.Retrieve(index);
                                 if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
                                 {
-                                    var clonedValue = assetNode.Cloner(baseItemValue);
+                                    var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
                                     assetNode.Content.Update(clonedValue, localIndex);
                                 }
                             }
@@ -427,7 +431,7 @@ namespace SiliconStudio.Assets.Quantum
                                 if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
                                 {
                                     // Reconcile using a move (Remove + Add) of the key-value pair
-                                    var clonedIndex = new Index(assetNode.Cloner(index.Value));
+                                    var clonedIndex = new Index(CloneValueFromBase(index.Value, assetNode));
                                     var localItemValue = assetNode.Content.Retrieve(localIndex);
                                     assetNode.Content.Remove(localItemValue, localIndex);
                                     assetNode.Content.Add(localItemValue, clonedIndex);
@@ -452,7 +456,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var baseIndex = baseNode.IdToIndex(item.Value);
                         var baseItemValue = baseNode.Content.Retrieve(baseIndex);
-                        var clonedValue = assetNode.Cloner(baseItemValue);
+                        var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
                         if (assetNode.Content.Descriptor is CollectionDescriptor)
                         {
                             // In a collection, we need to find an index that matches the index on the base to maintain order.
@@ -496,7 +500,7 @@ namespace SiliconStudio.Assets.Quantum
                     var targetNode = assetNode.Content.Reference?.AsObject?.TargetNode;
                     if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Content.Reference is ObjectReference))
                     {
-                        var clonedValue = assetNode.Cloner(baseValue);
+                        var clonedValue = CloneValueFromBase(baseValue, assetNode);
                         assetNode.Content.Update(clonedValue);
                     }
                 }
