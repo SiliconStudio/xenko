@@ -41,6 +41,12 @@ namespace SiliconStudio.Presentation.Dirtiables
             return true;
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{{{GetType().Name}}}";
+        }
+
         /// <inheritdoc/>
         protected sealed override void Rollback()
         {

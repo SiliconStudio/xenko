@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
                 {
                     var compId = RuntimeIdHelper.ToRuntimeId(spriteComp);
-                    color = new Color4(compId);
+                    color = new Color4(compId, 0.0f, 0.0f, 0.0f);
                 }
 
                 // skip the sprite if no texture is set.
