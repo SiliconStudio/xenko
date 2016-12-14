@@ -309,25 +309,34 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
             {
-                for (int lightIndex = 0; lightIndex < currentLights.Count; ++lightIndex)
-                {
-                    var lightEntry = currentLights[lightIndex];
-                    var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
-                    lightOffset[lightIndex] = shaderData.Offset;
-                    lightBackfaceOffset[lightIndex] = shaderData.BackfaceOffset;
-                    lightFaceSize[lightIndex] = shaderData.FaceSize;
-                    lightDepthParameters[lightIndex] = shaderData.LightDepthParameters;
-                    depthBiases[lightIndex] = shaderData.DepthBias;
-                    worldToShadowMatrices[lightIndex] = shaderData.WorldToShadow;
+                var boundingBox2 = (BoundingBox)boundingBox;
+                bool shadowMapCreated = false;
+                int lightIndex = 0;
 
-                    // TODO: should be setup just once at creation time
-                    if (lightIndex == 0)
+                for (int i = 0; i < currentLights.Count; ++i)
+                {
+                    var lightEntry = currentLights[i];
+                    if (lightEntry.Light.BoundingBox.Intersects(ref boundingBox2))
                     {
-                        shadowMapTexture = shaderData.Texture;
-                        if (shadowMapTexture != null)
+                        var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
+                        lightOffset[lightIndex] = shaderData.Offset;
+                        lightBackfaceOffset[lightIndex] = shaderData.BackfaceOffset;
+                        lightFaceSize[lightIndex] = shaderData.FaceSize;
+                        lightDepthParameters[lightIndex] = shaderData.LightDepthParameters;
+                        depthBiases[lightIndex] = shaderData.DepthBias;
+                        worldToShadowMatrices[lightIndex] = shaderData.WorldToShadow;
+                        lightIndex++;
+
+                        // TODO: should be setup just once at creation time
+                        if (!shadowMapCreated)
                         {
-                            shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
-                            shadowMapTextureTexelSize = 1.0f / shadowMapTextureSize;
+                            shadowMapTexture = shaderData.Texture;
+                            if (shadowMapTexture != null)
+                            {
+                                shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
+                                shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
+                            }
+                            shadowMapCreated = true;
                         }
                     }
                 }

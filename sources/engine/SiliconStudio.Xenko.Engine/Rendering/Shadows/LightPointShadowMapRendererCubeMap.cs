@@ -317,32 +317,41 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
             {
-                for (int lightIndex = 0; lightIndex < currentLights.Count; ++lightIndex)
+                var boundingBox2 = (BoundingBox)boundingBox;
+                bool shadowMapCreated = false;
+                int lightIndex = 0;
+
+                for (int i = 0; i < currentLights.Count; ++i)
                 {
-                    var lightEntry = currentLights[lightIndex];
-                    var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
-
-                    // Copy per-face data
-                    for (int i = 0; i < 6; i++)
+                    var lightEntry = currentLights[i];
+                    if (lightEntry.Light.BoundingBox.Intersects(ref boundingBox2))
                     {
-                        viewProjection[lightIndex*6 + i] = shaderData.ViewProjection[i];
-                        inverseViewProjection[lightIndex*6 + i] = shaderData.InverseViewProjection[i];
-                        projectionToShadow[lightIndex * 6 + i] = shaderData.ProjectionToShadow[i];
-                    }
+                        var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
 
-                    lightPosition[lightIndex] = new Vector4(shaderData.Position, 1);
-                    depthBiases[lightIndex] = shaderData.DepthBias;
-                    directionOffset[lightIndex] = shaderData.DirectionOffset;
-                    depthParameters[lightIndex] = shaderData.LightDepthParameters;
-
-                    // TODO: should be setup just once at creation time
-                    if (lightIndex == 0)
-                    {
-                        shadowMapTexture = shaderData.Texture;
-                        if (shadowMapTexture != null)
+                        // Copy per-face data
+                        for (int j = 0; j < 6; j++)
                         {
-                            shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
-                            shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
+                            viewProjection[lightIndex*6 + j] = shaderData.ViewProjection[j];
+                            inverseViewProjection[lightIndex*6 + j] = shaderData.InverseViewProjection[j];
+                            projectionToShadow[lightIndex*6 + j] = shaderData.ProjectionToShadow[j];
+                        }
+
+                        lightPosition[lightIndex] = new Vector4(shaderData.Position, 1);
+                        depthBiases[lightIndex] = shaderData.DepthBias;
+                        directionOffset[lightIndex] = shaderData.DirectionOffset;
+                        depthParameters[lightIndex] = shaderData.LightDepthParameters;
+                        lightIndex++;
+
+                        // TODO: should be setup just once at creation time
+                        if (!shadowMapCreated)
+                        {
+                            shadowMapTexture = shaderData.Texture;
+                            if (shadowMapTexture != null)
+                            {
+                                shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
+                                shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
+                            }
+                            shadowMapCreated = true;
                         }
                     }
                 }

@@ -31,12 +31,24 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     {
         private const float PlaneSize = 20.0f;
         private const float HalfPlaneSize = PlaneSize*0.5f;
+        private const int InitialLightCount = 8;
+
         private Material material;
         private Entity lightEntity;
         private Entity lightEntity1;
         private Entity cameraEntity;
         private List<LightComponent> pointLights = new List<LightComponent>();
         private SpriteFont font;
+        
+        private Stopwatch lightTimer = new Stopwatch();
+        private float lightRotationOffset = 0.0f;
+        private float lightDistance = 5.0f;
+
+        // Initial shadow map settings
+        private LightPointShadowMapType shadowMapType = LightPointShadowMapType.Cubemap;
+        private LightShadowMapSize shadowMapSize = LightShadowMapSize.Medium;
+        private float shadowMapBias = 0.05f;
+        private int shadowMapFilter = 0;
 
         public TestShadows()
         {
@@ -53,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             model.Materials.Add(material);
             cubeEntity.Add(new ModelComponent(model));
 
-            var modelDescriptor = new ProceduralModelDescriptor(new TeapotProceduralModel() { Tessellation = 5 });
+            var modelDescriptor = new ProceduralModelDescriptor(new TeapotProceduralModel() { Tessellation = 3 });
             modelDescriptor.GenerateModel(Services, model);
 
             return cubeEntity;
@@ -111,11 +123,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
 
             Window.AllowUserResizing = true;
-
-            // Instantiate a scene with a single entity and model component
+            
             var scene = new Scene();
 
-            // Create a procedural model with a diffuse material
+            // Create diffuse material
             material = Material.New(GraphicsDevice, new MaterialDescriptor
             {
                 Attributes =
@@ -125,19 +136,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 }
             });
 
-            for (int i = 0; i < 4; i++)
-            {
-                var cube = GenerateTeapot();
-                cube.Transform.Position = new Vector3((float)random.NextDouble()*PlaneSize - HalfPlaneSize,
-                    (float)random.NextDouble()*3.0f + 0.2f,
-                    (float)random.NextDouble()*PlaneSize - HalfPlaneSize);
-                cube.Transform.Rotation = Quaternion.RotationYawPitchRoll((float)random.NextDouble()*MathUtil.TwoPi,
-                    (float)random.NextDouble()*MathUtil.TwoPi,
-                    (float)random.NextDouble()*MathUtil.TwoPi);
-                scene.Entities.Add(cube);
-            }
 
-            //
+            Random random = new Random(11324);
+
+            // Random teapots
             for (int i = 0; i < 32; i++)
             {
                 var cube = GenerateTeapot();
@@ -149,24 +151,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     (float)random.NextDouble()*MathUtil.TwoPi);
                 scene.Entities.Add(cube);
             }
-            //
-            //for (int i = 0; i < 16; i++)
-            //{
-            //    var cube = GenerateTeapot();
-            //    cube.Transform.Position = new Vector3(((float)random.NextDouble() * 2.0f - 1.0f) * HalfPlaneSize,
-            //        (float)random.NextDouble()*PlaneSize,
-            //        ((float)random.NextDouble() * 2.0f - 1.0f) * HalfPlaneSize);
-            //    cube.Transform.Rotation = Quaternion.RotationYawPitchRoll((float)random.NextDouble()*MathUtil.TwoPi,
-            //        (float)random.NextDouble()*MathUtil.TwoPi,
-            //        (float)random.NextDouble()*MathUtil.TwoPi);
-            //    cube.Transform.Scale = Vector3.One*1.5f;
-            //    scene.Entities.Add(cube);
-            //}
-
-            //var cube1 = GenerateCube(2.0f);
-            //cube1.Transform.Position = new Vector3(0.0f, HalfPlaneSize, 0.0f);
-            //cube1.Transform.Scale = new Vector3(1.0f);
-            //scene.Entities.Add(cube1);
 
             {
                 var planeLeft = GeneratePlane();
@@ -255,7 +239,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             BuildUI();
 
             // Create initial set of lights
-            RegenerateLights(1);
+            RegenerateLights(InitialLightCount);
         }
 
         private Button CustomButtom(string text, Action action)
@@ -273,7 +257,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void BuildUI()
         {
-#if SILICONSTUDIO_PLATFORM_ANDROID
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
             var width = 1000;
 #else
             var width = 1920;
@@ -335,21 +319,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             };
         }
 
-        Stopwatch lightTimer = new Stopwatch();
-        private float lightRotationOffset = 0.0f;
-        private float lightDistance = 5.0f;
-        private Random random = new Random(11324);
-
         void ToggleShadowMapType()
         {
+            if (shadowMapType == LightPointShadowMapType.Cubemap)
+                shadowMapType = LightPointShadowMapType.DualParaboloid;
+            else
+                shadowMapType = LightPointShadowMapType.Cubemap;
+
             foreach (var lc in pointLights)
             {
                 var point = lc.Type as LightPoint;
                 var shadow = point.Shadow as LightPointShadowMap;
-                if (shadow.Type == LightPointShadowMapType.Cubemap)
-                    shadow.Type = LightPointShadowMapType.DualParaboloid;
-                else
-                    shadow.Type = LightPointShadowMapType.Cubemap;
+                
+                shadow.Type = shadowMapType;
             }
         }
 
@@ -358,13 +340,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (adjustBias != 0.0f)
             {
                 adjustBias *= (float)UpdateTime.Elapsed.TotalSeconds;
+                shadowMapBias += adjustBias;
+                if (shadowMapBias < 0.0f)
+                    shadowMapBias = 0.0f;
+
                 foreach (var lc in pointLights)
                 {
                     var point = lc.Type as LightPoint;
                     var shadow = point.Shadow as LightPointShadowMap;
-                    shadow.BiasParameters.DepthBias += adjustBias;
-                    if (shadow.BiasParameters.DepthBias < 0.0f)
-                        shadow.BiasParameters.DepthBias = 0.0f;
+                    shadow.BiasParameters.DepthBias = shadowMapBias;
                 }
             }
         }
@@ -373,17 +357,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             if (adjustSize != 0)
             {
-                bool sizeSet = false;
-                LightShadowMapSize targetSize = 0;
+                shadowMapSize = (LightShadowMapSize)MathUtil.Clamp((int)shadowMapSize + adjustSize, 0, (int)LightShadowMapSize.XLarge);
                 foreach (var lc in pointLights)
                 {
                     var point = lc.Type as LightPoint;
-                    if (!sizeSet)
-                    {
-                        targetSize = (LightShadowMapSize)MathUtil.Clamp((int)point.Shadow.Size + adjustSize, 0, (int)LightShadowMapSize.XLarge);
-                        sizeSet = true;
-                    }
-                    point.Shadow.Size = targetSize;
+                    point.Shadow.Size = shadowMapSize;
                 }
             }
         }
@@ -393,7 +371,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var targetCount = MathUtil.Clamp(pointLights.Count + adjustSize, 0, 64);
             RegenerateLights(targetCount);
         }
-
+        
         void RegenerateLights(int amount)
         {
             var scene = SceneSystem.SceneInstance.Scene;
@@ -405,20 +383,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // Always use the same random number source
             Random random = new Random(1527918523);
-
+            
             // Create lights
             for (int i = 0; i < amount; i++)
             {
                 var lightType = new LightPoint();
                 lightType.Shadow.Enabled = true;
-                (lightType.Shadow as LightPointShadowMap).Type = LightPointShadowMapType.Cubemap;
-                lightType.Shadow.BiasParameters.DepthBias = 0.07f;
-                lightType.Shadow.Size = LightShadowMapSize.Medium;
-                //lightType.Shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = LightShadowMapFilterTypePcfSize.Filter7x7 };
+                (lightType.Shadow as LightPointShadowMap).Type = shadowMapType;
+                lightType.Shadow.BiasParameters.DepthBias = shadowMapBias;
+                lightType.Shadow.Size = shadowMapSize;
+                SetFilterType(lightType, shadowMapFilter);
                 Color4 color = new ColorHSV((float)random.NextDouble()*360.0f, 1.0f, 1.0f, 1.0f).ToColor();
                 lightType.Color = new ColorRgbProvider(new Color3(color.R, color.G, color.B));
-                //lightType.Color = new ColorRgbProvider(Color.White);
-                lightType.Radius = PlaneSize*1.5f;
+                lightType.Radius = HalfPlaneSize;
 
                 var lightComponent = new LightComponent { Type = lightType, Intensity = 60.0f/amount };
                 pointLights.Add(lightComponent);
@@ -444,24 +421,24 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             if (adjustFilter != 0)
             {
+                shadowMapFilter = MathUtil.Clamp(shadowMapFilter + adjustFilter, 0, 3);
                 foreach (var lc in pointLights)
                 {
                     var point = lc.Type as LightPoint;
-                    var shadow = point.Shadow as LightPointShadowMap;
-                    int current = 0;
-                    var pcf = shadow.Filter as LightShadowMapFilterTypePcf;
-                    if (pcf != null)
-                        current = 1 + (int)pcf.FilterSize;
-
-                    current = MathUtil.Clamp(current + adjustFilter, 0, 3);
-
-                    if (current == 0)
-                        shadow.Filter = null;
-                    else
-                    {
-                        shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = (LightShadowMapFilterTypePcfSize)(current - 1) };
-                    }
+                    SetFilterType(point, shadowMapFilter);
                 }
+            }
+        }
+
+        void SetFilterType(LightPoint point, int type)
+        {
+            var shadow = point.Shadow as LightPointShadowMap;
+
+            if (type == 0)
+                shadow.Filter = null;
+            else
+            {
+                shadow.Filter = new LightShadowMapFilterTypePcf { FilterSize = (LightShadowMapFilterTypePcfSize)(type - 1) };
             }
         }
 
@@ -524,12 +501,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             for (int i = 0; i < pointLights.Count; i++)
             {
                 float phase = (i*-0.2f) + (float)(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)*(1.0f - i*0.3f);
-                float distMult = (float)Math.Cos(phase*0.25f)*0.5f + 1.5f;
+                float distMult = (float)(Math.Cos(phase*0.25f)*0.5f + 1.0f) * 0.2f + 0.8f;
                 float lightX = (float)Math.Cos(phase)*lightDistance*distMult;
                 float lightZ = (float)Math.Sin(phase)*lightDistance*distMult;
                 float lightY = (float)-Math.Sin(phase*0.5f)*lightDistance*distMult + HalfPlaneSize;
                 pointLights[i].Entity.Transform.Position = new Vector3(lightX, lightY, lightZ);
-                //lightEntity1.Transform.Position = new Vector3(lightX, HalfPlaneSize, lightZ);
             }
         }
 
