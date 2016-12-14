@@ -114,17 +114,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 Intensity = 0.25f,
                 Type = new LightSkybox(),
             });
-
-            // Switch editor settings to HDR mode
-            var hdrSettings = new SceneEditorGraphicsModeHDRSettings();
-            hdrSettings.PostProcessingEffects.DisableAll();
-
-            // enable only the tonemap
-            hdrSettings.PostProcessingEffects.ColorTransforms.Enabled = true;
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new ToneMap());
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new FilmGrain { Enabled = false });
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new Vignetting { Enabled = false });
-            sceneAsset.SceneSettings.EditorSettings.Mode = hdrSettings;
             
             return sceneAsset;
         }

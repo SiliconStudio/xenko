@@ -24,22 +24,11 @@ namespace SiliconStudio.Xenko.Engine
         public SceneSettings()
         {
             Id = Guid.NewGuid();
-            EditorSettings = new SceneEditorSettings();
         }
 
         [DataMember(10)]
         [Display(Browsable = false)]
         [NonOverridable]
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the editor settings.
-        /// </summary>
-        /// <value>The editor settings.</value>
-        /// <userdoc>Settings for the scene editor</userdoc>
-        [DataMember(30)]
-        [Display("Editor Settings", Expand = ExpandRule.Always)]
-        [Category]
-        public SceneEditorSettings EditorSettings { get; set; }
     }
 }

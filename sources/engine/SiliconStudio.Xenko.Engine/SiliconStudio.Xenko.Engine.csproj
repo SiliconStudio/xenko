@@ -2513,7 +2513,6 @@
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />
-    <Compile Include="Engine\Design\SceneEditorSettings.cs" />
     <Compile Include="Engine\Processors\ScriptProcessor.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />
