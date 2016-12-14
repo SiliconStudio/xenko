@@ -564,7 +564,6 @@
     <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
-    <Compile Include="Engine\SceneSettings.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\SkyboxComponent.cs" />

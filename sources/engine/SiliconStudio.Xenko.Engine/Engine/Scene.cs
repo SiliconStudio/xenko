@@ -14,24 +14,6 @@ namespace SiliconStudio.Xenko.Engine
     [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
     public sealed class Scene : PrefabBase
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Scene"/> class.
-        /// </summary>
-        public Scene() : this(new SceneSettings())
-        {
-        }
-
-        public Scene(SceneSettings settings)
-        {
-            Settings = settings;
-        }
-
-        /// <summary>
-        /// Gets the settings of this scene.
-        /// </summary>
-        /// <value>The settings.</value>
-        public SceneSettings Settings { get; }
-
         public override string ToString()
         {
             return $"Scene {Name}";
