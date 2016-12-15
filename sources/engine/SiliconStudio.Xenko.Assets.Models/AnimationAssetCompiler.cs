@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     animationOperations.Clear();
                     animationOperations.Add(AnimationOperation.NewPush(sourceEvaluator, time));
                     animationOperations.Add(AnimationOperation.NewPush(baseEvaluator, baseTime));
-                    animationOperations.Add(AnimationOperation.NewBlend(AnimationBlendOperation.Subtract, 1.0f));
+                    animationOperations.Add(AnimationOperation.NewBlend(CoreAnimationOperation.Subtract, 1.0f));
                     animationOperations.Add(AnimationOperation.NewPop(resultEvaluator, time));
                     
                     // Compute

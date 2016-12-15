@@ -70,6 +70,10 @@ System::String^ ConvertToUTF8(std::string str)
 	auto byteCount = str.length();
 	// Check `str' cannot be more than the size of a int.
 	assert(byteCount <= INT32_MAX);
+	if (byteCount <= 0)
+	{
+		return "";
+	}
 	array<Byte>^ bytes = gcnew array<Byte>((int) byteCount);
 	pin_ptr<Byte> p = &bytes[0];
 	memcpy(p, str.c_str(), byteCount);

@@ -318,7 +318,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                                     {
                                         if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.NormalMap)
                                         {
-                                            outputFormat = PixelFormat.BC5_SNorm;
+                                            outputFormat = PixelFormat.BC5_UNorm;
                                         }
                                         else if (parameters.GraphicsPlatform != GraphicsPlatform.OpenGL && hint == TextureHint.Grayscale)
                                         {

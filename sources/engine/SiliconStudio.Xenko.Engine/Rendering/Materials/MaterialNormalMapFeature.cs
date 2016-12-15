@@ -54,15 +54,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public IComputeColor NormalMap { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to scale by (2,2) and bias by (-1,-1) the normal map.
+        /// Gets or sets a value indicating whether to scale by (2,2) and offset by (-1,-1) the normal map.
         /// </summary>
-        /// <value><c>true</c> if scale and bias this normal map; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if scale and offset this normal map; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// Scale the XY by (2,2) and bias by (-1,-1). Required to unpack unsigned values of [0..1] to signed coordinates of [-1..+1].
+        /// Scale the XY by (2,2) and offset by (-1,-1). Required to unpack unsigned values of [0..1] to signed coordinates of [-1..+1].
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]
-        [Display("Scale & Bias")]
+        [Display("Scale & Offset")]
         public bool ScaleAndBias { get; set; }
 
         /// <summary>
@@ -74,14 +74,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
-        [Display("Polar Z")]
+        [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
         /// <summary>
-        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent-space.
+        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space.
         /// </summary>
         /// <userdoc>
-        /// Indicates that a positive Y-component (green) faces up in tangent space. This options depends on your normal maps generation tools.
+        /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent space. This options depends on your normal maps generation tools.
         /// </userdoc>
         [DataMember(40)]
         [DefaultValue(true)]

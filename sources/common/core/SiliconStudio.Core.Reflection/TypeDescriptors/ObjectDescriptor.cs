@@ -224,11 +224,16 @@ namespace SiliconStudio.Core.Reflection
 
             // Start with DataContractAttribute.DefaultMemberMode (if set)
             member.Mode = DefaultMemberMode;
+            member.Mask = 1;
+
 
             // Gets the style
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
-            member.Style = styleAttribute?.Style ?? DataStyle.Any;
-            member.Mask = 1;
+            if (styleAttribute != null)
+            {
+                member.Style = styleAttribute.Style;
+                member.ScalarStyle = styleAttribute.ScalarStyle;
+            }
 
             // Handle member attribute
             var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
