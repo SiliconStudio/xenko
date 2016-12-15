@@ -89,10 +89,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <summary>
         /// Gets or sets the current time.
         /// </summary>
-        /// <userdoc>
-        /// The current time when playing the animation.
-        /// </userdoc>
-        [DataMember(60)]
+        [DataMemberIgnore]
         public TimeSpan CurrentTime { get; set; }
 
         /// <summary>
@@ -118,8 +115,17 @@ namespace SiliconStudio.Xenko.Animations
         // Animation (not exposed until stabilized)
         [DataMemberIgnore]
         public float WeightTarget { get; set; }
+
         [DataMemberIgnore]
-        public TimeSpan RemainingTime { get; set; }
+        [Obsolete("Use CrossfadeRemainingTime instead")]
+        public TimeSpan RemainingTime { get { return CrossfadeRemainingTime; } set { CrossfadeRemainingTime = value; } }
+
+        /// <summary>
+        /// If the <see cref="CrossfadeRemainingTime"/> is positive the blend weight will shift towards the target weight, reaching it at CrossfadeRemainingTime == 0
+        /// At that point if the blend weight reaches 0, the animation will be deleted from the list
+        /// </summary>
+        [DataMemberIgnore]
+        public TimeSpan CrossfadeRemainingTime { get; set; }
 
         /// <summary>
         /// Returns an awaitable object that will be completed when the animation is removed from the PlayingAnimation list.
