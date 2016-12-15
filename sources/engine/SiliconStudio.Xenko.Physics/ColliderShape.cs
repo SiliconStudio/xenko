@@ -89,7 +89,8 @@ namespace SiliconStudio.Xenko.Physics
                 var oldScale = CachedScaling;
 
                 CachedScaling = value;
-                if (Is2D) CachedScaling.Z = 0.0f;
+                if (Is2D && Type == ColliderShapeTypes.Box) CachedScaling.Z = 0.001f;
+                else CachedScaling.Z = 0.0f;
 
                 if (Parent == null)
                 {
