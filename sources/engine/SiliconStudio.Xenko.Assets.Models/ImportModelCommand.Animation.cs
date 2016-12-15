@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public partial class ImportModelCommand
     {
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
+        public AnimationClipBlendMode BlendMode { get; set; }
         public bool AnimationRootMotion { get; set; }
 
         private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
@@ -236,6 +237,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 // Optimize and set common parameters
                 animationClip.RepeatMode = AnimationRepeatMode;
+                animationClip.BlendMode = BlendMode;
                 animationClip.Optimize();
             }
             return animationClip;

@@ -38,6 +38,11 @@ namespace SiliconStudio.Xenko.Animations
         public AnimationRepeatMode RepeatMode { get; set; }
 
         /// <summary>
+        /// Gets or sets the blend mode of the <see cref="AnimationClipBlendMode"/>.
+        /// </summary>
+        public AnimationClipBlendMode BlendMode { get; set; }
+
+        /// <summary>
         /// Gets the channels of this clip.
         /// </summary>
         /// <value>

@@ -4,6 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.Animations;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public abstract class AnimationAssetType
     {
         [DataMemberIgnore]
-        public abstract AnimationAssetTypeEnum Type { get; }
+        public abstract AnimationClipBlendMode BlendMode { get; }
     }
 
     [Display("Animation Clip")]
@@ -21,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public class StandardAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
-        public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.AnimationClip;
+        public override AnimationClipBlendMode BlendMode => AnimationClipBlendMode.LinearBlend;
     }
 
     [Display("Difference Clip")]
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public class DifferenceAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
-        public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.DifferenceClip;
+        public override AnimationClipBlendMode BlendMode => AnimationClipBlendMode.Additive;
 
         /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
@@ -47,25 +48,5 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
-    }
-
-    /// <summary>
-    /// Type which describes the nature of the animation clip we want to use.
-    /// The terms are borrowed from the book Game Engine Architecture, Chapter 11.6.5 Additive Blending
-    /// </summary>
-    [DataContract]
-    public enum AnimationAssetTypeEnum
-    {
-        /// <summary>
-        /// Standard animation clip which animates the character
-        /// </summary>
-        [Display("Animation Clip")]
-        AnimationClip = 1,
-
-        /// <summary>
-        /// Difference animation clip which is added on top of another pose
-        /// </summary>
-        [Display("Difference Clip")]
-        DifferenceClip = 2,
     }
 }

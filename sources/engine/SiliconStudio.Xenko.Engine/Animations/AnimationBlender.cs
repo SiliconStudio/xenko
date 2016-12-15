@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Animations
             }
         }
 
-        public static unsafe void Blend(CoreAnimationOperation blendOperation, float blendFactor, AnimationClipResult sourceLeft, AnimationClipResult sourceRight, AnimationClipResult result)
+        public static unsafe void Blend(AnimationBlendOperation blendOperation, float blendFactor, AnimationClipResult sourceLeft, AnimationClipResult sourceRight, AnimationClipResult result)
         {
             fixed (byte* sourceLeftDataStart = sourceLeft.Data)
             fixed (byte* sourceRightDataStart = sourceRight.Data)
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Animations
 
                     switch (blendOperation)
                     {
-                        case CoreAnimationOperation.Blend:
+                        case AnimationBlendOperation.LinearBlend:
                             // Perform linear blending
                             // It will blend between left (0.0) and right (1.0)
                             switch (channel.BlendType)
@@ -216,7 +216,7 @@ namespace SiliconStudio.Xenko.Animations
                                     throw new ArgumentOutOfRangeException();
                             }
                             break;
-                        case CoreAnimationOperation.Add:
+                        case AnimationBlendOperation.Add:
                             // Perform additive blending
                             // It will blend between left (0.0) and left + right (1.0).
                             switch (channel.BlendType)
@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Animations
                                     throw new ArgumentOutOfRangeException();
                             }
                             break;
-                        case CoreAnimationOperation.Subtract:
+                        case AnimationBlendOperation.Subtract:
                             // Perform subtractive blending
                             // It will blend between left (0.0) and left - right (1.0).
                             switch (channel.BlendType)

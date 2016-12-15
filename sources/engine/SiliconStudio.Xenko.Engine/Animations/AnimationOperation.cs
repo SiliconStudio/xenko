@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Animations
         public AnimationOperationType Type;
 
         // Blend parameters
-        public CoreAnimationOperation CoreBlendOperation;
+        public AnimationBlendOperation CoreBlendOperation;
         public float BlendFactor;
 
         // Push parameters
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <param name="operation">The blend operation.</param>
         /// <param name="blendFactor">The blend factor.</param>
         /// <returns></returns>
-        public static AnimationOperation NewBlend(CoreAnimationOperation operation, float blendFactor)
+        public static AnimationOperation NewBlend(AnimationBlendOperation operation, float blendFactor)
         {
             return new AnimationOperation { Type = AnimationOperationType.Blend, CoreBlendOperation = operation, BlendFactor = blendFactor };
         }

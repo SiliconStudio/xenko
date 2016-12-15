@@ -84,8 +84,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="name">The animation name.</param>
         public PlayingAnimation Play(string name)
         {
+            if (!Animations.ContainsKey(name))
+                throw new ArgumentException(nameof(name));
+
             PlayingAnimations.Clear();
-            var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
+            var playingAnimation = new PlayingAnimation(Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
             PlayingAnimations.Add(playingAnimation);
             return playingAnimation;
         }
@@ -122,9 +125,9 @@ namespace SiliconStudio.Xenko.Engine
         public PlayingAnimation Blend(string name, float desiredWeight, TimeSpan fadeTimeSpan)
         {
             if (!Animations.ContainsKey(name))
-                throw new ArgumentException("name");
+                throw new ArgumentException(nameof(name));
 
-            var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 0.0f };
+            var playingAnimation = new PlayingAnimation(Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 0.0f };
             PlayingAnimations.Add(playingAnimation);
 
             if (fadeTimeSpan > TimeSpan.Zero)
@@ -142,7 +145,10 @@ namespace SiliconStudio.Xenko.Engine
 
         public PlayingAnimation NewPlayingAnimation(string name)
         {
-            return new PlayingAnimation(name, Animations[name]);
+            if (!Animations.ContainsKey(name))
+                throw new ArgumentException(nameof(name));
+
+            return new PlayingAnimation(Animations[name]);
         }
 
         /// <summary>

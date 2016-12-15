@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = targetUrlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
+            sourceBuildStep.BlendMode = asset.Type.BlendMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.PivotPosition = asset.PivotPosition;
@@ -70,6 +71,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 baseBuildStep.SourcePath = baseAssetSource;
                 baseBuildStep.Location = baseUrlInStorage;
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
+                baseBuildStep.BlendMode = asset.Type.BlendMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
@@ -87,12 +89,12 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
             else
             {
-                if (asset.Type.Type == AnimationAssetTypeEnum.AnimationClip)
+                if (asset.Type.BlendMode == AnimationClipBlendMode.LinearBlend)
                 {
                     // Import the main animation
                     buildStep.Add(sourceBuildStep);
                 }
-                else if (asset.Type.Type == AnimationAssetTypeEnum.DifferenceClip)
+                else if (asset.Type.BlendMode == AnimationClipBlendMode.Additive)
                 {
                     var diffAnimationAsset = ((DifferenceAnimationAssetType)asset.Type);
                     var referenceClip = diffAnimationAsset.BaseSource;
@@ -117,6 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     baseBuildStep.SourcePath = baseAssetSource;
                     baseBuildStep.Location = baseUrlInStorage;
                     baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
+                    baseBuildStep.BlendMode = asset.Type.BlendMode;
                     baseBuildStep.AnimationRootMotion = asset.RootMotion;
                     baseBuildStep.ScaleImport = asset.ScaleImport;
                     baseBuildStep.PivotPosition = asset.PivotPosition;
@@ -222,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     animationOperations.Clear();
                     animationOperations.Add(AnimationOperation.NewPush(sourceEvaluator, time));
                     animationOperations.Add(AnimationOperation.NewPush(baseEvaluator, baseTime));
-                    animationOperations.Add(AnimationOperation.NewBlend(CoreAnimationOperation.Subtract, 1.0f));
+                    animationOperations.Add(AnimationOperation.NewBlend(AnimationBlendOperation.Subtract, 1.0f));
                     animationOperations.Add(AnimationOperation.NewPop(resultEvaluator, time));
                     
                     // Compute
@@ -232,6 +235,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 resultAnimation.Duration = sourceAnimation.Duration;
                 resultAnimation.RepeatMode = sourceAnimation.RepeatMode;
+                resultAnimation.BlendMode = AnimationClipBlendMode.Additive;
 
                 return resultAnimation;
             }
