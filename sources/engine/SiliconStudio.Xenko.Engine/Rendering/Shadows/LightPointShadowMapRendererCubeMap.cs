@@ -162,13 +162,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             Vector2 atlasSize = new Vector2(lightShadowMap.Atlas.Width, lightShadowMap.Atlas.Height);
 
-            Rectangle frontRectangle = lightShadowMap.GetRectangle(0);
-
             int borderPixels2 = BorderPixels*2;
-
-            // Coordinates have 1 border pixel so that the shadow receivers don't accidentally sample outside of the texture area
-            shaderData.FaceSize = new Vector2(frontRectangle.Width - borderPixels2, frontRectangle.Height - borderPixels2)/atlasSize;
-
+            
             for (int i = 0; i < 6; i++)
             {
                 Rectangle faceRectangle = lightShadowMap.GetRectangle(i);
@@ -179,7 +174,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             var clippingPlanes = GetLightClippingPlanes((LightPoint)lightShadowMap.Light);
-            shaderData.LightDepthParameters = CameraKeys.ZProjectionACalculate(clippingPlanes.X, clippingPlanes.Y);
+            shaderData.DepthParameters = CameraKeys.ZProjectionACalculate(clippingPlanes.X, clippingPlanes.Y);
         }
 
         private class ShaderData : ILightShadowMapShaderData
@@ -192,14 +187,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public readonly Vector2[] FaceOffsets = new Vector2[6];
 
             /// <summary>
-            /// Size of a single face of the shadow map
-            /// </summary>
-            public Vector2 FaceSize;
-
-            /// <summary>
             /// Calculated by <see cref="CameraKeys.ZProjectionACalculate"/> to reconstruct linear depth from the depth buffer
             /// </summary>
-            public Vector2 LightDepthParameters;
+            public Vector2 DepthParameters;
 
             /// <summary>
             /// Position of the light
@@ -339,7 +329,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         lightPosition[lightIndex] = new Vector4(shaderData.Position, 1);
                         depthBiases[lightIndex] = shaderData.DepthBias;
                         directionOffset[lightIndex] = shaderData.DirectionOffset;
-                        depthParameters[lightIndex] = shaderData.LightDepthParameters;
+                        depthParameters[lightIndex] = shaderData.DepthParameters;
                         lightIndex++;
 
                         // TODO: should be setup just once at creation time

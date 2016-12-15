@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public static partial class ShadowMapCasterDpProjectionKeys
     {
-        public static readonly ValueParameterKey<Vector2> LightDepthParameters = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
     }
 }

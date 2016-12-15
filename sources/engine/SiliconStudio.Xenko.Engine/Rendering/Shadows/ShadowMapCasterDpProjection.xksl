@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         cbuffer PerView.ShadowCaster
         {
             // x = Near; y = 1/(Far-Near)
-            float2 LightDepthParameters;
+            float2 DepthParameters;
         }
 
         // Used to write the distance from an object to the light to the depth buffer
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // 2 different depth values
             // The first one is the depth written to the depth buffer
             // The second one is used for clipping
-            float2 depthValues = float2(z, lightSpace.z + ClippingEpsilon) * LightDepthParameters.y;
+            float2 depthValues = float2(z, lightSpace.z + ClippingEpsilon) * DepthParameters.y;
 
             // Send projected depth to pixel shader
             // TODO: Add camera distance

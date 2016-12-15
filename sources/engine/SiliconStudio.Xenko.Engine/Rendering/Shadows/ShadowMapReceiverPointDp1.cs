@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     internal static partial class ShadowMapReceiverPointDpKeys
     {
-        public static readonly ValueParameterKey<Vector2> LightFaceOffset = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<Vector2> LightBackfaceOffset = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<Vector2> LightFaceSize = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<Vector2> LightDepthParameters = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> FaceOffset = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> BackfaceOffset = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> FaceSize = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
     }
 }
