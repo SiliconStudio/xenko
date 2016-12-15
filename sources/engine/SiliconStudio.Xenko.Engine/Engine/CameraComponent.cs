@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("CameraComponent")]
     [Display("Camera", Expand = ExpandRule.Once)]
     //[DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
+    [DefaultEntityComponentProcessor(typeof(CameraProcessor))]
     [ComponentOrder(13000)]
     public sealed class CameraComponent : ActivableEntityComponent
     {
@@ -53,6 +54,9 @@ namespace SiliconStudio.Xenko.Engine
             NearClipPlane = nearClipPlane;
             FarClipPlane = farClipPlane;
         }
+
+        [DataMember(-5)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the projection.

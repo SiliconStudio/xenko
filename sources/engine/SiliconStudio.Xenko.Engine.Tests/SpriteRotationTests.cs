@@ -69,8 +69,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 var center = CreateSpriteEntity(rotationSheet, "Round");
                 center.Transform.Position = new Vector3(rotatedSprite.Transform.Position.XY(), 1);
 
-                SceneSystem.SceneInstance.Scene.Entities.Add(rotatedSprite);
-                SceneSystem.SceneInstance.Scene.Entities.Add(center);
+                SceneSystem.SceneInstance.RootScene.Entities.Add(rotatedSprite);
+                SceneSystem.SceneInstance.RootScene.Entities.Add(center);
             }
 
             CameraComponent.UseCustomProjectionMatrix = true;

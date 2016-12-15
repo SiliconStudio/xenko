@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Rendering
 {

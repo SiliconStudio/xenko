@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // add all the entities to the scene
             foreach (var entity in entities)
-                SceneSystem.SceneInstance.Scene.Entities.Add(entity);
+                SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
 
             CameraComponent.UseCustomProjectionMatrix = true;
             CameraComponent.ProjectionMatrix = Matrix.OrthoOffCenterRH(0, ScreenWidth, 0, ScreenHeight, -10, 10);

@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 }
             };
 
-            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            Scene = new Scene();
             Scene.Entities.Add(Camera);
 
             AmbientLight = new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 };
@@ -86,6 +86,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Scene.Entities.Add(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+            SceneSystem.GraphicsCompositor = graphicsCompositor;
         }
 
         protected virtual void PreCameraRendererDraw(RenderDrawContext context, RenderFrame frame)

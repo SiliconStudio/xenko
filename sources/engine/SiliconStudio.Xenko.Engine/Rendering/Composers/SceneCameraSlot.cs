@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMember(10)]
         public string Name { get; set; }
 
-        [DataMember(20)]
+        [DataMemberIgnore]
         public CameraComponent Camera { get; set; }
 
         public override string ToString()

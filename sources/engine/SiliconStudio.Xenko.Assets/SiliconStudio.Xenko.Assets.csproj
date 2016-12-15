@@ -323,6 +323,7 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
@@ -365,7 +366,6 @@
     <Compile Include="Scripts\BlockReference.cs" />
     <Compile Include="Scripts\ConditionalBranchBlock.cs" />
     <Compile Include="Scripts\CustomCodeBlock.cs" />
-    <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Scripts\Link.cs" />
     <Compile Include="Scripts\MethodCallBlock.cs" />
     <Compile Include="Scripts\Slot.cs" />

@@ -1,15 +1,19 @@
+﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Xenko.Rendering
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     [DataSerializerGlobal(typeof(ReferenceSerializer<GraphicsCompositor>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]
     [DataContract]
     public class GraphicsCompositor
     {
+        [Obsolete]
+        public ISceneGraphicsCompositor Instance { get; set; }
+
         /// <summary>
         /// The list of render stages.
         /// </summary>

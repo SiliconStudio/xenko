@@ -51,25 +51,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(IdentifiableComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "2.0.0-alpha01", typeof(RemoveSceneSettingsUpgrader))]
     [Display(2000, "Scene")]
-    // TODO GFXCOMP: We temporarily expand IGraphicsCompositorSharedPart while Graphics Compositor is being migrated
-    [AssetPartReference(typeof(SceneSettings), typeof(IGraphicsCompositorSharedPart))]
-    [AssetPartReference(typeof(IGraphicsCompositorSharedPart), typeof(IGraphicsCompositorSharedPart))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta05";
+        private const string CurrentVersion = "2.0.0-alpha01";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
-        public SceneAsset()
-        {
-            SceneSettings = new SceneSettings();
-        }
-
         /// <summary>
-        /// Gets the scene settings for this instance.
+        /// The parent scene.
         /// </summary>
         [DataMember(10)]
-        public SceneSettings SceneSettings { get; private set; }
+        public Scene Parent { get; set; }
     }
 }

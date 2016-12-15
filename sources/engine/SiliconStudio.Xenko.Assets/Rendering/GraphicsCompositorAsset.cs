@@ -14,11 +14,13 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Assets.Scripts;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Assets.Rendering
 {
     [DataContract("GraphicsCompositorAsset")]
     [Display(82, "Graphics Compositor")]
+    [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
     [AssetPartReference(typeof(RenderStage))]
     // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,

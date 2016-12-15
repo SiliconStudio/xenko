@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Rendering
 {

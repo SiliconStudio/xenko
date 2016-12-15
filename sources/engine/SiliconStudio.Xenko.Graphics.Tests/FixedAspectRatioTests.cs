@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 }
             };
 
-            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            Scene = new Scene();
 
             Texture png;
             using (var pngStream = ContentManager.FileProvider.OpenStream("PngImage", VirtualFileMode.Open, VirtualFileAccess.Read))
@@ -48,6 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             Scene.Entities.Add(plane);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+            SceneSystem.GraphicsCompositor = graphicsCompositor;
         }
 
         [Test]

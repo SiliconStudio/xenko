@@ -180,6 +180,7 @@
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
+    <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\Pipeline.cs" />
     <Compile Include="Rendering\Composers\PipelineCollection.cs" />
     <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
@@ -219,8 +220,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\GraphicsCompositor.cs" />
-    <Compile Include="Rendering\GraphicsCompositorPart.cs" />
+    <Compile Include="Rendering\Composers\GraphicsCompositorPart.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
@@ -569,7 +569,6 @@
     <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
-    <Compile Include="Engine\SceneSettings.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
     <Compile Include="Engine\ScriptComponent.cs" />
     <Compile Include="Engine\SkyboxComponent.cs" />
@@ -2518,7 +2517,6 @@
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />
-    <Compile Include="Engine\Design\SceneEditorSettings.cs" />
     <Compile Include="Engine\Processors\ScriptProcessor.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />

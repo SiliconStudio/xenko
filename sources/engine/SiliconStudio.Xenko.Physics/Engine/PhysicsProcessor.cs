@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
                 var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
 
                 foreach (var element in elements)
@@ -59,13 +59,13 @@ namespace SiliconStudio.Xenko.Physics
                     element.RemoveDebugEntity(scene);
                 }
 
-                sceneSystem.SceneInstance.Scene.Entities.Remove(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
                 mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
                 //we create a child scene to render the shapes, so that they are totally separated from the normal scene
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
 
                 var graphicsCompositor = new SceneGraphicsCompositorLayers
                 {
@@ -79,14 +79,14 @@ namespace SiliconStudio.Xenko.Physics
                     }
                 };
 
-                debugScene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+                debugScene = new Scene();
 
                 var childComponent = new ChildSceneComponent { Scene = debugScene };
                 debugEntityScene = new Entity { childComponent };
-                debugSceneRenderer = new SceneChildRenderer(childComponent);
+                debugSceneRenderer = new SceneChildRenderer(childComponent) { GraphicsCompositorOverride = graphicsCompositor };
 
                 mainCompositor.Master.Add(debugSceneRenderer);
-                sceneSystem.SceneInstance.Scene.Entities.Add(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);
 
                 foreach (var element in elements)
                 {

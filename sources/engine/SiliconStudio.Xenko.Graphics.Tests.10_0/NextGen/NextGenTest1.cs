@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                 }
             };
 
-            Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            Scene = new Scene();
             Scene.Entities.Add(Camera);
 
             //var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
@@ -173,6 +173,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
+            SceneSystem.GraphicsCompositor = graphicsCompositor;
 
             camera = new TestCamera();
             CameraComponent = camera.Camera;

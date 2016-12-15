@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 scene = value;
                 if (SceneInstance != null)
-                    SceneInstance.Scene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
+                    SceneInstance.RootScene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
             }
         }
     }

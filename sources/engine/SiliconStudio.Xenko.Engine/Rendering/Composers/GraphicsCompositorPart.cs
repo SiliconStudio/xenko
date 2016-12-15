@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Rendering
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     public interface IGraphicsCompositorPart : IIdentifiable
     {
