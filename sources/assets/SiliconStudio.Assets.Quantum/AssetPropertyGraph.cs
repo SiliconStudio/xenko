@@ -105,9 +105,14 @@ namespace SiliconStudio.Assets.Quantum
 
         public void ReconcileWithBase()
         {
+            ReconcileWithBase(RootNode);
+        }
+
+        public void ReconcileWithBase(AssetNode rootNode)
+        {
             var visitor = CreateReconcilierVisitor();
             visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
-            visitor.Visit(RootNode);
+            visitor.Visit(rootNode);
         }
 
         // TODO: turn protected
@@ -120,7 +125,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
-        protected virtual GraphVisitorBase CreateReconcilierVisitor()
+        public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
             return new GraphVisitorBase();
         }
@@ -185,8 +190,13 @@ namespace SiliconStudio.Assets.Quantum
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
 
-        // TODO: turn protected
-        protected virtual object CloneValueFromBase(object value, AssetNode node)
+        // TODO: this method is should be called in every scenario of ReconcileWithBase, it is not the case yet.
+        protected virtual bool CanUpdate(AssetNode node, ContentChangeType changeType, Index index, object value)
+        {
+            return true;
+        }
+
+        protected internal virtual object CloneValueFromBase(object value, AssetNode node)
         {
             return AssetNode.CloneFromBase(value);
         }
@@ -194,7 +204,6 @@ namespace SiliconStudio.Assets.Quantum
         private void LinkBaseNode(IGraphNode currentNode, IGraphNode baseNode)
         {
             var assetNode = (AssetNode)currentNode;
-            assetNode.Cloner = x => CloneValueFromBase(x, assetNode);
             assetNode.PropertyGraph = this;
             assetNode.SetBase(baseNode?.Content);
             if (!baseLinkedNodes.ContainsKey(assetNode))
@@ -321,7 +330,7 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     if (localValue == null && baseValue != null)
                     {
-                        var clonedValue = assetNode.Cloner(baseValue);
+                        var clonedValue = CloneValueFromBase(baseValue, assetNode);
                         assetNode.Content.Update(clonedValue);
                     }
                     else if (localValue != null /*&& baseValue == null*/)
@@ -383,10 +392,14 @@ namespace SiliconStudio.Assets.Quantum
                         Index localIndex;
                         if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
-                            // We have an item in the base that is missing in the instance (not even marked as "override-deleted")
-                            if (assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x))))
+                            // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
+                            var keyCollision = assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x)));
+                            // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
+                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Content.Retrieve(index));
+
+                            // We cannot add the item, let's mark it as deleted.
+                            if (keyCollision || itemRejected)
                             {
-                                // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
                                 var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
                                 instanceIds.MarkAsDeleted(itemId);
                             }
@@ -408,7 +421,7 @@ namespace SiliconStudio.Assets.Quantum
                                 var baseItemValue = baseNode.Content.Retrieve(index);
                                 if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
                                 {
-                                    var clonedValue = assetNode.Cloner(baseItemValue);
+                                    var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
                                     assetNode.Content.Update(clonedValue, localIndex);
                                 }
                             }
@@ -418,7 +431,7 @@ namespace SiliconStudio.Assets.Quantum
                                 if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
                                 {
                                     // Reconcile using a move (Remove + Add) of the key-value pair
-                                    var clonedIndex = new Index(assetNode.Cloner(index.Value));
+                                    var clonedIndex = new Index(CloneValueFromBase(index.Value, assetNode));
                                     var localItemValue = assetNode.Content.Retrieve(localIndex);
                                     assetNode.Content.Remove(localItemValue, localIndex);
                                     assetNode.Content.Add(localItemValue, clonedIndex);
@@ -443,7 +456,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         var baseIndex = baseNode.IdToIndex(item.Value);
                         var baseItemValue = baseNode.Content.Retrieve(baseIndex);
-                        var clonedValue = assetNode.Cloner(baseItemValue);
+                        var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
                         if (assetNode.Content.Descriptor is CollectionDescriptor)
                         {
                             // In a collection, we need to find an index that matches the index on the base to maintain order.
@@ -452,7 +465,7 @@ namespace SiliconStudio.Assets.Quantum
 
                             // Initialize the target index to zero, in case we don't find any better index.
                             var localIndex = new Index(0);
-                            
+
                             // Find the first item of the base that also exists (in term of id) in the local node, iterating backward (from baseIndex to 0)
                             while (currentBaseIndex >= 0)
                             {
@@ -471,7 +484,7 @@ namespace SiliconStudio.Assets.Quantum
                                 currentBaseIndex--;
                             }
 
-                            assetNode.Restore(clonedValue, localIndex, item.Value);
+                                assetNode.Restore(clonedValue, localIndex, item.Value);
                         }
                         else
                         {
@@ -487,7 +500,7 @@ namespace SiliconStudio.Assets.Quantum
                     var targetNode = assetNode.Content.Reference?.AsObject?.TargetNode;
                     if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Content.Reference is ObjectReference))
                     {
-                        var clonedValue = assetNode.Cloner(baseValue);
+                        var clonedValue = CloneValueFromBase(baseValue, assetNode);
                         assetNode.Content.Update(clonedValue);
                     }
                 }

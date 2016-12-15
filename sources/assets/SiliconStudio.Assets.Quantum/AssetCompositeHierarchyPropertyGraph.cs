@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum
             return base.FindTarget(sourceNode, target);
         }
 
-        protected override object CloneValueFromBase(object value, AssetNode node)
+        protected internal override object CloneValueFromBase(object value, AssetNode node)
         {
             var part = value as TAssetPart;
             // Part reference
@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Quantum
             return result;
         }
 
-        protected override GraphVisitorBase CreateReconcilierVisitor()
+        public override GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }

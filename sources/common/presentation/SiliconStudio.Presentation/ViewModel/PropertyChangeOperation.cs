@@ -56,6 +56,12 @@ namespace SiliconStudio.Presentation.ViewModel
             // Nothing to do: we keep our current previousValue and we do not store the newValue.
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{{{nameof(PropertyChangeOperation)}: {ContainerType.Name}.{PropertyName}}}";
+        }
+
         /// <inheritdoc/>
         protected override void FreezeContent()
         {
