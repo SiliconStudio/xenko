@@ -47,7 +47,7 @@
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// Specifies the style of a YAML scalar.
+    /// Specifies the style used for textual serialization of scalars.
     /// </summary>
     public enum ScalarStyle
     {
