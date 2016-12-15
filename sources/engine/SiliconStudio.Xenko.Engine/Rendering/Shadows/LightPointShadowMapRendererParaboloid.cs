@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         public readonly RenderStage ShadowMapRenderStageDp;
 
-        private PoolListStruct<ShadowMapRenderViewParaboloid> shadowRenderViews;
+        private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
         private PoolListStruct<ShaderData> shaderDataPool;
         private PoolListStruct<ShadowMapTexture> shadowMapTextures;
 
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             ShadowMapRenderStageDp = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
 
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
-            shadowRenderViews = new PoolListStruct<ShadowMapRenderViewParaboloid>(16, () => new ShadowMapRenderViewParaboloid { RenderStages = { ShadowMapRenderStageDp } });
+            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowMapRenderStageDp } });
             shadowMapTextures = new PoolListStruct<ShadowMapTexture>(16, () => new ShadowMapTexture());
         }
 
