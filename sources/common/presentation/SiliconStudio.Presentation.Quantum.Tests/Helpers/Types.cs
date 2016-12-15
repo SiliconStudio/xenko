@@ -22,9 +22,9 @@ namespace SiliconStudio.Presentation.Tests.Helpers
                 return rootNode;
             }
 
-            public bool ShouldExpandReference(MemberContent member, ObjectReference reference) => true;
+            public ExpandReferencePolicy ShouldExpandReference(MemberContent member, ObjectReference reference) => ExpandReferencePolicy.Full;
 
-            public bool ShouldConstructMember(MemberContent content) => true;
+            public bool ShouldConstructMember(MemberContent content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
         }
 
         public class SimpleObject

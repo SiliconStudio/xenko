@@ -1,3 +1,4 @@
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // Copyright (c) 2015 SharpYaml - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -43,10 +44,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SiliconStudio.Core.Yaml
+namespace SiliconStudio.Core
 {
     /// <summary>
-    /// Specifies the style of a YAML scalar.
+    /// Specifies the style used for textual serialization of scalars.
     /// </summary>
     public enum ScalarStyle
     {
