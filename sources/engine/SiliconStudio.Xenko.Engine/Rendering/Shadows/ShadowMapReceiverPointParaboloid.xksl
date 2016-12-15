@@ -6,19 +6,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Selects the shadow map and computes the shadow factor.
     /// </summary>
-    internal shader ShadowMapReceiverPointDp<int TLightCount> : ShadowMapReceiverBase<PerDraw.Lighting, 1, TLightCount>
+    internal shader ShadowMapReceiverPointParaboloid<int TLightCount> : ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4, ShaderBaseStream
     {
         cbuffer PerDraw.Lighting
         {
+            float4x4 View[TLightCount];
             float2 FaceOffset[TLightCount];
             float2 BackfaceOffset[TLightCount];
+            float BackfaceMode[TLightCount];
             float2 FaceSize[TLightCount];
+            float DepthBiases[TLightCount];
             float2 DepthParameters[TLightCount];
         };
         
         override void ComputeShadow(int lightIndex)
         {
-            float4 lightSpace = mul(float4(streams.PositionWS.xyz, 1), WorldToShadowCascadeUV[lightIndex]);
+            float4 lightSpace = mul(float4(streams.PositionWS.xyz, 1), View[lightIndex]);
             
             // Store length and normalize
             float z = length(lightSpace.xyz);
@@ -36,13 +39,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Apply offset into atlas and size of a single face in the atlas
             float2 samplePosition = intermediate.xy * FaceSize[lightIndex] + FaceOffset[lightIndex];
 
+            float shadowMultiplier = 1;
+            float3 debugColor = 0;
             [flatten]
             if(lightSpace.z < 0)
             {
                 samplePosition += BackfaceOffset[lightIndex];
+                if(BackfaceMode[lightIndex] == 0)
+                {
+                    debugColor = float3(1,0,1);
+                    // Basically ignore shadow
+                    samplePosition = 0;
+                    shadowMultiplier = 0;
+                }
             }
             
-            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex], float2(0,0));
+            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex], 0) * shadowMultiplier + (1-shadowMultiplier);
         }
     };
 }

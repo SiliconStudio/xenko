@@ -157,12 +157,12 @@ namespace SiliconStudio.Xenko.Rendering
             base.Load(context);
 
             var shadowMapRenderStage = context.RenderSystem.GetRenderStage("ShadowMapCaster");
-            var shadowMapRenderStageDp = context.RenderSystem.GetRenderStage("ShadowMapCasterDp");
+            var shadowMapRenderStageParaboloid = context.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
             var shadowMapRenderStageCubeMap = context.RenderSystem.GetRenderStage("ShadowMapCasterCubeMap");
 
             // Add a list of render stages to ignore to the forward lighting renderer
             var forwardLightingRenderFeature = RenderFeature.RenderFeatures.OfType<ForwardLightingRenderFeature>().First();
-            forwardLightingRenderFeature.StagesToIgnore = new List<RenderStage> {shadowMapRenderStage, shadowMapRenderStageDp, shadowMapRenderStageCubeMap };
+            forwardLightingRenderFeature.StagesToIgnore = new List<RenderStage> {shadowMapRenderStage, shadowMapRenderStageParaboloid, shadowMapRenderStageCubeMap };
 
             RegisterPostProcessPipelineState((RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering
                     pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
                 }
                 // Enable depth clipping on both cubemap and dual paraboloid shadow maps
-                else if (renderNode.RenderStage == shadowMapRenderStageDp || renderNode.RenderStage == shadowMapRenderStageCubeMap)
+                else if (renderNode.RenderStage == shadowMapRenderStageParaboloid || renderNode.RenderStage == shadowMapRenderStageCubeMap)
                 {
                     pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = true };
                 }
@@ -185,14 +185,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             RegisterRenderStageSelector(new ShadowMapRenderStageSelector
             {
-                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCaster",
+                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCasterCubeMap",
                 ShadowMapRenderStage = shadowMapRenderStageCubeMap,
             });
 
             RegisterRenderStageSelector(new ShadowMapRenderStageSelector
             {
-                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCasterDp",
-                ShadowMapRenderStage = shadowMapRenderStageDp,
+                EffectName = MeshPipelinePlugin.DefaultEffectName + ".ShadowMapCasterParaboloid",
+                ShadowMapRenderStage = shadowMapRenderStageParaboloid,
             });
         }
     }

@@ -13,22 +13,22 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
-    /// Renders point light shadows using dual paraboloid shadow maps
+    /// Renders omnidirectional shadow maps using paraboloid shadow maps
     /// </summary>
-    public class LightPointShadowMapRendererDp : LightShadowMapRendererBase
+    public class LightPointShadowMapRendererParaboloid : LightShadowMapRendererBase
     {
         public readonly RenderStage ShadowMapRenderStageDp;
 
-        private PoolListStruct<ShadowMapRenderViewDp> shadowRenderViews;
+        private PoolListStruct<ShadowMapRenderViewParaboloid> shadowRenderViews;
         private PoolListStruct<ShaderData> shaderDataPool;
         private PoolListStruct<ShadowMapTexture> shadowMapTextures;
 
-        public LightPointShadowMapRendererDp(ShadowMapRenderer parent) : base(parent)
+        public LightPointShadowMapRendererParaboloid(ShadowMapRenderer parent) : base(parent)
         {
-            ShadowMapRenderStageDp = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterDp");
+            ShadowMapRenderStageDp = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
 
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
-            shadowRenderViews = new PoolListStruct<ShadowMapRenderViewDp>(16, () => new ShadowMapRenderViewDp { RenderStages = { ShadowMapRenderStageDp } });
+            shadowRenderViews = new PoolListStruct<ShadowMapRenderViewParaboloid>(16, () => new ShadowMapRenderViewParaboloid { RenderStages = { ShadowMapRenderStageDp } });
             shadowMapTextures = new PoolListStruct<ShadowMapTexture>(16, () => new ShadowMapTexture());
         }
 
@@ -51,21 +51,32 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var pl = light as LightPoint;
             if (pl != null)
-                return ((LightPointShadowMap)pl.Shadow).Type == LightPointShadowMapType.DualParaboloid;
+            {
+                var type = ((LightPointShadowMap)pl.Shadow).Type;
+                return type == LightPointShadowMapType.DualParaboloid || type == LightPointShadowMapType.HemisphereParaboloid;
+            }
             return false;
         }
 
         public override LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMap = shadowMapTextures.Add();
-            shadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
-            shadowMap.CascadeCount = 2; // 2 faces
-            return shadowMap;
+            var lightShadowMap = shadowMapTextures.Add();
+            lightShadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
+
+            // One or two faces?
+            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
+            int numViews = shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid ? 1 : 2;
+
+            lightShadowMap.CascadeCount = numViews; // 2 faces
+            return lightShadowMap;
         }
 
         public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
         {
-            for (int i = 0; i < 2; i++)
+            // One or two faces?
+            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
+            int numViews = shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid ? 1 : 2;
+            for (int i = 0; i < numViews; i++)
             {
                 // Allocate shadow render view
                 var shadowRenderView = shadowRenderViews.Add();
@@ -147,13 +158,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
         {
-            parameters.Set(ShadowMapCasterDpProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
+            parameters.Set(ShadowMapCasterParaboloidProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
         }
 
         public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
         {
             var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
             CalculateViewDirection(visibilityGroup, lightShadowMap);
+
 
             var shaderData = shaderDataPool.Add();
             lightShadowMap.ShaderData = shaderData;
@@ -171,9 +183,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             Rectangle backRectangle = lightShadowMap.GetRectangle(1);
             shaderData.BackfaceOffset = new Vector2(backRectangle.Left+1, backRectangle.Top+1) / atlasSize - shaderData.Offset;
             
-            shaderData.LightDepthParameters = GetShadowMapDepthParameters(lightShadowMap);
+            shaderData.DepthParameters = GetShadowMapDepthParameters(lightShadowMap);
             
-            GetViewParameters(lightShadowMap, 0, out shaderData.WorldToShadow, false);
+            GetViewParameters(lightShadowMap, 0, out shaderData.View, false);
+
+            // One or two faces?
+            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
+            if (shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid)
+                shaderData.BackfaceMode = 0.0f; // Ignore back face
+            else
+                shaderData.BackfaceMode = 1.0f;
         }
 
         /// <summary>
@@ -206,6 +225,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public Vector2 BackfaceOffset;
 
             /// <summary>
+            /// How the back face is shadowed (0=always lit,1=normal)
+            /// </summary>
+            public float BackfaceMode;
+
+            /// <summary>
             /// Size of a single face of the shadow map
             /// </summary>
             public Vector2 FaceSize;
@@ -213,19 +237,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// <summary>
             /// Matrix that converts from world space to the front face space of the light's shadow map
             /// </summary>
-            public Matrix WorldToShadow;
+            public Matrix View;
 
             /// <summary>
             /// Radius of the point light, used to determine the range of the depth buffer
             /// </summary>
-            public Vector2 LightDepthParameters;
-
+            public Vector2 DepthParameters;
+            
             public float DepthBias;
         }
 
         private class ShaderGroupData : ILightShadowMapShaderGroupData
         {
-            private const string ShaderName = "ShadowMapReceiverPointDp";
+            private const string ShaderName = "ShadowMapReceiverPointParaboloid";
 
             private ShaderMixinSource shadowShader;
             private LightShadowType shadowType;
@@ -234,22 +258,25 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Vector2 shadowMapTextureSize;
             private Vector2 shadowMapTextureTexelSize;
 
-            private Matrix[] worldToShadowMatrices;
-            private Vector2[] lightOffset;
-            private Vector2[] lightBackfaceOffset;
-            private Vector2[] lightFaceSize;
-            private Vector2[] lightDepthParameters;
+            private Matrix[] viewMatrices;
+            private Vector2[] offsets;
+            private Vector2[] backfaceOffsets;
+            private float[] backfaceMode;
+            private Vector2[] faceSize;
+            private Vector2[] depthParameters;
             private float[] depthBiases;
+
+            private ValueParameterKey<float> depthBiasesKey;
+            private ValueParameterKey<Matrix> viewKey;
             private ValueParameterKey<Vector2> offsetsKey;
             private ValueParameterKey<Vector2> backfaceOffsetsKey;
+            private ValueParameterKey<float> backfaceModeKey;
             private ValueParameterKey<Vector2> faceSizeKey;
             private ValueParameterKey<Vector2> depthParametersKey;
 
             private ObjectParameterKey<Texture> shadowMapTextureKey;
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
-            private ValueParameterKey<Matrix> worldToShadowKey;
-            private ValueParameterKey<float> depthBiasesKey;
 
             public ShaderGroupData(LightShadowType shadowType)
             {
@@ -266,12 +293,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
-                offsetsKey = ShadowMapReceiverPointDpKeys.FaceOffset.ComposeWith(compositionName);
-                backfaceOffsetsKey = ShadowMapReceiverPointDpKeys.BackfaceOffset.ComposeWith(compositionName);
-                faceSizeKey = ShadowMapReceiverPointDpKeys.FaceSize.ComposeWith(compositionName);
-                depthParametersKey = ShadowMapReceiverPointDpKeys.DepthParameters.ComposeWith(compositionName);
-                worldToShadowKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionName);
-                depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionName);
+                offsetsKey = ShadowMapReceiverPointParaboloidKeys.FaceOffset.ComposeWith(compositionName);
+                backfaceOffsetsKey = ShadowMapReceiverPointParaboloidKeys.BackfaceOffset.ComposeWith(compositionName);
+                backfaceModeKey = ShadowMapReceiverPointParaboloidKeys.BackfaceMode.ComposeWith(compositionName);
+                faceSizeKey = ShadowMapReceiverPointParaboloidKeys.FaceSize.ComposeWith(compositionName);
+                depthParametersKey = ShadowMapReceiverPointParaboloidKeys.DepthParameters.ComposeWith(compositionName);
+                viewKey = ShadowMapReceiverPointParaboloidKeys.View.ComposeWith(compositionName);
+                depthBiasesKey = ShadowMapReceiverPointParaboloidKeys.DepthBiases.ComposeWith(compositionName);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -295,11 +323,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         break;
                 }
                 
-                Array.Resize(ref lightOffset, lightCurrentCount);
-                Array.Resize(ref lightBackfaceOffset, lightCurrentCount);
-                Array.Resize(ref lightFaceSize, lightCurrentCount);
-                Array.Resize(ref lightDepthParameters, lightCurrentCount);
-                Array.Resize(ref worldToShadowMatrices, lightCurrentCount);
+                Array.Resize(ref offsets, lightCurrentCount);
+                Array.Resize(ref backfaceOffsets, lightCurrentCount);
+                Array.Resize(ref backfaceMode, lightCurrentCount);
+                Array.Resize(ref faceSize, lightCurrentCount);
+                Array.Resize(ref depthParameters, lightCurrentCount);
+                Array.Resize(ref viewMatrices, lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
             }
 
@@ -319,12 +348,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     if (lightEntry.Light.BoundingBox.Intersects(ref boundingBox2))
                     {
                         var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
-                        lightOffset[lightIndex] = shaderData.Offset;
-                        lightBackfaceOffset[lightIndex] = shaderData.BackfaceOffset;
-                        lightFaceSize[lightIndex] = shaderData.FaceSize;
-                        lightDepthParameters[lightIndex] = shaderData.LightDepthParameters;
+                        offsets[lightIndex] = shaderData.Offset;
+                        backfaceOffsets[lightIndex] = shaderData.BackfaceOffset;
+                        backfaceMode[lightIndex] = shaderData.BackfaceMode;
+                        faceSize[lightIndex] = shaderData.FaceSize;
+                        depthParameters[lightIndex] = shaderData.DepthParameters;
                         depthBiases[lightIndex] = shaderData.DepthBias;
-                        worldToShadowMatrices[lightIndex] = shaderData.WorldToShadow;
+                        viewMatrices[lightIndex] = shaderData.View;
                         lightIndex++;
 
                         // TODO: should be setup just once at creation time
@@ -345,11 +375,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
 
-                parameters.Set(worldToShadowKey, worldToShadowMatrices);
-                parameters.Set(offsetsKey, lightOffset);
-                parameters.Set(backfaceOffsetsKey, lightBackfaceOffset);
-                parameters.Set(faceSizeKey, lightFaceSize);
-                parameters.Set(depthParametersKey, lightDepthParameters);
+                parameters.Set(viewKey, viewMatrices);
+                parameters.Set(offsetsKey, offsets);
+                parameters.Set(backfaceOffsetsKey, backfaceOffsets);
+                parameters.Set(backfaceModeKey, backfaceMode);
+                parameters.Set(faceSizeKey, faceSize);
+                parameters.Set(depthParametersKey, depthParameters);
 
                 parameters.Set(depthBiasesKey, depthBiases);
             }

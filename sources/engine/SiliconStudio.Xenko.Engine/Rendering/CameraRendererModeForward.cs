@@ -81,12 +81,12 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 if (ShadowMapRenderStageDp == null)
                 {
-                    ShadowMapRenderStageDp = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterDp", "ShadowMapCasterDp", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageDp = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterParaboloid", "ShadowMapCasterParaboloid", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
                     ShadowMapRenderStageDp.SortMode = new FrontToBackSortMode();
                 }
                 if (ShadowMapRenderStageCubeMap == null)
                 {
-                    ShadowMapRenderStageCubeMap = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterCubeMap", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageCubeMap = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterCubeMap", "ShadowMapCasterCubeMap", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
                     ShadowMapRenderStageCubeMap.SortMode = new FrontToBackSortMode();
                 }
 

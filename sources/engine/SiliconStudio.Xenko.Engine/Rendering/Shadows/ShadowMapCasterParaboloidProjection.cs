@@ -16,10 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    internal static partial class ShadowMapReceiverPointCubeMapKeys
+    public static partial class ShadowMapCasterParaboloidProjectionKeys
     {
-        public static readonly ValueParameterKey<Matrix> WorldToShadow = ParameterKeys.NewValue<Matrix>();
-        public static readonly ValueParameterKey<float> DepthBiases = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
     }
 }

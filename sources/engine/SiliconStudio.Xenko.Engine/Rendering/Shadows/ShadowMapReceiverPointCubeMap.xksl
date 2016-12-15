@@ -6,28 +6,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Selects the shadow map and computes the shadow factor.
     /// </summary>
-    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : MaterialPixelShadingStream, ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4, ShaderBaseStream
+    internal shader ShadowMapReceiverPointCubeMap<int TLightCount> : ShadowMapGroup<PerDraw.Lighting>, ShadowMapFilterBase<PerDraw.Lighting>, PositionStream4, ShaderBaseStream, LightStream
     {
         cbuffer PerDraw.Lighting
         {
-            float4x4 ViewProjection[TLightCount*6];
-            float4x4 InverseViewProjection[TLightCount*6];
-            float4x4 ProjectionToShadow[TLightCount*6];
-            float4 LightPosition[TLightCount];
+            float4x4 WorldToShadow[TLightCount*6];
             float DepthBiases[TLightCount];
             float2 DepthParameters[TLightCount];
-            float DirectionOffset[TLightCount];
-
-            // Should this be conditional or on by default?
-            //bool GradientShadowMap[TLightCount];
         };
 
         override void ComputeShadow(int lightIndex)
         {
             // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
-            float3 lightPosition = LightPosition[lightIndex].xyz;
+            float3 lightPosition = streams.lightPositionWS.xyz;
             float3 delta = streams.PositionWS.xyz - lightPosition;
-            float3 direction = normalize(delta);
+            float l = length(delta);
+            float3 direction = delta / l;
             float3 dirAbs = abs(direction);
             
             float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
@@ -57,54 +51,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float sz = sign(z);
             faceIndex += int(-min(0.0, sz));
 
-            float4x4 viewProjection = ViewProjection[lightIndex*6+faceIndex];
-            float4x4 invViewProjection = InverseViewProjection[lightIndex*6+faceIndex];
-            float4x4 toShadow = ProjectionToShadow[lightIndex*6+faceIndex];
-
-            float4 projectedPosition = mul(streams.PositionWS, viewProjection);
+            // Map to texture space
+            float4 projectedPosition = mul(streams.PositionWS, WorldToShadow[lightIndex*6+faceIndex]);
             projectedPosition /= projectedPosition.w;
 
-            float2 zgradient = 0;
-            //if (GradientShadowMap[lightIndex])
-            {
-                // Customized implementation similar to ShadowMapReceiverBase but suitable for perspective projection
-                float projectedOffset = DirectionOffset[lightIndex];
-                float4 pointRight = float4(projectedPosition.x + projectedOffset, projectedPosition.y, 0, 1);
-                pointRight = mul(pointRight, invViewProjection);
-                float3 rayRight = normalize(pointRight.xyz / pointRight.w - lightPosition);
+            // Apply bias
+            l -= DepthBiases[lightIndex];
 
-                float4 pointUp = float4(projectedPosition.x, projectedPosition.y - projectedOffset, 0, 1);
-                pointUp = mul(pointUp, invViewProjection);
-                float3 rayUp = normalize(pointUp.xyz / pointUp.w - lightPosition);
-                
-                float3 normal = streams.normalWS;
+            // Scale distance to light depth buffer range 
+            l *= DepthParameters[lightIndex].y;
 
-                // intersect light dir ray to geometry:
-                float t1 = dot(delta, normal) / dot(normal, rayRight);
-                float3 p1 = lightPosition + rayRight * t1;
-                
-                float t2 = dot(delta, normal) / dot(normal, rayUp);
-                float3 p2 = lightPosition + rayUp * t2;
-                
-                // rexpress in UV space:
-                float4 z1 = mul(float4(p1,1), viewProjection);
-                z1 /= z1.w;
-                float4 z2 = mul(float4(p2,1), viewProjection);
-                z2 /= z2.w;
-                
-                // Take depth diffence as zgradient and scale it by the texture map size so it can be multiplied by offsets in the filter
-                zgradient = float2(z1.z - projectedPosition.z, z2.z - projectedPosition.z) * ShadowMapTextureSize;
-            }
-
-            // Apply bias on linear Z
-            float linearZ = DepthParameters[lightIndex].y / (projectedPosition.z - DepthParameters[lightIndex].x);
-            linearZ -= DepthBiases[lightIndex];
-            projectedPosition.z = DepthParameters[lightIndex].y / linearZ + DepthParameters[lightIndex].x;
-            
-            // Convert from normalized coordinates to texture space
-            float4 uvPos = mul(projectedPosition, toShadow);
-
-            streams.shadowColor = FilterShadow(uvPos.xy, projectedPosition.z, zgradient);
+            streams.shadowColor = FilterShadow(projectedPosition.xy, l, 0);
         }
     };
 }

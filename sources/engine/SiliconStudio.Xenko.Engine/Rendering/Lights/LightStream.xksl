@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     shader LightStream
     {
+        stage stream float3 lightPositionWS;
         stage stream float3 lightDirectionWS;
         stage stream float3 lightColor;
         stage stream float3 lightColorNdotL;
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         void ResetLightStream()
         {
+            streams.lightPositionWS = 0;
             streams.lightDirectionWS = 0;
             streams.lightColor = 0;
             streams.lightColorNdotL = 0;

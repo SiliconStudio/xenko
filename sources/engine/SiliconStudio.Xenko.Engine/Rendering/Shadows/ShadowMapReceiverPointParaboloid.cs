@@ -16,11 +16,14 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    internal static partial class ShadowMapReceiverPointDpKeys
+    internal static partial class ShadowMapReceiverPointParaboloidKeys
     {
+        public static readonly ValueParameterKey<Matrix> View = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Vector2> FaceOffset = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<Vector2> BackfaceOffset = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> BackfaceMode = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Vector2> FaceSize = ParameterKeys.NewValue<Vector2>();
+        public static readonly ValueParameterKey<float> DepthBiases = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
     }
 }

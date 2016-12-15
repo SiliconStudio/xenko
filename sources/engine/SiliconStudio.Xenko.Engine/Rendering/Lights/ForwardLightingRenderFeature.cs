@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     ShadowMapRenderer = new ShadowMapRenderer(RenderSystem);
                     ShadowMapRenderer.Renderers.Add(new LightDirectionalShadowMapRenderer(ShadowMapRenderer));
                     ShadowMapRenderer.Renderers.Add(new LightSpotShadowMapRenderer(ShadowMapRenderer));
-                    ShadowMapRenderer.Renderers.Add(new LightPointShadowMapRendererDp(ShadowMapRenderer));
+                    ShadowMapRenderer.Renderers.Add(new LightPointShadowMapRendererParaboloid(ShadowMapRenderer));
                     ShadowMapRenderer.Renderers.Add(new LightPointShadowMapRendererCubeMap(ShadowMapRenderer));
                 }
 

@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             Shadow = new LightPointShadowMap()
             {
                 Size = LightShadowMapSize.Small,
-                Type = LightPointShadowMapType.Cubemap,
+                Type = LightPointShadowMapType.CubeMap,
             };
         }
 

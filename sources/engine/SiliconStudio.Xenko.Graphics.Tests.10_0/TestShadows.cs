@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private float lightDistance = 5.0f;
 
         // Initial shadow map settings
-        private LightPointShadowMapType shadowMapType = LightPointShadowMapType.Cubemap;
+        private LightPointShadowMapType shadowMapType = LightPointShadowMapType.HemisphereParaboloid;
         private LightShadowMapSize shadowMapSize = LightShadowMapSize.Medium;
         private float shadowMapBias = 0.05f;
         private int shadowMapFilter = 0;
@@ -321,10 +321,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         void ToggleShadowMapType()
         {
-            if (shadowMapType == LightPointShadowMapType.Cubemap)
-                shadowMapType = LightPointShadowMapType.DualParaboloid;
-            else
-                shadowMapType = LightPointShadowMapType.Cubemap;
+            shadowMapType = (LightPointShadowMapType)(((int)shadowMapType + 1)%3);
 
             foreach (var lc in pointLights)
             {

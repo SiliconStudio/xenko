@@ -16,8 +16,21 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    public static partial class ShadowMapCasterDpProjectionKeys
+    internal static partial class ShaderMixins
     {
-        public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
+        internal partial class ShadowMapCasterParaboloid  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "ShadowMapCasterParaboloidProjection");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("ShadowMapCasterParaboloid", new ShadowMapCasterParaboloid());
+            }
+        }
     }
 }

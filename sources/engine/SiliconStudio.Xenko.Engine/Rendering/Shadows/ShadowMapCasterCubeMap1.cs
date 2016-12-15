@@ -18,18 +18,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapCasterDp  : IShaderMixinBuilder
+        internal partial class ShadowMapCasterCubeMap  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ShadowMapCasterDpProjection");
+                context.Mixin(mixin, "ShadowMapCasterCubeMapProjection");
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ShadowMapCasterDp", new ShadowMapCasterDp());
+                ShaderMixinManager.Register("ShadowMapCasterCubeMap", new ShadowMapCasterCubeMap());
             }
         }
     }
