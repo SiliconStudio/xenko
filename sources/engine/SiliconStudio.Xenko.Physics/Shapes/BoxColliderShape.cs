@@ -21,6 +21,8 @@ namespace SiliconStudio.Xenko.Physics
             Type = ColliderShapeTypes.Box;
             Is2D = is2D;
 
+            //Box is not working properly when in a convex2dshape, Z cannot be 0
+
             CachedScaling = Is2D ? new Vector3(1, 1, 0.001f) : Vector3.One;
 
             if (is2D) size.Z = 0.001f;
