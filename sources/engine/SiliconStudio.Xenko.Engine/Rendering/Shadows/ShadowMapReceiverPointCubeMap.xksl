@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Scale distance to light depth buffer range 
             l *= DepthParameters[lightIndex].y;
 
-            streams.shadowColor = FilterShadow(projectedPosition.xy, l, 0);
+            streams.shadowColor = FilterShadow(projectedPosition.xy, l);
         }
     };
 }

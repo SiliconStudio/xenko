@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             DepthRange = new DepthRangeParameters();
             PartitionMode = new PartitionLogarithmic();
             StabilizationMode = LightShadowMapStabilizationMode.ProjectionSnapping;
-            GradientSampling = true;
         }
 
         /// <summary>
@@ -60,16 +59,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         [DataMember(90)]
         [NotNull]
         public PartitionModeBase PartitionMode { get; set; }
-
-        /// <summary>
-        /// Use gradient based sampling
-        /// </summary>
-        /// <value>activate or deactivate</value>
-        /// <userdoc>adapt the samples taken in the shadowmap to compare with a depth that respect the geometry plane.</userdoc>
-        [DataMember(95)]
-        [DefaultValue(true)]
-        [Display("Gradient Aware")]
-        public bool GradientSampling { get; set; }
 
 
         public override int GetCascadeCount()

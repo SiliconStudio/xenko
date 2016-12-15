@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Calculate the shadow factor based the position and shadow map distance.
         /// </summary>
-        abstract float FilterShadow(float2 position, float positionDepth, float2 zgradient);
+        abstract float FilterShadow(float2 position, float positionDepth);
     };
 }

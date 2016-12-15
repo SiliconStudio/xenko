@@ -40,21 +40,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float2 samplePosition = intermediate.xy * FaceSize[lightIndex] + FaceOffset[lightIndex];
 
             float shadowMultiplier = 1;
-            float3 debugColor = 0;
             [flatten]
             if(lightSpace.z < 0)
             {
                 samplePosition += BackfaceOffset[lightIndex];
                 if(BackfaceMode[lightIndex] == 0)
                 {
-                    debugColor = float3(1,0,1);
-                    // Basically ignore shadow
+                    // Basically ignore shadow by multiplying with 0 conditionally, but preventing a branch on the texture sampler
                     samplePosition = 0;
                     shadowMultiplier = 0;
                 }
             }
             
-            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex], 0) * shadowMultiplier + (1-shadowMultiplier);
+            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex]) * shadowMultiplier + (1-shadowMultiplier);
         }
     };
 }

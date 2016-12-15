@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Calculate the shadow factor based on the shadow map texture, the position, a sampler
         /// </summary>
-        float FilterShadow(float2 position, float positionDepth, float2 zgradient)
+        float FilterShadow(float2 position, float positionDepth)
         {
             return ShadowMapTexture.SampleCmp(LinearClampCompareLessEqualSampler, position, positionDepth);
         }

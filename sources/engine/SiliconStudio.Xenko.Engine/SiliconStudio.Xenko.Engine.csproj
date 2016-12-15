@@ -515,7 +515,6 @@
     <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapRenderViewParaboloid.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />

@@ -145,7 +145,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
-            shaderData.GradientSampling = shadow.GradientSampling;
 
             float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
