@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class AnimationAssetCompiler : AssetCompilerBase
     {
+        public const string RefClipSuffix = "_reference_clip";
+        public const string SrcClipSuffix = "_source_clip";
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (AnimationAsset)assetItem.Asset;
@@ -100,8 +103,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                     var referenceClip = diffAnimationAsset.BaseSource;
                     var rebaseMode = diffAnimationAsset.Mode;
 
-                    var baseUrlInStorage = targetUrlInStorage + "_reference_clip";
-                    var sourceUrlInStorage = targetUrlInStorage + "_source_clip";
+                    var baseUrlInStorage = targetUrlInStorage + RefClipSuffix;
+                    var sourceUrlInStorage = targetUrlInStorage + SrcClipSuffix;
 
                     var baseAssetSource = UPath.Combine(assetDirectory, referenceClip);
                     var baseExtension = baseAssetSource.GetFileExtension();
