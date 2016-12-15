@@ -334,8 +334,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         private static bool IsReadOnlyTypeSerializable(TypeReference type)
         {
-            // For now, we allow any class which is not a string (since they are immutable)
-            return type.MetadataType != MetadataType.String && type.Resolve().IsClass;
+            // For now, we allow any non-valuetype (class & interface) which is not a string (since they are immutable)
+            return type.MetadataType != MetadataType.String && !type.Resolve().IsValueType;
         }
 
         protected static string CreateMemberVariableName(IMemberDefinition memberInfo)
