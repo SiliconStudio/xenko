@@ -208,6 +208,8 @@ namespace SiliconStudio.Core.Reflection
 
             // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
             member.Mode = DataMemberMode.Content;
+            member.Mask = 1;
+
             if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
             {
                 // If there is no setter, and the value is a string or a value type, we won't write the object at all.
@@ -216,8 +218,11 @@ namespace SiliconStudio.Core.Reflection
 
             // Gets the style
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
-            member.Style = styleAttribute?.Style ?? DataStyle.Any;
-            member.Mask = 1;
+            if (styleAttribute != null)
+            {
+                member.Style = styleAttribute.Style;
+                member.ScalarStyle = styleAttribute.ScalarStyle;
+            }
 
             // Handle member attribute
             var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);

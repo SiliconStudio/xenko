@@ -95,6 +95,11 @@ namespace SiliconStudio.Core.Reflection
         DataStyle Style { get; set; }
 
         /// <summary>
+        /// Gets the default scalar style attached to this member.
+        /// </summary>
+        ScalarStyle ScalarStyle { get; set; }
+
+        /// <summary>
         /// Gets the value of this member for the specified instance.
         /// </summary>
         /// <param name="thisObject">The this object to get the value from.</param>
