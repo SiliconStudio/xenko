@@ -33,8 +33,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             {
                 var graphicsCompositor = new GraphicsCompositor();
 
-                graphicsCompositor.RenderStages.AddRange(Parameters.RenderStages);
-                graphicsCompositor.RenderFeatures.AddRange(Parameters.RenderFeatures);
+                foreach (var renderStage in Parameters.RenderStages)
+                    graphicsCompositor.RenderStages.Add(renderStage);
+                foreach (var renderFeature in Parameters.RenderFeatures)
+                    graphicsCompositor.RenderFeatures.Add(renderFeature);
                 graphicsCompositor.TopLevel = Parameters.TopLevel;
 
                 var assetManager = new ContentManager();

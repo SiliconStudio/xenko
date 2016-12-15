@@ -161,15 +161,12 @@ namespace SiliconStudio.Xenko.Engine
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
                 renderDrawContext.CommandList.ClearState();
 
-                if (GraphicsCompositor != null)
+                // Push context (pop after using)
+                using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
+                using (renderDrawContext.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, MainRenderFrame))
+                using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
                 {
-                    // Push context (pop after using)
-                    using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
-                    using (renderDrawContext.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, MainRenderFrame))
-                    using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
-                    {
-                        GraphicsCompositor.Draw(renderDrawContext);
-                    }
+                    NewGraphicsCompositor?.Draw(renderDrawContext);
                 }
             }
             catch (Exception ex)

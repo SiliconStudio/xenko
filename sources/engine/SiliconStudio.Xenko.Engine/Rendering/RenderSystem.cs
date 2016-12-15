@@ -408,6 +408,7 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = graphicsDeviceService.GraphicsDevice;
             RenderContextOld = context;
 
+            // Initializes existing render features
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.Initialize(RenderContextOld);
@@ -416,6 +417,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected override void Destroy()
         {
+            RenderFeatures.CollectionChanged -= RenderFeatures_CollectionChanged;
+            Views.CollectionChanged -= Views_CollectionChanged;
+            RenderStages.CollectionChanged -= RenderStages_CollectionChanged;
+
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.Dispose();
