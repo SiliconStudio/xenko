@@ -4,7 +4,6 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Xenko.Animations;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
@@ -13,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public abstract class AnimationAssetType
     {
         [DataMemberIgnore]
-        public abstract AnimationClipBlendMode BlendMode { get; }
+        public abstract AnimationAssetTypeEnum Type { get; }
     }
 
     [Display("Animation Clip")]
@@ -22,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public class StandardAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
-        public override AnimationClipBlendMode BlendMode => AnimationClipBlendMode.LinearBlend;
+        public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.AnimationClip;
     }
 
     [Display("Difference Clip")]
@@ -31,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     public class DifferenceAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
-        public override AnimationClipBlendMode BlendMode => AnimationClipBlendMode.Additive;
+        public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.DifferenceClip;
 
         /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
@@ -48,5 +47,31 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
+    }
+
+    /// <summary>
+    /// Type which describes the nature of the animation clip we want to use.
+    /// The terms are borrowed from the book Game Engine Architecture, Chapter 11.6.5 Additive Blending
+    /// </summary>
+    [DataContract]
+    public enum AnimationAssetTypeEnum
+    {
+        /// <summary>
+        /// Single source animation clip which animates the character.
+        /// </summary>
+        /// <userdoc>
+        /// Single source animation clip which animates the character.
+        /// </userdoc>
+        [Display("Animation Clip")]
+        AnimationClip = 1,
+
+        /// <summary>
+        /// Difference animation clip is computed as the difference against another animation. It is usually used for additive blending.
+        /// </summary>
+        /// <userdoc>
+        /// Difference animation clip is computed as the difference against another animation. It is usually used for additive blending.
+        /// </userdoc>
+        [Display("Difference Clip")]
+        DifferenceClip = 2,
     }
 }

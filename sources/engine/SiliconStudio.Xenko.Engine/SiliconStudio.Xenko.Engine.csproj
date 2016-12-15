@@ -79,7 +79,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Animations\AnimationClipBlendMode.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorDirectBlittableGroup.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorDirectVector4Group.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedBlittableGroup.cs" />

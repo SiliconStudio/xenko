@@ -24,8 +24,9 @@ namespace SiliconStudio.Xenko.Animations
         internal TaskCompletionSource<bool> endedTCS;
         internal bool attached; // Is it part of a AnimationComponent.PlayingAnimations collection?
 
-        internal PlayingAnimation(AnimationClip clip) : this()
+        internal PlayingAnimation(string name, AnimationClip clip) : this()
         {
+            Name = name;
             Clip = clip;
             RepeatMode = Clip.RepeatMode;
         }
@@ -35,6 +36,7 @@ namespace SiliconStudio.Xenko.Animations
             Enabled = true;
             TimeFactor = 1.0f;
             Weight = 1.0f;
+            BlendOperation = AnimationBlendOperation.LinearBlend;
             RepeatMode = AnimationRepeatMode.LoopInfinite;
         }
 
@@ -47,6 +49,15 @@ namespace SiliconStudio.Xenko.Animations
         [DefaultValue(true)]
         [DataMember(10)]
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of this playing animation (optional).
+        /// </summary>
+        /// <userdoc>
+        /// The name of this playing animation (optional).
+        /// </userdoc>
+        [DataMember(20)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the animation clip to run
@@ -65,6 +76,15 @@ namespace SiliconStudio.Xenko.Animations
         /// </value>
         [DataMember(40)]
         public AnimationRepeatMode RepeatMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blend operation.
+        /// </summary>
+        /// <value>
+        /// The blend operation.
+        /// </value>
+        [DataMember(50)]
+        public AnimationBlendOperation BlendOperation { get; set; }
 
         /// <summary>
         /// Gets or sets the current time.
