@@ -56,24 +56,43 @@ namespace SiliconStudio.Xenko.VirtualReality
             {
                 case TouchControllerButton.Trigger:
                     return OpenVR.Controller.ButtonId.ButtonSteamVrTrigger;
+                case TouchControllerButton.Grip:
+                    return OpenVR.Controller.ButtonId.ButtonGrip;
+                case TouchControllerButton.Pad:
+                    return OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
             }
         }
 
-        public override bool IsButtonDown(TouchControllerButton button)
+        public override bool IsPressedDown(TouchControllerButton button)
         {
             return controller?.GetPressDown(ToOpenVrButton(button)) ?? false;
         }
 
-        public override bool IsButtonPressed(TouchControllerButton button)
+        public override bool IsPressed(TouchControllerButton button)
         {
             return controller?.GetPress(ToOpenVrButton(button)) ?? false;
         }
 
-        public override bool IsButtonReleased(TouchControllerButton button)
+        public override bool IsPressReleased(TouchControllerButton button)
         {
             return controller?.GetPressUp(ToOpenVrButton(button)) ?? false;
+        }
+
+        public override bool IsTouchedDown(TouchControllerButton button)
+        {
+            return controller?.GetTouchDown(ToOpenVrButton(button)) ?? false;
+        }
+
+        public override bool IsTouched(TouchControllerButton button)
+        {
+            return controller?.GetTouch(ToOpenVrButton(button)) ?? false;
+        }
+
+        public override bool IsTouchReleased(TouchControllerButton button)
+        {
+            return controller?.GetTouchUp(ToOpenVrButton(button)) ?? false;
         }
 
         public override DeviceState State => internalState;

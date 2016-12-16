@@ -46,10 +46,16 @@ namespace SiliconStudio.Xenko.VirtualReality
             base.Destroy();
         }
 
-        public abstract bool IsButtonDown(TouchControllerButton button);
+        public abstract bool IsPressedDown(TouchControllerButton button);
 
-        public abstract bool IsButtonPressed(TouchControllerButton button);
+        public abstract bool IsPressed(TouchControllerButton button);
 
-        public abstract bool IsButtonReleased(TouchControllerButton button);
+        public abstract bool IsPressReleased(TouchControllerButton button);
+
+        public abstract bool IsTouchedDown(TouchControllerButton button);
+
+        public abstract bool IsTouched(TouchControllerButton button);
+
+        public abstract bool IsTouchReleased(TouchControllerButton button);
     }
 }

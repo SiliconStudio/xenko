@@ -2,6 +2,8 @@
 {
     public enum TouchControllerButton
     {
-        Trigger
+        Trigger,
+        Grip,
+        Pad
     }
 }
