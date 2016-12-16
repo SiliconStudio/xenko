@@ -126,20 +126,13 @@ namespace SiliconStudio.Xenko.Rendering
 
             public int RenderTargetCount;
 
-            public Viewport[] Viewports;
-            public Texture[] RenderTargets;
+            public readonly Viewport[] Viewports = new Viewport[MaxRenderTargetCount];
+            public readonly Texture[] RenderTargets = new Texture[MaxRenderTargetCount];
             public Texture DepthStencilBuffer;
 
             public void Capture(CommandList commandList)
             {
                 RenderTargetCount = commandList.RenderTargetCount;
-
-                // TODO GRAPHICS REFACTOR avoid unecessary reallocation if size is different
-                if (RenderTargetCount > 0 && (RenderTargets == null || RenderTargets.Length != RenderTargetCount))
-                {
-                    RenderTargets = new Texture[RenderTargetCount];
-                    Viewports = new Viewport[RenderTargetCount];
-                }
 
                 DepthStencilBuffer = commandList.DepthStencilBuffer;
 
@@ -152,9 +145,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             public void Restore(CommandList commandList)
             {
-                commandList.SetRenderTargetsAndViewport(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
-                if (RenderTargetCount > 0)
-                    commandList.SetViewports(Viewports);
+                commandList.SetRenderTargets(DepthStencilBuffer, RenderTargetCount, RenderTargets);
+                commandList.SetViewports(RenderTargetCount, Viewports);
             }
         }
     }
