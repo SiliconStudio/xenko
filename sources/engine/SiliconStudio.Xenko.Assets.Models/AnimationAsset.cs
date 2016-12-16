@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     [Display(1805, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-//    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.9.3-beta01", typeof(AnimationAssetRemoveAdditiveUpgrader))]
     public partial class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
         private const string CurrentVersion = "1.5.0-alpha02";

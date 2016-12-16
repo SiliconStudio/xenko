@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-beta"))
             {
                 ConvertAdditiveAnimationToAnimation(assetFiles);
             }

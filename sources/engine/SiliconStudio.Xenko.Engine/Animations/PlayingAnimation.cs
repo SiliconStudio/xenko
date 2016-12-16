@@ -89,7 +89,9 @@ namespace SiliconStudio.Xenko.Animations
         /// <summary>
         /// Gets or sets the current time.
         /// </summary>
-        [DataMemberIgnore]
+        // CurrentTime is also exposed as a design time property and appears as Start time to avoid confusion
+        [Display("Start time")]
+        [DataMember(60)]
         public TimeSpan CurrentTime { get; set; }
 
         /// <summary>
