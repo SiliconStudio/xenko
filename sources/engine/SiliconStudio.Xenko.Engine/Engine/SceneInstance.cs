@@ -9,9 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Core.ReferenceCounting;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -80,11 +78,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The scene.</value>
         public Scene RootScene
         {
-            get
-            {
-                return rootScene;
-            }
-
+            get { return rootScene; }
             set
             {
                 if (rootScene == value)
@@ -174,7 +168,7 @@ namespace SiliconStudio.Xenko.Engine
                 Remove(entity);
         }
 
-        private void Entities_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        private void Entities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -187,7 +181,7 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        private void Children_CollectionChanged(object sender, Core.Collections.TrackingCollectionChangedEventArgs e)
+        private void Children_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {

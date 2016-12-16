@@ -3,7 +3,6 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
