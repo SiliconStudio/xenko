@@ -5,11 +5,12 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public class OpenVrTouchController : TouchController
+    internal class OpenVrTouchController : TouchController
     {
         private readonly OpenVR.Controller.Hand hand;
-        private int controllerIndex;
+        private int controllerIndex = -1;
         private OpenVR.Controller controller;
+        private DeviceState internalState;
 
         internal OpenVrTouchController(Game game, TouchControllerHand hand) : base(game.Services)
         {
@@ -37,8 +38,14 @@ namespace SiliconStudio.Xenko.VirtualReality
             controller?.Update();
 
             Matrix mat;
-            OpenVR.GetControllerPose(controllerIndex, out mat);
-            Pose = mat;
+            Vector3 vel, angVel;
+            internalState = OpenVR.GetControllerPose(controllerIndex, out mat, out vel, out angVel);
+            if (internalState != DeviceState.Invalid)
+            {
+                Pose = mat;
+                LinearVelocity = vel;
+                AngularVelocity = new Vector3(MathUtil.DegreesToRadians(angVel.X), MathUtil.DegreesToRadians(angVel.Y) , MathUtil.DegreesToRadians(angVel.Z));
+            }
 
             base.Update(gameTime);
         }
@@ -68,5 +75,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             return controller?.GetPressUp(ToOpenVrButton(button)) ?? false;
         }
+
+        public override DeviceState State => internalState;
     }
 }

@@ -1,6 +1,7 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using System;
+using SharpDX.Direct3D11;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -202,15 +203,19 @@ namespace SiliconStudio.Xenko.VirtualReality
             Valve.VR.OpenVR.Compositor.WaitGetPoses(DevicePoses, GamePoses);
         }
 
-        public static DeviceState GetControllerPose(int controllerIndex, out Matrix pose)
+        public static DeviceState GetControllerPose(int controllerIndex, out Matrix pose, out Vector3 velocity, out Vector3 angVelocity)
         {
-            return GetControllerPoseUnsafe(controllerIndex, out pose);
+            return GetControllerPoseUnsafe(controllerIndex, out pose, out velocity, out angVelocity);
         }
 
-        private static unsafe DeviceState GetControllerPoseUnsafe(int controllerIndex, out Matrix pose)
+        private static unsafe DeviceState GetControllerPoseUnsafe(int controllerIndex, out Matrix pose, out Vector3 velocity, out Vector3 angVelocity)
         {
             var currentIndex = 0;
+
             pose = Matrix.Identity;
+            velocity = Vector3.Zero;
+            angVelocity = Vector3.Zero;
+
             for (uint index = 0; index < DevicePoses.Length; index++)
             {
                 if (Valve.VR.OpenVR.System.GetTrackedDeviceClass(index) == ETrackedDeviceClass.Controller)
@@ -218,6 +223,8 @@ namespace SiliconStudio.Xenko.VirtualReality
                     if (currentIndex == controllerIndex)
                     {
                         Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref DevicePoses[index].mDeviceToAbsoluteTracking), Utilities.SizeOf<HmdMatrix34_t>());
+                        Utilities.CopyMemory((IntPtr)Interop.Fixed(ref velocity), (IntPtr)Interop.Fixed(ref DevicePoses[index].vVelocity), Utilities.SizeOf<HmdVector3_t>());
+                        Utilities.CopyMemory((IntPtr)Interop.Fixed(ref angVelocity), (IntPtr)Interop.Fixed(ref DevicePoses[index].vAngularVelocity), Utilities.SizeOf<HmdVector3_t>());
 
                         var state = DeviceState.Invalid;
                         if (DevicePoses[index].bDeviceIsConnected && DevicePoses[index].bPoseIsValid)
@@ -290,6 +297,16 @@ namespace SiliconStudio.Xenko.VirtualReality
         public static void HideMirror()
         {
             Valve.VR.OpenVR.Compositor.HideMirrorWindow();
+        }
+
+        public static Texture GetMirrorTexture(GraphicsDevice device, int eyeIndex)
+        {
+            var nativeDevice = device.NativeDevice.NativePointer;
+            var eyeTexSrv = IntPtr.Zero;
+            Valve.VR.OpenVR.Compositor.GetMirrorTextureD3D11(eyeIndex == 0 ? EVREye.Eye_Left : EVREye.Eye_Right, nativeDevice, ref eyeTexSrv);
+            var tex = new Texture(device);
+            tex.InitializeFrom(new ShaderResourceView(eyeTexSrv));
+            return tex;
         }
     }
 }

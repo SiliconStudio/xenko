@@ -28,6 +28,12 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public Matrix Pose { get; protected set; }
 
+        public Vector3 LinearVelocity { get; protected set; }
+
+        public Vector3 AngularVelocity { get; protected set; }
+
+        public abstract DeviceState State { get; }
+
         protected TouchController(IServiceRegistry registry) : base(registry)
         {
             Game.GameSystems.Add(this);

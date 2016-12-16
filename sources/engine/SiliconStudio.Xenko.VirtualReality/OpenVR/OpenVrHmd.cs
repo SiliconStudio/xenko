@@ -8,10 +8,13 @@ using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public class OpenVrHmd : Hmd
+    internal class OpenVrHmd : Hmd
     {
         private RectangleF leftView = new RectangleF(0.0f, 0.0f, 0.5f, 1.0f);
         private RectangleF rightView = new RectangleF(0.5f, 0.0f, 1.0f, 1.0f);
+        private Texture bothEyesMirror;
+        private Texture leftEyeMirror;
+        private Texture rightEyeMirror;
 
         internal OpenVrHmd(IServiceRegistry registry) : base(registry)
         { 
@@ -21,15 +24,28 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
         {
             var width = (int)(2160.0f*RenderFrameScaling);
+            width += width % 2;
             var height = (int)(1200*RenderFrameScaling);
+            height += height % 2;
             RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+
+            bothEyesMirror = Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
             var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
             compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
             {
                 OpenVR.Submit(0, RenderFrameProvider.RenderFrame.RenderTargets[0], ref leftView);
                 OpenVR.Submit(1, RenderFrameProvider.RenderFrame.RenderTargets[0], ref rightView);
+
+                //copy mirror
+                var wholeRegion = new ResourceRegion(0, 0, 0, width, height, 1);
+                x.CommandList.CopyRegion(leftEyeMirror, 0, wholeRegion, bothEyesMirror, 0);
+                x.CommandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width / 2);
             }));
+
+            leftEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 0);
+            rightEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 1);
+            MirrorTexture = bothEyesMirror;
 
             base.Initialize(cameraRoot, leftCamera, rightCamera);
         }
@@ -86,6 +102,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         public override DeviceState State { get; protected set; }
+
+        public override Texture MirrorTexture { get; protected set; }
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
 
