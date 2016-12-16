@@ -51,7 +51,9 @@ namespace SiliconStudio.Xenko.VirtualReality
                     case HmdApi.Oculus:
                         break;
                     case HmdApi.OpenVr:
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                         return new OpenVrHmd(game.Services);
+#endif
                     case HmdApi.Fove:
                         break;
                     case HmdApi.Google:

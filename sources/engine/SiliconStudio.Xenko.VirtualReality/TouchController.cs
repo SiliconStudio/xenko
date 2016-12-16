@@ -16,7 +16,9 @@ namespace SiliconStudio.Xenko.VirtualReality
                     case TouchControllerApi.Oculus:
                         break;
                     case TouchControllerApi.OpenVr:
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                         return new OpenVrTouchController(game, hand);
+#endif
                     case TouchControllerApi.Google:
                         break;
                     default:

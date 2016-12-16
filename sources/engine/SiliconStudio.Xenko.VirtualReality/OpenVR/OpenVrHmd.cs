@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -114,3 +116,5 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
     }
 }
+
+#endif

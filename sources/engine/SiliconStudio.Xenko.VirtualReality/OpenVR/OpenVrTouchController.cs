@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -98,3 +100,5 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override DeviceState State => internalState;
     }
 }
+
+#endif
