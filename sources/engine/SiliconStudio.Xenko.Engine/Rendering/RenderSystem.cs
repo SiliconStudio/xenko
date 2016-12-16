@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Performs pipeline initialization, enumerates views and populates visibility groups.
         /// </summary>
         /// <param name="context"></param>
-        public void Collect(RenderDrawContext context)
+        public void Collect(RenderContext context)
         {
             foreach (var renderFeature in RenderFeatures)
             {
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Extract data from entities, should be as fast as possible to not block simulation loop. It should be mostly copies, and the actual processing should be part of Prepare().
         /// </summary>
-        public void Extract(RenderDrawContext context)
+        public void Extract(RenderContext context)
         {
             // Prepare views
             for (int index = 0; index < Views.Count; index++)

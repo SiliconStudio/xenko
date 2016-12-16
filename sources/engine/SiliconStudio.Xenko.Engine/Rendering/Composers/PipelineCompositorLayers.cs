@@ -63,10 +63,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     Master.Collect(context.RenderContext);
 
                     // Collect in render features
-                    RenderSystem.Collect(context);
+                    RenderSystem.Collect(context.RenderContext);
 
                     // Extract
-                    RenderSystem.Extract(context);
+                    RenderSystem.Extract(context.RenderContext);
 
                     // Prepare
                     RenderSystem.Prepare(context);

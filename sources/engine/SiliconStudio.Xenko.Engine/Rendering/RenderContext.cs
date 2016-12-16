@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using ComponentBase = SiliconStudio.Core.ComponentBase;
@@ -77,6 +78,16 @@ namespace SiliconStudio.Xenko.Rendering
         /// The current render system.
         /// </summary>
         public RenderSystem RenderSystem { get; set; }
+
+        /// <summary>
+        /// The current scene instance.
+        /// </summary>
+        public SceneInstance SceneInstance { get; set; }
+
+        /// <summary>
+        /// The current visibility group from the <see cref="SceneInstance"/> and <see cref="RenderSystem"/>.
+        /// </summary>
+        public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
         /// Gets a global shared context.

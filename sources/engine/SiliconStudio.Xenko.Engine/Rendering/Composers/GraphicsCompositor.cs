@@ -69,17 +69,19 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
                     // Set render system
                     context.RenderContext.RenderSystem = RenderSystem;
+                    context.RenderContext.SceneInstance = sceneInstance;
+                    context.RenderContext.VisibilityGroup = visibilityGroup;
 
                     try
                     {
-                        // Collect in the game graphics compositor: Setup features/stages, enumerate viewes and populates VisibilityGroup
+                        // Collect in the game graphics compositor: Setup features/stages, enumerate views and populates VisibilityGroup
                         TopLevel.Collect(context.RenderContext);
 
                         // Collect in render features
-                        RenderSystem.Collect(context);
+                        RenderSystem.Collect(context.RenderContext);
 
                         // Extract
-                        RenderSystem.Extract(context);
+                        RenderSystem.Extract(context.RenderContext);
 
                         // Prepare
                         RenderSystem.Prepare(context);
