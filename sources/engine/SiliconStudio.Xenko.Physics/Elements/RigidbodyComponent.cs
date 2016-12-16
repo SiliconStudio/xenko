@@ -79,6 +79,11 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("the Mass of a Rigidbody cannot be negative.");
+                }
+
                 mass = value;
 
                 if(InternalRigidBody == null) return;
