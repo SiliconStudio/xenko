@@ -591,9 +591,6 @@ extern "C" {
 
 #else
 
-#include "../../../../deps/NativePath/NativePath.h"
-#include "../XenkoNative.h"
-
 extern "C" {
 	typedef struct _GUID {
 		unsigned long  Data1;
