@@ -21,10 +21,13 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetContentType(typeof(AnimationClip))]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [Display(1805, "Animation")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.9.3-beta01", typeof(AnimationAssetRemoveAdditiveUpgrader))]
+    public partial class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
+        private const string CurrentVersion = "1.9.3-beta01";
+
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
