@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.IO;
 using System.Text.RegularExpressions;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Schemas;
 using SiliconStudio.Core.Yaml.Tokens;
