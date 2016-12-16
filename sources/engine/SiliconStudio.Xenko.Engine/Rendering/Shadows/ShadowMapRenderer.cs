@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     if (shadowMapTexture.Atlas == null)
                         continue;
 
-                    shadowMapTexture.Renderer.Collect(RenderSystem.RenderContextOld, this, shadowMapTexture);
+                    shadowMapTexture.Renderer.Collect(context, this, shadowMapTexture);
                     for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
                     {
                         // Allocate shadow render view
