@@ -40,6 +40,5 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             }
         }
-
     }
 }

@@ -8,7 +8,6 @@ using SiliconStudio.Core.IO;
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("AnimationAssetType")]
-
     public abstract class AnimationAssetType
     {
         [DataMemberIgnore]
@@ -17,7 +16,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
     [Display("Animation Clip")]
     [DataContract("StandardAnimationAssetType")]
-
     public class StandardAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
@@ -26,7 +24,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
     [Display("Difference Clip")]
     [DataContract("DifferenceAnimationAssetType")]
-
     public class DifferenceAnimationAssetType : AnimationAssetType
     {
         [DataMemberIgnore]
