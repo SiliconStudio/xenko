@@ -1,11 +1,12 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
+
 #if defined(WINDOWS_DESKTOP) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativePath.h"
-#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 
 #ifndef __clang__
 //Make resharper work!
