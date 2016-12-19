@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -29,5 +29,14 @@ namespace SiliconStudio.Assets
         [DataMember(20)]
         [NonIdentifiableCollectionItems]
         public AssetPartCollection<TAssetPartDesign, TAssetPart> Parts { get; } = new AssetPartCollection<TAssetPartDesign, TAssetPart>();
+
+        /// <summary>
+        /// Enumerates the root parts of this hierarchy.
+        /// </summary>
+        /// <returns>A sequence containing the root parts of this hierarchy.</returns>
+        public IEnumerable<TAssetPartDesign> EnumerateRootParts()
+        {
+            return RootPartIds.Select(rootId => Parts[rootId]);
+        }
     }
 }
