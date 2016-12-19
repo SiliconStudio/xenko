@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Input
         /// The deadzone amount applied to all game controller axes
         /// </summary>
         public static float GameControllerAxisDeadZone = 0.05f;
-        
+
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input
         // List mapping GamePad index to the guid of the device
         private readonly List<List<IGamePadDevice>> gamePadRequestedIndex = new List<List<IGamePadDevice>>();
         private readonly List<IGamePadDevice> gamePadsByIndex = new List<IGamePadDevice>();
-        
+
         private readonly List<InputEvent> inputEvents = new List<InputEvent>();
 
         private readonly List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<IGameControllerDevice> gameControllerDevices = new List<IGameControllerDevice>();
         private readonly List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
         private readonly List<ISensorDevice> sensorDevices = new List<ISensorDevice>();
-        
+
         private readonly Dictionary<Type, IInputEventRouter> eventRouters = new Dictionary<Type, IInputEventRouter>();
 
         /// <summary>
@@ -61,13 +61,13 @@ namespace SiliconStudio.Xenko.Input
         internal InputManager(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
-            
+
             ActivatedGestures = new TrackingCollection<IInputGesture>();
             ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
-        
+
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the value indicating if the mouse position is currently locked or not.
         /// </summary>
         public bool IsMousePositionLocked => HasMouse && Mouse.IsPositionLocked;
-        
+
         /// <summary>
         /// All input events that happened since the last frame
         /// </summary>
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         /// <value><c>true</c> if game controllers are available; otherwise, <c>false</c>.</value>
         public bool HasGameController { get; private set; }
-        
+
         /// <summary>
         /// Gets a value indicating whether gamepads are available.
         /// </summary>
@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Input
         /// Raised before new input is sent to their respective event listeners
         /// </summary>
         public event EventHandler<InputPreUpdateEventArgs> PreUpdateInput;
-        
+
         /// <summary>
         /// Raised when a device was removed from the system
         /// </summary>
@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Input
         /// <exception cref="IndexOutOfRangeException">When <paramref name="gamePadIndex"/> is less than 0</exception>
         public IGamePadDevice GetGamePad(int gamePadIndex)
         {
-            if(gamePadIndex < 0) throw new IndexOutOfRangeException(nameof(gamePadIndex));
+            if (gamePadIndex < 0) throw new IndexOutOfRangeException(nameof(gamePadIndex));
             if (gamePadIndex >= gamePadsByIndex.Count) return null;
             return gamePadsByIndex[gamePadIndex];
         }
@@ -479,24 +479,24 @@ namespace SiliconStudio.Xenko.Input
                         break;
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
-                case AppContextType.Android:
-                    AddInputSource(new InputSourceAndroid());
-                    break;
+                    case AppContextType.Android:
+                        AddInputSource(new InputSourceAndroid());
+                        break;
 #endif
 #if SILICONSTUDIO_PLATFORM_IOS
-                case AppContextType.iOS:
-                    AddInputSource(new InputSourceiOS());
-                    break;
+                    case AppContextType.iOS:
+                        AddInputSource(new InputSourceiOS());
+                        break;
 #endif
 #if SILICONSTUDIO_UI_OPENTK
-                case AppContextType.DesktopOpenTK:
-                    AddInputSource(new InputSourceOpenTK());
-                    break;
+                    case AppContextType.DesktopOpenTK:
+                        AddInputSource(new InputSourceOpenTK());
+                        break;
 #endif
 #if SILICONSTUDIO_PLATFORM_UWP
-                case  AppContextType.UWP:
-                    AddInputSource(new InputSourceUWP());
-                    break;
+                    case  AppContextType.UWP:
+                        AddInputSource(new InputSourceUWP());
+                        break;
 #endif
 #if SILICONSTUDIO_PLATFORM_WINDOWS && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
                     case AppContextType.Desktop:
@@ -536,12 +536,12 @@ namespace SiliconStudio.Xenko.Input
             // ensure that OnApplicationPaused is called before destruction, when Game.Deactivated event is not triggered.
             OnApplicationPaused(this, EventArgs.Empty);
         }
-        
+
         private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
             // TODO: Rename
             var gesture = trackingCollectionChangedEventArgs.Item as InputGestureBase;
-            if(gesture == null) throw new InvalidOperationException("Added gesture does not inherit from InputGestureBase");
+            if (gesture == null) throw new InvalidOperationException("Added gesture does not inherit from InputGestureBase");
             switch (trackingCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -553,7 +553,7 @@ namespace SiliconStudio.Xenko.Input
                     break;
             }
         }
-        
+
         private void SetMousePosition(Vector2 normalizedPosition)
         {
             // Set mouse position for first mouse device
@@ -562,7 +562,7 @@ namespace SiliconStudio.Xenko.Input
                 Mouse.SetPosition(normalizedPosition);
             }
         }
-        
+
         private void InputDevicesOnCollectionChanged(IInputSource source, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -635,9 +635,9 @@ namespace SiliconStudio.Xenko.Input
             }
             UpdateConnectedDevices();
 
-            DeviceRemoved?.Invoke(this, new DeviceChangedEventArgs { Device = device, Source = source, Type = DeviceChangedEventType.Removed});
+            DeviceRemoved?.Invoke(this, new DeviceChangedEventArgs { Device = device, Source = source, Type = DeviceChangedEventType.Removed });
         }
-        
+
         private void UpdateConnectedDevices()
         {
             Keyboard = keyboardDevices.FirstOrDefault();
@@ -650,14 +650,14 @@ namespace SiliconStudio.Xenko.Input
 
             Pointer = pointerDevices.FirstOrDefault();
             HasPointer = Pointer != null;
-            
+
             GameControllerCount = GameControllers.Count;
             HasGameController = GameControllerCount > 0;
 
             GamePadCount = GamePads.Count;
             HasGamePad = GamePadCount > 0;
-            
-            gamePadDevices.Sort((l,r)=>l.Index.CompareTo(r.Index));
+
+            gamePadDevices.Sort((l, r) => l.Index.CompareTo(r.Index));
 
             DefaultGamePad = gamePadDevices.FirstOrDefault();
 
@@ -743,7 +743,7 @@ namespace SiliconStudio.Xenko.Input
         {
             ReassignActiveGamepads();
         }
-        
+
         private void RegisterSensor(ISensorDevice sensorDevice)
         {
             sensorDevices.Add(sensorDevice);
@@ -804,7 +804,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             for (int i = 0; i < gamePadRequestedIndex.Count; i++)
-            { 
+            {
                 var gamePad = gamePadRequestedIndex[i].FirstOrDefault();
                 gamePadsByIndex.Add(gamePad);
             }
@@ -844,6 +844,7 @@ namespace SiliconStudio.Xenko.Input
                     ((IInputEventListener<TEventType>)gesture).ProcessEvent((TEventType)evt);
                 }
             }
+
             public void TryAddListener(IInputEventListener listener)
             {
                 var specific = listener as IInputEventListener<TEventType>;
@@ -852,6 +853,7 @@ namespace SiliconStudio.Xenko.Input
                     Listeners.Add(specific);
                 }
             }
+
             public void PoolEvent(InputEvent evt)
             {
                 InputEventPool<TEventType>.Enqueue((TEventType)evt);

@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Input
 {
     [DataContract]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
+    [AssetContentType(typeof(InputActionConfiguration))]
     [Display("Input Action Configuration")]
     [AssetCompiler(typeof(InputActionConfigurationAssetCompiler))]
     public class InputActionConfigurationAsset : Asset

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// The new value of the pov controller
         /// </summary>
-        /// <remarks>Goes from 0 to 1 where 0 is up</remarks>
+        /// <remarks>Goes clockwise from 0 to 1 where 0 is up</remarks>
         public float Value;
 
         /// <summary>
