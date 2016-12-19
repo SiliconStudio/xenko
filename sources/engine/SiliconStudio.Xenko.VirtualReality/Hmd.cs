@@ -30,7 +30,17 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract float RenderFrameScaling { get; set; }
 
-        public abstract Size2 RenderFrameSize { get; }
+        public virtual Size2 RenderFrameSize
+        {
+            get
+            {
+                var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
+                width += width % 2;
+                var height = (int)(OptimalRenderFrameSize.Height * RenderFrameScaling);
+                height += height % 2;
+                return new Size2(width, height);
+            }
+        }
 
         public abstract DeviceState State { get; }
 
@@ -65,7 +75,14 @@ namespace SiliconStudio.Xenko.VirtualReality
 #endif
                     }
                     case HmdApi.Fove:
+                    {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+                        var device = new FoveHmd(game.Services);
+                        if (device.CanInitialize) return device;
+                        device.Destroy();
                         break;
+#endif
+                    }
                     case HmdApi.Google:
                         break;
                     default:

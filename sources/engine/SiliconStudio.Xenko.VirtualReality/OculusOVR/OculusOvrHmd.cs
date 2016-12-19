@@ -69,10 +69,14 @@ namespace SiliconStudio.Xenko.VirtualReality
                 OculusOvr.CommitFrame(ovrSession, null, 0);
             }));
 
+            leftCamera.UseCustomProjectionMatrix = true;
+            rightCamera.UseCustomProjectionMatrix = true;
+            leftCamera.UseCustomViewMatrix = true;
+            rightCamera.UseCustomViewMatrix = true;
             leftCamera.NearClipPlane *= ViewScaling;
             rightCamera.NearClipPlane *= ViewScaling;
 
-            base.Initialize(cameraRoot, leftCamera, rightCamera);
+            base.Initialize(cameraRoot, leftCamera, rightCamera, requireMirror);
         }
 
         public override void Draw(GameTime gameTime)
@@ -89,29 +93,24 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             //have to make sure it's updated now
             CameraRootEntity.Transform.UpdateWorldMatrix();
-
             CameraRootEntity.Transform.WorldMatrix.Decompose(out scale, out camRot, out camPos);
 
-            LeftCameraComponent.UseCustomProjectionMatrix = true;
             LeftCameraComponent.ProjectionMatrix = frameProperties.ProjLeft;
 
             var posL = camPos + Vector3.Transform(frameProperties.PosLeft * ViewScaling, camRot);
-            var rotL = Matrix.RotationQuaternion(frameProperties.RotLeft) * ViewScaling * Matrix.RotationQuaternion(camRot);
+            var rotL = Matrix.RotationQuaternion(frameProperties.RotLeft) * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
             var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotL);
             var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotL);
             var view = Matrix.LookAtRH(posL, posL + finalForward, finalUp);
-            LeftCameraComponent.UseCustomViewMatrix = true;
             LeftCameraComponent.ViewMatrix = view;
 
-            RightCameraComponent.UseCustomProjectionMatrix = true;
             RightCameraComponent.ProjectionMatrix = frameProperties.ProjRight;
 
             var posR = camPos + Vector3.Transform(frameProperties.PosRight * ViewScaling, camRot);
-            var rotR = Matrix.RotationQuaternion(frameProperties.RotRight) * ViewScaling *  Matrix.RotationQuaternion(camRot);
+            var rotR = Matrix.RotationQuaternion(frameProperties.RotRight) * Matrix.Scaling(ViewScaling) *  Matrix.RotationQuaternion(camRot);
             finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotR);
             finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotR);
             view = Matrix.LookAtRH(posR, posR + finalForward, finalUp);
-            RightCameraComponent.UseCustomViewMatrix = true;
             RightCameraComponent.ViewMatrix = view;
 
             base.Draw(gameTime);
@@ -124,18 +123,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Texture MirrorTexture { get; protected set; }
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
-
-        public override Size2 RenderFrameSize
-        {
-            get
-            {
-                var width = (int)(2160.0f * RenderFrameScaling);
-                width += width % 2;
-                var height = (int)(1200 * RenderFrameScaling);
-                height += height % 2;
-                return new Size2(width, height);
-            }
-        }
 
         public override DeviceState State
         {

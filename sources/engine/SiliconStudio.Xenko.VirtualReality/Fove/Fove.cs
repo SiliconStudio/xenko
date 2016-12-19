@@ -9,7 +9,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public class Fove
+    public static class Fove
     {
         static Fove()
         {
@@ -56,5 +56,9 @@ namespace SiliconStudio.Xenko.VirtualReality
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnFoveRecenter", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Recenter();
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnFoveIsHardwareReady", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IsHardwareReady();
     }
 }

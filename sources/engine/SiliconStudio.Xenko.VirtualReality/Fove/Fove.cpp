@@ -14,6 +14,8 @@ extern "C"
 {
 	void* __libFove = NULL;
 
+	static bool sFoveInitialized = false;
+
 	static Fove::IFVRHeadset* sHeadSet = NULL;
 	static Fove::IFVRCompositor* sCompositor = NULL;
 
@@ -22,25 +24,33 @@ extern "C"
 
 	DLL_EXPORT_API npBool xnFoveStartup()
 	{
-		__libFove = LoadDynamicLibrary("FoveClient");
-		if (!__libFove) __libFove = LoadDynamicLibrary("x86\\FoveClient");
-		if (!__libFove) __libFove = LoadDynamicLibrary("x64\\FoveClient");
-		if (!__libFove) __libFove = LoadDynamicLibrary("x64/FoveClient");
-		if (!__libFove) __libFove = LoadDynamicLibrary("x64/FoveClient");
 		if (!__libFove)
 		{
-			return false;
+			__libFove = LoadDynamicLibrary("FoveClient");
+			if (!__libFove) __libFove = LoadDynamicLibrary("x86\\FoveClient");
+			if (!__libFove) __libFove = LoadDynamicLibrary("x64\\FoveClient");
+			if (!__libFove) __libFove = LoadDynamicLibrary("x64/FoveClient");
+			if (!__libFove) __libFove = LoadDynamicLibrary("x64/FoveClient");
+			if (!__libFove)
+			{
+				return false;
+			}
+
+			GetFVRHeadsetPtr get_fvr_headset_ptr = (GetFVRHeadsetPtr)GetSymbolAddress(__libFove, "CGetFVRHeadset");
+			if (!get_fvr_headset_ptr) return false;
+			sHeadSet = get_fvr_headset_ptr();
+
+			CGetFVRCompositorPtr get_fvr_compositor_ptr = (CGetFVRCompositorPtr)GetSymbolAddress(__libFove, "CGetFVRCompositor");
+			if (!get_fvr_compositor_ptr) return false;
+			sCompositor = get_fvr_compositor_ptr();
 		}
 
-		GetFVRHeadsetPtr get_fvr_headset_ptr = (GetFVRHeadsetPtr)GetSymbolAddress(__libFove, "CGetFVRHeadset");
-		if (!get_fvr_headset_ptr) return false;
-		sHeadSet = get_fvr_headset_ptr();
+		if(sHeadSet && !sFoveInitialized)
+		{
+			sFoveInitialized = sHeadSet->Initialise();
+		}
 
-		CGetFVRCompositorPtr get_fvr_compositor_ptr = (CGetFVRCompositorPtr)GetSymbolAddress(__libFove, "CGetFVRCompositor");
-		if (!get_fvr_compositor_ptr) return false;
-		sCompositor = get_fvr_compositor_ptr();
-
-		return sHeadSet != NULL && sHeadSet->Initialise();
+		return sFoveInitialized;
 	}
 
 	DLL_EXPORT_API void xnFoveShutdown()
@@ -128,6 +138,16 @@ extern "C"
 			sHeadSet->TarePositionSensors();
 		}
 	}
+
+	DLL_EXPORT_API npBool xnFoveIsHardwareReady()
+	{
+		if(sHeadSet)
+		{
+			return sHeadSet->IsHardwareConnected() && sHeadSet->IsHardwareReady();
+		}
+
+		return false;
+	}
 }
 
 #else
@@ -163,6 +183,11 @@ extern "C"
 
 	DLL_EXPORT_API void xnFoveRecenter()
 	{
+	}
+
+	DLL_EXPORT_API bool xnFoveIsHardwareReady()
+	{
+		return false;
 	}
 }
 

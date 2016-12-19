@@ -95,6 +95,7 @@
     <Compile Include="DeviceState.cs" />
     <Compile Include="Eyes.cs" />
     <Compile Include="Fove\Fove.cs" />
+    <Compile Include="Fove\FoveHmd.cs" />
     <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="Hmd.cs" />
     <Compile Include="HmdApi.cs" />
