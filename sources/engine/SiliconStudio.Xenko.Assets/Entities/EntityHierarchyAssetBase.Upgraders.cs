@@ -160,6 +160,58 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
+        /// <summary>
+        /// <item>Upgrader from version 1.9.0-beta04 to 1.9.0-beta05 (PrefabAsset).</item>
+        /// <item>Upgrader from version 1.9.0-beta05 to 1.9.0-beta06 (SceneAsset).</item>
+        /// </summary>
+        /// <remarks>
+        /// Upgrades a bug where Edge and Center for trails values were treated wrongly
+        /// </remarks>
+        protected sealed class ParticleTrailEdgeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic entityAndDesign in entities)
+                {
+                    var entity = entityAndDesign.Entity;
+
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Value?.Node.Tag ?? component.Node.Tag;
+                        if (componentTag == "!ParticleSystemComponent")
+                        {
+                            dynamic particleSystem = component.Value?.ParticleSystem ?? component.ParticleSystem;
+                            if (particleSystem != null)
+                            {
+
+                                foreach (dynamic emitter in particleSystem.Emitters)
+                                {
+                                    dynamic shapeBuilder = emitter.Value?.ShapeBuilder ?? emitter.ShapeBuilder;
+                                    if (shapeBuilder == null)
+                                        continue;
+
+                                    var shapeBuilderTag = shapeBuilder.Node.Tag;
+                                    if (shapeBuilderTag != "!ShapeBuilderTrail")
+                                        continue;
+
+                                    if (shapeBuilder.EdgePolicy == "Center")
+                                    {
+                                        shapeBuilder["EdgePolicy"] = "Edge";
+                                    }
+                                    else
+                                    {
+                                        shapeBuilder["EdgePolicy"] = "Center";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected sealed class EntityDesignUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,

@@ -51,6 +51,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public class MyAsset5 : MyAssetBase
         {
             public List<IMyInterface> MyInterfaces { get; set; } = new List<IMyInterface>();
+            public IMyInterface MyInterface { get; set; }
         }
 
         [DataContract]

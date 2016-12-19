@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
     {
         private bool premultiplyAlpha;
-        private bool hasChanged;
+        private bool hasChanged = true;
 
         // Possible optimization will be to keep this on the ComputeValueBase<T> side
         private Color4 cachedColor;
