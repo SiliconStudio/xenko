@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Texture bothEyesMirror;
         private Texture leftEyeMirror;
         private Texture rightEyeMirror;
+        private DeviceState state;
 
         internal OpenVrHmd(IServiceRegistry registry) : base(registry)
         { 
@@ -24,15 +25,17 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
-        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
+        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
         {
-            var width = (int)(2160.0f*RenderFrameScaling);
-            width += width % 2;
-            var height = (int)(1200*RenderFrameScaling);
-            height += height % 2;
+            var size = RenderFrameSize;
+            var width = size.Width;
+            var height = size.Height;
             RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
 
-            bothEyesMirror = Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            if (requireMirror)
+            {
+                bothEyesMirror = Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            }
 
             var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
             compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
@@ -41,14 +44,19 @@ namespace SiliconStudio.Xenko.VirtualReality
                 OpenVR.Submit(1, RenderFrameProvider.RenderFrame.RenderTargets[0], ref rightView);
 
                 //copy mirror
+                if (!requireMirror) return;
+
                 var wholeRegion = new ResourceRegion(0, 0, 0, width, height, 1);
                 x.CommandList.CopyRegion(leftEyeMirror, 0, wholeRegion, bothEyesMirror, 0);
-                x.CommandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width / 2);
+                x.CommandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width/2);
             }));
 
             leftEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 0);
             rightEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 1);
             MirrorTexture = bothEyesMirror;
+
+            leftCamera.NearClipPlane *= ViewScaling;
+            rightCamera.NearClipPlane *= ViewScaling;
 
             base.Initialize(cameraRoot, leftCamera, rightCamera);
         }
@@ -67,7 +75,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             OpenVR.GetEyeToHead(0, out leftEye);
             OpenVR.GetEyeToHead(1, out rightEye);
 
-            State = OpenVR.GetHeadPose(out head);
+            state = OpenVR.GetHeadPose(out head);
 
             OpenVR.GetProjection(0, LeftCameraComponent.NearClipPlane, LeftCameraComponent.FarClipPlane, out leftProj);
             OpenVR.GetProjection(1, LeftCameraComponent.NearClipPlane, LeftCameraComponent.FarClipPlane, out rightProj);
@@ -99,13 +107,23 @@ namespace SiliconStudio.Xenko.VirtualReality
             base.Draw(gameTime);
         }
 
-        public override DeviceState State { get; protected set; }
+        public override DeviceState State => state;
 
         public override Texture MirrorTexture { get; protected set; }
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
 
-        public override Size2F RenderFrameSize => new Size2F(RenderFrameProvider.RenderFrame.Width, RenderFrameProvider.RenderFrame.Height);
+        public override Size2 RenderFrameSize
+        {
+            get
+            {
+                var width = (int)(2160.0f*RenderFrameScaling);
+                width += width%2;
+                var height = (int)(1200*RenderFrameScaling);
+                height += height%2;
+                return new Size2(width, height);
+            }
+        }
 
         public override DirectRenderFrameProvider RenderFrameProvider { get; protected set; }
 

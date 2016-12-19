@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using System;
 using SharpDX.Direct3D11;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -12,7 +10,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Xenko.VirtualReality.OculusOVR
+namespace SiliconStudio.Xenko.VirtualReality
 {
     internal class OculusOvrHmd : Hmd
     {
@@ -27,22 +25,25 @@ namespace SiliconStudio.Xenko.VirtualReality.OculusOVR
         {         
         }
 
-        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
+        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
-            Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString();
+            //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString();
 
             int texturesCount;
-            if (!OculusOvr.CreateTexturesDx(ovrSession, GraphicsDevice.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, 1280, 720))
+            if (!OculusOvr.CreateTexturesDx(ovrSession, GraphicsDevice.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
             {
                 throw new Exception(OculusOvr.GetError());
             }
 
-            var mirrorTex = OculusOvr.GetMirrorTexture(ovrSession, Dx11Texture2DGuid);
-            MirrorTexture = new Texture(GraphicsDevice);
-            MirrorTexture.InitializeFrom(new Texture2D(mirrorTex), false);
-           
+            if (requireMirror)
+            {
+                var mirrorTex = OculusOvr.GetMirrorTexture(ovrSession, Dx11Texture2DGuid);
+                MirrorTexture = new Texture(GraphicsDevice);
+                MirrorTexture.InitializeFrom(new Texture2D(mirrorTex), false);
+            }
+
             textures = new Texture[texturesCount];
             for (var i = 0; i < texturesCount; i++)
             {
@@ -58,7 +59,6 @@ namespace SiliconStudio.Xenko.VirtualReality.OculusOVR
             }
 
             RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
-
 
             var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
             compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
@@ -125,9 +125,28 @@ namespace SiliconStudio.Xenko.VirtualReality.OculusOVR
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
 
-        public override Size2F RenderFrameSize => new Size2F(RenderFrameProvider.RenderFrame.Width, RenderFrameProvider.RenderFrame.Height);
+        public override Size2 RenderFrameSize
+        {
+            get
+            {
+                var width = (int)(2160.0f * RenderFrameScaling);
+                width += width % 2;
+                var height = (int)(1200 * RenderFrameScaling);
+                height += height % 2;
+                return new Size2(width, height);
+            }
+        }
 
-        public override DeviceState State { get; protected set; }
+        public override DeviceState State
+        {
+            get
+            {
+                var deviceStatus = OculusOvr.GetStatus(ovrSession);
+                if(deviceStatus.DisplayLost || !deviceStatus.HmdPresent) return DeviceState.Invalid;
+                if(deviceStatus.HmdMounted && deviceStatus.IsVisible) return DeviceState.Valid;
+                return DeviceState.OutOfRange;
+            }
+        }
 
         public override bool CanInitialize
         {
@@ -135,8 +154,29 @@ namespace SiliconStudio.Xenko.VirtualReality.OculusOVR
             {
                 if (initDone) return true;
                 initDone = OculusOvr.Startup();
+                if (initDone)
+                {
+                    long deviceId;
+                    var tempSession = OculusOvr.CreateSessionDx(out deviceId);
+                    if (tempSession != IntPtr.Zero)
+                    {
+                        OculusOvr.DestroySession(tempSession);
+                        initDone = true;
+                    }
+                    else
+                    {
+                        initDone = false;
+                    }
+                }
                 return initDone;
             }
         }
+
+        public override void Recenter()
+        {
+            OculusOvr.Recenter(ovrSession);
+        }
     }
 }
+
+#endif

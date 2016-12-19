@@ -4,7 +4,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Composers;
-using SiliconStudio.Xenko.VirtualReality.OculusOVR;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -31,10 +30,14 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract float RenderFrameScaling { get; set; }
 
-        public abstract Size2F RenderFrameSize { get; }
+        public abstract Size2 RenderFrameSize { get; }
 
-        public abstract DeviceState State { get; protected set; }
+        public abstract DeviceState State { get; }
 
+        /// <summary>
+        /// Allows you to scale the view, effectively it will change the size of the player in respect to the world, turning it into a giant or a tiny ant.
+        /// </summary>
+        /// <remarks>This will reduce the near clip plane of the cameras, it might induce depth issues.</remarks>
         public float ViewScaling { get; set; }
 
         public static Hmd GetHmd(Game game, HmdApi[] preferredApis)
@@ -75,7 +78,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool CanInitialize { get; }
 
-        public virtual void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
+        public virtual void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
         {
             CameraRootEntity = cameraRoot;
             LeftCameraComponent = leftCamera;
