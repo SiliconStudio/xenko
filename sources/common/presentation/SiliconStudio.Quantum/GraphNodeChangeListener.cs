@@ -115,7 +115,7 @@ namespace SiliconStudio.Quantum
                             var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
                             if (removedNode != null)
                             {
-                                visitor.Visit(removedNode);
+                                visitor.Visit(removedNode, node.Content as MemberContent);
                             }
                         }
                         break;
@@ -160,7 +160,7 @@ namespace SiliconStudio.Quantum
                             if (addedNode != null)
                             {
                                 var path = new GraphNodePath(node).PushIndex(index);
-                                visitor.Visit(addedNode, path);
+                                visitor.Visit(addedNode, node.Content as MemberContent, path);
                             }
                         }
                         break;
