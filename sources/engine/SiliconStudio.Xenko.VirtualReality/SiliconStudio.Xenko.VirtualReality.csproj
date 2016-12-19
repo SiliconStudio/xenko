@@ -101,6 +101,7 @@
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="NoHmdDeviceException.cs" />
     <Compile Include="OculusOVR\OculusOVR.cs" />
+    <Compile Include="OculusOVR\OculusOVRHmd.cs" />
     <Compile Include="OpenVR\OpenVrHmd.cs" />
     <Compile Include="OpenVR\OpenVrTouchController.cs" />
     <Compile Include="OpenVR\OpenVR.cs" />

@@ -20,8 +20,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         internal OpenVrHmd(IServiceRegistry registry) : base(registry)
         { 
-            OpenVR.Init();
         }
+
+        public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
         public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
         {
@@ -66,12 +67,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             OpenVR.GetEyeToHead(0, out leftEye);
             OpenVR.GetEyeToHead(1, out rightEye);
 
-            LeftEyePose = leftEye;
-            RightEyePose = rightEye;
-
             State = OpenVR.GetHeadPose(out head);
-
-            HeadPose = head;
 
             OpenVR.GetProjection(0, LeftCameraComponent.NearClipPlane, LeftCameraComponent.FarClipPlane, out leftProj);
             OpenVR.GetProjection(1, LeftCameraComponent.NearClipPlane, LeftCameraComponent.FarClipPlane, out rightProj);

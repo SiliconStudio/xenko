@@ -4,6 +4,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.VirtualReality.OculusOVR;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         protected Hmd(IServiceRegistry registry) : base(registry)
         {
             DrawOrder = -10000;
-            ViewScaling = Matrix.Scaling(1.0f);
+            ViewScaling = 1.0f;
             Game.GameSystems.Add(this);
         }
 
@@ -21,12 +22,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         public virtual CameraComponent LeftCameraComponent { get; set; }
 
         public virtual CameraComponent RightCameraComponent { get; set; }
-
-        public Matrix HeadPose { get; protected set; }
-
-        public Matrix LeftEyePose { get; protected set; }
-
-        public Matrix RightEyePose { get; protected set; }
 
         public abstract Size2 OptimalRenderFrameSize { get; }
 
@@ -40,7 +35,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract DeviceState State { get; protected set; }
 
-        public Matrix ViewScaling { get; set; }
+        public float ViewScaling { get; set; }
 
         public static Hmd GetHmd(Game game, HmdApi[] preferredApis)
         {
@@ -49,11 +44,23 @@ namespace SiliconStudio.Xenko.VirtualReality
                 switch (hmdApi)
                 {
                     case HmdApi.Oculus:
-                        break;
-                    case HmdApi.OpenVr:
+                    {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        return new OpenVrHmd(game.Services);
+                        var device = new OculusOvrHmd(game.Services);
+                        if (device.CanInitialize) return device;
+                        device.Destroy();
+                        break;
 #endif
+                    }
+                    case HmdApi.OpenVr:
+                    {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+                        var device = new OpenVrHmd(game.Services);
+                        if (device.CanInitialize) return device;
+                        device.Destroy();
+                        break;
+#endif
+                    }
                     case HmdApi.Fove:
                         break;
                     case HmdApi.Google:
@@ -65,6 +72,8 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             throw new NoHmdDeviceException();
         }
+
+        public abstract bool CanInitialize { get; }
 
         public virtual void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera)
         {

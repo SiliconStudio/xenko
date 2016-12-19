@@ -156,14 +156,20 @@ namespace SiliconStudio.Xenko.VirtualReality
             NativeLibrary.PreloadLibrary("openvr_api.dll");
         }
 
-        public static void Init()
+        public static bool InitDone = false;
+
+        public static bool Init()
         {
             var err = EVRInitError.None;
             Valve.VR.OpenVR.Init(ref err);
             if (err != EVRInitError.None)
             {
-                throw new Exception("Failed to initialize OpenVR.");
+                return false;
             }
+
+            InitDone = true;
+
+            return true;
         }
 
         public static bool Submit(int eyeIndex, Texture texture, ref RectangleF viewport)
