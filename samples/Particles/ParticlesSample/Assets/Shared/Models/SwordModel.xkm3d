@@ -5,24 +5,22 @@ Tags: []
 Source: ../../../Resources/Models/SwordModel.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: fb94837b-1b68-53f3-e280-97d3e28097d3
+    7b8394fb681bf353e28097d3e28097d3:
         Name: glowMT
         MaterialInstance:
-            ~Id: da083f5a-3b12-475a-a843-96f3eebaa5bc
-            Material: 51e241d6-d643-4b00-9db6-131f34fbe779/c1c59baa-abf1-47d3-9c8e-2e9046f50ece:Materials/Emissive
-    -   ~Id: 41ca58b1-5be1-f846-b274-6c0a97fdd6ee
+            Material: c1c59baa-abf1-47d3-9c8e-2e9046f50ece:Materials/Emissive
+    b158ca41e15b46f8b2746c0a97fdd6ee:
         Name: semiGlossMT
         MaterialInstance:
-            ~Id: 06769a01-df7a-4cb2-b5b3-0e7fc742e265
-            Material: 6f8e2c27-d11a-4d3b-af7e-38694fb1daa4/dd76a5f4-d28a-470e-9bca-e3231a52d132:Materials/BodyGray
-    -   ~Id: fb8d2c93-c0d8-2e8c-58a6-732158a67321
+            Material: dd76a5f4-d28a-470e-9bca-e3231a52d132:Materials/BodyGray
+    932c8dfbd8c08c2e58a6732158a67321:
         Name: bladeMT
         MaterialInstance:
-            ~Id: 00086a3d-1389-4953-bd95-523ed1b991e6
-            Material: f19da5ab-acf3-4eb3-9093-765909f46712/025822a7-4b62-42f4-83e1-8d617607df47:Materials/Blade
-    -   ~Id: 0cd2c498-aa91-1816-068f-92bf068f92bf
+            Material: 025822a7-4b62-42f4-83e1-8d617607df47:Materials/Blade
+    98c4d20c91aa1618068f92bf068f92bf:
         Name: glossMT
         MaterialInstance:
-            ~Id: 1d389b54-08aa-4353-b27a-2834c0b0224a
-            Material: cd0ce476-3ec1-428e-8c86-60ec3c3c26e3/4804672a-09da-4d16-a2e4-cc5a9e722ab2:Materials/BodyWhite
+            Material: 4804672a-09da-4d16-a2e4-cc5a9e722ab2:Materials/BodyWhite
 Skeleton: null
+~SourceHashes:
+    c1799f1f0f4211be95d5a879368c4eac~../../../Resources/Models/SwordModel.fbx: f21eb0d2f6563aa8f6a26b74477d96d5

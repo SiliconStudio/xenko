@@ -5,12 +5,14 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 5b1c18a7-42f2-4df6-ae8f-e0d4c949ec9c/13ad1467-0e79-4492-a615-41f43d953864:Textures/xenko_box_normals
+            Texture: 13ad1467-0e79-4492-a615-41f43d953864:Textures/xenko_box_normals
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.8
@@ -24,15 +26,12 @@ Attributes:
         Intensity: !ComputeFloat
             Value: 0.6
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 363abf19-0393-4699-8413-3f6bfa022308
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: f821cd77-2e04-4187-8fd4-871c39b2a5ab
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 1c161de0-65bd-4dd1-9feb-a0fab79ba691
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeTextureScalar
-            Texture: 8340093c-3fb4-4bd3-8f1f-2dba700a1fe6/57ddc50d-9565-431e-943c-a7da593efd69:Textures/xenko_box_occlusion
+            Texture: 57ddc50d-9565-431e-943c-a7da593efd69:Textures/xenko_box_occlusion
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
@@ -50,4 +49,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

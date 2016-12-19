@@ -5,12 +5,14 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 3b025963-37a6-4bbf-9c5b-a073a7ecde4a/c9f8f580-763f-4948-b65e-ec011e2d7a8e:Textures/xenko_coin_a_normals
+            Texture: c9f8f580-763f-4948-b65e-ec011e2d7a8e:Textures/xenko_coin_a_normals
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.9
@@ -22,15 +24,12 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 74868dfd-ed1b-4d37-a50f-5541e5c49e78
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 20eaa5f2-11f4-4cd4-8a33-f5860fa74a56
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 5dc03871-28f1-426b-bcba-771ae790234e
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeTextureScalar
-            Texture: 98737532-ebaf-4b24-b531-3dfa4269dcf2/052260a6-1e31-4010-92bb-c627b85427df:Textures/xenko_coin_a_occlusion
+            Texture: 052260a6-1e31-4010-92bb-c627b85427df:Textures/xenko_coin_a_occlusion
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
@@ -44,4 +43,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

@@ -202,6 +202,10 @@
       <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
@@ -300,7 +304,6 @@
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Effect\CompileDefaultSceneEffectCommand.cs" />
-    <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
@@ -311,14 +314,12 @@
     <Compile Include="Effect\EffectLogStore.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
-    <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityComponentReferenceSerializer.cs" />
     <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
-    <Compile Include="Entities\PrefabAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyDataExtensions.cs" />
     <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
@@ -352,7 +353,6 @@
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />
     <Compile Include="SceneRenderer.cs" />
-    <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontWriter.cs" />
@@ -397,8 +397,6 @@
     <Compile Include="RenderFrames\RenderFrameAsset.cs" />
     <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Serializers\EntityComponentCollectionSerializer.cs" />
-    <Compile Include="Serializers\UnloadableComponent.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
@@ -418,7 +416,7 @@
     <Compile Include="Textures\Packing\AtlasTextureFactory.cs" />
     <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
-    <Compile Include="Serializers\GenericDictionarySerializer.cs" />
+    <Compile Include="Serializers\ComputeColorParametersSerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
     <Compile Include="SpriteFont\CharacterRegion.cs" />
     <Compile Include="SpriteFont\Compiler\BitmapImporter.cs" />
@@ -447,6 +445,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="UI\Resources\UIDesigns.dds" />
+    <None Include="UI\Resources\UIDesigns.pdn" />
+    <None Include="UI\XenkoUIDesigns.xksheet" />
+    <None Include="UI\XenkoUILibrary.xkuilib" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

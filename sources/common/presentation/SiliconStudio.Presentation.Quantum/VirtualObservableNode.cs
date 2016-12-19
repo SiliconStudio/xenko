@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly Action<object> Setter;
         private IContent associatedContent;
         private bool updatingValue;
+        private bool initialized;
 
         static VirtualObservableNode()
         {
@@ -44,7 +45,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override int? Order { get; }
 
-        public override bool HasList => typeof(ICollection).IsAssignableFrom(Type);
+        public override bool HasCollection => typeof(ICollection).IsAssignableFrom(Type);
 
         public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
 
@@ -77,9 +78,17 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent.Changed += ContentChanged;
         }
 
-        public new void AddCommand(INodeCommandWrapper command)
+        public void CompleteInitialization()
         {
-            base.AddCommand(command);
+            // Safety check
+            if (initialized) throw new InvalidOperationException("This node has already been initialized.");
+            Owner.ObservableViewModelService.NotifyNodeInitialized(this);
+            initialized = true;
+        }
+
+        protected override void Refresh()
+        {
+            // TODO: what do we want to do for virtual nodes? They are constructed completely externally...
         }
 
         protected virtual void SetTypedValue(object value)
@@ -119,6 +128,6 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }

@@ -54,7 +54,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         private readonly Dictionary<string, object> aliasToObject;
         private readonly Dictionary<object, string> objectToAlias;
 
-        public AnchorSerializer(IYamlSerializable next) : base(next)
+        public AnchorSerializer()
         {
             aliasToObject = new Dictionary<string, object>();
             objectToAlias = new Dictionary<object, string>(new IdentityEqualityComparer<object>());

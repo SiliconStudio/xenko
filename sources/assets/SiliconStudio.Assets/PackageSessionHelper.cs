@@ -161,14 +161,14 @@ MinimumVisualStudioVersion = 14.0.23107.0";
                         continue;
                     }
 
-                    var packageFolder = solution.Projects.FindByGuid(package.Id);
+                    var packageFolder = solution.Projects.FindByGuid((Guid)package.Id);
 
                     // Packages are created as solution folders in VisualStudio
                     if (packageFolder == null)
                     {
                         // Create this package as a Solution Folder 
                         packageFolder = new Project(solution,
-                            package.Id,
+                            (Guid)package.Id,
                             KnownProjectTypeGuid.SolutionFolder,
                             package.Meta.Name,
                             package.Meta.Name,

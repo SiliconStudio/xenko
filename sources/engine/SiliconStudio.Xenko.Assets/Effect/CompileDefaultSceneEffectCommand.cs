@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
 
             // And all its dependencies (TODO: restrict ourselves on what affect rendering?)
             var sceneAssetItem = package.Session.FindAsset(defaultSceneUrl);
-            var dependencies = package.Session.DependencyManager.ComputeDependencies(sceneAssetItem, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            var dependencies = package.Session.DependencyManager.ComputeDependencies(sceneAssetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
 
             foreach (var dependency in dependencies.LinksOut)
             {

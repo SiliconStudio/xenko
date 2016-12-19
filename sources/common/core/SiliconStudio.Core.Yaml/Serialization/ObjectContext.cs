@@ -18,6 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
@@ -42,6 +44,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             SerializerContext = serializerContext;
             Instance = instance;
             Descriptor = descriptor;
+            Properties = new PropertyContainer();
         }
 
         /// <summary>
@@ -53,25 +56,25 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the current YAML reader. Equivalent to calling directly <see cref="Serialization.SerializerContext.Reader"/>.
         /// </summary>
         /// <value>The current YAML reader.</value>
-        public EventReader Reader { get { return SerializerContext.Reader; } }
+        public EventReader Reader => SerializerContext.Reader;
 
         /// <summary>
         /// Gets the writer used while deserializing. Equivalent to calling directly <see cref="Serialization.SerializerContext.Writer"/>.
         /// </summary>
         /// <value>The writer.</value>
-        public IEventEmitter Writer { get { return SerializerContext.Writer; } }
+        public IEventEmitter Writer => SerializerContext.Writer;
 
         /// <summary>
         /// Gets the settings. Equivalent to calling directly <see cref="Serialization.SerializerContext.Settings"/>.
         /// </summary>
         /// <value>The settings.</value>
-        public SerializerSettings Settings { get { return SerializerContext.Settings; } }
+        public SerializerSettings Settings => SerializerContext.Settings;
 
         /// <summary>
         /// Gets the object serializer backend.
         /// </summary>
         /// <value>The object serializer backend.</value>
-        public IObjectSerializerBackend ObjectSerializerBackend { get { return SerializerContext.ObjectSerializerBackend; } }
+        public IObjectSerializerBackend ObjectSerializerBackend => SerializerContext.ObjectSerializerBackend;
 
         /// <summary>
         /// The instance link to this context.
@@ -96,6 +99,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The style used when serializing.
         /// </summary>
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
+
+        /// <summary>
+        /// The style used when serializing scalars.
+        /// </summary>
+        public ScalarStyle ScalarStyle { get; set; }
+
+        /// <summary>
+        /// The dictionary containing custom properties for this context.
+        /// </summary>
+        public PropertyContainer Properties;
     }
 }

@@ -1,5 +1,12 @@
 <!-- Build file pre-included by all Silicon Studio projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Setup this part according to your project if you want your .csproj to compile individually without going through the .sln file -->
+  <PropertyGroup>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(MSBuildThisFileDirectory)..\..\..\build\</SolutionDir>
+    <SolutionName Condition=" '$(SolutionName)' == '' ">Xenko</SolutionName>
+    <SolutionPath Condition=" '$(SolutionPath)' == '' ">$(SolutionDir)$(SolutionName).sln</SolutionPath>
+  </PropertyGroup>
+  
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <Import Project="$(SolutionDir)SiliconStudio.PreSettings.Local.targets" Condition="Exists('$(SolutionDir)SiliconStudio.PreSettings.Local.targets')" />

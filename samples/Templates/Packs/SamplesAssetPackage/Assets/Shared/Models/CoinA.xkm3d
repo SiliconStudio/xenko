@@ -5,11 +5,10 @@ Tags: []
 Source: ../../../Resources/Models/XenkoCoin.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: be7c0b58-8282-e807-8282-07e8828207e8
+    580b7cbe828207e8828207e8828207e8:
         Name: Coin
         MaterialInstance:
-            ~Id: 510e5cd1-01b0-4a22-9bd3-1282eedfd3a5
-            Material: 55552c69-f9b9-4d36-82af-814b918d2ced/3f0137f3-e26b-4913-a475-756e20c3ff79:Materials/coin
+            Material: 3f0137f3-e26b-4913-a475-756e20c3ff79:Materials/coin
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/Models/XenkoCoin.fbx: f00d518ee22cd1edef712f91c53faceb
+    47a4789112d242562663ba32ed9707c2~../../../Resources/Models/XenkoCoin.fbx: f00d518ee22cd1edef712f91c53faceb

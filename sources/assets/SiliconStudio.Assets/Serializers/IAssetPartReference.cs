@@ -1,5 +1,4 @@
 using System;
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -12,7 +11,7 @@ namespace SiliconStudio.Assets.Serializers
         /// Gets or sets the actual type of object that is being deserialized.
         /// </summary>
         /// <remarks>
-        /// This property is transient and used only during serialization. Therefore, implementations should have the <see cref="DataMemberIgnoreAttribute"/> set on this property.
+        /// This property is transient and used only during serialization. Therefore, implementations should have the <see cref="Core.DataMemberIgnoreAttribute"/> set on this property.
         /// </remarks>
         Type InstanceType { get; set; }
 

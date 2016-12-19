@@ -135,6 +135,7 @@
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\InputComponent.cs" />
+    <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -378,7 +379,6 @@
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\LogicalGroup.cs" />
     <Compile Include="Rendering\LogicalGroupReference.cs" />
-    <Compile Include="Rendering\MaterialNull.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -3603,6 +3603,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary) });
+            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
             DisplayName = this.combinedNodes.First().DisplayName;
@@ -83,7 +84,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void Initialize()
         {
-            var commandGroups = new Dictionary<string, List<ModelNodeCommandWrapper>>();
+            var commandGroups = new Dictionary<string, List<NodeCommandWrapperBase>>();
             foreach (var node in combinedNodes)
             {
                 if (node.IsDestroyed)
@@ -92,7 +93,7 @@ namespace SiliconStudio.Presentation.Quantum
                 foreach (var command in node.Commands)
                 {
                     var list = commandGroups.GetOrCreateValue(command.Name);
-                    list.Add((ModelNodeCommandWrapper)command);
+                    list.Add((NodeCommandWrapperBase)command);
                 }
             }
 
@@ -111,7 +112,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
 
-            if (!HasList || HasDictionary)
+            if (!HasCollection || HasDictionary)
             {
                 var commonChildren = GetCommonChildren();
                 GenerateChildren(commonChildren);
@@ -148,7 +149,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override sealed bool IsPrimitive { get { return CombinedNodes.All(x => x.IsPrimitive); } }
+        public sealed override bool IsPrimitive { get { return CombinedNodes.All(x => x.IsPrimitive); } }
 
         public IReadOnlyCollection<SingleObservableNode> CombinedNodes => combinedNodes;
 
@@ -167,10 +168,10 @@ namespace SiliconStudio.Presentation.Quantum
         public bool GroupByType { get; set; }
 
         /// <inheritdoc/>
-        public override sealed bool HasList => CombinedNodes.First().HasList;
+        public sealed override bool HasCollection => CombinedNodes.First().HasCollection;
 
         /// <inheritdoc/>
-        public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
+        public sealed override bool HasDictionary => CombinedNodes.First().HasDictionary;
 
         /// <inheritdoc/>
         public override void Destroy()
@@ -182,7 +183,7 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        public void Refresh()
+        protected override void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
 
@@ -190,7 +191,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var parent = (CombinedObservableNode)Parent;
                 parent.NotifyPropertyChanging(Name);
-                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
                 
                 if (AreCombinable(CombinedNodes))
                 {
@@ -206,7 +207,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Initialize();
                 }
 
-                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
                 parent.NotifyPropertyChanged(Name);
             }
         }
@@ -492,6 +493,6 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
     }
 }

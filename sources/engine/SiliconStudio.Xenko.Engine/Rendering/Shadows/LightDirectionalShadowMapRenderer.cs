@@ -73,7 +73,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowType |= LightShadowType.DepthRangeAuto;
             }
-            else if (shadowMap.DepthRange.IsBlendingCascades)
+
+            if (shadowMap.DepthRange.IsBlendingCascades)
             {
                 shadowType |= LightShadowType.BlendCascade;
             }
@@ -162,7 +163,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Vector3 cascadeMaxBoundLS;
                 Vector3 target;
 
-                if (!shadow.DepthRange.IsAutomatic && (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping))
+                if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ViewSnapping || shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
                     // Make sure we are using the same direction when stabilizing
                     var boundingVS = BoundingSphere.FromPoints(cascadeFrustumCornersVS);
@@ -224,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Stabilize the Shadow matrix on the projection
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
-                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;
+                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;  // shouln't it be scale and not translation ?
                     shadowPixelPosition.Z = 0;
                     var shadowPixelPositionRounded = new Vector3((float)Math.Round(shadowPixelPosition.X), (float)Math.Round(shadowPixelPosition.Y), 0.0f);
 
@@ -298,6 +299,22 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return projectionMatrix.M43 / denominator;
         }
 
+        private static float LogFloor(float value)
+        {
+            var log = (float)Math.Log(value, 1.5);
+            log = (float)Math.Floor(log);
+            log = (float)Math.Pow(1.5, log);
+            return log;
+        }
+
+        private static float LogCeiling(float value)
+        {
+            var log = (float)Math.Log(value, 1.5);
+            log = (float)Math.Ceiling(log);
+            log = (float)Math.Pow(1.5, log);
+            return log;
+        }
+
         private Vector2 ComputeCascadeSplits(RenderContext context, ShadowMapRenderer shadowContext, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
@@ -329,10 +346,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
+                minDistance = LogFloor(minDistance);
 
                 // Reserve 2/3 of the guard distance for the max distance
                 var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
                 maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
+                // snap to a 'closest floor' of sorts, to improve stability:
+                maxDistance = LogCeiling(maxDistance);
             }
             else
             {
@@ -533,7 +553,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 shadowShader = new ShaderMixinSource();
                 var isDepthRangeAuto = (this.shadowType & LightShadowType.DepthRangeAuto) != 0;
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0 && !isDepthRangeAuto, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
+                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
                 // TODO: Temporary passing filter here
 
                 switch (shadowType & LightShadowType.FilterMask)

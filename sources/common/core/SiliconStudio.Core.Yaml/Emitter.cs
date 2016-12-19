@@ -109,7 +109,8 @@ namespace SiliconStudio.Core.Yaml
             public bool isFlowPlainAllowed;
             public bool isBlockPlainAllowed;
             public bool isSingleQuotedAllowed;
-            public bool isBlockAllowed;
+            public bool isFoldAllowed;
+            public bool isLiteralAllowed;
             public ScalarStyle style;
         }
 
@@ -323,6 +324,7 @@ namespace SiliconStudio.Core.Yaml
             bool flow_indicators = false;
             bool line_breaks = false;
             bool special_characters = false;
+            bool tabs = false;
 
             bool leading_space = false;
             bool leading_break = false;
@@ -342,7 +344,7 @@ namespace SiliconStudio.Core.Yaml
                 scalarData.isFlowPlainAllowed = false;
                 scalarData.isBlockPlainAllowed = true;
                 scalarData.isSingleQuotedAllowed = true;
-                scalarData.isBlockAllowed = false;
+                scalarData.isFoldAllowed = false;
                 return;
             }
 
@@ -412,6 +414,11 @@ namespace SiliconStudio.Core.Yaml
                     special_characters = true;
                 }
 
+                if (buffer.IsTab())
+                {
+                    tabs = true;
+                }
+
                 if (buffer.IsBreak())
                 {
                     line_breaks = true;
@@ -474,7 +481,8 @@ namespace SiliconStudio.Core.Yaml
             scalarData.isFlowPlainAllowed = true;
             scalarData.isBlockPlainAllowed = true;
             scalarData.isSingleQuotedAllowed = true;
-            scalarData.isBlockAllowed = true;
+            scalarData.isFoldAllowed = true;
+            scalarData.isLiteralAllowed = true;
 
             if (leading_space || leading_break || trailing_space || trailing_break)
             {
@@ -484,7 +492,7 @@ namespace SiliconStudio.Core.Yaml
 
             if (trailing_space)
             {
-                scalarData.isBlockAllowed = false;
+                scalarData.isFoldAllowed = false;
             }
 
             if (break_space)
@@ -494,12 +502,17 @@ namespace SiliconStudio.Core.Yaml
                 scalarData.isSingleQuotedAllowed = false;
             }
 
-            if (space_break || special_characters)
+            if (space_break || special_characters || tabs)
             {
                 scalarData.isFlowPlainAllowed = false;
                 scalarData.isBlockPlainAllowed = false;
                 scalarData.isSingleQuotedAllowed = false;
-                scalarData.isBlockAllowed = false;
+                scalarData.isFoldAllowed = false;
+            }
+
+            if (special_characters)
+            {
+                scalarData.isLiteralAllowed = false;
             }
 
             if (line_breaks)
@@ -905,7 +918,7 @@ namespace SiliconStudio.Core.Yaml
 
             SequenceStart sequenceStart = (SequenceStart) evt;
 
-            if (flowLevel != 0 || isCanonical || sequenceStart.Style == YamlStyle.Flow || CheckEmptySequence())
+            if (flowLevel != 0 || isCanonical || sequenceStart.Style == DataStyle.Compact || CheckEmptySequence())
             {
                 state = EmitterState.YAML_EMIT_FLOW_SEQUENCE_FIRST_ITEM_STATE;
             }
@@ -979,7 +992,7 @@ namespace SiliconStudio.Core.Yaml
 
             MappingStart mappingStart = (MappingStart) evt;
 
-            if (flowLevel != 0 || isCanonical || mappingStart.Style == YamlStyle.Flow || CheckEmptyMapping())
+            if (flowLevel != 0 || isCanonical || mappingStart.Style == DataStyle.Compact || CheckEmptyMapping())
             {
                 state = EmitterState.YAML_EMIT_FLOW_MAPPING_FIRST_KEY_STATE;
             }
@@ -1059,6 +1072,9 @@ namespace SiliconStudio.Core.Yaml
         {
             return
                 (character >= '\x20' && character <= '\x7E') ||
+                character == '\x09' ||
+                character == '\x0A' ||
+                character == '\x0D' ||
                 character == '\x85' ||
                 (character >= '\xA0' && character <= '\xD7FF') ||
                 (character >= '\xE000' && character <= '\xFFFD');
@@ -1079,6 +1095,12 @@ namespace SiliconStudio.Core.Yaml
             for (int i = 0; i < value.Length; ++i)
             {
                 char character = value[i];
+
+                // Treat CRLF as a single line break
+                if (character == '\r' && i + 1 < value.Length && value[i + 1] == '\n')
+                {
+                    continue;
+                }
                 if (IsBreak(character))
                 {
                     if (!previous_break && !leading_spaces && character == '\n')
@@ -1129,8 +1151,15 @@ namespace SiliconStudio.Core.Yaml
             isIndentation = true;
             isWhitespace = true;
 
-            foreach (var character in value)
+            for (int i = 0; i < value.Length; i++)
             {
+                var character = value[i];
+
+                // Treat CRLF as a single line break
+                if (character == '\r' && i + 1 < value.Length && value[i + 1] == '\n')
+                {
+                    continue;
+                }
                 if (IsBreak(character))
                 {
                     WriteBreak();
@@ -1160,7 +1189,7 @@ namespace SiliconStudio.Core.Yaml
                 char character = value[index];
 
 
-                if (!IsPrintable(character) || IsBreak(character) || character == '"' || character == '\\')
+                if (!IsPrintable(character) || IsBreak(character) || character == '\x9' || character == '"' || character == '\\')
                 {
                     Write('\\');
 
@@ -1423,7 +1452,7 @@ namespace SiliconStudio.Core.Yaml
 
             if (style == ScalarStyle.Any)
             {
-                style = scalarData.isMultiline ? ScalarStyle.Folded : ScalarStyle.Plain;
+                style = scalarData.isMultiline ? ScalarStyle.Literal : ScalarStyle.Plain;
             }
 
             if (isCanonical)
@@ -1431,7 +1460,8 @@ namespace SiliconStudio.Core.Yaml
                 style = ScalarStyle.DoubleQuoted;
             }
 
-            if (isSimpleKeyContext && scalarData.isMultiline)
+            // Note: if length is 1, it might be a single char and going literal might transform \n into \r\n (which is no good)
+            if ((isSimpleKeyContext || scalar.Value.Length <= 1) && scalarData.isMultiline)
             {
                 style = ScalarStyle.DoubleQuoted;
             }
@@ -1462,7 +1492,9 @@ namespace SiliconStudio.Core.Yaml
 
             if (style == ScalarStyle.Literal || style == ScalarStyle.Folded)
             {
-                if (!scalarData.isBlockAllowed || flowLevel != 0 || isSimpleKeyContext)
+                if ((!scalarData.isFoldAllowed && style == ScalarStyle.Folded)
+                    || (!scalarData.isLiteralAllowed && style == ScalarStyle.Literal)
+                    || (flowLevel != 0 || isSimpleKeyContext))
                 {
                     style = ScalarStyle.DoubleQuoted;
                 }
@@ -1786,9 +1818,9 @@ namespace SiliconStudio.Core.Yaml
         {
             var analyzer = new CharacterAnalyzer<StringLookAheadBuffer>(new StringLookAheadBuffer(value));
 
-            if (analyzer.IsSpace() || analyzer.IsBreak())
+            if (analyzer.IsBlank() || analyzer.IsBreak())
             {
-                string indent_hint = string.Format(CultureInfo.InvariantCulture, "{0}\0", bestIndent);
+                string indent_hint = string.Format(CultureInfo.InvariantCulture, "{0}", bestIndent);
                 WriteIndicator(indent_hint, false, false, false);
             }
 
@@ -1799,7 +1831,8 @@ namespace SiliconStudio.Core.Yaml
             {
                 chomp_hint = "-";
             }
-            else if (value.Length >= 2 && analyzer.IsBreak(value.Length - 2))
+            else if (value.Length >= 2 && analyzer.IsBreak(value.Length - 2)
+                || (value.Length == 1 && analyzer.IsBreak(0)))
             {
                 chomp_hint = "+";
                 isOpenEnded = true;

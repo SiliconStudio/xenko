@@ -98,6 +98,9 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         public Event Current { get { return current; } }
 
+        /// <inheritdoc/>
+        public bool IsEndOfStream => state == ParserState.YAML_PARSE_END_STATE;
+
         /// <summary>
         /// Moves to the next event.
         /// </summary>
@@ -489,7 +492,7 @@ namespace SiliconStudio.Core.Yaml
                     anchorName,
                     tagName,
                     isImplicit,
-                    YamlStyle.Block,
+                    DataStyle.Normal,
                     start,
                     GetCurrentToken().End
                     );
@@ -521,14 +524,14 @@ namespace SiliconStudio.Core.Yaml
                 if (flowSequenceStart != null)
                 {
                     state = ParserState.YAML_PARSE_FLOW_SEQUENCE_FIRST_ENTRY_STATE;
-                    return new Events.SequenceStart(anchorName, tagName, isImplicit, YamlStyle.Flow, start, flowSequenceStart.End);
+                    return new Events.SequenceStart(anchorName, tagName, isImplicit, DataStyle.Compact, start, flowSequenceStart.End);
                 }
 
                 FlowMappingStart flowMappingStart = GetCurrentToken() as FlowMappingStart;
                 if (flowMappingStart != null)
                 {
                     state = ParserState.YAML_PARSE_FLOW_MAPPING_FIRST_KEY_STATE;
-                    return new Events.MappingStart(anchorName, tagName, isImplicit, YamlStyle.Flow, start, flowMappingStart.End);
+                    return new Events.MappingStart(anchorName, tagName, isImplicit, DataStyle.Compact, start, flowMappingStart.End);
                 }
 
                 if (isBlock)
@@ -537,14 +540,14 @@ namespace SiliconStudio.Core.Yaml
                     if (blockSequenceStart != null)
                     {
                         state = ParserState.YAML_PARSE_BLOCK_SEQUENCE_FIRST_ENTRY_STATE;
-                        return new Events.SequenceStart(anchorName, tagName, isImplicit, YamlStyle.Block, start, blockSequenceStart.End);
+                        return new Events.SequenceStart(anchorName, tagName, isImplicit, DataStyle.Normal, start, blockSequenceStart.End);
                     }
 
                     BlockMappingStart blockMappingStart = GetCurrentToken() as BlockMappingStart;
                     if (blockMappingStart != null)
                     {
                         state = ParserState.YAML_PARSE_BLOCK_MAPPING_FIRST_KEY_STATE;
-                        return new Events.MappingStart(anchorName, tagName, isImplicit, YamlStyle.Block, start, GetCurrentToken().End);
+                        return new Events.MappingStart(anchorName, tagName, isImplicit, DataStyle.Normal, start, GetCurrentToken().End);
                     }
                 }
 
@@ -787,7 +790,7 @@ namespace SiliconStudio.Core.Yaml
                 if (GetCurrentToken() is Key)
                 {
                     state = ParserState.YAML_PARSE_FLOW_SEQUENCE_ENTRY_MAPPING_KEY_STATE;
-                    evt = new Events.MappingStart(null, null, true, YamlStyle.Flow);
+                    evt = new Events.MappingStart(null, null, true, DataStyle.Compact);
                     Skip();
                     return evt;
                 }

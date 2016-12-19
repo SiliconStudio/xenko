@@ -5,21 +5,18 @@ Tags: []
 Source: ../../../Resources/Models/table.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: fed20303-3832-f602-3238-02f6323802f6
+    0303d2fe323802f6323802f6323802f6:
         Name: pole
         MaterialInstance:
-            ~Id: 50bd4c20-4f56-4ff6-a6d0-5dad4eff7060
-            Material: 9919fff2-db85-4d6f-a122-923b5a57cbf1/ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
-    -   ~Id: ad6ab7a3-d537-ef11-b4ae-a277b4aea277
+            Material: ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
+    a3b76aad37d511efb4aea277b4aea277:
         Name: partsA1
         MaterialInstance:
-            ~Id: 00f40e9a-6d83-4902-afcf-5e8c59486214
-            Material: 9919fff2-db85-4d6f-a122-923b5a57cbf1/ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
-    -   ~Id: c912d6c0-09f0-3732-4c5a-75564c5a7556
+            Material: ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
+    c0d612c9f00932374c5a75564c5a7556:
         Name: board1
         MaterialInstance:
-            ~Id: 787cb0d5-2408-4cc6-8de9-f48a941bade5
-            Material: 9919fff2-db85-4d6f-a122-923b5a57cbf1/ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
+            Material: ee1ef4b7-4fb4-4597-ad68-84b86ab128c7:Materials/board1
 Skeleton: null
 ~SourceHashes:
-    ../../../Resources/Models/table.fbx: 75f2628b4f3fedec9a2277b336c5f756
+    e6abe8847912f9fadb936b7043bacd0c~../../../Resources/Models/table.fbx: 75f2628b4f3fedec9a2277b336c5f756

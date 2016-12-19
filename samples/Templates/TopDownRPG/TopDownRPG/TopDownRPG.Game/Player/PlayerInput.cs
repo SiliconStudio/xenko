@@ -62,7 +62,7 @@ namespace TopDownRPG.Player
                         modelComponentA.Model = modelComponentB.Model;
                         modelComponentA.Materials.Clear();
                         for (int i = 0; i < materialCount; i++)
-                            modelComponentA.Materials.Add(HighlightMaterial);
+                            modelComponentA.Materials.Add(i, HighlightMaterial);
 
                         modelComponentA.Entity.Transform.UseTRS = false;
                         modelComponentA.Entity.Transform.LocalMatrix = modelComponentB.Entity.Transform.WorldMatrix;

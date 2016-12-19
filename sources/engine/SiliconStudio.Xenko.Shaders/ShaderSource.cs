@@ -3,6 +3,7 @@
 
 using System.IO;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Shaders
 {
@@ -10,6 +11,7 @@ namespace SiliconStudio.Xenko.Shaders
     /// A shader source.
     /// </summary>
     [DataContract("ShaderSource")]
+    [NonIdentifiableCollectionItems]
     public abstract class ShaderSource
     {
         /// <summary>

@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     /// </summary>
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Model))]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(1850, "Procedural Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.9.0-beta01")]
@@ -75,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             { new YamlScalarNode("Y"), new YamlScalarNode(size.Node.Value) },
                             { new YamlScalarNode("Z"), new YamlScalarNode(size.Node.Value) }
                         };
-                        vecSize.Style = YamlStyle.Flow;
+                        vecSize.Style = DataStyle.Compact;
                         asset.Type.Size = vecSize;
                     }
                 }
@@ -127,7 +129,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         { new YamlScalarNode("X"), new YamlScalarNode(currentScale.ToString(CultureInfo.InvariantCulture)) },
                         { new YamlScalarNode("Y"), new YamlScalarNode(currentScale.ToString(CultureInfo.InvariantCulture)) }
                     };
-                    vecSize.Style = YamlStyle.Flow;
+                    vecSize.Style = DataStyle.Compact;
 
                     proceduralType.RemoveChild("ScaleUV");
 
@@ -143,7 +145,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         { new YamlScalarNode("X"), new YamlScalarNode(x.ToString(CultureInfo.InvariantCulture)) },
                         { new YamlScalarNode("Y"), new YamlScalarNode(y.ToString(CultureInfo.InvariantCulture)) }
                     };
-                    vecSize.Style = YamlStyle.Flow;
+                    vecSize.Style = DataStyle.Compact;
 
                     proceduralType.RemoveChild("UVScales");
 
@@ -156,7 +158,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         { new YamlScalarNode("X"), new YamlScalarNode("1") },
                         { new YamlScalarNode("Y"), new YamlScalarNode("1") }
                     };
-                    vecSize.Style = YamlStyle.Flow;
+                    vecSize.Style = DataStyle.Compact;
 
                     proceduralType.UvScale = vecSize;
                 }

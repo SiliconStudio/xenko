@@ -5,9 +5,10 @@ Tags: []
 Source: ../../../Resources/Models/Stairs1x1x1_25.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 50624c2a-842d-2c61-d0bc-56d6d0bc56d6
+    2a4c62502d84612cd0bc56d6d0bc56d6:
         Name: GridMT
         MaterialInstance:
-            ~Id: 3121f1ff-e042-4f3f-844f-a28ecb42c86c
-            Material: 1ffc798a-1d12-4726-9314-d6f2002b0336/12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
+            Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
+~SourceHashes:
+    4f711f3f208e409800e294c7695e2af6~../../../Resources/Models/Stairs1x1x1_25.fbx: 0cb9546b7ba63c33b33d0b504b303a06

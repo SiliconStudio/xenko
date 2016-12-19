@@ -5,41 +5,40 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 2814f57a-0344-447b-9424-a43f7b52dc7a/184397fd-b187-46be-a659-694993def0bb:Materials/wood_gloss/wood_gloss_nml
+            Texture: 184397fd-b187-46be-a659-694993def0bb:Materials/wood_gloss/wood_gloss_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.93
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 4a2656c4-eabe-4060-94cb-9f823ff927fc/12537902-c912-4053-b6a6-510f161e6b9a:Materials/wood_gloss/wood_gloss_dif
+            Texture: 12537902-c912-4053-b6a6-510f161e6b9a:Materials/wood_gloss/wood_gloss_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: a8531bd2-7637-4ccf-87a6-7fb61be9ee7d/a80fd309-cf53-452b-b28e-93cb91b0adef:Materials/wood_gloss/wood_gloss_spc
+            Texture: a80fd309-cf53-452b-b28e-93cb91b0adef:Materials/wood_gloss/wood_gloss_spc
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
         Intensity: !ComputeFloat
             Value: 0.1
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 14886f11-c4d6-42e9-8c0f-d67b3e883740
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 4168f0f6-fcee-4c0f-9b9a-18d0ab47ee92
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: ba7727f3-e694-4e89-9c92-4a28d0d97cd4
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

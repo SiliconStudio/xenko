@@ -10,7 +10,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// Associate an <see cref="UIElement"/> with design-time data.
     /// </summary>
     [DataContract("UIElementDesign")]
-    [NonIdentifiable]
     public class UIElementDesign : IAssetPartDesign<UIElement>
     {
         /// <summary>
@@ -31,24 +30,15 @@ namespace SiliconStudio.Xenko.Assets.UI
         }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the base UIElement.
-        /// </summary>
-        [DataMember(20)]
-        [DefaultValue(null)]
-        public Guid? BaseId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the part group. If null, the entity doesn't belong to a part group.
-        /// </summary>
-        [DataMember(30)]
-        [DefaultValue(null)]
-        public Guid? BasePartInstanceId { get; set; }
-
-        /// <summary>
         /// Gets or sets the entity
         /// </summary>
-        [DataMember(40)]
+        [DataMember(10)]
         public UIElement UIElement { get; set; }
+
+        /// <inheritdoc/>
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public BasePart Base { get; set; }
 
         /// <inheritdoc/>
         UIElement IAssetPartDesign<UIElement>.Part => UIElement;

@@ -144,14 +144,17 @@ namespace SiliconStudio.Presentation.Quantum
         public virtual MemberInfo MemberInfo => null;
 
         /// <summary>
-        /// Gets whether this node contains a list
+        /// Gets whether this node contains a collection.
         /// </summary>
         /// <remarks>Used mostly for sorting purpose.</remarks>
-        public abstract bool HasList { get; }
+        /// <seealso cref="HasDictionary"/>
+        public abstract bool HasCollection { get; }
 
         /// <summary>
-        /// Gets whether this node contains a dictionary
+        /// Gets whether this node contains a dictionary.
         /// </summary>
+        /// <remarks>Usually a dictionary is also a collection.</remarks>
+        /// <seealso cref="HasCollection"/>
         public abstract bool HasDictionary { get; }
 
         /// <inheritdoc/>
@@ -240,6 +243,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
             return result;
         }
+
+        /// <summary>
+        /// Refreshes this node, updating its properties and its child nodes.
+        /// </summary>
+        protected abstract void Refresh();
 
         /// <summary>
         /// Indicates whether this node can be moved.

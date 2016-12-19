@@ -50,6 +50,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
@@ -246,7 +247,7 @@ String: This is a test
 UInt16: 4
 UInt32: 6
 UInt64: 8
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 20};
             settings.RegisterTagMapping("MyObject", typeof(MyObject));
@@ -256,7 +257,7 @@ UInt64: 8
 
         private class MyDynamicMember : DynamicMemberDescriptorBase
         {
-            public MyDynamicMember() : base("~Id", typeof(int))
+            public MyDynamicMember() : base("~Id", typeof(int), typeof(object))
             {
                 DynamicIds = new Dictionary<object, int>();
                 Order = -1000;
@@ -308,6 +309,71 @@ UInt64: 8
             Assert.AreEqual((object) 16, dynamicMember.DynamicIds[myObject1]);
         }
 
+        public class ObjectWithLiteralString
+        {
+            [DataStyle(ScalarStyle.Literal)]
+            public string Text { get; set; }
+        }
+
+        [TestCase("Simple")]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("\r\n")]
+        [TestCase("\t")]
+        [TestCase("\r\n ")]
+        [TestCase(" \r\n")]
+        [TestCase("\r\n\t")]
+        [TestCase("\t\r\n")]
+        [TestCase("    A\r\n    B")]
+        [TestCase("    A\r\n    B\r\n")]
+        [TestCase("    A\r\n    B\r\n\r\n")]
+        [TestCase("    A\r\n    B\r\n    \r\n")]
+        public void TestLiteralString(string text)
+        {
+            var settings = new SerializerSettings() { LimitPrimitiveFlowSequence = 20, EmitAlias = false };
+            settings.RegisterTagMapping(nameof(ObjectWithLiteralString), typeof(ObjectWithLiteralString));
+
+            // Normalize line ending to current OS
+            text = text.Replace("\r\n", Environment.NewLine);
+
+            var original = new ObjectWithLiteralString { Text = text };
+            var obj = SerialRoundTrip(settings, original);
+            Assert.True(obj is ObjectWithLiteralString);
+            Assert.AreEqual(original.Text, ((ObjectWithLiteralString)obj).Text);
+        }
+
+        public class ObjectWithFoldedString
+        {
+            [DataStyle(ScalarStyle.Folded)]
+            public string Text { get; set; }
+        }
+
+        [TestCase("Simple")]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("\r\n")]
+        [TestCase("\t")]
+        [TestCase("\r\n ")]
+        [TestCase(" \r\n")]
+        [TestCase("\r\n\t")]
+        [TestCase("\t\r\n")]
+        [TestCase("    A\r\n    B")]
+        [TestCase("    A\r\n    B\r\n")]
+        [TestCase("    A\r\n    B\r\n\r\n")]
+        [TestCase("    A\r\n    B\r\n    \r\n")]
+        public void TestFoldedString(string text)
+        {
+            var settings = new SerializerSettings() { LimitPrimitiveFlowSequence = 20, EmitAlias = false };
+            settings.RegisterTagMapping(nameof(ObjectWithFoldedString), typeof(ObjectWithFoldedString));
+
+            // Normalize line ending to current OS
+            text = text.Replace("\r\n", Environment.NewLine);
+
+            var original = new ObjectWithFoldedString { Text = text };
+            var obj = SerialRoundTrip(settings, original);
+            Assert.True(obj is ObjectWithFoldedString);
+            Assert.AreEqual(original.Text, ((ObjectWithFoldedString)obj).Text);
+        }
         public class ObjectFloatDoublePrecision
         {
             public float Float { get; set; }
@@ -324,7 +390,7 @@ UInt64: 8
             var text = @"!ObjectFloatDoublePrecision
 Double: 1E-05
 Float: 1E-05
-".Trim();
+";
 
             SerialRoundTrip(settings, text);
         }
@@ -357,7 +423,7 @@ DoublePositiveInfinity: Infinity
 FloatNaN: NaN
 FloatNegativeInfinity: -Infinity
 FloatPositiveInfinity: Infinity
-".Trim();
+";
 
             SerialRoundTrip(settings, text);
         }
@@ -384,7 +450,7 @@ FloatPositiveInfinity: Infinity
             var text = @"!MyObjectAndCollection
 Name: Yes
 Values: [a, b, c]
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 20};
             settings.RegisterTagMapping("MyObjectAndCollection", typeof(MyObjectAndCollection));
@@ -415,7 +481,7 @@ Value: 1
   - a
   - b
   - c
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomCollectionWithProperties", typeof(MyCustomCollectionWithProperties));
@@ -448,7 +514,7 @@ Value: 1
   a: true
   b: false
   c: true
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomDictionaryWithProperties", typeof(MyCustomDictionaryWithProperties));
@@ -469,7 +535,7 @@ Value: 1
 a: true
 b: false
 c: true
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0, SerializeDictionaryItemsAsMembers = true};
             settings.RegisterTagMapping("MyCustomDictionaryWithProperties", typeof(MyCustomDictionaryWithProperties));
@@ -571,7 +637,7 @@ StringMapbyContent:
   e: 4
   f: no
 Value: 0
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomClassWithSpecialMembers", typeof(MyCustomClassWithSpecialMembers));
@@ -596,13 +662,13 @@ Value: 0
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(1)]
+            [DataMember(1)]
             public int Second { get; set; }
 
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(0)]
+            [DataMember(0)]
             public int First { get; set; }
 
             /// <summary>
@@ -621,7 +687,7 @@ Value: 0
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(2)]
+            [DataMember(2)]
             public int BeforeName { get; set; }
         }
 
@@ -730,7 +796,7 @@ StringMapbyContent:
   e: 4
   f: no
 Value: 0
-".Trim();
+";
 
             SerialRoundTrip(settings, text, typeof(Dictionary<object, object>));
         }
@@ -881,9 +947,9 @@ Value: 0
 
         public class ClassWithChars
         {
-            [YamlMember(0)] public char Start;
+            [DataMember(0)] public char Start;
 
-            [YamlMember(1)] public char End;
+            [DataMember(1)] public char End;
         }
 
         [Test]
@@ -900,19 +966,19 @@ Value: 0
         [Test]
         public void TestClassWithSpecialChars()
         {
-            var settings = new SerializerSettings() {EmitShortTypeName = true};
             for (int i = 0; i < 32; i++)
             {
+                var settings = new SerializerSettings() { EmitShortTypeName = true };
                 SerialRoundTrip(settings, new ClassWithChars()
                 {
                     Start = (char) i,
-                    End = (char) (i + 1)
+                    End = (char) i,
                 });
             }
         }
 
 
-        [YamlStyle(YamlStyle.Flow)]
+        [DataStyle(DataStyle.Compact)]
         public class ClassWithStyle
         {
             public string Name { get; set; }
@@ -932,12 +998,12 @@ Value: 0
                 G_ListCustom = new CustomList();
             }
 
-            [YamlStyle(YamlStyle.Flow)]
+            [DataStyle(DataStyle.Compact)]
             public List<string> A_ListWithCustomStyle { get; set; }
 
             public ClassWithStyle B_ClassWithStyle { get; set; }
 
-            [YamlStyle(YamlStyle.Block)]
+            [DataStyle(DataStyle.Normal)]
             public ClassWithStyle C_ClassWithStyleOverridenByLocalYamlStyle { get; set; }
 
             public List<object> D_ListHandleByDynamicStyleFormat { get; set; }
@@ -951,7 +1017,7 @@ Value: 0
             public CustomList G_ListCustom { get; set; }
         }
 
-        [YamlStyle(YamlStyle.Flow)]
+        [DataStyle(DataStyle.Compact)]
         public class CustomList : List<object>
         {
             public string Name { get; set; }
@@ -960,9 +1026,9 @@ Value: 0
 
         private class FormatListObject : DefaultObjectSerializerBackend
         {
-            public override YamlStyle GetStyle(ref ObjectContext objectContext)
+            public override DataStyle GetStyle(ref ObjectContext objectContext)
             {
-                return objectContext.Instance is List<object> ? YamlStyle.Flow : base.GetStyle(ref objectContext);
+                return objectContext.Instance is List<object> ? DataStyle.Compact : base.GetStyle(ref objectContext);
             }
         }
 
@@ -1004,7 +1070,7 @@ Value: 0
             classNoStyle.G_ListCustom.Add(7);
 
             var serializer = new Serializer(settings);
-            var text = serializer.Serialize(classNoStyle).Trim();
+            var text = serializer.Serialize(classNoStyle);
 
             var textReference = @"!ClassNoStyle
 A_ListWithCustomStyle: [a, b, c]
@@ -1022,7 +1088,8 @@ E_ListDefaultPrimitiveLimitExceed:
   - 5
 F_ListClassWithStyleDefaultFormat:
   - {Name: name3, Value: 3}
-G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
+G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}
+";
 
             Assert.AreEqual(textReference, text);
         }
@@ -1035,10 +1102,10 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
                 KeyValues = new Dictionary<string, object>();
             }
 
-            [YamlMember(0)]
+            [DataMember(0)]
             public string Name { get; set; }
 
-            [YamlMember(1)]
+            [DataMember(1)]
             public Dictionary<string, object> KeyValues { get; set; }
         }
 
@@ -1062,29 +1129,25 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
                 return memberName;
             }
 
-            public override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+            public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
             {
-                var item = base.ReadDictionaryItem(ref objectContext, keyValueType);
-                var itemKey = item.Key as string;
+                var itemKey = base.ReadDictionaryKey(ref objectContext, keyType) as string;
                 if (itemKey != null && itemKey.EndsWith("!"))
                 {
                     itemKey = itemKey.Substring(0, itemKey.Length - 1);
                     SpecialKeys.Add(new Tuple<object, object>(objectContext.Instance, itemKey));
-                    return new KeyValuePair<object, object>(itemKey, item.Value);
                 }
-                return item;
+                return itemKey;
             }
 
-
-            public override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+            public override void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
             {
-                var itemKey = keyValue.Key as string;
+                var itemKey = key as string;
                 if (itemKey != null && (itemKey.Contains("Name") || itemKey.Contains("Test")))
                 {
-                    keyValue = new KeyValuePair<object, object>(itemKey + "!", keyValue.Value);
+                    itemKey = itemKey + "!";
                 }
-
-                base.WriteDictionaryItem(ref objectContext, keyValue, types);
+                base.WriteDictionaryKey(ref objectContext, itemKey, keyType);
             }
 
             public override void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
@@ -1163,22 +1226,22 @@ Enum: Value2");
             }
         }
 
-        [YamlTag("TestRemapObject")]
-        [YamlRemap("TestRemapObjectOld")]
+        [DataContract("TestRemapObject")]
+        [DataAlias("TestRemapObjectOld")]
         public class TestRemapObject
         {
-            [YamlRemap("OldName")]
+            [DataAlias("OldName")]
             public string Name { get; set; }
 
             public MyRemapEnum Enum { get; set; }
         }
 
-        [YamlTag("MyRemapEnum")]
+        [DataContract("MyRemapEnum")]
         public enum MyRemapEnum
         {
-            [YamlRemap("OldValue1")] Value1,
+            [DataAlias("OldValue1")] Value1,
 
-            [YamlRemap("OldValue2")] Value2
+            [DataAlias("OldValue2")] Value2
         }
 
         [Test]
@@ -1230,10 +1293,10 @@ Enum: OldValue2
             Assert.IsTrue(context.HasRemapOccurred);
         }
 
-        [YamlTag("TestWithMemberRenamed")]
+        [DataContract("TestWithMemberRenamed")]
         public sealed class TestWithMemberRenamed
         {
-            [YamlMember("~Base")]
+            [DataMember("~Base")]
             [DefaultValue(null)]
             public string Base { get; set; }
         }
@@ -1249,6 +1312,8 @@ Enum: OldValue2
             var text = serializer.Serialize(value);
             Assert.True(text.Contains("~Base"));
 
+            settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(TestWithMemberRenamed).Assembly);
             SerialRoundTrip(settings, value);
         }
 
@@ -1399,6 +1464,8 @@ Enum: OldValue2
             Assert.AreEqual(newItem.Int2, 0);
             Assert.AreEqual(newItem.Int3, 0);
 
+            settings = new SerializerSettings();
+            settings.RegisterTagMapping("ObjectWithMask", typeof(ObjectWithMask));
             serializer = new Serializer(settings);
             text = serializer.Serialize(item, null, new SerializerContextSettings {MemberMask = 4});
 
@@ -1409,6 +1476,8 @@ Enum: OldValue2
             Assert.AreEqual(newItem.Int2, item.Int2);
             Assert.AreEqual(newItem.Int3, item.Int3);
 
+            settings = new SerializerSettings();
+            settings.RegisterTagMapping("ObjectWithMask", typeof(ObjectWithMask));
             serializer = new Serializer(settings);
             text = serializer.Serialize(item, null, new SerializerContextSettings {MemberMask = 1 | 4});
 
@@ -1424,10 +1493,10 @@ Enum: OldValue2
         {
             public int Int1 { get; set; }
 
-            [YamlMember(Mask = 4)]
+            [DataMember(Mask = 4)]
             public int Int2 { get; set; }
 
-            [YamlMember(Mask = 4)]
+            [DataMember(Mask = 4)]
             internal int Int3 { get; set; }
         }
 
@@ -1439,7 +1508,7 @@ Enum: OldValue2
             var text = @"!ClassWithImplicitMemberType
 Test:
   String: test
-".Trim();
+";
 
             settings.RegisterTagMapping("ClassWithImplicitMemberType", typeof(ClassWithImplicitMemberType));
             settings.RegisterTagMapping("ClassWithImplicitMemberTypeInner", typeof(ClassWithImplicitMemberTypeInner));
@@ -1454,7 +1523,7 @@ Test:
             var text = @"!ClassWithNonImplicitMemberType
 Test: !ClassWithImplicitMemberTypeInner
   String: test
-".Trim();
+";
 
             settings.RegisterTagMapping("ClassWithNonImplicitMemberType", typeof(ClassWithNonImplicitMemberType));
             settings.RegisterTagMapping("ClassWithImplicitMemberTypeInner", typeof(ClassWithImplicitMemberTypeInner));
@@ -1521,7 +1590,7 @@ Test: !ClassWithImplicitMemberTypeInner
 
             Console.WriteLine();
 
-            var text2 = serializer.Serialize(value, serializedType).Trim();
+            var text2 = serializer.Serialize(value, serializedType);
             Console.WriteLine("Text deserialized:");
             Console.WriteLine("------------------");
             Console.WriteLine(text2);

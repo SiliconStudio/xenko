@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,14 +22,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             using (var stream = new MemoryStream())
             {
-                AssetSerializer.Save(stream, originAsset);
+                AssetFileSerializer.Save(stream, originAsset);
 
                 stream.Position = 0;
                 var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var newAsset = (PrefabAsset)AssetSerializer.Load(stream, "xkentity");
+                var newAsset = AssetFileSerializer.Load<PrefabAsset>(stream, "Prefab.xkprefab").Asset;
 
                 CheckAsset(originAsset, newAsset);
             }
@@ -40,63 +39,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestClone()
         {
             var originAsset = CreateOriginAsset();
-            var newAsset = (PrefabAsset)AssetCloner.Clone(originAsset);
+            var newAsset = AssetCloner.Clone(originAsset);
             CheckAsset(originAsset, newAsset);
-        }
-
-        [Test]
-        public void TestSerializationWithBaseAndParts()
-        {
-            // Create an entity as in TestSerialization
-            // Then create a derivedAsset from it 
-            // Then create a partAsset and add this partAsset as a composition to derivedAsset
-            // Serialize and deserialize derivedAsset
-            // Check that deserialized derivedAsset has all base/baseParts correctly serialized
-
-            var originAsset = CreateOriginAsset();
-
-            var derivedAsset = (PrefabAsset)originAsset.CreateChildAsset("base");
-
-            var basePartAsset = new PrefabAsset();
-            var entityPart1 = new Entity() { Name = "EPart1" };
-            var entityPart2 = new Entity() { Name = "EPart2" };
-            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart1));
-            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart2));
-            basePartAsset.Hierarchy.RootPartIds.Add(entityPart1.Id);
-            basePartAsset.Hierarchy.RootPartIds.Add(entityPart2.Id);
-
-            // Add 2 asset parts from the same base
-            var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Parts.AddRange(instance.Parts);
-            derivedAsset.Hierarchy.RootPartIds.AddRange(instance.RootPartIds);
-
-            var instance2 = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Parts.AddRange(instance2.Parts);
-            derivedAsset.Hierarchy.RootPartIds.AddRange(instance2.RootPartIds);
-
-            using (var stream = new MemoryStream())
-            {
-                AssetSerializer.Save(stream, derivedAsset);
-
-                stream.Position = 0;
-                var serializedVersion = Encoding.UTF8.GetString(stream.ToArray());
-                Console.WriteLine(serializedVersion);
-
-                stream.Position = 0;
-                var newAsset = (PrefabAsset)AssetSerializer.Load(stream, "test.xkentity");
-
-                Assert.NotNull(newAsset.Base);
-                Assert.NotNull(newAsset.BaseParts);
-
-                // We should have only 1 base part, as we created parts from the same base
-                Assert.AreEqual(1, newAsset.BaseParts.Count);
-
-                CheckAsset(derivedAsset, newAsset);
-
-                CheckAsset(originAsset, (PrefabAsset)newAsset.Base.Asset);
-
-                CheckGenericAsset(basePartAsset, (PrefabAsset)newAsset.BaseParts[0].Asset);
-            }
         }
 
         private static PrefabAsset CreateOriginAsset()

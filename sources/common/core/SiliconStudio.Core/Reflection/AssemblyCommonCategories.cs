@@ -8,6 +8,10 @@ namespace SiliconStudio.Core.Reflection
     public static class AssemblyCommonCategories
     {
         /// <summary>
+        /// The assembly is containing engine data.
+        /// </summary>
+        public const string Engine = "engine";
+        /// <summary>
         /// The assembly is containing assets data.
         /// </summary>
         public const string Assets = "assets";

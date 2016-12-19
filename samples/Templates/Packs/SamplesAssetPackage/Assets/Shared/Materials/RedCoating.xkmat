@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
-            Texture: 9284dc64-01e8-490d-bce4-c4bea8ce58c2/e16b869e-c4e8-4ac3-92a4-d2b3fd3fc1ef:Textures/metal03_gls
+            Texture: e16b869e-c4e8-4ac3-92a4-d2b3fd3fc1ef:Textures/metal03_gls
             FallbackValue:
                 Value: 1.0
             Scale: {X: 3.0, Y: 3.0}
@@ -18,15 +18,12 @@ Attributes:
         MetalnessMap: !ComputeFloat
             Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: 2c186533-a542-473d-87b6-b3398f7b6b19
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 9879cb3a-eb90-40cc-9571-6860c4c26302
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: a3282f94-39ff-46d0-931d-aba16e857812
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Occlusion: !MaterialOcclusionMapFeature
         AmbientOcclusionMap: !ComputeTextureScalar
-            Texture: 6e84e731-9751-4963-bf25-f4c1127fff54/68365ad4-c396-442f-9a36-408d583570a9:Textures/simple_ground_ao
+            Texture: 68365ad4-c396-442f-9a36-408d583570a9:Textures/simple_ground_ao
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
@@ -44,4 +41,4 @@ Attributes:
             Value: 1.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

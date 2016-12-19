@@ -20,7 +20,7 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -29,7 +29,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     public abstract class DynamicMemberDescriptorBase : IMemberDescriptor
     {
-        protected DynamicMemberDescriptorBase(string name, Type type)
+        protected DynamicMemberDescriptorBase(string name, Type type, Type declaringType)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
@@ -37,6 +37,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 throw new ArgumentNullException("type");
             Name = name;
             Type = type;
+            DeclaringType = declaringType;
             OriginalName = Name;
             Mask = 1;
             ShouldSerialize = ObjectDescriptor.ShouldSerializeDefault;
@@ -49,11 +50,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public StringComparer DefaultNameComparer { get; set; }
 
-        public Type Type { get; set; }
+        public Type Type { get; }
+
+        public Type DeclaringType { get; }
+
+        // TODO: store the proper type descriptor here
+        public ITypeDescriptor TypeDescriptor => null;
 
         public int? Order { get; set; }
 
-        public SerializeMemberMode SerializeMemberMode { get; set; }
+        public DataMemberMode Mode { get; set; }
 
         public abstract object Get(object thisObject);
 
@@ -65,12 +71,19 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public uint Mask { get; set; }
 
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
+
+        public ScalarStyle ScalarStyle { get; set; }
 
         public Func<object, bool> ShouldSerialize { get; set; }
 
         public List<string> AlternativeNames { get; set; }
 
         public object Tag { get; set; }
+
+        public IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute
+        {
+            yield break;
+        }
     }
 }

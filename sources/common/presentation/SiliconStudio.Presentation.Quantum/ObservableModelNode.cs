@@ -15,7 +15,6 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableModelNode : SingleObservableNode
     {
         public readonly IGraphNode SourceNode;
-        protected readonly GraphNodePath SourceNodePath;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -106,11 +105,11 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (!isPrimitive && targetNode != null)
             {
-                var targetNodePath = GetTargetNodePath(SourceNode, Index, SourceNodePath);
+                var targetNodePath = GetTargetNodePath();
                 if (targetNodePath == null || !targetNodePath.IsValid)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
-                GenerateChildren(targetNode, targetNodePath);
+                GenerateChildren(targetNode, targetNodePath, Index);
             }
 
             isInitialized = true;
@@ -121,6 +120,8 @@ namespace SiliconStudio.Presentation.Quantum
 
             CheckDynamicMemberConsistency();
         }
+        
+        public GraphNodePath SourceNodePath { get; }
 
         /// <inheritdoc/>
         public override int? Order
@@ -159,7 +160,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool IsPrimitive => isPrimitive;
 
         /// <inheritdoc/>
-        public sealed override bool HasList => CollectionDescriptor.IsCollection(Type);
+        public sealed override bool HasCollection => CollectionDescriptor.IsCollection(Type);
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
@@ -173,7 +174,7 @@ namespace SiliconStudio.Presentation.Quantum
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
         internal Guid ModelGuid => SourceNode.Guid;
-   
+
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>
@@ -205,7 +206,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 if (referenceEnumerable != null && !Index.IsEmpty)
                 {
-                    if (!referenceEnumerable.ContainsIndex(Index))
+                    if (!referenceEnumerable.HasIndex(Index))
                         throw new ObservableViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
 
                     if (targetNode != referenceEnumerable[Index].TargetNode)
@@ -241,6 +242,16 @@ namespace SiliconStudio.Presentation.Quantum
         {
             base.ClearCommands();
         }
+        
+        /// <summary>
+        /// Retrieves the path of the target node if the source node content holds a reference or a sequence of references, or the source node path otherwise.
+        /// </summary>
+        /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
+        /// <remarks>This method can return null if the target node is null.</remarks>
+        public GraphNodePath GetTargetNodePath()
+        {
+            return GetTargetNodePath(SourceNode, Index, SourceNodePath);
+        }
 
         protected void AssertInit()
         {
@@ -274,25 +285,27 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetNode"></param>
+        /// <param name="targetNodePath"></param>
+        /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references.</param>
+        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath, Index index)
         {
+            // Set the default policy for expanding reference children.
+            ExpandReferencePolicy = ExpandReferencePolicy.Full;
+
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.Content.IsReference)
             {
-                var objectReference = SourceNode.Content.Reference as ObjectReference;
+                var objectReference = SourceNode.Content.Reference as ObjectReference ?? (SourceNode.Content.Reference as ReferenceEnumerable)?[index];
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
-                    return;
-
-                var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
-                if (refEnum != null)
+                if (objectReference != null)
                 {
-                    foreach (var reference in refEnum)
-                    {
-                        // Discard the children of the referenced object if requested by the property provider
-                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
-                            return;
-                    }
+                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference);
+                    if (ExpandReferencePolicy == ExpandReferencePolicy.None)
+                        return;
                 }
             }
 
@@ -305,7 +318,7 @@ namespace SiliconStudio.Presentation.Quantum
                 var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
-                    // We create one node per item of the collection, unless requested by the property provide to not expand the reference.
+                    // We create one node per item of the collection, we will check later if the reference should be expanded.
                     foreach (var reference in referenceEnumerable)
                     {
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
@@ -325,8 +338,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
                 {
-                    var index = new Index(key);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    var newIndex = new Index(key);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
@@ -336,10 +349,10 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
+                for (var i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
                 {
-                    var index = new Index(i);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    var newIndex = new Index(i);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
@@ -355,7 +368,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
@@ -370,11 +383,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        protected void Refresh()
+        protected override void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
-            OnPropertyChanging(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanging(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
@@ -397,7 +410,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 DisplayName = DisplayNameProvider();
             }
-            OnPropertyChanged(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanged(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
         }
 
         /// <summary>
@@ -530,7 +543,7 @@ namespace SiliconStudio.Presentation.Quantum
                     return Equals(e.Index, Index);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:
-                    return HasList || HasDictionary; // TODO: probably not sufficent
+                    return HasCollection || HasDictionary; // TODO: probably not sufficent
                 default:
                     throw new ArgumentOutOfRangeException();
             }

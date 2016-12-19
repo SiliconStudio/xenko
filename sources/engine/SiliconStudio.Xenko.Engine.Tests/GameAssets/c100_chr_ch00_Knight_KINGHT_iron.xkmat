@@ -10,6 +10,7 @@ Attributes:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+        IsXYNormal: true
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: 3b9e7d5b-28b5-4091-852a-fe8732ca5787:c100_body_cm

@@ -30,6 +30,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Assets\AssetId.cs" />
     <Compile Include="IO\IDatabaseStream.cs" />
     <Compile Include="IO\NativeLockFile.cs" />
     <Compile Include="LZ4\ILZ4Service.cs" />
@@ -37,9 +38,6 @@
     <Compile Include="LZ4\LZ4Stream.cs" />
     <Compile Include="LZ4\Services\NativeLz4Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
-    <Compile Include="Reflection\ShadowObject.cs" />
-    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
     <Compile Include="Serialization\Contents\ContentManager.ReferenceCounting.cs" />
     <Compile Include="Serialization\Contents\ContentManagerException.cs" />
     <Compile Include="Serialization\Contents\ContentManagerLoaderSettings.cs" />
@@ -111,6 +109,9 @@
       <Name>SiliconStudio.Core.IO</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reflection\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets
             // Make sure that this assembly is registered
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
 
-            YamlSerializer.PrepareMembers += SourceHashesHelper.AddSourceHashesMember;
+            AssetYamlSerializer.Default.PrepareMembers += SourceHashesHelper.AddSourceHashesMember;
         }
     }
 }

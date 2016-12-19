@@ -5,9 +5,10 @@ Tags: []
 Source: ../../../Resources/Models/Pendilum0x2x0Ball.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    -   ~Id: 50624c2a-842d-2c61-d0bc-56d6d0bc56d6
+    2a4c62502d84612cd0bc56d6d0bc56d6:
         Name: GridMT
         MaterialInstance:
-            ~Id: 92fdbb95-fed8-43d6-bd3b-3f60af6100a3
-            Material: d84686f4-2f78-4afa-ab63-997a7da373c5/12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
+            Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
+~SourceHashes:
+    c5afb9d67d9de69d7fbe324a0033201b~../../../Resources/Models/Pendilum0x2x0Ball.fbx: f1049b864923d2791106d77325e8da6d

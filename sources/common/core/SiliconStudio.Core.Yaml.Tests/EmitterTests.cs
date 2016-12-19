@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -166,7 +167,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         private string EmitScalar(Scalar scalar)
         {
             return Emit(
-                new SequenceStart(null, null, false, YamlStyle.Block),
+                new SequenceStart(null, null, false, DataStyle.Normal),
                 scalar,
                 new SequenceEnd()
                 );
@@ -221,7 +222,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             var sequence = (YamlSequenceNode) stream.Documents[0].RootNode;
             var scalar = (YamlScalarNode) sequence.Children[0];
 
-            Assert.AreEqual("hello\nworld", scalar.Value);
+            Assert.AreEqual("hello\nworld", scalar.Value.Replace(Environment.NewLine, "\n"));
         }
 
         [Test]
@@ -235,7 +236,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             var sequence = (YamlSequenceNode) stream.Documents[0].RootNode;
             var scalar = (YamlScalarNode) sequence.Children[0];
 
-            Assert.AreEqual(">+\n", scalar.Value);
+            Assert.AreEqual(">+\n", scalar.Value.Replace(Environment.NewLine, "\n"));
         }
 
         [Test]
@@ -259,7 +260,7 @@ namespace SiliconStudio.Core.Yaml.Tests
 
             var output = value.Value;
             Dump.WriteLine(output);
-            Assert.AreEqual(input, output);
+            Assert.AreEqual(input, output.Replace(Environment.NewLine, "\n"));
         }
     }
 }

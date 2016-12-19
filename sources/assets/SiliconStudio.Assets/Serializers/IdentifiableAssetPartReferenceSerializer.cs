@@ -6,7 +6,7 @@ using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Serializers
 {
-    [YamlSerializerFactory]
+    [YamlSerializerFactory(YamlAssetProfile.Name)]
     public sealed class IdentifiableAssetPartReferenceSerializer : ScalarOrObjectSerializer
     {
         public override bool CanVisit(Type type)

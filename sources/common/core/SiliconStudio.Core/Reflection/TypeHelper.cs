@@ -8,9 +8,12 @@ using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
 {
+    // TODO: these methods should be compilant with collection/dictionary descriptors. Since they're used only for design-time, they should be removed from here anyway
+    [Obsolete("This class will be removed in a future version")]
     public static class TypeHelper
     {
-        public static bool IsCollection(Type type)
+        [Obsolete("This method will be removed in a future version")]
+        public static bool IsCollection(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();
@@ -19,7 +22,7 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             }
 
-            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(typeInfo))
+            if (typeof(IList).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
@@ -36,7 +39,8 @@ namespace SiliconStudio.Core.Reflection
             return false;
         }
 
-        public static bool IsDictionary(Type type)
+        [Obsolete("This method will be removed in a future version")]
+        public static bool IsDictionary(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();

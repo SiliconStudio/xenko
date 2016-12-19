@@ -11,6 +11,7 @@ Attributes:
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
+        IsXYNormal: true
         InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor

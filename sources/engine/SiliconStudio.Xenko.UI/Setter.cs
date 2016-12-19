@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.UI
         /// Internal helper to apply value (if not already overriden).
         /// </summary>
         /// <param name="propertyContainer"></param>
-        internal abstract void ApplyIfNotSet(ref PropertyContainer propertyContainer);
+        internal abstract void ApplyIfNotSet(ref PropertyContainerClass propertyContainer);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.UI
         public T Value { get; set; }
 
         /// <inheritdoc/>
-        internal override void ApplyIfNotSet(ref PropertyContainer propertyContainer)
+        internal override void ApplyIfNotSet(ref PropertyContainerClass propertyContainer)
         {
             if (!propertyContainer.ContainsKey(Property))
                 propertyContainer.Set(Property, Value);

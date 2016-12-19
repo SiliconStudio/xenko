@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
@@ -20,6 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
     /// </summary>
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
+    [AssetContentType(typeof(Material))]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         protected override int InternalBuildOrder => 100;
 
         [DataMemberIgnore]
-        public Guid MaterialId => Id;
+        public AssetId MaterialId => Id;
 
         /// <summary>
         /// Gets or sets the material attributes.
@@ -69,14 +71,14 @@ namespace SiliconStudio.Xenko.Assets.Materials
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public MaterialBlendLayers Layers { get; set; }
 
-        public IEnumerable<AssetReference<MaterialAsset>> FindMaterialReferences()
+        public IEnumerable<AssetReference> FindMaterialReferences()
         {
             foreach (var layer in Layers)
             {
                 if (layer.Material != null)
                 {
                     var reference = AttachedReferenceManager.GetAttachedReference(layer.Material);
-                    yield return new AssetReference<MaterialAsset>(reference.Id, reference.Url);
+                    yield return new AssetReference(reference.Id, reference.Url);
                 }
             }
         }
@@ -93,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
             if (gameSettings != null)
             {
-                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
             }
             foreach (var materialReference in FindMaterialReferences())
             {
