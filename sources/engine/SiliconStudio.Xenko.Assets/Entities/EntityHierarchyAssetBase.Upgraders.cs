@@ -179,16 +179,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     foreach (var component in entity.Components)
                     {
-                        var componentTag = component.Value.Node.Tag;
+                        var componentTag = component.Value?.Node.Tag ?? component.Node.Tag;
                         if (componentTag == "!ParticleSystemComponent")
                         {
-                            dynamic particleSystem = component.Value.ParticleSystem;
+                            dynamic particleSystem = component.Value?.ParticleSystem ?? component.ParticleSystem;
                             if (particleSystem != null)
                             {
 
                                 foreach (dynamic emitter in particleSystem.Emitters)
                                 {
-                                    dynamic shapeBuilder = emitter.Value.ShapeBuilder;
+                                    dynamic shapeBuilder = emitter.Value?.ShapeBuilder ?? emitter.ShapeBuilder;
                                     if (shapeBuilder == null)
                                         continue;
 
