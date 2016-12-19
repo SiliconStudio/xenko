@@ -4,7 +4,9 @@
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
 
 using System;
+#if SILICONSTUDIO_PLATFORM_ANDROID
 using Android.App;
+#endif
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -21,7 +23,11 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public GoogleVrHmd(IServiceRegistry registry) : base(registry)
         {
+#if SILICONSTUDIO_PLATFORM_ANDROID
             GoogleVr.Startup(Game, (Activity)PlatformAndroid.Context);
+#else
+            GoogleVr.Startup(Game);
+#endif
         }
 
         public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
