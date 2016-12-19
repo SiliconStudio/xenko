@@ -89,6 +89,9 @@ namespace SiliconStudio.Xenko.Animations
         /// <summary>
         /// Gets or sets the current time.
         /// </summary>
+        /// <userdoc>
+        /// Starting time when playing the animation for the first time.
+        /// </userdoc>
         // CurrentTime is also exposed as a design time property and appears as Start time to avoid confusion
         [Display("Start time")]
         [DataMember(60)]
