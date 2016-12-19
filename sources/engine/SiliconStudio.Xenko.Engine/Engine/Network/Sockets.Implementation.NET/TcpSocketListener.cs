@@ -59,7 +59,7 @@ namespace Sockets.Plugin
                 _backingTcpListener = new TcpListener(ipAddress, port);
                 _backingTcpListener.Start();
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
                 if (!inheritHandle)
                     SetHandleInformation(_backingTcpListener.Server.Handle, HANDLE_FLAGS.Inherit, HANDLE_FLAGS.None);
 #endif
@@ -137,7 +137,7 @@ namespace Sockets.Plugin
             }
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool SetHandleInformation(IntPtr hObject, HANDLE_FLAGS dwMask, HANDLE_FLAGS dwFlags);
 
