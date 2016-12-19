@@ -27,6 +27,10 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
             nonSrgbFrame = Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            if (requireMirror)
+            {
+                MirrorTexture = RenderFrameProvider.RenderFrame.RenderTargets[0]; //assign the surface we submit as mirror if needed
+            }
 
             var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
             compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
