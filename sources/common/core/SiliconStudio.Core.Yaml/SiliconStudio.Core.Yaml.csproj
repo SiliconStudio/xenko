@@ -148,7 +148,6 @@
     <Compile Include="Tokens\FlowSequenceStart.cs" />
     <Compile Include="Tokens\Key.cs" />
     <Compile Include="Tokens\Scalar.cs" />
-    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Tokens\StreamEnd.cs" />
     <Compile Include="Tokens\StreamStart.cs" />
     <Compile Include="Tokens\Tag.cs" />
