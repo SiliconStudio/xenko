@@ -425,7 +425,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Particle rotation - intentionally IGNORED for ribbon
 
-                    var particlePos = (EdgePolicy == EdgePolicy.Edge) ? oldPoint - oldUnitX : oldPoint;
+                    var particlePos = (EdgePolicy == EdgePolicy.Center) ? oldPoint - oldUnitX : oldPoint;
                     var uvCoord = new Vector2(0, 0);
                     var rotatedCoord = uvCoord;
 
@@ -441,7 +441,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
                     // Top Right - 1f 0f
-                    particlePos += (EdgePolicy == EdgePolicy.Edge) ? oldUnitX * 2 : oldUnitX;
+                    particlePos += (EdgePolicy == EdgePolicy.Center) ? oldUnitX * 2 : oldUnitX;
                     bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 1;
@@ -469,7 +469,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
                     // Bottom Right - 0f 1f
-                    particlePos -= (EdgePolicy == EdgePolicy.Edge) ? unitX * 2 : unitX;
+                    particlePos -= (EdgePolicy == EdgePolicy.Center) ? unitX * 2 : unitX;
                     bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 0;

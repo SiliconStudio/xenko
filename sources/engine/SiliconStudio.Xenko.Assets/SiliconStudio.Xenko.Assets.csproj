@@ -332,7 +332,7 @@
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
     <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
-    <Compile Include="UI\UIElementHierarchyData.cs" />
+    <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />

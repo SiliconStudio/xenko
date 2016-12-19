@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Texture")]
     public class ComputeTextureColor : ComputeTextureBase, IComputeColor
     {
-        private bool hasChanged;
+        private bool hasChanged = true;
 
         // Possible optimization will be to keep this on the ComputeTextureBase side
         private Texture cachedTexture;

@@ -247,7 +247,7 @@ String: This is a test
 UInt16: 4
 UInt32: 6
 UInt64: 8
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 20};
             settings.RegisterTagMapping("MyObject", typeof(MyObject));
@@ -309,6 +309,71 @@ UInt64: 8
             Assert.AreEqual((object) 16, dynamicMember.DynamicIds[myObject1]);
         }
 
+        public class ObjectWithLiteralString
+        {
+            [DataStyle(ScalarStyle.Literal)]
+            public string Text { get; set; }
+        }
+
+        [TestCase("Simple")]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("\r\n")]
+        [TestCase("\t")]
+        [TestCase("\r\n ")]
+        [TestCase(" \r\n")]
+        [TestCase("\r\n\t")]
+        [TestCase("\t\r\n")]
+        [TestCase("    A\r\n    B")]
+        [TestCase("    A\r\n    B\r\n")]
+        [TestCase("    A\r\n    B\r\n\r\n")]
+        [TestCase("    A\r\n    B\r\n    \r\n")]
+        public void TestLiteralString(string text)
+        {
+            var settings = new SerializerSettings() { LimitPrimitiveFlowSequence = 20, EmitAlias = false };
+            settings.RegisterTagMapping(nameof(ObjectWithLiteralString), typeof(ObjectWithLiteralString));
+
+            // Normalize line ending to current OS
+            text = text.Replace("\r\n", Environment.NewLine);
+
+            var original = new ObjectWithLiteralString { Text = text };
+            var obj = SerialRoundTrip(settings, original);
+            Assert.True(obj is ObjectWithLiteralString);
+            Assert.AreEqual(original.Text, ((ObjectWithLiteralString)obj).Text);
+        }
+
+        public class ObjectWithFoldedString
+        {
+            [DataStyle(ScalarStyle.Folded)]
+            public string Text { get; set; }
+        }
+
+        [TestCase("Simple")]
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase("\r\n")]
+        [TestCase("\t")]
+        [TestCase("\r\n ")]
+        [TestCase(" \r\n")]
+        [TestCase("\r\n\t")]
+        [TestCase("\t\r\n")]
+        [TestCase("    A\r\n    B")]
+        [TestCase("    A\r\n    B\r\n")]
+        [TestCase("    A\r\n    B\r\n\r\n")]
+        [TestCase("    A\r\n    B\r\n    \r\n")]
+        public void TestFoldedString(string text)
+        {
+            var settings = new SerializerSettings() { LimitPrimitiveFlowSequence = 20, EmitAlias = false };
+            settings.RegisterTagMapping(nameof(ObjectWithFoldedString), typeof(ObjectWithFoldedString));
+
+            // Normalize line ending to current OS
+            text = text.Replace("\r\n", Environment.NewLine);
+
+            var original = new ObjectWithFoldedString { Text = text };
+            var obj = SerialRoundTrip(settings, original);
+            Assert.True(obj is ObjectWithFoldedString);
+            Assert.AreEqual(original.Text, ((ObjectWithFoldedString)obj).Text);
+        }
         public class ObjectFloatDoublePrecision
         {
             public float Float { get; set; }
@@ -325,7 +390,7 @@ UInt64: 8
             var text = @"!ObjectFloatDoublePrecision
 Double: 1E-05
 Float: 1E-05
-".Trim();
+";
 
             SerialRoundTrip(settings, text);
         }
@@ -358,7 +423,7 @@ DoublePositiveInfinity: Infinity
 FloatNaN: NaN
 FloatNegativeInfinity: -Infinity
 FloatPositiveInfinity: Infinity
-".Trim();
+";
 
             SerialRoundTrip(settings, text);
         }
@@ -385,7 +450,7 @@ FloatPositiveInfinity: Infinity
             var text = @"!MyObjectAndCollection
 Name: Yes
 Values: [a, b, c]
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 20};
             settings.RegisterTagMapping("MyObjectAndCollection", typeof(MyObjectAndCollection));
@@ -416,7 +481,7 @@ Value: 1
   - a
   - b
   - c
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomCollectionWithProperties", typeof(MyCustomCollectionWithProperties));
@@ -449,7 +514,7 @@ Value: 1
   a: true
   b: false
   c: true
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomDictionaryWithProperties", typeof(MyCustomDictionaryWithProperties));
@@ -470,7 +535,7 @@ Value: 1
 a: true
 b: false
 c: true
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0, SerializeDictionaryItemsAsMembers = true};
             settings.RegisterTagMapping("MyCustomDictionaryWithProperties", typeof(MyCustomDictionaryWithProperties));
@@ -572,7 +637,7 @@ StringMapbyContent:
   e: 4
   f: no
 Value: 0
-".Trim();
+";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
             settings.RegisterTagMapping("MyCustomClassWithSpecialMembers", typeof(MyCustomClassWithSpecialMembers));
@@ -731,7 +796,7 @@ StringMapbyContent:
   e: 4
   f: no
 Value: 0
-".Trim();
+";
 
             SerialRoundTrip(settings, text, typeof(Dictionary<object, object>));
         }
@@ -907,7 +972,7 @@ Value: 0
                 SerialRoundTrip(settings, new ClassWithChars()
                 {
                     Start = (char) i,
-                    End = (char) (i + 1)
+                    End = (char) i,
                 });
             }
         }
@@ -1005,7 +1070,7 @@ Value: 0
             classNoStyle.G_ListCustom.Add(7);
 
             var serializer = new Serializer(settings);
-            var text = serializer.Serialize(classNoStyle).Trim();
+            var text = serializer.Serialize(classNoStyle);
 
             var textReference = @"!ClassNoStyle
 A_ListWithCustomStyle: [a, b, c]
@@ -1023,7 +1088,8 @@ E_ListDefaultPrimitiveLimitExceed:
   - 5
 F_ListClassWithStyleDefaultFormat:
   - {Name: name3, Value: 3}
-G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
+G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}
+";
 
             Assert.AreEqual(textReference, text);
         }
@@ -1442,7 +1508,7 @@ Enum: OldValue2
             var text = @"!ClassWithImplicitMemberType
 Test:
   String: test
-".Trim();
+";
 
             settings.RegisterTagMapping("ClassWithImplicitMemberType", typeof(ClassWithImplicitMemberType));
             settings.RegisterTagMapping("ClassWithImplicitMemberTypeInner", typeof(ClassWithImplicitMemberTypeInner));
@@ -1457,7 +1523,7 @@ Test:
             var text = @"!ClassWithNonImplicitMemberType
 Test: !ClassWithImplicitMemberTypeInner
   String: test
-".Trim();
+";
 
             settings.RegisterTagMapping("ClassWithNonImplicitMemberType", typeof(ClassWithNonImplicitMemberType));
             settings.RegisterTagMapping("ClassWithImplicitMemberTypeInner", typeof(ClassWithImplicitMemberTypeInner));
@@ -1524,7 +1590,7 @@ Test: !ClassWithImplicitMemberTypeInner
 
             Console.WriteLine();
 
-            var text2 = serializer.Serialize(value, serializedType).Trim();
+            var text2 = serializer.Serialize(value, serializedType);
             Console.WriteLine("Text deserialized:");
             Console.WriteLine("------------------");
             Console.WriteLine(text2);
