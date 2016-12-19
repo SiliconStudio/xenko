@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -11,16 +13,21 @@ namespace SiliconStudio.Xenko.Input
     /// <typeparam name="TEventType">The type of event to pool</typeparam>
     public static class InputEventPool<TEventType> where TEventType : InputEvent, new()
     {
-        private static Queue<TEventType> eventPool;
+        private static PoolListStruct<TEventType> eventPool;
 
         /// <summary>
-        /// The number of pointer events in circulation, if this number keeps increasing, Enqueue is possible not called somewhere
+        /// The number of events in circulation, if this number keeps increasing, Enqueue is possible not called somewhere
         /// </summary>
-        public static int PoolSize { get; private set; } = 0;
+        public static int ActiveObjects => eventPool.Count;
 
         static InputEventPool()
         {
-            eventPool = new Queue<TEventType>();
+            eventPool = new PoolListStruct<TEventType>(8, CreateEvent);
+        }
+
+        private static TEventType CreateEvent()
+        {
+            return new TEventType();
         }
 
         /// <summary>
@@ -30,26 +37,18 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>An event</returns>
         public static TEventType GetOrCreate(IInputDevice device)
         {
-            TEventType evt;
-            if (eventPool.Count > 0)
-                evt = eventPool.Dequeue();
-            else
-            {
-                evt = new TEventType();
-                PoolSize++;
-            }
-
-            evt.Device = device;
-            return evt;
+            TEventType item = eventPool.Add();
+            item.Device = device;
+            return item;
         }
         
         /// <summary>
         /// Puts a used event back into the pool to be recycled
         /// </summary>
-        /// <param name="evt">The event to reuse</param>
-        public static void Enqueue(TEventType evt)
+        /// <param name="item">The event to reuse</param>
+        public static void Enqueue(TEventType item)
         {
-            eventPool.Enqueue(evt);
+            eventPool.Remove(item);
         }
     }
 }

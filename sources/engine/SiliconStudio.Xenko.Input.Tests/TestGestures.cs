@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input.Gestures;
+using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
@@ -113,12 +114,120 @@ namespace SiliconStudio.Xenko.Input.Tests
             Input.ActivatedGestures.Remove(composite);
         }
 
+        void TestDragGesture()
+        {
+            var mouse = InputSourceSimulated.Instance.Mouse;
+
+            DragGesture hdrag = new DragGesture(GestureShape.Horizontal);
+            Input.ActivatedGestures.Add(hdrag);
+
+            // Should only trigger when horizontal movement is detected, try a vertical drag
+            mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(hdrag.Events);
+
+            mouse.SimulatePointer(PointerEventType.Released, new Vector2(0.5f, 1.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(hdrag.Events);
+            
+            // Try a horizontal drag
+            mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.0f, 0.0f));
+            Input.Update(DrawTime);
+            
+            mouse.SimulatePointer(PointerEventType.Moved, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            {
+                Assert.IsNotEmpty(hdrag.Events);
+                var dragEvent = (DragEventArgs)hdrag.Events[0];
+                Assert.AreEqual(PointerGestureEventType.Began, dragEvent.EventType);
+                Assert.AreEqual(new Vector2(0.5f, 0.0f), dragEvent.DeltaTranslation);
+                Assert.AreEqual(new Vector2(0.5f, 0.0f), dragEvent.TotalTranslation);
+            }
+
+            mouse.SimulatePointer(PointerEventType.Released, new Vector2(1.0f, 0.0f));
+            Input.Update(DrawTime);
+            {
+                Assert.IsNotEmpty(hdrag.Events);
+                var dragEvent = (DragEventArgs)hdrag.Events[0];
+                Assert.AreEqual(PointerGestureEventType.Ended, dragEvent.EventType);
+                Assert.AreEqual(new Vector2(0.5f, 0.0f), dragEvent.TotalTranslation);
+                Assert.AreEqual(new Vector2(0.5f, 0.0f), dragEvent.CurrentPosition);
+            }
+        }
+
+        void TestFlickGesture()
+        {
+            var mouse = InputSourceSimulated.Instance.Mouse;
+
+            FlickGesture flick = new FlickGesture(GestureShape.Free) { MinimumFlickLength = 0.2f, RequiredFingerCount = 1 };
+            Input.ActivatedGestures.Add(flick);
+            
+            mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(flick.Events);
+
+            mouse.SimulatePointer(PointerEventType.Moved, new Vector2(0.5f, 1.0f));
+            Input.Update(DrawTime);
+            {
+                Assert.IsNotEmpty(flick.Events);
+                var flickEvent = (FlickEventArgs)flick.Events[0];
+                Assert.AreEqual(new Vector2(0.0f, 1.0f), flickEvent.DeltaTranslation);
+            }
+
+            mouse.SimulatePointer(PointerEventType.Released, new Vector2(0.5f, 1.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(flick.Events);
+        }
+
+        void TestLongPressGesture()
+        {
+            var mouse = InputSourceSimulated.Instance.Mouse;
+
+            LongPressGesture longPress = new LongPressGesture() { RequiredPressTime = TimeSpan.FromMilliseconds(100) };
+            Input.ActivatedGestures.Add(longPress);
+
+            mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(longPress.Events);
+
+            {
+                // Too short hold time
+                var ts = TimeSpan.FromMilliseconds(90);
+                Input.Update(new GameTime(ts, ts));
+                Assert.IsEmpty(longPress.Events);
+            }
+
+            mouse.SimulatePointer(PointerEventType.Released, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(longPress.Events);
+
+            mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(longPress.Events);
+
+            {
+                // Long enough hold time
+                var ts = TimeSpan.FromMilliseconds(200);
+                Input.Update(new GameTime(ts, ts));
+                Assert.IsNotEmpty(longPress.Events);
+                var longPressEvent = (LongPressEventArgs)longPress.Events[0];
+                Assert.AreEqual(new Vector2(0.5f, 0.0f), longPressEvent.Position);
+            }
+
+            mouse.SimulatePointer(PointerEventType.Released, new Vector2(0.5f, 0.0f));
+            Input.Update(DrawTime);
+            Assert.IsEmpty(longPress.Events);
+        }
+
         protected override void RegisterTests()
         {
             base.RegisterTests();
             
             FrameGameSystem.Update(TestTapGesture);
             FrameGameSystem.Update(TestCompositeGesture);
+            FrameGameSystem.Update(TestDragGesture);
+            FrameGameSystem.Update(TestFlickGesture);
+            FrameGameSystem.Update(TestLongPressGesture);
         }
 
         [Test]
