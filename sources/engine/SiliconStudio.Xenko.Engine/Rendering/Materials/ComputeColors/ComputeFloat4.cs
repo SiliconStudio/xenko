@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Float4")]
     public class ComputeFloat4 : ComputeValueBase<Vector4>, IComputeColor
     {
-        private bool hasChanged;
+        private bool hasChanged = true;
 
         // Possible optimization will be to keep this on the ComputeValueBase<T> side
         private Vector4 cachedValue;
