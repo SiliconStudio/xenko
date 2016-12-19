@@ -493,15 +493,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private Matrix[] worldToShadowCascadeUV;
 
-            private Vector3[] ShadowUpWS;
-            private Vector3[] ShadowLeftWS;
-            private Vector3[] ShadowLDirWS;
-
             private float[] depthBiases;
 
             private float[] offsetScales;
-
-            private bool[] useGradientSampling;
 
             private Texture shadowMapTexture;
 
@@ -516,16 +510,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private ValueParameterKey<float> cascadeSplitsKey;
 
             private ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
-
-            private ValueParameterKey<Vector3> ShadowUpWsKey;
-            private ValueParameterKey<Vector3> ShadowLeftWsKey;
-            private ValueParameterKey<Vector3> ShadowLDirWsKey;
-
+            
             private ValueParameterKey<float> depthBiasesKey;
 
             private ValueParameterKey<float> offsetScalesKey;
-
-            private ValueParameterKey<bool> gradientSamplingKey;
 
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
 
@@ -549,12 +537,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionKey);
                 cascadeSplitsKey = ShadowMapReceiverDirectionalKeys.CascadeDepthSplits.ComposeWith(compositionKey);
                 worldToShadowCascadeUVsKey = ShadowMapReceiverBaseKeys.WorldToShadowCascadeUV.ComposeWith(compositionKey);
-                ShadowUpWsKey = ShadowMapReceiverBaseKeys.ShadowUpWs.ComposeWith(compositionKey);
-                ShadowLeftWsKey = ShadowMapReceiverBaseKeys.ShadowLeftWs.ComposeWith(compositionKey);
-                ShadowLDirWsKey = ShadowMapReceiverBaseKeys.LightDirWS.ComposeWith(compositionKey);
                 depthBiasesKey = ShadowMapReceiverBaseKeys.DepthBiases.ComposeWith(compositionKey);
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
-                gradientSamplingKey = ShadowMapReceiverBaseKeys.GradientShadowMap.ComposeWith(compositionKey);
             }
 
             public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -582,12 +566,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 Array.Resize(ref cascadeSplits, cascadeCount * lightCurrentCount);
                 Array.Resize(ref worldToShadowCascadeUV, cascadeCount * lightCurrentCount);
-                Array.Resize(ref ShadowUpWS, cascadeCount * lightCurrentCount);
-                Array.Resize(ref ShadowLeftWS, cascadeCount * lightCurrentCount);
-                Array.Resize(ref ShadowLDirWS, cascadeCount * lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref offsetScales, lightCurrentCount);
-                Array.Resize(ref useGradientSampling, lightCurrentCount);
             }
 
             public void ApplyShader(ShaderMixinSource mixin)
@@ -609,14 +589,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     {
                         cascadeSplits[splitIndex + i] = splits[i];
                         worldToShadowCascadeUV[splitIndex + i] = matrices[i];
-                        ShadowUpWS[splitIndex + i] = singleLightData.ShadowUpWS[i];
-                        ShadowLeftWS[splitIndex + i] = singleLightData.ShadowLeftWS[i];
-                        ShadowLDirWS[splitIndex + i] = singleLightData.ShadowLDirWS[i];
                     }
 
                     depthBiases[lightIndex] = singleLightData.DepthBias;
                     offsetScales[lightIndex] = singleLightData.OffsetScale;
-                    useGradientSampling[lightIndex] = singleLightData.GradientSampling;
 
                     // TODO: should be setup just once at creation time
                     if (lightIndex == 0)
@@ -635,12 +611,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
                 parameters.Set(cascadeSplitsKey, cascadeSplits);
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
-                parameters.Set(ShadowUpWsKey, ShadowUpWS);
-                parameters.Set(ShadowLeftWsKey, ShadowLeftWS);
-                parameters.Set(ShadowLDirWsKey, ShadowLDirWS);
                 parameters.Set(depthBiasesKey, depthBiases);
                 parameters.Set(offsetScalesKey, offsetScales);
-                parameters.Set(gradientSamplingKey, useGradientSampling);
             }
 
             public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
