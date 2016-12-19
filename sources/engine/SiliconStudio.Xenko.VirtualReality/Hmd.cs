@@ -62,28 +62,35 @@ namespace SiliconStudio.Xenko.VirtualReality
                         var device = new OculusOvrHmd(game.Services);
                         if (device.CanInitialize) return device;
                         device.Destroy();
-                        break;
 #endif
                     }
+                        break;
                     case HmdApi.OpenVr:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                         var device = new OpenVrHmd(game.Services);
                         if (device.CanInitialize) return device;
                         device.Destroy();
-                        break;
 #endif
                     }
+                        break;
                     case HmdApi.Fove:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                         var device = new FoveHmd(game.Services);
                         if (device.CanInitialize) return device;
                         device.Destroy();
-                        break;
 #endif
                     }
+                        break;
                     case HmdApi.Google:
+                    {
+#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+                        var device = new GoogleVrHmd(game.Services);
+                        if (device.CanInitialize) return device;
+                        device.Destroy();
+#endif
+                    }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

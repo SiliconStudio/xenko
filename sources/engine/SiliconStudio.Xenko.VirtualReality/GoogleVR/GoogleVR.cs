@@ -9,7 +9,6 @@ using System.Security;
 using OpenTK.Graphics.ES20;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-
 using SiliconStudio.Xenko.Graphics;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID

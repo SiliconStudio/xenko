@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core;
+﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -113,3 +115,5 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override bool CanInitialize => Fove.Startup() && Fove.IsHardwareReady();
     }
 }
+
+#endif
