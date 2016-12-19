@@ -412,6 +412,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Quantu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.Quantum.Tests", "..\sources\common\presentation\SiliconStudio.Presentation.Quantum.Tests\SiliconStudio.Presentation.Quantum.Tests.csproj", "{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.GameControllerDatabaseGenerator", "..\sources\tools\SiliconStudio.Xenko.GameControllerDatabaseGenerator\SiliconStudio.Xenko.GameControllerDatabaseGenerator.csproj", "{72319A20-7C64-48CA-A1D3-04793CD104B9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 4

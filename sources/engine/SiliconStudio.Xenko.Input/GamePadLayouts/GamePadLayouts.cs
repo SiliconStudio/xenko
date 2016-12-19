@@ -15,10 +15,10 @@ namespace SiliconStudio.Xenko.Input
         static GamePadLayouts()
         {
             // XInput device layout for any plaform that does not support xinput directly
-            GamePadLayouts.AddLayout(new GamePadLayoutXInput());
+            AddLayout(new GamePadLayoutXInput());
 
             // Register layouts from the mapping database
-            GameControllerDb.RegisterLayouts();
+            GameControllerDatabase.RegisterLayouts();
         }
 
         /// <summary>

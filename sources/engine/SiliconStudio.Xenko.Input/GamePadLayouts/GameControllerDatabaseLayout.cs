@@ -9,12 +9,12 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Layout that matches a name or product Id
     /// </summary>
-    public class GameControllerDbLayout : GamePadLayout
+    public class GameControllerDatabaseLayout : GamePadLayout
     {
         public string Name;
         public Guid ProductId;
 
-        public GameControllerDbLayout(Guid productId, string name)
+        public GameControllerDatabaseLayout(Guid productId, string name)
         {
             Name = name;
             ProductId = productId;

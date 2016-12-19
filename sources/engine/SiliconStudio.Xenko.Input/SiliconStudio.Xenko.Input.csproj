@@ -78,8 +78,8 @@
     <Compile Include="GamePadButtonEvent.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
     <Compile Include="GamePadIndexChangedEventArgs.cs" />
-    <Compile Include="GamePadLayouts\GameControllerDb.cs" />
-    <Compile Include="GamePadLayouts\GameControllerDbLayout.cs" />
+    <Compile Include="GamePadLayouts\GameControllerDatabase.cs" />
+    <Compile Include="GamePadLayouts\GameControllerDatabaseLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />

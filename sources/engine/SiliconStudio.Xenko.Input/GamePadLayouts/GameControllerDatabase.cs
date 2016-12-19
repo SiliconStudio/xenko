@@ -18,7 +18,7 @@
 // 1. The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software.If you use this software
 //    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required. 
+//    appreciated but is not required.
 // 2. Altered source versions must be plainly marked as such, and must not be
 //    misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Acme 
     /// </summary>
-	internal class Layout0 : GameControllerDbLayout
+	internal class Layout0 : GameControllerDatabaseLayout
 	{
 		public Layout0() : base(new Guid("00120e8f-0000-0000-0000-504944564944"), "Acme")
 		{
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Afterglow PS3 Controller 
     /// </summary>
-	internal class Layout1 : GameControllerDbLayout
+	internal class Layout1 : GameControllerDatabaseLayout
 	{
 		public Layout1() : base(new Guid("08361a34-0000-0000-0000-504944564944"), "Afterglow PS3 Controller")
 		{
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GameStop Gamepad 
     /// </summary>
-	internal class Layout2 : GameControllerDbLayout
+	internal class Layout2 : GameControllerDatabaseLayout
 	{
 		public Layout2() : base(new Guid("0000ffff-0000-0000-0000-504944564944"), "GameStop Gamepad")
 		{
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Generic DirectInput Controller 
     /// </summary>
-	internal class Layout3 : GameControllerDbLayout
+	internal class Layout3 : GameControllerDatabaseLayout
 	{
 		public Layout3() : base(new Guid("c216046d-0000-0000-0000-504944564944"), "Generic DirectInput Controller")
 		{
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HORIPAD 4 
     /// </summary>
-	internal class Layout4 : GameControllerDbLayout
+	internal class Layout4 : GameControllerDatabaseLayout
 	{
 		public Layout4() : base(new Guid("006e0f0d-0000-0000-0000-504944564944"), "HORIPAD 4")
 		{
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F710 Gamepad 
     /// </summary>
-	internal class Layout5 : GameControllerDbLayout
+	internal class Layout5 : GameControllerDatabaseLayout
 	{
 		public Layout5() : base(new Guid("c219046d-0000-0000-0000-504944564944"), "Logitech F710 Gamepad")
 		{
@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller 
     /// </summary>
-	internal class Layout6 : GameControllerDbLayout
+	internal class Layout6 : GameControllerDatabaseLayout
 	{
 		public Layout6() : base(new Guid("03088888-0000-0000-0000-504944564944"), "PS3 Controller")
 		{
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller 
     /// </summary>
-	internal class Layout7 : GameControllerDbLayout
+	internal class Layout7 : GameControllerDatabaseLayout
 	{
 		public Layout7() : base(new Guid("0268054c-0000-0000-0000-504944564944"), "PS3 Controller")
 		{
@@ -259,7 +259,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 DualShock 
     /// </summary>
-	internal class Layout8 : GameControllerDbLayout
+	internal class Layout8 : GameControllerDatabaseLayout
 	{
 		public Layout8() : base(new Guid("00050925-0000-0000-0000-504944564944"), "PS3 DualShock")
 		{
@@ -287,7 +287,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS4 Controller 
     /// </summary>
-	internal class Layout9 : GameControllerDbLayout
+	internal class Layout9 : GameControllerDatabaseLayout
 	{
 		public Layout9() : base(new Guid("05c4054c-0000-0000-0000-504944564944"), "PS4 Controller")
 		{
@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech RumblePad 2 USB 
     /// </summary>
-	internal class Layout10 : GameControllerDbLayout
+	internal class Layout10 : GameControllerDatabaseLayout
 	{
 		public Layout10() : base(new Guid("c218046d-0000-0000-0000-504944564944"), "Logitech RumblePad 2 USB")
 		{
@@ -343,7 +343,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// OUYA Controller 
     /// </summary>
-	internal class Layout11 : GameControllerDbLayout
+	internal class Layout11 : GameControllerDatabaseLayout
 	{
 		public Layout11() : base(new Guid("00012836-0000-0000-0000-504944564944"), "OUYA Controller")
 		{
@@ -374,7 +374,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Firestorm Dual Power 
     /// </summary>
-	internal class Layout12 : GameControllerDbLayout
+	internal class Layout12 : GameControllerDatabaseLayout
 	{
 		public Layout12() : base(new Guid("b300044f-0000-0000-0000-504944564944"), "Thrustmaster Firestorm Dual Power")
 		{
@@ -402,7 +402,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// RetroUSB.com RetroPad 
     /// </summary>
-	internal class Layout13 : GameControllerDbLayout
+	internal class Layout13 : GameControllerDatabaseLayout
 	{
 		public Layout13() : base(new Guid("0003f000-0000-0000-0000-504944564944"), "RetroUSB.com RetroPad")
 		{
@@ -424,7 +424,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// RetroUSB.com Super RetroPort 
     /// </summary>
-	internal class Layout14 : GameControllerDbLayout
+	internal class Layout14 : GameControllerDatabaseLayout
 	{
 		public Layout14() : base(new Guid("00f1f000-0000-0000-0000-504944564944"), "RetroUSB.com Super RetroPort")
 		{
@@ -446,7 +446,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GamePad Pro USB 
     /// </summary>
-	internal class Layout15 : GameControllerDbLayout
+	internal class Layout15 : GameControllerDatabaseLayout
 	{
 		public Layout15() : base(new Guid("40010428-0000-0000-0000-504944564944"), "GamePad Pro USB")
 		{
@@ -470,7 +470,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// SVEN X-PAD 
     /// </summary>
-	internal class Layout16 : GameControllerDbLayout
+	internal class Layout16 : GameControllerDatabaseLayout
 	{
 		public Layout16() : base(new Guid("333111ff-0000-0000-0000-504944564944"), "SVEN X-PAD")
 		{
@@ -496,7 +496,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Piranha xtreme 
     /// </summary>
-	internal class Layout17 : GameControllerDbLayout
+	internal class Layout17 : GameControllerDatabaseLayout
 	{
 		public Layout17() : base(new Guid("00030e8f-0000-0000-0000-504944564944"), "Piranha xtreme")
 		{
@@ -524,7 +524,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Multilaser JS071 USB 
     /// </summary>
-	internal class Layout18 : GameControllerDbLayout
+	internal class Layout18 : GameControllerDatabaseLayout
 	{
 		public Layout18() : base(new Guid("310d0e8f-0000-0000-0000-504944564944"), "Multilaser JS071 USB")
 		{
@@ -552,7 +552,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS2 USB 
     /// </summary>
-	internal class Layout19 : GameControllerDbLayout
+	internal class Layout19 : GameControllerDatabaseLayout
 	{
 		public Layout19() : base(new Guid("00030810-0000-0000-0000-504944564944"), "PS2 USB")
 		{
@@ -580,7 +580,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// G-Shark GS-GP702 
     /// </summary>
-	internal class Layout20 : GameControllerDbLayout
+	internal class Layout20 : GameControllerDatabaseLayout
 	{
 		public Layout20() : base(new Guid("00060079-0000-0000-0000-504944564944"), "G-Shark GS-GP702")
 		{
@@ -608,7 +608,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// NYKO AIRFLO 
     /// </summary>
-	internal class Layout21 : GameControllerDbLayout
+	internal class Layout21 : GameControllerDatabaseLayout
 	{
 		public Layout21() : base(new Guid("4d01124b-0000-0000-0000-504944564944"), "NYKO AIRFLO")
 		{
@@ -632,7 +632,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PowerA Pro Ex 
     /// </summary>
-	internal class Layout22 : GameControllerDbLayout
+	internal class Layout22 : GameControllerDatabaseLayout
 	{
 		public Layout22() : base(new Guid("ca6d20d6-0000-0000-0000-504944564944"), "PowerA Pro Ex")
 		{
@@ -660,7 +660,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek P2500 
     /// </summary>
-	internal class Layout23 : GameControllerDbLayout
+	internal class Layout23 : GameControllerDatabaseLayout
 	{
 		public Layout23() : base(new Guid("ff0c06a3-0000-0000-0000-504944564944"), "Saitek P2500")
 		{
@@ -686,7 +686,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Dual Analog 3.2 
     /// </summary>
-	internal class Layout24 : GameControllerDbLayout
+	internal class Layout24 : GameControllerDatabaseLayout
 	{
 		public Layout24() : base(new Guid("b315044f-0000-0000-0000-504944564944"), "Thrustmaster Dual Analog 3.2")
 		{
@@ -714,7 +714,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Rock Candy Gamepad for PS3 
     /// </summary>
-	internal class Layout25 : GameControllerDbLayout
+	internal class Layout25 : GameControllerDatabaseLayout
 	{
 		public Layout25() : base(new Guid("011e0e6f-0000-0000-0000-504944564944"), "Rock Candy Gamepad for PS3")
 		{
@@ -742,7 +742,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// iBuffalo USB 2-axis 8-button Gamepad 
     /// </summary>
-	internal class Layout26 : GameControllerDbLayout
+	internal class Layout26 : GameControllerDatabaseLayout
 	{
 		public Layout26() : base(new Guid("20600583-0000-0000-0000-504944564944"), "iBuffalo USB 2-axis 8-button Gamepad")
 		{
@@ -764,7 +764,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS1 USB 
     /// </summary>
-	internal class Layout27 : GameControllerDbLayout
+	internal class Layout27 : GameControllerDatabaseLayout
 	{
 		public Layout27() : base(new Guid("00010810-0000-0000-0000-504944564944"), "PS1 USB")
 		{
@@ -792,7 +792,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Ipega PG-9023 
     /// </summary>
-	internal class Layout28 : GameControllerDbLayout
+	internal class Layout28 : GameControllerDatabaseLayout
 	{
 		public Layout28() : base(new Guid("04021949-0000-0000-0000-504944564944"), "Ipega PG-9023")
 		{
@@ -820,7 +820,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Dual Trigger 3-in-1 
     /// </summary>
-	internal class Layout29 : GameControllerDbLayout
+	internal class Layout29 : GameControllerDatabaseLayout
 	{
 		public Layout29() : base(new Guid("b323044f-0000-0000-0000-504944564944"), "Dual Trigger 3-in-1")
 		{
@@ -848,7 +848,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Hatsune Miku Sho Controller 
     /// </summary>
-	internal class Layout30 : GameControllerDbLayout
+	internal class Layout30 : GameControllerDatabaseLayout
 	{
 		public Layout30() : base(new Guid("00490f0d-0000-0000-0000-504944564944"), "Hatsune Miku Sho Controller")
 		{
@@ -876,7 +876,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mayflash GameCube Controller Adapter 
     /// </summary>
-	internal class Layout31 : GameControllerDbLayout
+	internal class Layout31 : GameControllerDatabaseLayout
 	{
 		public Layout31() : base(new Guid("18430079-0000-0000-0000-504944564944"), "Mayflash GameCube Controller Adapter")
 		{
@@ -904,7 +904,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mayflash WiiU Pro Game Controller Adapter (DInput) 
     /// </summary>
-	internal class Layout32 : GameControllerDbLayout
+	internal class Layout32 : GameControllerDatabaseLayout
 	{
 		public Layout32() : base(new Guid("18000079-0000-0000-0000-504944564944"), "Mayflash WiiU Pro Game Controller Adapter (DInput)")
 		{
@@ -932,7 +932,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mayflash Wii Classic Controller 
     /// </summary>
-	internal class Layout33 : GameControllerDbLayout
+	internal class Layout33 : GameControllerDatabaseLayout
 	{
 		public Layout33() : base(new Guid("03e80925-0000-0000-0000-504944564944"), "Mayflash Wii Classic Controller")
 		{
@@ -962,7 +962,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek P480 Rumble Pad 
     /// </summary>
-	internal class Layout34 : GameControllerDbLayout
+	internal class Layout34 : GameControllerDatabaseLayout
 	{
 		public Layout34() : base(new Guid("01100f30-0000-0000-0000-504944564944"), "Saitek P480 Rumble Pad")
 		{
@@ -990,7 +990,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// 8Bitdo SFC30 GamePad 
     /// </summary>
-	internal class Layout35 : GameControllerDbLayout
+	internal class Layout35 : GameControllerDatabaseLayout
 	{
 		public Layout35() : base(new Guid("00092810-0000-0000-0000-504944564944"), "8Bitdo SFC30 GamePad")
 		{
@@ -1012,7 +1012,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// USB Vibration Joystick (BM) 
     /// </summary>
-	internal class Layout36 : GameControllerDbLayout
+	internal class Layout36 : GameControllerDatabaseLayout
 	{
 		public Layout36() : base(new Guid("05232563-0000-0000-0000-504944564944"), "USB Vibration Joystick (BM)")
 		{
@@ -1040,7 +1040,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// 8Bitdo NES30 PRO Wireless 
     /// </summary>
-	internal class Layout37 : GameControllerDbLayout
+	internal class Layout37 : GameControllerDatabaseLayout
 	{
 		public Layout37() : base(new Guid("00093820-0000-0000-0000-504944564944"), "8Bitdo NES30 PRO Wireless")
 		{
@@ -1068,7 +1068,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// 8Bitdo NES30 PRO USB 
     /// </summary>
-	internal class Layout38 : GameControllerDbLayout
+	internal class Layout38 : GameControllerDatabaseLayout
 	{
 		public Layout38() : base(new Guid("90002002-0000-0000-0000-504944564944"), "8Bitdo NES30 PRO USB")
 		{
@@ -1096,7 +1096,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Gembird JPD-DualForce 
     /// </summary>
-	internal class Layout39 : GameControllerDbLayout
+	internal class Layout39 : GameControllerDatabaseLayout
 	{
 		public Layout39() : base(new Guid("333111ff-0000-0000-0000-504944564944"), "Gembird JPD-DualForce")
 		{
@@ -1124,7 +1124,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// EXEQ RF USB Gamepad 8206 
     /// </summary>
-	internal class Layout40 : GameControllerDbLayout
+	internal class Layout40 : GameControllerDatabaseLayout
 	{
 		public Layout40() : base(new Guid("08011a34-0000-0000-0000-504944564944"), "EXEQ RF USB Gamepad 8206")
 		{
@@ -1150,7 +1150,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Battalife Joystick 
     /// </summary>
-	internal class Layout41 : GameControllerDbLayout
+	internal class Layout41 : GameControllerDatabaseLayout
 	{
 		public Layout41() : base(new Guid("521311c0-0000-0000-0000-504944564944"), "Battalife Joystick")
 		{
@@ -1173,7 +1173,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GameStop Gamepad 
     /// </summary>
-	internal class Layout42 : GameControllerDbLayout
+	internal class Layout42 : GameControllerDatabaseLayout
 	{
 		public Layout42() : base(new Guid("00000005-5347-4720-616d-657061640000"), "GameStop Gamepad")
 		{
@@ -1201,7 +1201,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F310 Gamepad (DInput) 
     /// </summary>
-	internal class Layout43 : GameControllerDbLayout
+	internal class Layout43 : GameControllerDatabaseLayout
 	{
 		public Layout43() : base(new Guid("0000046d-0000-0000-16c2-000000000000"), "Logitech F310 Gamepad (DInput)")
 		{
@@ -1229,7 +1229,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F510 Gamepad (DInput) 
     /// </summary>
-	internal class Layout44 : GameControllerDbLayout
+	internal class Layout44 : GameControllerDatabaseLayout
 	{
 		public Layout44() : base(new Guid("0000046d-0000-0000-18c2-000000000000"), "Logitech F510 Gamepad (DInput)")
 		{
@@ -1257,7 +1257,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F710 Gamepad (XInput) 
     /// </summary>
-	internal class Layout45 : GameControllerDbLayout
+	internal class Layout45 : GameControllerDatabaseLayout
 	{
 		public Layout45() : base(new Guid("0000046d-0000-0000-1fc2-000000000000"), "Logitech F710 Gamepad (XInput)")
 		{
@@ -1289,7 +1289,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech Wireless Gamepad (DInput) 
     /// </summary>
-	internal class Layout46 : GameControllerDbLayout
+	internal class Layout46 : GameControllerDatabaseLayout
 	{
 		public Layout46() : base(new Guid("0000046d-0000-0000-19c2-000000000000"), "Logitech Wireless Gamepad (DInput)")
 		{
@@ -1317,7 +1317,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller 
     /// </summary>
-	internal class Layout47 : GameControllerDbLayout
+	internal class Layout47 : GameControllerDatabaseLayout
 	{
 		public Layout47() : base(new Guid("0000054c-0000-0000-6802-000000000000"), "PS3 Controller")
 		{
@@ -1349,7 +1349,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS4 Controller 
     /// </summary>
-	internal class Layout48 : GameControllerDbLayout
+	internal class Layout48 : GameControllerDatabaseLayout
 	{
 		public Layout48() : base(new Guid("0000054c-0000-0000-c405-000000000000"), "PS4 Controller")
 		{
@@ -1377,7 +1377,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// X360 Controller 
     /// </summary>
-	internal class Layout49 : GameControllerDbLayout
+	internal class Layout49 : GameControllerDatabaseLayout
 	{
 		public Layout49() : base(new Guid("0000045e-0000-0000-8e02-000000000000"), "X360 Controller")
 		{
@@ -1409,7 +1409,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Razer Onza Tournament 
     /// </summary>
-	internal class Layout50 : GameControllerDbLayout
+	internal class Layout50 : GameControllerDatabaseLayout
 	{
 		public Layout50() : base(new Guid("00001689-0000-0000-00fd-000000000000"), "Razer Onza Tournament")
 		{
@@ -1441,7 +1441,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Firestorm Dual Power 
     /// </summary>
-	internal class Layout51 : GameControllerDbLayout
+	internal class Layout51 : GameControllerDatabaseLayout
 	{
 		public Layout51() : base(new Guid("0000044f-0000-0000-00b3-000000000000"), "Thrustmaster Firestorm Dual Power")
 		{
@@ -1468,7 +1468,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Piranha xtreme 
     /// </summary>
-	internal class Layout52 : GameControllerDbLayout
+	internal class Layout52 : GameControllerDatabaseLayout
 	{
 		public Layout52() : base(new Guid("00000e8f-0000-0000-0300-000000000000"), "Piranha xtreme")
 		{
@@ -1496,7 +1496,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HORI Gem Pad 3 
     /// </summary>
-	internal class Layout53 : GameControllerDbLayout
+	internal class Layout53 : GameControllerDatabaseLayout
 	{
 		public Layout53() : base(new Guid("00000f0d-0000-0000-4d00-000000000000"), "HORI Gem Pad 3")
 		{
@@ -1524,7 +1524,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// G-Shark GP-702 
     /// </summary>
-	internal class Layout54 : GameControllerDbLayout
+	internal class Layout54 : GameControllerDatabaseLayout
 	{
 		public Layout54() : base(new Guid("00000079-0000-0000-0600-000000000000"), "G-Shark GP-702")
 		{
@@ -1552,7 +1552,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Dual Analog 3.2 
     /// </summary>
-	internal class Layout55 : GameControllerDbLayout
+	internal class Layout55 : GameControllerDatabaseLayout
 	{
 		public Layout55() : base(new Guid("0000044f-0000-0000-15b3-000000000000"), "Thrustmaster Dual Analog 3.2")
 		{
@@ -1580,7 +1580,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Gamestop BB-070 X360 Controller 
     /// </summary>
-	internal class Layout56 : GameControllerDbLayout
+	internal class Layout56 : GameControllerDatabaseLayout
 	{
 		public Layout56() : base(new Guid("00001bad-0000-0000-01f9-000000000000"), "Gamestop BB-070 X360 Controller")
 		{
@@ -1612,7 +1612,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Wii Remote 
     /// </summary>
-	internal class Layout57 : GameControllerDbLayout
+	internal class Layout57 : GameControllerDatabaseLayout
 	{
 		public Layout57() : base(new Guid("00000005-6957-6d69-6f74-652028303000"), "Wii Remote")
 		{
@@ -1638,7 +1638,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// iBuffalo USB 2-axis 8-button Gamepad 
     /// </summary>
-	internal class Layout58 : GameControllerDbLayout
+	internal class Layout58 : GameControllerDatabaseLayout
 	{
 		public Layout58() : base(new Guid("00000583-0000-0000-6020-000000000000"), "iBuffalo USB 2-axis 8-button Gamepad")
 		{
@@ -1660,7 +1660,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Xbox One Wired Controller 
     /// </summary>
-	internal class Layout59 : GameControllerDbLayout
+	internal class Layout59 : GameControllerDatabaseLayout
 	{
 		public Layout59() : base(new Guid("0000045e-0000-0000-dd02-000000000000"), "Xbox One Wired Controller")
 		{
@@ -1692,7 +1692,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Wii U Pro Controller 
     /// </summary>
-	internal class Layout60 : GameControllerDbLayout
+	internal class Layout60 : GameControllerDatabaseLayout
 	{
 		public Layout60() : base(new Guid("00000005-6957-6d69-6f74-652028313800"), "Wii U Pro Controller")
 		{
@@ -1724,7 +1724,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mayflash WiiU Pro Game Controller Adapter (DInput) 
     /// </summary>
-	internal class Layout61 : GameControllerDbLayout
+	internal class Layout61 : GameControllerDatabaseLayout
 	{
 		public Layout61() : base(new Guid("00000079-0000-0000-0018-000000000000"), "Mayflash WiiU Pro Game Controller Adapter (DInput)")
 		{
@@ -1752,7 +1752,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mayflash Wii Classic Controller 
     /// </summary>
-	internal class Layout62 : GameControllerDbLayout
+	internal class Layout62 : GameControllerDatabaseLayout
 	{
 		public Layout62() : base(new Guid("00000925-0000-0000-e803-000000000000"), "Mayflash Wii Classic Controller")
 		{
@@ -1782,7 +1782,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// SFC30 Joystick 
     /// </summary>
-	internal class Layout63 : GameControllerDbLayout
+	internal class Layout63 : GameControllerDatabaseLayout
 	{
 		public Layout63() : base(new Guid("00001235-0000-0000-21ab-000000000000"), "SFC30 Joystick")
 		{
@@ -1804,7 +1804,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Sega Saturn USB Gamepad 
     /// </summary>
-	internal class Layout64 : GameControllerDbLayout
+	internal class Layout64 : GameControllerDatabaseLayout
 	{
 		public Layout64() : base(new Guid("000004b4-0000-0000-0a01-000000000000"), "Sega Saturn USB Gamepad")
 		{
@@ -1826,7 +1826,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// 8Bitdo SFC30 GamePad 
     /// </summary>
-	internal class Layout65 : GameControllerDbLayout
+	internal class Layout65 : GameControllerDatabaseLayout
 	{
 		public Layout65() : base(new Guid("00002810-0000-0000-0900-000000000000"), "8Bitdo SFC30 GamePad")
 		{
@@ -1848,7 +1848,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// MC Cthulhu 
     /// </summary>
-	internal class Layout66 : GameControllerDbLayout
+	internal class Layout66 : GameControllerDatabaseLayout
 	{
 		public Layout66() : base(new Guid("000014d8-0000-0000-cecf-000000000000"), "MC Cthulhu")
 		{
@@ -1870,7 +1870,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HORIPAD FPS PLUS 4 
     /// </summary>
-	internal class Layout67 : GameControllerDbLayout
+	internal class Layout67 : GameControllerDatabaseLayout
 	{
 		public Layout67() : base(new Guid("00000f0d-0000-0000-6600-000000000000"), "HORIPAD FPS PLUS 4")
 		{
@@ -1899,7 +1899,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GameStop Gamepad 
     /// </summary>
-	internal class Layout68 : GameControllerDbLayout
+	internal class Layout68 : GameControllerDatabaseLayout
 	{
 		public Layout68() : base(new Guid("00000005-5347-4720-616d-657061640000"), "GameStop Gamepad")
 		{
@@ -1927,7 +1927,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Jess Technology USB Game Controller 
     /// </summary>
-	internal class Layout69 : GameControllerDbLayout
+	internal class Layout69 : GameControllerDatabaseLayout
 	{
 		public Layout69() : base(new Guid("00000003-22ba-0000-2010-000001010000"), "Jess Technology USB Game Controller")
 		{
@@ -1953,7 +1953,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech Cordless RumblePad 2 
     /// </summary>
-	internal class Layout70 : GameControllerDbLayout
+	internal class Layout70 : GameControllerDatabaseLayout
 	{
 		public Layout70() : base(new Guid("00000003-046d-0000-19c2-000010010000"), "Logitech Cordless RumblePad 2")
 		{
@@ -1981,7 +1981,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F310 Gamepad (XInput) 
     /// </summary>
-	internal class Layout71 : GameControllerDbLayout
+	internal class Layout71 : GameControllerDatabaseLayout
 	{
 		public Layout71() : base(new Guid("00000003-046d-0000-1dc2-000014400000"), "Logitech F310 Gamepad (XInput)")
 		{
@@ -2009,7 +2009,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F510 Gamepad (XInput) 
     /// </summary>
-	internal class Layout72 : GameControllerDbLayout
+	internal class Layout72 : GameControllerDatabaseLayout
 	{
 		public Layout72() : base(new Guid("00000003-046d-0000-1ec2-000020200000"), "Logitech F510 Gamepad (XInput)")
 		{
@@ -2037,7 +2037,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F710 Gamepad (DInput) 
     /// </summary>
-	internal class Layout73 : GameControllerDbLayout
+	internal class Layout73 : GameControllerDatabaseLayout
 	{
 		public Layout73() : base(new Guid("00000003-046d-0000-19c2-000011010000"), "Logitech F710 Gamepad (DInput)")
 		{
@@ -2065,7 +2065,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech F710 Gamepad (XInput) 
     /// </summary>
-	internal class Layout74 : GameControllerDbLayout
+	internal class Layout74 : GameControllerDatabaseLayout
 	{
 		public Layout74() : base(new Guid("00000003-046d-0000-1fc2-000005030000"), "Logitech F710 Gamepad (XInput)")
 		{
@@ -2093,7 +2093,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller 
     /// </summary>
-	internal class Layout75 : GameControllerDbLayout
+	internal class Layout75 : GameControllerDatabaseLayout
 	{
 		public Layout75() : base(new Guid("00000003-054c-0000-6802-000011010000"), "PS3 Controller")
 		{
@@ -2125,7 +2125,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Sony DualShock 4 
     /// </summary>
-	internal class Layout76 : GameControllerDbLayout
+	internal class Layout76 : GameControllerDatabaseLayout
 	{
 		public Layout76() : base(new Guid("00000003-054c-0000-c405-000011010000"), "Sony DualShock 4")
 		{
@@ -2153,7 +2153,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// EA Sports PS3 Controller 
     /// </summary>
-	internal class Layout77 : GameControllerDbLayout
+	internal class Layout77 : GameControllerDatabaseLayout
 	{
 		public Layout77() : base(new Guid("00000003-0e6f-0000-3001-000001010000"), "EA Sports PS3 Controller")
 		{
@@ -2181,7 +2181,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Valve Streaming Gamepad 
     /// </summary>
-	internal class Layout78 : GameControllerDbLayout
+	internal class Layout78 : GameControllerDatabaseLayout
 	{
 		public Layout78() : base(new Guid("00000003-28de-0000-ff11-000001000000"), "Valve Streaming Gamepad")
 		{
@@ -2209,7 +2209,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// X360 Controller 
     /// </summary>
-	internal class Layout79 : GameControllerDbLayout
+	internal class Layout79 : GameControllerDatabaseLayout
 	{
 		public Layout79() : base(new Guid("00000003-045e-0000-8e02-000014010000"), "X360 Controller")
 		{
@@ -2237,7 +2237,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// X360 Controller 
     /// </summary>
-	internal class Layout80 : GameControllerDbLayout
+	internal class Layout80 : GameControllerDatabaseLayout
 	{
 		public Layout80() : base(new Guid("00000003-045e-0000-8e02-000010010000"), "X360 Controller")
 		{
@@ -2265,7 +2265,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// X360 Wireless Controller 
     /// </summary>
-	internal class Layout81 : GameControllerDbLayout
+	internal class Layout81 : GameControllerDatabaseLayout
 	{
 		public Layout81() : base(new Guid("00000003-045e-0000-1907-000000010000"), "X360 Wireless Controller")
 		{
@@ -2297,7 +2297,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Twin USB PS2 Adapter 
     /// </summary>
-	internal class Layout82 : GameControllerDbLayout
+	internal class Layout82 : GameControllerDatabaseLayout
 	{
 		public Layout82() : base(new Guid("00000003-0810-0000-0100-000010010000"), "Twin USB PS2 Adapter")
 		{
@@ -2325,7 +2325,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek Cyborg V.1 Game Pad 
     /// </summary>
-	internal class Layout83 : GameControllerDbLayout
+	internal class Layout83 : GameControllerDatabaseLayout
 	{
 		public Layout83() : base(new Guid("00000003-06a3-0000-23f6-000011010000"), "Saitek Cyborg V.1 Game Pad")
 		{
@@ -2353,7 +2353,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster 2 in 1 DT 
     /// </summary>
-	internal class Layout84 : GameControllerDbLayout
+	internal class Layout84 : GameControllerDatabaseLayout
 	{
 		public Layout84() : base(new Guid("00000003-044f-0000-20b3-000010010000"), "Thrustmaster 2 in 1 DT")
 		{
@@ -2381,7 +2381,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Dual Trigger 3-in-1 
     /// </summary>
-	internal class Layout85 : GameControllerDbLayout
+	internal class Layout85 : GameControllerDatabaseLayout
 	{
 		public Layout85() : base(new Guid("00000003-044f-0000-23b3-000000010000"), "Thrustmaster Dual Trigger 3-in-1")
 		{
@@ -2409,7 +2409,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GreenAsia Inc.    USB Joystick      
     /// </summary>
-	internal class Layout86 : GameControllerDbLayout
+	internal class Layout86 : GameControllerDatabaseLayout
 	{
 		public Layout86() : base(new Guid("00000003-0e8f-0000-0300-000010010000"), "GreenAsia Inc.    USB Joystick     ")
 		{
@@ -2437,7 +2437,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GreenAsia Inc.      USB  Joystick   
     /// </summary>
-	internal class Layout87 : GameControllerDbLayout
+	internal class Layout87 : GameControllerDatabaseLayout
 	{
 		public Layout87() : base(new Guid("00000003-0e8f-0000-1200-000010010000"), "GreenAsia Inc.      USB  Joystick  ")
 		{
@@ -2465,7 +2465,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// X360 Wireless Controller 
     /// </summary>
-	internal class Layout88 : GameControllerDbLayout
+	internal class Layout88 : GameControllerDatabaseLayout
 	{
 		public Layout88() : base(new Guid("00000003-045e-0000-9102-000007010000"), "X360 Wireless Controller")
 		{
@@ -2497,7 +2497,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech Logitech Dual Action 
     /// </summary>
-	internal class Layout89 : GameControllerDbLayout
+	internal class Layout89 : GameControllerDatabaseLayout
 	{
 		public Layout89() : base(new Guid("00000003-046d-0000-16c2-000010010000"), "Logitech Logitech Dual Action")
 		{
@@ -2525,7 +2525,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GameCube {WiseGroup USB box} 
     /// </summary>
-	internal class Layout90 : GameControllerDbLayout
+	internal class Layout90 : GameControllerDatabaseLayout
 	{
 		public Layout90() : base(new Guid("00000003-0926-0000-8888-000000010000"), "GameCube {WiseGroup USB box}")
 		{
@@ -2549,7 +2549,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech WingMan Cordless RumblePad 
     /// </summary>
-	internal class Layout91 : GameControllerDbLayout
+	internal class Layout91 : GameControllerDatabaseLayout
 	{
 		public Layout91() : base(new Guid("00000003-046d-0000-11c2-000010010000"), "Logitech WingMan Cordless RumblePad")
 		{
@@ -2575,7 +2575,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logitech Logitech RumblePad 2 USB 
     /// </summary>
-	internal class Layout92 : GameControllerDbLayout
+	internal class Layout92 : GameControllerDatabaseLayout
 	{
 		public Layout92() : base(new Guid("00000003-046d-0000-18c2-000010010000"), "Logitech Logitech RumblePad 2 USB")
 		{
@@ -2603,7 +2603,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Moga Pro 
     /// </summary>
-	internal class Layout93 : GameControllerDbLayout
+	internal class Layout93 : GameControllerDatabaseLayout
 	{
 		public Layout93() : base(new Guid("00000005-20d6-0000-ad0d-000001000000"), "Moga Pro")
 		{
@@ -2630,7 +2630,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Run N Drive Wireless PS3 
     /// </summary>
-	internal class Layout94 : GameControllerDbLayout
+	internal class Layout94 : GameControllerDatabaseLayout
 	{
 		public Layout94() : base(new Guid("00000003-044f-0000-09d0-000000010000"), "Thrustmaster Run N Drive Wireless PS3")
 		{
@@ -2658,7 +2658,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Run N Drive  Wireless 
     /// </summary>
-	internal class Layout95 : GameControllerDbLayout
+	internal class Layout95 : GameControllerDatabaseLayout
 	{
 		public Layout95() : base(new Guid("00000003-044f-0000-08d0-000000010000"), "Thrustmaster Run N Drive  Wireless")
 		{
@@ -2686,7 +2686,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// RetroUSB.com RetroPad 
     /// </summary>
-	internal class Layout96 : GameControllerDbLayout
+	internal class Layout96 : GameControllerDatabaseLayout
 	{
 		public Layout96() : base(new Guid("00000003-f000-0000-0300-000000010000"), "RetroUSB.com RetroPad")
 		{
@@ -2708,7 +2708,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// RetroUSB.com Super RetroPort 
     /// </summary>
-	internal class Layout97 : GameControllerDbLayout
+	internal class Layout97 : GameControllerDatabaseLayout
 	{
 		public Layout97() : base(new Guid("00000003-f000-0000-f100-000000010000"), "RetroUSB.com Super RetroPort")
 		{
@@ -2730,7 +2730,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Generic X-Box pad 
     /// </summary>
-	internal class Layout98 : GameControllerDbLayout
+	internal class Layout98 : GameControllerDatabaseLayout
 	{
 		public Layout98() : base(new Guid("00000003-0e6f-0000-1f01-000000010000"), "Generic X-Box pad")
 		{
@@ -2758,7 +2758,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Gravis GamePad Pro USB  
     /// </summary>
-	internal class Layout99 : GameControllerDbLayout
+	internal class Layout99 : GameControllerDatabaseLayout
 	{
 		public Layout99() : base(new Guid("00000003-0428-0000-0140-000000010000"), "Gravis GamePad Pro USB ")
 		{
@@ -2782,7 +2782,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box pad v2 (US) 
     /// </summary>
-	internal class Layout100 : GameControllerDbLayout
+	internal class Layout100 : GameControllerDatabaseLayout
 	{
 		public Layout100() : base(new Guid("00000003-045e-0000-8902-000021010000"), "Microsoft X-Box pad v2 (US)")
 		{
@@ -2810,7 +2810,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box pad (Japan) 
     /// </summary>
-	internal class Layout101 : GameControllerDbLayout
+	internal class Layout101 : GameControllerDatabaseLayout
 	{
 		public Layout101() : base(new Guid("00000003-045e-0000-8502-000000010000"), "Microsoft X-Box pad (Japan)")
 		{
@@ -2838,7 +2838,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Rock Candy Gamepad for PS3 
     /// </summary>
-	internal class Layout102 : GameControllerDbLayout
+	internal class Layout102 : GameControllerDatabaseLayout
 	{
 		public Layout102() : base(new Guid("00000003-0e6f-0000-1e01-000011010000"), "Rock Candy Gamepad for PS3")
 		{
@@ -2866,7 +2866,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Sony PS2 pad with SmartJoy adapter 
     /// </summary>
-	internal class Layout103 : GameControllerDbLayout
+	internal class Layout103 : GameControllerDatabaseLayout
 	{
 		public Layout103() : base(new Guid("00000003-0925-0000-0500-000000010000"), "Sony PS2 pad with SmartJoy adapter")
 		{
@@ -2894,7 +2894,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Razer Onza Tournament 
     /// </summary>
-	internal class Layout104 : GameControllerDbLayout
+	internal class Layout104 : GameControllerDatabaseLayout
 	{
 		public Layout104() : base(new Guid("00000003-1689-0000-00fd-000024010000"), "Razer Onza Tournament")
 		{
@@ -2926,7 +2926,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Firestorm Dual Power 
     /// </summary>
-	internal class Layout105 : GameControllerDbLayout
+	internal class Layout105 : GameControllerDatabaseLayout
 	{
 		public Layout105() : base(new Guid("00000003-044f-0000-00b3-000010010000"), "Thrustmaster Firestorm Dual Power")
 		{
@@ -2954,7 +2954,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Hori Pad EX Turbo 2 
     /// </summary>
-	internal class Layout106 : GameControllerDbLayout
+	internal class Layout106 : GameControllerDatabaseLayout
 	{
 		public Layout106() : base(new Guid("00000003-1bad-0000-01f5-000033050000"), "Hori Pad EX Turbo 2")
 		{
@@ -2982,7 +2982,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS4 Controller (Bluetooth) 
     /// </summary>
-	internal class Layout107 : GameControllerDbLayout
+	internal class Layout107 : GameControllerDatabaseLayout
 	{
 		public Layout107() : base(new Guid("00000005-054c-0000-c405-000000010000"), "PS4 Controller (Bluetooth)")
 		{
@@ -3010,7 +3010,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller (Bluetooth) 
     /// </summary>
-	internal class Layout108 : GameControllerDbLayout
+	internal class Layout108 : GameControllerDatabaseLayout
 	{
 		public Layout108() : base(new Guid("00000006-054c-0000-6802-000000010000"), "PS3 Controller (Bluetooth)")
 		{
@@ -3042,7 +3042,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PS3 Controller (Bluetooth) 
     /// </summary>
-	internal class Layout109 : GameControllerDbLayout
+	internal class Layout109 : GameControllerDatabaseLayout
 	{
 		public Layout109() : base(new Guid("00000005-054c-0000-6802-000000010000"), "PS3 Controller (Bluetooth)")
 		{
@@ -3074,7 +3074,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// DragonRise Inc.   Generic   USB  Joystick   
     /// </summary>
-	internal class Layout110 : GameControllerDbLayout
+	internal class Layout110 : GameControllerDatabaseLayout
 	{
 		public Layout110() : base(new Guid("00000003-0079-0000-0600-000010010000"), "DragonRise Inc.   Generic   USB  Joystick  ")
 		{
@@ -3102,7 +3102,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Super Joy Box 5 Pro 
     /// </summary>
-	internal class Layout111 : GameControllerDbLayout
+	internal class Layout111 : GameControllerDatabaseLayout
 	{
 		public Layout111() : base(new Guid("00000003-6666-0000-0488-000000010000"), "Super Joy Box 5 Pro")
 		{
@@ -3134,7 +3134,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// OUYA Game Controller 
     /// </summary>
-	internal class Layout112 : GameControllerDbLayout
+	internal class Layout112 : GameControllerDatabaseLayout
 	{
 		public Layout112() : base(new Guid("00000005-2836-0000-0100-000002010000"), "OUYA Game Controller")
 		{
@@ -3164,7 +3164,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// OUYA Game Controller 
     /// </summary>
-	internal class Layout113 : GameControllerDbLayout
+	internal class Layout113 : GameControllerDatabaseLayout
 	{
 		public Layout113() : base(new Guid("00000005-2836-0000-0100-000003010000"), "OUYA Game Controller")
 		{
@@ -3194,7 +3194,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Razer Onza Classic Edition 
     /// </summary>
-	internal class Layout114 : GameControllerDbLayout
+	internal class Layout114 : GameControllerDatabaseLayout
 	{
 		public Layout114() : base(new Guid("00000003-1689-0000-01fd-000024010000"), "Razer Onza Classic Edition")
 		{
@@ -3226,7 +3226,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box One pad 
     /// </summary>
-	internal class Layout115 : GameControllerDbLayout
+	internal class Layout115 : GameControllerDatabaseLayout
 	{
 		public Layout115() : base(new Guid("00000003-045e-0000-d102-000001010000"), "Microsoft X-Box One pad")
 		{
@@ -3254,7 +3254,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box One pad v2 
     /// </summary>
-	internal class Layout116 : GameControllerDbLayout
+	internal class Layout116 : GameControllerDatabaseLayout
 	{
 		public Layout116() : base(new Guid("00000003-045e-0000-dd02-000003020000"), "Microsoft X-Box One pad v2")
 		{
@@ -3282,7 +3282,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// RetroLink Saturn Classic Controller 
     /// </summary>
-	internal class Layout117 : GameControllerDbLayout
+	internal class Layout117 : GameControllerDatabaseLayout
 	{
 		public Layout117() : base(new Guid("00000003-0079-0000-1100-000010010000"), "RetroLink Saturn Classic Controller")
 		{
@@ -3304,7 +3304,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Nintendo Wii U Pro Controller 
     /// </summary>
-	internal class Layout118 : GameControllerDbLayout
+	internal class Layout118 : GameControllerDatabaseLayout
 	{
 		public Layout118() : base(new Guid("00000005-057e-0000-3003-000001000000"), "Nintendo Wii U Pro Controller")
 		{
@@ -3336,7 +3336,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box 360 pad 
     /// </summary>
-	internal class Layout119 : GameControllerDbLayout
+	internal class Layout119 : GameControllerDatabaseLayout
 	{
 		public Layout119() : base(new Guid("00000003-045e-0000-8e02-000004010000"), "Microsoft X-Box 360 pad")
 		{
@@ -3364,7 +3364,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HORI CO. LTD. REAL ARCADE Pro.V3 
     /// </summary>
-	internal class Layout120 : GameControllerDbLayout
+	internal class Layout120 : GameControllerDatabaseLayout
 	{
 		public Layout120() : base(new Guid("00000003-0f0d-0000-2200-000011010000"), "HORI CO. LTD. REAL ARCADE Pro.V3")
 		{
@@ -3386,7 +3386,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HORI CO. LTD. FIGHTING STICK 3 
     /// </summary>
-	internal class Layout121 : GameControllerDbLayout
+	internal class Layout121 : GameControllerDatabaseLayout
 	{
 		public Layout121() : base(new Guid("00000003-0f0d-0000-1000-000011010000"), "HORI CO. LTD. FIGHTING STICK 3")
 		{
@@ -3408,7 +3408,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Goodbetterbest Ltd USB Controller 
     /// </summary>
-	internal class Layout122 : GameControllerDbLayout
+	internal class Layout122 : GameControllerDatabaseLayout
 	{
 		public Layout122() : base(new Guid("00000003-25f0-0000-c183-000010010000"), "Goodbetterbest Ltd USB Controller")
 		{
@@ -3436,7 +3436,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Xbox Gamepad (userspace driver) 
     /// </summary>
-	internal class Layout123 : GameControllerDbLayout
+	internal class Layout123 : GameControllerDatabaseLayout
 	{
 		public Layout123() : base(new Guid("00000000-6258-786f-2047-616d65706100"), "Xbox Gamepad (userspace driver)")
 		{
@@ -3464,7 +3464,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// PC Game Controller 
     /// </summary>
-	internal class Layout124 : GameControllerDbLayout
+	internal class Layout124 : GameControllerDatabaseLayout
 	{
 		public Layout124() : base(new Guid("00000003-11ff-0000-3133-000010010000"), "PC Game Controller")
 		{
@@ -3492,7 +3492,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// SpeedLink XEOX Pro Analog Gamepad pad 
     /// </summary>
-	internal class Layout125 : GameControllerDbLayout
+	internal class Layout125 : GameControllerDatabaseLayout
 	{
 		public Layout125() : base(new Guid("00000003-045e-0000-8e02-000020200000"), "SpeedLink XEOX Pro Analog Gamepad pad")
 		{
@@ -3520,7 +3520,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Generic X-Box pad 
     /// </summary>
-	internal class Layout126 : GameControllerDbLayout
+	internal class Layout126 : GameControllerDatabaseLayout
 	{
 		public Layout126() : base(new Guid("00000003-0e6f-0000-1304-000000010000"), "Generic X-Box pad")
 		{
@@ -3550,7 +3550,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek PLC Saitek P3200 Rumble Pad 
     /// </summary>
-	internal class Layout127 : GameControllerDbLayout
+	internal class Layout127 : GameControllerDatabaseLayout
 	{
 		public Layout127() : base(new Guid("00000003-06a3-0000-18f5-000010010000"), "Saitek PLC Saitek P3200 Rumble Pad")
 		{
@@ -3579,7 +3579,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// iBuffalo USB 2-axis 8-button Gamepad 
     /// </summary>
-	internal class Layout128 : GameControllerDbLayout
+	internal class Layout128 : GameControllerDatabaseLayout
 	{
 		public Layout128() : base(new Guid("00000003-0583-0000-6020-000010010000"), "iBuffalo USB 2-axis 8-button Gamepad")
 		{
@@ -3601,7 +3601,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HJC Game GAMEPAD 
     /// </summary>
-	internal class Layout129 : GameControllerDbLayout
+	internal class Layout129 : GameControllerDatabaseLayout
 	{
 		public Layout129() : base(new Guid("00000003-11c9-0000-f055-000011010000"), "HJC Game GAMEPAD")
 		{
@@ -3629,7 +3629,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek P2900 Wireless Pad 
     /// </summary>
-	internal class Layout130 : GameControllerDbLayout
+	internal class Layout130 : GameControllerDatabaseLayout
 	{
 		public Layout130() : base(new Guid("00000003-06a3-0000-0c04-000011010000"), "Saitek P2900 Wireless Pad")
 		{
@@ -3657,7 +3657,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// GameCube {HuiJia USB box} 
     /// </summary>
-	internal class Layout131 : GameControllerDbLayout
+	internal class Layout131 : GameControllerDatabaseLayout
 	{
 		public Layout131() : base(new Guid("00000003-1a34-0000-05f7-000010010000"), "GameCube {HuiJia USB box}")
 		{
@@ -3685,7 +3685,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// JC-U3613M - DirectInput Mode 
     /// </summary>
-	internal class Layout132 : GameControllerDbLayout
+	internal class Layout132 : GameControllerDatabaseLayout
 	{
 		public Layout132() : base(new Guid("00000003-056e-0000-0320-000010010000"), "JC-U3613M - DirectInput Mode")
 		{
@@ -3713,7 +3713,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Rock Candy Wired Controller for Xbox One 
     /// </summary>
-	internal class Layout133 : GameControllerDbLayout
+	internal class Layout133 : GameControllerDatabaseLayout
 	{
 		public Layout133() : base(new Guid("00000003-0e6f-0000-4601-000001010000"), "Rock Candy Wired Controller for Xbox One")
 		{
@@ -3741,7 +3741,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mad Catz Wired Xbox 360 Controller 
     /// </summary>
-	internal class Layout134 : GameControllerDbLayout
+	internal class Layout134 : GameControllerDatabaseLayout
 	{
 		public Layout134() : base(new Guid("00000003-0738-0000-1647-000010040000"), "Mad Catz Wired Xbox 360 Controller")
 		{
@@ -3769,7 +3769,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Afterglow Wired Controller for Xbox One 
     /// </summary>
-	internal class Layout135 : GameControllerDbLayout
+	internal class Layout135 : GameControllerDatabaseLayout
 	{
 		public Layout135() : base(new Guid("00000003-0e6f-0000-3901-000020060000"), "Afterglow Wired Controller for Xbox One")
 		{
@@ -3797,7 +3797,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Thrustmaster Dual Analog 4 
     /// </summary>
-	internal class Layout136 : GameControllerDbLayout
+	internal class Layout136 : GameControllerDatabaseLayout
 	{
 		public Layout136() : base(new Guid("00000003-044f-0000-15b3-000010010000"), "Thrustmaster Dual Analog 4")
 		{
@@ -3825,7 +3825,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// 8Bitdo SFC30 GamePad 
     /// </summary>
-	internal class Layout137 : GameControllerDbLayout
+	internal class Layout137 : GameControllerDatabaseLayout
 	{
 		public Layout137() : base(new Guid("00000005-2810-0000-0900-000000010000"), "8Bitdo SFC30 GamePad")
 		{
@@ -3847,7 +3847,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// HitBox (PS3/PC) Analog Mode 
     /// </summary>
-	internal class Layout138 : GameControllerDbLayout
+	internal class Layout138 : GameControllerDatabaseLayout
 	{
 		public Layout138() : base(new Guid("00000003-14d8-0000-0862-000011010000"), "HitBox (PS3/PC) Analog Mode")
 		{
@@ -3871,7 +3871,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// hori 
     /// </summary>
-	internal class Layout139 : GameControllerDbLayout
+	internal class Layout139 : GameControllerDatabaseLayout
 	{
 		public Layout139() : base(new Guid("00000003-0f0d-0000-0d00-000000010000"), "hori")
 		{
@@ -3893,7 +3893,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mad Catz Xbox 360 Controller 
     /// </summary>
-	internal class Layout140 : GameControllerDbLayout
+	internal class Layout140 : GameControllerDatabaseLayout
 	{
 		public Layout140() : base(new Guid("00000003-1bad-0000-16f0-000090040000"), "Mad Catz Xbox 360 Controller")
 		{
@@ -3921,7 +3921,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Toodles 2008 Chimp PC/PS3 
     /// </summary>
-	internal class Layout141 : GameControllerDbLayout
+	internal class Layout141 : GameControllerDatabaseLayout
 	{
 		public Layout141() : base(new Guid("00000003-14d8-0000-07cd-000011010000"), "Toodles 2008 Chimp PC/PS3")
 		{
@@ -3945,7 +3945,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// InterAct GoPad I-73000 (Fighting Game Layout) 
     /// </summary>
-	internal class Layout142 : GameControllerDbLayout
+	internal class Layout142 : GameControllerDatabaseLayout
 	{
 		public Layout142() : base(new Guid("00000003-05fd-0000-0030-000000010000"), "InterAct GoPad I-73000 (Fighting Game Layout)")
 		{
@@ -3967,7 +3967,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Nintendo Wiimote 
     /// </summary>
-	internal class Layout143 : GameControllerDbLayout
+	internal class Layout143 : GameControllerDatabaseLayout
 	{
 		public Layout143() : base(new Guid("00000005-0001-0000-0100-000003000000"), "Nintendo Wiimote")
 		{
@@ -3995,7 +3995,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Microsoft X-Box 360 pad 
     /// </summary>
-	internal class Layout144 : GameControllerDbLayout
+	internal class Layout144 : GameControllerDatabaseLayout
 	{
 		public Layout144() : base(new Guid("00000003-045e-0000-8e02-000062230000"), "Microsoft X-Box 360 pad")
 		{
@@ -4023,7 +4023,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Saitek P880 
     /// </summary>
-	internal class Layout145 : GameControllerDbLayout
+	internal class Layout145 : GameControllerDatabaseLayout
 	{
 		public Layout145() : base(new Guid("00000003-06a3-0000-0901-000000010000"), "Saitek P880")
 		{
@@ -4049,7 +4049,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Logic3 Controller 
     /// </summary>
-	internal class Layout146 : GameControllerDbLayout
+	internal class Layout146 : GameControllerDatabaseLayout
 	{
 		public Layout146() : base(new Guid("00000003-0e6f-0000-0103-000000020000"), "Logic3 Controller")
 		{
@@ -4077,7 +4077,7 @@ namespace SiliconStudio.Xenko.Input
 	/// <summary>
     /// Mad Catz C.T.R.L.R  
     /// </summary>
-	internal class Layout147 : GameControllerDbLayout
+	internal class Layout147 : GameControllerDatabaseLayout
 	{
 		public Layout147() : base(new Guid("00000005-0738-0000-6652-000025010000"), "Mad Catz C.T.R.L.R ")
 		{
@@ -4103,7 +4103,7 @@ namespace SiliconStudio.Xenko.Input
 
 	#endif
 	
-	internal static class GameControllerDb
+	internal static class GameControllerDatabase
 	{
 		public static void RegisterLayouts()
 		{
