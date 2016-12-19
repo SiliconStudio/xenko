@@ -4,6 +4,7 @@
 using System;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Sorters;
@@ -38,6 +39,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Emissive component ignores light and defines a fixed color this particle should use (emit) when rendered.
         /// </userdoc>
         [DataMember(100)]
+        [NotNull]
         [Display("Emissive Map")]
         public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
 
