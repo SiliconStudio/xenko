@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public Scene()
         {
+            Entities.CollectionChanged += Entities_CollectionChanged;
             Children = new TrackingCollection<Scene>();
             Children.CollectionChanged += ChildrenCollectionChanged;
         }
@@ -64,6 +65,19 @@ namespace SiliconStudio.Xenko.Engine
                     break;
                 default:
                     throw new NotSupportedException();
+            }
+        }
+
+        private void Entities_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    ((Entity)e.Item).Scene = this;
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    ((Entity)e.Item).Scene = null;
+                    break;
             }
         }
 
