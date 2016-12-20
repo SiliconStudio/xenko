@@ -45,14 +45,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private float lightDistance = 5.0f;
 
         // Initial shadow map settings
-        private LightPointShadowMapType shadowMapType = LightPointShadowMapType.HemisphereParaboloid;
+        private LightPointShadowMapType shadowMapType = LightPointShadowMapType.CubeMap;
         private LightShadowMapSize shadowMapSize = LightShadowMapSize.Medium;
         private float shadowMapBias = 0.05f;
         private int shadowMapFilter = 0;
 
         public TestShadows()
         {
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
         }
@@ -321,7 +320,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         void ToggleShadowMapType()
         {
-            shadowMapType = (LightPointShadowMapType)(((int)shadowMapType + 1)%3);
+            shadowMapType = (LightPointShadowMapType)(((int)shadowMapType + 1)%2);
 
             foreach (var lc in pointLights)
             {

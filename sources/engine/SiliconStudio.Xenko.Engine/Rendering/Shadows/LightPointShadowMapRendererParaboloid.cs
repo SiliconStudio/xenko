@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             if (pl != null)
             {
                 var type = ((LightPointShadowMap)pl.Shadow).Type;
-                return type == LightPointShadowMapType.DualParaboloid || type == LightPointShadowMapType.HemisphereParaboloid;
+                return type == LightPointShadowMapType.DualParaboloid;
             }
             return false;
         }
@@ -62,21 +62,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var lightShadowMap = shadowMapTextures.Add();
             lightShadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
-
-            // One or two faces?
-            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
-            int numViews = shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid ? 1 : 2;
-
-            lightShadowMap.CascadeCount = numViews; // 2 faces
+            
+            lightShadowMap.CascadeCount = 2; // 2 faces
             return lightShadowMap;
         }
 
         public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
         {
-            // One or two faces?
-            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
-            int numViews = shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid ? 1 : 2;
-            for (int i = 0; i < numViews; i++)
+            for (int i = 0; i < 2; i++)
             {
                 // Allocate shadow render view
                 var shadowRenderView = shadowRenderViews.Add();
@@ -186,13 +179,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.DepthParameters = GetShadowMapDepthParameters(lightShadowMap);
             
             GetViewParameters(lightShadowMap, 0, out shaderData.View, false);
-
-            // One or two faces?
-            var shadowMap = (LightPointShadowMap)lightShadowMap.Light.Shadow;
-            if (shadowMap.Type == LightPointShadowMapType.HemisphereParaboloid)
-                shaderData.BackfaceMode = 0.0f; // Ignore back face
-            else
-                shaderData.BackfaceMode = 1.0f;
         }
 
         /// <summary>
@@ -261,7 +247,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Matrix[] viewMatrices;
             private Vector2[] offsets;
             private Vector2[] backfaceOffsets;
-            private float[] backfaceMode;
             private Vector2[] faceSize;
             private Vector2[] depthParameters;
             private float[] depthBiases;
@@ -270,7 +255,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private ValueParameterKey<Matrix> viewKey;
             private ValueParameterKey<Vector2> offsetsKey;
             private ValueParameterKey<Vector2> backfaceOffsetsKey;
-            private ValueParameterKey<float> backfaceModeKey;
             private ValueParameterKey<Vector2> faceSizeKey;
             private ValueParameterKey<Vector2> depthParametersKey;
 
@@ -295,7 +279,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
                 offsetsKey = ShadowMapReceiverPointParaboloidKeys.FaceOffset.ComposeWith(compositionName);
                 backfaceOffsetsKey = ShadowMapReceiverPointParaboloidKeys.BackfaceOffset.ComposeWith(compositionName);
-                backfaceModeKey = ShadowMapReceiverPointParaboloidKeys.BackfaceMode.ComposeWith(compositionName);
                 faceSizeKey = ShadowMapReceiverPointParaboloidKeys.FaceSize.ComposeWith(compositionName);
                 depthParametersKey = ShadowMapReceiverPointParaboloidKeys.DepthParameters.ComposeWith(compositionName);
                 viewKey = ShadowMapReceiverPointParaboloidKeys.View.ComposeWith(compositionName);
@@ -325,7 +308,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 
                 Array.Resize(ref offsets, lightCurrentCount);
                 Array.Resize(ref backfaceOffsets, lightCurrentCount);
-                Array.Resize(ref backfaceMode, lightCurrentCount);
                 Array.Resize(ref faceSize, lightCurrentCount);
                 Array.Resize(ref depthParameters, lightCurrentCount);
                 Array.Resize(ref viewMatrices, lightCurrentCount);
@@ -350,7 +332,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
                         offsets[lightIndex] = shaderData.Offset;
                         backfaceOffsets[lightIndex] = shaderData.BackfaceOffset;
-                        backfaceMode[lightIndex] = shaderData.BackfaceMode;
                         faceSize[lightIndex] = shaderData.FaceSize;
                         depthParameters[lightIndex] = shaderData.DepthParameters;
                         depthBiases[lightIndex] = shaderData.DepthBias;
@@ -378,7 +359,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(viewKey, viewMatrices);
                 parameters.Set(offsetsKey, offsets);
                 parameters.Set(backfaceOffsetsKey, backfaceOffsets);
-                parameters.Set(backfaceModeKey, backfaceMode);
                 parameters.Set(faceSizeKey, faceSize);
                 parameters.Set(depthParametersKey, depthParameters);
 

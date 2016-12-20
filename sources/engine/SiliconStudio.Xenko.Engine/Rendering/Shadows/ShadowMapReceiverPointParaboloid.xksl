@@ -13,7 +13,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4x4 View[TLightCount];
             float2 FaceOffset[TLightCount];
             float2 BackfaceOffset[TLightCount];
-            float BackfaceMode[TLightCount];
             float2 FaceSize[TLightCount];
             float DepthBiases[TLightCount];
             float2 DepthParameters[TLightCount];
@@ -39,20 +38,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             // Apply offset into atlas and size of a single face in the atlas
             float2 samplePosition = intermediate.xy * FaceSize[lightIndex] + FaceOffset[lightIndex];
 
-            float shadowMultiplier = 1;
             [flatten]
             if(lightSpace.z < 0)
             {
                 samplePosition += BackfaceOffset[lightIndex];
-                if(BackfaceMode[lightIndex] == 0)
-                {
-                    // Basically ignore shadow by multiplying with 0 conditionally, but preventing a branch on the texture sampler
-                    samplePosition = 0;
-                    shadowMultiplier = 0;
-                }
             }
             
-            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex]) * shadowMultiplier + (1-shadowMultiplier);
+            streams.shadowColor = FilterShadow(samplePosition, projectedDepth - DepthBiases[lightIndex]);
         }
     };
 }

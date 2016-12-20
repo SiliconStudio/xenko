@@ -16,10 +16,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         DualParaboloid,
         /// <summary>
-        /// Generates shadow for only a single side of a point light, using paraboloid projection
-        /// </summary>
-        HemisphereParaboloid,
-        /// <summary>
         /// Renders the scene to 6 faces of a cube, provides more stable shadow maps with the tradoff of having to render the scene 6 times
         /// </summary>
         CubeMap,
