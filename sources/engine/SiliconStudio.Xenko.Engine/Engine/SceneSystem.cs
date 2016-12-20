@@ -74,7 +74,11 @@ namespace SiliconStudio.Xenko.Engine
             set { graphicsCompositor.Instance = value; }
         }
 
-        public GraphicsCompositor NewGraphicsCompositor => graphicsCompositor;
+        public GraphicsCompositor NewGraphicsCompositor
+        {
+            get { return graphicsCompositor; }
+            set { graphicsCompositor = value; }
+        }
 
         private GraphicsCompositor graphicsCompositor;
 
