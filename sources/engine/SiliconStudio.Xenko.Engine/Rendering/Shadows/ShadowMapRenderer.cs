@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class ShadowMapRenderer
     {
+        // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
         private const float ReferenceShadowSize = 1024;
 
         private static readonly int MaximumTextureSize = (int)(ReferenceShadowSize*ComputeSizeFactor(LightShadowMapSize.XLarge)*2.0f);
 
-        // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
         public readonly RenderStage ShadowMapRenderStage;
         
         public PoolListStruct<ShadowMapRenderView> ShadowRenderViews;

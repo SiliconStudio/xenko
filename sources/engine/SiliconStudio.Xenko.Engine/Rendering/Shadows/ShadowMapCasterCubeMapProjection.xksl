@@ -21,10 +21,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4 lightSpace = mul(streams.Position, Transformation.WorldView);
 
             // Store length and normalize
-            float z = length(lightSpace.xyz);
+            float distanceToLight = length(lightSpace.xyz);
 
-            // Send projected depth to pixel shader
-            streams.DepthVS = z * DepthParameters.y;
+            // Send depth to pixel shader
+            streams.DepthVS = distanceToLight * DepthParameters.y;
 
             streams.ShadingPosition = mul(lightSpace, Transformation.Projection);
         }

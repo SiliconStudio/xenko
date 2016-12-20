@@ -19,49 +19,50 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             // TODO: This already gets computed for lighting, so it's calculated a second time here while it should not be
             float3 lightPosition = streams.lightPositionWS.xyz;
-            float3 delta = streams.PositionWS.xyz - lightPosition;
-            float l = length(delta);
-            float3 direction = delta / l;
-            float3 dirAbs = abs(direction);
+            float3 lightDelta = streams.PositionWS.xyz - lightPosition;
+            float distanceToLight = length(lightDelta);
+            float3 direction = lightDelta / distanceToLight;
+            float3 directionAbs = abs(direction);
             
-            float longestAxis = max(dirAbs.x, max(dirAbs.y, dirAbs.z));
+            float longestAxis = max(directionAbs.x, max(directionAbs.y, directionAbs.z));
 
             int faceIndex;
-            float z;
+            float lightSpaceZ;
             
             // Select the base face index for either X,Y or Z facing
             [flatten]
-            if(dirAbs.x == longestAxis)
+            if(directionAbs.x == longestAxis)
             {
-                z = delta.x;
+                lightSpaceZ = lightDelta.x;
                 faceIndex = 2;
             }
-            else if(dirAbs.y == longestAxis)
+            else if(directionAbs.y == longestAxis)
             {
-                z = delta.y;
+                lightSpaceZ = lightDelta.y;
                 faceIndex = 4;
             }
             else // direction.z == longestAxis
             {
-                z = delta.z;
+                lightSpaceZ = lightDelta.z;
                 faceIndex = 0;
             }
             
-            // Apply offset the negative side of a direction (+1)
-            float sz = sign(z);
-            faceIndex += int(-min(0.0, sz));
+            // Apply offset for the negative side of a direction (+1)
+            float lightSpaceZDirection = sign(lightSpaceZ);
+            faceIndex += int(-min(0.0, lightSpaceZDirection));
 
             // Map to texture space
             float4 projectedPosition = mul(streams.PositionWS, WorldToShadow[lightIndex*6+faceIndex]);
             projectedPosition /= projectedPosition.w;
 
             // Apply bias
-            l -= DepthBiases[lightIndex];
+            distanceToLight -= DepthBiases[lightIndex];
 
             // Scale distance to light depth buffer range 
-            l *= DepthParameters[lightIndex].y;
+            distanceToLight *= DepthParameters[lightIndex].y;
 
-            streams.shadowColor = FilterShadow(projectedPosition.xy, l);
+            // Compare distance to light to value inside of the shadow map
+            streams.shadowColor = FilterShadow(projectedPosition.xy, distanceToLight);
         }
     };
 }

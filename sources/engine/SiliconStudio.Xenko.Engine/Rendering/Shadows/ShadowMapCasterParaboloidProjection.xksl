@@ -22,16 +22,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float4 lightSpace = mul(streams.Position, Transformation.WorldView);
 
             // Store length and normalize
-            float z = length(lightSpace.xyz);
-            float3 intermediate = lightSpace.xyz / z;
+            float distanceToLight = length(lightSpace.xyz);
+            float3 intermediate = lightSpace.xyz / distanceToLight;
 
             // Project x/y coordinates on parabola
             intermediate.xy /= 1.0f+intermediate.z;
 
             // 2 different depth values
-            // The first one is the depth written to the depth buffer
-            // The second one is used for clipping
-            float2 depthValues = float2(z, lightSpace.z + ClippingEpsilon) * DepthParameters.y;
+            // The first one is the depth written to the depth buffer (always positive, since it is the distance to the point light)
+            // The second one is used for clipping (world space along the light's z-axis)
+            float2 depthValues = float2(distanceToLight, lightSpace.z + ClippingEpsilon) * DepthParameters.y;
 
             // Send projected depth to pixel shader
             streams.DepthVS = depthValues.x;

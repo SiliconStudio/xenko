@@ -239,7 +239,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Matrix[] viewMatrices;
             private Vector2[] offsets;
             private Vector2[] backfaceOffsets;
-            private Vector2[] faceSize;
+            private Vector2[] faceSizes;
             private Vector2[] depthParameters;
             private float[] depthBiases;
 
@@ -247,7 +247,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private ValueParameterKey<Matrix> viewKey;
             private ValueParameterKey<Vector2> offsetsKey;
             private ValueParameterKey<Vector2> backfaceOffsetsKey;
-            private ValueParameterKey<Vector2> faceSizeKey;
+            private ValueParameterKey<Vector2> faceSizesKey;
             private ValueParameterKey<Vector2> depthParametersKey;
 
             private ObjectParameterKey<Texture> shadowMapTextureKey;
@@ -268,9 +268,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
                 shadowMapTextureTexelSizeKey = ShadowMapKeys.TextureTexelSize.ComposeWith(compositionName);
-                offsetsKey = ShadowMapReceiverPointParaboloidKeys.FaceOffset.ComposeWith(compositionName);
-                backfaceOffsetsKey = ShadowMapReceiverPointParaboloidKeys.BackfaceOffset.ComposeWith(compositionName);
-                faceSizeKey = ShadowMapReceiverPointParaboloidKeys.FaceSize.ComposeWith(compositionName);
+                offsetsKey = ShadowMapReceiverPointParaboloidKeys.FaceOffsets.ComposeWith(compositionName);
+                backfaceOffsetsKey = ShadowMapReceiverPointParaboloidKeys.BackfaceOffsets.ComposeWith(compositionName);
+                faceSizesKey = ShadowMapReceiverPointParaboloidKeys.FaceSizes.ComposeWith(compositionName);
                 depthParametersKey = ShadowMapReceiverPointParaboloidKeys.DepthParameters.ComposeWith(compositionName);
                 viewKey = ShadowMapReceiverPointParaboloidKeys.View.ComposeWith(compositionName);
                 depthBiasesKey = ShadowMapReceiverPointParaboloidKeys.DepthBiases.ComposeWith(compositionName);
@@ -282,7 +282,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 Array.Resize(ref offsets, lightCurrentCount);
                 Array.Resize(ref backfaceOffsets, lightCurrentCount);
-                Array.Resize(ref faceSize, lightCurrentCount);
+                Array.Resize(ref faceSizes, lightCurrentCount);
                 Array.Resize(ref depthParameters, lightCurrentCount);
                 Array.Resize(ref viewMatrices, lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         var shaderData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
                         offsets[lightIndex] = shaderData.Offset;
                         backfaceOffsets[lightIndex] = shaderData.BackfaceOffset;
-                        faceSize[lightIndex] = shaderData.FaceSize;
+                        faceSizes[lightIndex] = shaderData.FaceSize;
                         depthParameters[lightIndex] = shaderData.DepthParameters;
                         depthBiases[lightIndex] = shaderData.DepthBias;
                         viewMatrices[lightIndex] = shaderData.View;
@@ -329,7 +329,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(viewKey, viewMatrices);
                 parameters.Set(offsetsKey, offsets);
                 parameters.Set(backfaceOffsetsKey, backfaceOffsets);
-                parameters.Set(faceSizeKey, faceSize);
+                parameters.Set(faceSizesKey, faceSizes);
                 parameters.Set(depthParametersKey, depthParameters);
 
                 parameters.Set(depthBiasesKey, depthBiases);
