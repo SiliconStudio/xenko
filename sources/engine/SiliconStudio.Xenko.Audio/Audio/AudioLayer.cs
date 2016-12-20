@@ -1,9 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Native
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Wrapper around OpenAL

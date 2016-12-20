@@ -12,7 +12,7 @@
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
-#include "../XenkoNative.h"
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 
 
 #define HAVE_STDINT_H

@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #include "../../../../deps/NativePath/NativePath.h"
-#include "../XenkoNative.h"
-
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 #define HAVE_STDINT_H
 #include "../../../../deps/Celt/include/opus_custom.h"
 

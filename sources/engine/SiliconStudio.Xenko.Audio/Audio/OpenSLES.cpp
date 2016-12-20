@@ -13,6 +13,7 @@
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 #include "../../../../deps/OpenSLES/OpenSLES.h"
 #include "../../../../deps/OpenSLES/OpenSLES_Android.h"
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 
 extern "C" {
 	class SpinLock

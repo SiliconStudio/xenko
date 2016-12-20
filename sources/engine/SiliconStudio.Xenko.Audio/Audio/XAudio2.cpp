@@ -8,7 +8,7 @@
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../../../deps/NativePath/NativeThreading.h"
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../XenkoNative.h"
+#include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
 
 extern "C" {
 	class SpinLock
