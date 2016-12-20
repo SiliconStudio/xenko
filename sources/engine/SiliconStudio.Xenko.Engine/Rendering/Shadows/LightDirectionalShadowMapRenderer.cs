@@ -270,15 +270,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
-                Matrix shadowToWorld;
-                Matrix.Invert(ref shaderData.WorldToShadowCascadeUV[cascadeLevel], out shadowToWorld);
-
-                var leftUv = new Vector4(1, 0, 0, 0);
-                var upUv = new Vector4(0, 1, 0, 0);
-                var ldirUv = new Vector4(0, 0, 1, 0);
-                shaderData.ShadowUpWS[cascadeLevel] = Vector4.Transform(upUv, shadowToWorld).XYZ();
-                shaderData.ShadowLeftWS[cascadeLevel] = Vector4.Transform(leftUv, shadowToWorld).XYZ();
-                shaderData.ShadowLDirWS[cascadeLevel] = Vector4.Transform(ldirUv, shadowToWorld).XYZ();
             }
         }
 
@@ -452,9 +443,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 CascadeSplits = new float[cascadeCount];
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
-                ShadowUpWS = new Vector3[cascadeCount];
-                ShadowLeftWS = new Vector3[cascadeCount];
-                ShadowLDirWS = new Vector3[cascadeCount];
                 ViewMatrix = new Matrix[cascadeCount];
                 ProjectionMatrix = new Matrix[cascadeCount];
             }
@@ -467,15 +455,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             public float OffsetScale;
 
-            public bool GradientSampling;
-
             public readonly Matrix[] WorldToShadowCascadeUV;
-
-            // shader internals: shadow base vectors retroprojected in worldspace
-            public Vector3[] ShadowUpWS;
-            public Vector3[] ShadowLeftWS;
-            public Vector3[] ShadowLDirWS;
-
+            
             public readonly Matrix[] ViewMatrix;
 
             public readonly Matrix[] ProjectionMatrix;
