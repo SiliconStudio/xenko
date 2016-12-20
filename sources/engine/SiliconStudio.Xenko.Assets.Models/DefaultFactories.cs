@@ -2,10 +2,6 @@
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class DefaultAdditiveAnimationFactory : DefaultAssetFactory<AdditiveAnimationAsset>
-    {
-    }
-
     public class DefaultAnimationFactory : DefaultAssetFactory<AnimationAsset>
     {
     }
