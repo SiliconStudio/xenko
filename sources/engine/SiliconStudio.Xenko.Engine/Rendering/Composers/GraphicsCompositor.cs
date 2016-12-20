@@ -5,6 +5,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
@@ -71,6 +72,17 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     context.RenderContext.RenderSystem = RenderSystem;
                     context.RenderContext.SceneInstance = sceneInstance;
                     context.RenderContext.VisibilityGroup = visibilityGroup;
+
+                    // Set start states for viewports and output (it will be used during the Collect phase)
+                    var renderOutputs = new RenderOutputDescription();
+                    renderOutputs.CaptureState(context.CommandList);
+                    context.RenderContext.RenderOutputs.Clear();
+                    context.RenderContext.RenderOutputs.Push(renderOutputs);
+
+                    var viewports = new ViewportState();
+                    viewports.CaptureState(context.CommandList);
+                    context.RenderContext.ViewportStates.Clear();
+                    context.RenderContext.ViewportStates.Push(viewports);
 
                     try
                     {

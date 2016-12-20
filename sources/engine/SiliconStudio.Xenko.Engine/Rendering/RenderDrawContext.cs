@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         // States
         private int currentStateIndex = -1;
-        private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
+        private readonly List<RenderTargetsState> allocatedStates = new List<RenderTargetsState>(10);
 
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
 
@@ -67,11 +67,11 @@ namespace SiliconStudio.Xenko.Rendering
         public void PushRenderTargets()
         {
             // Check if we need to allocate a new StateAndTargets
-            StateAndTargets newState;
+            RenderTargetsState newState;
             currentStateIndex++;
             if (currentStateIndex == allocatedStates.Count)
             {
-                newState = new StateAndTargets();
+                newState = new RenderTargetsState();
                 allocatedStates.Add(newState);
             }
             else
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Holds current viewports and render targets.
         /// </summary>
-        private class StateAndTargets
+        private class RenderTargetsState
         {
             private const int MaxRenderTargetCount = 8;
 

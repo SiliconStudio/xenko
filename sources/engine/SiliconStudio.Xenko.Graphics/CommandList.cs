@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public int RenderTargetCount => renderTargetCount;
 
-        public IReadOnlyList<Viewport> Viewports => viewports;
+        public Viewport[] Viewports => viewports;
 
         /// <summary>
         /// Clears the state and restore the state of the device.

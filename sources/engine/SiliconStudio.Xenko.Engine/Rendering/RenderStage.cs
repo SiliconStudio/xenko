@@ -47,6 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Defines render targets this stage outputs to.
         /// </summary>
+        [DataMemberIgnore]
         public RenderOutputDescription Output;
 
         /// <summary>
