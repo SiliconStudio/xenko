@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.UI;
@@ -30,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         }
 
         /// <summary>
-        /// Gets or sets the entity
+        /// The UI element.
         /// </summary>
         [DataMember(10)]
         public UIElement UIElement { get; set; }
