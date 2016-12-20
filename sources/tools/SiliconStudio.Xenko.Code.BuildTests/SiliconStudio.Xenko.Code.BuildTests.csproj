@@ -6,8 +6,8 @@
     <ProjectGuid>{3C855DB2-EEA3-415C-A0A8-C834DEC40531}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Xenko.Code.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Code.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Code.BuildTests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Code.BuildTests</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
