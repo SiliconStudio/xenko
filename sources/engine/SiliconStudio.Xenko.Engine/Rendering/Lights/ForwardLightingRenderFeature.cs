@@ -125,8 +125,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Note: this renderer supports both Point and Spot lights
                 clusteredPointGroupRenderer = new LightClusteredPointGroupRenderer();
                 clusteredPointGroupRenderer.Initialize(Context);
-                
-                RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer() { NonShadowRenderer = clusteredPointGroupRenderer });
+
+                RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer { NonShadowRenderer = clusteredPointGroupRenderer });
                 RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointGroupRenderer.SpotRenderer });
             }
             else
@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (shadowMapEffectSlots.Contains(i))
                         continue;
 
-                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
+                    var staticEffectObjectNode = staticObjectNode*effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Skip effects not used during this frame
@@ -562,7 +562,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, ShadowMapRenderer shadowMapRenderer, EntityGroup group)
+        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData,
+            ShadowMapRenderer shadowMapRenderer, EntityGroup group)
         {
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {

@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         void ApplyShader(ShaderMixinSource mixin);
 
         void UpdateLayout(string compositionName);
+
         void UpdateLightCount(int lightLastCount, int lightCurrentCount);
 
         void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights);

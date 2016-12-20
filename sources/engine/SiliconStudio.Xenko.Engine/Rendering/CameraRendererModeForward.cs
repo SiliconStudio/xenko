@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
         public RenderStage ShadowMapRenderStage { get; set; }
 
         [DataMemberIgnore]
-        public RenderStage ShadowMapRenderStageDp { get; set; }
+        public RenderStage ShadowMapRenderStageParaboloid { get; set; }
 
         [DataMemberIgnore]
         public RenderStage ShadowMapRenderStageCubeMap { get; set; }
@@ -79,10 +79,10 @@ namespace SiliconStudio.Xenko.Rendering
                     ShadowMapRenderStage = RenderSystem.GetOrCreateRenderStage("ShadowMapCaster", "ShadowMapCaster", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
                     ShadowMapRenderStage.SortMode = new FrontToBackSortMode();
                 }
-                if (ShadowMapRenderStageDp == null)
+                if (ShadowMapRenderStageParaboloid == null)
                 {
-                    ShadowMapRenderStageDp = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterParaboloid", "ShadowMapCasterParaboloid", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
-                    ShadowMapRenderStageDp.SortMode = new FrontToBackSortMode();
+                    ShadowMapRenderStageParaboloid = RenderSystem.GetOrCreateRenderStage("ShadowMapCasterParaboloid", "ShadowMapCasterParaboloid", new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float));
+                    ShadowMapRenderStageParaboloid.SortMode = new FrontToBackSortMode();
                 }
                 if (ShadowMapRenderStageCubeMap == null)
                 {

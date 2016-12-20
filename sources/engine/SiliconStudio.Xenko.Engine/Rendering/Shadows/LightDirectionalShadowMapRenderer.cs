@@ -481,12 +481,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public readonly Matrix[] ProjectionMatrix;
         }
 
-        private class LightDirectionalShadowMapGroupShaderData : ILightShadowMapShaderGroupData
+        private class LightDirectionalShadowMapGroupShaderData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverDirectional";
-
-            private readonly LightShadowType shadowType;
-
+            
             private readonly int cascadeCount;
 
             private float[] cascadeSplits;
@@ -502,8 +500,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Vector2 shadowMapTextureSize;
 
             private Vector2 shadowMapTextureTexelSize;
-
-            private ShaderMixinSource shadowShader;
 
             private ObjectParameterKey<Texture> shadowMapTextureKey;
 
@@ -524,13 +520,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// </summary>
             /// <param name="shadowType">Type of the shadow.</param>
             /// <param name="lightCountMax">The light count maximum.</param>
-            public LightDirectionalShadowMapGroupShaderData(LightShadowType shadowType)
+            public LightDirectionalShadowMapGroupShaderData(LightShadowType shadowType) : base(shadowType)
             {
-                this.shadowType = shadowType;
-                this.cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
+                cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
             }
 
-            public void UpdateLayout(string compositionKey)
+            public override ShaderClassSource CreateShaderSource(int lightCurrentCount)
+            {
+                var isDepthRangeAuto = (ShadowType & LightShadowType.DepthRangeAuto) != 0;
+                return new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (ShadowType & LightShadowType.BlendCascade) != 0, isDepthRangeAuto, (ShadowType & LightShadowType.Debug) != 0);
+            }
+
+            public override void UpdateLayout(string compositionKey)
             {
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionKey);
@@ -541,28 +542,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
             }
 
-            public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
+            public override void UpdateLightCount(int lightLastCount, int lightCurrentCount)
             {
-                shadowShader = new ShaderMixinSource();
-                var isDepthRangeAuto = (this.shadowType & LightShadowType.DepthRangeAuto) != 0;
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, cascadeCount, lightCurrentCount, (this.shadowType & LightShadowType.BlendCascade) != 0, isDepthRangeAuto, (this.shadowType & LightShadowType.Debug) != 0));
-                // TODO: Temporary passing filter here
-
-                switch (shadowType & LightShadowType.FilterMask)
-                {
-                    case LightShadowType.PCF3x3:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 3));
-                        break;
-                    case LightShadowType.PCF5x5:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 5));
-                        break;
-                    case LightShadowType.PCF7x7:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerView.Lighting", 7));
-                        break;
-                    default:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerView.Lighting"));
-                        break;
-                }
+                base.UpdateLightCount(lightLastCount, lightCurrentCount);
 
                 Array.Resize(ref cascadeSplits, cascadeCount * lightCurrentCount);
                 Array.Resize(ref worldToShadowCascadeUV, cascadeCount * lightCurrentCount);
@@ -570,12 +552,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Array.Resize(ref offsetScales, lightCurrentCount);
             }
 
-            public void ApplyShader(ShaderMixinSource mixin)
-            {
-                mixin.CloneFrom(shadowShader);
-            }
-
-            public void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights)
+            public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights)
             {
                 for (int lightIndex = 0; lightIndex < currentLights.Count; ++lightIndex)
                 {
@@ -613,10 +590,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
                 parameters.Set(depthBiasesKey, depthBiases);
                 parameters.Set(offsetScalesKey, offsetScales);
-            }
-
-            public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
-            {
             }
         }
 

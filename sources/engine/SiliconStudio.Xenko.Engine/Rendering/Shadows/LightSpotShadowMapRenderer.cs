@@ -155,11 +155,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public Matrix ProjectionMatrix;
         }
 
-        private class LightSpotShadowMapGroupShaderData : ILightShadowMapShaderGroupData
+        private class LightSpotShadowMapGroupShaderData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverSpot";
-
-            private readonly LightShadowType shadowType;
 
             private Matrix[] worldToShadowCascadeUV;
 
@@ -172,8 +170,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private Vector2 shadowMapTextureSize;
 
             private Vector2 shadowMapTextureTexelSize;
-
-            private ShaderMixinSource shadowShader;
 
             private ObjectParameterKey<Texture> shadowMapTextureKey;
 
@@ -192,12 +188,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// </summary>
             /// <param name="shadowType">Type of the shadow.</param>
             /// <param name="lightCountMax">The light count maximum.</param>
-            public LightSpotShadowMapGroupShaderData(LightShadowType shadowType)
+            public LightSpotShadowMapGroupShaderData(LightShadowType shadowType) : base(shadowType)
             {
-                this.shadowType = shadowType;
+            }
+            
+            public override ShaderClassSource CreateShaderSource(int lightCurrentCount)
+            {
+                return new ShaderClassSource(ShaderName, lightCurrentCount, (ShadowType & LightShadowType.Debug) != 0);
             }
 
-            public void UpdateLayout(string compositionKey)
+            public override void UpdateLayout(string compositionKey)
             {
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionKey);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionKey);
@@ -207,48 +207,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 offsetScalesKey = ShadowMapReceiverBaseKeys.OffsetScales.ComposeWith(compositionKey);
             }
 
-            public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
+            public override void UpdateLightCount(int lightLastCount, int lightCurrentCount)
             {
-                shadowShader = new ShaderMixinSource();
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, lightCurrentCount, (this.shadowType & LightShadowType.Debug) != 0));
-                // TODO: Temporary passing filter here
-
-                switch (shadowType & LightShadowType.FilterMask)
-                {
-                    case LightShadowType.PCF3x3:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 3));
-                        break;
-                    case LightShadowType.PCF5x5:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 5));
-                        break;
-                    case LightShadowType.PCF7x7:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 7));
-                        break;
-                    default:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerDraw.Lighting"));
-                        break;
-                }
+                base.UpdateLightCount(lightLastCount, lightCurrentCount);
 
                 Array.Resize(ref worldToShadowCascadeUV, lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref offsetScales, lightCurrentCount);
             }
 
-            public void ApplyShader(ShaderMixinSource mixin)
-            {
-                mixin.CloneFrom(shadowShader);
-            }
-
-            public void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData)
-            {
-
-            }
-
-            public void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights)
-            {
-            }
-
-            public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
+            public override void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
             {
                 var boundingBox2 = (BoundingBox)boundingBox;
                 bool shadowMapCreated = false;

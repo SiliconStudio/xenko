@@ -466,6 +466,7 @@
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
     <Compile Include="Rendering\Shadows\LightPointShadowMapRendererParaboloid.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowMapShaderGroupDataBase.cs" />
     <Compile Include="Rendering\Shadows\LightShadowType.cs" />
     <Compile Include="Rendering\Shadows\ShadowCasterRenderFeature.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCasterCubeMap1.cs">

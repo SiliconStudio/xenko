@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private Entity cameraEntity;
         private List<LightComponent> pointLights = new List<LightComponent>();
         private SpriteFont font;
-        
+
         private Stopwatch lightTimer = new Stopwatch();
         private float lightRotationOffset = 0.0f;
         private float lightDistance = 5.0f;
@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             ProfilerSystem.EnableProfiling(false, ProfilingKeys.Engine);
 
             Window.AllowUserResizing = true;
-            
+
             var scene = new Scene();
 
             // Create diffuse material
@@ -185,17 +185,17 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // Create a camera entity and add it to the scene
             cameraEntity = new Entity { new CameraComponent() };
-            cameraEntity.Transform.Position = new Vector3(PlaneSize*1.5f, HalfPlaneSize, PlaneSize * 1.5f);
+            cameraEntity.Transform.Position = new Vector3(PlaneSize*1.5f, HalfPlaneSize, PlaneSize*1.5f);
             cameraEntity.Transform.RotationEulerXYZ = new Vector3(0.0f, MathUtil.PiOverFour, 0.0f);
             cameraEntity.Add(new LightComponent
             {
                 Type = new LightAmbient
                 {
-                    Color = new ColorRgbProvider(new Color((Color4.White * 0.1f).ToRgba()))
+                    Color = new ColorRgbProvider(new Color((Color4.White*0.1f).ToRgba()))
                 }
             });
             scene.Entities.Add(cameraEntity);
-            
+
             // Create a graphics compositor
             var compositor = new SceneGraphicsCompositorLayers();
 
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     Children =
                     {
                         CustomButtom("Map Type", () => ToggleShadowMapType()),
-                         new StackPanel
+                        new StackPanel
                         {
                             Orientation = Orientation.Vertical,
                             Children =
@@ -326,7 +326,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             {
                 var point = lc.Type as LightPoint;
                 var shadow = point.Shadow as LightPointShadowMap;
-                
+
                 shadow.Type = shadowMapType;
             }
         }
@@ -367,7 +367,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var targetCount = MathUtil.Clamp(pointLights.Count + adjustSize, 0, 64);
             RegenerateLights(targetCount);
         }
-        
+
         void RegenerateLights(int amount)
         {
             var scene = SceneSystem.SceneInstance.Scene;
@@ -379,7 +379,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // Always use the same random number source
             Random random = new Random(1527918523);
-            
+
             // Create lights
             for (int i = 0; i < amount; i++)
             {
@@ -481,7 +481,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             else if (Input.IsKeyDown(Keys.NumPad1))
                 adjustBias = -0.01f;
             AdjustBias(adjustBias);
-            
+
             // Adjust filter 
             int adjustFilter = 0;
             if (Input.IsKeyPressed(Keys.NumPad5))
@@ -497,7 +497,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             for (int i = 0; i < pointLights.Count; i++)
             {
                 float phase = (i*-0.2f) + (float)(lightTimer.Elapsed.TotalSeconds + lightRotationOffset)*(1.0f - i*0.3f);
-                float distMult = (float)(Math.Cos(phase*0.25f)*0.5f + 1.0f) * 0.2f + 0.8f;
+                float distMult = (float)(Math.Cos(phase*0.25f)*0.5f + 1.0f)*0.2f + 0.8f;
                 float lightX = (float)Math.Cos(phase)*lightDistance*distMult;
                 float lightZ = (float)Math.Sin(phase)*lightDistance*distMult;
                 float lightY = (float)-Math.Sin(phase*0.5f)*lightDistance*distMult + HalfPlaneSize;

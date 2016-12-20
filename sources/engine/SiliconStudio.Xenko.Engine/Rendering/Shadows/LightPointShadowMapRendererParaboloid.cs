@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightPointShadowMapRendererParaboloid : LightShadowMapRendererBase
     {
-        public readonly RenderStage ShadowMapRenderStageDp;
+        public readonly RenderStage ShadowMapRenderStageParaboloid;
 
         private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
         private PoolListStruct<ShaderData> shaderDataPool;
@@ -25,10 +25,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public LightPointShadowMapRendererParaboloid(ShadowMapRenderer parent) : base(parent)
         {
-            ShadowMapRenderStageDp = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
+            ShadowMapRenderStageParaboloid = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
 
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
-            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowMapRenderStageDp } });
+            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowMapRenderStageParaboloid } });
             shadowMapTextures = new PoolListStruct<ShadowMapTexture>(16, () => new ShadowMapTexture());
         }
 
@@ -98,57 +98,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        private Vector2 GetLightClippingPlanes(LightPoint pointLight)
-        {
-            return new Vector2(0.0f, pointLight.Radius + 2.0f);
-        }
-
-        private float GetShadowMapFarPlane(LightShadowMapTexture shadowMapTexture)
-        {
-            return GetLightClippingPlanes(shadowMapTexture.Light as LightPoint).Y;
-        }
-
-        /// <returns>
-        /// x = Near; y = 1/(Far-Near)
-        /// </returns>
-        private Vector2 GetShadowMapDepthParameters(LightShadowMapTexture shadowMapTexture)
-        {
-            var lightPoint = shadowMapTexture.Light as LightPoint;
-            Vector2 clippingPlanes = GetLightClippingPlanes(lightPoint);
-            return new Vector2(clippingPlanes.X, 1.0f / (clippingPlanes.Y - clippingPlanes.X));
-        }
-
-        private void GetViewParameters(LightShadowMapTexture shadowMapTexture, int index, out Matrix view, bool forCasting)
-        {
-            var pointShadowMapTexture = shadowMapTexture as ShadowMapTexture;
-            Matrix flippingMatrix = Matrix.Identity;
-
-            // Flip Y for rendering shadow maps
-            if (forCasting)
-            {
-                // Render upside down, so reading doesn't need any modification
-                flippingMatrix.Up = -flippingMatrix.Up;
-            }
-            
-            // Apply light position
-            view = Matrix.Translation(-shadowMapTexture.LightComponent.Position);
-
-            // Apply mapping plane rotatation
-            view *= pointShadowMapTexture.ForwardMatrix;
-
-            if (index == 0)
-            {
-                // Camera (Front)
-                // no rotation
-            }
-            else
-            {
-                // Camera (Back)
-                flippingMatrix.Forward = -flippingMatrix.Forward;
-            }
-            view *= flippingMatrix;
-        }
-
         public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
         {
             parameters.Set(ShadowMapCasterParaboloidProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
@@ -157,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
         {
             var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
-            CalculateViewDirection(visibilityGroup, lightShadowMap);
+            CalculateViewDirection(lightShadowMap);
 
 
             var shaderData = shaderDataPool.Add();
@@ -184,11 +133,62 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Calculates the direction of the split between the shadow maps
         /// </summary>
-        private void CalculateViewDirection(VisibilityGroup visibilityGroup, LightShadowMapTexture shadowMapTexture)
+        private void CalculateViewDirection(LightShadowMapTexture shadowMapTexture)
         {
             var pointShadowMapTexture = shadowMapTexture as ShadowMapTexture;
             Matrix.Orthonormalize(ref shadowMapTexture.LightComponent.Entity.Transform.WorldMatrix, out pointShadowMapTexture.ForwardMatrix);
             pointShadowMapTexture.ForwardMatrix.Invert();
+        }
+
+        /// <returns>
+        /// x = Near; y = 1/(Far-Near)
+        /// </returns>
+        private Vector2 GetShadowMapDepthParameters(LightShadowMapTexture shadowMapTexture)
+        {
+            var lightPoint = shadowMapTexture.Light as LightPoint;
+            Vector2 clippingPlanes = GetLightClippingPlanes(lightPoint);
+            return new Vector2(clippingPlanes.X, 1.0f / (clippingPlanes.Y - clippingPlanes.X));
+        }
+
+        private Vector2 GetLightClippingPlanes(LightPoint pointLight)
+        {
+            return new Vector2(0.0f, pointLight.Radius + 2.0f);
+        }
+
+        private float GetShadowMapFarPlane(LightShadowMapTexture shadowMapTexture)
+        {
+            return GetLightClippingPlanes(shadowMapTexture.Light as LightPoint).Y;
+        }
+
+        private void GetViewParameters(LightShadowMapTexture shadowMapTexture, int index, out Matrix view, bool forCasting)
+        {
+            var pointShadowMapTexture = shadowMapTexture as ShadowMapTexture;
+            Matrix flippingMatrix = Matrix.Identity;
+
+            // Flip Y for rendering shadow maps
+            if (forCasting)
+            {
+                // Render upside down, so reading doesn't need any modification
+                flippingMatrix.Up = -flippingMatrix.Up;
+            }
+
+            // Apply light position
+            view = Matrix.Translation(-shadowMapTexture.LightComponent.Position);
+
+            // Apply mapping plane rotatation
+            view *= pointShadowMapTexture.ForwardMatrix;
+
+            if (index == 0)
+            {
+                // Camera (Front)
+                // no rotation
+            }
+            else
+            {
+                // Camera (Back)
+                flippingMatrix.Forward = -flippingMatrix.Forward;
+            }
+            view *= flippingMatrix;
         }
 
         private class ShadowMapTexture : LightShadowMapTexture
@@ -209,12 +209,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// Offset from fromnt to back face in normalized texture coordinates in the atlas
             /// </summary>
             public Vector2 BackfaceOffset;
-
-            /// <summary>
-            /// How the back face is shadowed (0=always lit,1=normal)
-            /// </summary>
-            public float BackfaceMode;
-
+            
             /// <summary>
             /// Size of a single face of the shadow map
             /// </summary>
@@ -233,13 +228,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public float DepthBias;
         }
 
-        private class ShaderGroupData : ILightShadowMapShaderGroupData
+        private class ShaderGroupData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverPointParaboloid";
-
-            private ShaderMixinSource shadowShader;
-            private LightShadowType shadowType;
-
+            
             private Texture shadowMapTexture;
             private Vector2 shadowMapTextureSize;
             private Vector2 shadowMapTextureTexelSize;
@@ -262,17 +254,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
-            public ShaderGroupData(LightShadowType shadowType)
+            public ShaderGroupData(LightShadowType shadowType) : base(shadowType)
             {
-                this.shadowType = shadowType;
             }
 
-            public void ApplyShader(ShaderMixinSource mixin)
+            public override ShaderClassSource CreateShaderSource(int lightCurrentCount)
             {
-                mixin.CloneFrom(shadowShader);
+                return new ShaderClassSource(ShaderName, lightCurrentCount);
             }
-
-            public void UpdateLayout(string compositionName)
+            
+            public override void UpdateLayout(string compositionName)
             {
                 shadowMapTextureKey = ShadowMapKeys.Texture.ComposeWith(compositionName);
                 shadowMapTextureSizeKey = ShadowMapKeys.TextureSize.ComposeWith(compositionName);
@@ -285,27 +276,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 depthBiasesKey = ShadowMapReceiverPointParaboloidKeys.DepthBiases.ComposeWith(compositionName);
             }
 
-            public void UpdateLightCount(int lightLastCount, int lightCurrentCount)
+            public override void UpdateLightCount(int lightLastCount, int lightCurrentCount)
             {
-                shadowShader = new ShaderMixinSource();
-                shadowShader.Mixins.Add(new ShaderClassSource(ShaderName, lightCurrentCount));
+                base.UpdateLightCount(lightLastCount, lightCurrentCount);
 
-                switch (shadowType & LightShadowType.FilterMask)
-                {
-                    case LightShadowType.PCF3x3:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 3));
-                        break;
-                    case LightShadowType.PCF5x5:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 5));
-                        break;
-                    case LightShadowType.PCF7x7:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 7));
-                        break;
-                    default:
-                        shadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerDraw.Lighting"));
-                        break;
-                }
-                
                 Array.Resize(ref offsets, lightCurrentCount);
                 Array.Resize(ref backfaceOffsets, lightCurrentCount);
                 Array.Resize(ref faceSize, lightCurrentCount);
@@ -314,11 +288,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Array.Resize(ref depthBiases, lightCurrentCount);
             }
 
-            public void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights)
-            {
-            }
-
-            public void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
+            public override void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox)
             {
                 var boundingBox2 = (BoundingBox)boundingBox;
                 bool shadowMapCreated = false;
