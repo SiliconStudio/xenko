@@ -140,7 +140,7 @@ extern "C" {
 
 #define DEBUG_BREAK debugtrap()
 
-		xnAudioDevice* xnAudioCreate(const char* deviceName)
+		xnAudioDevice* xnAudioCreate(const char* deviceName, int flags)
 		{
 			auto res = new xnAudioDevice;
 			

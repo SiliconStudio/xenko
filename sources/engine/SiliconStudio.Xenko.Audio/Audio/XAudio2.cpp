@@ -64,7 +64,6 @@ extern "C" {
 #define _In_reads_(_xxx_)
 #define STDMETHOD(method) virtual HRESULT __stdcall method
 #define STDMETHOD_(type,method) virtual type __stdcall method
-#define IUnknown void
 #define XAUDIO2_COMMIT_NOW              0             // Used as an OperationSet argument
 #define XAUDIO2_COMMIT_ALL              0             // Used in IXAudio2::CommitChanges
 #define XAUDIO2_INVALID_OPSET           (UINT32)(-1)  // Not allowed for OperationSet arguments
@@ -126,6 +125,152 @@ extern "C" {
 #define X3DAUDIO_CALCULATE_REVERB          0x00000010 // enable reverb send level calculation
 #define X3DAUDIO_CALCULATE_DOPPLER         0x00000020 // enable doppler shift factor calculation
 #define X3DAUDIO_CALCULATE_EMITTER_ANGLE   0x00000040 // enable emitter-to-listener interior angle calculation
+
+#define HRTF_MAX_GAIN_LIMIT                  12.0f
+#define HRTF_MIN_GAIN_LIMIT                  -96.0f
+#define HRTF_MIN_UNITY_GAIN_DISTANCE         0.05f
+#define HRTF_DEFAULT_UNITY_GAIN_DISTANCE     1.0f
+#define HRTF_DEFAULT_CUTOFF_DISTANCE         FLT_MAX
+
+		struct IUnknown
+		{
+			// NAME: IXAudio2::QueryInterface
+			// DESCRIPTION: Queries for a given COM interface on the XAudio2 object.
+			//              Only IID_IUnknown and IID_IXAudio2 are supported.
+			//
+			// ARGUMENTS:
+			//  riid - IID of the interface to be obtained.
+			//  ppvInterface - Returns a pointer to the requested interface.
+			//
+			STDMETHOD(QueryInterface) (THIS_ REFIID riid, _Outptr_ void** ppvInterface) PURE;
+
+			// NAME: IXAudio2::AddRef
+			// DESCRIPTION: Adds a reference to the XAudio2 object.
+			//
+			STDMETHOD_(ULONG, AddRef) (THIS) PURE;
+
+			// NAME: IXAudio2::Release
+			// DESCRIPTION: Releases a reference to the XAudio2 object.
+			//
+			STDMETHOD_(ULONG, Release) (THIS) PURE;
+		};
+
+		//! Represents a position in 3D space, using a right-handed coordinate system.
+		typedef struct HrtfPosition
+		{
+			float x;
+			float y;
+			float z;
+		} HrtfPosition;
+
+		//! Indicates the orientation of an HRTF directivity object. This is a row-major 3x3 rotation matrix.
+		typedef struct HrtfOrientation
+		{
+			float element[9];
+		} HrtfOrientation;
+
+		//! Indicates one of several stock directivity patterns.
+		typedef enum HrtfDirectivityType
+		{
+			//! The sound emission is in all directions.
+			OmniDirectional = 0,
+			//! The sound emission is a cardiod shape.
+			Cardioid,
+			//! The sound emission is a cone.
+			Cone
+		} HrtfDirectivityType;
+
+		//! Indicates one of several stock environment types.
+		typedef enum HrtfEnvironment
+		{
+			//! A small room.
+			Small = 0,
+			//! A medium-sized room.
+			Medium,
+			//! A large enclosed space.
+			Large,
+			//! An outdoor space.
+			Outdoors,
+		} HrtfEnvironment;
+
+		//
+		//! Base directivity pattern descriptor. Describes the type of directivity applied to a sound.
+		//! The scaling parameter is used to interpolate between directivity behavior and omnidirectional; it determines how much attenuation is applied to the source outside of the directivity pattern and controls how directional the source is.
+		//
+		typedef struct HrtfDirectivity
+		{
+			//! Indicates the type of directivity.
+			HrtfDirectivityType type;
+			//! A normalized value between zero and one. Specifies the amount of linear interpolation between omnidirectional sound and the full directivity pattern, where 0 is fully omnidirectional and 1 is fully directional.
+			float               scaling;
+		} HrtfDirectivity;
+
+		//! Describes a cardioid directivity pattern.
+		typedef struct HrtfDirectivityCardioid
+		{
+			//! Descriptor for the cardioid pattern. The type parameter must be set to HrtfDirectivityType.Cardioid.
+			HrtfDirectivity directivity;
+			//! Order controls the shape of the cardioid. The higher order the shape, the narrower it is. Must be greater than 0 and less than or equal to 32.
+			float           order;
+		} HrtfDirectivityCardioid;
+
+		//
+		//! Describes a cone directivity.
+		//! Attenuation is 0 inside the inner cone.
+		//! Attenuation is linearly interpolated between the inner cone, which is defined by innerAngle, and the outer cone, which is defined by outerAngle.
+		//
+		typedef struct HrtfDirectivityCone
+		{
+			//! Descriptor for the cone pattern. The type parameter must be set to HrtfDirectivityType.Cone.
+			HrtfDirectivity directivity;
+			//! Angle, in radians, that defines the inner cone. Must be between 0 and 2 * pi.
+			float           innerAngle;
+			//! Angle, in radians, that defines the outer cone. Must be between 0 and 2 * pi.
+			float           outerAngle;
+		} HrtfDirectivityCone;
+
+		//
+		//! Indicates a distance-based decay type applied to a sound.
+		//
+		typedef enum HrtfDistanceDecayType
+		{
+			//! Simulates natural decay with distance, as constrained by minimum and maximum gain distance limits. Drops to silence at rolloff distance.
+			NaturalDecay = 0,
+			//! Used to set up a custom gain curve, within the maximum and minimum gain limit.
+			CustomDecay
+		} HrtfDistanceDecayType;
+
+		//
+		//! Describes a distance-based decay behavior.
+		//
+		typedef struct HrtfDistanceDecay
+		{
+			//! The type of decay behavior, natural or custom.
+			HrtfDistanceDecayType type;
+			//! The maximum gain limit applied at any distance. Applies to both natural and custom decay. This value is specified in dB, with a range from -96 to 12 inclusive. The default value is 12 dB.
+			float                 maxGain;
+			//! The minimum gain limit applied at any distance. Applies to both natural and custom decay. This value is specified in dB, with a range from -96 to 12 inclusive. The default value is -96 dB.
+			float                 minGain;
+			//! The distance at which the gain is 0dB. Applies to natural decay only. This value is specified in meters, with a range from 0.05 to infinity (FLT_MAX). The default value is 1 meter.
+			float                 unityGainDistance;
+			//! The distance at which output is silent. Applies to natural decay only. This value is specified in meters, with a range from zero (non-inclusive) to infinity (FLT_MAX). The default value is infinity.
+			float                 cutoffDistance;
+		} HrtfDistanceDecay;
+
+		//
+		//! Specifies parameters used to initialize HRTF.
+		//! 
+		//! Instances of the XAPO interface are created by using the CreateHrtfApo() API:
+		//!   ```STDAPI CreateHrtfApo(_In_ const HrtfApoInit* pInit, _Outptr_ IXAPO** ppXapo);```
+		//! 
+		//
+		typedef struct HrtfApoInit
+		{
+			//! The decay type. If you pass in nullptr, the default value will be used. The default is natural decay.
+			HrtfDistanceDecay* distanceDecay;
+			//! The directivity type. If you pass in nullptr, the default value will be used. The default directivity is omni-directional.
+			HrtfDirectivity*   directivity;
+		} HrtfApoInit;
 
 		struct XMFLOAT3
 		{
@@ -241,6 +386,9 @@ extern "C" {
 		typedef HRESULT (_cdecl * X3DAudioInitializePtr)(UINT32 SpeakerChannelMask, float SpeedOfSound, _Out_writes_bytes_(X3DAUDIO_HANDLE_BYTESIZE) X3DAUDIO_HANDLE Instance);
 		typedef void (_cdecl * X3DAudioCalculatePtr)(_In_reads_bytes_(X3DAUDIO_HANDLE_BYTESIZE) const X3DAUDIO_HANDLE Instance, _In_ const X3DAUDIO_LISTENER* pListener, _In_ const X3DAUDIO_EMITTER* pEmitter, UINT32 Flags, _Inout_ X3DAUDIO_DSP_SETTINGS* pDSPSettings);
 
+		typedef HRESULT(__stdcall * CreateHrtfApoPtr)(const HrtfApoInit* init, IUnknown** xApo);
+		CreateHrtfApoPtr CreateHrtfApoFunc = NULL;
+
 #ifndef WINDOWS_DESKTOP
 		extern HRESULT __stdcall XAudio2Create(void** ppXAudio2, UINT32 flags, UINT32 processor);
 		XAudio2CreatePtr XAudio2CreateFunc = XAudio2Create;
@@ -310,6 +458,21 @@ extern "C" {
 												//  must be > 0 and <= XAUDIO2_MAX_FILTER_ONEOVERQ.
 												//  Has no effect for one-pole filters.
 		} XAUDIO2_FILTER_PARAMETERS;
+
+		struct IXAPOHrtfParameters : IUnknown
+		{
+			// HRTF params
+			//! The position of the sound relative to the listener.
+			STDMETHOD(SetSourcePosition)(THIS_ _In_ const HrtfPosition* position);
+			//! The rotation matrix for the source orientation, with respect to the listener's frame of reference (the listener's coordinate system).
+			STDMETHOD(SetSourceOrientation)(THIS_ _In_ const HrtfOrientation* orientation);
+			//! The custom direct path gain value for the current source position. Valid only for sounds played with the HrtfDistanceDecayType. Custom decay type.
+			STDMETHOD(SetSourceGain)(THIS_ _In_ float gain);
+
+			// Distance cue params
+			//! Selects the acoustic environment to simulate.
+			STDMETHOD(SetEnvironment)(THIS_ _In_ HrtfEnvironment environment);
+		};
 
 		struct IXAudio2EngineCallback
 		{
@@ -748,6 +911,10 @@ extern "C" {
 			STDMETHOD(SetSourceSampleRate) (THIS_ UINT32 NewSourceSampleRate) PURE;
 		};
 
+		struct IXAudio2SubmixVoice : IXAudio2SourceVoice
+		{
+		};
+
 		typedef struct tWAVEFORMATEX
 		{
 			WORD        wFormatTag;         /* format type */
@@ -886,30 +1053,7 @@ extern "C" {
 			BOOL LogTiming;                     // Whether to log message timestamps.
 		} XAUDIO2_DEBUG_CONFIGURATION;
 
-		struct IUnkown
-		{
-			// NAME: IXAudio2::QueryInterface
-			// DESCRIPTION: Queries for a given COM interface on the XAudio2 object.
-			//              Only IID_IUnknown and IID_IXAudio2 are supported.
-			//
-			// ARGUMENTS:
-			//  riid - IID of the interface to be obtained.
-			//  ppvInterface - Returns a pointer to the requested interface.
-			//
-			STDMETHOD(QueryInterface) (THIS_ REFIID riid, _Outptr_ void** ppvInterface) PURE;
-
-			// NAME: IXAudio2::AddRef
-			// DESCRIPTION: Adds a reference to the XAudio2 object.
-			//
-			STDMETHOD_(ULONG, AddRef) (THIS) PURE;
-
-			// NAME: IXAudio2::Release
-			// DESCRIPTION: Releases a reference to the XAudio2 object.
-			//
-			STDMETHOD_(ULONG, Release) (THIS) PURE;
-		};
-
-		struct IXAudio2 : IUnkown
+		struct IXAudio2 : IUnknown
 		{
 			// NAME: IXAudio2::RegisterForCallbacks
 			// DESCRIPTION: Adds a new client to receive XAudio2's engine callbacks.
@@ -959,7 +1103,7 @@ extern "C" {
 			//  pSendList - Optional list of voices this voice should send audio to.
 			//  pEffectChain - Optional list of effects to apply to the audio data.
 			//
-			STDMETHOD(CreateSubmixVoice) (THIS_ _Outptr_ IXAudio2Voice** ppSubmixVoice,
+			STDMETHOD(CreateSubmixVoice) (THIS_ _Outptr_ IXAudio2SubmixVoice** ppSubmixVoice,
 				UINT32 InputChannels, UINT32 InputSampleRate,
 				UINT32 Flags X2DEFAULT(0), UINT32 ProcessingStage X2DEFAULT(0),
 				_In_opt_ const XAUDIO2_VOICE_SENDS* pSendList X2DEFAULT(NULL),
@@ -1023,7 +1167,7 @@ extern "C" {
 				_Reserved_ void* pReserved X2DEFAULT(NULL)) PURE;
 		};
 
-		struct IXAudio2_7 : IUnkown
+		struct IXAudio2_7 : IUnknown
 		{
 
 			// NAME: IXAudio2::GetDeviceCount
@@ -1172,9 +1316,13 @@ extern "C" {
 		//Windows 7 has no XAudio by default , it is taken from DX sdk and its loaded using COM...
 		bool xnAudioWindows7Hacks = false;
 
+		void* xnHrtfApoLib;
+
+		typedef IID *LPIID;
+		IID xnHrtfParamsIID;
+
 #ifdef WINDOWS_DESKTOP
 		void* xnXAudioLib;
-
 		typedef /* [unique] */ IUnknown *LPUNKNOWN;
 		typedef void *LPVOID;
 		typedef GUID IID;
@@ -1198,6 +1346,7 @@ extern "C" {
 
 #ifdef WINDOWS_DESKTOP
 			xnXAudioLib = LoadDynamicLibrary("XAudio2_9"); //win10+
+			xnHrtfApoLib = LoadDynamicLibrary("HrtfApo"); //win10+
 			
 			if (!xnXAudioLib) xnXAudioLib = LoadDynamicLibrary("XAudio2_8"); //win8+
 			
@@ -1205,6 +1354,12 @@ extern "C" {
 			{
 				XAudio2CreateFunc = (XAudio2CreatePtr)GetSymbolAddress(xnXAudioLib, "XAudio2Create");
 				if (!XAudio2CreateFunc) return false;
+
+				if(xnHrtfApoLib)
+				{
+					CreateHrtfApoFunc = (CreateHrtfApoPtr)GetSymbolAddress(xnHrtfApoLib, "CreateHrtfApo");
+					IIDFromString(L"{15B3CD66-E9DE-4464-B6E6-2BC3CF63D455}", &xnHrtfParamsIID);
+				}
 			}
 			else
 			{
@@ -1232,6 +1387,7 @@ extern "C" {
 			IXAudio2_7* x_audio2_7_;
 			X3DAUDIO_HANDLE x3_audio_;
 			IXAudio2MasteringVoice* mastering_voice_;
+			bool hrtf_;
 		};
 
 		struct xnAudioSource;
@@ -1251,7 +1407,13 @@ extern "C" {
 			X3DAUDIO_LISTENER listener_;
 		};
 
-		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(void* deviceName) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
+		enum xnAudioDeviceFlags
+		{
+			None,
+			Hrtf
+		};
+
+		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(void* deviceName, int flags) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
 		{
 			xnAudioDevice* res = new xnAudioDevice;
 
@@ -1299,8 +1461,10 @@ extern "C" {
 			else
 #endif
 			{
+				res->hrtf_ = xnHrtfApoLib && (flags & Hrtf);
+
 				//XAudio2, no flags, processor 1
-				result = XAudio2CreateFunc(reinterpret_cast<void**>(&res->x_audio2_), 0, 0x00000001);
+				result = XAudio2CreateFunc(reinterpret_cast<void**>(&res->x_audio2_), res->hrtf_ ? XAUDIO2_1024_QUANTUM : 0, 0x00000001);
 				if (FAILED(result))
 				{
 					delete res;
@@ -1392,6 +1556,7 @@ extern "C" {
 			IXAudio2SourceVoice* source_voice_;
 			X3DAUDIO_EMITTER* emitter_;
 			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
+			IXAPOHrtfParameters* hrtf_params_;
 			xnAudioListener* listener_;
 			volatile bool playing_;
 			volatile bool pause_;
@@ -1429,6 +1594,7 @@ extern "C" {
 			(void)streamed;
 
 			auto res = new xnAudioSource;
+			res->hrtf_params_ = NULL;
 			res->listener_ = listener;
 			res->playing_ = false;
 			res->sampleRate_ = sampleRate;
@@ -1436,7 +1602,7 @@ extern "C" {
 			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
-			if(spatialized)
+			if(spatialized && !res->listener_->device_->hrtf_) //do that only of HRTF is off
 			{
 				//if spatialized we also need those structures to calculate 3D audio
 				res->emitter_ = new X3DAUDIO_EMITTER;
@@ -1487,6 +1653,59 @@ extern "C" {
 			else
 			{
 				HRESULT result = listener->device_->x_audio2_->CreateSourceVoice(&res->source_voice_, &pcmWaveFormat, 0, XAUDIO2_MAX_FREQ_RATIO, res);
+				if (FAILED(result))
+				{
+					delete res;
+					return NULL;
+				}
+			}
+
+			if (spatialized && res->listener_->device_->hrtf_)
+			{
+				IXAudio2SubmixVoice* submixVoice = NULL;
+
+				HrtfApoInit params = {};
+				IUnknown* apoRoot;
+				HRESULT result = CreateHrtfApoFunc(&params, &apoRoot);
+				if (FAILED(result))
+				{
+					delete res;
+					return NULL;
+				}
+
+				apoRoot->QueryInterface(xnHrtfParamsIID, reinterpret_cast<void**>(&res->hrtf_params_));
+					
+				XAUDIO2_EFFECT_DESCRIPTOR fxDesc{};
+				fxDesc.InitialState = true;
+				fxDesc.OutputChannels = 2; // Stereo output
+				fxDesc.pEffect = res->hrtf_params_; // HRTF xAPO set as the effect.
+
+				XAUDIO2_EFFECT_CHAIN fxChain{};
+				fxChain.EffectCount = 1;
+				fxChain.pEffectDescriptors = &fxDesc;
+
+				XAUDIO2_VOICE_SENDS sends = {};
+				XAUDIO2_SEND_DESCRIPTOR sendDesc = {};
+				sendDesc.pOutputVoice = res->mastering_voice_;
+				sends.SendCount = 1;
+				sends.pSends = &sendDesc;
+
+				// HRTF APO expects mono 48kHz input, so we configure the submix voice for that format.
+				result = listener->device_->x_audio2_->CreateSubmixVoice(&submixVoice, 1, 48000, 0, 0, &sends, &fxChain);
+				if (FAILED(result))
+				{
+					delete res;
+					return NULL;
+				}
+
+				res->hrtf_params_->SetEnvironment(Outdoors); //todo
+
+				XAUDIO2_VOICE_SENDS voice_sends = {};
+				XAUDIO2_SEND_DESCRIPTOR voice_sendDesc = {};
+				voice_sendDesc.pOutputVoice = submixVoice;
+				voice_sends.SendCount = 1;
+				voice_sends.pSends = &voice_sendDesc;
+				result = res->source_voice_->SetOutputVoices(&voice_sends);
 				if (FAILED(result))
 				{
 					delete res;
@@ -1842,26 +2061,40 @@ extern "C" {
 
 		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
-			if (!source->emitter_) return;
-			
-			memcpy(&source->emitter_->Position, pos, sizeof(float) * 3);
-			memcpy(&source->emitter_->Velocity, vel, sizeof(float) * 3);
-			memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
-			memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
+			if(source->hrtf_params_)
+			{
+				float4 listener_pos;
+				memcpy(&listener_pos, &source->listener_->listener_.Position, sizeof(float) * 3);
+				float4 emitter_pos;
+				memcpy(&emitter_pos, pos, sizeof(float) * 3);
+				auto relative_pos = emitter_pos - listener_pos;
+				HrtfPosition hrtfEmitterPos;
+				memcpy(&hrtfEmitterPos, &relative_pos, sizeof(float) * 3);
+				source->hrtf_params_->SetSourcePosition(&hrtfEmitterPos);
+			}
+			else
+			{
+				if (!source->emitter_) return;
 
-			source->apply3DLock_.Lock();
+				memcpy(&source->emitter_->Position, pos, sizeof(float) * 3);
+				memcpy(&source->emitter_->Velocity, vel, sizeof(float) * 3);
+				memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
+				memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
 
-			//everything is calculated by Xaudio for us
-			X3DAudioCalculateFunc(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_, 
-				X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
+				source->apply3DLock_.Lock(); //todo is that really needed?
 
-			source->source_voice_->SetOutputMatrix(source->mastering_voice_, 1, AUDIO_CHANNELS, source->dsp_settings_->pMatrixCoefficients);
-			source->doppler_pitch_ = source->dsp_settings_->DopplerFactor;
-			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor * source->pitch_);
-			XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
-			if(!xnAudioWindows7Hacks) source->source_voice_->SetFilterParameters(&filter_parameters);
+				//everything is calculated by Xaudio for us
+				X3DAudioCalculateFunc(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_,
+					X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
 
-			source->apply3DLock_.Unlock();
+				source->source_voice_->SetOutputMatrix(source->mastering_voice_, 1, AUDIO_CHANNELS, source->dsp_settings_->pMatrixCoefficients);
+				source->doppler_pitch_ = source->dsp_settings_->DopplerFactor;
+				source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor * source->pitch_);
+				XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
+				if (!xnAudioWindows7Hacks) source->source_voice_->SetFilterParameters(&filter_parameters);
+
+				source->apply3DLock_.Unlock();
+			}
 		}
 
 		DLL_EXPORT_API npBool xnAudioSourceIsPlaying(xnAudioSource* source)

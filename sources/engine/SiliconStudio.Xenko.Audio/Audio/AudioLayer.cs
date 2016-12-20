@@ -38,9 +38,15 @@ namespace SiliconStudio.Xenko.Audio
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioInit", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool Init();
 
+        public enum DeviceFlags
+        {
+            None,
+            Hrtf
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioCreate", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern Device Create(string deviceName);
+        public static extern Device Create(string deviceName, DeviceFlags flags);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioDestroy", CallingConvention = CallingConvention.Cdecl)]

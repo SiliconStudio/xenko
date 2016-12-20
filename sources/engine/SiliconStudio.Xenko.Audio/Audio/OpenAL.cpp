@@ -249,7 +249,7 @@ extern "C" {
 			tinystl::vector<xnAudioBuffer*> freeBuffers;
 		};
 
-		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(const char* deviceName)
+		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(const char* deviceName, int flags)
 		{
 			auto res = new xnAudioDevice;
 			res->device = OpenDevice(deviceName);
