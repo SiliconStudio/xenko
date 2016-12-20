@@ -49,13 +49,6 @@
 	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
 	  </SiliconStudioEmbeddedNativeLibrary>
     
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'" Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\SDL2.dll">
-	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'" Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\SDL2.dll">
-	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
-	  </SiliconStudioEmbeddedNativeLibrary>
-    
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll">
       <SiliconStudioNativeCPU>%(SiliconStudioEmbeddedNativeLibrary.RecursiveDir)</SiliconStudioNativeCPU>
@@ -83,6 +76,12 @@
   <!-- On Vulkan embed the SPIR-V shader compiler -->
   <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
     <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator.exe" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Add SDL2 if we are not using DX -->
+  <Target Name="EmbedSDL2" BeforeTargets="SiliconStudioCompileAsset" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan' or '$(SiliconStudioXenkoGraphicsApi)' == 'OpenGL'">
+    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x86\SDL2.dll" DestinationFolder="$(OutputPath)\x86" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\x64\SDL2.dll" DestinationFolder="$(OutputPath)\x64" SkipUnchangedFiles="true" />
   </Target>
   
 </Project>
