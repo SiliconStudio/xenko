@@ -410,7 +410,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Quantu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Quantum.Tests", "..\sources\assets\SiliconStudio.Assets.Quantum.Tests\SiliconStudio.Assets.Quantum.Tests.csproj", "{A1A3EB96-46CE-4F2F-A3B6-EF869043DD49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Code.BuildTests", "..\sources\tools\SiliconStudio.Xenko.Code.BuildTests\SiliconStudio.Xenko.Code.BuildTests.csproj", "{3C855DB2-EEA3-415C-A0A8-C834DEC40531}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Code.Tests", "..\sources\tools\SiliconStudio.Xenko.Code.Tests\SiliconStudio.Xenko.Code.Tests.csproj", "{3C855DB2-EEA3-415C-A0A8-C834DEC40531}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

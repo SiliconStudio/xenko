@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Code.Tests
     [TestFixture]
     public class FixProjectReferenceTests
     {
-        [Test]
+        [Test, Category("Code")]
         public void TestCopyLocals()
         {
             var log = new LoggerResult();
