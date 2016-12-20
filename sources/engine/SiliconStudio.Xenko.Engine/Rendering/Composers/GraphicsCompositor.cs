@@ -89,6 +89,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         // Collect in the game graphics compositor: Setup features/stages, enumerate views and populates VisibilityGroup
                         TopLevel.Collect(context.RenderContext);
 
+                        // Collect visibile objects from each view
+                        foreach (var view in RenderSystem.Views)
+                            visibilityGroup.Collect(view);
+
                         // Collect in render features
                         RenderSystem.Collect(context.RenderContext);
 
