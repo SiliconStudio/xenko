@@ -77,9 +77,15 @@ namespace SiliconStudio.Xenko.Audio
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerDisable", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ListenerDisable(Listener listener);
 
+        public enum SourceFlags
+        {
+            None,
+            Hrtf
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceCreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Source SourceCreate(Listener listener, int sampleRate, int maxNumberOfBuffers, bool mono, bool spatialized, bool streamed);
+        public static extern Source SourceCreate(Listener listener, int sampleRate, int maxNumberOfBuffers, bool mono, bool spatialized, bool streamed, SourceFlags flags);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceDestroy", CallingConvention = CallingConvention.Cdecl)]

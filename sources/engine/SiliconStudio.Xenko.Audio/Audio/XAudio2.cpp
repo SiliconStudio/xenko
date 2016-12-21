@@ -1410,11 +1410,11 @@ extern "C" {
 
 		enum xnAudioDeviceFlags
 		{
-			None,
-			Hrtf
+			xnAudioDeviceFlagsNone,
+			xnAudioDeviceFlagsHrtf
 		};
 
-		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(void* deviceName, int flags) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
+		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(void* deviceName, xnAudioDeviceFlags flags) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
 		{
 			xnAudioDevice* res = new xnAudioDevice;
 
@@ -1462,7 +1462,7 @@ extern "C" {
 			else
 #endif
 			{
-				res->hrtf_ = xnHrtfApoLib && (flags & Hrtf);
+				res->hrtf_ = xnHrtfApoLib && (flags & xnAudioDeviceFlagsHrtf);
 
 				//XAudio2, no flags, processor 1
 				result = XAudio2CreateFunc(reinterpret_cast<void**>(&res->x_audio2_), res->hrtf_ ? XAUDIO2_1024_QUANTUM : 0, 0x00000001);
@@ -1590,7 +1590,13 @@ extern "C" {
 			void __stdcall OnVoiceError(void* context, HRESULT error) override;
 		};
 
-		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
+		enum xnAudioSourceFlags
+		{
+			xnAudioSourceFlagNone,
+			xnAudioSourceFlagHrtf
+		};
+
+		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed, xnAudioSourceFlags flags)
 		{
 			(void)streamed;
 
@@ -1603,7 +1609,7 @@ extern "C" {
 			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
-			if(spatialized && !res->listener_->device_->hrtf_) //do that only of HRTF is off
+			if(spatialized && !(flags & xnAudioSourceFlagHrtf) || flags & xnAudioSourceFlagHrtf && !res->listener_->device_->hrtf_)
 			{
 				//if spatialized we also need those structures to calculate 3D audio
 				res->emitter_ = new X3DAUDIO_EMITTER;
@@ -1661,7 +1667,7 @@ extern "C" {
 				}
 			}
 
-			if (spatialized && res->listener_->device_->hrtf_)
+			if (spatialized && res->listener_->device_->hrtf_ && flags & xnAudioSourceFlagHrtf)
 			{
 				IXAudio2SubmixVoice* submixVoice = NULL;
 

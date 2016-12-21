@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Based on compilation setting, returns the proper instance of sounds.
         /// </summary>
         /// <returns>A platform specific instance of <see cref="AudioEngine"/></returns>
-        public static AudioEngine NewAudioEngine(AudioDevice device = null)
+        public static AudioEngine NewAudioEngine(AudioDevice device = null, AudioLayer.DeviceFlags deviceFlags = AudioLayer.DeviceFlags.None)
         {
             AudioEngine engine = null;
 #if SILICONSTUDIO_PLATFORM_IOS
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Audio
 #else
             engine = new AudioEngine(device);
 #endif
-            engine.InitializeAudioEngine();
+            engine.InitializeAudioEngine(deviceFlags);
             return engine;
         }
     }

@@ -309,7 +309,7 @@ extern "C" {
 			//auto source = static_cast<xnAudioSource*>(pContext);
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed, int flags)
 		{
 			(void)spatialized;
 

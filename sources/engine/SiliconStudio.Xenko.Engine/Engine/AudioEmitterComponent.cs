@@ -231,6 +231,12 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public AudioEmitterSoundController this[string soundName] => SoundToController[Sounds[soundName]];
 
+        /// <summary>
+        /// If possible use a more complex HRTF algorithm to perform 3D sound simulation
+        /// </summary>
+        [DataMember(20)]
+        public bool UseHRTF { get; set; }
+
         private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {
             switch (args.Action)

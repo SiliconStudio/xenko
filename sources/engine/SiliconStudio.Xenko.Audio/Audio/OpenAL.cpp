@@ -371,7 +371,7 @@ extern "C" {
 			MakeContextCurrent(NULL);
 		}
 
-		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
+		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed, int flags)
 		{
 			(void)spatialized;
 			(void)maxNBuffers;

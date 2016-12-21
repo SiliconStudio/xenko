@@ -32,6 +32,7 @@
     <Compile Include="AudioEmitter.cs" />
     <Compile Include="AudioEngine.cs" />
     <Compile Include="AudioEngine.iOS.cs" />
+    <Compile Include="AudioEngineSettings.cs" />
     <Compile Include="AudioEngineState.cs" />
     <Compile Include="AudioExceptions.cs" />
     <Compile Include="AudioListener.cs" />

@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <returns>A new sound instance</returns>
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
-        public SoundInstance CreateInstance(AudioListener listener = null, bool forceLoadInMemory = false)
+        public SoundInstance CreateInstance(AudioListener listener = null, bool forceLoadInMemory = false, bool useHrtf = false)
         {
             if (listener == null)
             {
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Audio
 
             CheckNotDisposed();
 
-            var newInstance = new SoundInstance(this, listener, forceLoadInMemory) { Name = Name + " - Instance " + intancesCreationCount };
+            var newInstance = new SoundInstance(this, listener, forceLoadInMemory, useHrtf) { Name = Name + " - Instance " + intancesCreationCount };
 
             RegisterInstance(newInstance);
 

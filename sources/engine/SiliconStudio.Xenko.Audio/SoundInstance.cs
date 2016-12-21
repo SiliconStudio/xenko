@@ -35,7 +35,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="sampleRate">The sample rate of this audio stream</param>
         /// <param name="mono">Set to true if the souce is mono, false if stereo</param>
         /// <param name="spatialized">If the SoundInstance will be used for spatialized audio set to true, if not false, if true mono must also be true</param>
-        public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, int sampleRate, bool mono, bool spatialized = false)
+        /// <param name="useHrtf">If the engine should use Hrtf for spatialization</param>
+        public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, int sampleRate, bool mono, bool spatialized = false, bool useHrtf = false)
         {
             Listener = listener;
             this.engine = engine;
@@ -45,7 +46,7 @@ namespace SiliconStudio.Xenko.Audio
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized, true);
+            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized, true, useHrtf ? AudioLayer.SourceFlags.Hrtf : AudioLayer.SourceFlags.None);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
@@ -54,7 +55,7 @@ namespace SiliconStudio.Xenko.Audio
             ResetStateToDefault();
         }
 
-        internal SoundInstance(Sound staticSound, AudioListener listener, bool forceLoadInMemory)
+        internal SoundInstance(Sound staticSound, AudioListener listener, bool forceLoadInMemory, bool useHrtf = false)
         {
             Listener = listener;
             engine = staticSound.AudioEngine;
@@ -66,7 +67,7 @@ namespace SiliconStudio.Xenko.Audio
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, streamed ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, streamed);
+            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, streamed ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, streamed, useHrtf ? AudioLayer.SourceFlags.Hrtf : AudioLayer.SourceFlags.None);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
