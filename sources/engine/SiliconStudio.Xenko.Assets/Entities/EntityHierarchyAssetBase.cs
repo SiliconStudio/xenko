@@ -8,8 +8,8 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="writer">A text writer output</param>
         /// <param name="name">Name of this asset</param>
         /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
-        public bool DumpTo(TextWriter writer, string name)
+        public bool DumpTo([NotNull] TextWriter writer, string name)
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        public override int IndexOf(Entity part)
+        public override int IndexOf([NotNull] Entity part)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             var parent = GetParent(part);
@@ -55,21 +55,22 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        public override Entity GetChild(Entity part, int index)
+        public override Entity GetChild([NotNull] Entity part, int index)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             return part.Transform.Children[index].Entity;
         }
 
         /// <inheritdoc/>
-        public override int GetChildCount(Entity part)
+        public override int GetChildCount([NotNull] Entity part)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             return part.Transform.Children.Count;
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<Entity> EnumerateChildParts(Entity entity, bool isRecursive)
+        [NotNull]
+        public override IEnumerable<Entity> EnumerateChildParts([NotNull] Entity entity, bool isRecursive)
         {
             if (entity.Transform == null)
                 return Enumerable.Empty<Entity>();
@@ -87,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        protected override void PostClonePart(Entity part)
+        protected override void PostClonePart([NotNull] Entity part)
         {
             // disconnect the cloned entity
             part.Transform.Parent = null;
