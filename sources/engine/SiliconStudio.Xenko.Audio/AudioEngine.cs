@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Audio
         internal virtual void InitializeAudioEngine()
         {
             AudioDevice = AudioLayer.
-                Create(audioDevice.Name == "default" ? null : audioDevice.Name, AudioLayer.DeviceFlags.None);
+                Create(audioDevice.Name == "default" ? null : audioDevice.Name, AudioLayer.DeviceFlags.Hrtf);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 State = AudioEngineState.Invalidated;

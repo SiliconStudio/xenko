@@ -593,7 +593,7 @@ extern "C" {
 			}
 		}
 
-		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel, Matrix* worldTransform)
 		{
 			ContextState lock(listener->context);
 
@@ -628,7 +628,7 @@ extern "C" {
 			}
 		}
 
-		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel, Matrix* worldTransform)
 		{
 			ContextState lock(source->listener->context);
 

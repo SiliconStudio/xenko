@@ -1405,6 +1405,7 @@ extern "C" {
 		{
 			xnAudioDevice* device_;
 			X3DAUDIO_LISTENER listener_;
+			Matrix worldTransform_;
 		};
 
 		enum xnAudioDeviceFlags
@@ -2051,26 +2052,34 @@ extern "C" {
 			source->apply3DLock_.Unlock();
 		}
 
-		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel, Matrix* worldTransform)
 		{
 			memcpy(&listener->listener_.Position, pos, sizeof(float) * 3);
 			memcpy(&listener->listener_.Velocity, vel, sizeof(float) * 3);
 			memcpy(&listener->listener_.OrientFront, forward, sizeof(float) * 3);
 			memcpy(&listener->listener_.OrientTop, up, sizeof(float) * 3);
+			memcpy(&listener->worldTransform_, worldTransform, sizeof(Matrix));
 		}
 
-		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel, Matrix* worldTransform)
 		{
 			if(source->hrtf_params_)
 			{
-				float4 listener_pos;
-				memcpy(&listener_pos, &source->listener_->listener_.Position, sizeof(float) * 3);
-				float4 emitter_pos;
-				memcpy(&emitter_pos, pos, sizeof(float) * 3);
-				auto relative_pos = emitter_pos - listener_pos;
-				HrtfPosition hrtfEmitterPos;
-				memcpy(&hrtfEmitterPos, &relative_pos, sizeof(float) * 3);
+				Matrix localTransform;
+				Matrix invListener;
+				memcpy(&invListener, &source->listener_->worldTransform_, sizeof(Matrix));
+				xnMatrixInvert(&invListener);
+				xnMatrixMultiply(worldTransform, &invListener, &localTransform);
+
+				HrtfPosition hrtfEmitterPos{ localTransform.Flat.M41, localTransform.Flat.M42, localTransform.Flat.M43 };
 				source->hrtf_params_->SetSourcePosition(&hrtfEmitterPos);
+
+				//set orientation, relative to head, already computed c# side, todo c++ side
+				HrtfOrientation hrtfEmitterRot { 
+					localTransform.Flat.M11, localTransform.Flat.M12, localTransform.Flat.M13,
+					localTransform.Flat.M21, localTransform.Flat.M22, localTransform.Flat.M23,
+					localTransform.Flat.M31, localTransform.Flat.M32, localTransform.Flat.M33 };
+				source->hrtf_params_->SetSourceOrientation(&hrtfEmitterRot);
 			}
 			else
 			{

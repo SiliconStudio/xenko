@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -217,7 +216,11 @@ namespace SiliconStudio.Xenko.Audio
             if (emitter == null)
                 throw new ArgumentNullException(nameof(emitter));
 
-           emitter.Apply3D(Source);
+            //var invListener = Listener.WorldTransform;
+            //invListener.Invert();
+            //var finalTransform = emitter.WorldTransform * invListener;
+
+            emitter.Apply3D(Source);
         }
 
         /// <summary>

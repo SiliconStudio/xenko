@@ -622,7 +622,7 @@ extern "C" {
 			return time - source->streamPositionDiff;
 		}
 
-		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
+		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel, Matrix* worldTransform)
 		{
 			memcpy(&listener->pos, pos, sizeof(float) * 3);
 			memcpy(&listener->forward, forward, sizeof(float) * 3);
@@ -637,7 +637,7 @@ extern "C" {
 		const float MaxValue = 3.402823E+38f;
 #define E_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 
-		void xnAudioSourcePush3D(xnAudioSource* source, float* ppos, float* pforward, float* pup, float* pvel)
+		void xnAudioSourcePush3D(xnAudioSource* source, float* ppos, float* pforward, float* pup, float* pvel, Matrix* worldTransform)
 		{
 			float4 pos;
 			memcpy(&pos, ppos, sizeof(float) * 3);
