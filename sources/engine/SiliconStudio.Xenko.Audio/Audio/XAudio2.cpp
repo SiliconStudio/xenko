@@ -1799,7 +1799,6 @@ extern "C" {
 			source->source_voice_->Start();
 			source->playing_ = true;
 
-
 			if(!source->streamed_ && !source->pause_)
 			{
 				XAUDIO2_VOICE_STATE state;
