@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        Entity IAssetPartDesign<Entity>.Part => Entity;
+        Entity IAssetPartDesign<Entity>.Part { get { return Entity; } set { Entity = value; } }
 
         /// <inheritdoc/>
         public override string ToString()
