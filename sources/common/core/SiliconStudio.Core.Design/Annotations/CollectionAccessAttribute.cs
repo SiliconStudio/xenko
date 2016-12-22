@@ -28,24 +28,30 @@ using System;
 namespace SiliconStudio.Core.Annotations
 {
     /// <summary>
-    /// Indicates that the value of the marked element could be <c>null</c> sometimes, so the check for <c>null</c>
-    /// is necessary before its usage.
+    /// Indicates how method, constructor invocation or property access
+    /// over collection type affects content of the collection.
     /// </summary>
-    /// <example>
-    /// <code>
-    /// [CanBeNull] object Test() => null;
-    /// 
-    /// void UseTest() {
-    ///   var p = Test();
-    ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
-    /// }
-    /// </code>
-    /// </example>
-    [AttributeUsage(
-         AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property |
-         AttributeTargets.Delegate | AttributeTargets.Field | AttributeTargets.Event |
-         AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.GenericParameter)]
-    public sealed class CanBeNullAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property)]
+    public sealed class CollectionAccessAttribute : Attribute
     {
+        public CollectionAccessAttribute(CollectionAccessType collectionAccessType)
+        {
+            CollectionAccessType = collectionAccessType;
+        }
+
+        public CollectionAccessType CollectionAccessType { get; private set; }
+    }
+
+    [Flags]
+    public enum CollectionAccessType
+    {
+        /// <summary>Method does not use or modify content of the collection.</summary>
+        None = 0,
+        /// <summary>Method only reads content of the collection but does not modify it.</summary>
+        Read = 1,
+        /// <summary>Method can change content of the collection but does not add new elements.</summary>
+        ModifyExistingContent = 2,
+        /// <summary>Method can add new elements to the collection.</summary>
+        UpdatedContent = ModifyExistingContent | 4
     }
 }

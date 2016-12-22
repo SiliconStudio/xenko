@@ -28,24 +28,15 @@ using System;
 namespace SiliconStudio.Core.Annotations
 {
     /// <summary>
-    /// Indicates that the value of the marked element could be <c>null</c> sometimes, so the check for <c>null</c>
-    /// is necessary before its usage.
+    /// Can be appplied to symbols of types derived from <see cref="System.Collections.Generic.IEnumerable{T}"/>
+    /// as well as to symbols of <see cref="System.Threading.Tasks.Task"/> and <see cref="Lazy{T}"/> classes
+    /// to indicate that the value of a collection item, of the Task.Result property or of the Lazy.Value property
+    /// can be <c>null</c>.
     /// </summary>
-    /// <example>
-    /// <code>
-    /// [CanBeNull] object Test() => null;
-    /// 
-    /// void UseTest() {
-    ///   var p = Test();
-    ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
-    /// }
-    /// </code>
-    /// </example>
     [AttributeUsage(
          AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property |
-         AttributeTargets.Delegate | AttributeTargets.Field | AttributeTargets.Event |
-         AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.GenericParameter)]
-    public sealed class CanBeNullAttribute : Attribute
+         AttributeTargets.Delegate | AttributeTargets.Field)]
+    public sealed class ItemCanBeNullAttribute : Attribute
     {
     }
 }
