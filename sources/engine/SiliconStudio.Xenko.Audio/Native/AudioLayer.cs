@@ -83,9 +83,40 @@ namespace SiliconStudio.Xenko.Audio
             Hrtf
         }
 
+        public enum HrtfDirectivityType
+        {
+            // The sound emission is in all directions.
+            OmniDirectional,
+            // The sound emission is a cardiod shape.
+            Cardioid,
+            // The sound emission is a cone.
+            Cone
+        }
+
+		//! Indicates one of several stock environment types.
+		public enum HrtfEnvironment
+        {
+            // A small room.
+            Small,
+            // A medium-sized room.
+            Medium,
+            // A large enclosed space.
+            Large,
+            // An outdoor space.
+            Outdoors
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct SourceParams
+        {
+            public SourceFlags Flags;
+            public HrtfDirectivityType HrtfDirectivityType;
+            public HrtfEnvironment HrtfEnvironment;
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceCreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Source SourceCreate(Listener listener, int sampleRate, int maxNumberOfBuffers, bool mono, bool spatialized, bool streamed, SourceFlags flags);
+        public static extern Source SourceCreate(Listener listener, int sampleRate, int maxNumberOfBuffers, bool mono, bool spatialized, bool streamed, SourceFlags sourceParams);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceDestroy", CallingConvention = CallingConvention.Cdecl)]
