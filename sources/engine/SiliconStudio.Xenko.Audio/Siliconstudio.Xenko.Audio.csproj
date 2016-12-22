@@ -37,8 +37,8 @@
     <Compile Include="AudioExceptions.cs" />
     <Compile Include="AudioListener.cs" />
     <Compile Include="AudioEngineFactory.cs" />
-    <Compile Include="Audio\AudioLayer.cs" />
-    <Compile Include="Audio\Celt.cs" />
+    <Compile Include="Native\AudioLayer.cs" />
+    <Compile Include="Native\Celt.cs" />
     <Compile Include="CompressedSoundPacket.cs" />
     <Compile Include="CompressedSoundSource.cs" />
     <Compile Include="IPositionableSound.cs" />
@@ -94,7 +94,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\Celt.cpp" />
+    <None Include="Native\Celt.cpp" />
     <None Include="SiliconStudio.Xenko.Native.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -103,16 +103,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\Common.h" />
+    <None Include="Native\Common.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\OpenAL.cpp" />
+    <None Include="Native\OpenAL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\OpenSLES.cpp" />
+    <None Include="Native\OpenSLES.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\XAudio2.cpp" />
+    <None Include="Native\XAudio2.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
