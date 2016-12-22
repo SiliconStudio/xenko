@@ -6,6 +6,7 @@ shader SpriteBatchShader<bool TSRgb> : SpriteBase
     // streams
     // -------------------------------------
     stage stream float4 Color : COLOR;
+    stage stream float4 ColorAdd : COLOR1;
     stage stream float Swizzle : BATCH_SWIZZLE;
 
     // -------------------------------------
@@ -24,7 +25,7 @@ shader SpriteBatchShader<bool TSRgb> : SpriteBase
     stage override float4 Shading()
     {
         float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
-        float4 finalColor = swizzleColor * streams.Color;
+        float4 finalColor = swizzleColor * streams.Color + streams.ColorAdd;
         return finalColor;
     }
 };
