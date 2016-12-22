@@ -11,7 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Updater;
 using SiliconStudio.Xenko.Animations;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -150,8 +149,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                                 // Evaluate node
                                 foreach (var node in nodesToMerge)
                                 {
-                                    // Get default position
-                                    var modelNodeDefinition = node.Item1;
+                                    // Needs to be an array in order for it to be modified by the UpdateEngine, otherwise it would get passed by value
+                                    var modelNodeDefinitions = new ModelNodeDefinition[1] {node.Item1};
 
                                     // Compute
                                     AnimationClipResult animationClipResult = null;
@@ -161,19 +160,22 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                                     var updateMemberInfos = new List<UpdateMemberInfo>();
                                     foreach (var channel in animationClipResult.Channels)
-                                        updateMemberInfos.Add(new UpdateMemberInfo { Name = channel.PropertyName, DataOffset = channel.Offset });
+                                        updateMemberInfos.Add(new UpdateMemberInfo { Name = "[0]." + channel.PropertyName, DataOffset = channel.Offset });
 
                                     // TODO: Cache this
-                                    var compiledUpdate = UpdateEngine.Compile(typeof(ModelNodeDefinition), updateMemberInfos);
+                                    var compiledUpdate = UpdateEngine.Compile(typeof(ModelNodeDefinition[]), updateMemberInfos);
 
                                     unsafe
                                     {
                                         fixed (byte* data = animationClipResult.Data)
-                                            UpdateEngine.Run(modelNodeDefinition, compiledUpdate, (IntPtr)data, null);
+                                        {
+                                            UpdateEngine.Run(modelNodeDefinitions, compiledUpdate, (IntPtr)data, null);
+                                        }
                                     }
 
                                     Matrix localMatrix;
-                                    Matrix.Transformation(ref modelNodeDefinition.Transform.Scale, ref modelNodeDefinition.Transform.Rotation, ref modelNodeDefinition.Transform.Position,
+                                    var transformTRS = modelNodeDefinitions[0].Transform;
+                                    Matrix.Transformation(ref transformTRS.Scale, ref transformTRS.Rotation, ref transformTRS.Position,
                                         out localMatrix);
                                     matrix = Matrix.Multiply(localMatrix, matrix);
                                 }
