@@ -28,24 +28,11 @@ using System;
 namespace SiliconStudio.Core.Annotations
 {
     /// <summary>
-    /// Indicates that the value of the marked element could be <c>null</c> sometimes, so the check for <c>null</c>
-    /// is necessary before its usage.
+    /// Indicates that <see cref="System.Collections.Generic.IEnumerable{T}"/>, passed as parameter, is never
+    /// enumerated.
     /// </summary>
-    /// <example>
-    /// <code>
-    /// [CanBeNull] object Test() => null;
-    /// 
-    /// void UseTest() {
-    ///   var p = Test();
-    ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
-    /// }
-    /// </code>
-    /// </example>
-    [AttributeUsage(
-         AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property |
-         AttributeTargets.Delegate | AttributeTargets.Field | AttributeTargets.Event |
-         AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.GenericParameter)]
-    public sealed class CanBeNullAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public sealed class NoEnumerationAttribute : Attribute
     {
     }
 }
