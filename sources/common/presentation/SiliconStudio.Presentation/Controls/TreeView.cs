@@ -64,6 +64,8 @@ namespace SiliconStudio.Presentation.Controls
         private bool stoppingEdition;
         private bool allowedSelectionChanges;
         private bool mouseDown;
+        private bool scrollViewerRegistered;
+        private bool scrollViewerReentrency;
         private object lastShiftRoot;
         private TreeViewItem editedItem;
         private bool isInitialized;
@@ -119,6 +121,11 @@ namespace SiliconStudio.Presentation.Controls
             Loaded += OnLoaded;
             Unloaded += OnUnLoaded;
             OnLoaded(this, new RoutedEventArgs(LoadedEvent));
+            if (!scrollViewerRegistered && ScrollViewer != null)
+            {
+                ScrollViewer.ScrollChanged += ScrollChanged;
+                scrollViewerRegistered = true;
+            }
         }
 
         // TODO: This method has been implemented with a lot of fail and retry, and should be cleaned.
@@ -280,6 +287,11 @@ namespace SiliconStudio.Presentation.Controls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
+            if (!scrollViewerRegistered && ScrollViewer != null)
+            {
+                ScrollViewer.ScrollChanged += ScrollChanged;
+                scrollViewerRegistered = true;
+            }
             base.OnMouseDown(e);
             StopEditing();
 
@@ -298,6 +310,15 @@ namespace SiliconStudio.Presentation.Controls
             item.ForceFocus();
         }
 
+        private void ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (mouseDown && !scrollViewerReentrency)
+            {
+                scrollViewerReentrency = true;
+                ScrollViewer.ScrollToVerticalOffset(e.VerticalOffset - e.VerticalChange);
+            }
+        }
+
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
@@ -312,6 +333,7 @@ namespace SiliconStudio.Presentation.Controls
 
                 item.ForceFocus();
             }
+            scrollViewerReentrency = false;
             mouseDown = false;
         }
 
