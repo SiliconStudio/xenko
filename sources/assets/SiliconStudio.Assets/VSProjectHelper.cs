@@ -68,7 +68,7 @@ namespace SiliconStudio.Assets
             return (T)Enum.Parse(typeof(T), value);
         }
 
-        public static string GetOrCompileProjectAssembly(string solutionFullPath, string fullProjectLocation, ILogger logger, string targets, bool autoCompileProject, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
+        public static string GetOrCompileProjectAssembly(string solutionFullPath, string fullProjectLocation, ILogger logger, string targets, bool autoCompileProject, bool forceNugetRestore, string configuration, string platform = "AnyCPU", Dictionary<string, string> extraProperties = null, bool onlyErrors = false, BuildRequestDataFlags flags = BuildRequestDataFlags.None)
         {
             if (fullProjectLocation == null) throw new ArgumentNullException("fullProjectLocation");
             if (logger == null) throw new ArgumentNullException("logger");
@@ -84,7 +84,7 @@ namespace SiliconStudio.Assets
                         // NuGet restore
                         // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
                         // Probably not worth bothering since it might be part of MSBuild with VS15
-                        var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project);
+                        var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project, forceNugetRestore);
 
                         var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
                         asyncBuild.Build(restoreNugetTask, project, "Build", flags, new LoggerRedirect(logger, onlyErrors));
@@ -115,7 +115,7 @@ namespace SiliconStudio.Assets
                     // NuGet restore
                     // TODO: We might want to call this less regularly than every build (i.e. project creation, and project.json update?)
                     // Probably not worth bothering since it might be part of MSBuild with VS15
-                    var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project);
+                    var restoreNugetTask = RestoreNugetPackages(logger, solutionFullPath, project, false);
 
                     var asyncBuild = new CancellableAsyncBuild(project, assemblyPath);
                     asyncBuild.Build(restoreNugetTask, project, targets, flags, new LoggerRedirect(logger));
@@ -132,7 +132,7 @@ namespace SiliconStudio.Assets
             return null;
         }
 
-        public static async Task RestoreNugetPackages(ILogger logger, string solutionFullPath, Project project)
+        public static async Task RestoreNugetPackages(ILogger logger, string solutionFullPath, Project project, bool force)
         {
             var addedProjs = new HashSet<string>(); //to avoid worst case circular dependencies.
             var allProjs = Utilities.IterateTree(project, project1 =>
@@ -163,7 +163,7 @@ namespace SiliconStudio.Assets
 
                 // Check if project.json is newer than project.lock.json (GetLastWriteTimeUtc returns year 1601 if file doesn't exist so it will also generate it)
                 var projectLockJson = Path.Combine(proj.DirectoryPath, "project.lock.json");
-                if (File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
+                if (force || File.GetLastWriteTimeUtc(projectJson) > File.GetLastWriteTimeUtc(projectLockJson))
                 {
                     // Check if it needs to be regenerated
                     // Run NuGet.exe restore

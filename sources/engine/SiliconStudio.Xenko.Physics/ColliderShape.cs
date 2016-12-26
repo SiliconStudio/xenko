@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Physics
         public virtual void UpdateLocalTransformations()
         {
             //cache matrices used to translate the position from and to physics engine / gfx engine
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * (Parent == null ? Matrix.Translation(LocalOffset * CachedScaling) : Matrix.Translation(LocalOffset));
             NegativeCenterMatrix = PositiveCenterMatrix;
             NegativeCenterMatrix.Invert();
         }

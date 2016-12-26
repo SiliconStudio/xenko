@@ -52,6 +52,7 @@
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
       <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>

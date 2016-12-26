@@ -292,7 +292,8 @@ typedef struct BoundingBox
 typedef struct VertexPositionColorTextureSwizzle
 {
 	Vector4 Position;
-	Color4 Color;
+	Color4 ColorScale;
+	Color4 ColorAdd;
 	Vector2 TextureCoordinate;
 	float Swizzle;
 } VertexPositionColorTextureSwizzle;
@@ -307,7 +308,8 @@ typedef struct SpriteDrawInfo
 	float Rotation;
 	float Depth;
 	int SpriteEffects;
-	Color4 Color;
+	Color4 ColorScale;
+	Color4 ColorAdd;
 	int Swizzle;
 	Vector2 TextureSize;
 	int Orientation;

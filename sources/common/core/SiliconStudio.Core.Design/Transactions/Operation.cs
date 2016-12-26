@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Transactions
         /// Gets whether this operation has been frozen.
         /// </summary>
         /// <remarks>An operation is frozen after it has been discarded of the transaction stack.</remarks>
-        internal bool IsFrozen { get; private set; }
+        protected internal bool IsFrozen { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IOperation"/> interface used to interact with the transaction stack.
