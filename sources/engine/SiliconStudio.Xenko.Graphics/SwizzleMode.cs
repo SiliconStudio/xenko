@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Reconstructs the Z(B) component from R and G.
         /// </summary>
-        Normal = 2,
+        NormalMap = 2,
 
         /// <summary>
         /// Take the only the x component of the vector.

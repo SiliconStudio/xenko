@@ -281,10 +281,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, float rotation, 
-            Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0, Color4 colorAdd = default(Color4))
+            Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0, Color4 colorAdd = default(Color4), SwizzleMode swizzle = SwizzleMode.None)
         {
             var destination = new RectangleF(position.X, position.Y, scale, scale);
-            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, colorAdd, rotation, ref origin, effects, orientation, layerDepth);
+            DrawSprite(texture, ref destination, true, ref sourceRectangle, color, colorAdd, rotation, ref origin, effects, orientation, layerDepth, swizzle);
         }
 
         /// <summary>
