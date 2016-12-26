@@ -1,6 +1,8 @@
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
@@ -21,6 +23,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         [DataMember(10)]
         [NonIdentifiableCollectionItems]
+        [NotNull]
         public List<Guid> RootPartIds { get; } = new List<Guid>();
 
         /// <summary>
@@ -28,15 +31,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         [DataMember(20)]
         [NonIdentifiableCollectionItems]
+        [ItemNotNull, NotNull]
         public AssetPartCollection<TAssetPartDesign, TAssetPart> Parts { get; } = new AssetPartCollection<TAssetPartDesign, TAssetPart>();
-
-        /// <summary>
-        /// Enumerates the root parts of this hierarchy.
-        /// </summary>
-        /// <returns>A sequence containing the root parts of this hierarchy.</returns>
-        public IEnumerable<TAssetPartDesign> EnumerateRootParts()
-        {
-            return RootPartIds.Select(rootId => Parts[rootId]);
-        }
     }
 }

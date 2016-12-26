@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        public override int IndexOf([NotNull] Entity part)
+        public override int IndexOf(Entity part)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             var parent = GetParent(part);
@@ -55,22 +55,21 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        public override Entity GetChild([NotNull] Entity part, int index)
+        public override Entity GetChild(Entity part, int index)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             return part.Transform.Children[index].Entity;
         }
 
         /// <inheritdoc/>
-        public override int GetChildCount([NotNull] Entity part)
+        public override int GetChildCount(Entity part)
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             return part.Transform.Children.Count;
         }
 
         /// <inheritdoc/>
-        [NotNull]
-        public override IEnumerable<Entity> EnumerateChildParts([NotNull] Entity entity, bool isRecursive)
+        public override IEnumerable<Entity> EnumerateChildParts(Entity entity, bool isRecursive)
         {
             if (entity.Transform == null)
                 return Enumerable.Empty<Entity>();

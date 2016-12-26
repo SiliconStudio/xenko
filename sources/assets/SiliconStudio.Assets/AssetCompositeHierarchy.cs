@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
@@ -35,7 +36,8 @@ namespace SiliconStudio.Assets
         /// <param name="part">The part for which to retrieve the index.</param>
         /// <returns>The index of the part, or a negative value if the part is an orphan part that is not a member of this asset.</returns>
         /// <exception cref="ArgumentNullException">The given part is null.</exception>
-        public abstract int IndexOf(TAssetPart part);
+        [Pure]
+        public abstract int IndexOf([NotNull] TAssetPart part);
 
         /// <summary>
         /// Gets the child of the given part that matches the given index.
@@ -45,7 +47,8 @@ namespace SiliconStudio.Assets
         /// <returns>The the child of the given part that matches the given index.</returns>
         /// <exception cref="ArgumentNullException">The given part is null.</exception>
         /// <exception cref="IndexOutOfRangeException">The given index is out of range.</exception>
-        public abstract TAssetPart GetChild(TAssetPart part, int index);
+        [Pure]
+        public abstract TAssetPart GetChild([NotNull] TAssetPart part, int index);
 
         /// <summary>
         /// Gets the number of children in the given part.
@@ -53,7 +56,8 @@ namespace SiliconStudio.Assets
         /// <param name="part">The part for which to retrieve the number of children.</param>
         /// <returns>The number of children in the given part.</returns>
         /// <exception cref="ArgumentNullException">The given part is null.</exception>
-        public abstract int GetChildCount(TAssetPart part);
+        [Pure]
+        public abstract int GetChildCount([NotNull] TAssetPart part);
 
         /// <summary>
         /// Enumerates parts that are children of the given part.
@@ -62,40 +66,31 @@ namespace SiliconStudio.Assets
         /// <param name="isRecursive">If true, child parts will be enumerated recursively.</param>
         /// <returns>A sequence containing the child parts of the given part.</returns>
         /// <remarks>Implementations of this method should not rely on the <see cref="Hierarchy"/> property to enumerate.</remarks>
-        public abstract IEnumerable<TAssetPart> EnumerateChildParts(TAssetPart part, bool isRecursive);
+        [NotNull, Pure]
+        public abstract IEnumerable<TAssetPart> EnumerateChildParts([NotNull] TAssetPart part, bool isRecursive);
 
-        /// <summary>
-        /// Enumerates design parts that are children of the given design part.
-        /// </summary>
-        /// <param name="partDesign">The design part for which to enumerate child parts.</param>
-        /// <param name="hierarchyData">The hierarchy data object in which the design parts can be retrieved.</param>
-        /// <param name="isRecursive">If true, child design parts will be enumerated recursively.</param>
-        /// <returns>A sequence containing the child design parts of the given design part.</returns>
-        [NotNull]
-        public IEnumerable<TAssetPartDesign> EnumerateChildParts([NotNull] TAssetPartDesign partDesign, AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchyData, bool isRecursive)
-        {
-            return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => hierarchyData.Parts[e.Id]);
-        }
-
+        /// <inheritdoc/>
         [NotNull]
         public override IEnumerable<AssetPart> CollectParts()
         {
             return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.Base, newBase => x.Base = newBase));
         }
 
+        /// <inheritdoc/>
         [CanBeNull]
         public override IIdentifiable FindPart(Guid partId)
         {
             return Hierarchy.Parts.FirstOrDefault(x => x.Part.Id == partId)?.Part;
         }
 
+        /// <inheritdoc/>
         public override bool ContainsPart(Guid id)
         {
             return Hierarchy.Parts.ContainsKey(id);
         }
 
-        [NotNull]
-        public override Asset CreateDerivedAsset(string baseLocation, [CanBeNull] IDictionary<Guid, Guid> idRemapping = null)
+        /// <inheritdoc/>
+        public override Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
             var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, idRemapping);
 
@@ -120,38 +115,12 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
-        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        [NotNull]
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference)
-        {
-            Dictionary<Guid, Guid> idRemapping;
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, out idRemapping);
-        }
-
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
-        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        [NotNull]
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, [NotNull] out Dictionary<Guid, Guid> idRemapping)
-        {
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, out idRemapping);
-        }
-
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
         /// <param name="sourceRootIds">The ids that are the roots of the sub-hierarchies to clone.</param>
         /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
         /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
         /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
-        [NotNull]
+        [NotNull, Pure]
         public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies([NotNull] IEnumerable<Guid> sourceRootIds, bool cleanReference, [NotNull] out Dictionary<Guid, Guid> idRemapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
@@ -213,6 +182,7 @@ namespace SiliconStudio.Assets
             // default implementation does nothing
         }
 
+        /// <inheritdoc/>
         [CanBeNull]
         protected override object ResolvePartReference(object partReference)
         {
