@@ -1590,13 +1590,7 @@ extern "C" {
 			void __stdcall OnVoiceError(void* context, HRESULT error) override;
 		};
 
-		enum xnAudioSourceFlags
-		{
-			xnAudioSourceFlagNone,
-			xnAudioSourceFlagHrtf
-		};
-
-		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed, xnAudioSourceFlags flags)
+		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed, npBool hrtf, float directionFactor, HrtfEnvironment environment)
 		{
 			(void)streamed;
 
@@ -1609,7 +1603,7 @@ extern "C" {
 			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
-			if(spatialized && !(flags & xnAudioSourceFlagHrtf) || flags & xnAudioSourceFlagHrtf && !res->listener_->device_->hrtf_)
+			if(spatialized && !hrtf || hrtf && !res->listener_->device_->hrtf_)
 			{
 				//if spatialized we also need those structures to calculate 3D audio
 				res->emitter_ = new X3DAUDIO_EMITTER;
@@ -1667,11 +1661,16 @@ extern "C" {
 				}
 			}
 
-			if (spatialized && res->listener_->device_->hrtf_ && flags & xnAudioSourceFlagHrtf)
+			if (spatialized && res->listener_->device_->hrtf_ && hrtf)
 			{
 				IXAudio2SubmixVoice* submixVoice = NULL;
 
 				HrtfApoInit params = {};
+				HrtfDirectivity directivity;
+				directivity.type = OmniDirectional;
+				directivity.scaling = directionFactor;
+				params.directivity = &directivity;
+
 				IUnknown* apoRoot;
 				HRESULT result = CreateHrtfApoFunc(&params, &apoRoot);
 				if (FAILED(result))
@@ -1705,7 +1704,7 @@ extern "C" {
 					return NULL;
 				}
 
-				res->hrtf_params_->SetEnvironment(Outdoors); //todo
+				res->hrtf_params_->SetEnvironment(environment);
 
 				XAUDIO2_VOICE_SENDS voice_sends = {};
 				XAUDIO2_SEND_DESCRIPTOR voice_sendDesc = {};

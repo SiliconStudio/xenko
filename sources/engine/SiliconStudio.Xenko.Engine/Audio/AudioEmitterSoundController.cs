@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <returns>The new sound effect instance created</returns>
         internal SoundInstance CreateSoundInstance(AudioListenerComponent listener, bool forget)
         {
-            var newInstance = sound.CreateInstance(listener.Listener, false, emitter.UseHRTF);
+            var newInstance = sound.CreateInstance(listener.Listener, false, emitter.UseHRTF, emitter.DirectionalFactor, emitter.Environment);
 
             if (!forget)
             {

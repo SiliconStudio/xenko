@@ -86,8 +86,6 @@ namespace SiliconStudio.Xenko.Audio
 
         internal Matrix WorldTransform;
 
-        internal bool UseHrtf;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioEmitter"/> class.
         /// </summary>

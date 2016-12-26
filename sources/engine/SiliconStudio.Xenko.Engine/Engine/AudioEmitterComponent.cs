@@ -234,8 +234,29 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// If possible use a more complex HRTF algorithm to perform 3D sound simulation
         /// </summary>
+        /// <userdoc>
+        /// If possible use a more complex HRTF algorithm to perform 3D sound simulation
+        /// </userdoc>
         [DataMember(20)]
         public bool UseHRTF { get; set; }
+
+        /// <summary>
+        /// If 0 the sound will be omnidirectional, 1 fully directional
+        /// </summary>
+        /// <userdoc>
+        /// If 0 the sound will be omnidirectional, 1 fully directional
+        /// </userdoc>
+        [DataMember(30)]
+        public float DirectionalFactor { get; set; }
+
+        /// <summary>
+        /// The reverberation model that this emitter will use
+        /// </summary>
+        /// <userdoc>
+        /// The reverberation model that this emitter will use
+        /// </userdoc>
+        [DataMember(40)]
+        public HrtfEnvironment Environment { get; set; }
 
         private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {

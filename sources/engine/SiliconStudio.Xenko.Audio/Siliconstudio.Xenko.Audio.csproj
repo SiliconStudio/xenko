@@ -48,6 +48,7 @@
     <Compile Include="Microphone.Windows.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NativeInvoke.cs" />
+    <Compile Include="Native\HrtfEnvironment.cs" />
     <Compile Include="PlayRange.cs" />
     <Compile Include="RecorderState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
