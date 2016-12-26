@@ -53,8 +53,14 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly RoutedEvent ClearItemEvent =
             EventManager.RegisterRoutedEvent("ClearItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
 
+        /// <summary>
+        /// Indicates whether the Control key is currently down.
+        /// </summary>
         internal static bool IsControlKeyDown => (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
 
+        /// <summary>
+        /// Indicates whether the Shift key is currently down.
+        /// </summary>
         internal static bool IsShiftKeyDown => (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 
         // the space where items will be realized if virtualization is enabled. This is set by virtualizingtreepanel.
@@ -84,6 +90,9 @@ namespace SiliconStudio.Presentation.Controls
             KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(TreeView), new FrameworkPropertyMetadata(KeyboardNavigationMode.None));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TreeView"/> class.
+        /// </summary>
         public TreeView()
         {
             SelectedItems = new NonGenericObservableListWrapper<object>(new ObservableList<object>());
@@ -101,16 +110,28 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public IList SelectedItems { get { return (IList)GetValue(SelectedItemsProperty.DependencyProperty); } private set { SetValue(SelectedItemsProperty, value); } }
 
+        /// <summary>
+        /// Gets the selection mode for this control.
+        /// </summary>
         public SelectionMode SelectionMode { get { return (SelectionMode)GetValue(SelectionModeProperty); } set { SetValue(SelectionModeProperty, value); } }
 
+        /// <summary>
+        /// Raised when a <see cref="TreeViewItem"/> is being prepared to be added to the <see cref="TreeView"/>.
+        /// </summary>
+        /// <seealso cref="PrepareContainerForItemOverride"/>
         public event EventHandler<TreeViewItemEventArgs> PrepareItem { add { AddHandler(PrepareItemEvent, value); } remove { RemoveHandler(PrepareItemEvent, value); } }
 
+        /// <summary>
+        /// Raised when a <see cref="TreeViewItem"/> is being cleared from the <see cref="TreeView"/>.
+        /// </summary>
+        /// <seealso cref="ClearContainerForItemOverride"/>
         public event EventHandler<TreeViewItemEventArgs> ClearItem { add { AddHandler(ClearItemEvent, value); } remove { RemoveHandler(ClearItemEvent, value); } }
 
         internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
 
         internal bool AllowMultipleSelection => SelectionMode != SelectionMode.Single;
 
+        /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
