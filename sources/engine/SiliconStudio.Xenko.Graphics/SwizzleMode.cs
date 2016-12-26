@@ -18,6 +18,11 @@ namespace SiliconStudio.Xenko.Graphics
         RRRR = 1,
 
         /// <summary>
+        /// Reconstructs the Z(B) component from R and G.
+        /// </summary>
+        Normal = 2,
+
+        /// <summary>
         /// Take the only the x component of the vector.
         /// </summary>
         XXXX = RRRR,

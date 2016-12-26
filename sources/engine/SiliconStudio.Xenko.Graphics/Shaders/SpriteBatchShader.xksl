@@ -24,7 +24,18 @@ shader SpriteBatchShader<bool TSRgb> : SpriteBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-        float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
+        float4 swizzleColor = streams.Swizzle == 1 ? base.Shading().rrrr : base.Shading();
+        if (streams.Swizzle == 2)
+        {
+            // TODO This should change if we move the flags (reconstruct Z, etc) to the texture
+            //  For now just assume the formula below is correct (works for 90% of teh cases)
+            float nX = swizzleColor.r * 2 - 1;
+            float nY = swizzleColor.g * 2 - 1;
+            swizzleColor.a = 1;
+            float nZ = 1 - sqrt(saturate(nX * nX + nY * nY));
+            swizzleColor.b = nZ * 0.5f + 0.5f; // Don't forget that the Z-component is also in the range (-1, 1) so all normal textures have Blue channel above 0.5
+        }
+
         float4 finalColor = swizzleColor * streams.Color + streams.ColorAdd;
         return finalColor;
     }
