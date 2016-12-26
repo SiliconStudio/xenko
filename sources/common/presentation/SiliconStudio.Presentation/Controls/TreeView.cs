@@ -18,8 +18,14 @@ namespace SiliconStudio.Presentation.Controls
     /// <summary>
     /// Represents a control that displays hierarchical data in a tree structure that has items that can expand and collapse.
     /// </summary>
+    [TemplatePart(Name = ScrollViewerPartName, Type = typeof(ScrollViewer))]
     public class TreeView : ItemsControl
     {
+        /// <summary>
+        /// The name of the ScrollViewer contained in this <see cref="TreeView"/>.
+        /// </summary>
+        public const string ScrollViewerPartName = "PART_Scroller";
+
         /// <summary>
         /// Identifies the <see cref="SelectedItem"/> dependency property.
         /// </summary>
@@ -70,11 +76,9 @@ namespace SiliconStudio.Presentation.Controls
         private bool stoppingEdition;
         private bool allowedSelectionChanges;
         private bool mouseDown;
-        private bool scrollViewerRegistered;
         private bool scrollViewerReentrency;
         private object lastShiftRoot;
         private TreeViewItem editedItem;
-        private bool isInitialized;
         private ScrollViewer scroller;
 
         static TreeView()
@@ -127,25 +131,15 @@ namespace SiliconStudio.Presentation.Controls
         /// <seealso cref="ClearContainerForItemOverride"/>
         public event EventHandler<TreeViewItemEventArgs> ClearItem { add { AddHandler(ClearItemEvent, value); } remove { RemoveHandler(ClearItemEvent, value); } }
 
-        internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
-
-        internal bool AllowMultipleSelection => SelectionMode != SelectionMode.Single;
-
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (isInitialized)
-                return;
-
-            Loaded += OnLoaded;
-            Unloaded += OnUnLoaded;
-            OnLoaded(this, new RoutedEventArgs(LoadedEvent));
-            if (!scrollViewerRegistered && ScrollViewer != null)
+            scroller = DependencyObjectExtensions.CheckTemplatePart<ScrollViewer>(GetTemplateChild(ScrollViewerPartName));
+            if (scroller != null)
             {
-                ScrollViewer.ScrollChanged += ScrollChanged;
-                scrollViewerRegistered = true;
+                scroller.ScrollChanged += ScrollChanged;
             }
         }
 
@@ -308,11 +302,6 @@ namespace SiliconStudio.Presentation.Controls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!scrollViewerRegistered && ScrollViewer != null)
-            {
-                ScrollViewer.ScrollChanged += ScrollChanged;
-                scrollViewerRegistered = true;
-            }
             base.OnMouseDown(e);
             StopEditing();
 
@@ -329,15 +318,6 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             item.ForceFocus();
-        }
-
-        private void ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            if (mouseDown && !scrollViewerReentrency)
-            {
-                scrollViewerReentrency = true;
-                ScrollViewer.ScrollToVerticalOffset(e.VerticalOffset - e.VerticalChange);
-            }
         }
 
         protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -358,16 +338,13 @@ namespace SiliconStudio.Presentation.Controls
             mouseDown = false;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private void ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // Ensure everything is unloaded before reloading!
-            OnUnLoaded(sender, e);
-            isInitialized = true;
-        }
-
-        private void OnUnLoaded(object sender, RoutedEventArgs e)
-        {
-            scroller = null;
+            if (mouseDown && !scrollViewerReentrency)
+            {
+                scrollViewerReentrency = true;
+                scroller.ScrollToVerticalOffset(e.VerticalOffset - e.VerticalChange);
+            }
         }
 
         internal void StartEditing(TreeViewItem item)
