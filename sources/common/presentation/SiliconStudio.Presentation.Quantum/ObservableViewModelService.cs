@@ -15,12 +15,18 @@ namespace SiliconStudio.Presentation.Quantum
         public ObservableViewModelService()
         {
             ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
+            CombinedNodeFactory = ObservableViewModel.DefaultCombinedNodeFactory;
         }
 
         /// <summary>
         /// Gets or sets the observable node factory.
         /// </summary>
         public CreateNodeDelegate ObservableNodeFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the observable node factory.
+        /// </summary>
+        public CreateCombinedNodeDelegate CombinedNodeFactory { get; set; }
 
         /// <summary>
         /// Raised when a node is initialized, either during the construction of the <see cref="ObservableViewModel"/> or during the refresh of a
