@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
@@ -26,6 +27,21 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 entity.Transform.TransformLink = null;
         }
 
+        private bool RecurseCheckChildren(FastCollection<TransformComponent> children, TransformComponent targetTransform)
+        {
+            foreach (var transformComponentChild in children)
+            {
+                if (!RecurseCheckChildren(transformComponentChild.Children, targetTransform))
+                    return false;
+
+                if (targetTransform != transformComponentChild)
+                    continue;
+
+                return false;
+            }
+            return true;
+        }
+
         public override void Draw(RenderContext context)
         {
             foreach (var item in ComponentDatas)
@@ -39,6 +55,23 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var modelComponent = modelNodeLink.Target;
                 var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
 
+                // Prevent stack overflow
+                var modelTransform = modelComponent?.Entity?.Transform;
+                if (modelTransform != null)
+                {
+                    if (modelTransform == transformComponent)
+                    {
+                        //prevent the link
+                        modelComponent = null;
+                        modelEntity = null;
+                    }
+                    else if (!RecurseCheckChildren(transformComponent.Children, modelTransform))
+                    {
+                        modelComponent = null;
+                        modelEntity = null;
+                    }
+                }
+
                 // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
                 if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))
                 {
@@ -47,7 +80,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         modelComponent = modelEntity?.Get<ModelComponent>();
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
-                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;
+                    transformComponent.TransformLink = modelComponent != null ? 
+                        new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : 
+                        null;
                 }
             }
         }
