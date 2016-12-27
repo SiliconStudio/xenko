@@ -18,10 +18,7 @@ namespace SiliconStudio.Xenko.Updater
             if (!int.TryParse(indexerName, NumberStyles.Any, CultureInfo.InvariantCulture, out indexerValue))
                 throw new InvalidOperationException(string.Format("Property path parse error: could not parse indexer value '{0}'", indexerName));
 
-            var updatableField = new UpdatableField<T>(0);
-
-            var offset = UpdateEngineHelper.ArrayFirstElementOffset + indexerValue * updatableField.Size;
-            updatableField.Offset = offset;
+            var updatableField = new UpdatableArrayAccessor<T>(indexerValue);
 
             return updatableField;
         }
