@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
@@ -16,5 +18,16 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="oldComponent">The old component (may be null if newComponent is added)</param>
         /// <param name="newComponent">The new component (may be null if oldComponent is removed)</param>
         void OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent);
+
+        /// <summary>
+        /// To be invoked when the whole global hierarchy has changed
+        /// </summary>
+        /// <param name="entity">The entity that has changed</param>
+        void OnHierarchyChanged(Entity entity);
+
+        /// <summary>
+        /// Listens when the whole global hierarchy has changed
+        /// </summary>
+        event EventHandler<Entity> HierarchyChanged;
     }
 }

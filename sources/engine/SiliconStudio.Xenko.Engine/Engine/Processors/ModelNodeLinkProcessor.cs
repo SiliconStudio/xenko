@@ -1,8 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Rendering;
 
@@ -20,26 +18,18 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return component;
         }
 
+        protected override void OnEntityComponentAdding(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
+        {
+            entity.Owner.HierarchyChanged += component.OnHierarchyChanged;
+        }
+
         protected override void OnEntityComponentRemoved(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
         {
             // Reset TransformLink
             if (entity.Transform.TransformLink is ModelNodeTransformLink)
                 entity.Transform.TransformLink = null;
-        }
 
-        private bool RecurseCheckChildren(FastCollection<TransformComponent> children, TransformComponent targetTransform)
-        {
-            foreach (var transformComponentChild in children)
-            {
-                if (!RecurseCheckChildren(transformComponentChild.Children, targetTransform))
-                    return false;
-
-                if (targetTransform != transformComponentChild)
-                    continue;
-
-                return false;
-            }
-            return true;
+            entity.Owner.HierarchyChanged -= component.OnHierarchyChanged;
         }
 
         public override void Draw(RenderContext context)
@@ -54,23 +44,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 // Try to use Target, otherwise Parent
                 var modelComponent = modelNodeLink.Target;
                 var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
-
-                // Prevent stack overflow
-                var modelTransform = modelComponent?.Entity?.Transform;
-                if (modelTransform != null)
-                {
-                    if (modelTransform == transformComponent)
-                    {
-                        //prevent the link
-                        modelComponent = null;
-                        modelEntity = null;
-                    }
-                    else if (!RecurseCheckChildren(transformComponent.Children, modelTransform))
-                    {
-                        modelComponent = null;
-                        modelEntity = null;
-                    }
-                }
 
                 // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
                 if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))

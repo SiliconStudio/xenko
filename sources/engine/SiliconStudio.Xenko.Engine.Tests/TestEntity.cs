@@ -189,6 +189,13 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 action(new EntityComponentEvent(entity, index, oldComponent, newComponent));
             }
+
+            public void OnHierarchyChanged(Entity entity)
+            {
+                
+            }
+
+            public event EventHandler<Entity> HierarchyChanged;
         }
 
         struct EntityComponentEvent : IEquatable<EntityComponentEvent>
