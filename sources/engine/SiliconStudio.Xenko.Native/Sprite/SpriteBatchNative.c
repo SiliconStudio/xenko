@@ -49,7 +49,8 @@ DLL_EXPORT_API void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, 
 		vertexPointer->Position.Y = drawInfo->Destination.y + (position.X * rotation.Y) + (position.Y * rotation.X);
 		vertexPointer->Position.Z = drawInfo->Depth;
 		vertexPointer->Position.W = 1.0f;
-		vertexPointer->Color = drawInfo->Color;
+		vertexPointer->ColorScale = drawInfo->ColorScale;
+		vertexPointer->ColorAdd = drawInfo->ColorAdd;
 
 		corner = cornerOffsets[((j ^ (int)drawInfo->SpriteEffects) + (int)drawInfo->Orientation) % 4];
 		vertexPointer->TextureCoordinate.X = (drawInfo->Source.x + corner.X * drawInfo->Source.width) * deltaX;

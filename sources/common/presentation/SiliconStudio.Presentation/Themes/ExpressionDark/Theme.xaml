@@ -4513,7 +4513,7 @@
         <ControlTemplate TargetType="{x:Type ctrl:TreeView}">
           <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
                             BorderBrush="{TemplateBinding Border.BorderBrush}" Name="Bd" SnapsToDevicePixels="True">
-            <ScrollViewer CanContentScroll="True" x:Name="scroller"
+            <ScrollViewer CanContentScroll="True" x:Name="PART_Scroller"
                                 HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                 VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                                 Background="{TemplateBinding Panel.Background}"
