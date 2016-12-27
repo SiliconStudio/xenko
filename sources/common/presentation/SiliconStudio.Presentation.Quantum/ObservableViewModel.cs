@@ -21,9 +21,20 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
-    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
+    /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise.</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
     public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
+
+    /// <summary>
+    /// A factory that creates a <see cref="CombinedObservableNode"/> from a set of parameters.
+    /// </summary>
+    /// <param name="viewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
+    /// <param name="contentType">The type of content in the combined node.</param>
+    /// <param name="combinedNodes">The nodes to combine.</param>
+    /// <param name="index">The index of this node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
+    /// <returns>A new instance of <see cref="CombinedObservableNode"/> corresponding to the given parameters.</returns>
+    public delegate CombinedObservableNode CreateCombinedNodeDelegate(ObservableViewModel viewModel, string baseName, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index);
 
     public class ObservableViewModel : DispatcherViewModel
     {
@@ -33,13 +44,14 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
         private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
+        private readonly List<ObservableViewModel> children = new List<ObservableViewModel>();
         private IObservableNode rootNode;
         private ObservableViewModel parent;
-        private List<ObservableViewModel> children = new List<ObservableViewModel>();
 
         private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
         public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
+        public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeFactory = DefaultCreateCombinedNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
@@ -117,7 +129,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
                 rootNodeType = typeof(object);
 
-            CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, Index.Empty);
+            var service = serviceProvider.Get<ObservableViewModelService>();
+            var rootCombinedNode = service.CombinedNodeFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
@@ -214,6 +227,11 @@ namespace SiliconStudio.Presentation.Quantum
         private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
+        }
+
+        private static CombinedObservableNode DefaultCreateCombinedNode(ObservableViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
+        {
+            return CombinedObservableNode.Create(ownerViewModel, baseName, contentType, combinedNodes, index);
         }
     }
 }
