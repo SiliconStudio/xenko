@@ -12,28 +12,28 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class ObservableModelNode : SingleObservableNode
+    public abstract class GraphNodeViewModel : SingleNodeViewModel
     {
         public readonly IGraphNode SourceNode;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
 
-        static ObservableModelNode()
+        static GraphNodeViewModel()
         {
-            typeof(ObservableModelNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+            typeof(GraphNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableModelNode"/> class.
+        /// Initializes a new instance of the <see cref="GraphNodeViewModel"/> class.
         /// </summary>
-        /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="sourceNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
+        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
@@ -63,19 +63,19 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Create an <see cref="ObservableModelNode{T}"/> that matches the given content type.
+        /// Create an <see cref="GraphNodeViewModel{T}"/> that matches the given content type.
         /// </summary>
-        /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="sourceNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
-        /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        /// <returns>A new instance of <see cref="GraphNodeViewModel{T}"/> instanced with the given content type as generic argument.</returns>
+        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
-            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
+            var node = (GraphNodeViewModel)Activator.CreateInstance(typeof(GraphNodeViewModel<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
             return node;
         }
 
@@ -114,7 +114,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             isInitialized = true;
 
-            Owner.ObservableViewModelService?.NotifyNodeInitialized(this);
+            Owner.GraphViewModelService?.NotifyNodeInitialized(this);
 
             FinalizeChildrenInitialization();
 
@@ -176,7 +176,7 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid => SourceNode.Guid;
 
         /// <summary>
-        /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
+        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
@@ -223,7 +223,7 @@ namespace SiliconStudio.Presentation.Quantum
                 //throw new ObservableViewModelConsistencyException(this, "The value of this node does not match the value of its source node content.");
             }
 
-            foreach (var child in Children.OfType<ObservableModelNode>())
+            foreach (var child in Children.OfType<GraphNodeViewModel>())
             {
                 if (targetNode.Content.IsReference)
                 {
@@ -257,21 +257,21 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (!isInitialized)
             {
-                throw new InvalidOperationException("Accessing a property of a non-initialized ObservableNode.");
+                throw new InvalidOperationException("Accessing a property of a non-initialized NodeViewModel.");
             }
         }
 
         /// <summary>
-        /// Retrieve the value of the model content associated to this <see cref="ObservableModelNode"/>.
+        /// Retrieve the value of the model content associated to this <see cref="GraphNodeViewModel"/>.
         /// </summary>
-        /// <returns>The value of the model content associated to this <see cref="ObservableModelNode"/>.</returns>
+        /// <returns>The value of the model content associated to this <see cref="GraphNodeViewModel"/>.</returns>
         protected object GetModelContentValue()
         {
             return SourceNode.Content.Retrieve(Index);
         }
 
         /// <summary>
-        /// Sets the value of the model content associated to this <see cref="ObservableModelNode"/>. The value is actually modified only if the new value is different from the previous value.
+        /// Sets the value of the model content associated to this <see cref="GraphNodeViewModel"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
         protected bool SetModelContentValue(IGraphNode node, object newValue)
@@ -323,7 +323,7 @@ namespace SiliconStudio.Presentation.Quantum
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                        var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                        var observableNode = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                         AddChild(observableNode);
                         observableNode.Initialize();
                     }
@@ -337,7 +337,7 @@ namespace SiliconStudio.Presentation.Quantum
                 foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
                 {
                     var index = new Index(key);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
@@ -350,7 +350,7 @@ namespace SiliconStudio.Presentation.Quantum
                 for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
                 {
                     var index = new Index(i);
-                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
                     AddChild(observableChild);
                     observableChild.Initialize();
                 }
@@ -369,7 +369,7 @@ namespace SiliconStudio.Presentation.Quantum
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
+                            var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
                             AddChild(observableChild);
                             observableChild.Initialize();
                         }
@@ -392,7 +392,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             // Dispose all children and remove them
             Children.SelectDeep(x => x.Children).ForEach(x => x.Destroy());
-            foreach (var child in Children.Cast<ObservableNode>().ToList())
+            foreach (var child in Children.Cast<NodeViewModel>().ToList())
             {
                 RemoveChild(child);
             }
@@ -466,18 +466,18 @@ namespace SiliconStudio.Presentation.Quantum
         }
     }
 
-    public class ObservableModelNode<T> : ObservableModelNode
+    public class GraphNodeViewModel<T> : GraphNodeViewModel
     {
         /// <summary>
-        /// Construct a new <see cref="ObservableModelNode"/>.
+        /// Construct a new <see cref="GraphNodeViewModel"/>.
         /// </summary>
-        /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection.<see cref="Index.Empty"/> must be passed otherwise</param>
-        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
+        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
@@ -509,7 +509,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (IsValidChange(e))
             {
-                ((ObservableNode)Parent)?.NotifyPropertyChanging(Name);
+                ((NodeViewModel)Parent)?.NotifyPropertyChanging(Name);
                 OnPropertyChanging(nameof(TypedValue));
             }
         }
@@ -518,7 +518,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (IsValidChange(e))
             {
-                ((ObservableNode)Parent)?.NotifyPropertyChanged(Name);
+                ((NodeViewModel)Parent)?.NotifyPropertyChanged(Name);
 
                 // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
                 // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh

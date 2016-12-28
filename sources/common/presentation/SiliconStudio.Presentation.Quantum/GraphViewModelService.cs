@@ -5,17 +5,17 @@ using System;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// A class that provides various services to <see cref="ObservableViewModel"/> objects
+    /// A class that provides various services to <see cref="GraphViewModel"/> objects
     /// </summary>
-    public class ObservableViewModelService
+    public class GraphViewModelService
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
+        /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
         /// </summary>
-        public ObservableViewModelService()
+        public GraphViewModelService()
         {
-            ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
-            CombinedNodeFactory = ObservableViewModel.DefaultCombinedNodeFactory;
+            ObservableNodeFactory = GraphViewModel.DefaultObservableNodeFactory;
+            CombinedNodeFactory = GraphViewModel.DefaultCombinedNodeFactory;
         }
 
         /// <summary>
@@ -29,8 +29,8 @@ namespace SiliconStudio.Presentation.Quantum
         public CreateCombinedNodeDelegate CombinedNodeFactory { get; set; }
 
         /// <summary>
-        /// Raised when a node is initialized, either during the construction of the <see cref="ObservableViewModel"/> or during the refresh of a
-        /// node that has been modified. This event is raised once for each modified <see cref="SingleObservableNode"/> and their recursive children.
+        /// Raised when a node is initialized, either during the construction of the <see cref="GraphViewModel"/> or during the refresh of a
+        /// node that has been modified. This event is raised once for each modified <see cref="SingleNodeViewModel"/> and their recursive children.
         /// </summary>
         /// <remarks>
         /// This event is intended to allow to customize nodes (by adding associated data, altering hierarchy, etc.). Subscribers should
@@ -42,7 +42,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Raise the <see cref="NodeInitialized"/> event.
         /// </summary>
         /// <param name="node">The node that has been modified.</param>
-        internal void NotifyNodeInitialized(SingleObservableNode node)
+        internal void NotifyNodeInitialized(SingleNodeViewModel node)
         {
             NodeInitialized?.Invoke(this, new NodeInitializedEventArgs(node));
         }

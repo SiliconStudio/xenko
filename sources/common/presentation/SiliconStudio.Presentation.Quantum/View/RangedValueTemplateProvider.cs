@@ -8,7 +8,7 @@ namespace SiliconStudio.Presentation.Quantum.View
     {
         public override string Name { get { return "RangedValueTemplateProvider"; } }
 
-        public override bool MatchNode(IObservableNode node)
+        public override bool MatchNode(INodeViewModel node)
         {
             return node.Type.IsNumeric() && node.AssociatedData.ContainsKey("Minimum") && node.AssociatedData.ContainsKey("Maximum")
                    && node.AssociatedData.ContainsKey("SmallStep") && node.AssociatedData.ContainsKey("LargeStep");

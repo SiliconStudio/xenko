@@ -13,30 +13,33 @@ using SiliconStudio.Quantum;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// A factory that creates an <see cref="ObservableModelNode"/> from a set of parameters.
+    /// A factory that creates an <see cref="GraphNodeViewModel"/> from a set of parameters.
     /// </summary>
-    /// <param name="viewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="viewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
     /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
     /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-    /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
     /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
-    /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise.</param>
-    /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
+    /// <returns>A new instance of <see cref="GraphNodeViewModel"/> corresponding to the given parameters.</returns>
+    public delegate GraphNodeViewModel CreateNodeDelegate(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
 
     /// <summary>
-    /// A factory that creates a <see cref="CombinedObservableNode"/> from a set of parameters.
+    /// A factory that creates a <see cref="CombinedNodeViewModel"/> from a set of parameters.
     /// </summary>
-    /// <param name="viewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
+    /// <param name="viewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="GraphNodeViewModel"/>.</param>
     /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
     /// <param name="contentType">The type of content in the combined node.</param>
     /// <param name="combinedNodes">The nodes to combine.</param>
     /// <param name="index">The index of this node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-    /// <returns>A new instance of <see cref="CombinedObservableNode"/> corresponding to the given parameters.</returns>
-    public delegate CombinedObservableNode CreateCombinedNodeDelegate(ObservableViewModel viewModel, string baseName, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index);
+    /// <returns>A new instance of <see cref="CombinedNodeViewModel"/> corresponding to the given parameters.</returns>
+    public delegate CombinedNodeViewModel CreateCombinedNodeDelegate(GraphViewModel viewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index);
 
-    public class ObservableViewModel : DispatcherViewModel
+    /// <summary>
+    /// A view model class to present a graph of <see cref="IGraphNode"/> nodes to a view.
+    /// </summary>
+    public class GraphViewModel : DispatcherViewModel
     {
         public const string DefaultLoggerName = "Quantum";
         public const string HasChildPrefix = "HasChild_";
@@ -44,38 +47,37 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
         private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
-        private readonly List<ObservableViewModel> children = new List<ObservableViewModel>();
-        private IObservableNode rootNode;
-        private ObservableViewModel parent;
+        private readonly List<GraphViewModel> children = new List<GraphViewModel>();
+        private INodeViewModel rootNode;
 
-        private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
+        private Func<CombinedNodeViewModel, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
         public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
         public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeFactory = DefaultCreateCombinedNode;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
+        /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider)
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
+        private GraphViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
+            GraphViewModelService = serviceProvider.Get<GraphViewModelService>();
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
+        /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="GraphViewModelService"/> to use for this view model.</param>
         /// <param name="propertyProvider">The object providing properties to display</param>
         /// <param name="graphNode">The root node of the view model to generate.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
+        private GraphViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
             : this(serviceProvider)
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
+            var node = GraphViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -88,7 +90,7 @@ namespace SiliconStudio.Presentation.Quantum
             RootNode.Destroy();
         }
 
-        public static ObservableViewModel Create(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider)
+        public static GraphViewModel Create(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             if (propertyProvider == null) throw new ArgumentNullException(nameof(propertyProvider));
@@ -100,24 +102,24 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNode == null)
                 return null;
 
-            return new ObservableViewModel(serviceProvider, propertyProvider, rootNode);
+            return new GraphViewModel(serviceProvider, propertyProvider, rootNode);
         }
 
-        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<ObservableViewModel> viewModels)
+        public static GraphViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, IReadOnlyCollection<GraphViewModel> viewModels)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
-            var combinedViewModel = new ObservableViewModel(serviceProvider);
+            var combinedViewModel = new GraphViewModel(serviceProvider);
 
-            var rootNodes = new List<ObservableModelNode>();
+            var rootNodes = new List<GraphNodeViewModel>();
             foreach (var viewModel in viewModels)
             {
-                if (!(viewModel.RootNode is SingleObservableNode))
-                    throw new ArgumentException(@"The view models to combine must contains SingleObservableNode.", nameof(viewModels));
+                if (!(viewModel.RootNode is SingleNodeViewModel))
+                    throw new ArgumentException(@"The view models to combine must contains SingleNodeViewModel.", nameof(viewModels));
 
-                viewModel.parent = combinedViewModel;
+                viewModel.Parent = combinedViewModel;
                 combinedViewModel.children.Add(viewModel);
-                var rootNode = (ObservableModelNode)viewModel.RootNode;
+                var rootNode = (GraphNodeViewModel)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
 
@@ -129,7 +131,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (rootNodes.Skip(1).Any(x => x.Type != rootNodeType))
                 rootNodeType = typeof(object);
 
-            var service = serviceProvider.Get<ObservableViewModelService>();
+            var service = serviceProvider.Get<GraphViewModelService>();
             var rootCombinedNode = service.CombinedNodeFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
@@ -139,23 +141,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the root node of this observable view model.
         /// </summary>
-        public IObservableNode RootNode { get { return rootNode; } private set { SetValue(ref rootNode, value); } }
+        public INodeViewModel RootNode { get { return rootNode; } private set { SetValue(ref rootNode, value); } }
         
         /// <summary>
         /// Gets or sets a function that will generate a message for the action stack when combined nodes are modified. The function will receive
         /// the modified combined node and the new value as parameters and should return a string corresponding to the message to add to the action stack.
         /// </summary>
-        public Func<CombinedObservableNode, object, string> FormatCombinedUpdateMessage { get { return formatCombinedUpdateMessage; } set { if (value == null) throw new ArgumentException("The value cannot be null."); formatCombinedUpdateMessage = value; } }
+        public Func<CombinedNodeViewModel, object, string> FormatCombinedUpdateMessage { get { return formatCombinedUpdateMessage; } set { if (value == null) throw new ArgumentException("The value cannot be null."); formatCombinedUpdateMessage = value; } }
         
         /// <summary>
-        /// Gets the <see cref="ObservableViewModelService"/> associated to this view model.
+        /// Gets the <see cref="GraphViewModelService"/> associated to this view model.
         /// </summary>
-        public ObservableViewModelService ObservableViewModelService { get; }
-
-        ///// <summary>
-        ///// Gets the <see cref="NodeContainer"/> used to store Quantum objects.
-        ///// </summary>
-        //public NodeContainer NodeContainer { get; }
+        public GraphViewModelService GraphViewModelService { get; }
 
         /// <summary>
         /// Gets the object providing properties for this view model.
@@ -170,21 +167,21 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the parent of this view model.
         /// </summary>
-        public ObservableViewModel Parent => parent;
+        public GraphViewModel Parent { get; private set; }
 
         /// <summary>
         /// Gets the children of this view model (in case of combined node).
         /// </summary>
-        public IReadOnlyList<ObservableViewModel> Children => children;
+        public IReadOnlyList<GraphViewModel> Children => children;
 
         /// <summary>
-        /// Raised when the value of an <see cref="IObservableNode"/> contained into this view model has changed.
+        /// Raised when the value of an <see cref="INodeViewModel"/> contained into this view model has changed.
         /// </summary>
-        /// <remarks>If this view model contains <see cref="CombinedObservableNode"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
+        /// <remarks>If this view model contains <see cref="CombinedNodeViewModel"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
         public event EventHandler<ObservableViewModelNodeValueChangedArgs> NodeValueChanged;
 
         [Pure]
-        public IObservableNode ResolveObservableNode(string path)
+        public INodeViewModel ResolveObservableNode(string path)
         {
             var members = path.Split('.');
             if (members[0] != RootNode.Name)
@@ -202,7 +199,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyNodeChanged(string observableNodePath)
         {
-            parent?.combinedNodeChanges.Add(observableNodePath);
+            Parent?.combinedNodeChanges.Add(observableNodePath);
             NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
         }
 
@@ -224,14 +221,14 @@ namespace SiliconStudio.Presentation.Quantum
             combinedNodeChanges.Clear();
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        private static GraphNodeViewModel DefaultCreateNode(GraphViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
-            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
+            return GraphNodeViewModel.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }
 
-        private static CombinedObservableNode DefaultCreateCombinedNode(ObservableViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
+        private static CombinedNodeViewModel DefaultCreateCombinedNode(GraphViewModel ownerViewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index)
         {
-            return CombinedObservableNode.Create(ownerViewModel, baseName, contentType, combinedNodes, index);
+            return CombinedNodeViewModel.Create(ownerViewModel, baseName, contentType, combinedNodes, index);
         }
     }
 }

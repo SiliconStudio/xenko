@@ -9,12 +9,12 @@ namespace SiliconStudio.Presentation.Quantum
 {
     internal class ObservableNodeDynamicMetaObject : DynamicMetaObject
     {
-        private readonly ObservableNode node;
+        private readonly NodeViewModel node;
 
-        public ObservableNodeDynamicMetaObject(Expression parameter, ObservableNode observableNode)
-            : base(parameter, BindingRestrictions.Empty, observableNode)
+        public ObservableNodeDynamicMetaObject(Expression parameter, NodeViewModel node)
+            : base(parameter, BindingRestrictions.Empty, node)
         {
-            node = observableNode;
+            this.node = node;
         }
 
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
@@ -25,31 +25,31 @@ namespace SiliconStudio.Presentation.Quantum
             var propertyName = binder.Name;
             var args = new Expression[1];
 
-            if (binder.Name.StartsWith(ObservableViewModel.HasChildPrefix))
+            if (binder.Name.StartsWith(GraphViewModel.HasChildPrefix))
             {
-                propertyName = binder.Name.Substring(ObservableViewModel.HasChildPrefix.Length);
+                propertyName = binder.Name.Substring(GraphViewModel.HasChildPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetChild), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetChild), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
-            else if (binder.Name.StartsWith(ObservableViewModel.HasCommandPrefix))
+            else if (binder.Name.StartsWith(GraphViewModel.HasCommandPrefix))
             {
-                propertyName = binder.Name.Substring(ObservableViewModel.HasCommandPrefix.Length);
+                propertyName = binder.Name.Substring(GraphViewModel.HasCommandPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetCommand), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetCommand), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
-            else if (binder.Name.StartsWith(ObservableViewModel.HasAssociatedDataPrefix))
+            else if (binder.Name.StartsWith(GraphViewModel.HasAssociatedDataPrefix))
             {
-                propertyName = binder.Name.Substring(ObservableViewModel.HasAssociatedDataPrefix.Length);
+                propertyName = binder.Name.Substring(GraphViewModel.HasAssociatedDataPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetAssociatedData), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetAssociatedData), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else
             {
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetDynamicObject), BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(NodeViewModel).GetMethod(nameof(NodeViewModel.GetDynamicObject), BindingFlags.Public | BindingFlags.Instance), args);
             }
 
             var getMember = new DynamicMetaObject(expression, BindingRestrictions.GetTypeRestriction(Expression, LimitType));
