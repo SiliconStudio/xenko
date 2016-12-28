@@ -202,16 +202,16 @@ namespace SiliconStudio.Presentation.Quantum
                 var referenceEnumerable = SourceNode.Content.Reference as ReferenceEnumerable;
                 if (objectReference != null && targetNode != objectReference.TargetNode)
                 {
-                    throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
+                    throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
                 }
                 if (referenceEnumerable != null && !Index.IsEmpty)
                 {
                     if (!referenceEnumerable.HasIndex(Index))
-                        throw new ObservableViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
+                        throw new GraphViewModelConsistencyException(this, "The Index of this node does not exist in the reference of its source node.");
 
                     if (targetNode != referenceEnumerable[Index].TargetNode)
                     {
-                        throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
+                        throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!Equals(modelContentValue, Value))
             {
                 // TODO: I had this exception with a property that is returning a new IEnumerable each time - we should have a way to notice this, maybe by correctly transfering and checking the IsReadOnly property
-                //throw new ObservableViewModelConsistencyException(this, "The value of this node does not match the value of its source node content.");
+                //throw new GraphViewModelConsistencyException(this, "The value of this node does not match the value of its source node content.");
             }
 
             foreach (var child in Children.OfType<GraphNodeViewModel>())
@@ -230,7 +230,7 @@ namespace SiliconStudio.Presentation.Quantum
                     var objectReference = targetNode.Content.Reference as ObjectReference;
                     if (objectReference != null)
                     {
-                        throw new ObservableViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
+                        throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
                     }
                 }
                 child.CheckConsistency();
@@ -323,9 +323,9 @@ namespace SiliconStudio.Presentation.Quantum
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                        var observableNode = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
-                        AddChild(observableNode);
-                        observableNode.Initialize();
+                        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                        AddChild(child);
+                        child.Initialize();
                     }
                 }
             }
@@ -337,9 +337,9 @@ namespace SiliconStudio.Presentation.Quantum
                 foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
                 {
                     var index = new Index(key);
-                    var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
-                    AddChild(observableChild);
-                    observableChild.Initialize();
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    AddChild(child);
+                    child.Initialize();
                 }
             }
             // Node containing a list of primitive values
@@ -347,20 +347,20 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
+                for (var i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
                 {
                     var index = new Index(i);
-                    var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
-                    AddChild(observableChild);
-                    observableChild.Initialize();
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    AddChild(child);
+                    child.Initialize();
                 }
             }
             // Node containing a single non-reference primitive object
             else
             {
-                foreach (var child in targetNode.Children)
+                foreach (var targetChild in targetNode.Children)
                 {
-                    var memberContent = (MemberContent)child.Content;
+                    var memberContent = (MemberContent)targetChild.Content;
                     var descriptor = (MemberDescriptorBase)memberContent.Member;
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                     if (displayAttribute == null || displayAttribute.Browsable)
@@ -368,10 +368,10 @@ namespace SiliconStudio.Presentation.Quantum
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
-                            var childPath = targetNodePath.PushMember(child.Name);
-                            var observableChild = Owner.GraphViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
-                            AddChild(observableChild);
-                            observableChild.Initialize();
+                            var childPath = targetNodePath.PushMember(targetChild.Name);
+                            var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, targetChild.Name, targetChild.Content.IsPrimitive, targetChild, childPath, targetChild.Content.Type, Index.Empty);
+                            AddChild(child);
+                            child.Initialize();
                         }
                     }
                 }

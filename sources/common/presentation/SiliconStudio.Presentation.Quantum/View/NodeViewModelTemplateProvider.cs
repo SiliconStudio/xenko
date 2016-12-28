@@ -9,12 +9,13 @@ namespace SiliconStudio.Presentation.Quantum.View
     /// <summary>
     /// A base class for implementations of <see cref="ITemplateProvider"/> that can provide templates for <see cref="INodeViewModel"/> instances.
     /// </summary>
-    public abstract class ObservableNodeTemplateProvider : TemplateProviderBase
+    public abstract class NodeViewModelTemplateProvider : TemplateProviderBase
     {
         /// <inheritdoc/>
         public override bool Match(object obj)
         {
-            return obj is INodeViewModel && MatchNode((INodeViewModel)obj);
+            var node = obj as INodeViewModel;
+            return node != null && MatchNode(node);
         }
 
         /// <summary>

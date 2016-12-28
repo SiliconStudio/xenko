@@ -109,7 +109,7 @@ namespace SiliconStudio.Presentation.Quantum
         public Index Index { get; }
 
         /// <summary>
-        /// Gets a unique identifier for this observable node.
+        /// Gets a unique identifier for this node view model.
         /// </summary>
         public Guid Guid { get; }
 
@@ -347,7 +347,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new ObservableNodeDynamicMetaObject(parameter, this);
+            return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
         internal void NotifyPropertyChanging(string propertyName)

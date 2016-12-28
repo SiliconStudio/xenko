@@ -247,7 +247,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var contentType = children.Value.First().Type;
                 var index = children.Value.First().Index;
-                var child = Owner.GraphViewModelService.CombinedNodeFactory(Owner, children.Key, contentType, children.Value, index);
+                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, children.Key, contentType, children.Value, index);
                 AddChild(child);
                 child.Initialize();
             }
@@ -263,7 +263,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var contentType = children.Value.First().Type;
                 var name = $"Item {currentIndex}";
-                var child = Owner.GraphViewModelService.CombinedNodeFactory(Owner, name, contentType, children.Value, new Index(currentIndex));
+                var child = Owner.GraphViewModelService.CombinedNodeViewModelFactory(Owner, name, contentType, children.Value, new Index(currentIndex));
                 AddChild(child);
                 child.Initialize();
                 child.DisplayName = name;
@@ -276,9 +276,9 @@ namespace SiliconStudio.Presentation.Quantum
             var allChildNodes = new Dictionary<string, List<SingleNodeViewModel>>();
             foreach (var singleNode in CombinedNodes)
             {
-                foreach (var observableNode in singleNode.Children)
+                foreach (var node in singleNode.Children)
                 {
-                    var child = (SingleNodeViewModel)observableNode;
+                    var child = (SingleNodeViewModel)node;
                     var list = allChildNodes.GetOrCreateValue(child.Name);
                     list.Add(child);
                 }
@@ -348,9 +348,9 @@ namespace SiliconStudio.Presentation.Quantum
             foreach (var singleNode in CombinedNodes)
             {
                 var usedSlots = new List<List<SingleNodeViewModel>>();
-                foreach (var observableNode in singleNode.Children)
+                foreach (var node in singleNode.Children)
                 {
-                    var child = (SingleNodeViewModel)observableNode;
+                    var child = (SingleNodeViewModel)node;
                     if (!child.Type.IsValueType && child.Type != typeof(string))
                         return null;
 

@@ -14,19 +14,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         public GraphViewModelService()
         {
-            ObservableNodeFactory = GraphViewModel.DefaultObservableNodeFactory;
-            CombinedNodeFactory = GraphViewModel.DefaultCombinedNodeFactory;
+            GraphNodeViewModelFactory = GraphViewModel.DefaultGraphNodeViewModelFactory;
+            CombinedNodeViewModelFactory = GraphViewModel.DefaultCombinedNodeViewModelFactory;
         }
 
         /// <summary>
-        /// Gets or sets the observable node factory.
+        /// Gets or sets the graph node factory.
         /// </summary>
-        public CreateNodeDelegate ObservableNodeFactory { get; set; }
+        public CreateNodeDelegate GraphNodeViewModelFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets the observable node factory.
+        /// Gets or sets the combined node factory.
         /// </summary>
-        public CreateCombinedNodeDelegate CombinedNodeFactory { get; set; }
+        public CreateCombinedNodeDelegate CombinedNodeViewModelFactory { get; set; }
 
         /// <summary>
         /// Raised when a node is initialized, either during the construction of the <see cref="GraphViewModel"/> or during the refresh of a

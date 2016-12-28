@@ -63,11 +63,11 @@ namespace SiliconStudio.Presentation.Quantum
 
         public VirtualNodeViewModel CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = (VirtualNodeViewModel)Activator.CreateInstance(typeof(VirtualNodeViewModel<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
-            nodeAssociatedData?.ForEach(x => observableChild.AddAssociatedData(x.Key, x.Value));
-            observableChild.FinalizeChildrenInitialization();
-            AddChild(observableChild);
-            return observableChild;
+            var child = (VirtualNodeViewModel)Activator.CreateInstance(typeof(VirtualNodeViewModel<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
+            nodeAssociatedData?.ForEach(x => child.AddAssociatedData(x.Key, x.Value));
+            child.FinalizeChildrenInitialization();
+            AddChild(child);
+            return child;
         }
 
         protected override void OnPropertyChanged(params string[] propertyNames)

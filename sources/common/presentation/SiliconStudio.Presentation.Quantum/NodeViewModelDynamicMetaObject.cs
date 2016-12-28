@@ -7,11 +7,11 @@ using System.Reflection;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    internal class ObservableNodeDynamicMetaObject : DynamicMetaObject
+    internal class NodeViewModelDynamicMetaObject : DynamicMetaObject
     {
         private readonly NodeViewModel node;
 
-        public ObservableNodeDynamicMetaObject(Expression parameter, NodeViewModel node)
+        public NodeViewModelDynamicMetaObject(Expression parameter, NodeViewModel node)
             : base(parameter, BindingRestrictions.Empty, node)
         {
             this.node = node;

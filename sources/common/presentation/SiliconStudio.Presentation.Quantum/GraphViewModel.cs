@@ -52,8 +52,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         private Func<CombinedNodeViewModel, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
-        public static readonly CreateNodeDelegate DefaultObservableNodeFactory = DefaultCreateNode;
-        public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeFactory = DefaultCreateCombinedNode;
+        public static readonly CreateNodeDelegate DefaultGraphNodeViewModelFactory = DefaultCreateNode;
+        public static readonly CreateCombinedNodeDelegate DefaultCombinedNodeViewModelFactory = DefaultCreateCombinedNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModel"/> class.
@@ -77,7 +77,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
-            var node = GraphViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
+            var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -132,14 +132,14 @@ namespace SiliconStudio.Presentation.Quantum
                 rootNodeType = typeof(object);
 
             var service = serviceProvider.Get<GraphViewModelService>();
-            var rootCombinedNode = service.CombinedNodeFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
+            var rootCombinedNode = service.CombinedNodeViewModelFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
         }
 
         /// <summary>
-        /// Gets the root node of this observable view model.
+        /// Gets the root node of this <see cref="GraphViewModel"/>.
         /// </summary>
         public INodeViewModel RootNode { get { return rootNode; } private set { SetValue(ref rootNode, value); } }
         
@@ -178,10 +178,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// Raised when the value of an <see cref="INodeViewModel"/> contained into this view model has changed.
         /// </summary>
         /// <remarks>If this view model contains <see cref="CombinedNodeViewModel"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
-        public event EventHandler<ObservableViewModelNodeValueChangedArgs> NodeValueChanged;
+        public event EventHandler<GraphViewModelNodeValueChanged> NodeValueChanged;
 
         [Pure]
-        public INodeViewModel ResolveObservableNode(string path)
+        public INodeViewModel ResolveNode(string path)
         {
             var members = path.Split('.');
             if (members[0] != RootNode.Name)
@@ -197,25 +197,25 @@ namespace SiliconStudio.Presentation.Quantum
             return currentNode;
         }
 
-        internal void NotifyNodeChanged(string observableNodePath)
+        internal void NotifyNodeChanged(string nodePath)
         {
-            Parent?.combinedNodeChanges.Add(observableNodePath);
-            NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
+            Parent?.combinedNodeChanges.Add(nodePath);
+            NodeValueChanged?.Invoke(this, new GraphViewModelNodeValueChanged(this, nodePath));
         }
 
-        internal CombinedActionsContext BeginCombinedAction(string actionName, string observableNodePath)
+        internal CombinedActionsContext BeginCombinedAction(string actionName, string nodePath)
         {
-            return new CombinedActionsContext(this, actionName, observableNodePath);
+            return new CombinedActionsContext(this, actionName, nodePath);
         }
 
-        internal void EndCombinedAction(string observableNodePath)
+        internal void EndCombinedAction(string nodePath)
         {
             var handler = NodeValueChanged;
             if (handler != null)
             {
                 foreach (var nodeChange in combinedNodeChanges)
                 {
-                    handler(this, new ObservableViewModelNodeValueChangedArgs(this, nodeChange));
+                    handler(this, new GraphViewModelNodeValueChanged(this, nodeChange));
                 }
             }
             combinedNodeChanges.Clear();

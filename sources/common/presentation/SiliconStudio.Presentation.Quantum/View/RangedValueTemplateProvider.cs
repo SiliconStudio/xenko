@@ -4,9 +4,9 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.Quantum.View
 {
-    public class RangedValueTemplateProvider : ObservableNodeTemplateProvider
+    public class RangedValueTemplateProvider : NodeViewModelTemplateProvider
     {
-        public override string Name { get { return "RangedValueTemplateProvider"; } }
+        public override string Name => "RangedValueTemplateProvider";
 
         public override bool MatchNode(INodeViewModel node)
         {
