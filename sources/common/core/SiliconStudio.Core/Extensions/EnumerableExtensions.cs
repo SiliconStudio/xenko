@@ -63,7 +63,9 @@ namespace SiliconStudio.Core.Extensions
         public static void ForEach<T>([NotNull] this IEnumerable<T> source, [NotNull] Action<T> action)
         {
             foreach (var item in source)
+            {
                 action(item);
+            }
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core
         /// <param name="order">The order weight of the column.</param>
         /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute(int order, string name = null, string category = null)
+        public DisplayAttribute(int order, [CanBeNull] string name = null, [CanBeNull] string category = null)
             : this(name, category)
         {
             Order = order;
@@ -52,7 +53,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute(string name = null, string category = null)
+        public DisplayAttribute([CanBeNull] string name = null, [CanBeNull] string category = null)
         {
             Name = name;
             Category = category;
@@ -99,7 +100,7 @@ namespace SiliconStudio.Core
         /// <returns>DisplayAttribute.</returns>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
+        public static DisplayAttribute GetDisplay([NotNull] MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
             lock (RegisteredDisplayAttributes)
@@ -115,7 +116,7 @@ namespace SiliconStudio.Core
         }
 
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static int? GetOrder(MemberInfo memberInfo)
+        public static int? GetOrder([NotNull] MemberInfo memberInfo)
         {
             var display = GetDisplay(memberInfo);
             return display.Order;

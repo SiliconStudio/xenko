@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
@@ -95,7 +96,7 @@ namespace SiliconStudio.Core.Serialization
             SerializerSelectors.Add(new WeakReference<SerializerSelector>(serializerSelector));
         }
 
-        public static AssemblySerializerEntry GetSerializer(string profile, Type type)
+        public static AssemblySerializerEntry GetSerializer([NotNull] string profile, Type type)
         {
             lock (Lock)
             {
@@ -108,7 +109,8 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static Type GetTypeFromAlias(string alias)
+        [CanBeNull]
+        internal static Type GetTypeFromAlias([NotNull] string alias)
         {
             lock (Lock)
             {
@@ -118,7 +120,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        public static void RegisterSerializationAssembly(AssemblySerializers assemblySerializers)
+        public static void RegisterSerializationAssembly([NotNull] AssemblySerializers assemblySerializers)
         {
             lock (Lock)
             {
@@ -158,7 +160,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        public static void RegisterSerializationAssembly(Assembly assembly)
+        public static void RegisterSerializationAssembly([NotNull] Assembly assembly)
         {
             lock (Lock)
             {
@@ -210,7 +212,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        private static void RegisterSerializers(AssemblySerializers assemblySerializers)
+        private static void RegisterSerializers([NotNull] AssemblySerializers assemblySerializers)
         {
             // Register data contract aliases
             foreach (var dataContractAliasEntry in assemblySerializers.DataContractAliases)

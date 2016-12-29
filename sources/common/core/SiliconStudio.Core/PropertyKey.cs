@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -14,7 +15,7 @@ namespace SiliconStudio.Core
     /// </summary>
     [DataContract]
     [DataSerializer(typeof(PropertyKeySerializer<>), Mode = DataSerializerGenericMode.Type)]
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public abstract class PropertyKey : IComparable
     {
         private DefaultValueMetadata defaultValueMetadata;
@@ -26,9 +27,9 @@ namespace SiliconStudio.Core
         /// <param name="propertyType">Type of the property.</param>
         /// <param name="ownerType">Type of the owner.</param>
         /// <param name="metadatas">The metadatas.</param>
-        protected PropertyKey(string name, Type propertyType, Type ownerType, params PropertyKeyMetadata[] metadatas)
+        protected PropertyKey([NotNull] string name, Type propertyType, Type ownerType, params PropertyKeyMetadata[] metadatas)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             Name = name;
             PropertyType = propertyType;
@@ -121,7 +122,7 @@ namespace SiliconStudio.Core
 
         protected virtual void SetupMetadatas()
         {
-            foreach (PropertyKeyMetadata metadata in Metadatas)
+            foreach (var metadata in Metadatas)
             {
                 SetupMetadata(metadata);
             }
@@ -156,7 +157,7 @@ namespace SiliconStudio.Core
     /// <typeparam name="T">Type of the property</typeparam>
     public sealed class PropertyKey<T> : PropertyKey
     {
-        private readonly static bool isValueType = typeof(T).GetTypeInfo().IsValueType;
+        private static readonly bool isValueType = typeof(T).GetTypeInfo().IsValueType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyKey{T}"/> class.
@@ -164,7 +165,7 @@ namespace SiliconStudio.Core
         /// <param name="name">The name.</param>
         /// <param name="ownerType">Type of the owner.</param>
         /// <param name="metadatas">The metadatas.</param>
-        public PropertyKey(string name, Type ownerType, params PropertyKeyMetadata[] metadatas)
+        public PropertyKey([NotNull] string name, Type ownerType, params PropertyKeyMetadata[] metadatas)
             : base(name, typeof(T), ownerType, GenerateDefaultData(metadatas))
         {
         }
@@ -192,7 +193,8 @@ namespace SiliconStudio.Core
         /// <value>The object invalidation metadata.</value>
         public ObjectInvalidationMetadata<T> ObjectInvalidationMetadataT { get { return (ObjectInvalidationMetadata<T>)ObjectInvalidationMetadata; } }
 
-        private static PropertyKeyMetadata[] GenerateDefaultData(PropertyKeyMetadata[] metadatas)
+        [NotNull]
+        private static PropertyKeyMetadata[] GenerateDefaultData([CanBeNull] PropertyKeyMetadata[] metadatas)
         {
             if (metadatas == null)
             {
@@ -211,6 +213,7 @@ namespace SiliconStudio.Core
             return metadatas;
         }
 
+        [NotNull]
         internal override PropertyContainer.ValueHolder CreateValueHolder(object value)
         {
             return new PropertyContainer.ValueHolder<T>((T)value);

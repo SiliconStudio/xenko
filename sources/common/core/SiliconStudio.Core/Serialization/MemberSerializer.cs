@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -66,7 +65,8 @@ namespace SiliconStudio.Core.Serialization
             this.dataSerializer = dataSerializer;
         }
 
-        public static DataSerializer<T> Create(SerializerSelector serializerSelector, bool nullable = true)
+        [CanBeNull]
+        public static DataSerializer<T> Create([NotNull] SerializerSelector serializerSelector, bool nullable = true)
         {
             var dataSerializer = serializerSelector.GetSerializer<T>();
             if (!isValueType)

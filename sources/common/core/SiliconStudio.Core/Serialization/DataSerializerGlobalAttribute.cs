@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="mode">Defines how generic type are added to <paramref name="serializerType"/>.</param>
         /// <param name="inherited">Similar to <see cref="DataContractAttribute.Inherited"/></param>
         /// <param name="complexSerializer"></param>
-        public DataSerializerGlobalAttribute(Type serializerType, Type dataType = null, DataSerializerGenericMode mode = DataSerializerGenericMode.None, bool inherited = false, bool complexSerializer = false)
+        public DataSerializerGlobalAttribute(Type serializerType, [CanBeNull] Type dataType = null, DataSerializerGenericMode mode = DataSerializerGenericMode.None, bool inherited = false, bool complexSerializer = false)
         {
             
         }

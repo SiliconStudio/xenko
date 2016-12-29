@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -34,7 +35,7 @@ namespace SiliconStudio.Core
                 return;
             }
 
-            for (int i = disposables.Count - 1; i >= 0; i--)
+            for (var i = disposables.Count - 1; i >= 0; i--)
             {
                 var objectToDispose = disposables[i];
                 DisposeObject(objectToDispose);
@@ -54,7 +55,8 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="objectToDispose">To dispose.</param>
         /// <exception cref="ArgumentException">If objectToDispose argument is not IDisposable or a valid memory pointer allocated by <see cref="Utilities.AllocateMemory"/></exception>
-        public T Add<T>(T objectToDispose)
+        [NotNull]
+        public T Add<T>([NotNull] T objectToDispose)
         {
             if (!(objectToDispose is IDisposable || objectToDispose is IntPtr || objectToDispose is IReferencable))
                 throw new ArgumentException("Argument must be IDisposable, IReferenceable or IntPtr");
@@ -79,7 +81,7 @@ namespace SiliconStudio.Core
         /// Dispose a disposable object and set the reference to null. Removes this object from this instance..
         /// </summary>
         /// <param name="objectToDispose">Object to dispose.</param>
-        public void RemoveAndDispose<T>(ref T objectToDispose)
+        public void RemoveAndDispose<T>([CanBeNull] ref T objectToDispose)
         {
             if (disposables != null)
             {
@@ -100,7 +102,7 @@ namespace SiliconStudio.Core
                 disposables.Remove(objectToDispose);
         }
 
-        private void DisposeObject(object objectToDispose)
+        private void DisposeObject([CanBeNull] object objectToDispose)
         {
             if (objectToDispose == null)
                 return;

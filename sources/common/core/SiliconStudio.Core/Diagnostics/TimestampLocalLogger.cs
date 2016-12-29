@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -15,7 +16,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerResult" /> class.
         /// </summary>
-        public TimestampLocalLogger(DateTime startTime, string moduleName = null)
+        public TimestampLocalLogger(DateTime startTime, [CanBeNull] string moduleName = null)
         {
             this.startTime = startTime;
 
@@ -30,11 +31,11 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the messages logged to this instance.
         /// </summary>
         /// <value>The messages.</value>
-        public List<Message> Messages { get; private set; }
+        public List<Message> Messages { get; }
 
         protected override void LogRaw(ILogMessage logMessage)
         {
-            TimeSpan timestamp = DateTime.Now - startTime;
+            var timestamp = DateTime.Now - startTime;
             lock (Messages)
             {
                 Messages.Add(new Message(timestamp.Ticks, logMessage));

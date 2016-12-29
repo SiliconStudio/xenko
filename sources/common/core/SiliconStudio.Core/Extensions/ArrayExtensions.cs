@@ -36,7 +36,7 @@ namespace SiliconStudio.Core.Extensions
 
             if (comparer == null)
                 comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (!comparer.Equals(a1[i], a2[i]))
                     return false;
@@ -63,7 +63,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -117,7 +117,7 @@ namespace SiliconStudio.Core.Extensions
             if (a1.Count != a2.Count)
                 return false;
 
-            for (int i = 0; i < a1.Count; i++)
+            for (var i = 0; i < a1.Count; i++)
             {
                 if (a1[i] != a2[i])
                     return false;
@@ -133,7 +133,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="data">The list to generates the hash</param>
         /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
         /// <returns>The hashcode of the collection.</returns>
-        public static int ComputeHash<T>(this ICollection<T> data, IEqualityComparer<T> comparer = null)
+        public static int ComputeHash<T>([CanBeNull] this ICollection<T> data, IEqualityComparer<T> comparer = null)
         {
             unchecked
             {
@@ -143,9 +143,9 @@ namespace SiliconStudio.Core.Extensions
                 if (comparer == null)
                     comparer = EqualityComparer<T>.Default;
 
-                int hash = 17 + data.Count;
-                int result = hash;
-                foreach (T unknown in data)
+                var hash = 17 + data.Count;
+                var result = hash;
+                foreach (var unknown in data)
                     result = result*31 + comparer.GetHashCode(unknown);
                 return result;
             }
@@ -158,7 +158,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="data">The array to generates the hash</param>
         /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
         /// <returns>The hashcode of the array.</returns>
-        public static int ComputeHash<T>(this T[] data, IEqualityComparer<T> comparer = null)
+        public static int ComputeHash<T>([CanBeNull] this T[] data, IEqualityComparer<T> comparer = null)
         {
             unchecked
             {
@@ -168,9 +168,9 @@ namespace SiliconStudio.Core.Extensions
                 if (comparer == null)
                     comparer = EqualityComparer<T>.Default;
 
-                int hash = 17 + data.Length;
-                int result = hash;
-                foreach (T unknown in data)
+                var hash = 17 + data.Length;
+                var result = hash;
+                foreach (var unknown in data)
                     result = result * 31 + comparer.GetHashCode(unknown);
                 return result;
             }

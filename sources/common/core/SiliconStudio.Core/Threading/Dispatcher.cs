@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Threading
@@ -44,8 +44,8 @@ namespace SiliconStudio.Core.Threading
 
                     try
                     {
-                        int batchCount = Math.Min(MaxDregreeOfParallelism, count);
-                        int batchSize = (count + (batchCount - 1)) / batchCount;
+                        var batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        var batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
                         state.AddReference();
@@ -63,7 +63,8 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action,
+            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
         {
             using (Profile(action))
             {
@@ -89,8 +90,8 @@ namespace SiliconStudio.Core.Threading
 
                     try
                     {
-                        int batchCount = Math.Min(MaxDregreeOfParallelism, count);
-                        int batchSize = (count + (batchCount - 1)) / batchCount;
+                        var batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        var batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
                         state.AddReference();
@@ -108,23 +109,24 @@ namespace SiliconStudio.Core.Threading
             }
         }
         
-        public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<TItem, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void ForEach<TItem, TLocal>([NotNull] IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<TItem, TLocal> action,
+            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
         {
             For(0, collection.Count, initializeLocal, (i, local) => action(collection[i], local), finalizeLocal);
         }
 
-        public static void ForEach<T>(IReadOnlyList<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>([NotNull] IReadOnlyList<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
 
-        public static void ForEach<T>(List<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>([NotNull] List<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
+        public static void ForEach<TKey, TValue>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
         {
             if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
             {
@@ -136,8 +138,8 @@ namespace SiliconStudio.Core.Threading
 
                 try
                 {
-                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
-                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+                    var batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    var batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
                     // Kick off a worker, then perform work synchronously
                     state.AddReference();
@@ -154,7 +156,8 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void ForEach<TKey, TValue, TLocal>(Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void ForEach<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action,
+            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
         {
             if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
             {
@@ -166,8 +169,8 @@ namespace SiliconStudio.Core.Threading
 
                 try
                 {
-                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
-                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+                    var batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    var batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
                     // Kick off a worker, then perform work synchronously
                     state.AddReference();
@@ -184,32 +187,33 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void ForEach<T>(FastCollection<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>([NotNull] FastCollection<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastList<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>([NotNull] FastList<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection.Items[i]));
         }
 
-        public static void ForEach<T>(ConcurrentCollector<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>([NotNull] ConcurrentCollector<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection.Items[i]));
         }
 
-        public static void ForEach<T>(FastList<T> collection, [Pooled] ValueAction<T> action)
+        public static void ForEach<T>([NotNull] FastList<T> collection, [Pooled] ValueAction<T> action)
         {
             For(0, collection.Count, i => action(ref collection.Items[i]));
         }
 
-        public static void ForEach<T>(ConcurrentCollector<T> collection, [Pooled] ValueAction<T> action)
+        public static void ForEach<T>([NotNull] ConcurrentCollector<T> collection, [Pooled] ValueAction<T> action)
         {
             For(0, collection.Count, i => action(ref collection.Items[i]));
         }
 
-        private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<KeyValuePair<TKey, TValue>> action, BatchState state)
+        private static void Fork<TKey, TValue>([NotNull] Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<KeyValuePair<TKey, TValue>> action,
+            [NotNull] BatchState state)
         {
             // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
             if (state.StartInclusive >= collection.Count)
@@ -251,7 +255,8 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork<TKey, TValue, TLocal>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
+        private static void Fork<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal,
+            [NotNull] BatchState state)
         {
             // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
             if (state.StartInclusive >= collection.Count)
@@ -295,15 +300,16 @@ namespace SiliconStudio.Core.Threading
 
         private static void ExecuteBatch(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
         {
-            for (int i = fromInclusive; i < toExclusive; i++)
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
                 action(i);
             }
         }
 
-        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [CanBeNull] [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action,
+            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal)
         {
-            TLocal local = default(TLocal);
+            var local = default(TLocal);
             try
             {
                 if (initializeLocal != null)
@@ -311,7 +317,7 @@ namespace SiliconStudio.Core.Threading
                     local = initializeLocal();
                 }
 
-                for (int i = fromInclusive; i < toExclusive; i++)
+                for (var i = fromInclusive; i < toExclusive; i++)
                 {
                     action(i, local);
                 }
@@ -322,7 +328,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<int> action, BatchState state)
+        private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<int> action, [NotNull] BatchState state)
         {
             // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
             if (state.StartInclusive >= endExclusive)
@@ -362,7 +368,8 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
+        private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal,
+            [NotNull] BatchState state)
         {
             // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
             if (state.StartInclusive >= endExclusive)
@@ -402,10 +409,10 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TKey, TValue>(Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
+        private static void ExecuteBatch<TKey, TValue>([NotNull] Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
         {
             var enumerator = dictionary.GetEnumerator();
-            int index = 0;
+            var index = 0;
 
             // Skip to offset
             while (index < offset && enumerator.MoveNext())
@@ -421,9 +428,10 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TKey, TValue, TLocal>(Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> dictionary, int offset, int count, [CanBeNull] [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action,
+            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal)
         {
-            TLocal local = default(TLocal);
+            var local = default(TLocal);
             try
             {
                 if (initializeLocal != null)
@@ -432,7 +440,7 @@ namespace SiliconStudio.Core.Threading
                 }
 
                 var enumerator = dictionary.GetEnumerator();
-                int index = 0;
+                var index = 0;
 
                 // Skip to offset
                 while (index < offset && enumerator.MoveNext())
@@ -453,12 +461,12 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void Sort<T>(ConcurrentCollector<T> collection, IComparer<T> comparer)
+        public static void Sort<T>([NotNull] ConcurrentCollector<T> collection, IComparer<T> comparer)
         {
             Sort(collection.Items, 0, collection.Count, comparer);
         }
 
-        public static void Sort<T>(FastList<T> collection, IComparer<T> comparer)
+        public static void Sort<T>([NotNull] FastList<T> collection, IComparer<T> comparer)
         {
             Sort(collection.Items, 0, collection.Count, comparer);
         }
@@ -489,7 +497,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Sort<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, SortState state)
+        private static void Sort<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, [NotNull] SortState state)
         {
             const int sequentialThreshold = 2048;
 
@@ -503,7 +511,7 @@ namespace SiliconStudio.Core.Threading
             // This thread is now actively processing work items, meaning there might be work in progress
             Interlocked.Increment(ref state.ActiveWorkerCount);
 
-            bool hasChild = false;
+            var hasChild = false;
 
             try
             {
@@ -517,7 +525,7 @@ namespace SiliconStudio.Core.Threading
                     }
                     else
                     {
-                        int pivot = Partition(collection, range.Left, range.Right, comparer);
+                        var pivot = Partition(collection, range.Left, range.Right, comparer);
 
                         // Add work items
                         if (pivot - 1 > range.Left)
@@ -552,10 +560,10 @@ namespace SiliconStudio.Core.Threading
             ThreadPool.Instance.QueueWorkItem(() => Sort(collection, maxDegreeOfParallelism - 1, comparer, state));
         }
 
-        private static int Partition<T>(T[] collection, int left, int right, IComparer<T> comparer)
+        private static int Partition<T>([NotNull] T[] collection, int left, int right, [NotNull] IComparer<T> comparer)
         {
             int i = left, j = right;
-            int mid = (left + right) / 2;
+            var mid = (left + right) / 2;
 
             if (comparer.Compare(collection[right], collection[left]) < 0)
                 Swap(collection, left, right);
@@ -587,7 +595,7 @@ namespace SiliconStudio.Core.Threading
             return mid;
         }
 
-        private static void Swap<T>(T[] collection, int i, int j)
+        private static void Swap<T>([NotNull] T[] collection, int i, int j)
         {
             var temp = collection[i];
             collection[i] = collection[j];
@@ -606,6 +614,7 @@ namespace SiliconStudio.Core.Threading
 
             public int ActiveWorkerCount;
 
+            [NotNull]
             public static BatchState Acquire()
             {
                 var state = Pool.Acquire();
@@ -655,6 +664,7 @@ namespace SiliconStudio.Core.Threading
 
             public int ActiveWorkerCount;
 
+            [NotNull]
             public static SortState Acquire()
             {
                 var state = Pool.Acquire();

@@ -28,7 +28,8 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="objectType">The object type for which to retrieve the factory.</param>
         /// <returns>The factory corresponding to the given object type if available, <c>null</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">objectType</exception>
-        public static IObjectFactory GetFactory(Type objectType)
+        [CanBeNull]
+        public static IObjectFactory GetFactory([NotNull] Type objectType)
         {
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             lock (RegisteredFactories)
@@ -69,7 +70,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         /// <returns>A new default instance of an object.</returns>
-        public static object NewInstance(Type objectType)
+        public static object NewInstance([NotNull] Type objectType)
         {
             var factory = FindFactory(objectType);
 
@@ -92,7 +93,8 @@ namespace SiliconStudio.Core.Reflection
             return factory;
         }
 
-        private static IObjectFactory RegisterFactory(Type objectType)
+        [CanBeNull]
+        private static IObjectFactory RegisterFactory([NotNull] Type objectType)
         {
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
 
@@ -102,7 +104,7 @@ namespace SiliconStudio.Core.Reflection
                 var factoryAttribute = objectType.GetTypeInfo().GetCustomAttribute<ObjectFactoryAttribute>();
                 if (factoryAttribute != null)
                 {
-                    factory = Activator.CreateInstance(factoryAttribute.FactoryType) as IObjectFactory;
+                    factory = (IObjectFactory)Activator.CreateInstance(factoryAttribute.FactoryType);
                 }
 
                 RegisteredFactories[objectType] = factory;

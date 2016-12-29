@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core
         /// Computes an unique runtime id (32bits) valid for the specified <see cref="object"/>.
         /// </summary>
         /// <returns>An unique runtime identifier (32bits)</returns>
-        public static int ToRuntimeId(object instance)
+        public static int ToRuntimeId([CanBeNull] object instance)
         {
             if (instance == null)
             {

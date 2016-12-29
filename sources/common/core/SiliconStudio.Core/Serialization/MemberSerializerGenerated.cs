@@ -2,13 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
-    public unsafe static class MemberNullableSerializer
+    public static unsafe class MemberNullableSerializer
     {
-        public static void SerializeExtended(SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -64,7 +65,7 @@ namespace SiliconStudio.Core.Serialization
             else
             {
 
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 
                 if (isNull)
                 {
@@ -129,7 +130,7 @@ namespace SiliconStudio.Core.Serialization
             else
             {
 
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 
                 if (isNull)
                 {
@@ -149,7 +150,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, SerializationStream stream, DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -205,7 +206,7 @@ namespace SiliconStudio.Core.Serialization
             else
             {
 
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 
                 if (isNull)
                 {
@@ -279,7 +280,7 @@ namespace SiliconStudio.Core.Serialization
             else
             {
 
-                bool isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = ((SerializeClassFlags)stream.ReadByte() & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
 
                 if (isNull)
                 {
@@ -300,9 +301,9 @@ namespace SiliconStudio.Core.Serialization
         }
     }
 
-    public unsafe static class MemberNonSealedSerializer
+    public static unsafe class MemberNonSealedSerializer
     {
-        public static void SerializeExtended(SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -406,7 +407,7 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
@@ -539,7 +540,7 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
@@ -577,7 +578,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, SerializationStream stream, DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -684,7 +685,7 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
@@ -828,7 +829,7 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
@@ -867,9 +868,9 @@ namespace SiliconStudio.Core.Serialization
         }
     }
 
-    public unsafe static class MemberReuseSerializer
+    public static unsafe class MemberReuseSerializer
     {
-        public static void SerializeExtended(SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -995,10 +996,10 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
@@ -1182,10 +1183,10 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
@@ -1252,7 +1253,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, SerializationStream stream, DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -1381,10 +1382,10 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
@@ -1579,10 +1580,10 @@ namespace SiliconStudio.Core.Serialization
             {
 
                 flags = (SerializeClassFlags)stream.ReadByte();
-                bool isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
+                var isNull = (flags & SerializeClassFlags.IsNull) == SerializeClassFlags.IsNull;
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
-                bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
