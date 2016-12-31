@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -15,9 +16,7 @@ namespace SiliconStudio.Presentation.Controls
     /// </summary>
     public class VirtualizingTilePanel : VirtualizingPanel, IScrollInfo
     {
-        private int itemsPerLine = -1;
         private int lineCount = -1;
-        private int itemCount = -1;
 
         /// <summary>
         /// Identifies the <see cref="Orientation"/> dependency property.
@@ -78,9 +77,9 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public Size ItemSlotSize { get { return (Size)GetValue(ItemSlotSizeProperty); } set { SetValue(ItemSlotSizeProperty, value); } }
 
-        public int ItemsPerLine { get { return itemsPerLine; } }
+        public int ItemsPerLine { get; private set; } = -1;
 
-        public int ItemCount { get { return itemCount; } }
+        public int ItemCount { get; private set; } = -1;
 
         private static bool ValidateMinMaxItemSpacing(object value)
         {
@@ -123,11 +122,11 @@ namespace SiliconStudio.Presentation.Controls
                 lastVisibleLine = firstVisibleLine + (int)Math.Ceiling(panelSize.Width) / itemWidthSpace + 1;
             }
             
-            firstVisibleItemIndex = firstVisibleLine * itemsPerLine;
-            lastVisibleItemIndex = lastVisibleLine * itemsPerLine + itemsPerLine - 1;
+            firstVisibleItemIndex = firstVisibleLine * ItemsPerLine;
+            lastVisibleItemIndex = lastVisibleLine * ItemsPerLine + ItemsPerLine - 1;
 
-            if (lastVisibleItemIndex >= itemCount)
-                lastVisibleItemIndex = itemCount - 1;
+            if (lastVisibleItemIndex >= ItemCount)
+                lastVisibleItemIndex = ItemCount - 1;
         }
 
         /// <inheritdoc/>
@@ -139,9 +138,9 @@ namespace SiliconStudio.Presentation.Controls
             // ReSharper disable once UnusedVariable
             var doNotRemove = Children;
 
-            itemCount = -1;
+            ItemCount = -1;
 
-            IItemContainerGenerator generator = ItemContainerGenerator;
+            var generator = ItemContainerGenerator;
             if (generator == null)
                 return base.MeasureOverride(availableSize);
 
@@ -149,9 +148,9 @@ namespace SiliconStudio.Presentation.Controls
             if (parentItemsControl == null)
                 return base.MeasureOverride(availableSize);
 
-            itemCount = parentItemsControl.Items.Count;
-            itemsPerLine = itemCount;
-            lineCount = itemsPerLine;
+            ItemCount = parentItemsControl.Items.Count;
+            ItemsPerLine = ItemCount;
+            lineCount = ItemsPerLine;
 
             Size desiredSize;
             if (Orientation == Orientation.Vertical)
@@ -159,9 +158,9 @@ namespace SiliconStudio.Presentation.Controls
                 if (double.IsPositiveInfinity(availableSize.Width))
                     throw new InvalidOperationException("Width must not be infinite when virtualizing vertically.");
 
-                itemsPerLine = (int)Math.Ceiling(availableSize.Width - MinimumItemSpacing) / (int)(ItemSlotSize.Width + MinimumItemSpacing);
-                itemsPerLine = Math.Max(1, Math.Min(itemsPerLine, itemCount));
-                lineCount = ComputeLineCount(itemCount);
+                ItemsPerLine = (int)Math.Ceiling(availableSize.Width - MinimumItemSpacing) / (int)(ItemSlotSize.Width + MinimumItemSpacing);
+                ItemsPerLine = Math.Max(1, Math.Min(ItemsPerLine, ItemCount));
+                lineCount = ComputeLineCount(ItemCount);
                 desiredSize = new Size(availableSize.Width, lineCount * ItemSlotSize.Height);
             }
             else
@@ -169,9 +168,9 @@ namespace SiliconStudio.Presentation.Controls
                 if (double.IsPositiveInfinity(availableSize.Height))
                     throw new InvalidOperationException("Height must not be infinite when virtualizing horizontally.");
 
-                itemsPerLine = (int)Math.Ceiling(availableSize.Height - MinimumItemSpacing) / (int)Math.Ceiling(ItemSlotSize.Height + MinimumItemSpacing);
-                itemsPerLine = Math.Max(1, Math.Min(itemsPerLine, itemCount));
-                lineCount = ComputeLineCount(itemCount);
+                ItemsPerLine = (int)Math.Ceiling(availableSize.Height - MinimumItemSpacing) / (int)Math.Ceiling(ItemSlotSize.Height + MinimumItemSpacing);
+                ItemsPerLine = Math.Max(1, Math.Min(ItemsPerLine, ItemCount));
+                lineCount = ComputeLineCount(ItemCount);
                 desiredSize = new Size(lineCount * ItemSlotSize.Width, availableSize.Height);
             }
 
@@ -181,13 +180,13 @@ namespace SiliconStudio.Presentation.Controls
             GetVisibilityRange(availableSize, out firstVisibleItemIndex, out lastVisibleItemIndex);
 
             // Get the generator position of the first visible data item
-            GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
+            var startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
 
-            int childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
+            var childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
 
             using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
             {
-                for (int itemIndex = firstVisibleItemIndex; itemIndex <= lastVisibleItemIndex; itemIndex++, childIndex++)
+                for (var itemIndex = firstVisibleItemIndex; itemIndex <= lastVisibleItemIndex; itemIndex++, childIndex++)
                 {
                     bool newlyRealized;
 
@@ -199,7 +198,7 @@ namespace SiliconStudio.Presentation.Controls
                     if (newlyRealized)
                     {
                         // Figure out if we need to insert the child at the end or somewhere in the middle
-                        if (childIndex >= itemCount)
+                        if (childIndex >= ItemCount)
                             AddInternalChild(child);
                         else
                             InsertInternalChild(childIndex, child);
@@ -225,7 +224,7 @@ namespace SiliconStudio.Presentation.Controls
             // ReSharper disable once UnusedVariable
             var doNotRemove = Children;
 
-            IItemContainerGenerator generator = ItemContainerGenerator;
+            var generator = ItemContainerGenerator;
             if (generator == null)
                 return base.ArrangeOverride(finalSize);
 
@@ -235,17 +234,17 @@ namespace SiliconStudio.Presentation.Controls
 
             var space = ComputeItemSpacing(finalSize);
 
-            for (int i = 0; i < Children.Count; i++)
+            for (var i = 0; i < Children.Count; i++)
             {
-                UIElement child = Children[i];
+                var child = Children[i];
 
                 // Map the child offset to an item offset
-                int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(i, 0));
+                var itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(i, 0));
 
                 if (Orientation == Orientation.Vertical)
                 {
-                    int row = itemIndex / itemsPerLine;
-                    int column = itemIndex % itemsPerLine;
+                    var row = itemIndex / ItemsPerLine;
+                    var column = itemIndex % ItemsPerLine;
 
                     var absoluteY = MinimumItemSpacing + row * (ItemSlotSize.Height + MinimumItemSpacing);
 
@@ -259,8 +258,8 @@ namespace SiliconStudio.Presentation.Controls
                 }
                 else
                 {
-                    int row = itemIndex % itemsPerLine;
-                    int column = itemIndex / itemsPerLine;
+                    var row = itemIndex % ItemsPerLine;
+                    var column = itemIndex / ItemsPerLine;
 
                     var absoluteX = MinimumItemSpacing + column * (ItemSlotSize.Width + MinimumItemSpacing);
 
@@ -279,13 +278,13 @@ namespace SiliconStudio.Presentation.Controls
 
         private void CleanUpItems(int minDesiredGenerated, int maxDesiredGenerated)
         {
-            UIElementCollection children = InternalChildren;
-            IItemContainerGenerator generator = ItemContainerGenerator;
+            var children = InternalChildren;
+            var generator = ItemContainerGenerator;
 
-            for (int i = children.Count - 1; i >= 0; i--)
+            for (var i = children.Count - 1; i >= 0; i--)
             {
                 var childGeneratorPos = new GeneratorPosition(i, 0);
-                int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
+                var itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
                 if (itemIndex >= 0 && (itemIndex < minDesiredGenerated || itemIndex > maxDesiredGenerated))
                 {
                     generator.Remove(childGeneratorPos, 1);
@@ -300,16 +299,16 @@ namespace SiliconStudio.Presentation.Controls
 
             if (Orientation == Orientation.Vertical)
             {
-                var totalItemWidth = itemsPerLine * ItemSlotSize.Width;
+                var totalItemWidth = ItemsPerLine * ItemSlotSize.Width;
                 itemsInnerSpace = Math.Max(0.0, finalSize.Width - totalItemWidth - 2 * MinimumItemSpacing);
             }
             else
             {
-                var totalItemHeight = itemsPerLine * ItemSlotSize.Height;
+                var totalItemHeight = ItemsPerLine * ItemSlotSize.Height;
                 itemsInnerSpace = Math.Max(0.0, finalSize.Height - totalItemHeight - 2 * MinimumItemSpacing);
             }
 
-            var intervalCount = itemsPerLine - 1;
+            var intervalCount = ItemsPerLine - 1;
             if (intervalCount <= 0)
                 return MinimumItemSpacing;
 
@@ -337,8 +336,7 @@ namespace SiliconStudio.Presentation.Controls
             if (localExtent != extent)
             {
                 extent = localExtent;
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
 
                 Dispatcher.CurrentDispatcher.BeginInvoke((Action)InvalidateMeasure);
 
@@ -351,8 +349,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 viewport = availableSize;
 
-                if (ScrollOwner != null)
-                    ScrollOwner.InvalidateScrollInfo();
+                ScrollOwner?.InvalidateScrollInfo();
 
                 SetHorizontalOffset(offset.X);
                 SetVerticalOffset(offset.Y);
@@ -361,7 +358,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private int ComputeLineCount(int totalItemCount)
         {
-            return (totalItemCount + itemsPerLine - 1) / itemsPerLine;
+            return (totalItemCount + ItemsPerLine - 1) / ItemsPerLine;
         }
 
         public bool CanHorizontallyScroll
@@ -378,15 +375,9 @@ namespace SiliconStudio.Presentation.Controls
 
         private Size extent;
 
-        public double ExtentWidth
-        {
-            get { return extent.Width; }
-        }
+        public double ExtentWidth => extent.Width;
 
-        public double ExtentHeight
-        {
-            get { return extent.Height; }
-        }
+        public double ExtentHeight => extent.Height;
 
         public void LineUp()
         {
@@ -417,13 +408,13 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.BringIndexIntoView(index);
 
-            int n = index / itemsPerLine;
+            var n = index / ItemsPerLine;
 
             var space = ComputeItemSpacing(RenderSize);
 
             if (Orientation == Orientation.Vertical)
             {
-                double newTop = n * (ItemSlotSize.Height + space);
+                var newTop = n * (ItemSlotSize.Height + space);
 
                 if (newTop < offset.Y)
                     SetVerticalOffset(newTop);
@@ -432,7 +423,7 @@ namespace SiliconStudio.Presentation.Controls
             }
             else
             {
-                double newLeft = n * (ItemSlotSize.Width + space);
+                var newLeft = n * (ItemSlotSize.Width + space);
 
                 if (newLeft < offset.X)
                     SetHorizontalOffset(newLeft);
@@ -452,16 +443,16 @@ namespace SiliconStudio.Presentation.Controls
             if (parentItemsControl == null)
                 return new Rect();
 
-            IItemContainerGenerator generator = ItemContainerGenerator;
+            var generator = ItemContainerGenerator;
 
-            for (int i = 0; i < InternalChildren.Count; i++)
+            for (var i = 0; i < InternalChildren.Count; i++)
             {
                 if (Equals(InternalChildren[i], visual))
                 {
-                    int itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(i, 0));
+                    var itemIndex = generator.IndexFromGeneratorPosition(new GeneratorPosition(i, 0));
 
-                    int row = itemIndex / itemsPerLine;
-                    int column = itemIndex % itemsPerLine;
+                    var row = itemIndex / ItemsPerLine;
+                    var column = itemIndex % ItemsPerLine;
 
                     return new Rect(new Point(column * ItemSlotSize.Width, row * ItemSlotSize.Height), ItemSlotSize);
                 }
@@ -530,8 +521,7 @@ namespace SiliconStudio.Presentation.Controls
 
             offset.X = horizontalOffset;
 
-            if (ScrollOwner != null)
-                ScrollOwner.InvalidateScrollInfo();
+            ScrollOwner?.InvalidateScrollInfo();
 
             InvalidateMeasure();
         }
@@ -548,39 +538,26 @@ namespace SiliconStudio.Presentation.Controls
 
             offset.Y = verticalOffset;
 
-            if (ScrollOwner != null)
-                ScrollOwner.InvalidateScrollInfo();
+            ScrollOwner?.InvalidateScrollInfo();
 
             InvalidateMeasure();
         }
 
-        public double HorizontalOffset
-        {
-            get { return offset.X; }
-        }
+        public double HorizontalOffset => offset.X;
 
-        public double VerticalOffset
-        {
-            get { return offset.Y; }
-        }
+        public double VerticalOffset => offset.Y;
 
         private Size viewport;
 
-        public double ViewportHeight
-        {
-            get { return viewport.Height; }
-        }
+        public double ViewportHeight => viewport.Height;
 
-        public double ViewportWidth
-        {
-            get { return viewport.Width; }
-        }
+        public double ViewportWidth => viewport.Width;
 
         protected override void OnItemsChanged(object sender, ItemsChangedEventArgs args)
         {
             if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-                int index = args.Position.Index;
+                var index = args.Position.Index;
                 if (args.Position.Offset > 0)
                 {
                     index++;

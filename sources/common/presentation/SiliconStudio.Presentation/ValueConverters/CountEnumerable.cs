@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class CountEnumerable : OneWayValueConverter<CountEnumerable>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)

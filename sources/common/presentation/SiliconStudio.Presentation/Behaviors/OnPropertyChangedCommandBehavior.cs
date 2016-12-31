@@ -9,6 +9,7 @@ using SiliconStudio.Presentation.Extensions;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -90,7 +91,7 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnDetaching();
         }
 
-        private void OnSourceUpdated(object sender, DataTransferEventArgs e)
+        private void OnSourceUpdated(object sender, [NotNull] DataTransferEventArgs e)
         {
             if (ExecuteOnlyOnSourceUpdate && e.Property == dependencyProperty)
             {

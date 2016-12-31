@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -28,7 +30,7 @@ namespace SiliconStudio.Presentation.Collections
         /// </summary>
         /// <param name="comparer">The comparer to use to compare items. If null, the default comparison for the type T will be used.</param>
         /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
-        public AutoUpdatingSortedObservableCollection(IComparer<T> comparer = null)
+        public AutoUpdatingSortedObservableCollection(IComparer<T> comparer)
             : base(comparer)
         {
         }
@@ -38,7 +40,7 @@ namespace SiliconStudio.Presentation.Collections
         /// </summary>
         /// <param name="comparison">The comparison to use to compare items. If null, the default comparison for the type T will be used.</param>
         /// <exception cref="InvalidOperationException">No comparison has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
-        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison)
+        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison = null)
             : base(comparison)
         {
         }
@@ -50,7 +52,7 @@ namespace SiliconStudio.Presentation.Collections
         /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
         /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
         /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
-        public AutoUpdatingSortedObservableCollection(IComparer<T> comparer, string propertyName, params string[] otherPropertyNames)
+        public AutoUpdatingSortedObservableCollection(IComparer<T> comparer, [NotNull] string propertyName, [ItemNotNull] params string[] otherPropertyNames)
             : base(comparer)
         {
             if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
@@ -64,7 +66,7 @@ namespace SiliconStudio.Presentation.Collections
         /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
         /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
         /// <exception cref="InvalidOperationException">No comparison has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
-        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison, string propertyName, params string[] otherPropertyNames)
+        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison, [NotNull] string propertyName, [ItemNotNull] params string[] otherPropertyNames)
             : base(comparison)
         {
             if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
@@ -77,14 +79,14 @@ namespace SiliconStudio.Presentation.Collections
         /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
         /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
         /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
-        public AutoUpdatingSortedObservableCollection(string propertyName, params string[] otherPropertyNames)
+        public AutoUpdatingSortedObservableCollection([NotNull] string propertyName, [ItemNotNull] params string[] otherPropertyNames)
             : base((IComparer<T>)null)
         {
             if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
             RegisterPropertyNames(propertyName, otherPropertyNames);
         }
 
-        private void RegisterPropertyNames(string propertyName, params string[] otherPropertyNames)
+        private void RegisterPropertyNames([NotNull] string propertyName, [ItemNotNull] params string[] otherPropertyNames)
         {
             propertyNames = new HashSet<string> { propertyName };
             if (otherPropertyNames != null)
@@ -95,13 +97,14 @@ namespace SiliconStudio.Presentation.Collections
                 }
             }
         }
+        
         /// <inheritdoc/>
         public override string ToString()
         {
             return $"{{AutoUpdatingSortedObservableCollection}} Count = {Count}";
         }
         
-        protected virtual void ItemPropertyChanging(object sender, PropertyChangingEventArgs e)
+        protected virtual void ItemPropertyChanging(object sender, [NotNull] PropertyChangingEventArgs e)
         {
             if (propertyNames != null && !propertyNames.Contains(e.PropertyName))
                 return;
@@ -117,7 +120,7 @@ namespace SiliconStudio.Presentation.Collections
             AddedItem = null;
         }
 
-        protected virtual void ItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected virtual void ItemPropertyChanged(object sender, [NotNull] PropertyChangedEventArgs e)
         {
             if (propertyNames != null && !propertyNames.Contains(e.PropertyName))
                 return;
@@ -206,7 +209,7 @@ namespace SiliconStudio.Presentation.Collections
         }
 
         /// <inheritdoc/>
-        protected override void InsertItem(int index, T item)
+        protected override void InsertItem(int index, [NotNull] T item)
         {
             item.PropertyChanging += ItemPropertyChanging;
             item.PropertyChanged += ItemPropertyChanged;

@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -20,17 +21,17 @@ namespace SiliconStudio.Presentation.Collections
         /// Initializes a new instance of the <see cref="NonGenericObservableListWrapper{T}"/> class.
         /// </summary>
         /// <param name="list">The <see cref="IObservableList{T}"/> to wrap.</param>
-        public NonGenericObservableListWrapper(IObservableList<T> list)
+        public NonGenericObservableListWrapper([NotNull] IObservableList<T> list)
             : base(list)
         {
         }
 
-        public void AddRange(IEnumerable values)
+        public void AddRange([NotNull] IEnumerable values)
         {
             ((IObservableList<T>)List).AddRange(values.Cast<T>());
         }
         
-        public void AddRange(IEnumerable<T> values)
+        public void AddRange([NotNull] IEnumerable<T> values)
         {
             ((IObservableList<T>)List).AddRange(values);
         }      

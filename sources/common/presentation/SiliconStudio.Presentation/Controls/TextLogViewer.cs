@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Presentation.Controls
@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public TextLogViewer()
         {
-            Loaded += (s, e) => { if (AutoScroll && logTextBox != null) logTextBox.ScrollToEnd(); };
+            Loaded += (s, e) => { if (AutoScroll) logTextBox?.ScrollToEnd(); };
         }
 
         /// <summary>
@@ -308,10 +308,11 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void AppendText(FlowDocument document, IEnumerable<ILogMessage> logMessages)
+        private void AppendText([NotNull] FlowDocument document, [NotNull] IEnumerable<ILogMessage> logMessages)
         {
-            if (document == null) throw new ArgumentNullException("document");
-            if (logTextBox != null && logMessages != null)
+            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (logMessages == null) throw new ArgumentNullException(nameof(logMessages));
+            if (logTextBox != null)
             {
                 var paragraph = (Paragraph)document.Blocks.AsEnumerable().First();
                 var stringComparison = SearchMatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
@@ -328,24 +329,24 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         do
                         {
-                            int tokenIndex = lineText.IndexOf(searchToken, stringComparison);
+                            var tokenIndex = lineText.IndexOf(searchToken, stringComparison);
                             if (tokenIndex == -1)
                             {
                                 paragraph.Inlines.Add(new Run(lineText) { Foreground = logColor });
                                 break;
                             }
-                            bool acceptResult = true;
+                            var acceptResult = true;
                             if (SearchMatchWord && lineText.Length > 1)
                             {
                                 if (tokenIndex > 0)
                                 {
-                                    char c = lineText[tokenIndex - 1];
+                                    var c = lineText[tokenIndex - 1];
                                     if ((c >= 'A' && c <= 'A') || (c >= 'a' && c <= 'z'))
                                         acceptResult = false;
                                 }
                                 if (tokenIndex + searchToken.Length < lineText.Length)
                                 {
-                                    char c = lineText[tokenIndex + searchToken.Length];
+                                    var c = lineText[tokenIndex + searchToken.Length];
                                     if ((c >= 'A' && c <= 'A') || (c >= 'a' && c <= 'z'))
                                         acceptResult = false;
                                 }
@@ -386,7 +387,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (searchMatches.Count > 0)
             {
-                int previousResult = (searchMatches.Count + currentResult - 1) % searchMatches.Count;
+                var previousResult = (searchMatches.Count + currentResult - 1) % searchMatches.Count;
                 SelectSearchResult(previousResult);
             }
         }
@@ -395,7 +396,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (searchMatches.Count > 0)
             {
-                int nextResult = (currentResult + 1) % searchMatches.Count;
+                var nextResult = (currentResult + 1) % searchMatches.Count;
                 SelectSearchResult(nextResult);
             }
         }
@@ -404,8 +405,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             var result = searchMatches[resultIndex];
             logTextBox.Selection.Select(result.Start, result.End);
-            Rect selectionRect = logTextBox.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
-            double offset = selectionRect.Top + logTextBox.VerticalOffset;
+            var selectionRect = logTextBox.Selection.Start.GetCharacterRect(LogicalDirection.Forward);
+            var offset = selectionRect.Top + logTextBox.VerticalOffset;
             logTextBox.ScrollToVerticalOffset(offset - logTextBox.ActualHeight / 2);
             logTextBox.BringIntoView();
             currentResult = resultIndex;
@@ -428,7 +429,7 @@ namespace SiliconStudio.Presentation.Controls
                 case LogMessageType.Fatal:
                     return ShowFatalMessages;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException(nameof(type));
             }
         }
 
@@ -449,7 +450,7 @@ namespace SiliconStudio.Presentation.Controls
                 case LogMessageType.Fatal:
                     return FatalBrush;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException(nameof(type));
             }
         }
 
@@ -457,10 +458,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             var logViewer = (TextLogViewer)d;
             logViewer.ResetText();
-            if (logViewer.logTextBox != null)
-            {
-                logViewer.logTextBox.ScrollToEnd();
-            }
+            logViewer.logTextBox?.ScrollToEnd();
         }
 
         /// <summary>
@@ -507,9 +505,9 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Raised when the collection of log messages is observable and changes.
         /// </summary>
-        private void LogMessagesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void LogMessagesCollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
-            bool shouldScroll = AutoScroll && logTextBox != null && logTextBox.ViewportHeight - logTextBox.ExtentHeight - logTextBox.VerticalOffset < 1.0;
+            var shouldScroll = AutoScroll && logTextBox != null && logTextBox.ViewportHeight - logTextBox.ExtentHeight - logTextBox.VerticalOffset < 1.0;
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {

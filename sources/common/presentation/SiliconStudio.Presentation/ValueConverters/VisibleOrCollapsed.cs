@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -15,6 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class VisibleOrCollapsed : ValueConverterBase<VisibleOrCollapsed>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var result = ConverterHelper.ConvertToBoolean(value, culture);
@@ -26,6 +28,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var visibility = (Visibility)value;

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Windows;
 
 namespace SiliconStudio.Presentation.Services
@@ -17,18 +18,21 @@ namespace SiliconStudio.Presentation.Services
         /// Creates a modal file open dialog.
         /// </summary>
         /// <returns>An instance of <see cref="IFileOpenModalDialog"/>.</returns>
+        [NotNull]
         IFileOpenModalDialog CreateFileOpenModalDialog();
 
         /// <summary>
         /// Create a modal folder open dialog.
         /// </summary>
         /// <returns>An instance of <see cref="IFolderOpenModalDialog"/>.</returns>
+        [NotNull]
         IFolderOpenModalDialog CreateFolderOpenModalDialog();
 
         /// <summary>
         /// Creates a modal file save dialog.
         /// </summary>
         /// <returns>An instance of <see cref="IFileSaveModalDialog"/>.</returns>
+        [NotNull]
         IFileSaveModalDialog CreateFileSaveModalDialog();
 
         /// <summary>
@@ -39,6 +43,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        [NotNull]
         Task<MessageBoxResult> MessageBox(string message, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
@@ -49,6 +54,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        [NotNull]
         Task<MessageBoxResult> MessageBox(string message, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
@@ -62,6 +68,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        [NotNull]
         Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>
@@ -75,6 +82,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <param name="owner">The intended owner for the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        [NotNull]
         Task<CheckedMessageBoxResult> CheckedMessageBox(string message, bool? isChecked, string checkboxMessage, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None, WindowOwner owner = WindowOwner.LastModal);
 
         /// <summary>

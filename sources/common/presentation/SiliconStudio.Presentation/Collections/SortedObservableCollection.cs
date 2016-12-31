@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -115,7 +117,7 @@ namespace SiliconStudio.Presentation.Collections
                 if (typeof(T).GetInterfaces().Contains(typeof(IComparable<TSearch>)))
                     compareFunc = (item1, item2) => ((IComparable<TSearch>)item1).CompareTo(item2);
                 else
-                    throw new ArgumentNullException("compareFunc");
+                    throw new ArgumentNullException(nameof(compareFunc));
             }
 
             return GetIndex(key, false, compareFunc);
@@ -124,7 +126,7 @@ namespace SiliconStudio.Presentation.Collections
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{{SortedObservableCollection}} Count = {0}", Count);
+            return $"{{SortedObservableCollection}} Count = {Count}";
         }
 
         protected int GetIndex(T item, bool returnInsertIndex)

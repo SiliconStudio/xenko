@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -35,7 +36,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         {
             return value != DependencyProperty.UnsetValue ? Convert.ToInt32(value, culture) : default(int);
         }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ConvertToString(object value, IFormatProvider culture)
         {

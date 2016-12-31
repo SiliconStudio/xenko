@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.MarkupExtensions
 {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Presentation.MarkupExtensions
         /// <param name="gesture">A string representing the gesture.</param>
         public ToolTipExtension(string text, string gesture)
         {
-            content = !string.IsNullOrEmpty(gesture) ? string.Format("{0} ({1})", text, gesture) : text;
+            content = !string.IsNullOrEmpty(gesture) ? $"{text} ({gesture})" : text;
         }
 
         /// <inheritdoc/>

@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Core;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -106,7 +106,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private void RoutedEventHandler(object sender, RoutedEventArgs e)
+        private void RoutedEventHandler(object sender, [NotNull] RoutedEventArgs e)
         {
             if (HandleEvent)
             {

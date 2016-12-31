@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -358,7 +359,7 @@ namespace SiliconStudio.Presentation.Controls
             RaiseEvent(new RoutedDependencyPropertyChangedEventArgs(ScaleChangedEvent, dependencyProperty, oldValue, newValue));
         }
 
-        private void SetScaleChangingProperty(DependencyProperty dependencyProperty, object value)
+        private void SetScaleChangingProperty([NotNull] DependencyProperty dependencyProperty, object value)
         {
             var oldValue = GetValue(dependencyProperty);
             RaiseScaleChangingEvent(dependencyProperty, oldValue, value);
@@ -366,7 +367,7 @@ namespace SiliconStudio.Presentation.Controls
             RaiseScaleChangedEvent(dependencyProperty, oldValue, value);
         }
 
-        private void SetScaleChangingProperty(DependencyPropertyKey dependencyPropertyKey, DependencyProperty dependencyProperty, object value)
+        private void SetScaleChangingProperty([NotNull] DependencyPropertyKey dependencyPropertyKey, [NotNull] DependencyProperty dependencyProperty, object value)
         {
             var oldValue = GetValue(dependencyProperty);
             RaiseScaleChangingEvent(dependencyProperty, oldValue, value);
@@ -628,7 +629,7 @@ namespace SiliconStudio.Presentation.Controls
             scalebar.UpdatePixelInfo();
         }
 
-        private static void OnIsAliasedPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnIsAliasedPropertyChanged([NotNull] DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             RenderOptions.SetEdgeMode(sender, (bool)e.NewValue ? EdgeMode.Aliased : EdgeMode.Unspecified);
         }
@@ -639,11 +640,13 @@ namespace SiliconStudio.Presentation.Controls
             return scalebar.MinimumUnitsPerTick < scalebar.MaximumUnitsPerTick ? Math.Min(scalebar.MaximumUnitsPerTick, Math.Max(scalebar.MinimumUnitsPerTick, (double)value)) : value;
         }
 
-        private static object CoercePixelsPerTickPropertyValue(DependencyObject sender, object value)
+        [NotNull]
+        private static object CoercePixelsPerTickPropertyValue(DependencyObject sender, [NotNull] object value)
         {
             return Math.Max(10.0, (double)value);
         }
 
+        [NotNull]
         private static object CoerceDecimalCountRoundingPropertyValue(DependencyObject sender, object value)
         {
             return Math.Max(0, 12);
@@ -667,14 +670,14 @@ namespace SiliconStudio.Presentation.Controls
 
         public void SetUnitsPerTickAt(double unitsPerTick, double pixel)
         {
-            double unit = GetUnitAt(pixel);
+            var unit = GetUnitAt(pixel);
             UnitsPerTick = unitsPerTick;
             SetUnitAt(unit, pixel);
         }
 
         public void SetPixelsPerTickAt(double pixelsPerTick, double pixel)
         {
-            double unit = GetUnitAt(pixel);
+            var unit = GetUnitAt(pixel);
             PixelsPerTick = pixelsPerTick;
             SetUnitAt(unit, pixel);
         }
@@ -701,7 +704,7 @@ namespace SiliconStudio.Presentation.Controls
 
         protected override void OnRender(DrawingContext localDrawingContext)
         {
-            DrawingContext drawingContext = CustomDrawingContext ?? localDrawingContext;
+            var drawingContext = CustomDrawingContext ?? localDrawingContext;
 
             if (AdjustedPixelsPerTick.Equals(0.0))
                 SetValue(AdjustedPixelsPerTickPropertyKey, PixelsPerTick);
@@ -717,7 +720,7 @@ namespace SiliconStudio.Presentation.Controls
             largeTickPen = LargeTickPen;
             smallTickPen = SmallTickPen;
 
-            bool isSmallTickVisible = IsSmallTickVisible;
+            var isSmallTickVisible = IsSmallTickVisible;
 
             textPositionOrigin = TextPositionOrigin;
             textPosition = TextPosition;
@@ -730,14 +733,14 @@ namespace SiliconStudio.Presentation.Controls
                 fontSize = FontSize;
             }
 
-            double adjustedUnitsPerTick = AdjustedUnitsPerTick;
-            double adjustedPixelsPerTick = AdjustedPixelsPerTick;
-            int decimalCountRounding = DecimalCountRounding;
+            var adjustedUnitsPerTick = AdjustedUnitsPerTick;
+            var adjustedPixelsPerTick = AdjustedPixelsPerTick;
+            var decimalCountRounding = DecimalCountRounding;
 
-            double currentUnit = (int)(StartUnit / adjustedUnitsPerTick) * adjustedUnitsPerTick;
-            double currentPixel = ((currentUnit - StartUnit) / adjustedUnitsPerTick) * adjustedPixelsPerTick;
+            var currentUnit = (int)(StartUnit / adjustedUnitsPerTick) * adjustedUnitsPerTick;
+            var currentPixel = ((currentUnit - StartUnit) / adjustedUnitsPerTick) * adjustedPixelsPerTick;
 
-            double smallIntevalLength = (1.0 / adjustedSmallIntervalPerTick);
+            var smallIntevalLength = (1.0 / adjustedSmallIntervalPerTick);
 
             //if (StartUnit >= 0.0)
             //{
@@ -754,9 +757,9 @@ namespace SiliconStudio.Presentation.Controls
 
             if (isSmallTickVisible)
             {
-                for (int i = 0; i < adjustedSmallIntervalPerTick - 1; i++)
+                for (var i = 0; i < adjustedSmallIntervalPerTick - 1; i++)
                 {
-                    double smallLeft = currentPixel - ((i + 1) * adjustedPixelsPerTick) * smallIntevalLength;
+                    var smallLeft = currentPixel - ((i + 1) * adjustedPixelsPerTick) * smallIntevalLength;
                     if (smallLeft < 0.0)
                         break;
                     DrawSmallTick(drawingContext, smallLeft);
@@ -774,9 +777,9 @@ namespace SiliconStudio.Presentation.Controls
 
                 if (isSmallTickVisible)
                 {
-                    for (int i = 0; i < adjustedSmallIntervalPerTick - 1; i++)
+                    for (var i = 0; i < adjustedSmallIntervalPerTick - 1; i++)
                     {
-                        double smallLeft = currentPixel + ((i + 1) * adjustedPixelsPerTick) * smallIntevalLength;
+                        var smallLeft = currentPixel + ((i + 1) * adjustedPixelsPerTick) * smallIntevalLength;
                         if (smallLeft > actualWidth)
                             break;
                         DrawSmallTick(drawingContext, smallLeft + 1.0);
@@ -795,12 +798,12 @@ namespace SiliconStudio.Presentation.Controls
         private static double AdjustUnitInterval(double value)
         {
             // computing cannot be done on negative values
-            bool negative = (value <= 0.0f);
+            var negative = (value <= 0.0f);
             if (negative)
                 value = -value;
 
-            double log = Math.Log10(value);
-            double log0 = Math.Pow(10.0, Math.Floor(log));
+            var log = Math.Log10(value);
+            var log0 = Math.Pow(10.0, Math.Floor(log));
 
             double result;
 
@@ -821,10 +824,10 @@ namespace SiliconStudio.Presentation.Controls
             return Math.Abs(value - reference) < Math.Abs(other - reference);
         }
 
-        private static bool IsCloseEnoughToMultiply(List<double> sortedGroupings, double value, double target)
+        private static bool IsCloseEnoughToMultiply([NotNull] List<double> sortedGroupings, double value, double target)
         {
-            bool result = true;
-            int index = sortedGroupings.FindIndex(x => x.Equals(value));
+            var result = true;
+            var index = sortedGroupings.FindIndex(x => x.Equals(value));
 
             if (index > 0 && sortedGroupings[index - 1] > target)
                 result = false;
@@ -847,15 +850,15 @@ namespace SiliconStudio.Presentation.Controls
 
             UnitSymbol = UnitSystem.Symbol;
 
-            double scaledValue = value * 1.5;
-            double referenceUnitsPerTick = AdjustedUnitsPerTick;
-            bool hasResult = false;
+            var scaledValue = value * 1.5;
+            var referenceUnitsPerTick = AdjustedUnitsPerTick;
+            var hasResult = false;
             var allGrouping = new List<double>();
             UnitSystem.GetAllGroupingValues(ref allGrouping);
             allGrouping.Sort();
 
             // Check if there is a grouping matching our value
-            foreach (UnitGrouping grouping in UnitSystem.GroupingValues)
+            foreach (var grouping in UnitSystem.GroupingValues)
             {
                 if (!hasResult || IsCloser(grouping.LargeIntervalSize, referenceUnitsPerTick, scaledValue))
                 {
@@ -868,7 +871,7 @@ namespace SiliconStudio.Presentation.Controls
                 // If the grouping is multipliable using the default grouping method ({1/2/5}*10^n), check for a better value
                 if (grouping.IsMultipliable)
                 {
-                    double val = AdjustUnitInterval(scaledValue / grouping.LargeIntervalSize) * grouping.LargeIntervalSize;
+                    var val = AdjustUnitInterval(scaledValue / grouping.LargeIntervalSize) * grouping.LargeIntervalSize;
 
                     if (IsCloseEnoughToMultiply(allGrouping, grouping.LargeIntervalSize, scaledValue) && IsCloser(val, referenceUnitsPerTick, scaledValue))
                     {
@@ -888,12 +891,12 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             // Check if a conversion may fit better our scale
-            foreach (UnitConversion conversion in UnitSystem.Conversions)
+            foreach (var conversion in UnitSystem.Conversions)
             {
                 // Check if there is a grouping matching our value
-                foreach (UnitGrouping grouping in conversion.GroupingValues)
+                foreach (var grouping in conversion.GroupingValues)
                 {
-                    double groupingValue = grouping.LargeIntervalSize * conversion.Value;
+                    var groupingValue = grouping.LargeIntervalSize * conversion.Value;
 
                     if (IsCloser(groupingValue, referenceUnitsPerTick, scaledValue))
                     {
@@ -907,7 +910,7 @@ namespace SiliconStudio.Presentation.Controls
                     // If the grouping is multipliable using the default grouping method ({1/2/5}*10^n), check for a better value
                     if (grouping.IsMultipliable)
                     {
-                        double val = AdjustUnitInterval(scaledValue / groupingValue) * groupingValue;
+                        var val = AdjustUnitInterval(scaledValue / groupingValue) * groupingValue;
 
                         if (IsCloseEnoughToMultiply(allGrouping, groupingValue, scaledValue) && IsCloser(val, referenceUnitsPerTick, scaledValue))
                         {
@@ -923,8 +926,8 @@ namespace SiliconStudio.Presentation.Controls
                 // When there is no grouping, use the default grouping method
                 if (conversion.GroupingValues.Count == 0)
                 {
-                    double val = conversion.Value;
-                    bool canMultiply = true;
+                    var val = conversion.Value;
+                    var canMultiply = true;
                     if (conversion.IsMultipliable)
                     {
                         canMultiply = IsCloseEnoughToMultiply(allGrouping, conversion.Value, scaledValue);
@@ -942,12 +945,12 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        protected virtual void DrawLargeTick(DrawingContext drawingContext, double unit, double position)
+        protected virtual void DrawLargeTick([NotNull] DrawingContext drawingContext, double unit, double position)
         {
             if (isTextVisible)
             {
-                string symbol = UnitSymbol ?? "";
-                double dividedUnit = !TickTextUnitDivider.Equals(0.0) ? unit / TickTextUnitDivider : unit;
+                var symbol = UnitSymbol ?? "";
+                var dividedUnit = !TickTextUnitDivider.Equals(0.0) ? unit / TickTextUnitDivider : unit;
                 dividedUnit = Math.Round(dividedUnit, 6);
 
                 var ft = new FormattedText(dividedUnit + symbol, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, font, fontSize, foreground);
@@ -957,7 +960,7 @@ namespace SiliconStudio.Presentation.Controls
             drawingContext.DrawLine(largeTickPen, new Point(position, largeTickTopPosition), new Point(position, largeTickBottomPosition));
         }
 
-        protected virtual void DrawSmallTick(DrawingContext drawingContext, double position)
+        protected virtual void DrawSmallTick([NotNull] DrawingContext drawingContext, double position)
         {
             drawingContext.DrawLine(smallTickPen, new Point(position, smallTickTopPosition), new Point(position, smallTickBottomPosition));
         }
@@ -968,8 +971,8 @@ namespace SiliconStudio.Presentation.Controls
 
             if (IsZoomingOnMouseWheel)
             {
-                double coeficient = e.Delta >= 0.0 ? MouseWheelZoomCoeficient : 1.0 / MouseWheelZoomCoeficient;
-                Point pos = e.GetPosition(this);
+                var coeficient = e.Delta >= 0.0 ? MouseWheelZoomCoeficient : 1.0 / MouseWheelZoomCoeficient;
+                var pos = e.GetPosition(this);
 
                 ZoomAtPosition(pos.X, coeficient, Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
             }
@@ -1013,7 +1016,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (isDraggingScale)
             {
-                Vector delta = e.GetPosition(this) - mouseDelta;
+                var delta = e.GetPosition(this) - mouseDelta;
                 mouseDelta = e.GetPosition(this);
                 StartUnit -= delta.X / PixelsPerUnit;
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.SizeChanged -= SizeChanged;
         }
 
-        private void SizeChanged(object sender, SizeChangedEventArgs e)
+        private void SizeChanged(object sender, [NotNull] SizeChangedEventArgs e)
         {
             if (IsSizeRatioInValid() || !e.HeightChanged || !e.WidthChanged)
                 return;

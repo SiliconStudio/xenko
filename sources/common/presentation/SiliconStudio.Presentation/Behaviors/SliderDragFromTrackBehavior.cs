@@ -1,12 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -47,13 +48,13 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.Initialized += SliderInitialized;
         }
 
-        private void TrackMouseEvent(object sender, MouseButtonEventArgs e)
+        private void TrackMouseEvent(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 trackMouseDown = e.ButtonState == MouseButtonState.Pressed;
         }
 
-        private void MouseEnter(object sender, MouseEventArgs e)
+        private void MouseEnter(object sender, [NotNull] MouseEventArgs e)
         {
             if (trackMouseDown)
             {

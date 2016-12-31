@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.View
 {
@@ -32,14 +33,14 @@ namespace SiliconStudio.Presentation.View
         public OverrideRule OverrideRule { get; set; }
 
         /// <inheritdoc/>
-        public List<string> OverriddenProviderNames { get; private set; }
+        public List<string> OverriddenProviderNames { get; }
 
         /// <inheritdoc/>
         public abstract bool Match(object obj);
 
-        public int CompareTo(ITemplateProvider other)
+        public int CompareTo([NotNull] ITemplateProvider other)
         {
-            if (other == null) throw new ArgumentNullException("other");
+            if (other == null) throw new ArgumentNullException(nameof(other));
 
             // Both overrides all: undeterminated.
             if (OverrideRule == OverrideRule.All && other.OverrideRule == OverrideRule.All)
@@ -66,8 +67,8 @@ namespace SiliconStudio.Presentation.View
                 return -1;
             
             // From this point, both have either the "Some" rule or the "Most" rule.
-            bool thisOverrides = OverriddenProviderNames.Contains(other.Name);
-            bool otherOverrides = other.OverriddenProviderNames.Contains(Name);
+            var thisOverrides = OverriddenProviderNames.Contains(other.Name);
+            var otherOverrides = other.OverriddenProviderNames.Contains(Name);
 
             // Both overrides each other: undeterminated
             if (thisOverrides && otherOverrides)

@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Extensions
             return result;
         }
 
-        public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> thisObject, [NotNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+        public static void AddRange<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> thisObject, [NotNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
             foreach (var keyValuePair in keyValuePairs)
             {
@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.Extensions
             }
         }
 
-        public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> thisObject, [NotNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+        public static void Merge<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> thisObject, [NotNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
         {
             foreach (var keyValuePair in keyValuePairs)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.MarkupExtensions
 {
@@ -18,12 +19,13 @@ namespace SiliconStudio.Presentation.MarkupExtensions
         /// Initializes a new instance of the <see cref="KeyExtension"/> class with a string representing the key.
         /// </summary>
         /// <param name="key">A string representing the key.</param>
-        public KeyExtension(string key)
+        public KeyExtension([NotNull] string key)
         {
             Key = (Key)Enum.Parse(typeof(Key), key, true);
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return Key;

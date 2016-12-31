@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Interactivity;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Adorners;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
@@ -79,7 +80,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static void PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void PropertyChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ContainTextAdornerBehavior)d;
             var adorner = behavior.adorner;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
@@ -56,7 +57,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Initializes a new instance of the <see cref="PropertyViewItem"/> class.
         /// </summary>
         /// <param name="propertyView">The <see cref="PropertyView"/> instance in which this <see cref="PropertyViewItem"/> is contained.</param>
-        public PropertyViewItem(PropertyView propertyView)
+        public PropertyViewItem([NotNull] PropertyView propertyView)
         {
             if (propertyView == null) throw new ArgumentNullException(nameof(propertyView));
             PropertyView = propertyView;

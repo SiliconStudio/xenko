@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Controls;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -41,7 +42,7 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnDetaching();
         }
 
-        private void KeyUp(object sender, KeyEventArgs e)
+        private void KeyUp(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key != Key || AssociatedObject.HasChangesToValidate)
             {

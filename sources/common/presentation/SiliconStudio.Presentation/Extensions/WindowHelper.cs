@@ -164,6 +164,7 @@ namespace SiliconStudio.Presentation.Extensions
 
         #region Internals
         // FIXME: this should be turned private. Review usage in BehaviorProperties.
+        [CanBeNull]
         internal static NativeHelper.MONITORINFO GetMonitorInfo(IntPtr hWnd)
         {
             var monitor = NativeHelper.MonitorFromWindow(hWnd, NativeHelper.MONITOR_DEFAULTTONEAREST);

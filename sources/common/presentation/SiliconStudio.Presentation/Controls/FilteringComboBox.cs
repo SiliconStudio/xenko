@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
@@ -481,7 +482,7 @@ namespace SiliconStudio.Presentation.Controls
             updatingSelection = false;
         }
 
-        private void ListBoxMouseUp(object sender, MouseButtonEventArgs e)
+        private void ListBoxMouseUp(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left && listBox.SelectedIndex > -1)
             {
@@ -518,7 +519,7 @@ namespace SiliconStudio.Presentation.Controls
             return MatchText(filter, text);
         }
 
-        private static bool MatchText(string inputText, string text)
+        private static bool MatchText([NotNull] string inputText, string text)
         {
             var tokens = inputText.Split(" \t\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
@@ -548,7 +549,7 @@ namespace SiliconStudio.Presentation.Controls
             return value;
         }
 
-        private static bool MatchCamelCase(string inputText, string text)
+        private static bool MatchCamelCase([NotNull] string inputText, [NotNull] string text)
         {
             var camelCaseSplit = text.CamelCaseSplit();
             var filter = inputText.ToLowerInvariant();

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -24,7 +25,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public CursorOverrideRuleCollection Rules { get { ReadPreamble(); return rules; } }
 
-        void IAddChild.AddChild(object value)
+        void IAddChild.AddChild([NotNull] object value)
         {
             var rule = value as CursorOverrideRule;
             if (rule != null)
@@ -110,6 +111,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public bool When { get { return (bool)GetValue(WhenProperty); } set { SetValue(WhenProperty, value); } }
 
+        [NotNull]
         protected override Freezable CreateInstanceCore()
         {
             return new CursorOverrideRule();

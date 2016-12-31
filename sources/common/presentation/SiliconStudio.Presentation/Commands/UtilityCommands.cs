@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.Commands
             return new AnonymousCommand<string>(serviceProvider, OpenHyperlink, CanOpenHyperlink);
         }
 
-        private static bool CanOpenHyperlink([CanBeNull] string url)
+        private static bool CanOpenHyperlink(string url)
         {
             return !string.IsNullOrEmpty(url) && Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
         }

@@ -3,7 +3,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Commands;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Behaviors
             CommandManager.InvalidateRequerySuggested();
         }
 
-        private void OnCanExecute(CanExecuteRoutedEventArgs canExecuteRoutedEventArgs)
+        private void OnCanExecute([NotNull] CanExecuteRoutedEventArgs canExecuteRoutedEventArgs)
         {
             if (Command != null)
             {
@@ -97,7 +97,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private void OnExecuted(ExecutedRoutedEventArgs executedRoutedEventArgs)
+        private void OnExecuted([NotNull] ExecutedRoutedEventArgs executedRoutedEventArgs)
         {
             if (Command != null && IsEnabled)
             {

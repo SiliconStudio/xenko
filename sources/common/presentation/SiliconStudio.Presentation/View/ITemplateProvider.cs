@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.View
 {
@@ -37,6 +38,7 @@ namespace SiliconStudio.Presentation.View
         /// <summary>
         /// Gets an identifier name for this instance of <see cref="ITemplateProvider"/>.
         /// </summary>
+        [NotNull]
         string Name { get; }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -17,6 +18,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class NumericToSize : ValueConverterBase<NumericToSize>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             double scalar;
@@ -40,7 +42,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack(object value, [NotNull] Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is Size))
             {

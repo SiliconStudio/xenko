@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Controls;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -27,6 +28,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             }
         }
 
+        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)

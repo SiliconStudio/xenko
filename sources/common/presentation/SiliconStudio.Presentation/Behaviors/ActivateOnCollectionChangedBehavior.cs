@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="Collection"/> dependency property.
         /// </summary>
-        public static DependencyProperty CollectionProperty = DependencyProperty.Register("Collection", typeof(INotifyCollectionChanged),
+        public static DependencyProperty CollectionProperty = DependencyProperty.Register(nameof(Collection), typeof(INotifyCollectionChanged),
             typeof(ActivateOnCollectionChangedBehavior<T>), new FrameworkPropertyMetadata(OnCollectionChanged));
 
         /// <summary>
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Behaviors
             set { SetValue(CollectionProperty, value); }
         }
 
-        private static void OnCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnCollectionChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ActivateOnCollectionChangedBehavior<T>)d;
             if (e.OldValue != null)
@@ -45,12 +46,12 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         protected abstract void Activate();
 
-        protected virtual bool MatchChange(NotifyCollectionChangedEventArgs e)
+        protected virtual bool MatchChange([NotNull] NotifyCollectionChangedEventArgs e)
         {
             return true;
         }
 
-        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void CollectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
             if (MatchChange(e))
             {

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
 
@@ -212,7 +213,7 @@ namespace SiliconStudio.Presentation.Controls
             Clear();
         }
 
-        private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
+        private void EditableTextBoxPreviewKeyDown(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
@@ -276,7 +277,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void EditableTextBoxPreviewKeyUp(object sender, KeyEventArgs e)
+        private void EditableTextBoxPreviewKeyUp(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {

@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Drawing
 {
@@ -47,7 +48,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape. The default is <c>null</c>.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawEllipses(IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
+        void DrawEllipses([NotNull] IList<Point> points, double radiusX, double radiusY, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool isHitTestVisible = false);
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawLineSegments(IList<Point> points, Color strokeColor,
+        void DrawLineSegments([NotNull] IList<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawPolygon(IList<Point> points, Color fillColor, Color strokeColor,
+        void DrawPolygon([NotNull] IList<Point> points, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins. The default is <c>0</c>.</param>
         /// <param name="aliased"></param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawPolyline(IList<Point> points, Color strokeColor,
+        void DrawPolyline([NotNull] IList<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false, bool isHitTestVisible = false);
 
         /// <summary>
@@ -134,7 +135,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="hAlign">The horizontal alignment. The default is <see cref="HorizontalAlignment.Left"/>.</param>
         /// <param name="vAlign">The vertical alignment. The default is <see cref="VerticalAlignment.Top"/>.</param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+        void DrawText(Point point, Color color, string text, [NotNull] FontFamily fontFamily, double fontSize, FontWeight fontWeight,
             HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top, bool isHitTestVisible = false);
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <param name="hAlign">The horizontal alignment. The default is <see cref="HorizontalAlignment.Left"/>.</param>
         /// <param name="vAlign">The vertical alignment. The default is <see cref="VerticalAlignment.Top"/>.</param>
         /// <param name="isHitTestVisible"><c>true</c> if hit testing should be enabled, <c>false</c> otherwise. The default is <c>false</c>.</param>
-        void DrawTexts(IList<Point> points, Color color, IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+        void DrawTexts([NotNull] IList<Point> points, Color color, [NotNull] IList<string> texts, [NotNull] FontFamily fontFamily, double fontSize, FontWeight fontWeight,
             HorizontalAlignment hAlign = HorizontalAlignment.Left, VerticalAlignment vAlign = VerticalAlignment.Top, bool isHitTestVisible = false);
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <returns>
         /// The size of the text (in device independent units, 1/96 inch).
         /// </returns>
-        Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+        Size MeasureText(string text, [NotNull] FontFamily fontFamily, double fontSize, FontWeight fontWeight,
             TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface);
 
         /// <summary>
@@ -183,7 +184,7 @@ namespace SiliconStudio.Presentation.Drawing
         /// <returns>
         /// The maximum size of the texts (in device independent units, 1/96 inch).
         /// </returns>
-        Size MeasureTexts(IList<string> texts, FontFamily fontFamily, double fontSize, FontWeight fontWeight,
+        Size MeasureTexts([NotNull] IList<string> texts, [NotNull] FontFamily fontFamily, double fontSize, FontWeight fontWeight,
             TextMeasurementMethod measurementMethod = TextMeasurementMethod.GlyphTypeface);
 
         /// <summary>

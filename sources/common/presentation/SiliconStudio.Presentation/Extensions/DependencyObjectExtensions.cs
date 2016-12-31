@@ -7,7 +7,6 @@ using System.Windows;
 using System.Reflection;
 using System.Windows.Media;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Presentation.Extensions
 {
@@ -169,7 +168,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <typeparam name="T">Type of child to find.</typeparam>
         /// <param name="source">Base node from where to start looking for children.</param>
         /// <returns>Returns the retrieved children, or empty otherwise.</returns>
-        [NotNull]
+        [ItemNotNull, NotNull]
         public static IEnumerable<T> FindLogicalChildrenOfType<T>([NotNull] this DependencyObject source) where T : DependencyObject
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -186,8 +185,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <typeparam name="T">The type expected for the template part.</typeparam>
         /// <param name="templatePart">The template part to evaluate.</param>
         /// <returns>The given template part, cast into the proper type.</returns>
-        [CanBeNull]
-        public static T CheckTemplatePart<T>([CanBeNull] DependencyObject templatePart) where T : DependencyObject
+        public static T CheckTemplatePart<T>(DependencyObject templatePart) where T : DependencyObject
         {
             if (templatePart == null)
                 return null;
@@ -290,15 +288,15 @@ namespace SiliconStudio.Presentation.Extensions
             for (var i = 0; i < childCount; i++)
             {
                 var child = getChildFunc(source, i);
-                if (child != null)
-                {
-                    if (child is T)
-                        yield return child as T;
+                if (child == null)
+                    continue;
 
-                    foreach (var subChild in FindChildrenOfType<T>(child, getChildrenCountFunc, getChildFunc).NotNull())
-                    {
-                        yield return subChild;
-                    }
+                if (child is T)
+                    yield return child as T;
+
+                foreach (var subChild in FindChildrenOfType<T>(child, getChildrenCountFunc, getChildFunc))
+                {
+                    yield return subChild;
                 }
             }
         }

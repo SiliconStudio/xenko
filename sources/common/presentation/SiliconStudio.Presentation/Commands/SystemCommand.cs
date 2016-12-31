@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Commands
 {
@@ -11,10 +12,10 @@ namespace SiliconStudio.Presentation.Commands
         private readonly Func<Window, bool> canExecute;
         private readonly Action<Window> execute;
 
-        internal SystemCommand(Func<Window, bool> canExecute, Action<Window> execute)
+        internal SystemCommand([NotNull] Func<Window, bool> canExecute, [NotNull] Action<Window> execute)
         {
-            if (canExecute == null) throw new ArgumentNullException("canExecute");
-            if (execute == null) throw new ArgumentNullException("execute");
+            if (canExecute == null) throw new ArgumentNullException(nameof(canExecute));
+            if (execute == null) throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
             this.execute = execute;
         }
@@ -25,10 +26,10 @@ namespace SiliconStudio.Presentation.Commands
             return window != null && canExecute(window);
         }
 
-        public void Execute(object parameter)
+        public void Execute([NotNull] object parameter)
         {
             var window = parameter as Window;
-            if (window == null) throw new ArgumentException(string.Format("The parameter of this command must be an instance of 'Window'."));
+            if (window == null) throw new ArgumentException("The parameter of this command must be an instance of \'Window\'.");
             execute(window);
         }
 

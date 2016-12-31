@@ -34,6 +34,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Drawing;
 
 namespace SiliconStudio.Presentation.Controls
@@ -78,7 +79,7 @@ namespace SiliconStudio.Presentation.Controls
 
         public IDrawingModel Model { get { return (IDrawingModel)GetValue(ModelProperty); } set { SetValue(ModelProperty, value); } }
 
-        private static void OnModelPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnModelPropertyChanged([NotNull] DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var view = (CanvasView)sender;
 
@@ -158,7 +159,7 @@ namespace SiliconStudio.Presentation.Controls
             DoInvalidateDrawing();
         }
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnSizeChanged(object sender, [NotNull] SizeChangedEventArgs e)
         {
             if (e.NewSize.Height > 0 && e.NewSize.Width > 0)
             {

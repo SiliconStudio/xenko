@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Dialogs
 {
     public class FileSaveModalDialog : ModalDialogBase, IFileSaveModalDialog
     {
-        internal FileSaveModalDialog(IDispatcherService dispatcher)
+        internal FileSaveModalDialog([NotNull] IDispatcherService dispatcher)
             : base(dispatcher)
         {
             Dialog = new CommonSaveFileDialog();

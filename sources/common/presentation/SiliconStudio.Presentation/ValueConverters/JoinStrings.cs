@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class JoinStrings : ValueConverterBase<JoinStrings>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var strings = (IEnumerable<string>)value;
@@ -21,6 +23,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var str = (string)value;

@@ -3,11 +3,13 @@
 
 using System.Collections.Generic;
 using System.Windows.Controls;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
     public static class TreeViewElementFinder
     {
+        [CanBeNull]
         public static TreeViewItem FindNext(TreeViewItem treeViewItem, bool visibleOnly)
         {
             while (true)
@@ -33,7 +35,8 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        public static TreeViewItem GetFirstVirtualizedItem(TreeViewItem treeViewItem)
+        [CanBeNull]
+        public static TreeViewItem GetFirstVirtualizedItem([NotNull] TreeViewItem treeViewItem)
         {
             for (var i = 0; i < treeViewItem.Items.Count; i++)
             {
@@ -45,6 +48,7 @@ namespace SiliconStudio.Presentation.Controls
             return null;
         }
 
+        [CanBeNull]
         public static ItemsControl FindNextSibling(ItemsControl itemsControl)
         {
             var parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
@@ -61,7 +65,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="treeView">The tree.</param>
         /// <param name="visibleOnly">If true, returns the first visible item.</param>
         /// <returns>Returns a TreeViewItem.</returns>
-        public static TreeViewItem FindFirst(TreeView treeView, bool visibleOnly)
+        [CanBeNull]
+        public static TreeViewItem FindFirst([NotNull] TreeView treeView, bool visibleOnly)
         {
             for (var i = 0; i < treeView.Items.Count; i++)
             {
@@ -78,7 +83,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="treeView">The tree.</param>
         /// <param name="visibleOnly">If true, returns the last visible item.</param>
         /// <returns>Returns a TreeViewItem.</returns>
-        public static TreeViewItem FindLast(TreeView treeView, bool visibleOnly)
+        [CanBeNull]
+        public static TreeViewItem FindLast([NotNull] TreeView treeView, bool visibleOnly)
         {
             for (var i = treeView.Items.Count - 1; i >= 0; i--)
             {
@@ -95,7 +101,8 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="treeView">The tree.</param>
         /// <param name="visibleOnly">True if only visible items should be returned.</param>
         /// <returns>Returns an enumerable of items.</returns>
-        public static IEnumerable<TreeViewItem> FindAll(TreeView treeView, bool visibleOnly)
+        [ItemNotNull]
+        public static IEnumerable<TreeViewItem> FindAll([NotNull] TreeView treeView, bool visibleOnly)
         {
             var currentItem = FindFirst(treeView, visibleOnly);
             while (currentItem != null)
@@ -105,6 +112,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        [CanBeNull]
         private static ItemsControl FindNextSiblingRecursive(ItemsControl itemsControl)
         {
             while (true)

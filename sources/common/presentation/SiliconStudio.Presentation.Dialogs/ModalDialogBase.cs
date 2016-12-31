@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Dialogs
@@ -13,8 +14,9 @@ namespace SiliconStudio.Presentation.Dialogs
         private readonly IDispatcherService dispatcher;
         protected CommonFileDialog Dialog;
 
-        protected ModalDialogBase(IDispatcherService dispatcher)
+        protected ModalDialogBase([NotNull] IDispatcherService dispatcher)
         {
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             this.dispatcher = dispatcher;
         }
 
@@ -31,6 +33,7 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public DialogResult Result { get; set; }
 
+        [NotNull]
         protected Task InvokeDialog()
         {
             return dispatcher.InvokeAsync(() =>
@@ -53,6 +56,7 @@ namespace SiliconStudio.Presentation.Dialogs
             });
         }
 
+        [NotNull]
         public abstract Task<DialogResult> ShowModal();
     }
 }

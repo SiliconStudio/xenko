@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -265,6 +266,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public Type TargetType8 { get { return chainedConverter.TargetType8; } set { chainedConverter.TargetType8 = value; } }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return this;

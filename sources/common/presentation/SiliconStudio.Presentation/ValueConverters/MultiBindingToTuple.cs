@@ -2,12 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
     public class MultiBindingToTuple : OneWayMultiValueConverter<MultiBindingToTuple>
     {
-        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        [NotNull]
+        public override object Convert([NotNull] object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             switch (values.Length)
             {

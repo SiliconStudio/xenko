@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Windows
@@ -39,12 +40,13 @@ namespace SiliconStudio.Presentation.Windows
             set { SetValue(IsCheckedProperty, value); }
         }
 
+        [NotNull]
         public static Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
             return Show(owner, message, caption, GetButtons(button), image, checkedMessage, isChecked);
         }
         
-        public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
+        public static async Task<CheckedMessageBoxResult> Show(WindowOwner owner, string message, string caption, [NotNull] IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, bool? isChecked)
         {
             var buttonList = buttons.ToList();
             var messageBox = new CheckedMessageBox

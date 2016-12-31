@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class Multiply : ValueConverterBase<Multiply>
     {
         /// <inheritdoc/>
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, [NotNull] Type targetType, object parameter, CultureInfo culture)
         {
             double scalar;
             try

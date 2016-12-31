@@ -116,7 +116,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void OnValueValueChanged()
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
+            var isInitializing = !templateApplied && initializingProperty == null;
             if (isInitializing)
                 initializingProperty = ValueProperty;
 
@@ -134,7 +134,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void OnComponentPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            bool isInitializing = !templateApplied && initializingProperty == null;
+            var isInitializing = !templateApplied && initializingProperty == null;
             if (isInitializing)
                 initializingProperty = e.Property;
 
@@ -159,9 +159,8 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (dependencyProperty != initializingProperty)
             {
-                BindingExpression expression = GetBindingExpression(dependencyProperty);
-                if (expression != null)
-                    expression.UpdateSource();
+                var expression = GetBindingExpression(dependencyProperty);
+                expression?.UpdateSource();
             }
         }
 
@@ -174,7 +173,7 @@ namespace SiliconStudio.Presentation.Controls
         protected static object CoerceComponentValue(DependencyObject sender, object basevalue)
         {
             var editor = (VectorEditorBase<T>)sender;
-            int decimalPlaces = editor.DecimalPlaces;
+            var decimalPlaces = editor.DecimalPlaces;
             return decimalPlaces < 0 ? basevalue : (float)Math.Round((float)basevalue, decimalPlaces);
         }
 

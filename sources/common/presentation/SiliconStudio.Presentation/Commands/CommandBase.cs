@@ -1,8 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
-using SiliconStudio.Presentation.Services;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Commands
@@ -20,8 +19,8 @@ namespace SiliconStudio.Presentation.Commands
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandBase"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
-        protected CommandBase(IViewModelServiceProvider serviceProvider)
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
+        protected CommandBase([NotNull] IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
         }

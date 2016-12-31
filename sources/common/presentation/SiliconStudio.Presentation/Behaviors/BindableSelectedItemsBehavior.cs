@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Collections;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -102,7 +103,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// Scrolls the items control to make the given item visible. This method should be overriden in implementations of this behavior.
         /// </summary>
         /// <param name="dataItem">The item to include</param>
-        protected abstract void ScrollIntoView(object dataItem);
+        protected abstract void ScrollIntoView([NotNull] object dataItem);
         
         /// <summary>
         /// Notifies that the collection of selected items has changed in the control. Updates the collection of selected items in the view model.
@@ -178,7 +179,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="d">The sender of the event (this behavior).</param>
         /// <param name="e">The arguments of the event.</param>
-        private static void SelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void SelectedItemsChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (BindableSelectedItemsBehavior<T>)d;
 
@@ -215,7 +216,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The arguments of the event.</param>
-        private void CollectionSelectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void CollectionSelectionChanged(object sender, [NotNull] NotifyCollectionChangedEventArgs e)
         {
             SanityCheck();
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Services
 {
@@ -30,6 +31,7 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
+        [NotNull]
         Task InvokeAsync(Action callback);
 
         /// <summary>
@@ -38,6 +40,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
         /// <remarks>This method uses a low priority to schedule the action on the dispatcher thread.</remarks>
+        [NotNull]
         Task LowPriorityInvokeAsync(Action callback);
 
         /// <summary>
@@ -46,6 +49,7 @@ namespace SiliconStudio.Presentation.Services
         /// <typeparam name="TResult">The type of result returned by the task.</typeparam>
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>
+        [NotNull]
         Task<TResult> InvokeAsync<TResult>(Func<TResult> callback);
 
         /// <summary>
@@ -53,6 +57,7 @@ namespace SiliconStudio.Presentation.Services
         /// </summary>
         /// <param name="task">The asynchronous task to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
+        [NotNull]
         Task InvokeTask(Func<Task> task);
 
         /// <summary>
@@ -61,6 +66,7 @@ namespace SiliconStudio.Presentation.Services
         /// <typeparam name="TResult">The type of result returned by the task.</typeparam>
         /// <param name="task">The asynchronous task to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>
+        [NotNull]
         Task<TResult> InvokeTask<TResult>(Func<Task<TResult>> task);
 
         /// <summary>

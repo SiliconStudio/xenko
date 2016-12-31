@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -41,7 +42,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
-        private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void IsEnabledChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (MouseMoveCaptureBehaviorBase<TElement>)d;
             if ((bool)e.NewValue != true)
@@ -53,9 +54,7 @@ namespace SiliconStudio.Presentation.Behaviors
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool AreModifiersValid()
         {
-            if (Modifiers == null)
-                return true;
-            return Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers);
+            return Modifiers == null || (Modifiers == ModifierKeys.None ? Keyboard.Modifiers == ModifierKeys.None : Keyboard.Modifiers.HasFlag(Modifiers));
         }
 
         protected void Cancel()
@@ -93,19 +92,19 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.LostMouseCapture -= OnLostMouseCapture;
         }
 
-        protected virtual void OnMouseDown(MouseButtonEventArgs e)
+        protected virtual void OnMouseDown([NotNull] MouseButtonEventArgs e)
         {
         }
 
-        protected virtual void OnMouseMove(MouseEventArgs e)
+        protected virtual void OnMouseMove([NotNull] MouseEventArgs e)
         {
         }
 
-        protected virtual void OnMouseUp(MouseButtonEventArgs e)
+        protected virtual void OnMouseUp([NotNull] MouseButtonEventArgs e)
         {
         }
 
-        private void MouseDown(object sender, MouseButtonEventArgs e)
+        private void MouseDown(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (!IsEnabled || IsInProgress)
                 return;
@@ -113,7 +112,7 @@ namespace SiliconStudio.Presentation.Behaviors
             OnMouseDown(e);
         }
 
-        private void MouseMove(object sender, MouseEventArgs e)
+        private void MouseMove(object sender, [NotNull] MouseEventArgs e)
         {
             if (!IsEnabled || !IsInProgress)
                 return;
@@ -121,7 +120,7 @@ namespace SiliconStudio.Presentation.Behaviors
             OnMouseMove(e);
         }
 
-        private void MouseUp(object sender, MouseButtonEventArgs e)
+        private void MouseUp(object sender, [NotNull] MouseButtonEventArgs e)
         {
             if (!IsEnabled || !IsInProgress || !AssociatedObject.IsMouseCaptured)
                 return;
@@ -129,7 +128,7 @@ namespace SiliconStudio.Presentation.Behaviors
             OnMouseUp(e);
         }
 
-        private void OnLostMouseCapture(object sender, MouseEventArgs e)
+        private void OnLostMouseCapture(object sender, [NotNull] MouseEventArgs e)
         {
             var obj = (UIElement)sender;
 

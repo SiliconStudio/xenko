@@ -4,6 +4,7 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Adorners
 {
@@ -96,7 +97,7 @@ namespace SiliconStudio.Presentation.Adorners
         /// Initializes a new instance of the <see cref="HighlightBorderAdorner"/> class.
         /// </summary>
         /// <param name="adornedElement"></param>
-        public HighlightBorderAdorner(UIElement adornedElement)
+        public HighlightBorderAdorner([NotNull] UIElement adornedElement)
             : base(adornedElement)
         {
         }
@@ -230,7 +231,7 @@ namespace SiliconStudio.Presentation.Adorners
             }
         }
 
-        private static void PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void PropertyChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var adorner = (Adorner)d;
             adorner.InvalidateVisual();

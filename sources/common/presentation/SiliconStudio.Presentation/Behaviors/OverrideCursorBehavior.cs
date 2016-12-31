@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -29,7 +30,7 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.Cursor = null;
             base.OnDetaching();
         }
-        private static void PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void PropertyChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (OverrideCursorBehavior)d;
             behavior.UpdateCursorOverride();

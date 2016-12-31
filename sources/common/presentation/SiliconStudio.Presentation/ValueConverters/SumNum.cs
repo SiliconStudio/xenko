@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack(object value, [NotNull] Type targetType, object parameter, CultureInfo culture)
         {
             var doubleValue = ConverterHelper.ConvertToDouble(value, culture);
             var doubleParameter = ConverterHelper.ConvertToDouble(parameter, culture);

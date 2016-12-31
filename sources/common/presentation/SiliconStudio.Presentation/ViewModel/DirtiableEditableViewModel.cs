@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Dirtiables;
 
@@ -18,7 +19,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtiableEditableViewModel"/> class.
         /// </summary>
-        protected DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
+        protected DirtiableEditableViewModel([NotNull] IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
         }

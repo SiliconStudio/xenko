@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -18,17 +19,19 @@ namespace SiliconStudio.Presentation.Collections
     /// <typeparam name="T">The type of item contained in the <see cref="ObservableList{T}"/>.</typeparam>
     public abstract class NonGenericObservableCollectionWrapper<T> : IList, IList<T>, INotifyPropertyChanged, INotifyCollectionChanged
     {
-        protected readonly IList<T> List;
+        [NotNull] protected readonly IList<T> List;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NonGenericObservableListWrapper{T}"/> class.
         /// </summary>
         /// <param name="list">The <see cref="ObservableList{T}"/> to wrap.</param>
-        protected NonGenericObservableCollectionWrapper(IList<T> list)
+        protected NonGenericObservableCollectionWrapper([NotNull] IList<T> list)
         {
-            List = list;
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (!(list is INotifyPropertyChanged)) throw new ArgumentException(@"The list must implements INotifyPropertyChanged", nameof(list));
             if (!(list is INotifyCollectionChanged)) throw new ArgumentException(@"The list must implements INotifyCollectionChanged", nameof(list));
+
+            List = list;
             ((INotifyPropertyChanged)List).PropertyChanged += (sender, e) => PropertyChanged?.Invoke(this, e);
             ((INotifyCollectionChanged)List).CollectionChanged += (sender, e) => CollectionChanged?.Invoke(this, e);
         }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -55,7 +56,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static void CommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void CommandChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ButtonCloseWindowBehavior)d;
             var oldCommand = e.OldValue as ICommand;
@@ -71,7 +72,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private static void CommandParameterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void CommandParameterChanged([NotNull] DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (ButtonCloseWindowBehavior)d;
             if (behavior.Command != null)
@@ -144,7 +145,7 @@ namespace SiliconStudio.Presentation.Behaviors
                 throw new MissingFieldException(nameof(Window), FieldName);
         }
 
-        public static bool IsModal(Window window)
+        public static bool IsModal([NotNull] Window window)
         {
             return (bool)ShowingAsDialog.GetValue(window);
         }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Presentation.Core
         /// Initializes a new instance of the <see cref="AnonymousComparer{T}"/> class.
         /// </summary>
         /// <param name="compare">The comparison function to use for this comparer.</param>
-        public AnonymousComparer(Func<T, T, int> compare)
+        public AnonymousComparer([NotNull] Func<T, T, int> compare)
         {
             if (compare == null) throw new ArgumentNullException(nameof(compare));
             this.compare = compare;

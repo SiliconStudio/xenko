@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 // Code from http://www.wpfmentor.com/2009/01/how-to-debug-triggers-using-trigger.html
 // No license specified - this code is trimmed out from Release build anyway so it should be ok using it this way
@@ -39,7 +40,7 @@ namespace SiliconStudio.Presentation.Diagnostics
         /// </summary>
         /// <param name="trigger">The trigger.</param>
         /// <returns></returns>
-        public static string GetTriggerName(TriggerBase trigger)
+        public static string GetTriggerName([NotNull] TriggerBase trigger)
         {
             return (string)trigger.GetValue(TriggerNameProperty);
         }
@@ -50,7 +51,7 @@ namespace SiliconStudio.Presentation.Diagnostics
         /// </summary>
         /// <param name="trigger">The trigger.</param>
         /// <returns></returns>
-        public static void SetTriggerName(TriggerBase trigger, string value)
+        public static void SetTriggerName([NotNull] TriggerBase trigger, string value)
         {
             trigger.SetValue(TriggerNameProperty, value);
         }
@@ -71,7 +72,7 @@ namespace SiliconStudio.Presentation.Diagnostics
         /// </summary>
         /// <param name="trigger">The trigger.</param>
         /// <returns></returns>
-        public static bool GetTraceEnabled(TriggerBase trigger)
+        public static bool GetTraceEnabled([NotNull] TriggerBase trigger)
         {
             return (bool)trigger.GetValue(TraceEnabledProperty);
         }
@@ -81,7 +82,7 @@ namespace SiliconStudio.Presentation.Diagnostics
         /// </summary>
         /// <param name="trigger"></param>
         /// <param name="value"></param>
-        public static void SetTraceEnabled(TriggerBase trigger, bool value)
+        public static void SetTraceEnabled([NotNull] TriggerBase trigger, bool value)
         {
             trigger.SetValue(TraceEnabledProperty, value);
         }
@@ -117,13 +118,13 @@ namespace SiliconStudio.Presentation.Diagnostics
             {
                 // remove the dummy storyboards
                 
-                foreach (TriggerActionCollection actionCollection in new[] { triggerBase.EnterActions, triggerBase.ExitActions })
+                foreach (var actionCollection in new[] { triggerBase.EnterActions, triggerBase.ExitActions })
                 {
-                    foreach (TriggerAction triggerAction in actionCollection)
+                    foreach (var triggerAction in actionCollection)
                     {
-                        BeginStoryboard bsb = triggerAction as BeginStoryboard;
+                        var bsb = triggerAction as BeginStoryboard;
 
-                        if (bsb != null && bsb.Storyboard != null && bsb.Storyboard is TriggerTraceStoryboard)
+                        if (bsb?.Storyboard is TriggerTraceStoryboard)
                         {
                             actionCollection.Remove(bsb);
                             break;
@@ -145,8 +146,8 @@ namespace SiliconStudio.Presentation.Diagnostics
         /// </summary>
         private class TriggerTraceStoryboard : Storyboard
         {
-            public TriggerTraceStoryboardType StoryboardType { get; private set; }
-            public TriggerBase TriggerBase { get; private set; }
+            public TriggerTraceStoryboardType StoryboardType { get; }
+            public TriggerBase TriggerBase { get; }
 
             public TriggerTraceStoryboard(TriggerBase triggerBase, TriggerTraceStoryboardType storyboardType)
             {
@@ -166,26 +167,22 @@ namespace SiliconStudio.Presentation.Diagnostics
 
                 if (format.StartsWith("Storyboard has begun;"))
                 {
-                    TriggerTraceStoryboard storyboard = args[1] as TriggerTraceStoryboard;
+                    var storyboard = args[1] as TriggerTraceStoryboard;
                     if (storyboard != null)
                     {
                         // add a breakpoint here to see when your trigger has been
                         // entered or exited
                         
                         // the element being acted upon
-                        object targetElement = args[5];
+                        var targetElement = args[5];
                         
                         // the namescope of the element being acted upon
-                        INameScope namescope = (INameScope)args[7];
+                        var namescope = (INameScope)args[7];
                         
-                        TriggerBase triggerBase = storyboard.TriggerBase;
-                        string triggerName = GetTriggerName(storyboard.TriggerBase);
+                        var triggerBase = storyboard.TriggerBase;
+                        var triggerName = GetTriggerName(storyboard.TriggerBase);
 
-                        Debug.WriteLine(string.Format("Element: {0}, {1}: {2}: {3}",
-                            targetElement,
-                            triggerBase.GetType().Name,
-                            triggerName,
-                            storyboard.StoryboardType));
+                        Debug.WriteLine($"Element: {targetElement}, {triggerBase.GetType().Name}: {triggerName}: {storyboard.StoryboardType}");
                     }
                 }
             }

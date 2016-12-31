@@ -3,12 +3,14 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
     public class ItemToIndex : ValueConverterBase<ItemToIndex>
     {
         /// <inheritdoc/>
+        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = (IList)parameter;

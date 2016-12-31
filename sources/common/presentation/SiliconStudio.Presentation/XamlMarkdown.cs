@@ -44,6 +44,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation
 {
@@ -101,7 +102,7 @@ namespace SiliconStudio.Presentation
         /// Creates an instance of <see cref="XamlMarkdown"/> with <paramref name="resourcesProvider"/> for styles look-up.
         /// </summary>
         /// <param name="resourcesProvider">The framework element used for styles look-up.</param>
-        public XamlMarkdown(FrameworkElement resourcesProvider)
+        public XamlMarkdown([NotNull] FrameworkElement resourcesProvider)
             : this()
         {
             if (resourcesProvider == null) throw new ArgumentNullException(nameof(resourcesProvider));
@@ -159,26 +160,35 @@ namespace SiliconStudio.Presentation
         /// 
         public bool StrictBoldItalic { get { return (bool)GetValue(StrictBoldItalicProperty); } set { SetValue(StrictBoldItalicProperty, value); } }
 
+        [CanBeNull]
         private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));
 
+        [CanBeNull]
         private Style DocumentStyle => documentStyle ?? (documentStyle = TryFindStyle(DocumentStyleKey));
 
+        [CanBeNull]
         private Style Heading1Style => heading1Style ?? (heading1Style = TryFindStyle(Heading1StyleKey));
 
+        [CanBeNull]
         private Style Heading2Style => heading2Style ?? (heading2Style = TryFindStyle(Heading2StyleKey));
 
+        [CanBeNull]
         private Style Heading3Style => heading3Style ?? (heading3Style = TryFindStyle(Heading3StyleKey));
 
+        [CanBeNull]
         private Style Heading4Style => heading4Style ?? (heading4Style = TryFindStyle(Heading4StyleKey));
 
+        [CanBeNull]
         private Style ImageStyle => imageStyle ?? (imageStyle = TryFindStyle(ImageStyleKey));
 
+        [CanBeNull]
         private Style TryFindStyle(object resourceKey)
         {
             return resourcesProvider?.TryFindResource(resourceKey) as Style;
         }
 
-        public FlowDocument Transform(string text)
+        [NotNull]
+        public FlowDocument Transform([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -200,7 +210,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Perform transformations that form block-level tags like paragraphs, headers, and list items.
         /// </summary>
-        private IEnumerable<Block> RunBlockGamut(string text)
+        private IEnumerable<Block> RunBlockGamut([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -213,7 +223,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Perform transformations that occur *within* block-level tags like paragraphs, headers, and list items.
         /// </summary>
-        private IEnumerable<Inline> RunSpanGamut(string text)
+        private IEnumerable<Inline> RunSpanGamut([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -231,7 +241,8 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// splits on two or more newlines, to form "paragraphs";    
         /// </summary>
-        private IEnumerable<Block> FormParagraphs(string text)
+        [ItemNotNull]
+        private IEnumerable<Block> FormParagraphs([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -317,7 +328,7 @@ namespace SiliconStudio.Presentation
         /// <remarks>
         /// [link text](url "title") 
         /// </remarks>
-        private IEnumerable<Inline> DoAnchors(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoAnchors([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -325,7 +336,8 @@ namespace SiliconStudio.Presentation
             return Evaluate(text, AnchorInline, AnchorInlineEvaluator, defaultHandler);
         }
 
-        private Inline AnchorInlineEvaluator(Match match)
+        [NotNull]
+        private Inline AnchorInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -394,7 +406,7 @@ namespace SiliconStudio.Presentation
         /// ![alt text][id]
         /// ![alt text](url "optional title")
         /// </remarks>
-        private IEnumerable<Inline> DoImages(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoImages([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             
@@ -404,7 +416,8 @@ namespace SiliconStudio.Presentation
                 s => Evaluate(s, ImageInline, ImageInlineEvaluator, defaultHandler));
         }
 
-        private Inline HtmlImageInlineEvaluator(Match match)
+        [NotNull]
+        private Inline HtmlImageInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             
@@ -416,7 +429,8 @@ namespace SiliconStudio.Presentation
             return ImageTag(url, null, null);
         }
 
-        private Inline ImageInlineEvaluator(Match match)
+        [NotNull]
+        private Inline ImageInlineEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -430,6 +444,7 @@ namespace SiliconStudio.Presentation
             return ImageTag(url, altText, title);
         }
 
+        [NotNull]
         private Inline ImageTag(string url, string altText, string title)
         {
             var image = new Image();
@@ -508,7 +523,7 @@ namespace SiliconStudio.Presentation
         /// ...  
         /// ###### Header 6  
         /// </remarks>
-        private IEnumerable<Block> DoHeaders(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoHeaders([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -516,7 +531,8 @@ namespace SiliconStudio.Presentation
                 s => Evaluate(s, HeaderAtx, AtxHeaderEvaluator, defaultHandler));
         }
 
-        private Block SetextHeaderEvaluator(Match match)
+        [NotNull]
+        private Block SetextHeaderEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -526,7 +542,8 @@ namespace SiliconStudio.Presentation
             return CreateHeader(level, RunSpanGamut(header.Trim()));
         }
 
-        private Block AtxHeaderEvaluator(Match match)
+        [NotNull]
+        private Block AtxHeaderEvaluator([NotNull] Match match)
         {
             if (match == null)
                 throw new ArgumentNullException(nameof(match));
@@ -536,7 +553,8 @@ namespace SiliconStudio.Presentation
             return CreateHeader(level, RunSpanGamut(header));
         }
 
-        public Block CreateHeader(int level, IEnumerable<Inline> content)
+        [NotNull]
+        public Block CreateHeader(int level, [NotNull] IEnumerable<Inline> content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
@@ -606,14 +624,15 @@ namespace SiliconStudio.Presentation
         /// ---
         /// - - -
         /// </remarks>
-        private IEnumerable<Block> DoHorizontalRules(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoHorizontalRules([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
             return Evaluate(text, HorizontalRules, RuleEvaluator, defaultHandler);
         }
 
-        private Block RuleEvaluator(Match match)
+        [NotNull]
+        private Block RuleEvaluator([NotNull] Match match)
         {
             if (match == null)
                 throw new ArgumentNullException(nameof(match));
@@ -657,17 +676,17 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown lists into HTML ul and ol and li tags
         /// </summary>
-        private IEnumerable<Block> DoLists(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        private IEnumerable<Block> DoLists([NotNull] string text, Func<string, IEnumerable<Block>> defaultHandler)
         {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             // We use a different prefix before nested lists than top-level lists.
             // See extended comment in _ProcessListItems().
             return Evaluate(text, listLevel > 0 ? ListNested : ListTopLevel, ListEvaluator, defaultHandler);
         }
 
-        private Block ListEvaluator(Match match)
+        [NotNull]
+        private Block ListEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -689,7 +708,8 @@ namespace SiliconStudio.Presentation
         /// Process the contents of a single ordered or unordered list, splitting it
         /// into individual list items.
         /// </summary>
-        private IEnumerable<ListItem> ProcessListItems(string list, string marker)
+        [ItemNotNull]
+        private IEnumerable<ListItem> ProcessListItems([NotNull] string list, string marker)
         {
             // The listLevel global keeps track of when we're inside a list.
             // Each time we enter a list, we increment it; when we leave a list,
@@ -739,7 +759,8 @@ namespace SiliconStudio.Presentation
             }
         }
 
-        private ListItem ListItemEvaluator(Match match)
+        [NotNull]
+        private ListItem ListItemEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -769,7 +790,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown `code spans` into HTML code tags
         /// </summary>
-        private IEnumerable<Inline> DoCodeSpans(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoCodeSpans([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -798,7 +819,8 @@ namespace SiliconStudio.Presentation
             return Evaluate(text, CodeSpan, CodeSpanEvaluator, defaultHandler);
         }
 
-        private Inline CodeSpanEvaluator(Match match)
+        [NotNull]
+        private Inline CodeSpanEvaluator([NotNull] Match match)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -838,7 +860,7 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// Turn Markdown *italics* and **bold** into HTML strong and em tags
         /// </summary>
-        private IEnumerable<Inline> DoItalicsAndBold(string text, Func<string, IEnumerable<Inline>> defaultHandler)
+        private IEnumerable<Inline> DoItalicsAndBold([NotNull] string text, Func<string, IEnumerable<Inline>> defaultHandler)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -854,7 +876,8 @@ namespace SiliconStudio.Presentation
                     defaultHandler));
         }
 
-        private Inline ItalicEvaluator(Match match, int contentGroup)
+        [NotNull]
+        private Inline ItalicEvaluator([NotNull] Match match, int contentGroup)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -862,7 +885,8 @@ namespace SiliconStudio.Presentation
             return Create<Italic, Inline>(RunSpanGamut(content));
         }
 
-        private Inline BoldEvaluator(Match match, int contentGroup)
+        [NotNull]
+        private Inline BoldEvaluator([NotNull] Match match, int contentGroup)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
 
@@ -878,7 +902,8 @@ namespace SiliconStudio.Presentation
         /// makes sure text ends with a couple of newlines; 
         /// removes any blank lines (only spaces) in the text
         /// </summary>
-        private string Normalize(string text)
+        [NotNull]
+        private string Normalize([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -933,7 +958,8 @@ namespace SiliconStudio.Presentation
         /// <summary>
         /// this is to emulate what's available in PHP
         /// </summary>
-        private static string RepeatString(string text, int count)
+        [NotNull]
+        private static string RepeatString([NotNull] string text, int count)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -943,7 +969,8 @@ namespace SiliconStudio.Presentation
             return sb.ToString();
         }
 
-        private static TResult Create<TResult, TContent>(IEnumerable<TContent> content)
+        [NotNull]
+        private static TResult Create<TResult, TContent>([NotNull] IEnumerable<TContent> content)
             where TResult : IAddChild, new()
         {
             var result = new TResult();
@@ -955,7 +982,7 @@ namespace SiliconStudio.Presentation
             return result;
         }
 
-        private IEnumerable<T> Evaluate<T>(string text, Regex expression, Func<Match, T> build, Func<string, IEnumerable<T>> rest)
+        private IEnumerable<T> Evaluate<T>([NotNull] string text, [NotNull] Regex expression, Func<Match, T> build, Func<string, IEnumerable<T>> rest)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 
@@ -989,7 +1016,8 @@ namespace SiliconStudio.Presentation
 
         private static readonly Regex Eoln = new Regex(@"\s+");
 
-        public IEnumerable<Inline> DoText(string text)
+        [ItemNotNull]
+        private IEnumerable<Inline> DoText([NotNull] string text)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
 

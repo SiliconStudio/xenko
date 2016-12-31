@@ -13,6 +13,6 @@ namespace SiliconStudio.Presentation.Collections
     public interface IObservableList<T> : IList<T>, IObservableCollection<T>
     {
         [CollectionAccess(CollectionAccessType.UpdatedContent)]
-        void AddRange(IEnumerable<T> items);
+        void AddRange([NotNull] IEnumerable<T> items);
     }
 }

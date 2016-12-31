@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.Windows;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
@@ -16,7 +17,7 @@ namespace SiliconStudio.Presentation.Dialogs
     {
         private Action onClosedAction;
 
-        public DialogService(IDispatcherService dispatcher, string applicationName)
+        public DialogService([NotNull] IDispatcherService dispatcher, string applicationName)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 

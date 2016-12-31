@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.MarkupExtensions
 {
@@ -26,6 +27,7 @@ namespace SiliconStudio.Presentation.MarkupExtensions
 
         public Size Value { get; set; }
 
+        [NotNull]
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return Value;

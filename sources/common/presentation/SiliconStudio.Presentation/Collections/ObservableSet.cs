@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Collections
         }
 
         [CollectionAccess(CollectionAccessType.UpdatedContent)]
-        public ObservableSet(IEnumerable<T> collection)
+        public ObservableSet([NotNull] IEnumerable<T> collection)
               : this(EqualityComparer<T>.Default, collection)
         {
         }
@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.Collections
         }
 
         [CollectionAccess(CollectionAccessType.UpdatedContent)]
-        public ObservableSet(IEqualityComparer<T> comparer, IEnumerable<T> collection)
+        public ObservableSet(IEqualityComparer<T> comparer, [NotNull] IEnumerable<T> collection)
         {
             list = new List<T>();
             hashSet = new HashSet<T>(comparer);
@@ -93,7 +93,7 @@ namespace SiliconStudio.Presentation.Collections
         [NotNull, Pure]
         public IList ToIList()
         {
-            return new NonGenericObservableSetWrapper<T>(this);
+            return new NonGenericObservableListWrapper<T>(this);
         }
 
         [CollectionAccess(CollectionAccessType.UpdatedContent)]
@@ -107,7 +107,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
-        public void AddRange([NotNull] IEnumerable<T> items)
+        public void AddRange(IEnumerable<T> items)
         {
             var itemList = items.Where(x => hashSet.Add(x)).ToList();
             if (itemList.Count > 0)
@@ -205,7 +205,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs arg)
+        protected void OnPropertyChanged([NotNull] PropertyChangedEventArgs arg)
         {
             PropertyChanged?.Invoke(this, arg);
         }

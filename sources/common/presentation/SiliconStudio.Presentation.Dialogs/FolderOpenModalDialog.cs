@@ -2,15 +2,15 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.Dialogs
 {
     public class FolderOpenModalDialog : ModalDialogBase, IFolderOpenModalDialog
     {
-        internal FolderOpenModalDialog(IDispatcherService dispatcher)
+        internal FolderOpenModalDialog([NotNull] IDispatcherService dispatcher)
             : base(dispatcher)
         {
             Dialog = new CommonOpenFileDialog { EnsurePathExists = true };

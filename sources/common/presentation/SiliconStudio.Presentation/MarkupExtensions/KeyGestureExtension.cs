@@ -3,6 +3,7 @@
 using System;
 using System.Windows.Input;
 using System.Windows.Markup;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.MarkupExtensions
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Presentation.MarkupExtensions
         /// Initializes a new instance of the <see cref="KeyGestureExtension"/> class with a string representing the gesture.
         /// </summary>
         /// <param name="gesture">A string representing the gesture.</param>
-        public KeyGestureExtension(string gesture)
+        public KeyGestureExtension([NotNull] string gesture)
         {
             var modifiers = ModifierKeys.None;
             var tokens = gesture.Split('+');

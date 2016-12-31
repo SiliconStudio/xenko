@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
@@ -80,7 +81,7 @@ namespace SiliconStudio.Presentation.Controls
 
         [DependsOn("Indentation")]
         public double Offset => ParentTreeViewItem?.Offset + Indentation ?? 0;
-
+        
         public TreeViewItem ParentTreeViewItem => ItemsControlFromItemContainer(this) as TreeViewItem;
 
         public TreeView ParentTreeView { get; internal set; }
@@ -105,13 +106,13 @@ namespace SiliconStudio.Presentation.Controls
         private bool IsExpandableOnInput => IsEnabled;
         
         // Synchronizes the value of the child's IsVirtualizing property with that of the parent's
-        internal static void IsVirtualizingPropagationHelper(DependencyObject parent, DependencyObject element)
+        internal static void IsVirtualizingPropagationHelper([NotNull] DependencyObject parent, [NotNull] DependencyObject element)
         {
             SynchronizeValue(VirtualizingStackPanel.IsVirtualizingProperty, parent, element);
             SynchronizeValue(VirtualizingStackPanel.VirtualizationModeProperty, parent, element);
         }
 
-        private static void SynchronizeValue(DependencyProperty dp, DependencyObject parent, DependencyObject child)
+        private static void SynchronizeValue([NotNull] DependencyProperty dp, [NotNull] DependencyObject parent, [NotNull] DependencyObject child)
         {
             var value = parent.GetValue(dp);
             child.SetValue(dp, value);

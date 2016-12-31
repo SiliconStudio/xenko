@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Globalization;
 using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.TextChanged -= TextChanged;
         }
 
-        private void TextChanged(object sender, TextChangedEventArgs e)
+        private void TextChanged(object sender, [NotNull] TextChangedEventArgs e)
         {
             if (updatingText)
                 return;
@@ -43,7 +44,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
 
             // Update the binding source on each change
-            BindingExpression expression = AssociatedObject.GetBindingExpression(TextBox.TextProperty);
+            var expression = AssociatedObject.GetBindingExpression(TextBox.TextProperty);
             expression?.UpdateSource();
         }
     }

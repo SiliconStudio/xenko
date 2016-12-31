@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Interactivity
 {
@@ -21,6 +22,7 @@ namespace SiliconStudio.Presentation.Interactivity
 
         public DependencyObject AssociatedObject { get; private set; }
 
+        [NotNull]
         public BehaviorCollection Clone()
         {
             var clone = new BehaviorCollection();
@@ -31,7 +33,7 @@ namespace SiliconStudio.Presentation.Interactivity
             return clone;
         }
 
-        public void Attach(DependencyObject dependencyObject)
+        public void Attach([NotNull] DependencyObject dependencyObject)
         {
             if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
             // Aleady attached
@@ -43,7 +45,7 @@ namespace SiliconStudio.Presentation.Interactivity
 
             AssociatedObject = dependencyObject;
             var behaviors = System.Windows.Interactivity.Interaction.GetBehaviors(dependencyObject);
-            foreach (Behavior behavior in this)
+            foreach (var behavior in this)
             {
                 behaviors.Add(behavior);
             }
@@ -54,7 +56,7 @@ namespace SiliconStudio.Presentation.Interactivity
             if (AssociatedObject != null)
             {
                 var behaviors = System.Windows.Interactivity.Interaction.GetBehaviors(AssociatedObject);
-                foreach (Behavior behavior in this)
+                foreach (var behavior in this)
                 {
                     behaviors.Remove(behavior);
                 }

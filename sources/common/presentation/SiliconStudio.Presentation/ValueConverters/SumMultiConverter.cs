@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
     public class SumMultiConverter : OneWayMultiValueConverter<SumMultiConverter>
     {
-        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        [NotNull]
+        public override object Convert([NotNull] object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2)
                 throw new InvalidOperationException("This multi converter must be invoked with at least two elements");
