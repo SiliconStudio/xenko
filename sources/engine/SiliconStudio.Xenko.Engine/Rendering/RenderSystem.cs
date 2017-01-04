@@ -147,7 +147,11 @@ namespace SiliconStudio.Xenko.Rendering
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
 
-                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
+                        var renderStage = renderViewStage.RenderStage;
+                        if (renderStage.Filter != null && !renderStage.Filter.IsVisible(renderObject, view, renderViewStage))
+                            continue;
+
+                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderStage);
 
                         // Note: Used mostly during updating
                         viewFeature.RenderNodes.Add(renderNode, batch.ViewFeatureRenderNodeCache);

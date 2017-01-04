@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public SortMode SortMode { get; set; }
 
+        public RenderStageFilter Filter { get; set; }
+
         public RenderStage()
         {
             Id = Guid.NewGuid();

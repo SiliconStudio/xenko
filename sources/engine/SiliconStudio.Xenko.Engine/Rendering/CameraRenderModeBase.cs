@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Collect render objects
             var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
-            visibilityGroup.Collect(MainRenderView);
+            visibilityGroup.TryCollect(MainRenderView);
         }
 
         public static void UpdateCameraToRenderView(RenderContext context, RenderView renderView)

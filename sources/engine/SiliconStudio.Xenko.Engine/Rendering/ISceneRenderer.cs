@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Interface for a scene graphics renderer
     /// </summary>
-    public interface ISceneRenderer : IGraphicsCompositorTopPart
+    public interface ISceneRenderer : IRenderCollector, IGraphicsRenderer
     {
         /// <summary>
         /// Gets or sets the output of this effect

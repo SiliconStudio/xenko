@@ -295,6 +295,7 @@
     </Compile>
     <Compile Include="Rendering\MeshPipelineProcessor.cs" />
     <Compile Include="Rendering\PipelineProcessor.cs" />
+    <Compile Include="Rendering\RenderStageFilter.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />

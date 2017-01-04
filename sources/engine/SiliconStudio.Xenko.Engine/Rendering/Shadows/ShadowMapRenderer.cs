@@ -100,6 +100,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Gets the current camera
                 CurrentView = renderViewData.Key;
 
+                // Make sure the view is collected (if not done previously)
+                context.VisibilityGroup.TryCollect(CurrentView);
+
                 // Check if there is any shadow receivers at all
                 if (CurrentView.MinimumDistance >= CurrentView.MaximumDistance)
                 {

@@ -35,6 +35,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Index = -1;
 
+        internal int LastFrameCollected;
+
         internal float MinimumDistance;
 
         internal float MaximumDistance;

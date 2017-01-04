@@ -172,6 +172,9 @@ namespace SiliconStudio.Xenko.Rendering
             renderModel.Model = model;
             renderModel.Meshes = renderMeshes;
 
+            // Update before first add so that RenderGroup is properly set
+            UpdateRenderModel(renderModel);
+
             // Update and register with render system
             lock (VisibilityGroup.RenderObjects)
             {

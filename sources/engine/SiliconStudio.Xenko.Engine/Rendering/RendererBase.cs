@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Base implementation of <see cref="IGraphicsRenderer"/>
     /// </summary>
     [DataContract]
-    public abstract class RendererBase : RendererCoreBase, IGraphicsRenderer, IGraphicsCompositorPart
+    public abstract class RendererBase : RendererCoreBase, IGraphicsRenderer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RendererBase"/> class.

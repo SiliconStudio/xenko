@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public IGraphicsCompositorTopPart TopLevel { get; set; }
+        public IGraphicsCompositorPart TopLevel { get; set; }
 
 
         public void Draw(RenderDrawContext context)
@@ -89,12 +89,12 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         // Collect in the game graphics compositor: Setup features/stages, enumerate views and populates VisibilityGroup
                         TopLevel.Collect(context.RenderContext);
 
-                        // Collect visibile objects from each view
-                        foreach (var view in RenderSystem.Views)
-                            visibilityGroup.Collect(view);
-
                         // Collect in render features
                         RenderSystem.Collect(context.RenderContext);
+
+                        // Collect visibile objects from each view (that were not properly collected previously)
+                        foreach (var view in RenderSystem.Views)
+                            visibilityGroup.TryCollect(view);
 
                         // Extract
                         RenderSystem.Extract(context.RenderContext);

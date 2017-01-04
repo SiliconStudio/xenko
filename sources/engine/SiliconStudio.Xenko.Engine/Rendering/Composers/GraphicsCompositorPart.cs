@@ -4,24 +4,13 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
-    public interface IGraphicsCompositorPart : IIdentifiable
+    public interface IGraphicsCompositorPart : IIdentifiable, IRenderCollector, IGraphicsRendererBase
     {
     }
 
     public interface IGraphicsCompositorSharedPart : IGraphicsCompositorPart
     {
         string Name { get; }
-    }
-
-    public interface IGraphicsCompositorTopPart : IGraphicsCompositorPart, IGraphicsRenderer, IRenderCollector
-    {
-    }
-
-    public interface IGraphicsCompositorViewPart : IGraphicsCompositorPart
-    {
-        void Collect(RenderContext renderContext, RenderView mainRenderView);
-
-        void Draw(RenderDrawContext renderContext, RenderView mainRenderView);
     }
 
     /// <summary>
@@ -36,17 +25,15 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public virtual string Name => GetType().Name;
 
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
+        public bool Initialized { get; private set; }
+
         protected GraphicsCompositorPart()
         {
             Id = Guid.NewGuid();
         }
-    }
 
-    public abstract class GraphicsCompositorTopPart : GraphicsCompositorPart, IGraphicsCompositorTopPart
-    {
-        [DefaultValue(true)]
-        public bool Enabled { get; set; } = true;
-        public bool Initialized { get; private set; }
         public void Initialize(RenderContext context)
         {
             Initialized = true;
@@ -61,17 +48,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         }
 
         public virtual void Draw(RenderDrawContext renderContext)
-        {
-        }
-    }
-
-    public abstract class GraphicsCompositorViewPart : GraphicsCompositorPart, IGraphicsCompositorViewPart
-    {
-        public virtual void Collect(RenderContext renderContext, RenderView mainRenderView)
-        {
-        }
-
-        public virtual void Draw(RenderDrawContext renderContext, RenderView mainRenderView)
         {
         }
     }

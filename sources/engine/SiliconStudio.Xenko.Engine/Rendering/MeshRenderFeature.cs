@@ -114,6 +114,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
             pipelineState.PrimitiveType = drawData.PrimitiveType;
+
+            // Prepare each sub render feature
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
+            }
         }
 
         /// <inheritdoc/>

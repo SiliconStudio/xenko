@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public IGraphicsCompositorTopPart TopLevel { get; set; }
+        public IGraphicsCompositorPart TopLevel { get; set; }
 
         /// <summary>
         /// The list of graphics compositors.

@@ -93,12 +93,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The current render output format (used during the collect phase).
         /// </summary>
-        public Stack<RenderOutputDescription> RenderOutputs { get; set; } = new Stack<RenderOutputDescription>();
+        public Stack<RenderOutputDescription> RenderOutputs { get; } = new Stack<RenderOutputDescription>();
 
         /// <summary>
         /// The current render output format (used during the collect phase).
         /// </summary>
-        public Stack<ViewportState> ViewportStates { get; set; } = new Stack<ViewportState>();
+        public Stack<ViewportState> ViewportStates { get; } = new Stack<ViewportState>();
+
+        /// <summary>
+        /// The current render view.
+        /// </summary>
+        public RenderView RenderView { get; set; }
 
         /// <summary>
         /// Gets a global shared context.
