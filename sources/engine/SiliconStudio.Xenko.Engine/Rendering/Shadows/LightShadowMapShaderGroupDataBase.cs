@@ -22,6 +22,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public ShaderMixinSource ShadowShader { get; private set; }
 
+        /// <summary>
+        /// The first member name argument passed to the instantiated filter
+        /// </summary>
+        protected virtual string FilterMemberName { get; } = "PerDraw.Lighting";
+
         public virtual void ApplyShader(ShaderMixinSource mixin)
         {
             mixin.CloneFrom(ShadowShader);
@@ -36,16 +41,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             switch (ShadowType & LightShadowType.FilterMask)
             {
                 case LightShadowType.PCF3x3:
-                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 3));
+                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", FilterMemberName, 3));
                     break;
                 case LightShadowType.PCF5x5:
-                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 5));
+                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", FilterMemberName, 5));
                     break;
                 case LightShadowType.PCF7x7:
-                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", "PerDraw.Lighting", 7));
+                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterPcf", FilterMemberName, 7));
                     break;
                 default:
-                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", "PerDraw.Lighting"));
+                    ShadowShader.Mixins.Add(new ShaderClassSource("ShadowMapFilterDefault", FilterMemberName));
                     break;
             }
         }

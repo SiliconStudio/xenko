@@ -506,6 +506,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
             }
 
+            protected override string FilterMemberName { get; } = "PerView.Lighting";
+
             public override ShaderClassSource CreateShaderSource(int lightCurrentCount)
             {
                 var isDepthRangeAuto = (ShadowType & LightShadowType.DepthRangeAuto) != 0;
