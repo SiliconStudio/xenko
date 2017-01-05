@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -247,6 +248,7 @@ namespace SiliconStudio.Xenko.Engine
         /// If 0 the sound will be omnidirectional, 1 fully directional
         /// </userdoc>
         [DataMember(30)]
+        [DataMemberRange(0.0, 1.0, 0.1, 0.2)]
         public float DirectionalFactor { get; set; }
 
         /// <summary>
