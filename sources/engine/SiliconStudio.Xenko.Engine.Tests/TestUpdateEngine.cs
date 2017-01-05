@@ -365,6 +365,57 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.That(test.IntProperty, Is.EqualTo(456));
         }
 
+        [Test]
+        public void TestOutOfBoundsSkip()
+        {
+            var test = new TestClass
+            {
+                TestClassArray =
+                {
+                    [0] = new TestClass(),
+                    [1] = new TestClass()
+                },
+                TestClassList =
+                {
+                    [0] = new TestClass(),
+                    [1] = new TestClass()
+                }
+            };
+
+            // Check that ctor of TestClass properly initialized size of array/list to 4 (this test relies on it)
+            Assert.That(test.IntArray.Length, Is.EqualTo(4));
+            Assert.That(test.IntList.Count, Is.EqualTo(4));
+            Assert.That(test.TestClassArray.Length, Is.EqualTo(2));
+            Assert.That(test.TestClassList.Count, Is.EqualTo(2));
+
+            UpdateEngine.RegisterMemberResolver(new ArrayUpdateResolver<int>());
+            UpdateEngine.RegisterMemberResolver(new ListUpdateResolver<int>());
+
+            // Combine many of the other tests in one, to easily test if switching from one member to another works well
+            var updateMemberInfo = new List<UpdateMemberInfo>
+            {
+                new UpdateMemberInfo("IntArray[0]", 0),
+                new UpdateMemberInfo("IntArray[4]", 0),
+                new UpdateMemberInfo("IntList[0]", 0),
+                new UpdateMemberInfo("IntList[4]", 0),
+                new UpdateMemberInfo("TestClassArray[0].IntField", 0),
+                new UpdateMemberInfo("TestClassArray[2].IntField", 0),
+                new UpdateMemberInfo("TestClassList[0].IntField", 0),
+                new UpdateMemberInfo("TestClassList[2].IntField", 0),
+            };
+
+            var blittableData = new TestData[] { 123 };
+
+            // This shouldn't crash
+            RunUpdateEngine(test, updateMemberInfo, blittableData, null);
+
+            // Update shouldn't have been done (we skip the whole stuff if it goes out of bound)
+            Assert.That(test.IntArray[0], Is.EqualTo(0));
+            Assert.That(test.IntList[0], Is.EqualTo(0));
+            Assert.That(test.TestClassArray[0].IntField, Is.EqualTo(0));
+            Assert.That(test.TestClassList[0].IntField, Is.EqualTo(0));
+        }
+
         private static unsafe void RunUpdateEngine(TestClass test, List<UpdateMemberInfo> updateMemberInfo, TestData[] blittableData, UpdateObjectData[] objectData)
         {
             var compiledUpdate = UpdateEngine.Compile(test.GetType(), updateMemberInfo);

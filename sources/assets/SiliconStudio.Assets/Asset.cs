@@ -102,17 +102,6 @@ namespace SiliconStudio.Assets
         public AssetReference Archetype { get; set; }
 
         /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-450)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [Obsolete]
-        public int BuildOrder { get; set; }
-
-        /// <summary>
         /// Gets the main source file for this asset, used in the editor.
         /// </summary>
         [DataMemberIgnore]

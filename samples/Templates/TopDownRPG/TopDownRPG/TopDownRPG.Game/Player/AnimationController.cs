@@ -189,7 +189,7 @@ namespace TopDownRPG.Player
                             TimeSpan.FromTicks((long)(currentTime * animationClipWalkLerp1.Duration.Ticks))));
                         blendStack.Add(AnimationOperation.NewPush(animEvaluatorWalkLerp2,
                             TimeSpan.FromTicks((long)(currentTime * animationClipWalkLerp2.Duration.Ticks))));
-                        blendStack.Add(AnimationOperation.NewBlend(AnimationBlendOperation.LinearBlend, walkLerpFactor));
+                        blendStack.Add(AnimationOperation.NewBlend(CoreAnimationOperation.Blend, walkLerpFactor));
                     }
                     break;
 

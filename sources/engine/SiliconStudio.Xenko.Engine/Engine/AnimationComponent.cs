@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Engine
             foreach (var otherPlayingAnimation in PlayingAnimations)
             {
                 otherPlayingAnimation.WeightTarget = 0.0f;
-                otherPlayingAnimation.RemainingTime = fadeTimeSpan;
+                otherPlayingAnimation.CrossfadeRemainingTime = fadeTimeSpan;
             }
 
             // Blend to new animation
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Engine
             if (fadeTimeSpan > TimeSpan.Zero)
             {
                 playingAnimation.WeightTarget = desiredWeight;
-                playingAnimation.RemainingTime = fadeTimeSpan;
+                playingAnimation.CrossfadeRemainingTime = fadeTimeSpan;
             }
             else
             {

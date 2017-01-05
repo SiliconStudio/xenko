@@ -971,8 +971,8 @@ Value: 0
                 var settings = new SerializerSettings() { EmitShortTypeName = true };
                 SerialRoundTrip(settings, new ClassWithChars()
                 {
-                    Start = (char) '\n',
-                    End = (char) '\n',
+                    Start = (char) i,
+                    End = (char) i,
                 });
             }
         }

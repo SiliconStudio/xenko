@@ -1426,7 +1426,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Check if we need to fold the leading line break.
 
-                if (!isLiteral && StartsWith(leadingBreak, '\n') && !leadingBlank && !trailingBlank)
+                if (!isLiteral && (StartsWith(leadingBreak, '\r') || StartsWith(leadingBreak, '\n')) && !leadingBlank && !trailingBlank)
                 {
                     // Do we need to join the lines by space?
 
