@@ -64,10 +64,10 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 debugEntity.Transform.Rotation = rot;
             }
 
-            var rigidBody = component as RigidbodyComponent;
+            var shouldNotAddOffset = component is RigidbodyComponent || component is CharacterComponent;
 
             //don't add offset for non bone dynamic and kinematic as it is added already in the updates
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || !shouldNotAddOffset);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
