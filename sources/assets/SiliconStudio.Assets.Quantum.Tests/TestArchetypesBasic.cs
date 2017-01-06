@@ -33,6 +33,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             run.SecondChangeCheck();
 
         }
+
         [Test]
         public void TestSimplePropertyChange()
         {
@@ -77,6 +78,72 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetContentOverride());
+                }
+            };
+            return test;
+        }
+
+        [Test]
+        public void TestAbstractPropertyChange()
+        {
+            RunTest(PrepareAbstractPropertyChange());
+        }
+
+        public static TestArchetypesRun PrepareAbstractPropertyChange()
+        {
+            var asset = new Types.MyAsset5 { MyInterface = new Types.SomeObject2 { Value = "String1" } };
+            var context = DeriveAssetTest<Types.MyAsset5>.DeriveAsset(asset);
+            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterface));
+            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterface));
+
+            var objB = asset.MyInterface;
+            var objD = context.DerivedAsset.MyInterface;
+            var newObjB = new Types.SomeObject { Value = "MyBaseString" };
+            var newObjD = new Types.SomeObject2 { Value = "MyDerivedString" };
+
+            var test = new TestArchetypesRun(context)
+            {
+                InitialCheck = () =>
+                {
+                    Assert.AreEqual(objB, basePropertyNode.Content.Retrieve());
+                    // NOTE: we're using this code to test undo/redo and in this case, we have different objects in the derived object after undoing due to the fact that the type of the instance has changed
+                    //Assert.AreEqual(objD, derivedPropertyNode.Content.Retrieve());
+                    Assert.AreEqual("String1", ((Types.IMyInterface)basePropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual("String1", ((Types.IMyInterface)derivedPropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Target[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Target[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                },
+                FirstChange = () =>
+                {
+                    basePropertyNode.Content.Update(newObjB);
+                },
+                FirstChangeCheck = () =>
+                {
+                    Assert.AreEqual(newObjB, basePropertyNode.Content.Retrieve());
+                    Assert.AreNotEqual(objD, derivedPropertyNode.Content.Retrieve());
+                    Assert.AreEqual("MyBaseString", ((Types.IMyInterface)basePropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual("MyBaseString", ((Types.IMyInterface)derivedPropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Target[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Target[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                },
+                SecondChange = () =>
+                {
+                    derivedPropertyNode.Content.Update(newObjD);
+                },
+                SecondChangeCheck = () =>
+                {
+                    Assert.AreEqual(newObjB, basePropertyNode.Content.Retrieve());
+                    Assert.AreEqual(newObjD, derivedPropertyNode.Content.Retrieve());
+                    Assert.AreEqual("MyBaseString", ((Types.IMyInterface)basePropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual("MyDerivedString", ((Types.IMyInterface)derivedPropertyNode.Content.Retrieve()).Value);
+                    Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)basePropertyNode.Target[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetNode)derivedPropertyNode.Target[nameof(Types.SomeObject2.Value)]).GetContentOverride());
                 }
             };
             return test;

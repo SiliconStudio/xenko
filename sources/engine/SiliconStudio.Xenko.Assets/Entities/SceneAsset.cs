@@ -3,7 +3,6 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
@@ -51,7 +50,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta02", "1.9.0-beta03", typeof(IdentifiableComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "2.0.0-alpha01", typeof(RemoveSceneSettingsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.9.0-beta06", typeof(ParticleTrailEdgeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta06", "2.0.0-alpha01", typeof(RemoveSceneSettingsUpgrader))]
     [Display(2000, "Scene")]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {

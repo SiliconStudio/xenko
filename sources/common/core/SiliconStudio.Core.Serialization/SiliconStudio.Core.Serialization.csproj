@@ -94,10 +94,12 @@
     <ProjectReference Include="..\SiliconStudio.Core.MicroThreading\SiliconStudio.Core.MicroThreading.csproj">
       <Project>{1320F627-EE43-4115-8E89-19D1753E51F2}</Project>
       <Name>SiliconStudio.Core.MicroThreading</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
       <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

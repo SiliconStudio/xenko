@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -71,6 +72,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The mass of this Rigidbody
         /// </userdoc>
         [DataMember(80)]
+        [DataMemberRange(0, float.MaxValue)]
         public float Mass
         {
             get
@@ -79,6 +81,11 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("the Mass of a Rigidbody cannot be negative.");
+                }
+
                 mass = value;
 
                 if(InternalRigidBody == null) return;

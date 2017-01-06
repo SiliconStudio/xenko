@@ -20,11 +20,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color of this vertex.</param>
         /// <param name="textureCoordinate">UV texture coordinates.</param>
         /// <param name="swizzle">The swizzle mode</param>
-        public VertexPositionColorTextureSwizzle(Vector4 position, Color color, Vector2 textureCoordinate, SwizzleMode swizzle)
+        public VertexPositionColorTextureSwizzle(Vector4 position, Color color, Color colorAdd, Vector2 textureCoordinate, SwizzleMode swizzle)
             : this()
         {
             Position = position;
-            Color = color;
+            ColorScale = color;
+            ColorAdd = colorAdd;
             TextureCoordinate = textureCoordinate;
             Swizzle = (int)swizzle;
         }
@@ -37,7 +38,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The vertex color.
         /// </summary>
-        public Color4 Color;
+        public Color4 ColorScale;
+
+        /// <summary>
+        /// The vertex color.
+        /// </summary>
+        public Color4 ColorAdd;
 
         /// <summary>
         /// UV texture coordinates.
@@ -59,7 +65,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             VertexElement.Position<Vector4>(),
-            VertexElement.Color<Color4>(),
+            VertexElement.Color<Color4>(0),
+            VertexElement.Color<Color4>(1),
             VertexElement.TextureCoordinate<Vector2>(),
             new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
             );
@@ -67,7 +74,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool Equals(VertexPositionColorTextureSwizzle other)
         {
-            return Position.Equals(other.Position) && Color.Equals(other.Color) && TextureCoordinate.Equals(other.TextureCoordinate);
+            return Position.Equals(other.Position) && ColorScale.Equals(other.ColorScale) && ColorAdd.Equals(other.ColorAdd) && TextureCoordinate.Equals(other.TextureCoordinate);
         }
 
         public override bool Equals(object obj)
@@ -81,7 +88,8 @@ namespace SiliconStudio.Xenko.Graphics
             unchecked
             {
                 int hashCode = Position.GetHashCode();
-                hashCode = (hashCode * 397) ^ Color.GetHashCode();
+                hashCode = (hashCode * 397) ^ ColorScale.GetHashCode();
+                hashCode = (hashCode * 397) ^ ColorAdd.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextureCoordinate.GetHashCode();
                 hashCode = (hashCode * 397) ^ Swizzle.GetHashCode();
                 return hashCode;
@@ -100,7 +108,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public override string ToString()
         {
-            return string.Format("Position: {0}, Color: {1}, Texcoord: {2}, Swizzle: {3}", Position, Color, TextureCoordinate, Swizzle);
+            return string.Format("Position: {0}, ColorScale: {1}, ColorAdd: {2}, Texcoord: {3}, Swizzle: {4}", Position, ColorScale, ColorAdd, TextureCoordinate, Swizzle);
         }
 
         public VertexDeclaration GetLayout()

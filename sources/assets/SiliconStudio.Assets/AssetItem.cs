@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -228,6 +229,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the asset.
         /// </summary>
         /// <value>The asset.</value>
+        [NotNull]
         public Asset Asset
         {
             get
@@ -236,7 +238,7 @@ namespace SiliconStudio.Assets
             }
             internal set
             {
-                if (value == null) throw new ArgumentNullException("value");
+                if (value == null) throw new ArgumentNullException(nameof(value));
                 asset = value;
             }
         }

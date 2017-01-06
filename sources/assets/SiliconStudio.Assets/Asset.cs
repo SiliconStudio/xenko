@@ -102,17 +102,6 @@ namespace SiliconStudio.Assets
         public AssetReference Archetype { get; set; }
 
         /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-450)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [Obsolete]
-        public int BuildOrder { get; set; }
-
-        /// <summary>
         /// Gets the main source file for this asset, used in the editor.
         /// </summary>
         [DataMemberIgnore]
@@ -128,7 +117,8 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        [NotNull]
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, [CanBeNull] IDictionary<Guid, Guid> idRemapping = null)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 

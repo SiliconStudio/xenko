@@ -162,12 +162,12 @@ namespace SiliconStudio.Xenko.Animations
                     {
                         var playingAnimation = animationComponent.PlayingAnimations[index];
                         bool removeAnimation = false;
-                        if (playingAnimation.RemainingTime > TimeSpan.Zero)
+                        if (playingAnimation.CrossfadeRemainingTime > TimeSpan.Zero)
                         {
                             playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
-                                                       ((float)time.Elapsed.Ticks/playingAnimation.RemainingTime.Ticks);
-                            playingAnimation.RemainingTime -= time.Elapsed;
-                            if (playingAnimation.RemainingTime <= TimeSpan.Zero)
+                                                       ((float)time.Elapsed.Ticks/playingAnimation.CrossfadeRemainingTime.Ticks);
+                            playingAnimation.CrossfadeRemainingTime -= time.Elapsed;
+                            if (playingAnimation.CrossfadeRemainingTime <= TimeSpan.Zero)
                             {
                                 playingAnimation.Weight = playingAnimation.WeightTarget;
 

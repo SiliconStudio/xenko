@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(-40)]
         public string Type { get; set; }
 
-        Symbol IAssetPartDesign<Symbol>.Part => this;
+        Symbol IAssetPartDesign<Symbol>.Part { get { return this; } set { throw new InvalidOperationException(); } }
 
         public override string ToString()
         {

@@ -61,6 +61,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Slot Target { get; set; }
 
         /// <inheritdoc/>
-        Link IAssetPartDesign<Link>.Part => this;
+        Link IAssetPartDesign<Link>.Part { get { return this; } set { throw new InvalidOperationException(); } }
     }
 }

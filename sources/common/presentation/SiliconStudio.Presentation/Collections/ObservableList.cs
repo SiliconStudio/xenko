@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -19,7 +20,7 @@ namespace SiliconStudio.Presentation.Collections
             list = new List<T>();
         }
 
-        public ObservableList(IEnumerable<T> collection)
+        public ObservableList([NotNull] IEnumerable<T> collection)
         {
             list = new List<T>(collection);
         }
@@ -52,6 +53,7 @@ namespace SiliconStudio.Presentation.Collections
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        [NotNull]
         public IList ToIList()
         {
             return new NonGenericObservableListWrapper<T>(this);
@@ -61,7 +63,7 @@ namespace SiliconStudio.Presentation.Collections
         {
             return list.GetEnumerator();
         }
-
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -72,7 +74,11 @@ namespace SiliconStudio.Presentation.Collections
             Insert(Count, item);
         }
 
-        public void AddRange(IEnumerable<T> items)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="items"/> is <c>null</c>.</exception>
+        public void AddRange([NotNull] IEnumerable<T> items)
         {
             var itemList = items.ToList();
             if (itemList.Count > 0)
@@ -105,7 +111,7 @@ namespace SiliconStudio.Presentation.Collections
             list.CopyTo(array, arrayIndex);
         }
 
-        public int FindIndex(Predicate<T> match)
+        public int FindIndex([NotNull] Predicate<T> match)
         {
             return list.FindIndex(match);
         }
@@ -160,7 +166,7 @@ namespace SiliconStudio.Presentation.Collections
             return $"{{ObservableList}} Count = {Count}";
         }
 
-        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs arg)
+        protected void OnCollectionChanged([NotNull] NotifyCollectionChangedEventArgs arg)
         {
             CollectionChanged?.Invoke(this, arg);
 

@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
                 // draw the sprite
-                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
+                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, spriteComp.Swizzle, projectedZ);
             }
 
             if (hasBegin)

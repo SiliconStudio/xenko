@@ -1460,7 +1460,8 @@ namespace SiliconStudio.Core.Yaml
                 style = ScalarStyle.DoubleQuoted;
             }
 
-            if (isSimpleKeyContext && scalarData.isMultiline)
+            // Note: if length is 1, it might be a single char and going literal might transform \n into \r\n (which is no good)
+            if ((isSimpleKeyContext || scalar.Value.Length <= 1) && scalarData.isMultiline)
             {
                 style = ScalarStyle.DoubleQuoted;
             }
