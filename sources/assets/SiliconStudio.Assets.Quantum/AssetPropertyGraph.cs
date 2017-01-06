@@ -16,6 +16,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Assets.Quantum
 {
     [AssetPropertyGraph(typeof(Asset))]
+    // ReSharper disable once RequiredBaseTypesIsNotInherited
     public class AssetPropertyGraph : IDisposable
     {
         public struct NodeOverride
