@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             if (!File.Exists(Source))
             {
-                result?.Error("Cannot find font file '{0}'. Make sure it exists and is referenced correctly.", Source);
+                result?.Error($"Cannot find font file '{Source}'. Make sure it exists and is referenced correctly.");
             }
             return Source;
         }

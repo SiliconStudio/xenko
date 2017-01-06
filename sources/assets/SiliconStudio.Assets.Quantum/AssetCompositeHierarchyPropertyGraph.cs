@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || member == targetNode.Content)
+            if (member == null || targetNode == null || member == targetNode.Content)
                 return false;
 
             if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))

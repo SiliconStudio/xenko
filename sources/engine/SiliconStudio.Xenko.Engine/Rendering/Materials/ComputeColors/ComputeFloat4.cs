@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             }
             else
             {
-                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
+                context.Log.Error($"Unexpected ParameterKey [{key}] for type [{key.PropertyType}]. Expecting a [Vector3/Color3] or [Vector4/Color4]");
             }
             UsedKey = key;
 

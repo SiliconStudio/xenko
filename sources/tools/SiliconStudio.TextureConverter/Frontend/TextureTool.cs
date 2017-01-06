@@ -529,7 +529,7 @@ namespace SiliconStudio.TextureConverter
             if (image.Format != PixelFormat.R8G8B8A8_UNorm && image.Format != PixelFormat.B8G8R8A8_UNorm 
                 && image.Format != PixelFormat.B8G8R8A8_UNorm_SRgb && image.Format != PixelFormat.R8G8B8A8_UNorm_SRgb)
             {
-                Log.Error("ColorKey TextureConverter is only supporting R8G8B8A8_UNorm or B8G8R8A8_UNorm while Texture Format is [{0}]", image.Format);
+                Log.Error($"ColorKey TextureConverter is only supporting R8G8B8A8_UNorm or B8G8R8A8_UNorm while Texture Format is [{image.Format}]");
                 return;
             }
 
@@ -754,7 +754,7 @@ namespace SiliconStudio.TextureConverter
             if (texture.Dimension != TexImage.TextureDimension.Texture2D || !(format.IsRGBAOrder() || format.IsBGRAOrder() || pixelSize != 4))
             {
                 var guessedAlphaLevel = alphaDepth > 0 ? AlphaLevels.InterpolatedAlpha : AlphaLevels.NoAlpha;
-                logger?.Debug("Impossible to find alpha levels for texture type {0}. Returning default alpha level '{1}'.", format, guessedAlphaLevel);
+                logger?.Debug($"Unable to find alpha levels for texture type {format}. Returning default alpha level '{guessedAlphaLevel}'.");
                 return guessedAlphaLevel;
             }
 

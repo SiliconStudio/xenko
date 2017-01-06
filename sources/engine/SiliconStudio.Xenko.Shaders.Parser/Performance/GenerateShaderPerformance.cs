@@ -72,11 +72,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         public static void PrintResult()
         {
             Logger.Info(@"----------------------------GENERATE SHADER ANALYZER-----------------------------");
-            Logger.Info(@"Whole generation took {0} ms", Global.ElapsedMilliseconds);
-            Logger.Info(@"GroupByConstantBuffer took {0} ms", GroupByConstantBuffer.ElapsedMilliseconds);
-            Logger.Info(@"StreamCreator took {0} ms", StreamCreator.ElapsedMilliseconds);
-            Logger.Info(@"ExpandForEachStatements took {0} ms", ExpandForEachStatements.ElapsedMilliseconds);
-            Logger.Info(@"RemoveUselessVariables took {0} ms", RemoveUselessVariables.ElapsedMilliseconds);
+            Logger.Info($"Whole generation took {Global.ElapsedMilliseconds} ms");
+            Logger.Info($"GroupByConstantBuffer took {GroupByConstantBuffer.ElapsedMilliseconds} ms");
+            Logger.Info($"StreamCreator took {StreamCreator.ElapsedMilliseconds} ms");
+            Logger.Info($"ExpandForEachStatements took {ExpandForEachStatements.ElapsedMilliseconds} ms");
+            Logger.Info($"RemoveUselessVariables took {RemoveUselessVariables.ElapsedMilliseconds} ms");
             Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }
