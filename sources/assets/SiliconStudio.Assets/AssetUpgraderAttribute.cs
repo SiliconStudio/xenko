@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
@@ -8,6 +9,7 @@ namespace SiliconStudio.Assets
     /// Describes which upgrader type to use to upgrade an asset, depending on this current version number.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [BaseTypeRequired(typeof(Asset))]
     public class AssetUpgraderAttribute : Attribute
     {
         /// <summary>

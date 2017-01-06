@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Assets.Serializers
     /// will therefore be fully serialized, only if they are contained in a part of the type indicated by the <see cref="ReferenceableType"/> type.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [BaseTypeRequired(typeof(AssetComposite))]
     public class AssetPartReferenceAttribute : Attribute
     {
         /// <summary>
