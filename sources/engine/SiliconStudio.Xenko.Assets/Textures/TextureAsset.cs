@@ -151,6 +151,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
                     description.Node.Tag = "!NormalMapDescription";
                 }
+                else if (asset.Hint == "Grayscale")
+                {
+                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
+                    description.Node.Tag = "!GrayscaleTextureDescription";
+                }
                 else
                 {
                     dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
@@ -160,8 +165,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
                     description.ColorKeyColor = asset.ColorKeyColor;
                     description.Alpha = asset.Alpha;
                     description.PremultiplyAlpha = asset.PremultiplyAlpha;
-                    if (asset.Hint == "Grayscale")
-                        description.IsGrayscale = true;
                 }
 
                 asset.RemoveChild("ColorSpace");
@@ -216,14 +219,34 @@ namespace SiliconStudio.Xenko.Assets.Textures
         TextureHint ITextureDescription.Hint => TextureHint.NormalMap;
     }
 
+    /// <summary>
+    /// A single channel texture which can be used for luminance, height map, specular texture, etc.
+    /// </summary>
+    /// <userdoc>
+    /// A single channel texture which can be used for luminance, height map, specular texture, etc.
+    /// </userdoc>
+    [DataContract("GrayscaleTextureDescription")]
+    [Display("Grayscale")]
+    public class GrayscaleTextureDescription : ITextureDescription
+    {
+        TextureColorSpace ITextureDescription.ColorSpace => TextureColorSpace.Gamma;
+
+        bool ITextureDescription.ColorKeyEnabled => false;
+
+        Color ITextureDescription.ColorKeyColor => new Color();
+
+        AlphaFormat ITextureDescription.Alpha => AlphaFormat.None;
+
+        bool ITextureDescription.PremultiplyAlpha => false;
+
+        TextureHint ITextureDescription.Hint => TextureHint.Grayscale;
+    }
+
+
     [DataContract("ColorTextureDescription")]
     [Display("Color")]
     public class ColorTextureDescription : ITextureDescription
     {
-        [DataMember(60)]
-        [Display("Is Grayscale", "Format")]
-        public bool IsGrayscale { get; set; }
-
         /// <summary>
         /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
         /// </summary>
@@ -233,7 +256,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(70)]
         [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", "Format")]
+        [Display("ColorSpace")]
         public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
 
         /// <summary>
@@ -283,6 +306,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [Display(null, "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
 
-        TextureHint ITextureDescription.Hint => IsGrayscale ? TextureHint.Grayscale : TextureHint.Color;
+        TextureHint ITextureDescription.Hint => TextureHint.Color;
     }
 }
