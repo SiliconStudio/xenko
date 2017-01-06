@@ -1737,6 +1737,32 @@ extern "C" {
 			delete source;
 		}
 
+		DLL_EXPORT_API void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
+		{
+			source->looped_ = looping;
+
+			if (!source->streamed_)
+			{
+				if (!source->looped_)
+				{
+					source->single_buffer_.LoopBegin = 0;
+					source->single_buffer_.LoopLength = 0;
+					source->single_buffer_.LoopCount = 0;
+					source->single_buffer_.Flags = XAUDIO2_END_OF_STREAM;
+				}
+				else
+				{
+					source->single_buffer_.LoopBegin = source->single_buffer_.PlayBegin;
+					source->single_buffer_.LoopLength = source->single_buffer_.PlayLength;
+					source->single_buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
+					source->single_buffer_.Flags = 0;
+				}
+
+				source->source_voice_->FlushSourceBuffers();
+				source->source_voice_->SubmitSourceBuffer(&source->single_buffer_, NULL);
+			}
+		}
+
 		DLL_EXPORT_API void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
 			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
@@ -1859,30 +1885,6 @@ extern "C" {
 			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 		}
 
-		DLL_EXPORT_API void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
-		{
-			source->looped_ = looping;
-
-			if (!source->streamed_)
-			{
-				if(!source->looped_)
-				{
-					source->single_buffer_.LoopBegin = 0;
-					source->single_buffer_.LoopLength = 0;
-					source->single_buffer_.LoopCount = 0;
-				}
-				else
-				{
-					source->single_buffer_.LoopBegin = source->single_buffer_.PlayBegin;
-					source->single_buffer_.LoopLength = source->single_buffer_.PlayLength;
-					source->single_buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
-				}
-
-				source->source_voice_->FlushSourceBuffers();
-				source->source_voice_->SubmitSourceBuffer(&source->single_buffer_, NULL);
-			}
-		}
-
 		DLL_EXPORT_API void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
 			if(!source->streamed_)
@@ -1943,11 +1945,19 @@ extern "C" {
 
         void xnAudioSource::OnStreamEnd()
 		{
-			if (streamed_ && playing_)
+			if (playing_)
 			{
-				//buffer was flagged as end of stream
-				//looping is handled by the streamer, in the top level layer
-				xnAudioSourceStop(this);
+				if (streamed_)
+				{
+					//buffer was flagged as end of stream
+					//looping is handled by the streamer, in the top level layer
+					xnAudioSourceStop(this);
+				}
+				else if (!looped_)
+				{
+					playing_ = false;
+					pause_ = false;
+				}
 			}
 		}
 
@@ -1994,12 +2004,7 @@ extern "C" {
 				}
 
 				bufferLock_.Unlock();
-			}
-			else if(!looped_ && playing_)
-			{
-				playing_ = false;
-				pause_ = false;
-			}
+			}			
 		}
 
         void xnAudioSource::OnLoopEnd(void* context)
@@ -2010,9 +2015,6 @@ extern "C" {
 		{
 			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
-			
-			//we also have to avoid looping single buffers
-			buffer->buffer_.LoopCount = 0;
 
 			//flag the stream
 			buffer->buffer_.Flags = type == EndOfStream ? XAUDIO2_END_OF_STREAM : 0;
@@ -2137,7 +2139,7 @@ extern "C" {
 			buffer->buffer_.PlayLength = 0;
 			buffer->buffer_.LoopBegin = 0;
 			buffer->buffer_.LoopLength = 0;
-			buffer->buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
+			buffer->buffer_.LoopCount = 0;
 			buffer->buffer_.pAudioData = new BYTE[maxBufferSize];
 			return buffer;
 		}
@@ -2154,8 +2156,8 @@ extern "C" {
 			
 			buffer->buffer_.AudioBytes = bufferSize;
 			
-			buffer->buffer_.LoopBegin = buffer->buffer_.PlayBegin = 0;
-			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
+			buffer->buffer_.PlayBegin = 0;
+			buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
 			
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
