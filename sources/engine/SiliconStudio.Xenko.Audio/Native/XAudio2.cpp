@@ -1398,7 +1398,6 @@ extern "C" {
 			XAUDIO2_BUFFER buffer_;
 			int length_;
 			BufferType type_;
-			xnAudioSource* source_;
 		};
 
 		struct xnAudioListener
@@ -1573,6 +1572,8 @@ extern "C" {
 			xnAudioBuffer** freeBuffers_;
 			int freeBuffersMax_;
 
+			XAUDIO2_BUFFER single_buffer_;
+
 			volatile int samplesAtBegin = 0;
 
 			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
@@ -1741,35 +1742,8 @@ extern "C" {
 			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
 			source->streamed_ = false;
 			source->freeBuffers_[0] = buffer;
-			buffer->source_ = source;
-
-			if (!source->streamed_)
-			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
-			}
-		}
-
-        void xnAudioSource::OnBufferEnd(void* context)
-		{
-			//callback, called when Xaudio ended playing one buffer
-			auto buffer = static_cast<xnAudioBuffer*>(context);
-
-			if (streamed_)
-			{
-				bufferLock_.Lock();
-
-				for (int i = 0; i < buffer->source_->freeBuffersMax_; i++)
-				{
-					if(buffer->source_->freeBuffers_[i] == NULL)
-					{
-						buffer->source_->freeBuffers_[i] = buffer;
-						break;
-					}
-				}
-				
-				bufferLock_.Unlock();
-			}
+			memcpy(&source->single_buffer_, &buffer->buffer_, sizeof(XAUDIO2_BUFFER));
+			source->source_voice_->SubmitSourceBuffer(&source->single_buffer_, NULL);
 		}
 
 		DLL_EXPORT_API xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
@@ -1888,6 +1862,25 @@ extern "C" {
 		DLL_EXPORT_API void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
 			source->looped_ = looping;
+
+			if (!source->streamed_)
+			{
+				if(!source->looped_)
+				{
+					source->single_buffer_.LoopBegin = 0;
+					source->single_buffer_.LoopLength = 0;
+					source->single_buffer_.LoopCount = 0;
+				}
+				else
+				{
+					source->single_buffer_.LoopBegin = source->single_buffer_.PlayBegin;
+					source->single_buffer_.LoopLength = source->single_buffer_.PlayLength;
+					source->single_buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
+				}
+
+				source->source_voice_->FlushSourceBuffers();
+				source->source_voice_->SubmitSourceBuffer(&source->single_buffer_, NULL);
+			}
 		}
 
 		DLL_EXPORT_API void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
@@ -1897,10 +1890,8 @@ extern "C" {
 				auto singleBuffer = source->freeBuffers_[0];
 				if(startTime == 0 && stopTime == 0)
 				{
-					singleBuffer->buffer_.PlayBegin = 0;
-					singleBuffer->buffer_.LoopBegin = 0;
-					singleBuffer->buffer_.PlayLength = singleBuffer->length_;
-					singleBuffer->buffer_.LoopLength = singleBuffer->length_;
+					source->single_buffer_.PlayBegin = 0;
+					source->single_buffer_.PlayLength = singleBuffer->length_;
 				}
 				else
 				{					
@@ -1920,15 +1911,14 @@ extern "C" {
 					auto len = sampleStop - sampleStart;
 					if (len > 0)
 					{
-						singleBuffer->buffer_.PlayBegin = sampleStart;
-						singleBuffer->buffer_.LoopBegin = sampleStart;
-						singleBuffer->buffer_.PlayLength = len;
-						singleBuffer->buffer_.LoopLength = len;
+						source->single_buffer_.PlayBegin = sampleStart;
+						source->single_buffer_.PlayLength = len;
 					}
 				}
+
+				//sort looping properties and re-submit buffer
 				source->source_voice_->Stop();
-				source->source_voice_->FlushSourceBuffers();
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+				xnAudioSourceSetLooping(source, source->looped_);
 			}
 		}
 
@@ -1963,40 +1953,63 @@ extern "C" {
 
         void xnAudioSource::OnBufferStart(void* context)
 		{
-			auto buffer = static_cast<xnAudioBuffer*>(context);
-
-			if (buffer->type_ == BeginOfStream)
+			if (streamed_)
 			{
-				//we need this info to compute position of stream
-				XAUDIO2_VOICE_STATE state;
-				if (xnAudioWindows7Hacks)
+				auto buffer = static_cast<xnAudioBuffer*>(context);
+
+				if (buffer->type_ == BeginOfStream)
 				{
-					auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(buffer->source_->source_voice_);
-					win7Voice->GetState(&state);
+					//we need this info to compute position of stream
+					XAUDIO2_VOICE_STATE state;
+					if (xnAudioWindows7Hacks)
+					{
+						auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(source_voice_);
+						win7Voice->GetState(&state);
+					}
+					else
+					{
+						source_voice_->GetState(&state, 0);
+					}
+
+					samplesAtBegin = state.SamplesPlayed;
 				}
-				else
+			}
+		}
+
+		void xnAudioSource::OnBufferEnd(void* context)
+		{
+			if (streamed_)
+			{
+				auto buffer = static_cast<xnAudioBuffer*>(context);
+
+				bufferLock_.Lock();
+
+				for (int i = 0; i < freeBuffersMax_; i++)
 				{
-					buffer->source_->source_voice_->GetState(&state, 0);
+					if (freeBuffers_[i] == NULL)
+					{
+						freeBuffers_[i] = buffer;
+						break;
+					}
 				}
 
-				buffer->source_->samplesAtBegin = state.SamplesPlayed;
+				bufferLock_.Unlock();
+			}
+			else if(!looped_ && playing_)
+			{
+				playing_ = false;
+				pause_ = false;
 			}
 		}
 
         void xnAudioSource::OnLoopEnd(void* context)
 		{
-			if (!looped_ && !streamed_ && playing_)
-			{
-				//we stop a non streamed sound if it does not need loops, if not we just loop
-				xnAudioSourceStop(this);
-			}
 		}
 
 		DLL_EXPORT_API void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
-			buffer->source_ = source;
 			
 			//we also have to avoid looping single buffers
 			buffer->buffer_.LoopCount = 0;
@@ -2049,8 +2062,7 @@ extern "C" {
 			//since we flush we also rebuffer in this case
 			if (!source->streamed_)
 			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+				source->source_voice_->SubmitSourceBuffer(&source->single_buffer_, NULL);
 			}
 
 			source->apply3DLock_.Unlock();
