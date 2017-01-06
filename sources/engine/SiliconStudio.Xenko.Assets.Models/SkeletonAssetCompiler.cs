@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
             {
-                result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                result.Error($"No importer found for model extension '{extension}. The model '{assetSource}' can't be imported.");
                 return;
             }
 

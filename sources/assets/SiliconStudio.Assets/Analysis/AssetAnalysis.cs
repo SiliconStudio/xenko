@@ -72,14 +72,14 @@ namespace SiliconStudio.Assets.Analysis
 
                     if (existingAsset != null)
                     {
-                        log.Error("Assets [{0}] with id [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Id, package.FullPath, existingAsset.Package.FullPath);
+                        log.Error($"Assets [{existingAsset.FullPath}] with id [{existingAsset.Id}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                     }
                     else
                     {
                         existingAsset = otherPackage.Assets.Find(assetItem.Location);
                         if (existingAsset != null)
                         {
-                            log.Error("Assets [{0}] with location [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Location, package.FullPath, existingAsset.Package.FullPath);
+                            log.Error($"Assets [{existingAsset.FullPath}] with location [{existingAsset.Location}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                         }
                     }
                 }
