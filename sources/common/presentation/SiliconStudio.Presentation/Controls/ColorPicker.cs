@@ -190,12 +190,12 @@ namespace SiliconStudio.Presentation.Controls
 
             }
 
-            colorPickerRenderSurface = FrameworkElementExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_ColorPickerRenderSurface"));
-            colorPreviewRenderSurface = FrameworkElementExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_ColorPreviewRenderSurface"));
-            colorPickerSelector = FrameworkElementExtensions.CheckTemplatePart<Canvas>(GetTemplateChild("PART_ColorPickerSelector"));
-            huePickerSelector = FrameworkElementExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_HuePickerSelector"));
-            huePickerRenderSurface = FrameworkElementExtensions.CheckTemplatePart<FrameworkElement>(GetTemplateChild("PART_HuePickerRenderSurface"));
-     
+            colorPickerRenderSurface = DependencyObjectExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_ColorPickerRenderSurface"));
+            colorPreviewRenderSurface = DependencyObjectExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_ColorPreviewRenderSurface"));
+            colorPickerSelector = DependencyObjectExtensions.CheckTemplatePart<Canvas>(GetTemplateChild("PART_ColorPickerSelector"));
+            huePickerSelector = DependencyObjectExtensions.CheckTemplatePart<Rectangle>(GetTemplateChild("PART_HuePickerSelector"));
+            huePickerRenderSurface = DependencyObjectExtensions.CheckTemplatePart<FrameworkElement>(GetTemplateChild("PART_HuePickerRenderSurface"));
+
             if (colorPickerRenderSurface != null)
             {
                 colorPickerRenderSurface.MouseDown += OnColorPickerRenderSurfaceMouseDown;

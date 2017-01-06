@@ -18,6 +18,19 @@ namespace SiliconStudio.Assets.Quantum
     [AssetPropertyGraph(typeof(Asset))]
     public class AssetPropertyGraph : IDisposable
     {
+        public struct NodeOverride
+        {
+            public NodeOverride(AssetNode overriddenNode, Index overriddenIndex, OverrideTarget target)
+            {
+                Node = overriddenNode;
+                Index = overriddenIndex;
+                Target = target;
+            }
+            public readonly AssetNode Node;
+            public readonly Index Index;
+            public readonly OverrideTarget Target;
+        }
+
         private readonly Dictionary<IContentNode, OverrideType> previousOverrides = new Dictionary<IContentNode, OverrideType>();
         private readonly Dictionary<IContentNode, ItemId> removedItemIds = new Dictionary<IContentNode, ItemId>();
 
@@ -25,8 +38,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
-        // TODO: this should be turn private once all quantum code has been split from view model
-        public readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
+        private readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -182,6 +194,68 @@ namespace SiliconStudio.Assets.Quantum
                 }
             }
         }
+
+        public List<NodeOverride> ClearAllOverrides()
+        {
+            // Unregister handlers - must be done first!
+            foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
+            {
+                linkedNode.Key.BaseContent.Changed -= linkedNode.Value;
+            }
+            baseLinkedNodes.Clear();
+
+            var clearedOverrides = new List<NodeOverride>();
+            // Clear override and base from node
+            if (RootNode != null)
+            {
+                var visitor = new GraphVisitorBase { SkipRootNode = true };
+                visitor.Visiting += (node, path) =>
+                {
+                    var assetNode = (AssetNode)node;
+                    if (assetNode.IsContentOverridden())
+                    {
+                        assetNode.OverrideContent(false);
+                        clearedOverrides.Add(new NodeOverride(assetNode, Index.Empty, OverrideTarget.Content));
+                    }
+                    foreach (var index in assetNode.GetOverriddenItemIndices())
+                    {
+                        assetNode.OverrideItem(false, index);
+                        clearedOverrides.Add(new NodeOverride(assetNode, index, OverrideTarget.Item));
+                    }
+                    foreach (var index in assetNode.GetOverriddenKeyIndices())
+                    {
+                        assetNode.OverrideKey(false, index);
+                        clearedOverrides.Add(new NodeOverride(assetNode, index, OverrideTarget.Key));
+                    }
+                };
+                visitor.Visit(RootNode);
+            }
+
+            return clearedOverrides;
+        }
+
+        public void RestoreOverrides(List<NodeOverride> overridesToRestore, AssetPropertyGraph archetypeBase)
+        {
+            foreach (var clearedOverride in overridesToRestore)
+            {
+                // TODO: this will need improvement when adding support for Seal
+                switch (clearedOverride.Target)
+                {
+                    case OverrideTarget.Content:
+                        clearedOverride.Node.OverrideContent(true);
+                        break;
+                    case OverrideTarget.Item:
+                        clearedOverride.Node.OverrideItem(true, clearedOverride.Index);
+                        break;
+                    case OverrideTarget.Key:
+                        clearedOverride.Node.OverrideKey(true, clearedOverride.Index);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
 
         // TODO: turn private
         public void LinkToBase(AssetNode sourceRootNode, AssetNode targetRootNode)

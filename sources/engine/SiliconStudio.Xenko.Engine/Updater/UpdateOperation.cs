@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Updater
     {
         internal UpdateOperationType Type;
         internal UpdatableMember Member;
+        internal EnterChecker EnterChecker;
 
         // TODO: Should we switch to short + short? (note: could be a problem with big arrays)
 

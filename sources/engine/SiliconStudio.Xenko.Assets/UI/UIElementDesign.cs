@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        UIElement IAssetPartDesign<UIElement>.Part => UIElement;
+        UIElement IAssetPartDesign<UIElement>.Part { get { return UIElement; } set { UIElement = value; } }
 
         /// <inheritdoc/>
         public override string ToString()

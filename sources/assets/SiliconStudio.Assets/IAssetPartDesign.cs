@@ -7,15 +7,15 @@ namespace SiliconStudio.Assets
     /// An interface representing a part in an <see cref="AssetComposite"/>.
     /// </summary>
     /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
-    public interface IAssetPartDesign<out TAssetPart> where TAssetPart : IIdentifiable
+    public interface IAssetPartDesign<TAssetPart> where TAssetPart : IIdentifiable
     {
         [CanBeNull]
         BasePart Base { get; set; }
 
         /// <summary>
-        /// Gets the actual part.
+        /// The actual part.
         /// </summary>
         [NotNull]
-        TAssetPart Part { get; }
+        TAssetPart Part { get; set; }
     }
 }

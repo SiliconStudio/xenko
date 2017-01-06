@@ -173,38 +173,79 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Parts;
-                foreach (dynamic entityAndDesign in entities)
+                foreach (dynamic entityDesign in entities)
                 {
-                    var entity = entityAndDesign.Entity;
-
+                    var entity = entityDesign.Entity;
                     foreach (var component in entity.Components)
                     {
-                        var componentTag = component.Value?.Node.Tag ?? component.Node.Tag;
-                        if (componentTag == "!ParticleSystemComponent")
+                        try
                         {
-                            dynamic particleSystem = component.Value?.ParticleSystem ?? component.ParticleSystem;
-                            if (particleSystem != null)
+                            var componentTag = component.Value.Node.Tag;
+                            if (componentTag == "!ParticleSystemComponent")
                             {
-
-                                foreach (dynamic emitter in particleSystem.Emitters)
+                                dynamic particleSystem = component.Value.ParticleSystem;
+                                if (particleSystem != null)
                                 {
-                                    dynamic shapeBuilder = emitter.Value?.ShapeBuilder ?? emitter.ShapeBuilder;
-                                    if (shapeBuilder == null)
-                                        continue;
-
-                                    var shapeBuilderTag = shapeBuilder.Node.Tag;
-                                    if (shapeBuilderTag != "!ShapeBuilderTrail")
-                                        continue;
-
-                                    if (shapeBuilder.EdgePolicy == "Center")
+                                    foreach (dynamic emitter in particleSystem.Emitters)
                                     {
-                                        shapeBuilder["EdgePolicy"] = "Edge";
+                                        dynamic shapeBuilder = emitter.Value.ShapeBuilder;
+                                        if (shapeBuilder == null)
+                                            continue;
+
+                                        var shapeBuilderTag = shapeBuilder.Node.Tag;
+                                        if (shapeBuilderTag != "!ShapeBuilderTrail")
+                                            continue;
+
+                                        if (shapeBuilder.EdgePolicy == "Center")
+                                        {
+                                            shapeBuilder["EdgePolicy"] = "Edge";
+                                        }
+                                        else
+                                        {
+                                            shapeBuilder["EdgePolicy"] = "Center";
+                                        }
                                     }
-                                    else
+
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                var componentTag = component.Node.Tag;
+                                if (componentTag == "!ParticleSystemComponent")
+                                {
+                                    dynamic particleSystem = component.ParticleSystem;
+                                    if (particleSystem != null)
                                     {
-                                        shapeBuilder["EdgePolicy"] = "Center";
+                                        foreach (dynamic emitter in particleSystem.Emitters)
+                                        {
+                                            dynamic shapeBuilder = emitter.ShapeBuilder;
+                                            if (shapeBuilder == null)
+                                                continue;
+
+                                            var shapeBuilderTag = shapeBuilder.Node.Tag;
+                                            if (shapeBuilderTag != "!ShapeBuilderTrail")
+                                                continue;
+
+                                            if (shapeBuilder.EdgePolicy == "Center")
+                                            {
+                                                shapeBuilder["EdgePolicy"] = "Edge";
+                                            }
+                                            else
+                                            {
+                                                shapeBuilder["EdgePolicy"] = "Center";
+                                            }
+                                        }
+
                                     }
                                 }
+                            }
+                            catch (Exception e)
+                            {
+                                // Changing the edge policy is non-critical update so skip it if exception is thrown
+                                e.Ignore();
                             }
                         }
                     }
