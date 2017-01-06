@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
             catch (Exception ex)
             {
-                Log.Error("Unexpected error while loading assembly reference in project [{0}]", ex, projectName);
+                Log.Error($"Unexpected error while loading assembly reference in project [{projectName}]", ex);
                 return DebugAssembly.Empty;
             }
         }
@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
             catch (Exception ex)
             {
-                Log.Error("Game [{0}] from project [{1}] failed to run", ex, gameTypeName, projectName);
+                Log.Error($"Game [{gameTypeName}] from project [{projectName}] failed to run", ex);
             }
         }
 
