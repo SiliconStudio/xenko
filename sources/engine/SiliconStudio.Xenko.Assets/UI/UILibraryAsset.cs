@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
             result.RootPartIds.Add(rootElementId);
             result.Parts.Add(instance.Hierarchy.Parts[rootElementId]);
-            foreach (var element in this.EnumerateChildParts(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
+            foreach (var element in this.EnumerateChildPartDesigns(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
             {
                 result.Parts.Add(element);
             }

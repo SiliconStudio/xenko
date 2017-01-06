@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets
         /// <param name="isRecursive">If true, child design parts will be enumerated recursively.</param>
         /// <returns>A sequence containing the child design parts of the given design part.</returns>
         [NotNull, Pure]
-        public static IEnumerable<TAssetPartDesign> EnumerateChildParts<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> @this,
+        public static IEnumerable<TAssetPartDesign> EnumerateChildPartDesigns<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> @this,
             [NotNull] TAssetPartDesign partDesign, AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchyData, bool isRecursive)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
             where TAssetPart : class, IIdentifiable
@@ -92,6 +92,21 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Enumerates the root design parts of this hierarchy.
+        /// </summary>
+        /// <typeparam name="TAssetPartDesign">The type used for the design information of a part.</typeparam>
+        /// <typeparam name="TAssetPart">The type used for the actual parts,</typeparam>
+        /// <param name="this">This hierarchy.</param>
+        /// <returns>A sequence containing the root design parts of this hierarchy.</returns>
+        [ItemNotNull, NotNull, Pure]
+        public static IEnumerable<TAssetPartDesign> EnumerateRootPartDesigns<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> @this)
+            where TAssetPartDesign : IAssetPartDesign<TAssetPart>
+            where TAssetPart : IIdentifiable
+        {
+            return @this.RootPartIds.Select(rootId => @this.Parts[rootId]);
+        }
+
+        /// <summary>
         /// Enumerates the root parts of this hierarchy.
         /// </summary>
         /// <typeparam name="TAssetPartDesign">The type used for the design information of a part.</typeparam>
@@ -99,11 +114,11 @@ namespace SiliconStudio.Assets
         /// <param name="this">This hierarchy.</param>
         /// <returns>A sequence containing the root parts of this hierarchy.</returns>
         [ItemNotNull, NotNull, Pure]
-        public static IEnumerable<TAssetPartDesign> EnumerateRootParts<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> @this)
+        public static IEnumerable<TAssetPart> EnumerateRootParts<TAssetPartDesign, TAssetPart>([NotNull] this AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> @this)
             where TAssetPartDesign : IAssetPartDesign<TAssetPart>
             where TAssetPart : IIdentifiable
         {
-            return @this.RootPartIds.Select(rootId => @this.Parts[rootId]);
+            return @this.RootPartIds.Select(rootId => @this.Parts[rootId].Part);
         }
 
         /// <summary>
