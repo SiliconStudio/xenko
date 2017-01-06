@@ -2,5 +2,4 @@
 Id: 39265df4-d32a-418d-baa2-ba073d499ee1
 Tags: []
 Model: !SkyboxCubeMapModel
-    ~Id: a4dccfb7-3211-41d6-8500-e2e8f16a2532
-    CubeMap: 77c330d1-7d2d-458f-9fbd-4ba32a685b3d/0454adf4-63d8-4f0d-9305-91f8ec79194f:sky
+    CubeMap: 0454adf4-63d8-4f0d-9305-91f8ec79194f:sky

@@ -71,7 +71,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                                 foreach (var material in materialList)
                                 {
                                     var materialReference = AttachedReferenceManager.GetAttachedReference(material);
-                                    references[materialReference.Id] = materialReference;
+                                    if (materialReference != null)
+                                    {
+                                        references[materialReference.Id] = materialReference;
+                                    }
                                 }
                             }
                         }

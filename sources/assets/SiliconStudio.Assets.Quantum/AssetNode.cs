@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetNode : GraphNode
     {
         internal bool contentUpdating;
-        private Func<object, object> cloner;
+        private AssetPropertyGraph propertyGraph;
         private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
@@ -22,7 +22,6 @@ namespace SiliconStudio.Assets.Quantum
         public AssetNode(string name, IContent content, Guid guid)
             : base(name, content, guid)
         {
-            Cloner = CloneFromBase;
             Content.PrepareChange += (sender, e) => contentUpdating = true;
             Content.FinalizeChange += (sender, e) => contentUpdating = false;
             Content.Changed += ContentChanged;
@@ -32,7 +31,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public sealed override IContent Content => base.Content;
 
-        public Func<object, object> Cloner { get { return cloner; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
+        public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
 
         public IContent BaseContent { get; private set; }
 
@@ -41,8 +40,6 @@ namespace SiliconStudio.Assets.Quantum
         internal bool ResettingOverride { get; set; }
 
         public bool CanOverride { get; }
-
-        public AssetPropertyGraph PropertyGraph { get; internal set; }
 
         public event EventHandler<EventArgs> OverrideChanging;
 
@@ -299,21 +296,6 @@ namespace SiliconStudio.Assets.Quantum
             return itemOverrides;
         }
 
-        private object RetrieveBaseContent(Index index)
-        {
-            object baseContent = null;
-
-            var baseNode = (AssetNode)BaseContent?.OwnerNode;
-            if (baseNode != null)
-            {
-                var id = IndexToId(index);
-                var baseIndex = baseNode.IdToIndex(id);
-                baseContent = baseNode.Content.Retrieve(baseIndex);
-            }
-
-            return baseContent;
-        }
-
         // TODO: move this in AssetPropertyGraph as a private method, it's the only usage (could also be inlined or split in 3 methods)
         internal Index RetrieveDerivedIndex(Index baseIndex, ContentChangeType changeType)
         {
@@ -515,10 +497,12 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        /// <summary>
+        /// Resets the overrides attached to this node and its descendants, recursively.
+        /// </summary>
+        /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
         public void ResetOverride(Index indexToReset)
         {
-            // TODO: comment
-
             if (indexToReset.IsEmpty)
             {
                 OverrideContent(false);
@@ -527,7 +511,8 @@ namespace SiliconStudio.Assets.Quantum
             {
                 OverrideItem(false, indexToReset);
             }
-            var visitor = new GraphVisitorBase { SkipRootNode = true };
+            var visitor = PropertyGraph.CreateReconcilierVisitor();
+            visitor.SkipRootNode = true;
             visitor.Visiting += (node, path) =>
             {
                 var childNode = (AssetNode)node;
@@ -543,43 +528,7 @@ namespace SiliconStudio.Assets.Quantum
             };
             visitor.Visit(this);
 
-            // TODO: we should reconcile directly only assetNode, not the whole asset
-            PropertyGraph.ReconcileWithBase();
-        }
-
-        public void ResetOverride(Index index, object overriddenValue, ContentChangeType changeType)
-        {
-            if (BaseContent == null)
-                return;
-
-            if (changeType == ContentChangeType.ValueChange)
-            {
-                // Make sure that what we're trying to reset is actually overridden.
-                if ((index != Index.Empty && !IsItemOverridden(index)) || (index == Index.Empty && !IsContentOverridden()))
-                    return;
-            }
-
-            object baseValue;
-            object clonedValue;
-            ResettingOverride = true;
-            switch (changeType)
-            {
-                case ContentChangeType.ValueChange:
-                    baseValue = RetrieveBaseContent(index);
-                    clonedValue = Cloner(baseValue);
-                    Content.Update(clonedValue, index);
-                    break;
-                case ContentChangeType.CollectionRemove:
-                    baseValue = RetrieveBaseContent(index);
-                    clonedValue = Cloner(baseValue);
-                    Content.Add(clonedValue, index);
-                    break;
-                case ContentChangeType.CollectionAdd:
-                    var value = Content.Retrieve(index);
-                    Content.Remove(value, index);
-                    break;
-            }
-            ResettingOverride = false;
+            PropertyGraph.ReconcileWithBase(this);
         }
 
         internal bool HasId(ItemId id)

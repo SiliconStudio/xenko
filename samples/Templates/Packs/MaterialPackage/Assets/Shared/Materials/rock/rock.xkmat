@@ -5,17 +5,19 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 5061a237-3083-4a47-8d4c-0c5d78d26dfc/7759c6b6-5b83-4bb3-8384-84dac159ee3a:Materials/rock/rock_nml
+            Texture: 7759c6b6-5b83-4bb3-8384-84dac159ee3a:Materials/rock/rock_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeBinaryScalar
             Operator: Add
             LeftChild: !ComputeTextureScalar
-                Texture: 687a6d67-0cf3-449a-a8ce-22468a0e37af/345c877f-f6fe-473b-807b-19f4fbdd8e27:Materials/rock/rock_gls
+                Texture: 345c877f-f6fe-473b-807b-19f4fbdd8e27:Materials/rock/rock_gls
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -24,12 +26,12 @@ Attributes:
                 Value: 0.1
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 63288ce5-50f2-4f82-8c04-0a337c091ec6/c84484a7-fd81-420c-9834-d01c901c6998:Materials/rock/rock_dif
+            Texture: c84484a7-fd81-420c-9834-d01c901c6998:Materials/rock/rock_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeFloat4
@@ -37,12 +39,9 @@ Attributes:
         Intensity: !ComputeFloat
             Value: 0.03
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: b7337511-8ded-49de-81a8-5101c929dacf
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 3b42a0ab-a181-46d6-910e-2deb2447b5db
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: b1cc0318-f11f-4a13-8fd1-6c3fdafc7fb4
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

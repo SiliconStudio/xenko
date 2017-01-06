@@ -102,7 +102,6 @@ namespace SiliconStudio.Assets
                 SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
             }
 
-            Tags = new TagCollection();
             Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
             IsDirty = true;
@@ -114,7 +113,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the unique identifier of this package.
         /// </summary>
         /// <value>The identifier.</value>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
         [NonOverridable]
         [Display(Browsable = false)]
         public Guid Id
@@ -137,27 +136,13 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
         [NonOverridable]
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
-
-        // Note: Please keep this code in sync with Asset class
-        /// <summary>
-        /// Gets the tags for this asset.
-        /// </summary>
-        /// <value>
-        /// The tags for this asset.
-        /// </value>
-        [DataMember(-900)]
-        [Display(Browsable = false)]
-        [NonIdentifiableCollectionItems]
-        [NonOverridable]
-        [MemberCollection(NotNullItems = true)]
-        public TagCollection Tags { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this package is a system package.
@@ -1153,7 +1138,7 @@ namespace SiliconStudio.Assets
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.ForceNugetRestore, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
                             log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);

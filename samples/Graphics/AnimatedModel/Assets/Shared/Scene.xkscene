@@ -161,7 +161,7 @@ Hierarchy:
                         Children: {}
                     77fd36bd095b584a92ce82be90aa012f: !BackgroundComponent
                         Id: bd36fd77-5b09-4a58-92ce-82be90aa012f
-                        Texture: b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
+                        Texture: 51b041a7-2f3e-4327-aa2f-9ac598ddedb1:XenkoBackground
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
                 Name: RenderToTextureTilted

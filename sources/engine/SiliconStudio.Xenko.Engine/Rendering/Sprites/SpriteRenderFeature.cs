@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
                 {
                     var compId = RuntimeIdHelper.ToRuntimeId(spriteComp);
-                    color = new Color4(compId);
+                    color = new Color4(compId, 0.0f, 0.0f, 0.0f);
                 }
 
                 // skip the sprite if no texture is set.
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
                 // draw the sprite
-                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
+                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, spriteComp.Swizzle, projectedZ);
             }
 
             if (hasBegin)
