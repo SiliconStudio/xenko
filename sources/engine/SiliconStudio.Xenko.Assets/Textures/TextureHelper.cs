@@ -62,8 +62,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = textureParameters.Texture.Description.ColorSpace.ToColorSpace(textureParameters.ColorSpace) == ColorSpace.Linear;
-
+                IsSRgb = textureParameters.Texture.Description.IsSRGBTexture(textureParameters.ColorSpace);
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;

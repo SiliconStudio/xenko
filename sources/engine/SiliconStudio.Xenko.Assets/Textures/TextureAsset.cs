@@ -27,7 +27,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
-    [CategoryOrder(30, "Transparency")]
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
@@ -160,7 +159,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 {
                     dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
                     description.Node.Tag = "!ColorTextureDescription";
-                    description.ColorSpace = asset.ColorSpace;
+                    description.SRGB = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
                     description.ColorKeyEnabled = asset.ColorKeyEnabled;
                     description.ColorKeyColor = asset.ColorKeyColor;
                     description.Alpha = asset.Alpha;
@@ -179,7 +178,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
     public interface ITextureDescription
     {
-        TextureColorSpace ColorSpace { get; }
+        bool IsSRGBTexture(ColorSpace colorSpaceReference);
 
         bool ColorKeyEnabled { get; }
 
@@ -196,6 +195,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display("Normal Map")]
     public class NormapMapDescription : ITextureDescription
     {
+        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
+
         /// <summary>
         /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent-space.
         /// </summary>
@@ -205,8 +206,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(10)]
         [DefaultValue(true)]
         public bool InvertY { get; set; } = true;
-
-        TextureColorSpace ITextureDescription.ColorSpace => TextureColorSpace.Gamma;
 
         bool ITextureDescription.ColorKeyEnabled => false;
 
@@ -229,7 +228,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display("Grayscale")]
     public class GrayscaleTextureDescription : ITextureDescription
     {
-        TextureColorSpace ITextureDescription.ColorSpace => TextureColorSpace.Gamma;
+        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
 
         bool ITextureDescription.ColorKeyEnabled => false;
 
@@ -243,21 +242,23 @@ namespace SiliconStudio.Xenko.Assets.Textures
     }
 
 
+    [CategoryOrder(40, "Transparency", Expand = ExpandRule.Never)]
     [DataContract("ColorTextureDescription")]
     [Display("Color")]
     public class ColorTextureDescription : ITextureDescription
     {
         /// <summary>
-        /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
+        /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
+        /// Should be checked for color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </userdoc>
-        [DataMember(70)]
-        [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace")]
-        public TextureColorSpace ColorSpace { get; set; } = TextureColorSpace.Auto;
+        [DataMember(20)]
+        [DefaultValue(true)]
+        [Display("sRGB sampling")]
+        public bool SRGB { get; set; } = true;
+
+        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && SRGB);
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
