@@ -195,11 +195,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public PostProcessingEffects PostEffects { get; set; }
 
-        /// <summary>
-        /// Overrides context camera (if not null).
-        /// </summary>
-        [DataMemberIgnore]
-        public CameraComponent Camera { get; set; }
+        public Color4 ClearColor { get; set; } = Color.Green;
 
         public override void Collect(RenderContext context)
         {
@@ -236,7 +232,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             // Allocate render targets
             var renderTarget = PostEffects != null ? context.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(playerWidth, playerHeight, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)) : currentRenderTarget;
 
-            context.CommandList.Clear(renderTarget, Color.Green);
+            context.CommandList.Clear(renderTarget, ClearColor);
             context.CommandList.Clear(currentDepthStencil, DepthStencilClearOptions.DepthBuffer);
             context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
             UnitRenderer?.Draw(context);
