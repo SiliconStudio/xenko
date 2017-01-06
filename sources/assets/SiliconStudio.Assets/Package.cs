@@ -965,7 +965,7 @@ namespace SiliconStudio.Assets
             var loggerResult = log as LoggerResult;
             if (loggerResult == null || !loggerResult.IsLoggingProgressAsInfo)
             {
-                log.Info(progressMessage);
+                log.Verbose(progressMessage);
             }
 
 
