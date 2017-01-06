@@ -87,7 +87,7 @@ public:
 		{
 			if (logger != nullptr)
 			{
-				logger->Warning("The texture '{0}' referenced in the mesh material can not be found on the system. Loading will probably fail at run time.", sourceTextureFile,
+				logger->Warning(String::Format("The texture '{0}' referenced in the mesh material can not be found on the system. Loading will probably fail at run time.", sourceTextureFile),
 								nullptr, CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 			}
 		}
@@ -116,7 +116,7 @@ public:
 		{
 			if (logger != nullptr)
 			{
-				logger->Warning("The texture '{0}' referenced in the mesh material can not be found on the system. Loading will probably fail at run time.", sourceTextureFile,
+				logger->Warning(String::Format("The texture '{0}' referenced in the mesh material can not be found on the system. Loading will probably fail at run time.", sourceTextureFile),
 								nullptr, CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 			}
 		}

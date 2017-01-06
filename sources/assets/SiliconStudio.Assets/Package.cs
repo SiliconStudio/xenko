@@ -369,7 +369,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected exception while loading project [{0}]", ex, pathToMsproj);
+                logger.Error($"Unexpected exception while loading project [{pathToMsproj}]", ex);
             }
         }
 
@@ -755,7 +755,7 @@ namespace SiliconStudio.Assets
 
             if (!File.Exists(filePath))
             {
-                log.Error("Package file [{0}] was not found", filePath);
+                log.Error($"Package file [{filePath}] was not found");
                 return null;
             }
 
@@ -777,7 +777,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, filePath);
+                log.Error($"Error while pre-loading package [{filePath}]", ex);
             }
 
             return null;
@@ -817,7 +817,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -861,7 +861,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -1141,7 +1141,7 @@ namespace SiliconStudio.Assets
                         assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.ForceNugetRestore, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
-                            log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
+                            log.Error($"Unable to locate assembly reference for project [{fullProjectLocation}]");
                             continue;
                         }
 
@@ -1150,14 +1150,14 @@ namespace SiliconStudio.Assets
 
                         if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
-                            log.Error("Unable to build assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to build assembly reference [{assemblyPath}]");
                             continue;
                         }
 
                         var assembly = assemblyContainer.LoadAssemblyFromPath(assemblyPath, log);
                         if (assembly == null)
                         {
-                            log.Error("Unable to load assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to load assembly reference [{assemblyPath}]");
                         }
 
                         loadedAssembly.Assembly = assembly;
@@ -1170,7 +1170,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Unexpected error while loading project [{0}] or assembly reference [{1}]", ex, fullProjectLocation, assemblyPath);
+                        log.Error($"Unexpected error while loading project [{fullProjectLocation}] or assembly reference [{assemblyPath}]", ex);
                     }
                 }
             }
@@ -1248,7 +1248,7 @@ namespace SiliconStudio.Assets
                         var file = new FileInfo(filePath);
                         if (!file.Exists)
                         {
-                            log.Warning("Template [{0}] does not exist ", file);
+                            log.Warning($"Template [{file}] does not exist ");
                             continue;
                         }
 
@@ -1258,7 +1258,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Error while loading template from [{0}]", ex, filePath);
+                        log.Error($"Error while loading template from [{filePath}]", ex);
                     }
                 }
             }
