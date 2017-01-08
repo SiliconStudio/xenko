@@ -741,7 +741,7 @@ private:
 			if (!isRootElement)
 			{
 				if (compositionFathers->Count == 0)
-					Logger->Error("Texture Stack Invalid : Operand without Operation.", nullptr);
+					Logger->Error("Texture Stack Invalid : Operand without Operation.", (CallerInfo^)nullptr);
 
 				curCompositionFather = (IComputeColor^)compositionFathers->Pop();
 			}
@@ -828,7 +828,7 @@ private:
 				}
 				else
 				{
-					Logger->Error(String::Format("Texture Stack Invalid : Invalid Operand Number {0}.", set), nullptr);
+					Logger->Error(String::Format("Texture Stack Invalid : Invalid Operand Number {0}.", set), (CallerInfo^)nullptr);
 				}	
 			}
 
