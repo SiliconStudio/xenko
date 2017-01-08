@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -64,6 +65,10 @@ namespace SiliconStudio.Xenko.Physics
             }
             else
             {
+                // TODO GFXCOMP: Reimplement physics debug shapes rendering
+                throw new NotImplementedException();
+
+                /*
                 //we create a child scene to render the shapes, so that they are totally separated from the normal scene
                 var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
 
@@ -86,7 +91,7 @@ namespace SiliconStudio.Xenko.Physics
                 debugSceneRenderer = new SceneChildRenderer(childComponent) { GraphicsCompositorOverride = graphicsCompositor };
 
                 mainCompositor.Master.Add(debugSceneRenderer);
-                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);
+                sceneSystem.SceneInstance.RootScene.Entities.Add(debugEntityScene);*/
 
                 foreach (var element in elements)
                 {
