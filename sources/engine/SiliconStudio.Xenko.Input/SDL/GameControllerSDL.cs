@@ -16,13 +16,20 @@ namespace SiliconStudio.Xenko.Input
         
         private IntPtr joystick;
 
+        private bool disposed = false;
+
+        internal int InstanceId { get; private set; } 
+
         public GameControllerSDL(int deviceIndex)
         {
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
+
             Id = Guid.NewGuid(); // Should be unique
             ProductId = SDL.SDL_JoystickGetGUID(joystick); // Will identify the type of controller
             Name = SDL.SDL_JoystickName(joystick);
-            
+
+            InstanceId = SDL.SDL_JoystickInstanceID(joystick);
+
             for (int i = 0; i < SDL.SDL_JoystickNumButtons(joystick); i++)
             {
                 buttonInfos.Add(new GameControllerButtonInfo { Name = $"Button {i}" });
@@ -41,10 +48,14 @@ namespace SiliconStudio.Xenko.Input
         
         public void Dispose()
         {
-            SDL.SDL_JoystickClose(joystick);
-            if (Disconnected == null)
-                throw new InvalidOperationException("Something should handle controller disconnect");
-            Disconnected.Invoke(this, null);
+            if (!disposed)
+            {
+                SDL.SDL_JoystickClose(joystick);
+                if (Disconnected == null)
+                    throw new InvalidOperationException("Something should handle controller disconnect");
+                Disconnected.Invoke(this, null);
+                disposed = true;
+            }
         }
 
         public override string Name { get; }

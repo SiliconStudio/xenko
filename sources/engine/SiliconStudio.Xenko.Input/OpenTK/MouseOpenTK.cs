@@ -6,6 +6,7 @@ using System;
 using OpenTK;
 using OpenTK.Input;
 using SiliconStudio.Xenko.Games;
+using Point = System.Drawing.Point;
 using GameWindow = OpenTK.GameWindow;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 

@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Input
     internal class InputSourceSDL : InputSourceBase
     {
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
+        private readonly Dictionary<int, Guid> joystickInstanceIdToDeviceId = new Dictionary<int, Guid>();
         private GameContext<Window> context;
         private Window uiControl;
         private MouseSDL mouse;
@@ -24,6 +25,10 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Dispose()
         {
+            // Stop handling device changes
+            uiControl.JoystickDeviceAdded -= UIControlOnJoystickDeviceAdded;
+            uiControl.JoystickDeviceRemoved -= UIControlOnJoystickDeviceRemoved;
+
             // Dispose all the game controllers
             foreach (var pair in InputDevices)
             {
@@ -52,14 +57,19 @@ namespace SiliconStudio.Xenko.Input
 
             // Scan for gamepads
             Scan();
-        }
 
+            // Handle future device changes
+            uiControl.JoystickDeviceAdded += UIControlOnJoystickDeviceAdded;
+            uiControl.JoystickDeviceRemoved += UIControlOnJoystickDeviceRemoved;
+        }
+        
         public override void Update()
         {
             // Notify event listeners of device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
                 var gameController = InputDevices[deviceIdToRemove];
+                (gameController as IDisposable)?.Dispose();
                 UnregisterDevice(gameController);
             }
             devicesToRemove.Clear();
@@ -68,45 +78,68 @@ namespace SiliconStudio.Xenko.Input
         public override void Scan()
         {
             for (int i = 0; i < SDL.SDL_NumJoysticks(); i++)
-            {
-                var joystickId = SDL.SDL_JoystickGetDeviceGUID(i);
-                if (!InputDevices.ContainsKey(joystickId))
+            { 
+                if (!joystickInstanceIdToDeviceId.ContainsKey(GetJoystickInstanceId(i)))
                 {
                     OpenDevice(i);
                 }
             }
         }
 
-        public void OpenDevice(int deviceIndex)
+        private void OpenDevice(int deviceIndex)
         {
             var joystickId = SDL.SDL_JoystickGetDeviceGUID(deviceIndex);
-            if (InputDevices.ContainsKey(joystickId))
-                throw new InvalidOperationException($"SDL GameController already opened {deviceIndex}/{joystickId}");
+            var joystickName = SDL.SDL_JoystickNameForIndex(deviceIndex);
+            if (joystickInstanceIdToDeviceId.ContainsKey(GetJoystickInstanceId(deviceIndex)))
+                throw new InvalidOperationException($"SDL GameController already opened {deviceIndex}/{joystickId}/{joystickName}");
 
             var controller = new GameControllerSDL(deviceIndex);
+
+            IInputDevice resultingDevice = controller;
 
             // Find gamepad layout
             var layout = GamePadLayouts.FindLayout(this, controller);
             if (layout != null)
             {
-                // Creata a gamepad wrapping around the controller
+                // Create a gamepad wrapping around the controller
                 var gamePad = new GamePadSDL(inputManager, controller, layout);
-                controller.Disconnected += (sender, args) =>
-                {
-                    // Queue device for removal
-                    devicesToRemove.Add(gamePad.Id);
-                };
-                RegisterDevice(gamePad); // Register gamepad instead
+                resultingDevice = gamePad; // Register gamepad instead
             }
-            else
+
+            controller.Disconnected += (sender, args) =>
             {
-                controller.Disconnected += (sender, args) =>
-                {
-                    // Queue device for removal
-                    devicesToRemove.Add(controller.Id);
-                };
-                RegisterDevice(controller);
+                // Queue device for removal
+                devicesToRemove.Add(resultingDevice.Id);
+                joystickInstanceIdToDeviceId.Remove(controller.InstanceId);
+            };
+
+            RegisterDevice(resultingDevice);
+            joystickInstanceIdToDeviceId.Add(controller.InstanceId, resultingDevice.Id);
+        }
+        
+        private void UIControlOnJoystickDeviceRemoved(int which)
+        {
+            Guid deviceId;
+            if (joystickInstanceIdToDeviceId.TryGetValue(which, out deviceId))
+            {
+                devicesToRemove.Add(deviceId);
             }
+        }
+
+        private void UIControlOnJoystickDeviceAdded(int which)
+        {
+            if (!joystickInstanceIdToDeviceId.ContainsKey(GetJoystickInstanceId(which)))
+            {
+                OpenDevice(which);
+            }
+        }
+
+        private int GetJoystickInstanceId(int deviceIndex)
+        {
+            var joystick = SDL.SDL_JoystickOpen(deviceIndex);
+            var instance = SDL.SDL_JoystickInstanceID(joystick);
+            SDL.SDL_JoystickClose(joystick);
+            return instance;
         }
     }
 }

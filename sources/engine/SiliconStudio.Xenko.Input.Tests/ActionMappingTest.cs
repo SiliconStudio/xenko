@@ -171,21 +171,32 @@ namespace SiliconStudio.Xenko.Input.Tests
             }
             lineOffset += 1;
 
-            WriteLine("Game Controllers:");
-            foreach(var controller in Input.GameControllers)
+            if (Input.HasGamePad)
             {
-                WriteLine($"Name: \"{controller.Name}\"", 1);
-                WriteLine($"ID: {controller.Id}", 2);
-                WriteLine($"PID: {controller.ProductId}", 2);
-                var gamePad = controller as IGamePadDevice;
-                if (gamePad != null)
+                WriteLine("Game Pads:");
+                foreach (var gamePad in Input.GamePads)
                 {
+                    WriteLine($"Name: \"{gamePad.Name}\"", 1);
+                    WriteLine($"ID: {gamePad.Id}", 2);
+                    WriteLine($"PID: {gamePad.ProductId}", 2);
                     WriteLine($"GamePad Index: {gamePad.Index}", 2);
                     WriteLine(gamePad.State.ToString(), 2);
                 }
+                lineOffset += 1;
             }
 
-            lineOffset += 1;
+            if (Input.HasGameController)
+            {
+                WriteLine("Game Controllers:");
+                foreach (var gameController in Input.GameControllers)
+                {
+                    WriteLine($"Name: \"{gameController.Name}\"", 1);
+                    WriteLine($"ID: {gameController.Id}", 2);
+                    WriteLine($"PID: {gameController.ProductId}", 2);
+                    WriteLine(gameController.ToString(), 2);
+                }
+                lineOffset += 1;
+            }
 
             WriteLine("Actions:");
             for (int i = 0; i < actions.Count; i++)
