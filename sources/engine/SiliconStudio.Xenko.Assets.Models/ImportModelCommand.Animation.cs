@@ -225,13 +225,13 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             if (animationClip == null)
             {
-                commandContext.Logger.Info("File {0} has an empty animation.", SourcePath);
+                commandContext.Logger.Info($"File {SourcePath} has an empty animation.");
             }
             else
             {
                 if (animationClip.Duration.Ticks == 0)
                 {
-                    commandContext.Logger.Warning("File {0} has a 0 tick long animation.", SourcePath);
+                    commandContext.Logger.Warning($"File {SourcePath} has a 0 tick long animation.");
                 }
 
                 // Optimize and set common parameters

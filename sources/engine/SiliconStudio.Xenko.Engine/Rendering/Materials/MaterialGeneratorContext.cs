@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 if (ReferenceEquals(previousMaterial, materialDescriptor) || previousMaterial.MaterialId == materialDescriptor.MaterialId)
                 {
-                    Log.Error("The material [{0}] cannot be used recursively.", materialName);
+                    Log.Error($"The material [{materialName}] cannot be used recursively.");
                     hasErrors = true;
                 }
             }

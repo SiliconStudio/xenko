@@ -259,6 +259,11 @@ extern "C" {
 				else
 				{
 					(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
+
+					//re-enqueue ready to play again
+					source->streamPositionDiff = 0.0;
+					(*source->queue)->Clear(source->queue);
+					(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
 				}
 			}
 			else
@@ -589,14 +594,10 @@ extern "C" {
 		{
 			(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
 
-			if (source->streamed)
-			{
-				//flush
-				(*source->queue)->Clear(source->queue);
-			}
-			source->streamPositionDiff = 0.0;
+			//flush
+			(*source->queue)->Clear(source->queue);
 
-			if(source->streamed)
+			if (source->streamed)
 			{
 				source->buffersLock.Lock();
 
@@ -609,6 +610,10 @@ extern "C" {
 
 				source->buffersLock.Unlock();
 			}
+
+			//re-enqueue ready to play again
+			source->streamPositionDiff = 0.0;
+			(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
 		}
 
 		double xnAudioSourceGetPosition(xnAudioSource* source)

@@ -476,7 +476,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
+                            Log.Error($"Unable to instantiate serializer factory [{type}]", ex);
                         }
                     }
                     // Custom visitors
@@ -490,7 +490,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate custom visitor [{0}]", ex, type);
+                            Log.Error($"Unable to instantiate custom visitor [{type}]", ex);
                         }
                     }
                     // Asset importer
@@ -505,7 +505,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate importer [{0}]", ex, type.Name);
+                            Log.Error($"Unable to instantiate importer [{type.Name}]", ex);
                         }
                     }
 
@@ -535,7 +535,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate package upgrader [{0}]", ex, type.Name);
+                            Log.Error($"Unable to instantiate package upgrader [{type.Name}]", ex);
                         }
                     }
 

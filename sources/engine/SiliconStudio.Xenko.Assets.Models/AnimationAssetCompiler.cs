@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var sourceBuildStep = ImportModelCommand.Create(extension);
             if (sourceBuildStep == null)
             {
-                result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                result.Error($"No importer found for model extension '{extension}. The model '{assetSource}' can't be imported.");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var baseBuildStep = ImportModelCommand.Create(extension);
                 if (baseBuildStep == null)
                 {
-                    result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", baseExtension, baseAssetSource);
+                    result.Error($"No importer found for model extension '{baseExtension}. The model '{baseAssetSource}' can't be imported.");
                     return;
                 }
 

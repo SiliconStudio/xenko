@@ -67,27 +67,23 @@ namespace SiliconStudio.Xenko.Input.Tests
                     {
                         case GestureType.Drag:
                             var drag = (GestureEventDrag)gestureEvent;
-                            log.Info("Drag: [Params = {0} {1} Time {2} {3} Pos {4} {5} Transl {6} {7} Speed {8}", drag.State, drag.NumberOfFinger, drag.DeltaTime, drag.TotalTime, 
-                                drag.StartPosition, drag.CurrentPosition, drag.DeltaTranslation, drag.TotalTranslation, drag.AverageSpeed);
+                            log.Info($"Drag: [Params = {drag.State} {drag.NumberOfFinger} Time {drag.DeltaTime} {drag.TotalTime} Pos {drag.StartPosition} {drag.CurrentPosition} Transl {drag.DeltaTranslation} {drag.TotalTranslation} Speed {drag.AverageSpeed}");
                             break;
                         case GestureType.Flick:
                             var flick = (GestureEventFlick)gestureEvent;
-                            log.Info("Flick: [Params = {0} {1} Time {2} Pos {3} {4} Transl {5} Speed {6}", flick.State, flick.NumberOfFinger, flick.TotalTime,
-                                flick.StartPosition, flick.CurrentPosition, flick.TotalTranslation, flick.AverageSpeed);
+                            log.Info($"Flick: [Params = {flick.State} {flick.NumberOfFinger} Time {flick.TotalTime} Pos {flick.StartPosition} {flick.CurrentPosition} Transl {flick.TotalTranslation} Speed {flick.AverageSpeed}");
                             break;
                         case GestureType.LongPress:
                             var longPressGesture = (GestureEventLongPress)gestureEvent;
-                            log.Info("A long press event has been detected. [Params = {0} {1} {2} {3}", longPressGesture.State, longPressGesture.DeltaTime, longPressGesture.NumberOfFinger, longPressGesture.Position);
+                            log.Info($"A long press event has been detected. [Params = {longPressGesture.State} {longPressGesture.DeltaTime} {longPressGesture.NumberOfFinger} {longPressGesture.Position}");
                             break;
                         case GestureType.Composite:
                             var compGesture = (GestureEventComposite)gestureEvent;
-                            log.Info("Rotation: [Params = {0} Time {1} {2} angles {3} {4} scale {5} {6} Transl {7} {8} Center {9} {10}", compGesture.State, compGesture.DeltaTime, compGesture.TotalTime,
-                                            compGesture.DeltaRotation, compGesture.TotalRotation, compGesture.DeltaScale, compGesture.TotalScale, 
-                                            compGesture.DeltaTranslation, compGesture.TotalTranslation, compGesture.CenterBeginningPosition, compGesture.CenterCurrentPosition);
+                            log.Info($"Rotation: [Params = {compGesture.State} Time {compGesture.DeltaTime} {compGesture.TotalTime} angles {compGesture.DeltaRotation} {compGesture.TotalRotation} scale {compGesture.DeltaScale} {compGesture.TotalScale} Transl {compGesture.DeltaTranslation} {compGesture.TotalTranslation} Center {compGesture.CenterBeginningPosition} {compGesture.CenterCurrentPosition}");
                             break;
                         case GestureType.Tap:
                             var tapGesture = (GestureEventTap)gestureEvent;
-                            log.Info("Tap: [Params = Fingers {0} Taps {1} Time {2} Position {3}", tapGesture.NumberOfFinger, tapGesture.NumberOfTaps, tapGesture.DeltaTime, tapGesture.TapPosition);
+                            log.Info($"Tap: [Params = Fingers {tapGesture.NumberOfFinger} Taps {tapGesture.NumberOfTaps} Time {tapGesture.DeltaTime} Position {tapGesture.TapPosition}");
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

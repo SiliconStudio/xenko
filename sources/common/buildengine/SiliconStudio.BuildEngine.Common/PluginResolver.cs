@@ -45,8 +45,7 @@ namespace SiliconStudio.BuildEngine
                         continue;
                 }
 
-                if (logger != null)
-                    logger.Debug("Loading plugin: {0}", pluginLocation);
+                logger?.Debug($"Loading plugin: {pluginLocation}");
                 return Assembly.LoadFrom(pluginLocation);
             }
             return null;
@@ -63,8 +62,7 @@ namespace SiliconStudio.BuildEngine
                         continue;
                 }
 
-                if (logger != null)
-                    logger.Debug("Loading plugin: {0}", pluginLocation);
+                logger?.Debug($"Loading plugin: {pluginLocation}");
                 return pluginLocation;
             }
             return null;
@@ -82,8 +80,7 @@ namespace SiliconStudio.BuildEngine
 
             foreach (string filePath in Directory.EnumerateFiles(folder, "*.dll"))
             {
-                if (logger != null)
-                    logger.Debug("Detected plugin: {0}", Path.GetFileNameWithoutExtension(filePath));
+                logger?.Debug($"Detected plugin: {Path.GetFileNameWithoutExtension(filePath)}");
                 pluginAssemblyLocations.Add(filePath);
             }
         }
