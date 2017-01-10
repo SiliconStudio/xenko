@@ -1604,7 +1604,7 @@ extern "C" {
 			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
-			if(spatialized && !hrtf || hrtf && !res->listener_->device_->hrtf_)
+			if((spatialized && !hrtf) || (hrtf && !res->listener_->device_->hrtf_))
 			{
 				//if spatialized we also need those structures to calculate 3D audio
 				res->emitter_ = new X3DAUDIO_EMITTER;
