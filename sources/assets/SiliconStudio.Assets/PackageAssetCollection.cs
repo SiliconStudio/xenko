@@ -331,12 +331,12 @@ namespace SiliconStudio.Assets
             var location = item.Location;
             if (mapPathToId.ContainsKey(location))
             {
-                throw new ArgumentException("An asset [{0}] with the same location [{1}] is already registered ".ToFormat(mapPathToId[location], location.GetDirectoryAndFileName()), "item");
+                throw new ArgumentException("An asset [{0}] with the same location [{1}] is already registered ".ToFormat(mapPathToId[location], location.GetDirectoryAndFileNameWithoutExtension()), "item");
             }
 
             if (mapIdToPath.ContainsKey(item.Id))
             {
-                throw new ArgumentException("An asset with the same id [{0}] is already registered with the location [{1}]".ToFormat(item.Id, location.GetDirectoryAndFileName()), "item");
+                throw new ArgumentException("An asset with the same id [{0}] is already registered with the location [{1}]".ToFormat(item.Id, location.GetDirectoryAndFileNameWithoutExtension()), "item");
             }
 
             if (location.HasDrive)

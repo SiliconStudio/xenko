@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var ufile = (UFile)value;
-            return ufile.GetFileName();
+            return ufile.GetFileNameWithoutExtension();
         }
     }
 }

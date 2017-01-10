@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets
 
         public bool Deleted;
 
-        public UFile AssetPath => FilePath.MakeRelative(SourceFolder).GetDirectoryAndFileName();
+        public UFile AssetPath => FilePath.MakeRelative(SourceFolder).GetDirectoryAndFileNameWithoutExtension();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageLoadingAssetFile"/> class.

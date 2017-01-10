@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -233,7 +233,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
