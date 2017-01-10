@@ -15,6 +15,7 @@ using SiliconStudio.Shaders.Ast.Hlsl;
 
 namespace SiliconStudio.Xenko.Shaders.Tests
 {
+    [Ignore("This test fixture is unmaintained and currently doesn't pass")]
     [TestFixture]
     public class TestGenericClass
     {

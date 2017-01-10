@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
             catch (Exception ex)
             {
-                log.Error("Unexpected error while converting file [{0}] with entry point [{1}]", ex, inputHlslFilepath, hlslEntryPoint);
+                log.Error($"Unexpected error while converting file [{inputHlslFilepath}] with entry point [{hlslEntryPoint}]", ex);
             }
             return null;
         }
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
             catch (Exception ex)
             {
-                log.Error("Unexpected error while converting file [{0}] with entry point [{1}]", ex, inputHlslFilepath, hlslEntryPoint);
+                log.Error($"Unexpected error while converting file [{inputHlslFilepath}] with entry point [{hlslEntryPoint}]", ex);
                 return null;
             }
         }

@@ -165,22 +165,22 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         public static void PrintResult()
         {
             Logger.Info(@"----------------------------STREAM CREATOR ANALYZER-----------------------------");
-            Logger.Info(@"Stream creation took {0} ms", Global.ElapsedMilliseconds);
-            Logger.Info(@"StreamAnalyzer took {0} ms", StreamAnalyzer.ElapsedMilliseconds);
-            Logger.Info(@"FindEntryPoint took {0} ms", FindEntryPoint.ElapsedMilliseconds);
-            Logger.Info(@"StreamAnalysisPerShader took {0} ms", StreamAnalysisPerShader.ElapsedMilliseconds);
-            Logger.Info(@"BubbleUpStreamUsages took {0} ms", BubbleUpStreamUsages.ElapsedMilliseconds);
-            Logger.Info(@"ComputeShaderStreamAnalysis took {0} ms", ComputeShaderStreamAnalysis.ElapsedMilliseconds);
-            Logger.Info(@"TagCleaner took {0} ms", TagCleaner.ElapsedMilliseconds);
-            Logger.Info(@"GenerateStreams took {0} ms", GenerateStreams.ElapsedMilliseconds);
-            Logger.Info(@"RemoveUselessAndSortMethods took {0} ms", RemoveUselessAndSortMethods.ElapsedMilliseconds);
-            Logger.Info(@"PropagateStreamsParameter took {0} ms", PropagateStreamsParameter.ElapsedMilliseconds);
-            Logger.Info(@"TransformStreamsAssignments took {0} ms", TransformStreamsAssignments.ElapsedMilliseconds);
-            Logger.Info(@"AssignSearch took {0} ms", AssignSearch.ElapsedMilliseconds);
-            Logger.Info(@"CreateOutputFromStream took {0} ms", CreateOutputFromStream.ElapsedMilliseconds);
-            Logger.Info(@"CreateStreamFromInput took {0} ms", CreateStreamFromInput.ElapsedMilliseconds);
-            Logger.Info(@"StreamFieldVisitor took {0} ms for {1} calls", StreamFieldVisitor.ElapsedMilliseconds, StreamFieldVisitorCount);
-            Logger.Info(@"StreamFieldVisitorClone took {0} ms", StreamFieldVisitorClone.ElapsedMilliseconds);
+            Logger.Info($"Stream creation took {Global.ElapsedMilliseconds} ms");
+            Logger.Info($"StreamAnalyzer took {StreamAnalyzer.ElapsedMilliseconds} ms");
+            Logger.Info($"FindEntryPoint took {FindEntryPoint.ElapsedMilliseconds} ms");
+            Logger.Info($"StreamAnalysisPerShader took {StreamAnalysisPerShader.ElapsedMilliseconds} ms");
+            Logger.Info($"BubbleUpStreamUsages took {BubbleUpStreamUsages.ElapsedMilliseconds} ms");
+            Logger.Info($"ComputeShaderStreamAnalysis took {ComputeShaderStreamAnalysis.ElapsedMilliseconds} ms");
+            Logger.Info($"TagCleaner took {TagCleaner.ElapsedMilliseconds} ms");
+            Logger.Info($"GenerateStreams took {GenerateStreams.ElapsedMilliseconds} ms");
+            Logger.Info($"RemoveUselessAndSortMethods took {RemoveUselessAndSortMethods.ElapsedMilliseconds} ms");
+            Logger.Info($"PropagateStreamsParameter took {PropagateStreamsParameter.ElapsedMilliseconds} ms");
+            Logger.Info($"TransformStreamsAssignments took {TransformStreamsAssignments.ElapsedMilliseconds} ms");
+            Logger.Info($"AssignSearch took {AssignSearch.ElapsedMilliseconds} ms");
+            Logger.Info($"CreateOutputFromStream took {CreateOutputFromStream.ElapsedMilliseconds} ms");
+            Logger.Info($"CreateStreamFromInput took {CreateStreamFromInput.ElapsedMilliseconds} ms");
+            Logger.Info($"StreamFieldVisitor took {StreamFieldVisitor.ElapsedMilliseconds} ms for {StreamFieldVisitorCount} calls");
+            Logger.Info($"StreamFieldVisitorClone took {StreamFieldVisitorClone.ElapsedMilliseconds} ms");
             Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }

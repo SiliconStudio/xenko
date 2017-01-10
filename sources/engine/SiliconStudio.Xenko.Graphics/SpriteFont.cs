@@ -245,7 +245,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             var destination = new RectangleF(parameters.Position.X, parameters.Position.Y, parameters.Scale.X, parameters.Scale.Y);
             RectangleF? sourceRectangle = glyph.Subrect;
-            parameters.SpriteBatch.DrawSprite(Textures[glyph.BitmapIndex], ref destination, true, ref sourceRectangle, parameters.Color, parameters.Rotation, ref offset, spriteEffects, ImageOrientation.AsIs, parameters.Depth, Swizzle, true);            
+            parameters.SpriteBatch.DrawSprite(Textures[glyph.BitmapIndex], ref destination, true, ref sourceRectangle, parameters.Color, new Color4(0, 0, 0, 0),  parameters.Rotation, ref offset, spriteEffects, ImageOrientation.AsIs, parameters.Depth, Swizzle, true);            
         }
 
         internal void InternalUIDraw(CommandList commandList, ref StringProxy text, ref InternalUIDrawCommand drawCommand)

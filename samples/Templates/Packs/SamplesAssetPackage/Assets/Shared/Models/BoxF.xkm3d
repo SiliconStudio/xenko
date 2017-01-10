@@ -5,14 +5,14 @@ Tags: []
 Source: ../../../Resources/Models/XenkoCrate.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    4c50f2b34074997e0cd410e93adb57d2:
+    e60b5b1aec04dfad5b137e381df5f2e1:
         Name: XenkoLogo
         MaterialInstance:
             Material: f3a8308f-8154-4df0-99a7-ee8beeae4608:Materials/MaskD
-    bebf00ebb3878af5ecf4e30fb4f2b9a3:
+    2c46d11775ad23c975ad23c975ad23c9:
         Name: Fame
         MaterialInstance:
             Material: b4997bcf-6d3e-4715-ac60-319461df7fca:Materials/FrameA
 Skeleton: null
 ~SourceHashes:
-    9743af20642bd2eceed2b3f5e0ad46fb~../../../Resources/Models/XenkoCrate.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0
+    d9676ebad638525246b9f564819b36a8~../../../Resources/Models/XenkoCrate.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0

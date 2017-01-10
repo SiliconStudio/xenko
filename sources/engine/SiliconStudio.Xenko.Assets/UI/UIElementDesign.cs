@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.UI;
@@ -30,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         }
 
         /// <summary>
-        /// Gets or sets the entity
+        /// The UI element.
         /// </summary>
         [DataMember(10)]
         public UIElement UIElement { get; set; }
@@ -41,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        UIElement IAssetPartDesign<UIElement>.Part => UIElement;
+        UIElement IAssetPartDesign<UIElement>.Part { get { return UIElement; } set { UIElement = value; } }
 
         /// <inheritdoc/>
         public override string ToString()

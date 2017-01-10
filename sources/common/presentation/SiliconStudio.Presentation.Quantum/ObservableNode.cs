@@ -508,7 +508,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 foreach (var property in propertyNames)
                 {
-                    Owner.Logger.Debug(@"Node Property changing: [{0}].{1}", Path, property);
+                    Owner.Logger.Debug($"Node Property changing: [{Path}].{property}");
                 }
             }
             base.OnPropertyChanging(propertyNames);
@@ -520,7 +520,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 foreach (var property in propertyNames)
                 {
-                    Owner.Logger.Debug(@"Node Property changed: [{0}].{1}", Path, property);
+                    Owner.Logger.Debug($"Node Property changed: [{Path}].{property}");
                 }
             }
             base.OnPropertyChanged(propertyNames);

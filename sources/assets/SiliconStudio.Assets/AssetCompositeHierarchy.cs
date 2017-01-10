@@ -152,10 +152,10 @@ namespace SiliconStudio.Assets
                 if (!Hierarchy.Parts.ContainsKey(rootId))
                     throw new ArgumentException(@"The source root parts must be parts of this asset.", nameof(sourceRootIds));
 
-                var subTreeRoot = Hierarchy.Parts[rootId].Part;
-                subTreeHierarchy.Parts.Add((TAssetPartDesign)Activator.CreateInstance(typeof(TAssetPartDesign), subTreeRoot));
                 subTreeHierarchy.RootPartIds.Add(rootId);
-                foreach (var subTreePart in EnumerateChildParts(subTreeRoot, true))
+
+                subTreeHierarchy.Parts.Add(Hierarchy.Parts[rootId]);
+                foreach (var subTreePart in EnumerateChildParts(Hierarchy.Parts[rootId].Part, true))
                     subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreePart.Id]);
             }
             // clone the parts of the sub-tree

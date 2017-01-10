@@ -387,7 +387,7 @@ namespace SiliconStudio.Xenko.Assets
                         }
                         else
                         {
-                            log.Error("Cannot locate {0}.", f.FullName);
+                            log.Error($"Cannot locate project {f.FullName}.");
                         }
                     }
                 }))

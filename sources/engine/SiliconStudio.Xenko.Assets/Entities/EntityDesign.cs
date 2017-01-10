@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -30,14 +29,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <summary>
-        /// Gets or sets the folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
+        /// The folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
         /// </summary>
         [DataMember(10)]
         [DefaultValue(null)]
         public string Folder { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity
+        /// The entity.
         /// </summary>
         [DataMember(10)]
         public Entity Entity { get; set; }
@@ -48,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        Entity IAssetPartDesign<Entity>.Part => Entity;
+        Entity IAssetPartDesign<Entity>.Part { get { return Entity; } set { Entity = value; } }
 
         /// <inheritdoc/>
         public override string ToString()

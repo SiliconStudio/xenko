@@ -141,7 +141,7 @@ namespace SiliconStudio.BuildEngine
                     {
                         Monitor.Exit(executeContext);
                         monitorExited = true;
-                        executeContext.Logger.Debug("Command {0} delayed because it is currently running...", Command.ToString());
+                        executeContext.Logger.Debug($"Command {Command} delayed because it is currently running...");
                         status = (await stepInProgress.ExecutedAsync()).Status;
                         matchingResult = stepInProgress.Result;
                     }
@@ -151,7 +151,7 @@ namespace SiliconStudio.BuildEngine
                         Monitor.Exit(executeContext);
                         monitorExited = true;
 
-                        executeContext.Logger.Debug("Command {0} scheduled...", Command.ToString());
+                        executeContext.Logger.Debug($"Command {Command} scheduled...");
 
                         // Register the cancel callback
                         var cancellationTokenSource = executeContext.CancellationTokenSource;
@@ -317,7 +317,7 @@ namespace SiliconStudio.BuildEngine
 
             using (commandResultEntries)
             {
-                logger.Debug("Starting command {0}...", Command.ToString());
+                logger.Debug($"Starting command {Command}...");
 
                 // Creating the CommandResult object
                 var commandContext = new LocalCommandContext(executeContext, this, builderContext);
@@ -397,7 +397,7 @@ namespace SiliconStudio.BuildEngine
 
                     if (process.ExitCode != 0)
                     {
-                        logger.Debug("Remote command crashed with output:\n{0}", string.Join(Environment.NewLine, output));
+                        logger.Debug($"Remote command crashed with output:{Environment.NewLine}{string.Join(Environment.NewLine, output)}");
                     }
 
                     if (processBuilderRemote.Result != null)

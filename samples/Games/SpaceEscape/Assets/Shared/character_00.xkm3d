@@ -5,18 +5,18 @@ Tags: []
 Source: ../../Resources/model/character/scene/character_00.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    21094688c4a61bdf95a094d2ef4cc297:
+    0b1a339ed28bc044af90b5da7012e9e2:
         Name: mc00
         MaterialInstance:
             Material: 7b624632-deab-482f-8b4f-d4b057e7180c:mc00
-    5f38334c14163a8fb363555ea6fa3937:
+    d22670ae028c8c469166ff0e07ef8443:
         Name: ef00
         MaterialInstance:
             Material: 9f4caaef-8604-4b70-ade3-e79035967dbe:ef00_1
-    b1a5329e34210990073a8ba611533a93:
+    9a7e4d3aaf9f96438da6000d9eeb45db:
         Name: mc01
         MaterialInstance:
             Material: 9c690025-c22a-4fc6-8d52-ea92cf9b82ff:mc01
 Skeleton: bfe057df-2fd1-402a-97bc-bd16edee241a:character_00 Skeleton
 ~SourceHashes:
-    c9a5717c2bd2ce86ac179f8bfe375a53~../../Resources/model/character/scene/character_00.FBX: 1a0b83c9b02b333469043d7a7a964b16
+    eb8a6905a984032c7b06df24d2b3862b~../../Resources/model/character/scene/character_00.FBX: 1a0b83c9b02b333469043d7a7a964b16

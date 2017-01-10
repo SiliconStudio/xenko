@@ -157,7 +157,7 @@ MinimumVisualStudioVersion = 14.0.23107.0";
                 {
                     if (string.IsNullOrWhiteSpace(package.Meta.Name))
                     {
-                        log.Error("Error while saving solution [{0}]. Package [{1}] should have a Meta.Name", solutionPath, package.FullPath);
+                        log.Error($"Error while saving solution [{solutionPath}]. Package [{package.FullPath}] should have a Meta.Name");
                         continue;
                     }
 
@@ -318,7 +318,7 @@ MinimumVisualStudioVersion = 14.0.23107.0";
             }
             catch (Exception ex)
             {
-                log.Error("Error while saving solution [{0}]", ex, solutionPath);
+                log.Error($"Error while saving solution [{solutionPath}]", ex);
             }
         }
 

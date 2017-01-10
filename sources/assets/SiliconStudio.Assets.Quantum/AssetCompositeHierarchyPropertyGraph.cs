@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum
             return base.FindTarget(sourceNode, target);
         }
 
-        protected override object CloneValueFromBase(object value, AssetNode node)
+        protected internal override object CloneValueFromBase(object value, AssetNode node)
         {
             var part = value as TAssetPart;
             // Part reference
@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Quantum
             return result;
         }
 
-        protected override GraphVisitorBase CreateReconcilierVisitor()
+        public override GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || member == targetNode.Content)
+            if (member == null || targetNode == null || member == targetNode.Content)
                 return false;
 
             if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))

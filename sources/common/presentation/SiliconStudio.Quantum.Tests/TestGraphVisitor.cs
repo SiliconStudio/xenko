@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -54,10 +55,10 @@ namespace SiliconStudio.Quantum.Tests
         {
             public readonly List<Tuple<IGraphNode, GraphNodePath>> Result = new List<Tuple<IGraphNode, GraphNodePath>>();
 
-            public override void Visit(IGraphNode node, GraphNodePath initialPath = null)
+            public override void Visit(IGraphNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
             {
                 Result.Clear();
-                base.Visit(node, initialPath);
+                base.Visit(node, memberContent, initialPath);
             }
 
             protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
@@ -106,7 +107,7 @@ namespace SiliconStudio.Quantum.Tests
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var initialPath = new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget();
             var visitor = new TestVisitor();
-            visitor.Visit(rootNode, initialPath);
+            visitor.Visit(rootNode, null, initialPath);
             var expectedNodes = new[]
             {
                 rootNode,

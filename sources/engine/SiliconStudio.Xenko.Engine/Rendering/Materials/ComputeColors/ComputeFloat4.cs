@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Float4")]
     public class ComputeFloat4 : ComputeValueBase<Vector4>, IComputeColor
     {
-        private bool hasChanged;
+        private bool hasChanged = true;
 
         // Possible optimization will be to keep this on the ComputeValueBase<T> side
         private Vector4 cachedValue;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             }
             else
             {
-                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
+                context.Log.Error($"Unexpected ParameterKey [{key}] for type [{key.PropertyType}]. Expecting a [Vector3/Color3] or [Vector4/Color4]");
             }
             UsedKey = key;
 

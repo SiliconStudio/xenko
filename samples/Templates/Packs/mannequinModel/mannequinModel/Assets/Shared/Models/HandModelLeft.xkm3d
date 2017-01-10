@@ -5,22 +5,22 @@ Tags: []
 Source: ../../../Resources/Models/HandModelLeft.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    dc7cdcdae47bcbf736bd3f1f876f22c1:
+    6a70d88729ca6a32a5bb95c95bade139:
         Name: SemiglossMT
         MaterialInstance:
             Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
-    3418cb0575fee6da4d3f930ef9a075e2:
+    320080a3133b85e84f5c5af64f5c5af6:
         Name: GlossMT
         MaterialInstance:
             Material: 1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
-    e8c65709b30957028acacb4d82cb144f:
+    faa4a3f8305ed27cc904838a9cc19a82:
         Name: upperMatteMT
         MaterialInstance:
             Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
-    6df02d2a6d6f20c786b94c2681eff099:
+    e3befa98ad23d3cfa84708dda84708dd:
         Name: lambert1
         MaterialInstance:
             Material: b4152531-11a9-4174-8ec9-c1d0a3561714:Materials/MattBlackUpper
 Skeleton: b906bf22-0ae2-4b1d-943e-8377d7d34303:Models/HandModelLeft Skeleton
 ~SourceHashes:
-    4ab37f3ab70e89f7624a6979ed044312~../../../Resources/Models/HandModelLeft.fbx: 335e0e2de46ea68c9918da4ae7680215
+    e2f82676e6d0728a055a986634539af4~../../../Resources/Models/HandModelLeft.fbx: 335e0e2de46ea68c9918da4ae7680215

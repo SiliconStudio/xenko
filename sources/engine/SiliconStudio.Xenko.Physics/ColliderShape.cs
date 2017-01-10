@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Physics
         public virtual void UpdateLocalTransformations()
         {
             //cache matrices used to translate the position from and to physics engine / gfx engine
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * (Parent == null ? Matrix.Translation(LocalOffset * CachedScaling) : Matrix.Translation(LocalOffset));
             NegativeCenterMatrix = PositiveCenterMatrix;
             NegativeCenterMatrix.Invert();
         }
@@ -89,7 +89,8 @@ namespace SiliconStudio.Xenko.Physics
                 var oldScale = CachedScaling;
 
                 CachedScaling = value;
-                if (Is2D) CachedScaling.Z = 0.0f;
+                if (Is2D && Type == ColliderShapeTypes.Box) CachedScaling.Z = 0.001f; //Box is not working properly when in a convex2dshape, Z cannot be 0
+                else if(Is2D) CachedScaling.Z = 0.0f;
 
                 if (Parent == null)
                 {

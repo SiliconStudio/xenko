@@ -63,6 +63,12 @@ namespace SiliconStudio.Presentation.ViewModel
 
         public int ItemCount => items?.Count ?? 0;
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{{{nameof(CollectionChangeOperation)}: {ActionToUndo}}}";
+        }
+
         /// <inheritdoc/>
         protected override void FreezeContent()
         {

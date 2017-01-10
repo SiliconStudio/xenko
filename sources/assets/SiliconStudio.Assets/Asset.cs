@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The identifier.</value>
         /// <exception cref="System.InvalidOperationException">Cannot change an Asset Object Id once it is locked</exception>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
         [NonOverridable]
         [Display(Browsable = false)]
         public AssetId Id
@@ -74,7 +74,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
@@ -82,36 +82,24 @@ namespace SiliconStudio.Assets
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
-        [DataMember(-900)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [DefaultValue(null)]
-        public AssetReference Archetype { get; set; }
-
-        /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-980)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [Obsolete]
-        public int BuildOrder { get; set; }
-
-        // Note: Please keep this code in sync with Asset class
         /// <summary>
         /// Gets the tags for this asset.
         /// </summary>
         /// <value>
         /// The tags for this asset.
         /// </value>
-        [DataMember(-900)]
+        [DataMember(-1000)]
         [Display(Browsable = false)]
         [NonIdentifiableCollectionItems]
         [NonOverridable]
         [MemberCollection(NotNullItems = true)]
         public TagCollection Tags { get; private set; }
+
+        [DataMember(-500)]
+        [Display(Browsable = false)]
+        [NonOverridable]
+        [DefaultValue(null)]
+        public AssetReference Archetype { get; set; }
 
         /// <summary>
         /// Gets the main source file for this asset, used in the editor.

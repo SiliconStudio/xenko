@@ -5,22 +5,22 @@ Tags: []
 Source: ../../../Resources/Models/MagazineModel.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
-    26e51931b695128f93b77a9f9e5bd9d7:
+    62b95c8c6d652a3c31424c6e31424c6e:
         Name: bulletMT
         MaterialInstance:
             Material: e90cd67b-0eb7-441c-a67d-50e192918d3a:Materials/MattBlack
-    f4686574afb42aa1c948175c793eb2da:
+    77f0be4f0cd36cd479800d2579800d25:
         Name: matteMT
         MaterialInstance:
             Material: c66e1fb2-baec-4900-84c2-208b307ad837:Materials/MattBlackMachinegun
-    31c694880a762f578451ba4bc7519146:
+    b158ca41e15b46f8b2746c0a97fdd6ee:
         Name: semiGlossMT
         MaterialInstance:
             Material: 9d50f321-04f3-48ab-b49c-c414ef358343:Materials/BodyGray
-    902d1d740ea99ec33a39d9503b610220:
+    98c4d20c91aa1618068f92bf068f92bf:
         Name: glossMT
         MaterialInstance:
             Material: 1b322c92-9a75-4b10-bd65-8104175c5f00:Materials/BodyWhite
 Skeleton: null
 ~SourceHashes:
-    fb7c255794414e7742163000b5dfe7ab~../../../Resources/Models/MagazineModel.fbx: 76bc45bc990ccc3a003c4aa1da508514
+    756cc310ad4215682f609872395f8d50~../../../Resources/Models/MagazineModel.fbx: 76bc45bc990ccc3a003c4aa1da508514

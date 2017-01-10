@@ -37,12 +37,13 @@ namespace SiliconStudio.Quantum
         /// Visits a hierarchy of node, starting by the given root node.
         /// </summary>
         /// <param name="node">The root node of the visit</param>
+        /// <param name="memberContent">The member content containing the node to visit, if relevant. This is used to properly check if the root node should be visited.</param>
         /// <param name="initialPath">The initial path of the root node, if this visit occurs in the context of a sub-hierarchy. Can be null.</param>
-        public virtual void Visit(IGraphNode node, GraphNodePath initialPath = null)
+        public virtual void Visit(IGraphNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
         {
             var path = initialPath ?? new GraphNodePath(node);
             RootNode = node;
-            if (ShouldVisitNode(null, node))
+            if (ShouldVisitNode(memberContent, node))
             {
                 VisitNode(node, path);
             }

@@ -102,7 +102,6 @@ namespace SiliconStudio.Assets
                 SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
             }
 
-            Tags = new TagCollection();
             Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
             IsDirty = true;
@@ -114,7 +113,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the unique identifier of this package.
         /// </summary>
         /// <value>The identifier.</value>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
         [NonOverridable]
         [Display(Browsable = false)]
         public Guid Id
@@ -137,27 +136,13 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
         [NonOverridable]
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
-
-        // Note: Please keep this code in sync with Asset class
-        /// <summary>
-        /// Gets the tags for this asset.
-        /// </summary>
-        /// <value>
-        /// The tags for this asset.
-        /// </value>
-        [DataMember(-900)]
-        [Display(Browsable = false)]
-        [NonIdentifiableCollectionItems]
-        [NonOverridable]
-        [MemberCollection(NotNullItems = true)]
-        public TagCollection Tags { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this package is a system package.
@@ -384,7 +369,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected exception while loading project [{0}]", ex, pathToMsproj);
+                logger.Error($"Unexpected exception while loading project [{pathToMsproj}]", ex);
             }
         }
 
@@ -770,7 +755,7 @@ namespace SiliconStudio.Assets
 
             if (!File.Exists(filePath))
             {
-                log.Error("Package file [{0}] was not found", filePath);
+                log.Error($"Package file [{filePath}] was not found");
                 return null;
             }
 
@@ -792,7 +777,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, filePath);
+                log.Error($"Error while pre-loading package [{filePath}]", ex);
             }
 
             return null;
@@ -832,7 +817,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -876,7 +861,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -980,7 +965,7 @@ namespace SiliconStudio.Assets
             var loggerResult = log as LoggerResult;
             if (loggerResult == null || !loggerResult.IsLoggingProgressAsInfo)
             {
-                log.Info(progressMessage);
+                log.Verbose(progressMessage);
             }
 
 
@@ -1153,10 +1138,10 @@ namespace SiliconStudio.Assets
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.ForceNugetRestore, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
-                            log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
+                            log.Error($"Unable to locate assembly reference for project [{fullProjectLocation}]");
                             continue;
                         }
 
@@ -1165,14 +1150,14 @@ namespace SiliconStudio.Assets
 
                         if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
-                            log.Error("Unable to build assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to build assembly reference [{assemblyPath}]");
                             continue;
                         }
 
                         var assembly = assemblyContainer.LoadAssemblyFromPath(assemblyPath, log);
                         if (assembly == null)
                         {
-                            log.Error("Unable to load assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to load assembly reference [{assemblyPath}]");
                         }
 
                         loadedAssembly.Assembly = assembly;
@@ -1185,7 +1170,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Unexpected error while loading project [{0}] or assembly reference [{1}]", ex, fullProjectLocation, assemblyPath);
+                        log.Error($"Unexpected error while loading project [{fullProjectLocation}] or assembly reference [{assemblyPath}]", ex);
                     }
                 }
             }
@@ -1263,7 +1248,7 @@ namespace SiliconStudio.Assets
                         var file = new FileInfo(filePath);
                         if (!file.Exists)
                         {
-                            log.Warning("Template [{0}] does not exist ", file);
+                            log.Warning($"Template [{file}] does not exist ");
                             continue;
                         }
 
@@ -1273,7 +1258,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Error while loading template from [{0}]", ex, filePath);
+                        log.Error($"Error while loading template from [{filePath}]", ex);
                     }
                 }
             }
