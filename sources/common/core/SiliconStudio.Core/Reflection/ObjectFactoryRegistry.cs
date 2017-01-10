@@ -57,7 +57,7 @@ namespace SiliconStudio.Core.Reflection
         public static bool CanCreateInstance(Type objectType)
         {
             var factory = FindFactory(objectType);
-            if (factory == null)
+            if (factory != null)
                 return true;
 
             // No factory, check if there is a parameterless ctor for Activator.CreateInstance
