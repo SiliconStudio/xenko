@@ -33,6 +33,18 @@ namespace SiliconStudio.Xenko.Assets.Models
         public const string FileExtension = ".xkanim;.pdxanim";
 
         /// <summary>
+        /// Gets or sets the start frame of the animation.
+        /// </summary>
+        [DataMember(2)]
+        public long StartFrame { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the end frame of the animation.
+        /// </summary>
+        [DataMember(4)]
+        public long EndFrame { get; set; } = 1000000;
+
+        /// <summary>
         /// Gets or sets the pivot position, that will be used as center of object.
         /// </summary>
         [DataMember(10)]

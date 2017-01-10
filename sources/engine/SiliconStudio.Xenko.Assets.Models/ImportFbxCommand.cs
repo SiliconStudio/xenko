@@ -32,10 +32,10 @@ namespace SiliconStudio.Xenko.Assets.Models
             return sceneData;
         }
 
-        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, out TimeSpan duration)
+        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, long startFrame, long endFrame, out TimeSpan duration)
         {
             var meshConverter = CreateMeshConverter(commandContext);
-            var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
+            var sceneData = meshConverter.ConvertAnimation(SourcePath, Location, startFrame, endFrame);
             duration = sceneData.Duration;
             return sceneData.AnimationClips;
         }

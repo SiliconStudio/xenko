@@ -41,6 +41,18 @@ namespace SiliconStudio.Xenko.Assets.Models
         [Display("Reference")]
         public UFile BaseSource { get; set; } = new UFile("");
 
+        /// <summary>
+        /// Gets or sets the start frame of the animation.
+        /// </summary>
+        [DataMember(32)]
+        public long StartFrame { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the end frame of the animation.
+        /// </summary>
+        [DataMember(34)]
+        public long EndFrame { get; set; } = 1000000;
+
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;

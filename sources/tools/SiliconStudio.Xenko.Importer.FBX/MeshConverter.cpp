@@ -1977,14 +1977,14 @@ public:
 		return nullptr;
 	}
 
-	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
+	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename, long long startFrame, long long endFrame)
 	{
 		try
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAnimationsOnly());
 
 			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
-			return animationConverter->ProcessAnimation(inputFilename, vfsOutputFilename);
+			return animationConverter->ProcessAnimation(inputFilename, vfsOutputFilename, startFrame, endFrame);
 		}
 		finally
 		{
