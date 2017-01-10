@@ -57,7 +57,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessorMetadata.cs" />
+    <Compile Include="Annotations\CanBeNullAttribute.cs" />
     <Compile Include="Annotations\CategoryOrderAttribute.cs" />
+    <Compile Include="Annotations\ItemCanBeNullAttribute.cs" />
+    <Compile Include="Annotations\ItemNotNullAttribute.cs" />
     <Compile Include="Annotations\MemberCollectionAttribute.cs" />
     <Compile Include="Annotations\DynamicTypeAttributeBase.cs" />
     <Compile Include="Annotations\InlinePropertyAttribute.cs" />

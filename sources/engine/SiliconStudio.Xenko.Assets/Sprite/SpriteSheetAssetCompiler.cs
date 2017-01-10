@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     }
                     else
                     {
-                        commandContext.Logger.Warning("Image '{0}' has an invalid image source file '{1}', resulting texture will be null.", image.Name, image.Source);
+                        commandContext.Logger.Warning($"Image '{image.Name}' has an invalid image source file '{image.Source}', resulting texture will be null.");
                     }
 
                     imageGroupData.Sprites.Add(new Graphics.Sprite

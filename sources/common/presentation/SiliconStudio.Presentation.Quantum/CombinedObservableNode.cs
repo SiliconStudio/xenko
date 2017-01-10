@@ -142,7 +142,7 @@ namespace SiliconStudio.Presentation.Quantum
             CheckDynamicMemberConsistency();
         }
 
-        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
+        internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, Index index)
         {
             var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
             return node;
@@ -247,7 +247,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var contentType = children.Value.First().Type;
                 var index = children.Value.First().Index;
-                CombinedObservableNode child = Create(Owner, children.Key, this, contentType, children.Value, index);
+                var child = Owner.ObservableViewModelService.CombinedNodeFactory(Owner, children.Key, contentType, children.Value, index);
                 AddChild(child);
                 child.Initialize();
             }
@@ -263,7 +263,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 var contentType = children.Value.First().Type;
                 var name = $"Item {currentIndex}";
-                CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, new Index(currentIndex));
+                var child = Owner.ObservableViewModelService.CombinedNodeFactory(Owner, name, contentType, children.Value, new Index(currentIndex));
                 AddChild(child);
                 child.Initialize();
                 child.DisplayName = name;

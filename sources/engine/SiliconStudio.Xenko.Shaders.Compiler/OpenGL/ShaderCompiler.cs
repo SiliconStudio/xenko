@@ -414,7 +414,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
             catch (Exception e)
             {
-                shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", e.Message);
+                shaderBytecodeResult.Warning("Could not run GLSL optimizer}", e);
             }
 #else
             shaderBytecodeResult.Warning("GLSL optimized has not been executed because it is currently not supported on this platform.");
@@ -563,7 +563,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 {
                     IntPtr log = glslopt_get_log(shader);
                     var logAsString = Marshal.PtrToStringAnsi(log);
-                    shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n    glsl_opt: {0}", string.Join("\r\n    glsl_opt: ", logAsString.Split(new[] { "\n", "\r", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)));
+                    shaderBytecodeResult.Warning($"Could not run GLSL optimizer:\n    glsl_opt: {string.Join("\r\n    glsl_opt: ", logAsString.Split(new[] { "\n", "\r", "\r\n" }, StringSplitOptions.RemoveEmptyEntries))}");
                 }
 
                 glslopt_shader_delete(shader);

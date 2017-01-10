@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -20,10 +21,12 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetContentType(typeof(AnimationClip))]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [Display(1805, "Animation")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
+    public partial class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
+        private const string CurrentVersion = "1.5.0-alpha02";
+
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
@@ -52,6 +55,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <userdoc>Specifies how the animation should be played. That is played once and stop, infinitely loop, etc...</userdoc>
         [DataMember(20)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
+
+        /// <summary>
+        /// Determine the animation type of the asset, which will dictate in what blend mode we can use it
+        /// </summary>
+        /// <userdoc>
+        /// The animation type of the asset decides how we blend it - linear blending will be used for Animation Clip, additive blending for Difference Clip
+        /// </userdoc>
+        [NotNull]
+        [DataMember(30)]
+        public AnimationAssetType Type { get; set; } = new StandardAnimationAssetType();
 
         /// <summary>
         /// Gets or sets the Skeleton.

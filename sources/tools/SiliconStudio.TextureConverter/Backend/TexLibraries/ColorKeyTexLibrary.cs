@@ -57,7 +57,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public unsafe void ApplyColorKey(TexImage image, ColorKeyRequest request)
         {
-            Log.Info("Apply color key [{0}]", request.ColorKey);
+            Log.Info($"Apply color key [{request.ColorKey}]");
 
             var colorKey = request.ColorKey;
             var rowPtr = image.Data;

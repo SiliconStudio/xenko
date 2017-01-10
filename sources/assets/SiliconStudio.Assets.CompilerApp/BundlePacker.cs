@@ -207,7 +207,7 @@ namespace SiliconStudio.Assets.CompilerApp
                             else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
                             {
                                 // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                                logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                                logger.Warning($"Generate bundles: Could not find OutputGroup {bundle.Source.OutputGroup} for bundle {bundle.Name} in ProjectBuildProfile.OutputGroupDirectories");
                                 bundleBackend = outputBundleBackend;
                             }
 
@@ -236,7 +236,7 @@ namespace SiliconStudio.Assets.CompilerApp
                             else if (!outputGroupBundleBackends.TryGetValue(bundle.Source.OutputGroup, out bundleBackend))
                             {
                                 // Output group not found in OutputGroupDirectories, let's issue a warning and fallback to OutputDirectory
-                                logger.Warning("Generate bundles: Could not find OutputGroup {0} for bundle {1} in ProjectBuildProfile.OutputGroupDirectories", bundle.Source.OutputGroup, bundle.Name);
+                                logger.Warning($"Generate bundles: Could not find OutputGroup {bundle.Source.OutputGroup} for bundle {bundle.Name} in ProjectBuildProfile.OutputGroupDirectories");
                                 bundleBackend = outputBundleBackend;
                             }
 
@@ -252,7 +252,7 @@ namespace SiliconStudio.Assets.CompilerApp
                             }
                             catch (Exception ex)
                             {
-                                logger.Error("Unable to dispose VFS [{0}]", ex, vfsToDispose.RootPath);
+                                logger.Error($"Unable to dispose VFS [{vfsToDispose.RootPath}]", ex);
                             }
                         }
                     }

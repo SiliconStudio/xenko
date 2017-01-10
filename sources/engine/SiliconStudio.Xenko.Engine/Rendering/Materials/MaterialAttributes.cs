@@ -170,9 +170,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // We may be able to describe a dependency system here, but for now, assume 
             // that it won't change much so it is hardcoded
 
-            // Diffuse
-            context.Visit(Diffuse);
-            context.Visit(DiffuseModel);
+            // Diffuse - these 2 features are always used as a pair
+            if (Diffuse != null && DiffuseModel != null)
+            {
+                context.Visit(Diffuse);
+                context.Visit(DiffuseModel);
+            }
 
             // Surface Geometry
             context.Visit(Tessellation);
@@ -190,9 +193,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 lambert.IsEnergyConservative = isEnergyConservative;
             }
 
-            // Specular 
-            context.Visit(Specular);
-            context.Visit(SpecularModel);
+            // Specular - these 2 features are always used as a pair
+            if (Specular != null && SpecularModel != null)
+            {
+                context.Visit(Specular);
+                context.Visit(SpecularModel);
+            }
 
             // Misc
             context.Visit(Occlusion);

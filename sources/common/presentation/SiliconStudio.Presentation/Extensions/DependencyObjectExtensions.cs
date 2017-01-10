@@ -170,6 +170,25 @@ namespace SiliconStudio.Presentation.Extensions
                 (d, i) => LogicalTreeHelper.GetChildren(d).Cast<DependencyObject>().ElementAt(i));
         }
 
+        /// <summary>
+        /// Checks that the given dependency object, retrieved as a template part of the calling object using <see cref="FrameworkElement.GetTemplateChild(string)"/>,
+        /// exists and matches the given type.
+        /// </summary>
+        /// <typeparam name="T">The type expected for the template part.</typeparam>
+        /// <param name="templatePart">The template part to evaluate.</param>
+        /// <returns>The given template part, cast into the proper type.</returns>
+        public static T CheckTemplatePart<T>(DependencyObject templatePart) where T : DependencyObject
+        {
+            if (templatePart == null)
+                return null;
+
+            if (templatePart is T == false)
+            {
+                throw new ArgumentException($"Invalid '{templatePart.GetType().FullName}' TemplatePart type. '{typeof(T).FullName}' expected.");
+            }
+
+            return (T)templatePart;
+        }
 
         #region Helper methods
 

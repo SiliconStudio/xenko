@@ -112,11 +112,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private void Edit1OnTextChanged(object sender, RoutedEventArgs routedEventArgs)
         {
-            Logger.Info("The text of the edit1 box changed: text={0}", edit1.Text);
+            Logger.Info($"The text of the edit1 box changed: text={edit1.Text}");
         }
         private void Edit2OnTextChanged(object sender, RoutedEventArgs routedEventArgs)
         {
-            Logger.Info("The text of the edit2 box changed: text={0}", edit2.Text);
+            Logger.Info($"The text of the edit2 box changed: text={edit2.Text}");
         }
 
         protected override void Update(GameTime gameTime)
