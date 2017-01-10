@@ -365,7 +365,15 @@ namespace SiliconStudio.Assets
         {
             lock (RegistryLock)
             {
-                return RegisteredAssetCompositePartTypes.ContainsKey(type);
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredAssetCompositePartTypes.ContainsKey(currentType))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
             }
         }
 
@@ -386,7 +394,7 @@ namespace SiliconStudio.Assets
                 var currentType = type;
                 while (currentType != null)
                 {
-                    if (RegisteredContentTypes.ContainsKey(type))
+                    if (RegisteredContentTypes.ContainsKey(currentType))
                         return true;
 
                     currentType = currentType.BaseType;
