@@ -128,6 +128,11 @@ namespace SiliconStudio.Xenko.Input
                 HandleButtonUp(button);
             }
 
+            public void SimulateMouseWheel(float wheelDelta)
+            {
+                HandleMouseWheel(wheelDelta);
+            }
+
             public override void SetPosition(Vector2 position)
             {
                 if (IsPositionLocked)

@@ -51,6 +51,16 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
+        /// Simulate mouse wheel movement, requires <see cref="InputSourceSimulated"/> to be enabled
+        /// </summary>
+        /// <param name="inputManager">the InputManager</param>
+        /// <param name="wheelDelta">the amount to scroll</param>
+        public static void SimulateMouseWheel(this InputManager inputManager, float wheelDelta)
+        {
+            InputSourceSimulated.Instance.Mouse.SimulateMouseWheel(wheelDelta);
+        }
+
+        /// <summary>
         /// Simulates pointer down events, requires <see cref="InputSourceSimulated"/> to be enabled
         /// </summary>
         /// <param name="inputManager">the InputManager</param>
