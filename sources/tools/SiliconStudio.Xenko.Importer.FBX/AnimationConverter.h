@@ -64,7 +64,7 @@ namespace SiliconStudio {
 						return false;
 					}
 
-					AnimationInfo^ ProcessAnimation(String^ inputFilename, String^ vfsOutputFilename, long long startFrame, long long endFrame)
+					AnimationInfo^ ProcessAnimation(String^ inputFilename, String^ vfsOutputFilename)
 					{
 						auto animationData = gcnew AnimationInfo();
 
@@ -109,20 +109,7 @@ namespace SiliconStudio {
 							animEnd = lTimeLineTimeSpan.GetStop();
 						}
 
-						FbxLongLong animStartFrame, animEndFrame;
-						animStartFrame = animStart.GetFrameCount(FbxTime::EMode::eFrames30);
-						animEndFrame = animEnd.GetFrameCount(FbxTime::EMode::eFrames30);
-
-						FbxLongLong animStartUser = startFrame;
-						FbxLongLong animEndUser = endFrame;
-
-						FbxTime animStartActual;
-							animStartActual.SetFrame(animStartUser > animStartFrame ? animStartUser : animStartFrame);
-							animStartTime = FBXTimeToTimeSpan(animStartActual);
-
-						FbxTime animDurationActual;
-							animDurationActual.SetFrame(animEndUser - animStartUser);
-						CompressedTimeSpan durationTimeSpan = FBXTimeToTimeSpan(animDurationActual);
+						animStartTime = FBXTimeToTimeSpan(animStart);
 
 						// Optimized code
 						// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
@@ -139,9 +126,6 @@ namespace SiliconStudio {
 							if (animationData->Duration < animationClip.Value->Duration)
 								animationData->Duration = animationClip.Value->Duration;
 						}
-
-						if (animationData->Duration > durationTimeSpan)
-							animationData->Duration = durationTimeSpan;
 
 						// Reference code (Uncomment Optimized code to use this part)
 						//scene->SetCurrentAnimationStack(animStack);

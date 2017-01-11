@@ -29,7 +29,25 @@ namespace SiliconStudio.Xenko.Assets.Models
             AdjustSkeleton(modelSkeleton);
 
             TimeSpan duration;
-            var animationClips = LoadAnimation(commandContext, contentManager, StartFrame, EndFrame, out duration);
+            var animationClips = LoadAnimation(commandContext, contentManager, out duration);
+
+            // Fix the animation frames
+            double startFrameSeconds = StartFrame / 30.0;
+            double endFrameSeconds = EndFrame / 30.0;
+            var startTime = CompressedTimeSpan.FromSeconds(-startFrameSeconds);
+
+            foreach (var clip in animationClips)
+            {
+                foreach (var animationCurve in clip.Value.Curves)
+                {
+                    animationCurve.ShiftKeys(startTime);
+                }
+            }
+
+            var durationTimeSpan = TimeSpan.FromSeconds((endFrameSeconds - startFrameSeconds));
+            if (duration > durationTimeSpan)
+                duration = durationTimeSpan;
+
             AnimationClip animationClip = null;
 
             if (animationClips.Count > 0)

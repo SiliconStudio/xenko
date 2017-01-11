@@ -52,31 +52,12 @@ namespace SiliconStudio.Xenko.Assets.Models
             return sceneData;
         }
 
-        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, long startFrame, long endFrame, out TimeSpan duration)
+        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, out TimeSpan duration)
         {
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
 
-            // TODO Post-adjust the duration based on , long long startFrame, long long endFrame
-
-            double startFrameSeconds = startFrame * 30;
-            double endFrameSeconds = endFrame * 30;
-            var startTime = CompressedTimeSpan.FromSeconds(startFrameSeconds);
-
-            foreach (var animationClip in sceneData.AnimationClips)
-            {
-                foreach (var animationCurve in animationClip.Value.Curves)
-                {
-                    animationCurve.ShiftKeys(startTime);
-                }
-            }
-
             duration = sceneData.Duration;
-
-            var durationTimeSpan = TimeSpan.FromSeconds(endFrameSeconds - startFrameSeconds);
-            if (duration > durationTimeSpan)
-                duration = sceneData.Duration = durationTimeSpan;
-
             return sceneData.AnimationClips;
         }
 

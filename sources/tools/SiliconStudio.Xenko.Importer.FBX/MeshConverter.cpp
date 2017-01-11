@@ -1929,7 +1929,7 @@ public:
 			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
 
 			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
-			auto animationData = animationConverter->ProcessAnimation(inputFilename, "", 0, 100000);
+			auto animationData = animationConverter->ProcessAnimation(inputFilename, "");
 
 			return animationData->Duration.TotalSeconds;
 		}
@@ -1996,14 +1996,14 @@ public:
 		return nullptr;
 	}
 
-	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename, long long startFrame, long long endFrame)
+	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
 	{
 		try
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAnimationsOnly());
 
 			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
-			return animationConverter->ProcessAnimation(inputFilename, vfsOutputFilename, startFrame, endFrame);
+			return animationConverter->ProcessAnimation(inputFilename, vfsOutputFilename);
 		}
 		finally
 		{
