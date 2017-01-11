@@ -41,17 +41,28 @@ namespace SiliconStudio.Xenko.Assets.Models
         [Display("Reference")]
         public UFile BaseSource { get; set; } = new UFile("");
 
+        #region Animation frames
+        // Please note that animation frames are edited using the AnimationFrameTemplateProvider
+        //  All 3 properties are required with the exact same names 
+        //  AnimationFrameMaximum should be set to match the actual length of the animation frame sequence
+
         /// <summary>
         /// Gets or sets the start frame of the animation.
         /// </summary>
         [DataMember(32)]
-        public long StartFrame { get; set; } = 0;
+        [Display("Start frame")]
+        public long StartAnimationFrame { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the end frame of the animation.
         /// </summary>
         [DataMember(34)]
-        public long EndFrame { get; set; } = 1000000;
+        [Display("End frame")]
+        public long EndAnimationFrame { get; set; } = 1000;
+
+        // TODO Hide it later
+        public long AnimationFrameMaximum { get; set; } = 1000;
+        #endregion
 
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]

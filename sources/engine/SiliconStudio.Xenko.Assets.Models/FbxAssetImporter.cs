@@ -29,5 +29,13 @@ namespace SiliconStudio.Xenko.Assets.Models
             var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, importParameters.IsTypeSelectedForOutput(typeof(TextureAsset)));
             return entityInfo;
         }
+
+        /// <inheritdoc/>
+        public override TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters)
+        {
+            var meshConverter = new Importer.FBX.MeshConverter(logger);
+            var durationInSeconds = meshConverter.GetAnimationDuration(localPath.FullPath);
+            return TimeSpan.FromSeconds(durationInSeconds);
+        }
     }
 }
