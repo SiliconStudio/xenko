@@ -63,6 +63,8 @@ namespace SiliconStudio.Xenko.Animations
         {
             InterpolationType = AnimationCurveInterpolationType.Linear;
         }
+
+        public virtual void ShiftKeys(CompressedTimeSpan shiftTimeSpan) { }
     }
 
     /// <summary>
@@ -149,6 +151,20 @@ namespace SiliconStudio.Xenko.Animations
         internal override AnimationData CreateOptimizedData(IEnumerable<KeyValuePair<string, AnimationCurve>> animationChannelsByName)
         {
             return AnimationData<T>.FromAnimationChannels(animationChannelsByName.Select(x => new KeyValuePair<string, AnimationCurve<T>>(x.Key, (AnimationCurve<T>)x.Value)).ToList());
+        }
+
+        public override void ShiftKeys(CompressedTimeSpan shiftTimeSpan)
+        {
+            var siftedKeyFrames = new FastList<KeyFrameData<T>>();
+
+            foreach (var keyFrameData in KeyFrames)
+            {
+                siftedKeyFrames.Add(new KeyFrameData<T> { Time = keyFrameData.Time + shiftTimeSpan, Value = keyFrameData.Value });
+            }
+
+            KeyFrames.Clear();
+
+            KeyFrames = siftedKeyFrames;
         }
 
         internal override AnimationCurveEvaluatorDirectGroup CreateEvaluator()

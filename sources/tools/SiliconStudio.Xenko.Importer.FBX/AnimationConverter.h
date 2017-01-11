@@ -138,10 +138,10 @@ namespace SiliconStudio {
 						{
 							if (animationData->Duration < animationClip.Value->Duration)
 								animationData->Duration = animationClip.Value->Duration;
-
-							if (animationData->Duration > durationTimeSpan)
-								animationData->Duration = durationTimeSpan;
 						}
+
+						if (animationData->Duration > durationTimeSpan)
+							animationData->Duration = durationTimeSpan;
 
 						// Reference code (Uncomment Optimized code to use this part)
 						//scene->SetCurrentAnimationStack(animStack);

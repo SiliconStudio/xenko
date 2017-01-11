@@ -59,7 +59,24 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             // TODO Post-adjust the duration based on , long long startFrame, long long endFrame
 
+            double startFrameSeconds = startFrame * 30;
+            double endFrameSeconds = endFrame * 30;
+            var startTime = CompressedTimeSpan.FromSeconds(startFrameSeconds);
+
+            foreach (var animationClip in sceneData.AnimationClips)
+            {
+                foreach (var animationCurve in animationClip.Value.Curves)
+                {
+                    animationCurve.ShiftKeys(startTime);
+                }
+            }
+
             duration = sceneData.Duration;
+
+            var durationTimeSpan = TimeSpan.FromSeconds(endFrameSeconds - startFrameSeconds);
+            if (duration > durationTimeSpan)
+                duration = sceneData.Duration = durationTimeSpan;
+
             return sceneData.AnimationClips;
         }
 
