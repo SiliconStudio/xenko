@@ -36,6 +36,15 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public const string FileExtension = ".xkgfxcomp";
 
         /// <summary>
+        /// Gets the cameras used by this composition.
+        /// </summary>
+        /// <value>The cameras.</value>
+        /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
+        public SceneCameraSlotCollection Cameras { get; } = new SceneCameraSlotCollection();
+
+        /// <summary>
         /// The list of render stages.
         /// </summary>
         [Category]

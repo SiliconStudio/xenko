@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -34,13 +36,29 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public RenderSystem RenderSystem { get; } = new RenderSystem();
 
         /// <summary>
+        /// Gets the cameras used by this composition.
+        /// </summary>
+        /// <value>The cameras.</value>
+        /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
+        [DataMember(10)]
+        [Category]
+        [MemberCollection(NotNullItems = true)]
+        public SceneCameraSlotCollection Cameras { get; } = new SceneCameraSlotCollection();
+
+        /// <summary>
         /// The list of render stages.
         /// </summary>
+        [DataMember(20)]
+        [Category]
+        [MemberCollection(NotNullItems = true)]
         public IList<RenderStage> RenderStages => RenderSystem.RenderStages;
 
         /// <summary>
         /// The list of render features.
         /// </summary>
+        [DataMember(30)]
+        [Category]
+        [MemberCollection(NotNullItems = true)]
         public IList<RootRenderFeature> RenderFeatures => RenderSystem.RenderFeatures;
 
         /// <summary>
@@ -63,6 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
+                using (context.RenderContext.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
                 {
                     // Reset & cleanup
                     visibilityGroup.Reset();
@@ -137,6 +156,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             return new GraphicsCompositor
             {
+                Cameras =
+                {
+                    camera
+                },
                 RenderStages =
                 {
                     mainRenderStage,
@@ -200,7 +223,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 },
                 TopLevel = new CameraViewCompositor()
                 {
-                    Camera = camera,
                     Child = new TopLevelCompositor
                     {
                         ClearColor = clearColor ?? Color.CornflowerBlue,

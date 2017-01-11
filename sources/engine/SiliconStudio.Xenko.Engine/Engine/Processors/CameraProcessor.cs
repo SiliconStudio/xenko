@@ -59,22 +59,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
 
             // Assign cameras to camera slots based on name
-            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor as SceneGraphicsCompositorLayers;
+            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.NewGraphicsCompositor;
             if (graphicsCompositor != null)
             {
-                foreach (var cameraSlot in graphicsCompositor.Cameras)
+                foreach (var camera in Cameras)
                 {
-                    cameraSlot.Camera = null;
-
-                    // Select the first matching camera
-                    foreach (var camera in Cameras)
-                    {
-                        if (cameraSlot.Name == camera.Name)
-                        {
-                            cameraSlot.Camera = camera;
-                            break;
-                        }
-                    }
+                    if (camera.Slot != null && camera.Slot < graphicsCompositor.Cameras.Count)
+                        graphicsCompositor.Cameras[camera.Slot].Camera = camera;
                 }
             }
         }

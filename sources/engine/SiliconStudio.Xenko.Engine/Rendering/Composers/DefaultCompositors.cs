@@ -109,8 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <summary>
         /// Overrides context camera (if not null).
         /// </summary>
-        [DataMemberIgnore]
-        public CameraComponent Camera { get; set; }
+        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
         public IGraphicsCompositorPart Child { get; set; }
 
@@ -121,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             renderContext.RenderSystem.Views.Add(MainRenderView);
 
             MainRenderView.SceneInstance = renderContext.SceneInstance;
-            var camera = Camera ?? renderContext.GetCurrentCamera();
+            var camera = renderContext.GetCameraFromSlot(Camera);
             UpdateCameraToRenderView(renderContext, MainRenderView, camera);
 
             var oldRenderView = renderContext.RenderView;
@@ -142,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             var oldRenderView = renderContext.RenderContext.RenderView;
             renderContext.RenderContext.RenderView = MainRenderView;
 
-            var camera = Camera ?? renderContext.RenderContext.GetCurrentCamera();
+            var camera = renderContext.RenderContext.GetCameraFromSlot(Camera);
             using (renderContext.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 Child?.Draw(renderContext);

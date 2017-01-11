@@ -41,12 +41,12 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public override string ToString()
         {
             string name = Name;
-            if (name == null && Camera != null && Camera.Entity != null)
+            if (name == null && Camera?.Entity != null)
             {
                 name = Camera.Entity.Name;
             }
 
-            return string.Format("Camera [{0}]", name);
+            return $"Camera [{name}]";
         }
 
         /// <summary>

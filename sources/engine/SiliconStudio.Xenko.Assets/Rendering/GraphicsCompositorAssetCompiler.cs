@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             {
                 var graphicsCompositor = new GraphicsCompositor();
 
+                foreach (var cameraSlot in Parameters.Cameras)
+                    graphicsCompositor.Cameras.Add(cameraSlot);
                 foreach (var renderStage in Parameters.RenderStages)
                     graphicsCompositor.RenderStages.Add(renderStage);
                 foreach (var renderFeature in Parameters.RenderFeatures)
