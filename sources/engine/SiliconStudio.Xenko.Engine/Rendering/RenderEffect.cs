@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
@@ -20,6 +21,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// Describes what state the effect is in (compiling, error, etc..)
         /// </summary>
         public RenderEffectState State;
+
+        /// <summary>
+        /// Describes when to try again after a previous error (UTC).
+        /// </summary>
+        public DateTime RetryTime = DateTime.MaxValue;
 
         public bool IsReflectionUpdateRequired;
 
