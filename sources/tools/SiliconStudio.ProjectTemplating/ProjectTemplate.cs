@@ -106,7 +106,7 @@ namespace SiliconStudio.ProjectTemplating
                 var templateDirectory = new FileInfo(FilePath).Directory;
                 if (templateDirectory == null || !templateDirectory.Exists)
                 {
-                    log.Error("Invalid ProjectTemplate directory [{0}]", FilePath);
+                    log.Error($"Invalid ProjectTemplate directory [{FilePath}]");
                     return;
                 }
 
@@ -151,14 +151,14 @@ namespace SiliconStudio.ProjectTemplating
                 {
                     if (fileItem.Source == null)
                     {
-                        log.Warning("Invalid empty file item [{0}] with no source location", fileItem);
+                        log.Warning($"Invalid empty file item [{fileItem}] with no source location");
                         continue;
                     }
                     var sourceFilePath = Path.Combine(templateDirectory.FullName, fileItem.Source);
                     var targetLocation = fileItem.Target ?? fileItem.Source;
                     if (Path.IsPathRooted(targetLocation))
                     {
-                        log.Error("Invalid file item [{0}]. TargetLocation must be a relative path", fileItem);
+                        log.Error($"Invalid file item [{fileItem}]. TargetLocation must be a relative path");
                         continue;
                     }
 
@@ -229,13 +229,13 @@ namespace SiliconStudio.ProjectTemplating
                     catch (Exception ex)
                     {
 
-                        log.Error("Unexpected exception while processing [{0}]", ex, fileItem);
+                        log.Error($"Unexpected exception while processing [{fileItem}]", ex);
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.Error("Unexpected exception while processing project template [{0}] to directory [{1}]", ex, projectName, outputDirectory);
+                log.Error($"Unexpected exception while processing project template [{projectName}] to directory [{outputDirectory}]", ex);
             }
         }
 

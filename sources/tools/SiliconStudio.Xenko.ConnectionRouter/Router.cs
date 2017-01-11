@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
         public async Task Listen(int port)
         {
-            Log.Info("Start to listen on port {0}", port);
+            Log.Info($"Start to listen on port {port}");
 
             var socketContext = CreateSocketContext();
             await socketContext.StartServer(port, false);
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                         // Routing
                         var routerMessage = (RouterMessage)await clientSocketContext.ReadStream.ReadInt16Async();
 
-                        Log.Info("Client {0}:{1} connected, with message {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, routerMessage);
+                        Log.Info($"Client {clientSocketContext.RemoteAddress}:{clientSocketContext.RemotePort} connected, with message {routerMessage}");
 
                         switch (routerMessage)
                         {
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     {
                         // TODO: Ideally, separate socket-related error messages (disconnection) from real errors
                         // Unfortunately, it seems WinRT returns Exception, so it seems we can't filter with SocketException/IOException only?
-                        Log.Info("Client {0}:{1} disconnected with exception: {2}", clientSocketContext.RemoteAddress, clientSocketContext.RemotePort, e.Message);
+                        Log.Info($"Client {clientSocketContext.RemoteAddress}:{clientSocketContext.RemotePort} disconnected with exception.", e);
                         clientSocketContext.Dispose();
                     }
                 });
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             // TODO: Proper Url parsing (query string)
             var url = await clientSocket.ReadStream.ReadStringAsync();
 
-            Log.Info("Client {0}:{1} sent message ClientRequestServer with URL {2}", clientSocket.RemoteAddress, clientSocket.RemotePort, url);
+            Log.Info($"Client {clientSocket.RemoteAddress}:{clientSocket.RemotePort} sent message ClientRequestServer with URL {url}");
 
             string[] urlSegments;
             string urlParameters;
@@ -222,7 +222,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 {
                     if (urlSegments.Length < 3)
                     {
-                        Log.Error("{0} action URL {1} is invalid", RouterMessage.ClientRequestServer, url);
+                        Log.Error($"{RouterMessage.ClientRequestServer} action URL {url} is invalid");
                         throw new InvalidOperationException();
                     }
 
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var xenkoSdkDir = RouterHelper.FindXenkoSdkDir(xenkoVersion);
                     if (xenkoSdkDir == null)
                     {
-                        Log.Error("{0} action URL [{1}] references a Xenko version which is not installed", RouterMessage.ClientRequestServer, url);
+                        Log.Error($"{RouterMessage.ClientRequestServer} action URL [{url}] references a Xenko version which is not installed");
                         throw new InvalidOperationException();
                     }
 

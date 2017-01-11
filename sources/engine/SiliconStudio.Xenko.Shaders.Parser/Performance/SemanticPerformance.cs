@@ -140,15 +140,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         public static void PrintResult()
         {
             Logger.Info(@"--------------------------TOTAL SEMANTIC ANALYZER---------------------------");
-            Logger.Info(@"{0} shader(s) analyzed in {1} ms, {2} ms per shader", nbShaders, TotalTime.ElapsedMilliseconds, nbShaders == 0 ? 0 : TotalTime.ElapsedMilliseconds / nbShaders);
-            Logger.Info(@"VisitVariable {0} ms for {1} calls", VisitVariable.ElapsedMilliseconds, VisitVariableCount);
-            Logger.Info(@"CommonVisit took {0} ms for {1} calls", CommonVisit.ElapsedMilliseconds, CommonVisitCount);
-            Logger.Info(@"FindDeclarationScope took {0} ms for {1} calls", FindDeclarationScope.ElapsedMilliseconds, FindDeclarationScopeCount);
-            Logger.Info(@"FindDeclarationsFromObject took {0} ms for {1} calls", FindDeclarationsFromObject.ElapsedMilliseconds, FindDeclarationsFromObjectCount);
-            Logger.Info(@"FindDeclarations took {0} ms for {1} calls", FindDeclarations.ElapsedMilliseconds, FindDeclarationsCount);
-            Logger.Info(@"ProcessMethodInvocation took {0} ms for {1} calls", ProcessMethodInvocation.ElapsedMilliseconds, ProcessMethodInvocationCount);
-            Logger.Info(@"CheckNameConflict took {0} ms for {1} calls", CheckNameConflict.ElapsedMilliseconds, CheckNameConflictCount);
-            Logger.Info(@"HasExternQualifier took {0} ms for {1} calls", HasExternQualifier.ElapsedMilliseconds, HasExternQualifierCount);
+            Logger.Info($"{nbShaders} shader(s) analyzed in {TotalTime.ElapsedMilliseconds} ms, {(nbShaders == 0 ? 0 : TotalTime.ElapsedMilliseconds / nbShaders)} ms per shader");
+            Logger.Info($"VisitVariable {VisitVariable.ElapsedMilliseconds} ms for {VisitVariableCount} calls");
+            Logger.Info($"CommonVisit took {CommonVisit.ElapsedMilliseconds} ms for {CommonVisitCount} calls");
+            Logger.Info($"FindDeclarationScope took {FindDeclarationScope.ElapsedMilliseconds} ms for {FindDeclarationScopeCount} calls");
+            Logger.Info($"FindDeclarationsFromObject took {FindDeclarationsFromObject.ElapsedMilliseconds} ms for {FindDeclarationsFromObjectCount} calls");
+            Logger.Info($"FindDeclarations took {FindDeclarations.ElapsedMilliseconds} ms for {FindDeclarationsCount} calls");
+            Logger.Info($"ProcessMethodInvocation took {ProcessMethodInvocation.ElapsedMilliseconds} ms for {ProcessMethodInvocationCount} calls");
+            Logger.Info($"CheckNameConflict took {CheckNameConflict.ElapsedMilliseconds} ms for {CheckNameConflictCount} calls");
+            Logger.Info($"HasExternQualifier took {HasExternQualifier.ElapsedMilliseconds} ms for {HasExternQualifierCount} calls");
             Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }

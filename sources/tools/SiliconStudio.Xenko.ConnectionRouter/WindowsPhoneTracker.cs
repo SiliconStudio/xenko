@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     // Launch a client thread that will automatically tries to connect to this port
                     var localPort = (int)connectedDevice.Key;
 
-                    Log.Info("Device connected: {0}; mapped port {1}", connectedDevice.Name, localPort);
+                    Log.Info($"Device connected: {connectedDevice.Name}; mapped port {localPort}");
 
                     Task.Run(() => DeviceHelper.LaunchPersistentClient(connectedDevice, router, "localhost", localPort));
                 });
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             }
             catch
             {
-                log.Error("Error restarting {0} service", serviceName);
+                log.Error($"Error restarting {serviceName} service");
             }
         }
     }

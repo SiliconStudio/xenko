@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
@@ -53,9 +52,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         modelComponent = modelEntity?.Get<ModelComponent>();
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
-                    transformComponent.TransformLink = modelComponent != null ? 
-                        new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : 
-                        null;
+                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;
                 }
             }
         }
