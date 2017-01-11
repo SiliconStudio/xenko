@@ -29,10 +29,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
-        /// <inheritdoc/>
-        [DataMember(-100), Display(Browsable = false)]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         /// <summary>
         /// Main drawing method for this renderer that must be implemented. 
         /// </summary>

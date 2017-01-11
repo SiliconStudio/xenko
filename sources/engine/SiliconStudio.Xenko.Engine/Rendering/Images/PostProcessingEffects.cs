@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     [DataContract("PostProcessingEffects")]
     [Display("Post-Processing Effects")]
-    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IGraphicsCompositorSharedPart
     {
         private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
@@ -63,6 +63,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             Initialize(context);
         }
+
+        /// <inheritdoc/>
+        [DataMember(-100), Display(Browsable = false)]
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Gets or sets the camera.

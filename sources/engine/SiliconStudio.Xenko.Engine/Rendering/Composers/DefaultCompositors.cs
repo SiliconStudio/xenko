@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 gizmoCompositor.Collect(context);
         }
 
-        public override void Draw(RenderDrawContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             context.RenderContext.RenderView = TopLevel.MainRenderView;
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             UnitRenderer?.Collect(context);
         }
 
-        public override void Draw(RenderDrawContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             context.RenderContext.RenderView = MainRenderView;
 
@@ -134,10 +134,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             renderContext.RenderView = oldRenderView;
         }
 
-        public override void Draw(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderDrawContext renderContext)
         {
-            base.Draw(renderContext);
-
             var oldRenderView = renderContext.RenderContext.RenderView;
             renderContext.RenderContext.RenderView = MainRenderView;
 
@@ -218,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
         }
 
-        public override void Draw(RenderDrawContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var viewport = context.CommandList.Viewport;
             var playerWidth = (int)viewport.Width;
@@ -321,10 +319,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        public override void Draw(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderDrawContext renderContext)
         {
-            base.Draw(renderContext);
-
             var commandList = renderContext.CommandList;
 
             var depthStencil = commandList.DepthStencilBuffer;
@@ -362,10 +358,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             this.drawAction = drawAction;
         }
 
-        public override void Draw(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderDrawContext renderContext)
         {
-            base.Draw(renderContext);
-
             drawAction(renderContext);
         }
     }
@@ -382,10 +376,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 child.Collect(renderContext);
         }
 
-        public override void Draw(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderDrawContext renderContext)
         {
-            base.Draw(renderContext);
-
             foreach (var child in Children)
                 child.Draw(renderContext);
         }
@@ -419,7 +411,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             context.RenderView.RenderStages.Add(RenderStage);
         }
 
-        public override void Draw(RenderDrawContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             context.RenderContext.RenderSystem.Draw(context, context.RenderContext.RenderView, RenderStage);
         }
@@ -459,7 +451,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 ShadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
         }
 
-        public override void Draw(RenderDrawContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var renderSystem = context.RenderContext.RenderSystem;
 
