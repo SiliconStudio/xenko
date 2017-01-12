@@ -3,14 +3,14 @@
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal class NamedCompassSensor : NamedSensor, ICompassSensor
+    internal class CompassSensor : Sensor, ICompassSensor
     {
         public float Heading { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedCompassSensor"/> class.
+        /// Initializes a new instance of the <see cref="CompassSensor"/> class.
         /// </summary>
-        public NamedCompassSensor(IInputSource source, string systemName) : base(source, systemName, "Compass")
+        public CompassSensor(IInputSource source, string systemName) : base(source, systemName, "Compass")
         {
         }
     }

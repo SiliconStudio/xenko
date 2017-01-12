@@ -32,12 +32,12 @@ namespace SiliconStudio.Xenko.Input
         private WindowsGyroscope windowsGyroscope;
         private WindowsOrientation windowsOrientation;
 
-        private NamedAccelerometerSensor accelerometer;
-        private NamedCompassSensor compass;
-        private NamedGyroscopeSensor gyroscope;
-        private NamedOrientationSensor orientation;
-        private NamedGravitySensor gravity;
-        private NamedUserAccelerationSensor userAcceleration;
+        private AccelerometerSensor accelerometer;
+        private CompassSensor compass;
+        private GyroscopeSensor gyroscope;
+        private OrientationSensor orientation;
+        private GravitySensor gravity;
+        private UserAccelerationSensor userAcceleration;
 
         private PointerUWP pointer;
         private KeyboardUWP keyboard;
@@ -65,36 +65,36 @@ namespace SiliconStudio.Xenko.Input
             windowsAccelerometer = WindowsAccelerometer.GetDefault();
             if (windowsAccelerometer != null)
             {
-                accelerometer = new NamedAccelerometerSensor(this, "UWP");
+                accelerometer = new AccelerometerSensor(this, "UWP");
                 RegisterDevice(accelerometer);
             }
 
             windowsCompass = WindowsCompass.GetDefault();
             if (windowsCompass != null)
             {
-                compass = new NamedCompassSensor(this, "UWP");
+                compass = new CompassSensor(this, "UWP");
                 RegisterDevice(compass);
             }
 
             windowsGyroscope = WindowsGyroscope.GetDefault();
             if (windowsGyroscope != null)
             {
-                gyroscope = new NamedGyroscopeSensor(this, "UWP");
+                gyroscope = new GyroscopeSensor(this, "UWP");
                 RegisterDevice(gyroscope);
             }
 
             windowsOrientation = WindowsOrientation.GetDefault();
             if (windowsOrientation != null)
             {
-                orientation = new NamedOrientationSensor(this, "UWP");
+                orientation = new OrientationSensor(this, "UWP");
                 RegisterDevice(orientation);
             }
 
             // Virtual sensors
             if (windowsOrientation != null && windowsAccelerometer != null)
             {
-                gravity = new NamedGravitySensor(this, "UWP");
-                userAcceleration = new NamedUserAccelerationSensor(this, "UWP");
+                gravity = new GravitySensor(this, "UWP");
+                userAcceleration = new UserAccelerationSensor(this, "UWP");
                 RegisterDevice(gravity);
                 RegisterDevice(userAcceleration);
             }

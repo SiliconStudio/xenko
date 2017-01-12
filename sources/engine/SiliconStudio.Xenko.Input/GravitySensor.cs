@@ -5,14 +5,14 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal class NamedGravitySensor : NamedSensor, IGravitySensor
+    internal class GravitySensor : Sensor, IGravitySensor
     {
         public Vector3 Vector { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedGravitySensor"/> class.
+        /// Initializes a new instance of the <see cref="GravitySensor"/> class.
         /// </summary>
-        public NamedGravitySensor(IInputSource source, string systemName) : base(source, systemName, "Gravity")
+        public GravitySensor(IInputSource source, string systemName) : base(source, systemName, "Gravity")
         {
         }
     }

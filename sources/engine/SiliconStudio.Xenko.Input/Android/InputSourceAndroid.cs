@@ -29,12 +29,12 @@ namespace SiliconStudio.Xenko.Input
         private AndroidSensorListener orientationListener;
         private AndroidSensorListener gravityListener;
         
-        private NamedAccelerometerSensor accelerometerSensor;
-        private NamedUserAccelerationSensor userAccelerationSensor;
-        private NamedGyroscopeSensor gyroscopeSensor;
-        private NamedOrientationSensor orientationSensor;
-        private NamedGravitySensor gravitySensor;
-        private NamedCompassSensor compassSensor;
+        private AccelerometerSensor accelerometerSensor;
+        private UserAccelerationSensor userAccelerationSensor;
+        private GyroscopeSensor gyroscopeSensor;
+        private OrientationSensor orientationSensor;
+        private GravitySensor gravitySensor;
+        private CompassSensor compassSensor;
 
         public override void Initialize(InputManager inputManager)
         {
@@ -50,38 +50,38 @@ namespace SiliconStudio.Xenko.Input
             // Create android sensors
             if ((accelerometerListener = TryGetSensorListener(SensorType.Accelerometer)) != null)
             {
-                accelerometerSensor = new NamedAccelerometerSensor(this, "Android");
+                accelerometerSensor = new AccelerometerSensor(this, "Android");
                 RegisterDevice(accelerometerSensor);
             }
 
             if ((linearAccelerationListener = TryGetSensorListener(SensorType.LinearAcceleration)) != null)
             {
-                userAccelerationSensor = new NamedUserAccelerationSensor(this, "Android");
+                userAccelerationSensor = new UserAccelerationSensor(this, "Android");
                 RegisterDevice(userAccelerationSensor);
             }
 
             if ((gyroscopeListener = TryGetSensorListener(SensorType.Gyroscope)) != null)
             {
-                gyroscopeSensor = new NamedGyroscopeSensor(this, "Android");
+                gyroscopeSensor = new GyroscopeSensor(this, "Android");
                 RegisterDevice(gyroscopeSensor);
             }
 
             if ((gravityListener = TryGetSensorListener(SensorType.Gravity)) != null)
             {
-                gravitySensor = new NamedGravitySensor(this, "Android");
+                gravitySensor = new GravitySensor(this, "Android");
                 RegisterDevice(gravitySensor);
             }
 
             if ((orientationListener = TryGetSensorListener(SensorType.RotationVector)) != null)
             {
-                orientationSensor = new NamedOrientationSensor(this, "Android");
-                compassSensor = new NamedCompassSensor(this, "Android");
+                orientationSensor = new OrientationSensor(this, "Android");
+                compassSensor = new CompassSensor(this, "Android");
                 RegisterDevice(orientationSensor);
                 RegisterDevice(compassSensor);
             }
         }
 
-        public void UpdateSensorPair<TSensor>(AndroidSensorListener listener, TSensor sensor, Action<TSensor, AndroidSensorListener> updater) where TSensor : NamedSensor
+        public void UpdateSensorPair<TSensor>(AndroidSensorListener listener, TSensor sensor, Action<TSensor, AndroidSensorListener> updater) where TSensor : Sensor
         {
             if (listener != null)
             {

@@ -22,12 +22,12 @@ namespace SiliconStudio.Xenko.Input
         private float firstNorthValue = float.NegativeInfinity;
         private PointeriOS pointer;
 
-        private NamedAccelerometerSensor accelerometerSensor;
-        private NamedUserAccelerationSensor userAccelerationSensor;
-        private NamedGyroscopeSensor gyroscopeSensor;
-        private NamedOrientationSensor orientationSensor;
-        private NamedGravitySensor gravitySensor;
-        private NamedCompassSensor compassSensor;
+        private AccelerometerSensor accelerometerSensor;
+        private UserAccelerationSensor userAccelerationSensor;
+        private GyroscopeSensor gyroscopeSensor;
+        private OrientationSensor orientationSensor;
+        private GravitySensor gravitySensor;
+        private CompassSensor compassSensor;
         
         public override void Initialize(InputManager inputManager)
         {
@@ -51,27 +51,27 @@ namespace SiliconStudio.Xenko.Input
             // Determine supported sensors
             if (motionManager.AccelerometerAvailable)
             {
-                accelerometerSensor = new NamedAccelerometerSensor(this, "iOS");
+                accelerometerSensor = new AccelerometerSensor(this, "iOS");
                 RegisterDevice(accelerometerSensor);
             }
 
             if (CLLocationManager.HeadingAvailable)
             {
-                compassSensor = new NamedCompassSensor(this, "iOS");
+                compassSensor = new CompassSensor(this, "iOS");
                 RegisterDevice(compassSensor);
             }
 
             if (motionManager.GyroAvailable)
             {
-                gyroscopeSensor = new NamedGyroscopeSensor(this, "iOS");
+                gyroscopeSensor = new GyroscopeSensor(this, "iOS");
                 RegisterDevice(gyroscopeSensor);
             }
 
             if (motionManager.DeviceMotionAvailable)
             {
-                gravitySensor = new NamedGravitySensor(this, "iOS");
-                userAccelerationSensor = new NamedUserAccelerationSensor(this, "iOS");
-                orientationSensor = new NamedOrientationSensor(this, "iOS");
+                gravitySensor = new GravitySensor(this, "iOS");
+                userAccelerationSensor = new UserAccelerationSensor(this, "iOS");
+                orientationSensor = new OrientationSensor(this, "iOS");
                 RegisterDevice(gravitySensor);
                 RegisterDevice(userAccelerationSensor);
                 RegisterDevice(orientationSensor);

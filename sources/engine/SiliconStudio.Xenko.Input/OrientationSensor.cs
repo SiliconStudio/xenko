@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal class NamedOrientationSensor : NamedSensor, IOrientationSensor
+    internal class OrientationSensor : Sensor, IOrientationSensor
     {
         private float yaw;
         private float pitch;
@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Input
         private Matrix rotationMatrix;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedOrientationSensor"/> class.
+        /// Initializes a new instance of the <see cref="OrientationSensor"/> class.
         /// </summary>
-        public NamedOrientationSensor(IInputSource source, string systemName) : base(source, systemName, "Orientation")
+        public OrientationSensor(IInputSource source, string systemName) : base(source, systemName, "Orientation")
         {
         }
 

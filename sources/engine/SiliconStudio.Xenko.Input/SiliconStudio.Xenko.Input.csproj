@@ -139,8 +139,8 @@
     <Compile Include="Gestures\KeyGesture.cs" />
     <Compile Include="Gestures\MouseAxisGesture.cs" />
     <Compile Include="Gestures\TwoWayGesture.cs" />
-    <Compile Include="NamedAccelerometerSensor.cs" />
-    <Compile Include="NamedCompassSensor.cs" />
+    <Compile Include="AccelerometerSensor.cs" />
+    <Compile Include="CompassSensor.cs" />
     <Compile Include="GameControllerAxisEvent.cs" />
     <Compile Include="GameControllerAxisInfo.cs" />
     <Compile Include="GameControllerButtonEvent.cs" />
@@ -154,8 +154,8 @@
     <Compile Include="PovControllerEvent.cs" />
     <Compile Include="PovControllerInfo.cs" />
     <Compile Include="GameControllerUtils.cs" />
-    <Compile Include="NamedGravitySensor.cs" />
-    <Compile Include="NamedGyroscopeSensor.cs" />
+    <Compile Include="GravitySensor.cs" />
+    <Compile Include="GyroscopeSensor.cs" />
     <Compile Include="IAccelerometerSensor.cs" />
     <Compile Include="TextInputEvent.cs" />
     <Compile Include="TextInputEventType.cs" />
@@ -197,12 +197,12 @@
     <Compile Include="MouseButtonEvent.cs" />
     <Compile Include="MouseDeviceBase.cs" />
     <Compile Include="MouseWheelEvent.cs" />
-    <Compile Include="NamedOrientationSensor.cs" />
+    <Compile Include="OrientationSensor.cs" />
     <Compile Include="OpenTK\InputSourceOpenTK.cs" />
     <Compile Include="OpenTK\KeyboardOpenTK.cs" />
     <Compile Include="OpenTK\MouseOpenTK.cs" />
     <Compile Include="PointerDeviceBase.cs" />
-    <Compile Include="NamedSensor.cs" />
+    <Compile Include="Sensor.cs" />
     <Compile Include="SDL\GameControllerSDL.cs" />
     <Compile Include="SDL\InputSourceSDL.cs" />
     <Compile Include="SDL\KeyboardSDL.cs" />
@@ -221,7 +221,7 @@
     <Compile Include="PointerType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IUserAccelerationSensor.cs" />
-    <Compile Include="NamedUserAccelerationSensor.cs" />
+    <Compile Include="UserAccelerationSensor.cs" />
     <Compile Include="Windows\DirectInputJoystick.cs" />
     <Compile Include="Windows\DirectInputState.cs" />
     <Compile Include="Windows\GameControllerDirectInput.cs" />

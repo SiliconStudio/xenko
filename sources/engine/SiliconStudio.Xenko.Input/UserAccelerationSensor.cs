@@ -5,14 +5,14 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal class NamedAccelerometerSensor : NamedSensor, IAccelerometerSensor
+    internal class UserAccelerationSensor : Sensor, IUserAccelerationSensor
     {
         public Vector3 Acceleration { get; internal set; }
-
+        
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedAccelerometerSensor"/> class.
+        /// Initializes a new instance of the <see cref="UserAccelerationSensor"/> class.
         /// </summary>
-        public NamedAccelerometerSensor(IInputSource source, string systemName) : base(source, systemName, "Accelerometer")
+        public UserAccelerationSensor(IInputSource source, string systemName) : base(source, systemName, "User Acceleration")
         {
         }
     }

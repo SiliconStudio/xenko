@@ -9,12 +9,12 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Describes a sensor that implements Enabled/Disable and provides a name/guid set from constructor
     /// </summary>
-    internal class NamedSensor : ISensorDevice
+    internal class Sensor : ISensorDevice
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NamedSensor"/> class.
+        /// Initializes a new instance of the <see cref="Sensor"/> class.
         /// </summary>
-        protected NamedSensor(IInputSource source, string systemName, string sensorName)
+        protected Sensor(IInputSource source, string systemName, string sensorName)
         {
             Source = source;
             Name = $"{systemName} {sensorName} Sensor";
