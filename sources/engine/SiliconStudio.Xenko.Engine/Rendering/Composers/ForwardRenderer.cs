@@ -41,12 +41,12 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             if (MainRenderStage != null)
             {
                 context.RenderView.RenderStages.Add(MainRenderStage);
-                MainRenderStage.Output = context.RenderOutputs.Peek();
+                MainRenderStage.Output = context.RenderOutput;
             }
             if (TransparentRenderStage != null)
             {
                 context.RenderView.RenderStages.Add(TransparentRenderStage);
-                TransparentRenderStage.Output = context.RenderOutputs.Peek();
+                TransparentRenderStage.Output = context.RenderOutput;
             }
 
             if (ShadowMapRenderStage != null)

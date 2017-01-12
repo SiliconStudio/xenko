@@ -93,12 +93,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The current render output format (used during the collect phase).
         /// </summary>
-        public Stack<RenderOutputDescription> RenderOutputs { get; } = new Stack<RenderOutputDescription>();
+        public RenderOutputDescription RenderOutput;
 
         /// <summary>
         /// The current render output format (used during the collect phase).
         /// </summary>
-        public Stack<ViewportState> ViewportStates { get; } = new Stack<ViewportState>();
+        public ViewportState ViewportState;
 
         /// <summary>
         /// The current render view.
@@ -117,6 +117,42 @@ namespace SiliconStudio.Xenko.Rendering
             // Store RenderContext shared into the GraphicsDevice
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, d => new RenderContext(services));
+        }
+
+        /// <summary>
+        /// Saves a viewport state and restores after using it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>PropertyTagRestore&lt;T&gt;.</returns>
+        public ViewportRestore SaveViewportAndRestore()
+        {
+            return new ViewportRestore(this);
+        }
+
+        /// <summary>
+        /// Saves a viewport and restores it after using it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>PropertyTagRestore&lt;T&gt;.</returns>
+        public RenderOutputRestore SaveRenderOutputAndRestore()
+        {
+            return new RenderOutputRestore(this);
+        }
+
+        /// <summary>
+        /// Saves a render view and restores it after using it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>PropertyTagRestore&lt;T&gt;.</returns>
+        public RenderViewRestore SaveRenderViewAndRestore()
+        {
+            return new RenderViewRestore(this);
         }
 
         public RenderDrawContext GetThreadContext() => threadContext.Value;
@@ -140,6 +176,57 @@ namespace SiliconStudio.Xenko.Rendering
         internal void OnRendererInitialized(IGraphicsRendererCore obj)
         {
             RendererInitialized?.Invoke(obj);
+        }
+
+        public struct ViewportRestore : IDisposable
+        {
+            private readonly RenderContext context;
+            private readonly ViewportState previousValue;
+
+            public ViewportRestore(RenderContext context)
+            {
+                this.context = context;
+                this.previousValue = context.ViewportState;
+            }
+
+            public void Dispose()
+            {
+                context.ViewportState = previousValue;
+            }
+        }
+
+        public struct RenderOutputRestore : IDisposable
+        {
+            private readonly RenderContext context;
+            private readonly RenderOutputDescription previousValue;
+
+            public RenderOutputRestore(RenderContext context)
+            {
+                this.context = context;
+                this.previousValue = context.RenderOutput;
+            }
+
+            public void Dispose()
+            {
+                context.RenderOutput = previousValue;
+            }
+        }
+
+        public struct RenderViewRestore : IDisposable
+        {
+            private readonly RenderContext context;
+            private readonly RenderView previousValue;
+
+            public RenderViewRestore(RenderContext context)
+            {
+                this.context = context;
+                this.previousValue = context.RenderView;
+            }
+
+            public void Dispose()
+            {
+                context.RenderView = previousValue;
+            }
         }
     }
     public class ViewportState

@@ -116,13 +116,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     // Set start states for viewports and output (it will be used during the Collect phase)
                     var renderOutputs = new RenderOutputDescription();
                     renderOutputs.CaptureState(context.CommandList);
-                    context.RenderContext.RenderOutputs.Clear();
-                    context.RenderContext.RenderOutputs.Push(renderOutputs);
+                    context.RenderContext.RenderOutput = new RenderOutputDescription();
 
                     var viewports = new ViewportState();
                     viewports.CaptureState(context.CommandList);
-                    context.RenderContext.ViewportStates.Clear();
-                    context.RenderContext.ViewportStates.Push(viewports);
+                    context.RenderContext.ViewportState = viewports;
 
                     try
                     {
@@ -236,7 +234,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         },
                     }
                 },
-                TopLevel = new CameraViewCompositor()
+                TopLevel = new SceneCameraRenderer()
                 {
                     Child = new TopLevelCompositor
                     {

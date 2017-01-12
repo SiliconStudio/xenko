@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Culling mode of a <see cref="SceneCameraRenderer"/>.
+    /// Culling mode of a <see cref="RenderView"/>.
     /// </summary>
     public enum CameraCullingMode
     {

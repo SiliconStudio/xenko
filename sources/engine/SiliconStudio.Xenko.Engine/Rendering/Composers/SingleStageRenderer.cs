@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         protected override void CollectCore(RenderContext context)
         {
             // Fill RenderStage formats
-            RenderStage.Output = context.RenderOutputs.Peek();
+            RenderStage.Output = context.RenderOutput;
 
             context.RenderView.RenderStages.Add(RenderStage);
         }

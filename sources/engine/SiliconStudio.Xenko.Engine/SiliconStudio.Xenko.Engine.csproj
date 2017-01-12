@@ -178,7 +178,6 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
-    <Compile Include="Rendering\CameraRenderModeBase.cs" />
     <Compile Include="Rendering\Composers\ClearRenderer.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\DefaultCompositors.cs" />
@@ -188,6 +187,7 @@
     <Compile Include="Rendering\Composers\Pipeline.cs" />
     <Compile Include="Rendering\Composers\PipelineCollection.cs" />
     <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
+    <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
     <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
@@ -436,7 +436,6 @@
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
     <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
-    <Compile Include="Rendering\CameraRendererModeForward.cs" />
     <Compile Include="Rendering\LogicalGroupExtensions.cs" />
     <Compile Include="Rendering\RenderSystem.cs" />
     <Compile Include="Rendering\RenderSystemExtensions.cs" />
@@ -1566,7 +1565,6 @@
     <Compile Include="Rendering\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
     <Compile Include="Rendering\RenderFrameProviderBase.cs" />
-    <Compile Include="Rendering\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\ClearRenderFrameFlags.cs" />
     <Compile Include="Rendering\ClearRenderFrameRenderer.cs" />
     <Compile Include="Rendering\Composers\SceneGraphicsCompositorLayers.cs" />
@@ -1584,7 +1582,6 @@
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
     <Compile Include="Rendering\IGraphicsRenderer.cs" />
-    <Compile Include="Rendering\CameraRendererMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAEffect.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShader.cs">
       <DependentUpon>FXAAShader.xksl</DependentUpon>

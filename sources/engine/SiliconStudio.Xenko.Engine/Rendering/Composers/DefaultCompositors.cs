@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 
@@ -77,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             MainRenderView.SceneInstance = context.SceneInstance;
             var camera = context.GetCurrentCamera();
-            CameraViewCompositor.UpdateCameraToRenderView(context, MainRenderView, camera);
+            SceneCameraRenderer.UpdateCameraToRenderView(context, MainRenderView, camera);
 
             UnitRenderer?.Collect(context);
         }
@@ -87,96 +86,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             context.RenderContext.RenderView = MainRenderView;
 
             UnitRenderer?.Draw(context);
-        }
-    }
-
-    /// <summary>
-    /// Defines and sets a <see cref="RenderView"/> and set it up using <see cref="Camera"/> or current context camera.
-    /// </summary>
-    /// <remarks>
-    /// Since it sets a view, it is usually not shareable for multiple rendering.
-    /// </remarks>
-    public partial class CameraViewCompositor : SceneRendererBase, ITopSceneRenderer
-    {
-        [DataMemberIgnore]
-        public RenderView MainRenderView { get; } = new RenderView();
-
-        /// <summary>
-        /// Overrides context camera (if not null).
-        /// </summary>
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
-
-        public ISceneRenderer Child { get; set; }
-
-        protected override void CollectCore(RenderContext renderContext)
-        {
-            base.CollectCore(renderContext);
-
-            renderContext.RenderSystem.Views.Add(MainRenderView);
-
-            MainRenderView.SceneInstance = renderContext.SceneInstance;
-            var camera = renderContext.GetCameraFromSlot(Camera);
-            UpdateCameraToRenderView(renderContext, MainRenderView, camera);
-
-            var oldRenderView = renderContext.RenderView;
-            renderContext.RenderView = MainRenderView;
-
-            using (renderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
-            {
-                Child?.Collect(renderContext);
-            }
-
-            renderContext.RenderView = oldRenderView;
-        }
-
-        protected override void DrawCore(RenderDrawContext renderContext)
-        {
-            var oldRenderView = renderContext.RenderContext.RenderView;
-            renderContext.RenderContext.RenderView = MainRenderView;
-
-            var camera = renderContext.RenderContext.GetCameraFromSlot(Camera);
-            using (renderContext.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
-            {
-                Child?.Draw(renderContext);
-            }
-
-            renderContext.RenderContext.RenderView = oldRenderView;
-        }
-
-        internal static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
-        {
-            //// Copy scene camera renderer data
-            //renderView.CullingMask = sceneCameraRenderer.CullingMask;
-            //renderView.CullingMode = sceneCameraRenderer.CullingMode;
-            //renderView.ViewSize = new Vector2(sceneCameraRenderer.ComputedViewport.Width, sceneCameraRenderer.ComputedViewport.Height);
-
-            // TODO: Multiple viewports?
-            var currentViewport = context.ViewportStates.Peek().Viewport0;
-            renderView.ViewSize = new Vector2(currentViewport.Width, currentViewport.Height);
-
-            if (camera != null)
-            {
-                // Setup viewport size
-                var aspectRatio = currentViewport.AspectRatio;
-
-                // Update the aspect ratio
-                if (camera.UseCustomAspectRatio)
-                {
-                    aspectRatio = camera.AspectRatio;
-                }
-
-                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-                camera.Update(aspectRatio);
-
-                // Copy camera data
-                renderView.View = camera.ViewMatrix;
-                renderView.Projection = camera.ProjectionMatrix;
-                renderView.NearClipPlane = camera.NearClipPlane;
-                renderView.FarClipPlane = camera.FarClipPlane;
-                renderView.Frustum = camera.Frustum;
-
-                Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
-            }
         }
     }
 
@@ -191,23 +100,15 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         protected override void CollectCore(RenderContext context)
         {
-            if (PostEffects != null)
-            {
-                // Setup pixel formats for RenderStage
-                var renderOutput = context.RenderOutputs.Peek();
-                context.RenderOutputs.Push(new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : renderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt));
-            }
-
-            try
-            {
-                UnitRenderer?.Collect(context);
-            }
-            finally
+            // Setup pixel formats for RenderStage
+            using (context.SaveRenderOutputAndRestore())
             {
                 if (PostEffects != null)
                 {
-                    context.RenderOutputs.Pop();
+                    context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
                 }
+
+                UnitRenderer?.Collect(context);
             }
         }
 
