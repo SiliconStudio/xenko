@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// Adds the specified scene renderer.
         /// </summary>
         /// <param name="sceneRenderer">The scene renderer.</param>
-        public void Add(ISceneRenderer sceneRenderer)
+        public void Add(ISceneRendererOld sceneRenderer)
         {
             Renderers.Add(sceneRenderer);
         }

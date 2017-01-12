@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     Renderers =
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneDelegateRenderer((context, frame) => drawTestAction(game, context, frame)),
+                        new SceneDelegateRendererOld((context, frame) => drawTestAction(game, context, frame)),
                     }
                 }
             };

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("SceneChildRenderer")]
     [Display("Render Child Scene")]
-    public sealed class SceneChildRenderer : SceneRendererBase
+    public sealed class SceneChildRenderer : SceneRendererBaseOld
     {
         private SceneInstance currentSceneInstance;
         private ChildSceneProcessor childSceneProcessor;

@@ -11,12 +11,12 @@ using SiliconStudio.Xenko.Rendering.Composers;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Base implementation for a <see cref="ISceneRenderer"/>.
+    /// Base implementation for a <see cref="ISceneRendererOld"/>.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class SceneRendererBase : RendererBase, ISceneRenderer
+    public abstract class SceneRendererBaseOld : RendererBase, ISceneRendererOld
     {
-        protected SceneRendererBase()
+        protected SceneRendererBaseOld()
         {
             Output = new CurrentRenderFrameProvider();
             ResetGraphicsStates = true;

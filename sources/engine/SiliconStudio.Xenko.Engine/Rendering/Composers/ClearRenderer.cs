@@ -1,27 +1,22 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System.ComponentModel;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Xenko.Rendering
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// A renderer to clear a render frame.
     /// </summary>
-    [DataContract("ClearRenderFrameRenderer")]
-    [Display("Clear RenderFrame")]
-    public sealed class ClearRenderFrameRenderer : SceneRendererBaseOld
+    [Display("Clear")]
+    public sealed class ClearRenderer : SceneRendererBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ClearRenderFrameRenderer"/> class.
         /// </summary>
-        public ClearRenderFrameRenderer()
+        public ClearRenderer()
         {
-            Name = "Clear RenderFrame";
+            Name = "Clear";
             ClearFlags = ClearRenderFrameFlags.ColorAndDepth;
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
@@ -71,29 +66,29 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext renderContext)
         {
-            var commandList = context.CommandList;
+            var commandList = renderContext.CommandList;
+
+            var depthStencil = commandList.DepthStencilBuffer;
 
             // clear the targets
-            if (output.DepthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
+            if (depthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
             {
                 var clearOptions = DepthStencilClearOptions.DepthBuffer;
-                if (output.DepthStencil.HasStencil)
+                if (depthStencil.HasStencil)
                     clearOptions |= DepthStencilClearOptions.Stencil;
 
-                commandList.Clear(output.DepthStencil, clearOptions, Depth, Stencil);
+                commandList.Clear(depthStencil, clearOptions, Depth, Stencil);
             }
 
             if (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.ColorOnly)
             {
-                foreach (var renderTarget in output.RenderTargets)
+                for (var index = 0; index < commandList.RenderTargetCount; index++)
                 {
-                    if (renderTarget != null)
-                    {
-                        var color = Color.ToColorSpace(context.GraphicsDevice.ColorSpace);
-                        commandList.Clear(renderTarget, color);
-                    }
+                    var renderTarget = commandList.RenderTargets[index];
+                    var color = Color.ToColorSpace(renderContext.GraphicsDevice.ColorSpace);
+                    commandList.Clear(renderTarget, color);
                 }
             }
         }

@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     // TODO: we would like an attribute to specify that serializing through the interface type is fine in this case (bypass type detection)
     [DataSerializerGlobal(null, typeof(FastTrackingCollection<RenderStage>))]
     [DataSerializerGlobal(null, typeof(FastTrackingCollection<RootRenderFeature>))]
-    public class GraphicsCompositor
+    public class GraphicsCompositor : RendererBase
     {
         [Obsolete]
         public ISceneGraphicsCompositor Instance { get; set; }
@@ -64,17 +64,29 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public IGraphicsCompositorPart TopLevel { get; set; }
+        public ISceneRenderer TopLevel { get; set; }
 
+        /// <inheritdoc/>
+        protected override void InitializeCore()
+        {
+            base.InitializeCore();
 
-        public void Draw(RenderDrawContext context)
+            RenderSystem.Initialize(Context);
+        }
+
+        /// <inheritdoc/>
+        protected override void Destroy()
+        {
+            RenderSystem.Dispose();
+
+            base.Destroy();
+        }
+
+        /// <inheritdoc/>
+        protected override void DrawCore(RenderDrawContext context)
         {
             if (TopLevel != null)
             {
-                // Do we need to initialize render system?
-                if (RenderSystem.GraphicsDevice == null)
-                    RenderSystem.Initialize(context.RenderContext);
-
                 // Get or create VisibilityGroup for this RenderSystem + SceneInstance
                 var sceneInstance = SceneInstance.GetCurrent(context.RenderContext);
                 var visibilityGroup = sceneInstance.GetOrCreateVisibilityGroup(RenderSystem);
@@ -226,11 +238,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     Child = new TopLevelCompositor
                     {
                         ClearColor = clearColor ?? Color.CornflowerBlue,
-                        UnitRenderer = new ForwardCompositor
+                        UnitRenderer = new ForwardRenderer
                         {
                             MainRenderStage = mainRenderStage,
                             TransparentRenderStage = transparentRenderStage,
-                            Shadows = true,
                             ShadowMapRenderStage = shadowCasterRenderStage,
                         },
                         PostEffects = enablePostEffects ? new PostProcessingEffects

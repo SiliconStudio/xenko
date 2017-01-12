@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -17,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     [DataContract("PostProcessingEffects")]
     [Display("Post-Processing Effects")]
-    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IGraphicsCompositorSharedPart
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, ISharedRenderer
     {
         private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
@@ -67,14 +66,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; } = Guid.NewGuid();
-
-        /// <summary>
-        /// Gets or sets the camera.
-        /// </summary>
-        /// <value>The camera.</value>
-        /// <userdoc>Specifies the camera to use for the sequence of post-effects</userdoc>
-        [DataMember(5)]
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
 
         /// <summary>
         /// Gets the ambient occlusion effect.
@@ -243,8 +234,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        public void Collect(RenderContext context)
+        public void Draw(RenderDrawContext context, Texture input, Texture depthStencil, Texture output)
         {
+            SetInput(0, input);
+            SetInput(1, depthStencil);
+            SetOutput(output);
+            Draw(context);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -256,19 +251,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 return;
             }
 
-            var depthStencil = InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil ? GetInput(1) : null;
-            Draw(context, input, depthStencil, output);
-        }
-
-        public void Draw(RenderDrawContext context, Texture input, Texture depthStencil, Texture output)
-        {
-            PreDrawCoreInternal(context);
-            DrawInternal(context, input, depthStencil, output);
-            PostDrawCoreInternal(context);
-        }
-
-        private void DrawInternal(RenderDrawContext context, Texture input, Texture depthStencil, Texture output)
-        {
             // Update the parameters for this post effect
             if (!Enabled)
             {
@@ -276,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     Scaler.SetInput(input);
                     Scaler.SetOutput(output);
-                    ((RendererBase)Scaler).Draw(context);
+                    Scaler.Draw(context);
                 }
                 return;
             }
@@ -291,14 +273,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
             var currentInput = input;
 
-            if (ambientOcclusion.Enabled && depthStencil != null)
+            if (ambientOcclusion.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
             {
                 // Ambient Occlusion
                 var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                var inputDepthTexture = depthStencil; // Depth
+                var inputDepthTexture = GetInput(1); // Depth
                 ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                 ambientOcclusion.SetOutput(aoOutput);
-                ((RendererBase)ambientOcclusion).Draw(context);
+                ambientOcclusion.Draw(context);
                 currentInput = aoOutput;
             }
 
@@ -306,10 +288,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 // DoF
                 var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                var inputDepthTexture = depthStencil; // Depth
+                var inputDepthTexture = GetInput(1); // Depth
                 depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
-                ((RendererBase)depthOfField).Draw(context);
+                depthOfField.Draw(context);
                 currentInput = dofOutput;
             }
 
@@ -329,7 +311,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 luminanceEffect.SetInput(currentInput);
                 luminanceEffect.SetOutput(luminanceTexture);
-                ((RendererBase)luminanceEffect).Draw(context);
+                luminanceEffect.Draw(context);
 
                 // Set this parameter that will be used by the tone mapping
                 colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
@@ -343,14 +325,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 brightFilter.SetInput(currentInput);
                 brightFilter.SetOutput(brightTexture);
-                ((RendererBase)brightFilter).Draw(context);
+                brightFilter.Draw(context);
 
                 // Bloom pass
                 if (bloom.Enabled)
                 {
                     bloom.SetInput(brightTexture);
                     bloom.SetOutput(currentInput);
-                    ((RendererBase)bloom).Draw(context);
+                    bloom.Draw(context);
                 }
 
                 // Light streak pass
@@ -358,7 +340,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     lightStreak.SetInput(brightTexture);
                     lightStreak.SetOutput(currentInput);
-                    ((RendererBase)lightStreak).Draw(context);
+                    lightStreak.Draw(context);
                 }
 
                 // Lens flare pass
@@ -366,7 +348,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     lensFlare.SetInput(brightTexture);
                     lensFlare.SetOutput(currentInput);
-                    ((RendererBase)lensFlare).Draw(context);
+                    lensFlare.Draw(context);
                 }
             }
 
@@ -400,7 +382,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-            ((RendererBase)lastEffect).Draw(context);
+            lastEffect.Draw(context);
 
             if (ssaa != null && ssaa.Enabled)
             {

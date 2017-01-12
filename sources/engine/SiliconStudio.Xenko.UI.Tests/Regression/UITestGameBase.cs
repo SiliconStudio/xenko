@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
 
-                        new SceneDelegateRenderer(SpecificDrawBeforeUI) { Name = "Delegate before main UI" },
+                        new SceneDelegateRendererOld(SpecificDrawBeforeUI) { Name = "Delegate before main UI" },
 
                         new SceneCameraRenderer { Mode = SceneCameraRenderer },
                     }

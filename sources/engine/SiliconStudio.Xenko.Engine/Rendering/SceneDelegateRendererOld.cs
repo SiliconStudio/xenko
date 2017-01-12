@@ -13,16 +13,16 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataContract("SceneDelegateRenderer")]
     [Display(Browsable = false)] // This type is not browsable from the editor
-    public class SceneDelegateRenderer : SceneRendererViewportBase
+    public class SceneDelegateRendererOld : SceneRendererViewportBase
     {
         private readonly Action<RenderDrawContext, RenderFrame> drawAction;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneDelegateRenderer"/> class.
+        /// Initializes a new instance of the <see cref="SceneDelegateRendererOld"/> class.
         /// </summary>
         /// <param name="drawAction">The draw action.</param>
         /// <exception cref="System.ArgumentNullException">drawAction</exception>
-        public SceneDelegateRenderer(Action<RenderDrawContext, RenderFrame> drawAction)
+        public SceneDelegateRendererOld(Action<RenderDrawContext, RenderFrame> drawAction)
         {
             if (drawAction == null) throw new ArgumentNullException("drawAction");
             this.drawAction = drawAction;

@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(RootRenderFeature))]
-    [AssetPartReference(typeof(IGraphicsCompositorSharedPart))]
+    [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     public class GraphicsCompositorAsset : AssetComposite
     {
@@ -68,22 +68,22 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// The code and values defined by this graphics compositor.
         /// </summary>
-        public IGraphicsCompositorPart TopLevel { get; set; }
+        public ISceneRenderer TopLevel { get; set; }
 
         /// <summary>
         /// The list of graphics compositors.
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        public List<IGraphicsCompositorSharedPart> Parts { get; } = new List<IGraphicsCompositorSharedPart>();
+        public List<ISharedRenderer> SharedRenderers { get; } = new List<ISharedRenderer>();
 
         /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var renderStage in RenderStages)
                 yield return new AssetPart(renderStage.Id, null, newBase => {});
-            foreach (var part in Parts)
-                yield return new AssetPart(part.Id, null, newBase => { });
+            foreach (var sharedRenderer in SharedRenderers)
+                yield return new AssetPart(sharedRenderer.Id, null, newBase => { });
         }
 
         /// <inheritdoc/>
@@ -95,10 +95,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                     return renderStage;
             }
 
-            foreach (var part in Parts)
+            foreach (var sharedRenderer in SharedRenderers)
             {
-                if (part.Id == partId)
-                    return part;
+                if (sharedRenderer.Id == partId)
+                    return sharedRenderer;
             }
 
             return null;
@@ -112,9 +112,9 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                 if (renderStage.Id == partId)
                     return true;
             }
-            foreach (var part in Parts)
+            foreach (var sharedRenderer in SharedRenderers)
             {
-                if (part.Id == partId)
+                if (sharedRenderer.Id == partId)
                     return true;
             }
 
@@ -135,13 +135,13 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                 return null;
             }
 
-            var partReference = referencedObject as IGraphicsCompositorSharedPart;
+            var partReference = referencedObject as ISharedRenderer;
             if (partReference != null)
             {
-                foreach (var part in Parts)
+                foreach (var sharedRenderer in SharedRenderers)
                 {
-                    if (part.Id == partReference.Id)
-                        return part;
+                    if (sharedRenderer.Id == partReference.Id)
+                        return sharedRenderer;
                 }
                 return null;
             }

@@ -179,12 +179,16 @@
     <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\CameraRenderModeBase.cs" />
+    <Compile Include="Rendering\Composers\ClearRenderer.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
     <Compile Include="Rendering\Composers\DefaultCompositors.cs" />
+    <Compile Include="Rendering\Composers\DelegateSceneRenderer.cs" />
+    <Compile Include="Rendering\Composers\ForwardRenderer.cs" />
     <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\Pipeline.cs" />
     <Compile Include="Rendering\Composers\PipelineCollection.cs" />
     <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
+    <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
     <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
@@ -221,7 +225,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Composers\GraphicsCompositorPart.cs" />
+    <Compile Include="Rendering\Composers\SceneRendererBase.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
@@ -1440,7 +1444,7 @@
     <Compile Include="Rendering\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs" />
     <Compile Include="Rendering\Images\IImageEffect.cs" />
     <Compile Include="Rendering\IRenderFrameProvider.cs" />
-    <Compile Include="Rendering\ISceneRenderer.cs" />
+    <Compile Include="Rendering\ISceneRendererOld.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryColor.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryScalar.cs" />
@@ -1569,12 +1573,12 @@
     <Compile Include="Rendering\Composers\CurrentRenderFrameProvider.cs" />
     <Compile Include="Rendering\Composers\MasterRenderFrameProvider.cs" />
     <Compile Include="Rendering\Composers\LocalRenderFrameProvider.cs" />
-    <Compile Include="Rendering\SceneDelegateRenderer.cs" />
+    <Compile Include="Rendering\SceneDelegateRendererOld.cs" />
     <Compile Include="Rendering\SceneRendererViewportBase.cs" />
     <Compile Include="Rendering\SharedRenderFrameProvider.cs" />
     <Compile Include="Rendering\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Rendering\SceneEffectRenderer.cs" />
-    <Compile Include="Rendering\SceneRendererBase.cs" />
+    <Compile Include="Rendering\SceneRendererBaseOld.cs" />
     <Compile Include="Rendering\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />

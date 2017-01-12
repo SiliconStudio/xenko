@@ -4,11 +4,11 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
-    public interface IGraphicsCompositorPart : IRenderCollector, IGraphicsRendererBase
+    public interface ISceneRenderer : IRenderCollector, IGraphicsRendererBase
     {
     }
 
-    public interface IGraphicsCompositorSharedPart : IIdentifiable
+    public interface ISharedRenderer : IIdentifiable
     {
         string Name { get; }
     }
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// Describes the code part of a <see cref="GraphicsCompositor"/>.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class GraphicsCompositorPart : RendererBase, IGraphicsCompositorPart
+    public abstract class SceneRendererBase : RendererBase, ISceneRenderer
     {
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public override string Name => GetType().Name;
 
-        protected GraphicsCompositorPart()
+        protected SceneRendererBase()
         {
             Id = Guid.NewGuid();
         }

@@ -6,9 +6,9 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Interface of an <see cref="ISceneRenderer"/> that supports a viewport.
+    /// Interface of an <see cref="ISceneRendererOld"/> that supports a viewport.
     /// </summary>
-    public interface ISceneRendererViewport : ISceneRenderer
+    public interface ISceneRendererViewport : ISceneRendererOld
     {
         /// <summary>
         /// Gets or sets the viewport in percentage or pixel.

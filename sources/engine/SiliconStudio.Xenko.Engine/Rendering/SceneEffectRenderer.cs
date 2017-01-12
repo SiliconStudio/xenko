@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     [DataContract("SceneEffectRenderer")]
     [Display("Render Effect")]
-    public class SceneEffectRenderer : SceneRendererBase
+    public class SceneEffectRenderer : SceneRendererBaseOld
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneEffectRenderer"/> class.

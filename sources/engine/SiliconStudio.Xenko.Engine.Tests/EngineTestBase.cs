@@ -71,9 +71,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
                     Renderers =
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneDelegateRenderer(PreCameraRendererDraw),
+                        new SceneDelegateRendererOld(PreCameraRendererDraw),
                         new SceneCameraRenderer { Mode = SceneCameraRenderer },
-                        new SceneDelegateRenderer(PostCameraRendererDraw),
+                        new SceneDelegateRendererOld(PostCameraRendererDraw),
                     }
                 }
             };

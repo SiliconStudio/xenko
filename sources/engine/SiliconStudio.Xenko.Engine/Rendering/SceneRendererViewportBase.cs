@@ -12,10 +12,10 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// A <see cref="SceneRendererBase"/> that supports a <see cref="Viewport"/>.
+    /// A <see cref="SceneRendererBaseOld"/> that supports a <see cref="Viewport"/>.
     /// </summary>
     [DataContract]
-    public abstract class SceneRendererViewportBase : SceneRendererBase, ISceneRendererViewport
+    public abstract class SceneRendererViewportBase : SceneRendererBaseOld, ISceneRendererViewport
     {
         protected SceneRendererViewportBase()
         {
