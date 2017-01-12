@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
-    public partial class SceneCameraRenderer : SceneRendererBase, ITopSceneRenderer
+    public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
         public RenderView MainRenderView { get; } = new RenderView();
@@ -29,20 +29,17 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.CollectCore(renderContext);
 
             renderContext.RenderSystem.Views.Add(MainRenderView);
-
+            
+            // Setup renderview
             MainRenderView.SceneInstance = renderContext.SceneInstance;
             var camera = renderContext.GetCameraFromSlot(Camera);
             UpdateCameraToRenderView(renderContext, MainRenderView, camera);
 
-            var oldRenderView = renderContext.RenderView;
-            renderContext.RenderView = MainRenderView;
-
+            using (renderContext.PushRenderViewAndRestore(MainRenderView))
             using (renderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
-                Child?.Collect(renderContext);
+                CollectInner(renderContext);
             }
-
-            renderContext.RenderView = oldRenderView;
         }
 
         protected override void DrawCore(RenderDrawContext renderContext)
@@ -51,12 +48,23 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             renderContext.RenderContext.RenderView = MainRenderView;
 
             var camera = renderContext.RenderContext.GetCameraFromSlot(Camera);
+            using (renderContext.RenderContext.PushRenderViewAndRestore(MainRenderView))
             using (renderContext.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
-                Child?.Draw(renderContext);
+                DrawInner(renderContext);
             }
 
             renderContext.RenderContext.RenderView = oldRenderView;
+        }
+
+        protected virtual void CollectInner(RenderContext renderContext)
+        {
+            Child?.Collect(renderContext);
+        }
+
+        protected virtual void DrawInner(RenderDrawContext renderContext)
+        {
+            Child?.Draw(renderContext);
         }
 
         internal static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)

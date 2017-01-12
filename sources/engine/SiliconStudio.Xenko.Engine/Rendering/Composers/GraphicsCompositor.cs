@@ -62,9 +62,14 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public IList<RootRenderFeature> RenderFeatures => RenderSystem.RenderFeatures;
 
         /// <summary>
-        /// The code and values defined by this graphics compositor.
+        /// The entry point for the game compositor.
         /// </summary>
         public ISceneRenderer TopLevel { get; set; }
+
+        /// <summary>
+        /// The entry point for a compositor that can render a single view.
+        /// </summary>
+        public ISceneRenderer SingleView { get; set; }
 
         /// <inheritdoc/>
         protected override void InitializeCore()
@@ -236,9 +241,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 },
                 TopLevel = new SceneCameraRenderer()
                 {
-                    Child = new TopLevelCompositor
+                    Child = new SingleViewPostProcessed
                     {
-                        ClearColor = clearColor ?? Color.CornflowerBlue,
+                        Clear = { Color = clearColor ?? Color.CornflowerBlue },
                         UnitRenderer = new ForwardRenderer
                         {
                             MainRenderStage = mainRenderStage,

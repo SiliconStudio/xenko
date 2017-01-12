@@ -13,48 +13,40 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     public interface ITopSceneRenderer : ISceneRenderer
     {
         RenderView MainRenderView { get; }
-
-        ISceneRenderer Child { get; }
     }
 
     public interface IGizmoCompositor
     {
-        ITopSceneRenderer TopLevel { get; }
+        ISceneRenderer Child { get; }
 
         List<ISceneRenderer> PreGizmoCompositors { get; }
 
         List<ISceneRenderer> PostGizmoCompositors { get; }
     }
 
-    public partial class EditorTopLevelCompositor : SceneRendererBase, ISharedRenderer, IGizmoCompositor
+    public partial class EditorTopLevelCompositor : SceneCameraRenderer, ISharedRenderer, IGizmoCompositor
     {
-        public ITopSceneRenderer TopLevel { get; set; }
-
         public List<ISceneRenderer> PreGizmoCompositors { get; } = new List<ISceneRenderer>();
 
         public List<ISceneRenderer> PostGizmoCompositors { get; } = new List<ISceneRenderer>();
 
-        protected override void CollectCore(RenderContext context)
+        protected override void CollectInner(RenderContext context)
         {
-            context.RenderView = TopLevel.MainRenderView;
-
             foreach (var gizmoCompositor in PreGizmoCompositors)
                 gizmoCompositor.Collect(context);
 
-            TopLevel.Collect(context);
+            base.CollectInner(context);
 
             foreach (var gizmoCompositor in PostGizmoCompositors)
                 gizmoCompositor.Collect(context);
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawInner(RenderDrawContext context)
         {
-            context.RenderContext.RenderView = TopLevel.MainRenderView;
-
             foreach (var gizmoCompositor in PreGizmoCompositors)
                 gizmoCompositor.Draw(context);
 
-            TopLevel.Draw(context);
+            base.DrawInner(context);
 
             foreach (var gizmoCompositor in PostGizmoCompositors)
                 gizmoCompositor.Draw(context);
@@ -90,13 +82,13 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     }
 
     // Note: Kept in a single file for easy iteration until the graphics compositor refactor is finished
-    public partial class TopLevelCompositor : SceneRendererBase, ISharedRenderer
+    public partial class SingleViewPostProcessed : SceneRendererBase, ISharedRenderer
     {
         public ISceneRenderer UnitRenderer { get; set; }
 
         public PostProcessingEffects PostEffects { get; set; }
 
-        public Color4 ClearColor { get; set; } = Color.Green;
+        public ClearRenderer Clear { get; } = new ClearRenderer();
 
         protected override void CollectCore(RenderContext context)
         {
@@ -115,18 +107,15 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         protected override void DrawCore(RenderDrawContext context)
         {
             var viewport = context.CommandList.Viewport;
-            var playerWidth = (int)viewport.Width;
-            var playerHeight = (int)viewport.Height;
 
             var currentRenderTarget = context.CommandList.RenderTarget;
             var currentDepthStencil = context.CommandList.DepthStencilBuffer;
             context.PushRenderTargets();
 
             // Allocate render targets
-            var renderTarget = PostEffects != null ? context.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(playerWidth, playerHeight, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)) : currentRenderTarget;
+            var renderTarget = PostEffects != null ? context.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)) : currentRenderTarget;
 
-            context.CommandList.Clear(renderTarget, ClearColor.ToColorSpace(context.GraphicsDevice.ColorSpace));
-            context.CommandList.Clear(currentDepthStencil, DepthStencilClearOptions.DepthBuffer);
+            Clear?.Draw(context);
             context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
             UnitRenderer?.Draw(context);
 

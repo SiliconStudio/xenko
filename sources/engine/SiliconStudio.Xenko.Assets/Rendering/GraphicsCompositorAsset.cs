@@ -66,9 +66,19 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
-        /// The code and values defined by this graphics compositor.
+        /// The entry point for the game compositor.
         /// </summary>
         public ISceneRenderer TopLevel { get; set; }
+
+        /// <summary>
+        /// The entry point for a compositor that can render a single view.
+        /// </summary>
+        public ISceneRenderer SingleView { get; set; }
+
+        /// <summary>
+        /// The entry point for a compositor used by the scene editor.
+        /// </summary>
+        public ISceneRenderer Editor { get; set; }
 
         /// <summary>
         /// The list of graphics compositors.
@@ -147,6 +157,26 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             }
 
             return null;
+        }
+
+        public GraphicsCompositor Compile(bool copyRenderers)
+        {
+            var graphicsCompositor = new GraphicsCompositor();
+
+            foreach (var cameraSlot in Cameras)
+                graphicsCompositor.Cameras.Add(cameraSlot);
+            foreach (var renderStage in RenderStages)
+                graphicsCompositor.RenderStages.Add(renderStage);
+            foreach (var renderFeature in RenderFeatures)
+                graphicsCompositor.RenderFeatures.Add(renderFeature);
+
+            if (copyRenderers)
+            {
+                graphicsCompositor.TopLevel = TopLevel;
+                graphicsCompositor.SingleView = SingleView;
+            }
+
+            return graphicsCompositor;
         }
     }
 }

@@ -144,15 +144,17 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Saves a render view and restores it after using it.
+        /// Pushes a render view and restores it after using it.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>PropertyTagRestore&lt;T&gt;.</returns>
-        public RenderViewRestore SaveRenderViewAndRestore()
+        public RenderViewRestore PushRenderViewAndRestore(RenderView renderView)
         {
-            return new RenderViewRestore(this);
+            var result = new RenderViewRestore(this);
+            RenderView = renderView;
+            return result;
         }
 
         public RenderDrawContext GetThreadContext() => threadContext.Value;
