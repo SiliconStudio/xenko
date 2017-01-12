@@ -18,7 +18,9 @@ namespace SiliconStudio.Assets.Templates
 
             // Load missing references (we do this after saving)
             // TODO: Better tracking of ProjectReferences (added, removed, etc...)
+            parameters.Logger.Verbose("Compiling game assemblies...");
             parameters.Session.UpdateAssemblyReferences(parameters.Logger);
+            parameters.Logger.Verbose("Game assemblies compiled...");
 
             return AfterSave(parameters).Result;
         }

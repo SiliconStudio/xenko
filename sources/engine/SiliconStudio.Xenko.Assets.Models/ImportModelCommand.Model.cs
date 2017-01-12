@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 if (TessellationAEN)
                 {
                     // TODO: Generate AEN model view
-                    commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
+                    commandContext.Logger.Error($"TessellationAEN is not supported in {ContextAsString}");
                 }
             }
 

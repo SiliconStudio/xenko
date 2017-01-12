@@ -249,12 +249,12 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             catch (OptionException e)
             {
-                options.Logger.Error("Command option '{0}': {1}", e.OptionName, e.Message);
+                options.Logger.Error($"Command option '{e.OptionName}': {e.Message}");
                 exitCode = BuildResultCode.CommandLineError;
             }
             catch (Exception e)
             {
-                options.Logger.Error("Unhandled exception: {0}", e, e.Message);
+                options.Logger.Error($"Unhandled exception", e);
                 exitCode = BuildResultCode.BuildError;
             }
             finally

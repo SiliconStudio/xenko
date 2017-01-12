@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
                 var assembly = assemblyContainer.LoadAssemblyFromPath(assemblyPath);
                 if (assembly == null)
                 {
-                    Log.Error("Unexpected error while loading assembly reference [{0}] in project [{1}]", assemblyPath, projectName);
+                    Log.Error($"Unexpected error while loading assembly reference [{assemblyPath}] in project [{projectName}]");
                     return DebugAssembly.Empty;
                 }
 
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
             catch (Exception ex)
             {
-                Log.Error("Unexpected error while loading assembly reference [{0}] in project [{1}]", ex, assemblyPath, projectName);
+                Log.Error($"Unexpected error while loading assembly reference [{assemblyPath}] in project [{projectName}]", ex);
                 return DebugAssembly.Empty;
             }
         }
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
             catch (Exception ex)
             {
-                Log.Error("Unexpected error while loading assembly reference in project [{0}]", ex, projectName);
+                Log.Error($"Unexpected error while loading assembly reference in project [{projectName}]", ex);
                 return DebugAssembly.Empty;
             }
         }
@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         {
             try
             {
-                Log.Info("Running game with type {0}", gameTypeName);
+                Log.Info($"Running game with type {gameTypeName}");
 
                 Type gameType;
                 lock (loadedAssemblies)
@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
             catch (Exception ex)
             {
-                Log.Error("Game [{0}] from project [{1}] failed to run", ex, gameTypeName, projectName);
+                Log.Error($"Game [{gameTypeName}] from project [{projectName}] failed to run", ex);
             }
         }
 
