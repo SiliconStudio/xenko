@@ -91,11 +91,11 @@ namespace TouchInputs
             if (!IsLiveReloading) // Live Scripting: do it only on first launch
             {
                 // activate the gesture recognitions
-                Input.ActivatedGestures.Add(dragGesture);
-                Input.ActivatedGestures.Add(flickGesture);
-                Input.ActivatedGestures.Add(longPressGesture);
-                Input.ActivatedGestures.Add(compositeGesture);
-                Input.ActivatedGestures.Add(tapGesture);
+                Input.Gestures.Add(dragGesture);
+                Input.Gestures.Add(flickGesture);
+                Input.Gestures.Add(longPressGesture);
+                Input.Gestures.Add(compositeGesture);
+                Input.Gestures.Add(tapGesture);
 
                 compositeGesture.Changed += (sender, args) =>
                 {

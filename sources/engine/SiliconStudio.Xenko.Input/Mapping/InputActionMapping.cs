@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 action.ActionMapping = null;
                 foreach (var gesture in action.ReadOnlyGestures)
                 {
-                    InputManager.ActivatedGestures.Remove(gesture);
+                    InputManager.Gestures.Remove(gesture);
                 }
             }
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             // Add gestures to the input managers
             foreach (var gesture in action.ReadOnlyGestures.OfType<InputGestureBase>())
             {
-                InputManager.ActivatedGestures.Add(gesture);
+                InputManager.Gestures.Add(gesture);
             }
         }
 
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             // Remove gestures from event routers
             foreach (var gesture in action.ReadOnlyGestures.OfType<InputGestureBase>())
             {
-                InputManager.ActivatedGestures.Remove(gesture);
+                InputManager.Gestures.Remove(gesture);
             }
 
             inputActions.Remove(action);

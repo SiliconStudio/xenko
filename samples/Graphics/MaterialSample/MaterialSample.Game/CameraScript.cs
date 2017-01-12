@@ -42,8 +42,8 @@ namespace MaterialSample
             CameraComponent.UseCustomViewMatrix = true;
             OnWindowSizeChanged(this, EventArgs.Empty);
             
-            Input.ActivatedGestures.Add(compositeGesture);
-            Input.ActivatedGestures.Add(dragGesture);
+            Input.Gestures.Add(compositeGesture);
+            Input.Gestures.Add(dragGesture);
 
             while (true)
             {

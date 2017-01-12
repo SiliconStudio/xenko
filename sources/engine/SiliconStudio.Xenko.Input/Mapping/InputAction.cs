@@ -152,12 +152,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 case NotifyCollectionChangedAction.Add:
                     OnGestureAdded(gesture);
-                    inputManager?.ActivatedGestures.Add(gesture);
+                    inputManager?.Gestures.Add(gesture);
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
                     OnGestureRemoved(gesture);
-                    inputManager?.ActivatedGestures.Remove(gesture);
+                    inputManager?.Gestures.Remove(gesture);
                     break;
 
                 case NotifyCollectionChangedAction.Replace:

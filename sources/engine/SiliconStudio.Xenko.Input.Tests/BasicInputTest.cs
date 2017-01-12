@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 log.Info("Drag: [Params = {0} {1} Time {2} {3} Pos {4} {5} Transl {6} {7} Speed {8}", args.EventType, args.FingerCount, args.DeltaTime, args.TotalTime,
                                     args.StartPosition, args.CurrentPosition, args.DeltaTranslation, args.TotalTranslation, args.AverageSpeed);
             };
-            Input.ActivatedGestures.Add(gesture);
+            Input.Gestures.Add(gesture);
         }
         void AddGesture(FlickGesture gesture)
         {
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                 log.Info("Flick: [Params = {0} {1} Time {2} Pos {3} {4} Transl {5} Speed {6}", args.EventType, args.FingerCount, args.TotalTime,
                     args.StartPosition, args.CurrentPosition, args.TotalTranslation, args.AverageSpeed);
             };
-            Input.ActivatedGestures.Add(gesture);
+            Input.Gestures.Add(gesture);
         }
         void AddGesture(LongPressGesture gesture)
         {
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             {
                 log.Info("A long press event has been detected. [Params = {0} {1} {2} {3}", args.EventType, args.DeltaTime, args.FingerCount, args.Position);
             };
-            Input.ActivatedGestures.Add(gesture);
+            Input.Gestures.Add(gesture);
         }
         void AddGesture(CompositeGesture gesture)
         {
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                                                 args.DeltaRotation, args.TotalRotation, args.DeltaScale, args.TotalScale,
                                                 args.DeltaTranslation, args.TotalTranslation, args.CenterBeginningPosition, args.CenterCurrentPosition);
             };
-            Input.ActivatedGestures.Add(gesture);
+            Input.Gestures.Add(gesture);
         }
         void AddGesture(TapGesture gesture)
         {
@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             {
                 log.Info("Tap: [Params = Fingers {0} Taps {1} Time {2} Position {3}", args.FingerCount, args.TapCount, args.DeltaTime, args.TapPosition);
             };
-            Input.ActivatedGestures.Add(gesture);
+            Input.Gestures.Add(gesture);
         }
 
         private async Task LogGestures()

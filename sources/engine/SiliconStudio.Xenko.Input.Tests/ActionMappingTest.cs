@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Input.Tests
                             LoadBindings(saveIndex);
                     }
                 };
-                Input.ActivatedGestures.Add(key);
+                Input.Gestures.Add(key);
             }
 
             // Load first save by default

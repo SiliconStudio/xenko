@@ -62,8 +62,8 @@ namespace SiliconStudio.Xenko.Input
         {
             Enabled = true;
 
-            ActivatedGestures = new TrackingCollection<IInputGesture>();
-            ActivatedGestures.CollectionChanged += Gestures_CollectionChanged;
+            Gestures = new TrackingCollection<IInputGesture>();
+            Gestures.CollectionChanged += Gestures_CollectionChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
@@ -71,7 +71,13 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
-        public TrackingCollection<IInputGesture> ActivatedGestures { get; }
+        public TrackingCollection<IInputGesture> Gestures { get; }
+
+        /// <summary>
+        /// List of the gestures to recognize.
+        /// </summary>
+        [Obsolete("Use InputManager.Gestures instead")]
+        public TrackingCollection<IInputGesture> ActivatedGestures => Gestures;
 
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
@@ -349,7 +355,7 @@ namespace SiliconStudio.Xenko.Input
             PreUpdateInput?.Invoke(this, new InputPreUpdateEventArgs { GameTime = gameTime });
 
             // Pre Update on gestures
-            foreach (var gesture in ActivatedGestures)
+            foreach (var gesture in Gestures)
             {
                 gesture.PreUpdate(gameTime.Elapsed);
             }
@@ -365,7 +371,7 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Update gestures
-            foreach (var gesture in ActivatedGestures)
+            foreach (var gesture in Gestures)
             {
                 gesture.Update(gameTime.Elapsed);
             }
@@ -523,7 +529,7 @@ namespace SiliconStudio.Xenko.Input
             base.Destroy();
 
             // Unregister all gestures
-            ActivatedGestures.Clear();
+            Gestures.Clear();
 
             // Destroy all input sources
             foreach (var source in inputSources)

@@ -84,8 +84,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(dragGesture);
-                Input.ActivatedGestures.Add(tapGesture);
+                Input.Gestures.Add(dragGesture);
+                Input.Gestures.Add(tapGesture);
 
                 dragGesture.Drag += DragGestureOnDrag;
                 tapGesture.Tap += TapGestureOnTap;

@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             TapGesture tap = new TapGesture(2, 1);
 
-            Input.ActivatedGestures.Add(tap);
+            Input.Gestures.Add(tap);
 
             mouse.HandleButtonDown(MouseButton.Left);
             Input.Update(DrawTime);
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             // Test no tap occured
             Assert.AreEqual(0, tap.Events.Count);
 
-            Input.ActivatedGestures.Remove(tap);
+            Input.Gestures.Remove(tap);
         }
 
         void TestCompositeGesture()
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             CompositeGesture composite = new CompositeGesture();
 
-            Input.ActivatedGestures.Add(composite);
+            Input.Gestures.Add(composite);
 
             // Starting position
             //
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             // Check empty event list
             Assert.IsEmpty(composite.Events);
 
-            Input.ActivatedGestures.Remove(composite);
+            Input.Gestures.Remove(composite);
         }
 
         void TestDragGesture()
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             var mouse = InputSourceSimulated.Instance.Mouse;
 
             DragGesture hdrag = new DragGesture(GestureShape.Horizontal);
-            Input.ActivatedGestures.Add(hdrag);
+            Input.Gestures.Add(hdrag);
 
             // Should only trigger when horizontal movement is detected, try a vertical drag
             mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             var mouse = InputSourceSimulated.Instance.Mouse;
 
             FlickGesture flick = new FlickGesture(GestureShape.Free) { MinimumFlickLength = 0.2f, RequiredFingerCount = 1 };
-            Input.ActivatedGestures.Add(flick);
+            Input.Gestures.Add(flick);
             
             mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
             Input.Update(DrawTime);
@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             var mouse = InputSourceSimulated.Instance.Mouse;
 
             LongPressGesture longPress = new LongPressGesture() { RequiredPressTime = TimeSpan.FromMilliseconds(100) };
-            Input.ActivatedGestures.Add(longPress);
+            Input.Gestures.Add(longPress);
 
             mouse.SimulatePointer(PointerEventType.Pressed, new Vector2(0.5f, 0.0f));
             Input.Update(DrawTime);
