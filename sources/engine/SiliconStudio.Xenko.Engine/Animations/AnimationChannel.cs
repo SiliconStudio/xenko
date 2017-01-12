@@ -37,7 +37,8 @@ namespace SiliconStudio.Xenko.Animations
             long timeStart = KeyFrames[keyIndex + 0].Time.Ticks;
             long timeEnd = KeyFrames[keyIndex + 1].Time.Ticks;
 
-            float t = ((float)time.Ticks - (float)timeStart) / ((float)timeEnd - (float)timeStart);
+            // Compute interpolation factor and avoid NaN operations when timeStart >= timeEnd
+            float t = (timeEnd <= timeStart) ? 0 : ((float)time.Ticks - (float)timeStart) / ((float)timeEnd - (float)timeStart);
 
             var evaluator = new EvaluatorData();
             evaluator.ValuePrev = KeyFrames[keyIndex > 0 ? keyIndex - 1 : 0];
