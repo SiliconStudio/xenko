@@ -77,6 +77,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <inheritdoc/>
         protected override void Destroy()
         {
+            // Dispose renderers
+            TopLevel?.Dispose();
+
             RenderSystem.Dispose();
 
             base.Destroy();

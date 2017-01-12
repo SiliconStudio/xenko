@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
-    public interface ISceneRenderer : IRenderCollector, IGraphicsRendererBase
+    public interface ISceneRenderer : IRenderCollector, IGraphicsRenderer
     {
     }
 
