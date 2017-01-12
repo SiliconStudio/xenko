@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
         IInputEventListener<GamePadAxisEvent>
     {
         /// <summary>
-        /// The threshold that is used to trigger using axes as buttons
-        /// </summary>
-        public float AxisThreshold = 0.9f;
-
-        /// <summary>
         /// Creates a new button action binder
         /// </summary>
         /// <param name="inputManager">The <see cref="InputManager"/> to monitor for input events</param>
@@ -32,11 +27,18 @@ namespace SiliconStudio.Xenko.Input.Mapping
             inputManager.AddListener(this);
         }
 
-        public override int BindingCount { get; } = 1;
-        public override bool AcceptsAxes => true;
-        public override bool AcceptsButtons => true;
-        public override bool AcceptsDirections => false;
+        /// <summary>
+        /// The threshold that is used to trigger using axes as buttons
+        /// </summary>
+        public float AxisThreshold { get; set; } = 0.9f;
 
+        public override int BindingCount { get; } = 1;
+
+        public override bool AcceptsAxes => true;
+
+        public override bool AcceptsButtons => true;
+
+        public override bool AcceptsDirections => false;
 
         public void ProcessEvent(KeyEvent inputEvent)
         {

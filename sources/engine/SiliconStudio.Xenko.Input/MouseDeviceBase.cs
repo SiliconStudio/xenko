@@ -12,13 +12,16 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
     {
-        public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
-        protected readonly List<InputEvent> EventQueue = new List<InputEvent>();
         private Vector2 nextDelta = Vector2.Zero;
-        
+
+        protected readonly List<InputEvent> Events = new List<InputEvent>();
+
+        public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
+
         public abstract bool IsPositionLocked { get; }
         
         public Vector2 Position { get; protected set; }
+
         public Vector2 Delta { get; protected set; }
 
         public override PointerType Type => PointerType.Mouse;
@@ -28,11 +31,11 @@ namespace SiliconStudio.Xenko.Input
             base.Update(inputEvents);
             
             // Collect events from queue
-            foreach (var evt in EventQueue)
+            foreach (var e in Events)
             {
-                inputEvents.Add(evt);
+                inputEvents.Add(e);
             }
-            EventQueue.Clear();
+            Events.Clear();
 
             // Reset mouse delta
             Delta = nextDelta;
@@ -80,7 +83,7 @@ namespace SiliconStudio.Xenko.Input
             pointerEvent.PointerType = Type;
             pointerEvent.EventType = PointerEventType.Moved;
 
-            EventQueue.Add(pointerEvent);
+            Events.Add(pointerEvent);
         }
 
         public void HandleButtonDown(MouseButton button)
@@ -94,7 +97,7 @@ namespace SiliconStudio.Xenko.Input
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;
             buttonEvent.State = ButtonState.Down;
-            EventQueue.Add(buttonEvent);
+            Events.Add(buttonEvent);
 
             // Simulate tap on primary mouse button
             if (button == MouseButton.Left)
@@ -112,7 +115,7 @@ namespace SiliconStudio.Xenko.Input
             var buttonEvent = InputEventPool<MouseButtonEvent>.GetOrCreate(this);
             buttonEvent.Button = button;
             buttonEvent.State = ButtonState.Up;
-            EventQueue.Add(buttonEvent);
+            Events.Add(buttonEvent);
 
             // Simulate tap on primary mouse button
             if (button == MouseButton.Left)
@@ -123,7 +126,7 @@ namespace SiliconStudio.Xenko.Input
         {
             var wheelEvent = InputEventPool<MouseWheelEvent>.GetOrCreate(this);
             wheelEvent.WheelDelta = wheelDelta;
-            EventQueue.Add(wheelEvent);
+            Events.Add(wheelEvent);
         }
         
         /// <summary>

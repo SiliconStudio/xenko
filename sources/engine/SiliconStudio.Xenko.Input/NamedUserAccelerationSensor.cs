@@ -7,13 +7,12 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class NamedUserAccelerationSensor : NamedSensor, IUserAccelerationSensor
     {
-        public Vector3 Acceleration => AccelerationInternal;
-        internal Vector3 AccelerationInternal;
-
+        public Vector3 Acceleration { get; internal set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedUserAccelerationSensor"/> class.
         /// </summary>
-        public NamedUserAccelerationSensor(string systemName) : base(systemName, "User Acceleration")
+        public NamedUserAccelerationSensor(IInputSource source, string systemName) : base(source, systemName, "User Acceleration")
         {
         }
     }

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// </summary>
     public abstract class ActionBinder : IInputEventListener, IDisposable
     {
-        protected InputManager InputManager;
+        protected readonly InputManager InputManager;
         protected readonly HashSet<IInputGesture> UsedGestures;
 
         /// <summary>
@@ -28,7 +28,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         public void Dispose()
         {
-            if (!Done) InputManager.RemoveListener(this);
+            if (!Done)
+            {
+                InputManager.RemoveListener(this);
+            }
         }
 
         /// <summary>
@@ -77,6 +80,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             {
                 Index += amount;
                 Done = Index >= BindingCount;
+
                 if (Done)
                 {
                     InputManager.RemoveListener(this);

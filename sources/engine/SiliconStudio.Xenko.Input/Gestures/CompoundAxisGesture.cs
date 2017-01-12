@@ -15,57 +15,41 @@ namespace SiliconStudio.Xenko.Input.Gestures
     [DataContract]
     public class CompoundAxisGesture : AxisGestureBase
     {
-        private Dictionary<object, float> states = new Dictionary<object, float>();
-        private TrackingCollection<IAxisGesture> gestures;
+        private readonly Dictionary<object, float> states = new Dictionary<object, float>();
         
         public CompoundAxisGesture()
         {
-            gestures = new TrackingCollection<IAxisGesture>();
-            gestures.CollectionChanged += GesturesOnCollectionChanged;
+            Gestures = new TrackingCollection<IAxisGesture>();
+            Gestures.CollectionChanged += GesturesOnCollectionChanged;
         }
         
         // Child axis gestures
-        public TrackingCollection<IAxisGesture> Gestures
-        {
-            get { return gestures; }
-            set
-            {
-                // Replace whole collection of gestures
-                foreach (var gesture in gestures)
-                {
-                    states.Remove(gesture);
-                    gesture.Changed -= GestureOnChanged;
-                    RemoveChild(gesture);
-                }
-                gestures = value;
-                foreach (var gesture in gestures)
-                {
-                    AddChild(gesture);
-                    gesture.Changed += GestureOnChanged;
-                }
-                gestures.CollectionChanged += GesturesOnCollectionChanged;
-            }
-        }
+        public TrackingCollection<IAxisGesture> Gestures { get; }
         
         private void GestureOnChanged(object sender, AxisGestureEventArgs axisGestureEventArgs)
         {
             if (axisGestureEventArgs.State == 0.0f)
+            {
                 states.Remove(sender);
+            }
             else
+            {
                 states[sender] = axisGestureEventArgs.State;
+            }
 
             float combinedState = 0.0f;
             foreach (var pair in states)
             {
                 combinedState += pair.Value;
             }
+
             UpdateAxis(combinedState, axisGestureEventArgs.Device);
         }
 
         private void GesturesOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {
-            var axis = ((IAxisGesture)args.Item);
-            if(axis == null) throw new InvalidOperationException("Item must be an IAxisGesture");
+            var axis = (IAxisGesture)args.Item;
+
             switch (args.Action)
             {
                 case NotifyCollectionChangedAction.Add:

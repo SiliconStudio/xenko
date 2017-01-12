@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Input
             var uiControl = context.Control;
             var gameController = context.Control.GameViewController;
 
-            pointer = new PointeriOS(uiControl, gameController);
+            pointer = new PointeriOS(this, uiControl, gameController);
             RegisterDevice(pointer);
 
             // Create sensor managers
@@ -51,24 +51,27 @@ namespace SiliconStudio.Xenko.Input
             // Determine supported sensors
             if (motionManager.AccelerometerAvailable)
             {
-                accelerometerSensor = new NamedAccelerometerSensor("iOS");
+                accelerometerSensor = new NamedAccelerometerSensor(this, "iOS");
                 RegisterDevice(accelerometerSensor);
             }
+
             if (CLLocationManager.HeadingAvailable)
             {
-                compassSensor = new NamedCompassSensor("iOS");
+                compassSensor = new NamedCompassSensor(this, "iOS");
                 RegisterDevice(compassSensor);
             }
+
             if (motionManager.GyroAvailable)
             {
-                gyroscopeSensor = new NamedGyroscopeSensor("iOS");
+                gyroscopeSensor = new NamedGyroscopeSensor(this, "iOS");
                 RegisterDevice(gyroscopeSensor);
             }
+
             if (motionManager.DeviceMotionAvailable)
             {
-                gravitySensor = new NamedGravitySensor("iOS");
-                userAccelerationSensor = new NamedUserAccelerationSensor("iOS");
-                orientationSensor = new NamedOrientationSensor("iOS");
+                gravitySensor = new NamedGravitySensor(this, "iOS");
+                userAccelerationSensor = new NamedUserAccelerationSensor(this, "iOS");
+                orientationSensor = new NamedOrientationSensor(this, "iOS");
                 RegisterDevice(gravitySensor);
                 RegisterDevice(userAccelerationSensor);
                 RegisterDevice(orientationSensor);
@@ -85,15 +88,20 @@ namespace SiliconStudio.Xenko.Input
                 bool enable = accelerometerSensor.IsEnabled;
                 if (enable != motionManager.AccelerometerActive)
                 {
-                    if(accelerometerSensor.IsEnabled)
+                    if (accelerometerSensor.IsEnabled)
+                    {
                         motionManager.StartAccelerometerUpdates();
+                    }
                     else
+                    {
                         motionManager.StopAccelerometerUpdates();
+                    }
                 }
+
                 if (enable)
                 {
                     var accelerometerData = motionManager.AccelerometerData;
-                    accelerometerSensor.AccelerationInternal = accelerometerData != null ? CmAccelerationToVector3(accelerometerData.Acceleration) : Vector3.Zero;
+                    accelerometerSensor.Acceleration = accelerometerData != null ? CmAccelerationToVector3(accelerometerData.Acceleration) : Vector3.Zero;
                 }
             }
             if (compassSensor != null)
@@ -102,14 +110,20 @@ namespace SiliconStudio.Xenko.Input
                 if (enable != locationManagerActivated)
                 {
                     if (compassSensor.IsEnabled)
+                    {
                         locationManager.StartUpdatingHeading();
+                    }
                     else
+                    {
                         locationManager.StopUpdatingHeading();
+                    }
+
                     locationManagerActivated = compassSensor.IsEnabled;
                 }
+
                 if (enable)
                 {
-                    compassSensor.HeadingInternal = GetNorthInRadian(locationManager);
+                    compassSensor.Heading = GetNorthInRadian(locationManager);
                 }
             }
             if (gyroscopeSensor != null)
@@ -118,14 +132,19 @@ namespace SiliconStudio.Xenko.Input
                 if (enable != motionManager.GyroActive)
                 {
                     if (gyroscopeSensor.IsEnabled)
+                    {
                         motionManager.StartGyroUpdates();
+                    }
                     else
+                    {
                         motionManager.StopGyroUpdates();
+                    }
                 }
+
                 if (enable)
                 {
                     var gyroData = motionManager.GyroData;
-                    gyroscopeSensor.RotationRateInternal = gyroData != null ? CmRotationRateToVector3(gyroData.RotationRate) : Vector3.Zero;
+                    gyroscopeSensor.RotationRate = gyroData != null ? CmRotationRateToVector3(gyroData.RotationRate) : Vector3.Zero;
                 }
             }
             if (userAccelerationSensor != null)
@@ -134,10 +153,15 @@ namespace SiliconStudio.Xenko.Input
                 if (enable != motionManager.DeviceMotionActive)
                 {
                     if (enable)
+                    {
                         motionManager.StartDeviceMotionUpdates();
+                    }
                     else
+                    {
                         motionManager.StopDeviceMotionUpdates();
+                    }
                 }
+
                 if (enable)
                 {
                     var motion = motionManager.DeviceMotion;
@@ -148,10 +172,12 @@ namespace SiliconStudio.Xenko.Input
                         var quaternion = new Quaternion((float)q.x, (float)q.z, -(float)q.y, (float)q.w);
 
                         if (compassSensor != null)
-                            // re-adjust the orientation to align with the north (common behavior on other platforms) TODO current implementation only takes in account the first value.
                         {
+                            // re-adjust the orientation to align with the north (common behavior on other platforms) TODO current implementation only takes in account the first value.
                             if (firstNorthValue <= 0)
+                            {
                                 firstNorthValue = GetNorthInRadian(locationManager);
+                            }
 
                             quaternion = Quaternion.RotationY(-firstNorthValue)*quaternion;
                         }
@@ -164,10 +190,10 @@ namespace SiliconStudio.Xenko.Input
                     }
 
                     // Update gravity sensor
-                    gravitySensor.VectorInternal = motion != null ? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
+                    gravitySensor.Vector = motion != null ? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
 
                     // Update user acceleration
-                    userAccelerationSensor.AccelerationInternal = motion != null ? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
+                    userAccelerationSensor.Acceleration = motion != null ? CmAccelerationToVector3(motion.Gravity) : Vector3.Zero;
                 }
             }
         }

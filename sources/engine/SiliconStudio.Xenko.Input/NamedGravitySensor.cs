@@ -7,13 +7,12 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class NamedGravitySensor : NamedSensor, IGravitySensor
     {
-        public Vector3 Vector => VectorInternal;
-        internal Vector3 VectorInternal;
+        public Vector3 Vector { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedGravitySensor"/> class.
         /// </summary>
-        public NamedGravitySensor(string systemName) : base(systemName, "Gravity")
+        public NamedGravitySensor(IInputSource source, string systemName) : base(source, systemName, "Gravity")
         {
         }
     }

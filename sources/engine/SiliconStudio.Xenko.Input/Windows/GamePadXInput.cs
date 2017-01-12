@@ -15,12 +15,13 @@ namespace SiliconStudio.Xenko.Input
     internal class GamePadXInput : GamePadDeviceBase, IDisposable
     {
         private readonly Controller controller;
+        private readonly short[] lastAxisState = new short[6];
         private State xinputState;
-        private short[] lastAxisState = new short[6];
         private GamePadState state = new GamePadState();
 
-        public GamePadXInput(Controller controller, Guid id, int index)
+        public GamePadXInput(InputSourceWindowsXInput source, Controller controller, Guid id, int index)
         {
+            Source = source;
             this.controller = controller;
             SetIndexInternal(index);
             Id = id;
@@ -30,8 +31,12 @@ namespace SiliconStudio.Xenko.Input
             var subType = controller.GetCapabilities(DeviceQueryType.Any).SubType;
             var pidBytes = Encoding.ASCII.GetBytes("xinput").ToList();
             pidBytes.Add((byte)subType);
-            while(pidBytes.Count < 16)
+
+            while (pidBytes.Count < 16)
+            {
                 pidBytes.Add(0);
+            }
+
             ProductId = new Guid(pidBytes.ToArray());
         }
 
@@ -39,17 +44,19 @@ namespace SiliconStudio.Xenko.Input
         {
             if (Disconnected == null)
                 throw new InvalidOperationException("Something should handle controller disconnect");
+
             Disconnected.Invoke(this, null);
         }
 
         public override string Name => $"XInput GamePad {Index}";
+
         public override Guid Id { get; }
+
         public override Guid ProductId { get; }
 
-        public override GamePadState State
-        {
-            get { return state; }
-        }
+        public override GamePadState State => state;
+
+        public override IInputSource Source { get; }
 
         public event EventHandler Disconnected;
 
@@ -132,6 +139,7 @@ namespace SiliconStudio.Xenko.Input
                 lastAxisState[index] = newValue;
                 return true;
             }
+
             return false;
         }
 

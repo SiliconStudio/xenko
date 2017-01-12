@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input
         internal static Logger Logger = GlobalLogger.GetLogger("Input");
 
         private readonly List<IInputSource> inputSources = new List<IInputSource>();
-        private readonly Dictionary<IInputDevice, IInputSource> inputDevices = new Dictionary<IInputDevice, IInputSource>();
+        private readonly List<IInputDevice> inputDevices = new List<IInputDevice>();
 
         // Mapping of device guid to device
         private readonly Dictionary<Guid, IInputDevice> inputDevicesById = new Dictionary<Guid, IInputDevice>();
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Input
             Enabled = true;
 
             ActivatedGestures = new TrackingCollection<IInputGesture>();
-            ActivatedGestures.CollectionChanged += ActivatedGesturesChanged;
+            ActivatedGestures.CollectionChanged += Gestures_CollectionChanged;
 
             Services.AddService(typeof(InputManager), this);
         }
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// List of the gestures to recognize.
         /// </summary>
-        public TrackingCollection<IInputGesture> ActivatedGestures { get; private set; }
+        public TrackingCollection<IInputGesture> ActivatedGestures { get; }
 
         /// <summary>
         /// Gets the reference to the accelerometer sensor. The accelerometer measures all the acceleration forces applied on the device.
@@ -340,9 +340,9 @@ namespace SiliconStudio.Xenko.Input
             }
 
             // Update all input sources so they can send events and update their state
-            foreach (var pair in inputDevices)
+            foreach (var inputDevice in inputDevices)
             {
-                pair.Key.Update(inputEvents);
+                inputDevice.Update(inputEvents);
             }
 
             // Notify PreUpdateInput
@@ -360,6 +360,7 @@ namespace SiliconStudio.Xenko.Input
                 IInputEventRouter router;
                 if (!eventRouters.TryGetValue(evt.GetType(), out router))
                     throw new InvalidOperationException($"The event type {evt.GetType()} was not registered with the input mapper and cannot be processed");
+
                 router.RouteEvent(evt);
             }
 
@@ -442,7 +443,7 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
-        /// Inserts any supported pointer event back into it's respective <see cref="InputEventPool&lt;"/>. This should normally not be used
+        /// Inserts any supported pointer event back into it's respective <see cref="InputEventPool"/>. This should normally not be used
         /// </summary>
         /// <param name="inputEvent">The event to instert into it's event pool</param>
         public void PoolInputEvent(InputEvent inputEvent)
@@ -537,11 +538,12 @@ namespace SiliconStudio.Xenko.Input
             OnApplicationPaused(this, EventArgs.Empty);
         }
 
-        private void ActivatedGesturesChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
+        private void Gestures_CollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
         {
             // TODO: Rename
             var gesture = trackingCollectionChangedEventArgs.Item as InputGestureBase;
             if (gesture == null) throw new InvalidOperationException("Added gesture does not inherit from InputGestureBase");
+
             switch (trackingCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -580,9 +582,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnInputDeviceAdded(IInputSource source, IInputDevice device)
         {
-            inputDevices.Add(device, source);
+            inputDevices.Add(device);
             if (inputDevicesById.ContainsKey(device.Id))
                 throw new InvalidOperationException($"Device with Id {device.Id}({device.Name}) already registered to {inputDevicesById[device.Id].Name}");
+
             inputDevicesById.Add(device.Id, device);
 
             if (device is IKeyboardDevice)
@@ -616,9 +619,10 @@ namespace SiliconStudio.Xenko.Input
 
         private void OnInputDeviceRemoved(IInputDevice device)
         {
-            if (!inputDevices.ContainsKey(device))
+            if (!inputDevices.Contains(device))
                 throw new InvalidOperationException("Input device was not registered");
-            var source = inputDevices[device];
+
+            var source = device.Source;
             inputDevices.Remove(device);
             inputDevicesById.Remove(device.Id);
 
@@ -652,7 +656,7 @@ namespace SiliconStudio.Xenko.Input
             Keyboard = keyboardDevices.FirstOrDefault();
             HasKeyboard = Keyboard != null;
 
-            TextInput = inputDevices.Keys.OfType<ITextInputDevice>().FirstOrDefault();
+            TextInput = inputDevices.OfType<ITextInputDevice>().FirstOrDefault();
 
             Mouse = pointerDevices.OfType<IMouseDevice>().FirstOrDefault();
             HasMouse = Mouse != null;
@@ -726,6 +730,7 @@ namespace SiliconStudio.Xenko.Input
             // this will allow another gamepad to use this index again
             if (gamePadRequestedIndex.Count <= gamePad.Index || gamePad.Index < 0)
                 throw new IndexOutOfRangeException("Gamepad index was out of range");
+
             gamePadRequestedIndex[gamePad.Index].Remove(gamePad);
 
             gamePadDevices.Remove(gamePad);
@@ -771,7 +776,7 @@ namespace SiliconStudio.Xenko.Input
                 targetIndex++;
             }
 
-            GetOrCreateGamepadRequestedIndexList(targetIndex).Add((IGamePadDevice)assignable);
+            GetOrCreateGamepadRequestedIndexList(targetIndex).Add(assignable);
             assignable.Index = targetIndex;
         }
 
@@ -799,7 +804,10 @@ namespace SiliconStudio.Xenko.Input
                             AssignGamepad(assignable);
                         }
                         else
+                        {
                             j++;
+                        }
+
                         if (gamePadList.Count == 1)
                             break; // Now there is only 1 gamepad with this index
                     }
@@ -827,15 +835,18 @@ namespace SiliconStudio.Xenko.Input
             return gamePadRequestedIndex[gamepadIndex];
         }
 
-        protected interface IInputEventRouter
+        private interface IInputEventRouter
         {
             HashSet<IInputEventListener> Listeners { get; }
+
             void PoolEvent(InputEvent evt);
+
             void RouteEvent(InputEvent evt);
+
             void TryAddListener(IInputEventListener listener);
         }
 
-        protected class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent, new()
+        private class InputEventRouter<TEventType> : IInputEventRouter where TEventType : InputEvent, new()
         {
             public HashSet<IInputEventListener> Listeners { get; } = new HashSet<IInputEventListener>(ReferenceEqualityComparer<IInputEventListener>.Default);
 

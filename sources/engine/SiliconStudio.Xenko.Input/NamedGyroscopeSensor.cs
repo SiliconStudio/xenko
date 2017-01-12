@@ -7,13 +7,12 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class NamedGyroscopeSensor : NamedSensor, IGyroscopeSensor
     {
-        public Vector3 RotationRate => RotationRateInternal;
-        internal Vector3 RotationRateInternal;
+        public Vector3 RotationRate { get; internal set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedGyroscopeSensor"/> class.
         /// </summary>
-        public NamedGyroscopeSensor(string systemName) : base(systemName, "Gyroscope")
+        public NamedGyroscopeSensor(IInputSource source, string systemName) : base(source, systemName, "Gyroscope")
         {
         }
     }

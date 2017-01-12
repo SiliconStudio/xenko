@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Input
             var gameContext = inputManager.Game.Context as GameContext<Control>;
             uiControl = gameContext.Control;
 
-            keyboard = new KeyboardWindowsRawInput();
+            keyboard = new KeyboardWindowsRawInput(this);
             RegisterDevice(keyboard);
             BindRawInputKeyboard(uiControl);
         }

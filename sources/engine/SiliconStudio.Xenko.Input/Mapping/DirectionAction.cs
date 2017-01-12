@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
     public class DirectionAction : InputAction
     {
         private readonly List<DirectionGestureEventArgs> events = new List<DirectionGestureEventArgs>();
-        private Vector2 lastState;
 
         public DirectionAction()
         {
@@ -29,8 +28,8 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Last direction
         /// </summary>
-        public Vector2 LastState => lastState;
-        
+        public Vector2 LastState { get; private set; }
+
         public TrackingCollection<IDirectionGesture> Gestures { get; } = new TrackingCollection<IDirectionGesture>();
 
         [DataMemberIgnore]
@@ -49,7 +48,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (events.Count > 0)
             {
                 var evt = events.Last();
-                lastState = evt.State;
+                LastState = evt.State;
                 Changed?.Invoke(this, evt);
             }
             events.Clear();
@@ -68,6 +67,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 Gestures.Add(item);
                 return true;
             }
+
             return false;
         }
 
@@ -78,13 +78,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         protected override void OnGestureAdded(InputGestureBase gesture)
         {
-            var direction = gesture as IDirectionGesture;
+            var direction = (IDirectionGesture)gesture;
             direction.Changed += DirectionOnChanged;
         }
 
         protected override void OnGestureRemoved(InputGestureBase gesture)
         {
-            var direction = gesture as IDirectionGesture;
+            var direction = (IDirectionGesture)gesture;
             direction.Changed -= DirectionOnChanged;
         }
 

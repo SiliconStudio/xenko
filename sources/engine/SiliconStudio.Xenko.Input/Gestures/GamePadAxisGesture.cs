@@ -17,7 +17,10 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// </summary>
         public GamePadAxis Axis;
 
-        private int gamePadIndex;
+        /// <summary>
+        /// The index of the gamepad to watch
+        /// </summary>
+        public int GamePadIndex { get; set; }
 
         public GamePadAxisGesture()
         {
@@ -26,18 +29,9 @@ namespace SiliconStudio.Xenko.Input.Gestures
         public GamePadAxisGesture(GamePadAxis axis, int gamePadIndex)
         {
             Axis = axis;
-            this.gamePadIndex = gamePadIndex;
+            GamePadIndex = gamePadIndex;
         }
         
-        /// <summary>
-        /// The index of the gamepad to watch
-        /// </summary>
-        public int GamePadIndex
-        {
-            get { return gamePadIndex; }
-            set { gamePadIndex = value; }
-        }
-
         public void ProcessEvent(GamePadAxisEvent inputEvent)
         {
             if (inputEvent.GamePad.Index == GamePadIndex)
@@ -54,7 +48,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         protected bool Equals(GamePadAxisGesture other)
         {
-            return Axis == other.Axis && gamePadIndex == other.gamePadIndex;
+            return Axis == other.Axis && GamePadIndex == other.GamePadIndex;
         }
 
         public override bool Equals(object obj)
@@ -69,7 +63,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         {
             unchecked
             {
-                return ((int)Axis * 397) ^ gamePadIndex;
+                return ((int)Axis * 397) ^ GamePadIndex;
             }
         }
     }

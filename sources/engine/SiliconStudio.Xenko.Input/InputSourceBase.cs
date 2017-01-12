@@ -10,16 +10,7 @@ namespace SiliconStudio.Xenko.Input
     /// Base class for input sources, implements common parts of the <see cref="IInputSource"/> interface and keeps track of registered devices through <see cref="RegisterDevice"/> and <see cref="UnregisterDevice"/>
     /// </summary>
     public abstract class InputSourceBase : IInputSource
-    {
-        /// <summary>
-        /// Unregisters all devices registered with <see cref="RegisterDevice"/> which have not been unregistered yet
-        /// </summary>
-        public virtual void Dispose()
-        {
-            // Remove all devices, done by clearing the tracking dictionary
-            InputDevices.Clear();
-        }
-        
+    {       
         public TrackingDictionary<Guid, IInputDevice> InputDevices { get; } = new TrackingDictionary<Guid, IInputDevice>();
 
         public abstract void Initialize(InputManager inputManager);
@@ -38,6 +29,15 @@ namespace SiliconStudio.Xenko.Input
         
         public virtual void Scan()
         {
+        }
+
+        /// <summary>
+        /// Unregisters all devices registered with <see cref="RegisterDevice"/> which have not been unregistered yet
+        /// </summary>
+        public virtual void Dispose()
+        {
+            // Remove all devices, done by clearing the tracking dictionary
+            InputDevices.Clear();
         }
 
         /// <summary>

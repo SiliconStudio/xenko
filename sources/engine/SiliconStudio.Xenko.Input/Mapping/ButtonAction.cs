@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
     public class ButtonAction : InputAction
     {
         private readonly List<ButtonGestureEventArgs> events = new List<ButtonGestureEventArgs>();
-        private ButtonState lastState;
 
         public ButtonAction()
         {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Last state of the button
         /// </summary>
-        public ButtonState LastState => lastState;
+        public ButtonState LastState { get; private set; }
 
         public TrackingCollection<IButtonGesture> Gestures { get; } = new TrackingCollection<IButtonGesture>();
 
@@ -48,7 +47,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (events.Count > 0)
             {
                 var evt = events.Last();
-                lastState = evt.State;
+                LastState = evt.State;
                 Changed?.Invoke(this, evt);
             }
             events.Clear();
@@ -67,6 +66,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 Gestures.Add(item);
                 return true;
             }
+
             return false;
         }
 
@@ -77,13 +77,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
         protected override void OnGestureAdded(InputGestureBase gesture)
         {
-            var button = gesture as IButtonGesture;
+            var button = (IButtonGesture)gesture;
             button.Changed += ButtonOnChanged;
         }
 
         protected override void OnGestureRemoved(InputGestureBase gesture)
         {
-            var button = gesture as IButtonGesture;
+            var button = (IButtonGesture)gesture;
             button.Changed -= ButtonOnChanged;
         }
 

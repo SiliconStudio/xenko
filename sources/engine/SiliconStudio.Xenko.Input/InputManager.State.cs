@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (inputEvent.State == ButtonState.Down)
             {
-                if(inputEvent.RepeatCount == 0)
+                if (inputEvent.RepeatCount == 0)
                     DownKeys.Add(inputEvent.Key);
                 PressedKeys.Add(inputEvent.Key);
             }
@@ -197,15 +197,21 @@ namespace SiliconStudio.Xenko.Input
         public void ProcessEvent(MouseWheelEvent inputEvent)
         {
             if (Math.Abs(inputEvent.WheelDelta) > Math.Abs(MouseWheelDelta))
+            {
                 MouseWheelDelta = inputEvent.WheelDelta;
+            }
         }
 
         public void ProcessEvent(GamePadButtonEvent inputEvent)
         {
-            if(inputEvent.State == ButtonState.Down)
+            if (inputEvent.State == ButtonState.Down)
+            {
                 PressedGamePadButtonEvents.Add(inputEvent);
+            }
             else
+            {
                 ReleasedGamePadButtonEvents.Add(inputEvent);
+            }
         }
 
         /// <summary>
@@ -312,6 +318,7 @@ namespace SiliconStudio.Xenko.Input
             var device = GetGamePad(gamePadIndex);
             if (device == null)
                 return false;
+
             return IsPadButtonPressed(device, button);
         }
         
@@ -326,6 +333,7 @@ namespace SiliconStudio.Xenko.Input
             var device = GetGamePad(gamePadIndex);
             if (device == null)
                 return false;
+
             return IsPadButtonReleased(device, button);
         }
 
@@ -340,6 +348,7 @@ namespace SiliconStudio.Xenko.Input
             var device = GetGamePad(gamePadIndex);
             if (device == null)
                 return false;
+
             return IsPadButtonReleased(device, button);
         }
     }

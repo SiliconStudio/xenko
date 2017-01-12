@@ -15,35 +15,24 @@ namespace SiliconStudio.Xenko.Input
     {
         private const int XInputGamePadCount = 4;
 
+        private readonly List<int> devicesToRemove = new List<int>();
+
         // Always monitored gamepads
         private Controller[] controllers;
         private Guid[] controllerIds;
         private GamePadXInput[] devices;
 
-        private readonly List<int> devicesToRemove = new List<int>();
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            // Dispose all the gamepads
-            foreach (var gamePad in devices)
-            {
-                gamePad?.Dispose();
-            }
-        }
-
         public static bool IsSupported()
         {
             try
             {
-                Controller controller = new Controller();
+                var controller = new Controller();
                 bool connected = controller.IsConnected;
             }
             catch (Exception ex)
             {
                 InputManager.Logger.Warning("XInput dll was not found on the computer. GameController detection will not fully work for the current game instance. " +
-                                     "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
+                    "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
                 return false;
             }
 
@@ -65,6 +54,17 @@ namespace SiliconStudio.Xenko.Input
                 controllers[i] = new Controller((UserIndex)i);
             }
             Scan();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            // Dispose all the gamepads
+            foreach (var gamePad in devices)
+            {
+                gamePad?.Dispose();
+            }
         }
 
         public override void Update()
@@ -106,15 +106,17 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index >= XInputGamePadCount)
                 throw new IndexOutOfRangeException($"Invalid XInput device index {index}");
+
             if (devices[index] != null)
                 throw new InvalidOperationException($"XInput device already opened {index}");
 
-            var newGamepad = new GamePadXInput(controllers[index], controllerIds[index], index);
+            var newGamepad = new GamePadXInput(this, controllers[index], controllerIds[index], index);
             newGamepad.Disconnected += (sender, args) =>
             {
                 // Queue device for removal
                 devicesToRemove.Add(index);
             };
+
             devices[index] = newGamepad;
             RegisterDevice(newGamepad);
         }

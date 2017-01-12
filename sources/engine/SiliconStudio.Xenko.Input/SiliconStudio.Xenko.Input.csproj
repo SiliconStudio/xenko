@@ -77,6 +77,7 @@
     <Compile Include="GamePadAxisEvent.cs" />
     <Compile Include="GamePadButtonEvent.cs" />
     <Compile Include="GamePadDeviceBase.cs" />
+    <Compile Include="GamePadFromLayout.cs" />
     <Compile Include="GamePadIndexChangedEventArgs.cs" />
     <Compile Include="GamePadLayouts\GameControllerDatabase.cs" />
     <Compile Include="GamePadLayouts\GameControllerDatabaseLayout.cs" />
@@ -266,9 +267,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

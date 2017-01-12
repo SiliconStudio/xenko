@@ -4,11 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 
 using System;
-using Android.Content;
-using Android.InputMethodServices;
 using Android.Views;
-using Android.Views.InputMethods;
-using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games.Android;
 using Keycode = Android.Views.Keycode;
 
@@ -16,29 +12,30 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class KeyboardAndroid : KeyboardDeviceBase, IDisposable
     {
-        private AndroidXenkoGameView gameView;
-        private Listener listener;
-        private InputMethodManager inputService;
+        private readonly AndroidXenkoGameView gameView;
 
-        public KeyboardAndroid(AndroidXenkoGameView gameView)
+        public KeyboardAndroid(InputSourceAndroid source, AndroidXenkoGameView gameView)
         {
-            inputService = (InputMethodManager)PlatformAndroid.Context.GetSystemService(Context.InputMethodService);
+            Source = source;
             this.gameView = gameView;
-            listener = new Listener(this);
+            var listener = new Listener(this);
             gameView.SetOnKeyListener(listener);
         }
+
+        public override string Name => "Android Keyboard";
+
+        public override Guid Id => new Guid("98468e4a-2895-4f87-b750-5ffe2dd943ae");
+
+        public override IInputSource Source { get; }
 
         public void Dispose()
         {
             gameView.SetOnKeyListener(null);
         }
 
-        public override string Name => "Android Keyboard";
-        public override Guid Id => new Guid("98468e4a-2895-4f87-b750-5ffe2dd943ae");
-
         protected class Listener : Java.Lang.Object, View.IOnKeyListener
         {
-            private KeyboardAndroid keyboard;
+            private readonly KeyboardAndroid keyboard;
 
             public Listener(KeyboardAndroid keyboard)
             {
@@ -48,6 +45,7 @@ namespace SiliconStudio.Xenko.Input
             public bool OnKey(View v, Keycode keyCode, Android.Views.KeyEvent e)
             {
                 var xenkoKey = ConvertKeyFromAndroid(keyCode);
+
                 if (e.Action == KeyEventActions.Down)
                 {
                     keyboard.HandleKeyDown(xenkoKey);
@@ -56,6 +54,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     keyboard.HandleKeyUp(xenkoKey);
                 }
+
                 return true;
             }
 

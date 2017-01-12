@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Mapping;
@@ -23,11 +24,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             foreach (var pair in ComponentDatas)
             {
                 var mapping = pair.Value.LoadedMapping;
-                if (mapping != null)
-                {
-                    var component = pair.Key;
-                    mapping.Update(time.Elapsed);
-                }
+                mapping?.Update(time.Elapsed);
             }
         }
 
@@ -36,7 +33,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             base.OnSystemAdd();
 
             // Retrieve the input manager
-            inputManager = (InputManager)Services.GetService(typeof(InputManager));
+            inputManager = Services.GetSafeServiceAs<InputManager>();
         }
 
         protected internal override void OnSystemRemove()
@@ -45,30 +42,42 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 data.LoadedMapping?.Dispose();
             }
+
             base.OnSystemRemove();
         }
 
         protected override AssociatedData GenerateComponentData(Entity entity, InputComponent component)
         {
-            var data = new AssociatedData()
+            var data = new AssociatedData
             {
                 ActionConfiguration = component.DefaultInputActionConfiguration,
                 LoadedMapping = CreateInputActionMapping(component.DefaultInputActionConfiguration),
             };
-            component.ActionMappingInternal = data.LoadedMapping;
-            component.DefaultConfigurationChanged += (sender, args) =>
-            {
-                var changedComponent = (InputComponent)sender;
-                if(changedComponent == null) throw new InvalidOperationException();
-                UpdateInputComponent(changedComponent);
-            };
+
             return data;
+        }
+
+        protected override void OnEntityComponentAdding(Entity entity, InputComponent component, AssociatedData data)
+        {
+            component.ActionMappingInternal = data.LoadedMapping;
+            component.DefaultConfigurationChanged += Component_DefaultConfigurationChanged;
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, InputComponent component, AssociatedData data)
         {
+            component.DefaultConfigurationChanged -= Component_DefaultConfigurationChanged;
             data.LoadedMapping?.Dispose();
         }
+
+        private void Component_DefaultConfigurationChanged(object sender, EventArgs e)
+        {
+            var changedComponent = (InputComponent)sender;
+            if (changedComponent == null)
+                throw new InvalidOperationException();
+
+            UpdateInputComponent(changedComponent);
+        }
+
         private void UpdateInputComponent(InputComponent component)
         {
             var data = ComponentDatas[component];
@@ -95,6 +104,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var actionClone = action.Clone();
                 actionMapping.AddAction(actionClone);
             }
+
             return actionMapping;
         }
         

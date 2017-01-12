@@ -18,13 +18,14 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class PointeriOS : PointerDeviceBase, IDisposable
     {
-        private XenkoGameController gameController;
-        private iOSWindow uiControl;
-        private Dictionary<int, int> touchFingerIndexMap = new Dictionary<int, int>();
-        private int touchCounter = 0;
+        private readonly XenkoGameController gameController;
+        private readonly iOSWindow uiControl;
+        private readonly Dictionary<int, int> touchFingerIndexMap = new Dictionary<int, int>();
+        private int touchCounter;
 
-        public PointeriOS(iOSWindow uiControl, XenkoGameController gameController)
+        public PointeriOS(InputSourceiOS source, iOSWindow uiControl, XenkoGameController gameController)
         {
+            Source = source;
             this.uiControl = uiControl;
             this.gameController = gameController;
             var window = uiControl.MainWindow;
@@ -39,6 +40,14 @@ namespace SiliconStudio.Xenko.Input
 
             OnResize(null, EventArgs.Empty);
         }
+       
+        public override string Name => "iOS Pointer";
+
+        public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
+
+        public override PointerType Type => PointerType.Touch;
+
+        public override IInputSource Source { get; }
 
         public void Dispose()
         {
@@ -48,10 +57,6 @@ namespace SiliconStudio.Xenko.Input
             gameController.TouchesCancelledDelegate -= Touched;
             uiControl.GameView.Resize -= OnResize;
         }
-        
-        public override string Name => "iOS Pointer";
-        public override Guid Id => new Guid("6fa378ee-1ffe-41c1-947a-b425adcd5258");
-        public override PointerType Type => PointerType.Touch;
 
         private void Touched(NSSet touchesSet, UIEvent evt)
         {
@@ -71,16 +76,20 @@ namespace SiliconStudio.Xenko.Input
                         case UITouchPhase.Began:
                             pointerEvent.Type = PointerEventType.Pressed;
                             break;
+
                         case UITouchPhase.Moved:
                         case UITouchPhase.Stationary:
                             pointerEvent.Type = PointerEventType.Moved;
                             break;
+
                         case UITouchPhase.Ended:
                             pointerEvent.Type = PointerEventType.Released;
                             break;
+
                         case UITouchPhase.Cancelled:
                             pointerEvent.Type = PointerEventType.Canceled;
                             break;
+
                         default:
                             throw new ArgumentException("Got an invalid Touch event in GetState");
                     }

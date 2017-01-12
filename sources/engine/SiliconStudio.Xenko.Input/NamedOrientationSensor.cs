@@ -8,12 +8,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class NamedOrientationSensor : NamedSensor, IOrientationSensor
     {
-        public float Yaw => yaw;
-        public float Pitch => pitch;
-        public float Roll => roll;
-        public Quaternion Quaternion => quaternion;
-        public Matrix RotationMatrix => rotationMatrix;
-
         private float yaw;
         private float pitch;
         private float roll;
@@ -23,9 +17,19 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedOrientationSensor"/> class.
         /// </summary>
-        public NamedOrientationSensor(string systemName) : base(systemName, "Orientation")
+        public NamedOrientationSensor(IInputSource source, string systemName) : base(source, systemName, "Orientation")
         {
         }
+
+        public float Yaw => yaw;
+
+        public float Pitch => pitch;
+
+        public float Roll => roll;
+
+        public Quaternion Quaternion => quaternion;
+
+        public Matrix RotationMatrix => rotationMatrix;
 
         public void FromQuaternion(Quaternion q)
         {

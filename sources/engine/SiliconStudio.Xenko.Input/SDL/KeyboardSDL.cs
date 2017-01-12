@@ -12,12 +12,12 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class KeyboardSDL : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
-        private Window window;
-
+        private readonly Window window;
         private readonly List<TextInputEvent> textEvents = new List<TextInputEvent>();
 
-        public KeyboardSDL(Window window)
+        public KeyboardSDL(InputSourceSDL source, Window window)
         {
+            Source = source;
             this.window = window;
             this.window.KeyDownActions += OnKeyEvent;
             this.window.KeyUpActions += OnKeyEvent;
@@ -32,8 +32,11 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name => "SDL Keyboard";
+
         public override Guid Id => new Guid("a25469ad-804e-4713-82da-347c6b187323");
-        
+
+        public override IInputSource Source { get; }
+
         public override void Update(List<InputEvent> inputEvents)
         {
             base.Update(inputEvents);
@@ -87,13 +90,16 @@ namespace SiliconStudio.Xenko.Input
         {
             byte[] sourceBytes = new byte[size];
             int length = 0;
+
             for (int i = 0; i < size; i++)
             {
                 if (text[i] == 0)
                     break;
+
                 sourceBytes[i] = text[i];
                 length++;
             }
+
             return Encoding.UTF8.GetString(sourceBytes,0,length);
         }
 

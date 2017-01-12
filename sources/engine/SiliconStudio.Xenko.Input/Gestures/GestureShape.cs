@@ -12,10 +12,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// Represent a gesture that has its shape along the horizontal axis.
         /// </summary>
         Horizontal,
+
         /// <summary>
         /// Represent a gesture that has its shape along the vertical axis.
         /// </summary>
         Vertical,
+
         /// <summary>
         /// Represent a gesture that has a random shape.
         /// </summary>

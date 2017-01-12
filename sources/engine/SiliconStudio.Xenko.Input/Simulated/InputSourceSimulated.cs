@@ -23,11 +23,12 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public static InputSourceSimulated Instance;
 
-        public KeyboardSimulated Keyboard;
-        public MouseSimulated Mouse;
+        private bool keyboardConnected;
+        private bool mouseConnected;
 
-        private bool keyboardConnected = false;
-        private bool mouseConnected = false;
+        public KeyboardSimulated Keyboard;
+
+        public MouseSimulated Mouse;
 
         public override void Initialize(InputManager inputManager)
         {
@@ -49,9 +50,14 @@ namespace SiliconStudio.Xenko.Input
             if (connected != keyboardConnected)
             {
                 if (connected)
+                {
                     RegisterDevice(Keyboard);
+                }
                 else
+                {
                     UnregisterDevice(Keyboard);
+                }
+
                 keyboardConnected = connected;
             }
         }
@@ -61,9 +67,14 @@ namespace SiliconStudio.Xenko.Input
             if (connected != mouseConnected)
             {
                 if (connected)
+                {
                     RegisterDevice(Mouse);
+                }
                 else
+                {
                     UnregisterDevice(Mouse);
+                }
+
                 mouseConnected = connected;
             }
         }
@@ -76,7 +87,10 @@ namespace SiliconStudio.Xenko.Input
             }
 
             public override string Name => "Simulated Keyboard";
+
             public override Guid Id => new Guid(10, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+
+            public override IInputSource Source => Instance;
 
             public void SimulateDown(Keys key)
             {
@@ -92,7 +106,7 @@ namespace SiliconStudio.Xenko.Input
         public class MouseSimulated : MouseDeviceBase
         {
             private readonly List<PointerEvent> injectedPointerEvents = new List<PointerEvent>();
-            private bool positionLocked = false;
+            private bool positionLocked;
             private Vector2 capturedPosition;
 
             public MouseSimulated()
@@ -102,9 +116,13 @@ namespace SiliconStudio.Xenko.Input
             }
 
             public override string Name => "Simulated Mouse";
+
             public override Guid Id => new Guid(10, 10, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+
             public override bool IsPositionLocked => positionLocked;
-            
+
+            public override IInputSource Source => Instance;
+
             public override void Update(List<InputEvent> inputEvents)
             {
                 base.Update(inputEvents);

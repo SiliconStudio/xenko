@@ -24,21 +24,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public List<InputAction> Actions { get; set; }
 
-        public void GestureForEach(Action<IInputGesture> action)
-        {
-            foreach (var inputAction in Actions)
-            {
-                inputAction.GestureForEach(action);
-            }
-        }
-        
         /// <summary>
         /// Changes all the gamepad gestures on this configuration to a different controller index
         /// </summary>
         /// <param name="targetIndex">The index to change all gamepad gestures to</param>
         public void ShiftGamePadIndex(int targetIndex)
         {
-            GestureForEach(gesture =>
+            ProcessGestures(gesture =>
             {
                 var gamePadGesture = gesture as IGamePadGesture;
                 if (gamePadGesture != null)
@@ -53,12 +45,20 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <param name="targetIndex">The index to change all matching gestures to</param>
         public void ShiftGamePadIndex(int sourceIndex, int targetIndex)
         {
-            GestureForEach(gesture =>
+            ProcessGestures(gesture =>
             {
                 var gamePadGesture = gesture as IGamePadGesture;
                 if (gamePadGesture != null && gamePadGesture.GamePadIndex == sourceIndex)
                     gamePadGesture.GamePadIndex = targetIndex;
             });
+        }
+
+        private void ProcessGestures(Action<IInputGesture> action)
+        {
+            foreach (var inputAction in Actions)
+            {
+                inputAction.GestureForEach(action);
+            }
         }
     }
 }

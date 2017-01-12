@@ -11,9 +11,10 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class GamePadDirectInput : GamePadFromLayout, IGamePadIndexAssignable
     {
-        public GamePadDirectInput(InputManager inputManager, GameControllerDirectInput controller, GamePadLayout layout)
+        public GamePadDirectInput(InputSourceWindowsDirectInput source, InputManager inputManager, GameControllerDirectInput controller, GamePadLayout layout)
             : base(inputManager, controller, layout)
         {
+            Source = source;
             Name = controller.Name;
             Id = controller.Id;
             ProductId = controller.ProductId;
@@ -26,8 +27,12 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name { get; }
+
         public override Guid Id { get; }
+
         public override Guid ProductId { get; }
+
+        public override IInputSource Source { get; }
 
         public override void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {

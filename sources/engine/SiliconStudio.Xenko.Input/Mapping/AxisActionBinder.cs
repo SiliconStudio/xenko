@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             else if (TargetGesture is CompoundAxisGesture)
             {
                 ((CompoundAxisGesture)TargetGesture).Gestures.Add(axis);
-                // Inver axis since this is now being used as the negative trigger
+                // Invert axis since this is now being used as the negative trigger
                 var scalable = axis as AxisGestureBase;
                 if (scalable != null) scalable.Inverted = !scalable.Inverted;
                 Advance(1);
@@ -148,7 +148,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         protected virtual TwoWayGesture AsTwoWayGesture()
         {
             if (TargetGesture == null)
+            {
                 TargetGesture = new TwoWayGesture();
+            }
+
             return TargetGesture as TwoWayGesture;
         }
 

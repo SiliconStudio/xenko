@@ -11,23 +11,30 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
+        private readonly List<Keys> downKeys = new List<Keys>();
+
+        protected readonly List<KeyEvent> Events = new List<KeyEvent>();
+
         public readonly Dictionary<Keys, int> KeyRepeats = new Dictionary<Keys, int>();
-        protected List<KeyEvent> EventQueue = new List<KeyEvent>();
-        private List<Keys> downKeys = new List<Keys>();
 
         public IReadOnlyList<Keys> DownKeys => downKeys;
+
         public abstract string Name { get; }
+
         public abstract Guid Id { get; }
+
         public int Priority { get; set; }
-        
+
+        public abstract IInputSource Source { get; }
+
         public virtual void Update(List<InputEvent> inputEvents)
         {
             // Fire events
-            foreach (var evt in EventQueue)
+            foreach (var evt in Events)
             {
                 inputEvents.Add(evt);
             }
-            EventQueue.Clear();
+            Events.Clear();
         }
         
         public virtual bool IsKeyDown(Keys key)
@@ -38,9 +45,11 @@ namespace SiliconStudio.Xenko.Input
         public void HandleKeyDown(Keys key)
         {
             // Increment repeat count on subsequent down events
-            int repeatCount = 0;
+            int repeatCount;
             if (KeyRepeats.TryGetValue(key, out repeatCount))
+            {
                 KeyRepeats[key] = ++repeatCount;
+            }
             else
             {
                 KeyRepeats.Add(key, repeatCount);
@@ -51,7 +60,7 @@ namespace SiliconStudio.Xenko.Input
             keyEvent.State = ButtonState.Down;
             keyEvent.Key = key;
             keyEvent.RepeatCount = repeatCount;
-            EventQueue.Add(keyEvent);
+            Events.Add(keyEvent);
         }
 
         public void HandleKeyUp(Keys key)
@@ -66,7 +75,7 @@ namespace SiliconStudio.Xenko.Input
             keyEvent.State = ButtonState.Up;
             keyEvent.Key = key;
             keyEvent.RepeatCount = 0;
-            EventQueue.Add(keyEvent);
+            Events.Add(keyEvent);
         }
     }
 }

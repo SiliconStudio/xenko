@@ -18,8 +18,9 @@ namespace SiliconStudio.Xenko.Input
     {
         private readonly FrameworkElement uiControl;
 
-        public PointerUWP(FrameworkElement uiControl)
+        public PointerUWP(InputSourceUWP source, FrameworkElement uiControl)
         {
+            Source = source;
             this.uiControl = uiControl;
 
             uiControl.SizeChanged += UIControlOnSizeChanged;
@@ -35,13 +36,18 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name { get; } = "UWP Pointer";
+
         public override Guid Id { get; } = new Guid("9b1e36b6-de69-4313-89dd-7cbfbe1a436e");
+
         public override PointerType Type { get; } = PointerType.Unknown;
-        
+
+        public override IInputSource Source { get; }
+
         protected virtual void HandlePointer(PointerEventType type, PointerRoutedEventArgs args)
         {
             var pointer = args.Pointer;
             var point = args.GetCurrentPoint(uiControl);
+
             if (point.PointerDevice.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 PointerInputEvents.Add(new PointerInputEvent
@@ -57,6 +63,7 @@ namespace SiliconStudio.Xenko.Input
             var newSize = sizeChangedEventArgs.NewSize;
             SetSurfaceSize(new Vector2((float)newSize.Width, (float)newSize.Height));
         }
+
         private Vector2 PointToVector2(Point point)
         {
             return new Vector2((float)point.X, (float)point.Y);

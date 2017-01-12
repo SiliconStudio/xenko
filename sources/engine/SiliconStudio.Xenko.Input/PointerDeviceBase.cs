@@ -19,14 +19,23 @@ namespace SiliconStudio.Xenko.Input
         private Vector2 surfaceSize;
         private Vector2 invSurfaceSize;
         private float aspectRatio;
-        
+
         public abstract string Name { get; }
+
         public abstract Guid Id { get; }
+
         public abstract PointerType Type { get; }
+
         public int Priority { get; set; }
+
+        public abstract IInputSource Source { get; }
+
         public Vector2 SurfaceSize => surfaceSize;
+
         public Vector2 InverseSurfaceSize => invSurfaceSize;
+
         public float SurfaceAspectRatio => aspectRatio;
+
         public IReadOnlyList<PointerPoint> PointerPoints => PointerDatas;
 
         public event EventHandler<SurfaceSizeChangedEventArgs> SurfaceSizeChanged;

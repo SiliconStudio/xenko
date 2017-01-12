@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Input
         public DirectInputJoystick(IntPtr nativePtr) : base(nativePtr)
         {
         }
+
         public DirectInputJoystick(DirectInput directInput, Guid deviceGuid) : base(directInput, deviceGuid)
         {
         }

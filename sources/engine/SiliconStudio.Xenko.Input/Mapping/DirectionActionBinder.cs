@@ -29,8 +29,11 @@ namespace SiliconStudio.Xenko.Input.Mapping
         }
         
         public override int BindingCount { get; } = 4;
+
         public override bool AcceptsAxes => Index == 0 || !CanBindButtons;
+
         public override bool AcceptsButtons => CanBindButtons;
+
         public override bool AcceptsDirections => Index == 0;
         
         public void ProcessEvent(PovControllerEvent inputEvent)
@@ -59,6 +62,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                     TargetFourWayGesture.X = new TwoWayGesture();
                     TargetFourWayGesture.Y = new TwoWayGesture();
                 }
+
                 return ((Index < 2) ? TargetFourWayGesture.X : TargetFourWayGesture.Y) as TwoWayGesture;
             }
             return null;
@@ -67,10 +71,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
         protected override void TryBindAxis(IAxisGesture axis, bool isBidirectional)
         {
             // Filter out duplicate axes
-            if (UsedGestures.Contains(axis)) return;
+            if (UsedGestures.Contains(axis))
+                return;
 
             // Don't bind triggers to directional axes
-            if (!isBidirectional) return;
+            if (!isBidirectional)
+                return;
 
             if (Index == 0)
             {

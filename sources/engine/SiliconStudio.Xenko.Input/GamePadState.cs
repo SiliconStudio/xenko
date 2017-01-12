@@ -114,11 +114,13 @@ namespace SiliconStudio.Xenko.Input
             {
                 return Update(buttonEvent);
             }
+
             var axisEvent = evt as GamePadAxisEvent;
             if (axisEvent != null)
             {
                 return Update(axisEvent);
             }
+
             return false;
         }
 
@@ -133,14 +135,17 @@ namespace SiliconStudio.Xenko.Input
             {
                 if ((Buttons & buttonEvent.Button) != 0)
                     return false;
+
                 Buttons |= buttonEvent.Button; // Set bits
             }
             else
             {
                 if ((Buttons & buttonEvent.Button) == 0)
                     return false;
+
                 Buttons &= ~buttonEvent.Button; // Clear bits
             }
+
             return true;
         }
 
@@ -174,6 +179,7 @@ namespace SiliconStudio.Xenko.Input
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (a == evt.Value)
                 return false;
+
             a = evt.Value;
             return true;
         }

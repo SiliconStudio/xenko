@@ -11,11 +11,12 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class GamePadSDL : GamePadFromLayout, IGamePadIndexAssignable, IDisposable
     {
-        private bool disposed = false;
+        private bool disposed;
 
-        public GamePadSDL(InputManager inputManager, GameControllerSDL controller, GamePadLayout layout)
+        public GamePadSDL(InputSourceSDL source, InputManager inputManager, GameControllerSDL controller, GamePadLayout layout)
             : base(inputManager, controller, layout)
         {
+            Source = source;
             Name = controller.Name;
             Id = controller.Id;
             ProductId = controller.ProductId;
@@ -32,15 +33,19 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
+        public override string Name { get; }
+
+        public override Guid Id { get; }
+
+        public override Guid ProductId { get; }
+
+        public override IInputSource Source { get; }
+
         public new int Index
         {
             get { return base.Index; }
             set { SetIndexInternal(value, false); }
         }
-
-        public override string Name { get; }
-        public override Guid Id { get; }
-        public override Guid ProductId { get; }
 
         public override void SetVibration(float smallLeft, float smallRight, float largeLeft, float largeRight)
         {

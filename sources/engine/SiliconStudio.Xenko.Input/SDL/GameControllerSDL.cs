@@ -14,14 +14,15 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<GameControllerAxisInfo> axisInfos = new List<GameControllerAxisInfo>();
         private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
         
-        private IntPtr joystick;
+        private readonly IntPtr joystick;
 
-        private bool disposed = false;
+        private bool disposed;
 
         internal int InstanceId { get; private set; } 
 
-        public GameControllerSDL(int deviceIndex)
+        public GameControllerSDL(InputSourceSDL source, int deviceIndex)
         {
+            Source = source;
             joystick = SDL.SDL_JoystickOpen(deviceIndex);
 
             Id = Guid.NewGuid(); // Should be unique
@@ -34,10 +35,12 @@ namespace SiliconStudio.Xenko.Input
             {
                 buttonInfos.Add(new GameControllerButtonInfo { Name = $"Button {i}" });
             }
+
             for (int i = 0; i < SDL.SDL_JoystickNumAxes(joystick); i++)
             {
                 axisInfos.Add(new GameControllerAxisInfo { Name = $"Axis {i}" });
             }
+
             for (int i = 0; i < SDL.SDL_JoystickNumHats(joystick); i++)
             {
                 povControllerInfos.Add(new PovControllerInfo { Name = $"Hat {i}" });
@@ -46,6 +49,22 @@ namespace SiliconStudio.Xenko.Input
             InitializeButtonStates();
         }
         
+        public override string Name { get; }
+
+        public override Guid Id { get; }
+
+        public override Guid ProductId { get; }
+
+        public override IInputSource Source { get; }
+
+        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
+
+        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
+
+        public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
+
+        public event EventHandler Disconnected;
+
         public void Dispose()
         {
             if (!disposed)
@@ -57,16 +76,6 @@ namespace SiliconStudio.Xenko.Input
                 disposed = true;
             }
         }
-
-        public override string Name { get; }
-        public override Guid Id { get; }
-        public override Guid ProductId { get; }
-
-        public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
-        public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
-        public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
-
-        public event EventHandler Disconnected;
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -80,12 +89,14 @@ namespace SiliconStudio.Xenko.Input
             {
                 HandleButton(i, SDL.SDL_JoystickGetButton(joystick, i) != 0);
             }
+
             for (int i = 0; i < axisInfos.Count; i++)
             {
                 short input = SDL.SDL_JoystickGetAxis(joystick, i);
                 float axis = (float)input / 0x7FFF;
                 HandleAxis(i, axis);
             }
+
             for (int i = 0; i < povControllerInfos.Count; i++)
             {
                 var hat = SDL.SDL_JoystickGetHat(joystick, i);
@@ -100,8 +111,10 @@ namespace SiliconStudio.Xenko.Input
         private bool ConvertJoystickHat(byte hat, out GamePadButton buttons)
         {
             buttons = 0;
+
             if (hat == SDL.SDL_HAT_CENTERED)
                 return false;
+
             for (int j = 0; j < 4; j++)
             {
                 int mask = 1 << j;
@@ -124,6 +137,7 @@ namespace SiliconStudio.Xenko.Input
                     }
                 }
             }
+
             return true;
         }
     }

@@ -15,8 +15,8 @@ namespace SiliconStudio.Xenko.Input
     internal class GamePadUWP : GameControllerDeviceBase, IGamePadDevice, IGamePadIndexAssignable
     {
         internal Gamepad Gamepad;
+        private readonly double[] lastAxisState = new double[6];
         private GamePadState state = new GamePadState();
-        private double[] lastAxisState = new double[6];
         private int index;
 
         private Dictionary<GamepadButtons, GamePadButton> buttonMap = new Dictionary<GamepadButtons, GamePadButton>
@@ -37,16 +37,23 @@ namespace SiliconStudio.Xenko.Input
             [GamepadButtons.RightThumbstick] = GamePadButton.RightThumb,
         };
 
-        public GamePadUWP(Gamepad gamepad, Guid id)
+        public GamePadUWP(InputSourceUWP source, Gamepad gamepad, Guid id)
         {
+            Source = source;
             Id = id;
             Gamepad = gamepad;
         }
 
         public override string Name => "UWP GamePad";
+
         public override Guid Id { get; }
+
+        public override IInputSource Source { get; }
+
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; } = new List<GameControllerButtonInfo>();
+
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos { get; } = new List<GameControllerAxisInfo>();
+
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos { get; } = new List<PovControllerInfo>();
 
         public GamePadState State => state;

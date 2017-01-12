@@ -14,22 +14,28 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedSensor"/> class.
         /// </summary>
-        public NamedSensor(string systemName, string sensorName)
+        protected NamedSensor(IInputSource source, string systemName, string sensorName)
         {
+            Source = source;
             Name = $"{systemName} {sensorName} Sensor";
             Id = InputDeviceUtils.DeviceNameToGuid(systemName + sensorName);
         }
 
-        public void Dispose()
+        public string Name { get; }
+
+        public Guid Id { get; }
+
+        public int Priority { get; set; }
+
+        public IInputSource Source { get; }
+
+        public bool IsEnabled { get; set; }
+
+        public void Update(List<InputEvent> inputEvents)
         {
         }
 
-        public string Name { get; }
-        public Guid Id { get; }
-        public int Priority { get; set; }
-        public bool IsEnabled { get; set; }
-
-        public virtual void Update(List<InputEvent> inputEvents)
+        public virtual void Dispose()
         {
         }
     }

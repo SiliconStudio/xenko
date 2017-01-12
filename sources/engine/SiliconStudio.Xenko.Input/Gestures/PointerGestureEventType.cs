@@ -12,14 +12,17 @@ namespace SiliconStudio.Xenko.Input.Gestures
         /// A discrete gesture has occurred.
         /// </summary>
         Occurred,
+
         /// <summary>
         /// A continuous gesture has started.
         /// </summary>
         Began,
+
         /// <summary>
         /// A continuous gesture parameters changed.
         /// </summary>
         Changed,
+
         /// <summary>
         /// A continuous gesture has stopped.
         /// </summary>

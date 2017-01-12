@@ -11,11 +11,15 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class GameControllerDeviceBase : IGameControllerDevice
     {
+        private readonly List<InputEvent> events = new List<InputEvent>();
+
         protected bool[] ButtonStates;
+
         protected float[] AxisStates;
+
         protected float[] PovStates;
+
         protected bool[] PovEnabledStates;
-        private readonly List<InputEvent> eventQueue = new List<InputEvent>();
 
         public abstract string Name { get; }
 
@@ -24,6 +28,8 @@ namespace SiliconStudio.Xenko.Input
         public virtual Guid ProductId => Id;
 
         public int Priority { get; set; }
+
+        public abstract IInputSource Source { get; }
 
         public abstract IReadOnlyList<GameControllerButtonInfo> ButtonInfos { get; }
 
@@ -46,6 +52,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > ButtonStates.Length)
                 return false;
+
             return ButtonStates[index];
         }
         
@@ -53,6 +60,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > AxisStates.Length)
                 return 0.0f;
+
             return AxisStates[index];
         }
         
@@ -60,6 +68,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > PovStates.Length)
                 return 0.0f;
+
             return PovStates[index];
         }
         
@@ -67,6 +76,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > PovStates.Length)
                 return false;
+
             return PovEnabledStates[index];
         }
 
@@ -76,24 +86,25 @@ namespace SiliconStudio.Xenko.Input
         public virtual void Update(List<InputEvent> inputEvents)
         {
             // Collect events from queue
-            foreach (var evt in eventQueue)
+            foreach (var evt in events)
             {
                 inputEvents.Add(evt);
             }
-            eventQueue.Clear();
+            events.Clear();
         }
 
         protected void HandleButton(int index, bool state)
         {
             if (index < 0 || index > ButtonStates.Length)
                 throw new IndexOutOfRangeException();
+
             if (ButtonStates[index] != state)
             {
                 ButtonStates[index] = state;
                 var buttonEvent = InputEventPool<GameControllerButtonEvent>.GetOrCreate(this);
                 buttonEvent.State = state ? ButtonState.Down : ButtonState.Up;
                 buttonEvent.Index = index;
-                eventQueue.Add(buttonEvent);
+                events.Add(buttonEvent);
             }
         }
 
@@ -101,13 +112,14 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > AxisStates.Length)
                 throw new IndexOutOfRangeException();
+
             if (AxisStates[index] != state)
             {
                 AxisStates[index] = state;
                 var axisEvent = InputEventPool<GameControllerAxisEvent>.GetOrCreate(this);
                 axisEvent.Value = state;
                 axisEvent.Index = index;
-                eventQueue.Add(axisEvent);
+                events.Add(axisEvent);
             }
         }
 
@@ -115,6 +127,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (index < 0 || index > PovStates.Length)
                 throw new IndexOutOfRangeException();
+
             if (enabled && PovStates[index] != state || PovEnabledStates[index] != enabled)
             {
                 PovStates[index] = state;
@@ -124,7 +137,7 @@ namespace SiliconStudio.Xenko.Input
                 povEvent.Index = index;
                 povEvent.Enabled = enabled;
                 povEvent.Value = enabled ? state : 0.0f;
-                eventQueue.Add(povEvent);
+                events.Add(povEvent);
             }
         }
     }

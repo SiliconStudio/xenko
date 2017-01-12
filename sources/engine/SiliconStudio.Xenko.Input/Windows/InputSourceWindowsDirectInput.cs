@@ -15,9 +15,16 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class InputSourceWindowsDirectInput : InputSourceBase
     {
-        private InputManager inputManager;
         private readonly HashSet<Guid> devicesToRemove = new HashSet<Guid>();
+        private InputManager inputManager;
         private DirectInput directInput;
+
+        public override void Initialize(InputManager inputManager)
+        {
+            this.inputManager = inputManager;
+            directInput = new DirectInput();
+            Scan();
+        }
 
         public override void Dispose()
         {
@@ -33,13 +40,6 @@ namespace SiliconStudio.Xenko.Input
 
             // Dispose DirectInput
             directInput.Dispose();
-        }
-
-        public override void Initialize(InputManager inputManager)
-        {
-            this.inputManager = inputManager;
-            directInput = new DirectInput();
-            Scan();
         }
 
         public override void Update()
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
             GameControllerDirectInput controller;
             try
             {
-                controller = new GameControllerDirectInput(directInput, deviceInstance);
+                controller = new GameControllerDirectInput(this, directInput, deviceInstance);
             }
             catch (SharpDXException)
             {
@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Input
             if (layout != null)
             {
                 // Creata a gamepad wrapping around the controller
-                var gamePad = new GamePadDirectInput(inputManager, controller, layout);
+                var gamePad = new GamePadDirectInput(this, inputManager, controller, layout);
                 controller.Disconnected += (sender, args) =>
                 {
                     // Queue device for removal

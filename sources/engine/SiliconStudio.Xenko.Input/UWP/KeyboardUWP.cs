@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Input
     {
         private static readonly Dictionary<VirtualKey, Keys> mapKeys;
         private readonly FrameworkElement uiControl;
-        private GameBase game;
+        private readonly GameBase game;
 
         static KeyboardUWP()
         {
@@ -202,17 +202,10 @@ namespace SiliconStudio.Xenko.Input
             AddKeys(WinFormsKeys.Pa1, Keys.Pa1);
             AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
         }
-       
-        static void AddKeys(WinFormsKeys fromKey, Keys toKey)
-        {
-            if (!mapKeys.ContainsKey((VirtualKey)fromKey))
-            {
-                mapKeys.Add((VirtualKey)fromKey, toKey);
-            }
-        }
 
-        public KeyboardUWP(GameBase game, FrameworkElement uiControl)
+        public KeyboardUWP(InputSourceUWP source, GameBase game, FrameworkElement uiControl)
         {
+            Source = source;
             this.game = game;
             this.uiControl = uiControl;
             uiControl.KeyDown += UIControlOnKeyDown;
@@ -220,8 +213,11 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name { get; } = "UWP Keyboard";
+
         public override Guid Id { get; } = new Guid("64f10812-74a6-448e-8454-7b8e47f39cf4");
-        
+
+        public override IInputSource Source { get; }
+
         void HandleKey(ButtonState state, KeyRoutedEventArgs args)
         {
             // If our EditText TextBox is active, let's ignore all key events
@@ -255,10 +251,14 @@ namespace SiliconStudio.Xenko.Input
             if (!mapKeys.TryGetValue(virtualKey, out xenkoKey))
                 return;
 
-            if(state == ButtonState.Down)
+            if (state == ButtonState.Down)
+            {
                 HandleKeyDown(xenkoKey);
+            }
             else
+            {
                 HandleKeyUp(xenkoKey);
+            }
         }
         
         private void UIControlOnKeyDown(object sender, KeyRoutedEventArgs args)
@@ -269,6 +269,14 @@ namespace SiliconStudio.Xenko.Input
         private void UIControlOnKeyUp(object sender, KeyRoutedEventArgs args)
         {   
             HandleKey(ButtonState.Up, args);
+        }
+
+        private static void AddKeys(WinFormsKeys fromKey, Keys toKey)
+        {
+            if (!mapKeys.ContainsKey((VirtualKey)fromKey))
+            {
+                mapKeys.Add((VirtualKey)fromKey, toKey);
+            }
         }
     }
 }

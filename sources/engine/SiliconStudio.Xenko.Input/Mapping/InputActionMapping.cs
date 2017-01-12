@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public InputActionMapping(InputManager inputManager)
         {
             if (inputManager == null) throw new ArgumentNullException(nameof(inputManager));
-            this.InputManager = inputManager;
+            InputManager = inputManager;
             inputManager.PreUpdateInput += OnPreUpdateInput;
         }
         
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             get
             {
-                HashSet<IInputGesture> gestures = new HashSet<IInputGesture>();
+                var gestures = new HashSet<IInputGesture>();
                 foreach (var action in Actions)
                 {
                     foreach (var gesture in action.ReadOnlyGestures)
@@ -86,11 +86,12 @@ namespace SiliconStudio.Xenko.Input.Mapping
             get
             {
                 // Collect all the gesture bindings into a key/value pair mapping
-                Dictionary<string, List<InputGestureBase>> settings = new Dictionary<string, List<InputGestureBase>>();
+                var settings = new Dictionary<string, List<InputGestureBase>>();
                 foreach (var pair in inputActionsByName)
                 {
                     settings.Add(pair.Key, pair.Value.ReadOnlyGestures.OfType<InputGestureBase>().ToList());
                 }
+
                 return settings;
             }
             set
@@ -129,8 +130,10 @@ namespace SiliconStudio.Xenko.Input.Mapping
         public void AddAction(InputAction action)
         {
             string name = action.MappingName;
+
             if (action.ActionMapping != null || inputActions.Contains(action))
                 throw new InvalidOperationException("Action was already added to a mapping");
+
             if (inputActionsByName.ContainsKey(name))
                 throw new InvalidOperationException("Can't add binding, a binding with the same name already exists");
 
@@ -185,11 +188,13 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// </summary>
         public void ClearBindings()
         {
-            InputAction[] actionsToRemove = inputActions.ToArray();
+            var actionsToRemove = inputActions.ToArray();
+
             foreach (var action in actionsToRemove)
             {
                 RemoveAction(action);
             }
+
             if (inputActionsByName.Count != 0) throw new Exception("Failed to correctly clear bindings");
             if (gestures.Count != 0) throw new Exception("Failed to correctly clear bindings");
             if (inputActions.Count != 0) throw new Exception("Failed to correctly clear bindings");
@@ -205,6 +210,5 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 action.PreUpdate(e.GameTime.Elapsed);
             }
         }
-
     }
 }

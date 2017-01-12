@@ -16,8 +16,6 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Trying to modify the <see cref="PointerGestureBase.RequiredFingerCount"/> field will throw an exception.</para></remarks>
     public class CompositeGesture : ContinuousMotionGesture
     {
-        protected float MinimumScaleValueInv { get; set; }
-
         private int firstFingerId;
         private int secondFingerId;
 
@@ -34,6 +32,8 @@ namespace SiliconStudio.Xenko.Input.Gestures
         private float minimumScaleValue;
         private float mminimumTranslationDistance;
         private float minimumRotationAngle;
+
+        protected float MinimumScaleValueInv { get; set; }
 
         public CompositeGesture()
         {
@@ -156,6 +156,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
             var args = new CompositeEventArgs(PointerDevice, eventType, ElapsedSinceLast, ElapsedSinceBeginning, deltaRotation, currentRotation,
                 deltaScale, currentScale, NormalizeVector(beginCenter), NormalizeVector(lastCenter), NormalizeVector(currentCenter));
+
             Changed?.Invoke(this, args);
             SendChangedEvent(args);
 

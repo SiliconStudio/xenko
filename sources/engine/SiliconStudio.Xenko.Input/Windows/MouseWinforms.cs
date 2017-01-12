@@ -24,8 +24,9 @@ namespace SiliconStudio.Xenko.Input
         private Point targetPosition;
         private bool shouldSetPosition;
 
-        public MouseWinforms(GameBase game, Control uiControl)
+        public MouseWinforms(InputSourceWinforms source, GameBase game, Control uiControl)
         {
+            Source = source;
             this.game = game;
             this.uiControl = uiControl;
             
@@ -38,6 +39,8 @@ namespace SiliconStudio.Xenko.Input
 
             OnSizeChanged(this, null);
         }
+
+        public override IInputSource Source { get; }
 
         public void Dispose()
         {

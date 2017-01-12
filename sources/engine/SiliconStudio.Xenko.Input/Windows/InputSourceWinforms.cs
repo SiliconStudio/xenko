@@ -17,28 +17,19 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     internal class InputSourceWinforms : InputSourceBase
     {
+        private readonly HashSet<WinFormsKeys> heldKeys = new HashSet<WinFormsKeys>();
+
         private KeyboardWinforms keyboard;
         private MouseWinforms mouse;
-        
+
         private IntPtr defaultWndProc;
         private Win32Native.WndProc inputWndProc;
-
-        private readonly HashSet<WinFormsKeys> heldKeys = new HashSet<WinFormsKeys>();
 
         // My input devices
         private GameContext<Control> gameContext;
         private GameBase game;
         private Control uiControl;
         private InputManager input;
-
-        public override void Dispose()
-        {
-            // Unregisters devices
-            base.Dispose();
-
-            mouse?.Dispose();
-            keyboard?.Dispose();
-        }
 
         /// <summary>
         /// Gets the value indicating if the mouse position is currently locked or not.
@@ -64,8 +55,17 @@ namespace SiliconStudio.Xenko.Input
             keyboard = new KeyboardWinforms(this, uiControl);
             RegisterDevice(keyboard);
 
-            mouse = new MouseWinforms(game, uiControl);
+            mouse = new MouseWinforms(this, game, uiControl);
             RegisterDevice(mouse);
+        }
+
+        public override void Dispose()
+        {
+            // Unregisters devices
+            base.Dispose();
+
+            mouse?.Dispose();
+            keyboard?.Dispose();
         }
 
         public override void Update()
@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Input
                     keyboard.HandleKeyUp(key);
                 }
             }
+
             if (mouse != null)
             {
                 foreach (var button in mouse.DownButtons.ToArray())
@@ -101,17 +102,23 @@ namespace SiliconStudio.Xenko.Input
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     if (!InputManager.UseRawInput)
+                    {
                         keyboard?.HandleKeyDown(virtualKey);
+                    }
                     heldKeys.Add(virtualKey);
                     break;
+
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
                     heldKeys.Remove(virtualKey);
                     if (!InputManager.UseRawInput)
+                    {
                         keyboard?.HandleKeyUp(virtualKey);
+                    }
                     break;
+
                 case Win32Native.WM_DEVICECHANGE:
                     // Trigger scan on device changed
                     input.Scan();
@@ -129,17 +136,20 @@ namespace SiliconStudio.Xenko.Input
                 // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
                 return (lParam & 0x01000000) == 0 ? WinFormsKeys.LControlKey : WinFormsKeys.RControlKey;
             }
+
             if (virtualKey == WinFormsKeys.ShiftKey)
             {
                 // We need to check the scan code to check which SHIFT key it is.
                 var scanCode = (lParam & 0x00FF0000) >> 16;
                 return (scanCode != 36) ? WinFormsKeys.LShiftKey : WinFormsKeys.RShiftKey;
             }
+
             if (virtualKey == WinFormsKeys.Menu)
             {
                 // We check if the key is an extended key. Extended keys are R-keys, non-extended are L-keys.
                 return (lParam & 0x01000000) == 0 ? WinFormsKeys.LMenu : WinFormsKeys.RMenu;
             }
+
             return virtualKey;
         }
     }

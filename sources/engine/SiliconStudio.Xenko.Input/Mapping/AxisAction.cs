@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Input.Mapping
     public class AxisAction : InputAction
     {
         private readonly List<AxisGestureEventArgs> events = new List<AxisGestureEventArgs>();
-        private float lastState;
 
         public AxisAction()
         {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
         /// <summary>
         /// Last state of the axis
         /// </summary>
-        public float LastState => lastState;
+        public float LastState { get; private set; }
 
         public TrackingCollection<IAxisGesture> Gestures { get; } = new TrackingCollection<IAxisGesture>();
 
@@ -48,7 +47,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             if (events.Count > 0)
             {
                 var evt = events.Last();
-                lastState = evt.State;
+                LastState = evt.State;
                 Changed?.Invoke(this, evt);
             }
             events.Clear();
@@ -67,6 +66,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
                 Gestures.Add(item);
                 return true;
             }
+
             return false;
         }
 

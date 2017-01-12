@@ -42,36 +42,40 @@ namespace SiliconStudio.Xenko.Input
             uiControl = context.Control;
 
             // Create android pointer and keyboard
-            keyboard = new KeyboardAndroid(uiControl);
-            pointer = new PointerAndroid(uiControl);
+            keyboard = new KeyboardAndroid(this, uiControl);
+            pointer = new PointerAndroid(this, uiControl);
             RegisterDevice(keyboard);
             RegisterDevice(pointer);
 
             // Create android sensors
             if ((accelerometerListener = TryGetSensorListener(SensorType.Accelerometer)) != null)
             {
-                accelerometerSensor = new NamedAccelerometerSensor("Android");
+                accelerometerSensor = new NamedAccelerometerSensor(this, "Android");
                 RegisterDevice(accelerometerSensor);
             }
+
             if ((linearAccelerationListener = TryGetSensorListener(SensorType.LinearAcceleration)) != null)
             {
-                userAccelerationSensor = new NamedUserAccelerationSensor("Android");
+                userAccelerationSensor = new NamedUserAccelerationSensor(this, "Android");
                 RegisterDevice(userAccelerationSensor);
             }
+
             if ((gyroscopeListener = TryGetSensorListener(SensorType.Gyroscope)) != null)
             {
-                gyroscopeSensor = new NamedGyroscopeSensor("Android");
+                gyroscopeSensor = new NamedGyroscopeSensor(this, "Android");
                 RegisterDevice(gyroscopeSensor);
             }
+
             if ((gravityListener = TryGetSensorListener(SensorType.Gravity)) != null)
             {
-                gravitySensor = new NamedGravitySensor("Android");
+                gravitySensor = new NamedGravitySensor(this, "Android");
                 RegisterDevice(gravitySensor);
             }
+
             if ((orientationListener = TryGetSensorListener(SensorType.RotationVector)) != null)
             {
-                orientationSensor = new NamedOrientationSensor("Android");
-                compassSensor = new NamedCompassSensor("Android");
+                orientationSensor = new NamedOrientationSensor(this, "Android");
+                compassSensor = new NamedCompassSensor(this, "Android");
                 RegisterDevice(orientationSensor);
                 RegisterDevice(compassSensor);
             }
@@ -85,10 +89,15 @@ namespace SiliconStudio.Xenko.Input
                 if (enable != listener.Enabled)
                 {
                     if (enable)
+                    {
                         listener.Enable();
+                    }
                     else
+                    {
                         listener.Disable();
+                    }
                 }
+
                 if (enable)
                 {
                     updater.Invoke(sensor, listener);
@@ -100,20 +109,20 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Update();
             
-            float[] quaternionArray = new float[4];
-            float[] rotationMatrixArray = new float[9];
-            float[] YawPitchRollArray = new float[3];
+            var quaternionArray = new float[4];
+            var rotationMatrixArray = new float[9];
+            var yawPitchRollArray = new float[3];
 
             // Update sensors
             // Enable/disable supported sensors and update enabled sensors
             UpdateSensorPair(accelerometerListener, accelerometerSensor, 
-                (sensor, listener) => sensor.AccelerationInternal = listener.GetCurrentValuesAsVector());
+                (sensor, listener) => sensor.Acceleration = listener.GetCurrentValuesAsVector());
             UpdateSensorPair(gyroscopeListener, gyroscopeSensor, 
-                (sensor, listener) => sensor.RotationRateInternal = -listener.GetCurrentValuesAsVector());
+                (sensor, listener) => sensor.RotationRate = -listener.GetCurrentValuesAsVector());
             UpdateSensorPair(linearAccelerationListener, userAccelerationSensor, 
-                (sensor, listener) => sensor.AccelerationInternal = listener.GetCurrentValuesAsVector());
+                (sensor, listener) => sensor.Acceleration = listener.GetCurrentValuesAsVector());
             UpdateSensorPair(gravityListener, gravitySensor, 
-                (sensor, listener) => sensor.VectorInternal = listener.GetCurrentValuesAsVector());
+                (sensor, listener) => sensor.Vector = listener.GetCurrentValuesAsVector());
 
             // Enabled/Disable/Update Orientation
             if (orientationListener != null)
@@ -122,20 +131,27 @@ namespace SiliconStudio.Xenko.Input
                 if (enable != orientationListener.Enabled)
                 {
                     if (enable)
+                    {
                         orientationListener.Enable();
+                    }
                     else
+                    {
                         orientationListener.Disable();
+                    }
                 }
+
                 if (enable)
                 {
                     // Update orientation
                     base.Update();
-                    float[] rotationVector = orientationListener.GetValues()?.ToArray() ?? new float[] {0.0f, 0.0f, 0.0f};
+
+                    var rotationVector = orientationListener.GetValues()?.ToArray() ?? new [] {0.0f, 0.0f, 0.0f};
                     if (rotationVector.Length < 3)
                         return;
+
                     SensorManager.GetQuaternionFromVector(quaternionArray, rotationVector);
                     SensorManager.GetRotationMatrixFromVector(rotationMatrixArray, rotationVector);
-                    SensorManager.GetOrientation(rotationMatrixArray, YawPitchRollArray);
+                    SensorManager.GetOrientation(rotationMatrixArray, yawPitchRollArray);
 
                     var quaternion = Quaternion.Identity;
                     quaternion.W = +quaternionArray[0];
@@ -146,7 +162,7 @@ namespace SiliconStudio.Xenko.Input
                     orientationSensor.FromQuaternion(quaternion);
 
                     // Update compass
-                    compassSensor.HeadingInternal = YawPitchRollArray[0] + MathUtil.Pi;
+                    compassSensor.Heading = yawPitchRollArray[0] + MathUtil.Pi;
                 }
             }
         }
@@ -180,6 +196,7 @@ namespace SiliconStudio.Xenko.Input
                 listener.Dispose();
                 return null;
             }
+
             listener.Disable();
             return listener;
         }

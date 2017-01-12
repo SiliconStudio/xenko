@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Input.Gestures;
 namespace SiliconStudio.Xenko.Input.Mapping
 {
     /// <summary>
-    /// An object that can respond to actions from various input gestures (keyboard,mouse,touch,gamepad,etc.)
+    /// An object that can respond to actions from various input gestures (keyboard, mouse, touch, gamepad, etc.)
     /// </summary>
     [DataContract]
     public abstract class InputAction
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
             set
             {
                 // Lock mapping name after being added to action mapping
-                if(ActionMapping != null) throw new InvalidOperationException("Can't change action name after it has been added to the action mapping");
+                if (ActionMapping != null) throw new InvalidOperationException("Can't change action name after it has been added to the action mapping");
                 mappingName = value; 
             }
         }
@@ -114,8 +114,9 @@ namespace SiliconStudio.Xenko.Input.Mapping
         {
             foreach (var rootGesture in ReadOnlyGestures)
             {
-                List<IInputGesture> gestures = new List<IInputGesture>();
+                var gestures = new List<IInputGesture>();
                 ((InputGestureBase)rootGesture).GetGesturesRecursive(gestures);
+
                 foreach (var gesture in gestures)
                 {
                     action(gesture);
@@ -141,23 +142,31 @@ namespace SiliconStudio.Xenko.Input.Mapping
 
             // Handles adding/removing new gestures to/from the action mapping when this action is registered as well
             var gesture = e.Item as InputGestureBase;
-            if (gesture == null) return; // This might happen when adding a new gesture in the GameStudio
-            if (ActionMapping == null) return;
+            if (gesture == null)
+                return; // This might happen when adding a new gesture in the GameStudio
+
+            if (ActionMapping == null)
+                return;
+
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     OnGestureAdded(gesture);
                     inputManager?.ActivatedGestures.Add(gesture);
                     break;
+
                 case NotifyCollectionChangedAction.Remove:
                     OnGestureRemoved(gesture);
                     inputManager?.ActivatedGestures.Remove(gesture);
                     break;
+
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Reset:
                     throw new NotSupportedException("Gestures collection was modified but the action was not supported by the system.");
+
                 case NotifyCollectionChangedAction.Move:
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

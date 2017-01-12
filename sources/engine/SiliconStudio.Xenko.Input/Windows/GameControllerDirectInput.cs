@@ -27,11 +27,12 @@ namespace SiliconStudio.Xenko.Input
         private readonly List<PovControllerInfo> povControllerInfos = new List<PovControllerInfo>();
         
         //private DirectInputGameController gamepad;
-        private DirectInputJoystick joystick;
+        private readonly DirectInputJoystick joystick;
         private DirectInputState state = new DirectInputState();
 
-        public GameControllerDirectInput(DirectInput directInput, DeviceInstance instance)
+        public GameControllerDirectInput(InputSourceWindowsDirectInput source, DirectInput directInput, DeviceInstance instance)
         {
+            Source = source;
             Name = instance.InstanceName.TrimEnd('\0');
             Id = instance.InstanceGuid;
             ProductId = instance.ProductGuid;
@@ -92,16 +93,23 @@ namespace SiliconStudio.Xenko.Input
             joystick.Dispose();
             if (Disconnected == null)
                 throw new InvalidOperationException("Something should handle controller disconnect");
+
             Disconnected.Invoke(this, null);
         }
 
         public override string Name { get; }
+
         public override Guid Id { get; }
+
         public override Guid ProductId { get; }
 
         public override IReadOnlyList<GameControllerButtonInfo> ButtonInfos => buttonInfos;
+
         public override IReadOnlyList<GameControllerAxisInfo> AxisInfos => axisInfos;
+
         public override IReadOnlyList<PovControllerInfo> PovControllerInfos => povControllerInfos;
+
+        public override IInputSource Source { get; }
 
         public event EventHandler Disconnected;
 
@@ -112,10 +120,12 @@ namespace SiliconStudio.Xenko.Input
                 joystick.Acquire();
                 joystick.Poll();
                 joystick.GetCurrentState(ref state);
+
                 for (int i = 0; i < buttonInfos.Count; i++)
                 {
                     HandleButton(i, state.Buttons[i]);
                 }
+
                 for (int i = 0; i < axisInfos.Count; i++)
                 {
                     HandleAxis(i, GameControllerUtils.ClampDeadZone(state.Axes[axisInfos[i].Offset] * 2.0f - 1.0f, InputManager.GameControllerAxisDeadZone));

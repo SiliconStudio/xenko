@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Input
     {
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f / InputManager.DesiredSensorUpdateRate * 1000f);
 
-        private Dictionary<Gamepad, GamePadUWP> gamePads = new Dictionary<Gamepad, GamePadUWP>();
+        private readonly Dictionary<Gamepad, GamePadUWP> gamePads = new Dictionary<Gamepad, GamePadUWP>();
 
         private WindowsAccelerometer windowsAccelerometer;
         private WindowsCompass windowsCompass;
@@ -50,14 +50,14 @@ namespace SiliconStudio.Xenko.Input
             var mouseCapabilities = new MouseCapabilities();
             if (mouseCapabilities.MousePresent > 0)
             {
-                pointer = new PointerUWP(uiControl);
+                pointer = new PointerUWP(this, uiControl);
                 RegisterDevice(pointer);
             }
 
             var keyboardCapabilities = new KeyboardCapabilities();
             if (keyboardCapabilities.KeyboardPresent > 0)
             {
-                keyboard = new KeyboardUWP(inputManager.Game, uiControl);
+                keyboard = new KeyboardUWP(this, inputManager.Game, uiControl);
                 RegisterDevice(keyboard);
             }
 
@@ -65,33 +65,36 @@ namespace SiliconStudio.Xenko.Input
             windowsAccelerometer = WindowsAccelerometer.GetDefault();
             if (windowsAccelerometer != null)
             {
-                accelerometer = new NamedAccelerometerSensor("UWP");
+                accelerometer = new NamedAccelerometerSensor(this, "UWP");
                 RegisterDevice(accelerometer);
             }
+
             windowsCompass = WindowsCompass.GetDefault();
             if (windowsCompass != null)
             {
-                compass = new NamedCompassSensor("UWP");
+                compass = new NamedCompassSensor(this, "UWP");
                 RegisterDevice(compass);
             }
+
             windowsGyroscope = WindowsGyroscope.GetDefault();
             if (windowsGyroscope != null)
             {
-                gyroscope = new NamedGyroscopeSensor("UWP");
+                gyroscope = new NamedGyroscopeSensor(this, "UWP");
                 RegisterDevice(gyroscope);
             }
+
             windowsOrientation = WindowsOrientation.GetDefault();
             if (windowsOrientation != null)
             {
-                orientation = new NamedOrientationSensor("UWP");
+                orientation = new NamedOrientationSensor(this, "UWP");
                 RegisterDevice(orientation);
             }
 
             // Virtual sensors
             if (windowsOrientation != null && windowsAccelerometer != null)
             {
-                gravity = new NamedGravitySensor("UWP");
-                userAcceleration = new NamedUserAccelerationSensor("UWP");
+                gravity = new NamedGravitySensor(this, "UWP");
+                userAcceleration = new NamedUserAccelerationSensor(this, "UWP");
                 RegisterDevice(gravity);
                 RegisterDevice(userAcceleration);
             }
@@ -127,7 +130,7 @@ namespace SiliconStudio.Xenko.Input
             if (gamePads.ContainsKey(gamepad))
                 return;
 
-            GamePadUWP newGamePad = new GamePadUWP(gamepad, Guid.NewGuid());
+            GamePadUWP newGamePad = new GamePadUWP(this, gamepad, Guid.NewGuid());
             gamePads.Add(gamepad, newGamePad);
             RegisterDevice(newGamePad);
         }
@@ -141,62 +144,61 @@ namespace SiliconStudio.Xenko.Input
             {
                 bool enable = accelerometer.IsEnabled || (userAcceleration?.IsEnabled ?? false) || (gravity?.IsEnabled ?? false);
                 bool isEnabled = windowsAccelerometer.ReportInterval != 0;
+
                 if (enable != isEnabled)
                 {
-                    if (enable)
-                        windowsAccelerometer.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval);
-                    else
-                        windowsAccelerometer.ReportInterval = 0;
+                    windowsAccelerometer.ReportInterval = enable ? Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval) : 0;
                 }
+
                 if (enable)
                 {
-                    accelerometer.AccelerationInternal = GetAcceleration(windowsAccelerometer);
+                    accelerometer.Acceleration = GetAcceleration(windowsAccelerometer);
                 }
             }
+
             if (compass != null)
             {
                 bool enable = compass.IsEnabled;
                 bool isEnabled = windowsCompass.ReportInterval != 0;
+
                 if (enable != isEnabled)
                 {
-                    if (enable)
-                        windowsCompass.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsCompass.MinimumReportInterval);
-                    else
-                        windowsCompass.ReportInterval = 0;
+                    windowsCompass.ReportInterval = enable ? Math.Max(DesiredSensorUpdateIntervalMs, windowsCompass.MinimumReportInterval) : 0;
                 }
+
                 if (enable)
                 {
-                    compass.HeadingInternal = GetNorth(windowsCompass);
+                    compass.Heading = GetNorth(windowsCompass);
                 }
             }
+
             if (gyroscope != null)
             {
                 bool enable = gyroscope.IsEnabled;
                 bool isEnabled = windowsGyroscope.ReportInterval != 0;
+
                 if (enable != isEnabled)
                 {
-                    if (enable)
-                        windowsGyroscope.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsGyroscope.MinimumReportInterval);
-                    else
-                        windowsGyroscope.ReportInterval = 0;
+                    windowsGyroscope.ReportInterval = enable ? Math.Max(DesiredSensorUpdateIntervalMs, windowsGyroscope.MinimumReportInterval) : 0;
                 }
+
                 if (enable)
                 {
                     var reading = windowsGyroscope.GetCurrentReading();
-                    gyroscope.RotationRateInternal = reading != null ? new Vector3((float)reading.AngularVelocityX, (float)reading.AngularVelocityZ, -(float)reading.AngularVelocityY) : Vector3.Zero;
+                    gyroscope.RotationRate = reading != null ? new Vector3((float)reading.AngularVelocityX, (float)reading.AngularVelocityZ, -(float)reading.AngularVelocityY) : Vector3.Zero;
                 }
             }
+
             if (orientation != null)
             {
                 bool enable = orientation.IsEnabled || (userAcceleration?.IsEnabled ?? false) || (gravity?.IsEnabled ?? false);
                 bool isEnabled = windowsOrientation.ReportInterval != 0;
+
                 if (enable != isEnabled)
                 {
-                    if (enable)
-                        windowsOrientation.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval);
-                    else
-                        windowsOrientation.ReportInterval = 0;
+                    windowsOrientation.ReportInterval = enable ? Math.Max(DesiredSensorUpdateIntervalMs, windowsOrientation.MinimumReportInterval) : 0;
                 }
+
                 if (enable)
                 {
                     var quaternion = GetOrientation(windowsOrientation);
@@ -209,8 +211,8 @@ namespace SiliconStudio.Xenko.Input
                         var gravityDirection = Vector3.Transform(-Vector3.UnitY, Quaternion.Invert(quaternion));
                         var gravity = InputManager.G * gravityDirection;
 
-                        this.gravity.VectorInternal = gravity;
-                        userAcceleration.AccelerationInternal = acceleration - gravity;
+                        this.gravity.Vector = gravity;
+                        userAcceleration.Acceleration = acceleration - gravity;
                     }
                 }
             }
@@ -219,6 +221,7 @@ namespace SiliconStudio.Xenko.Input
         public override void Pause()
         {
             base.Pause();
+
             if (windowsAccelerometer != null)
                 windowsAccelerometer.ReportInterval = 0;
 

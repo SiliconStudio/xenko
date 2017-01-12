@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Input
                 serializer.Write(typeof(IInputDevice).GetHashCode());
                 serializer.Write(name);
             }
+
             return writer.CurrentHash.ToGuid();
         }
     }

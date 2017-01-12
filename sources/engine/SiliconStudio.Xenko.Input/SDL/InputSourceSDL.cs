@@ -23,6 +23,28 @@ namespace SiliconStudio.Xenko.Input
         private KeyboardSDL keyboard;
         private InputManager inputManager;
 
+        public override void Initialize(InputManager inputManager)
+        {
+            this.inputManager = inputManager;
+            context = inputManager.Game.Context as GameContext<Window>;
+            uiControl = context.Control;
+
+            SDL.SDL_InitSubSystem(SDL.SDL_INIT_JOYSTICK);
+
+            mouse = new MouseSDL(this, inputManager.Game, uiControl);
+            keyboard = new KeyboardSDL(this, uiControl);
+
+            RegisterDevice(mouse);
+            RegisterDevice(keyboard);
+
+            // Scan for gamepads
+            Scan();
+
+            // Handle future device changes
+            uiControl.JoystickDeviceAdded += UIControlOnJoystickDeviceAdded;
+            uiControl.JoystickDeviceRemoved += UIControlOnJoystickDeviceRemoved;
+        }
+        
         public override void Dispose()
         {
             // Stop handling device changes
@@ -41,28 +63,6 @@ namespace SiliconStudio.Xenko.Input
             base.Dispose();
         }
 
-        public override void Initialize(InputManager inputManager)
-        {
-            this.inputManager = inputManager;
-            context = inputManager.Game.Context as GameContext<Window>;
-            uiControl = context.Control;
-
-            SDL.SDL_InitSubSystem(SDL.SDL_INIT_JOYSTICK);
-
-            mouse = new MouseSDL(inputManager.Game, uiControl);
-            keyboard = new KeyboardSDL(uiControl);
-
-            RegisterDevice(mouse);
-            RegisterDevice(keyboard);
-
-            // Scan for gamepads
-            Scan();
-
-            // Handle future device changes
-            uiControl.JoystickDeviceAdded += UIControlOnJoystickDeviceAdded;
-            uiControl.JoystickDeviceRemoved += UIControlOnJoystickDeviceRemoved;
-        }
-        
         public override void Update()
         {
             // Notify event listeners of device removals
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Input
             if (joystickInstanceIdToDeviceId.ContainsKey(GetJoystickInstanceId(deviceIndex)))
                 throw new InvalidOperationException($"SDL GameController already opened {deviceIndex}/{joystickId}/{joystickName}");
 
-            var controller = new GameControllerSDL(deviceIndex);
+            var controller = new GameControllerSDL(this, deviceIndex);
 
             IInputDevice resultingDevice = controller;
 
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Input
             if (layout != null)
             {
                 // Create a gamepad wrapping around the controller
-                var gamePad = new GamePadSDL(inputManager, controller, layout);
+                var gamePad = new GamePadSDL(this, inputManager, controller, layout);
                 resultingDevice = gamePad; // Register gamepad instead
             }
 

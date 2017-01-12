@@ -14,19 +14,18 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class KeyboardWinforms : KeyboardDeviceBase, ITextInputDevice, IDisposable
     {
-        private InputSourceWinforms source;
-        private Control uiControl;
+        private readonly Control uiControl;
         private readonly List<TextInputEvent> textEvents = new List<TextInputEvent>();
 
         // Hack that uses a text box to receive IME text input
-        private RichTextBox richTextBox;
-        private Win32Native.WndProc myWndProc;
-        private IntPtr oldWndProc;
+        private readonly RichTextBox richTextBox;
+        private readonly IntPtr oldWndProc;
+
         private bool textInputEnabled;
 
         public KeyboardWinforms(InputSourceWinforms source, Control uiControl)
         {
-            this.source = source;
+            Source = source;
             this.uiControl = uiControl;
 
             richTextBox = new RichTextBox
@@ -34,9 +33,9 @@ namespace SiliconStudio.Xenko.Input
                 Location = new Point(-100, -100),
                 Size = new Size(80, 80)
             };
+
             // Move so it is not in view
-            myWndProc = WndProc;
-            var windowProc = Marshal.GetFunctionPointerForDelegate(myWndProc);
+            var windowProc = Marshal.GetFunctionPointerForDelegate((Win32Native.WndProc)WndProc);
             oldWndProc = Win32Native.SetWindowLong(richTextBox.Handle, Win32Native.WindowLongType.WndProc, windowProc);
         }
 
@@ -46,7 +45,10 @@ namespace SiliconStudio.Xenko.Input
         }
 
         public override string Name => "Windows Keyboard";
+
         public override Guid Id => new Guid("027cf994-681f-4ed5-b38f-ce34fc295b8f");
+
+        public override IInputSource Source { get; }
 
         public override void Update(List<InputEvent> inputEvents)
         {
@@ -95,6 +97,7 @@ namespace SiliconStudio.Xenko.Input
                 // Filter out characters that do not belong in text input
                 string inputString = richTextBox.Text;
                 inputString = inputString.Replace("\r", "").Replace("\n", "").Replace("\t", "");
+
                 if (inputString.Length > 0)
                 {
                     var compEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
@@ -105,6 +108,7 @@ namespace SiliconStudio.Xenko.Input
                     textEvents.Add(compEvent);
                 }
             }
+
             richTextBox.Text = "";
         }
 
@@ -114,6 +118,7 @@ namespace SiliconStudio.Xenko.Input
             {
                 case 0x118: // Cursor blink message
                     return new IntPtr(0);
+
                 case Win32Native.WM_KEYDOWN:
                 case Win32Native.WM_SYSKEYDOWN:
                     if (richTextBox.TextLength == 0)
@@ -130,12 +135,15 @@ namespace SiliconStudio.Xenko.Input
                             return new IntPtr(0); // Swallow some keys when the text box is empty to prevent ding sound
                     }
                     break;
+
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
                     break;
+
                 case Win32Native.WM_IME_COMPOSITION:
                     OnComposition(hWnd, (int)lParam);
                     break;
+
                 case Win32Native.WM_NCPAINT:
                 case Win32Native.WM_PAINT:
                     var paintStruct = new Win32Native.PAINTSTRUCT();
@@ -150,10 +158,12 @@ namespace SiliconStudio.Xenko.Input
         {
             int len = Win32Native.ImmGetCompositionString(context, type, IntPtr.Zero, 0);
             byte[] data = new byte[len];
+
             fixed (byte* dataPtr = data)
             {
                 Win32Native.ImmGetCompositionString(context, type, new IntPtr(dataPtr), len);
             }
+
             return Encoding.Unicode.GetString(data);
         }
 
@@ -171,12 +181,13 @@ namespace SiliconStudio.Xenko.Input
                 textEvents.Add(compEvent);
                 return;
             }
+
             if ((lParam & Win32Native.GCS_COMPSTR) != 0)
             {
                 // Update the composition string
                 var context = Win32Native.ImmGetContext(hWnd);
 
-                string compString = GetCompositionString(context, Win32Native.GCS_COMPSTR);
+                var compString = GetCompositionString(context, Win32Native.GCS_COMPSTR);
 
                 compEvent = InputEventPool<TextInputEvent>.GetOrCreate(this);
                 compEvent.Type = TextInputEventType.Composition;

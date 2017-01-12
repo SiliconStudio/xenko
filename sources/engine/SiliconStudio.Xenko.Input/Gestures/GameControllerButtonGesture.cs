@@ -13,38 +13,29 @@ namespace SiliconStudio.Xenko.Input.Gestures
     [Display("Controller Button")]
     public class GameControllerButtonGesture : ButtonGestureBase, IInputEventListener<GameControllerButtonEvent>, IGameControllerGesture
     {
-        /// <summary>
-        /// The index of the axis to use
-        /// </summary>
-        public int ButtonIndex = 0;
-
-        /// <summary>
-        /// Id of the controller to watch
-        /// </summary>
-        private Guid controllerId;
-
         public GameControllerButtonGesture()
         {
         }
 
-        public GameControllerButtonGesture(int buttonIndex, Guid controllerId)
-        {
-            ButtonIndex = buttonIndex;
-            this.controllerId = controllerId;
-        }
+        /// <summary>
+        /// The index of the axis to use
+        /// </summary>
+        public int ButtonIndex { get; set; }
 
         /// <summary>
         /// Id of the controller to watch
         /// </summary>
-        public Guid ControllerId
+        public Guid ControllerId { get; set; }
+
+        public GameControllerButtonGesture(int buttonIndex, Guid controllerId)
         {
-            get { return controllerId; }
-            set { controllerId = value; }
+            ButtonIndex = buttonIndex;
+            ControllerId = controllerId;
         }
 
         public void ProcessEvent(GameControllerButtonEvent inputEvent)
         {
-            if (inputEvent.GameController.Id == controllerId || controllerId == Guid.Empty)
+            if (inputEvent.GameController.Id == ControllerId || ControllerId == Guid.Empty)
             {
                 if (inputEvent.Index == ButtonIndex)
                     UpdateButton(inputEvent.State, inputEvent.Device);
@@ -53,12 +44,12 @@ namespace SiliconStudio.Xenko.Input.Gestures
 
         public override string ToString()
         {
-            return $"{nameof(ButtonIndex)}: {ButtonIndex}, {nameof(controllerId)}: {controllerId}, {base.ToString()}";
+            return $"{nameof(ButtonIndex)}: {ButtonIndex}, {nameof(ControllerId)}: {ControllerId}, {base.ToString()}";
         }
 
         protected bool Equals(GameControllerButtonGesture other)
         {
-            return ButtonIndex == other.ButtonIndex && controllerId.Equals(other.controllerId);
+            return ButtonIndex == other.ButtonIndex && ControllerId.Equals(other.ControllerId);
         }
 
         public override bool Equals(object obj)
@@ -73,7 +64,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
         {
             unchecked
             {
-                return (ButtonIndex * 397) ^ controllerId.GetHashCode();
+                return (ButtonIndex * 397) ^ ControllerId.GetHashCode();
             }
         }
     }
