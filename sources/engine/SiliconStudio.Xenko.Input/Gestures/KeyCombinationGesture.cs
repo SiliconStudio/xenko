@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Represents a key combination, such as Alt+F4, Ctrl+Shift+4, etc.
     /// </summary>
     [DataContract]
+    [Display("Key Combination")]
     public class KeyCombinationGesture : ButtonGestureBase, IInputEventListener<KeyEvent>
     {
         /// <summary>

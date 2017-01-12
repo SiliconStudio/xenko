@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A gesture that generates a direction from mouse X and Y movement
     /// </summary>
     [DataContract]
+    [Display("Mouse Movement")]
     public class MouseMovementGesture : DirectionGestureBase, IInputEventListener<PointerEvent>
     {
         private Vector2 lastValue = Vector2.Zero;

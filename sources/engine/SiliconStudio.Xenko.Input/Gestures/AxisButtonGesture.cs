@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A button gesture generated from an <see cref="IAxisGesture"/>, with a customizable threshold
     /// </summary>
     [DataContract]
+    [Display("Axis to Button")]
     public class AxisButtonGesture : ButtonGestureBase
     {
         /// <summary>

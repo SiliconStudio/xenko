@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A gesture that responds to movement of a a single mouse mouse axis
     /// </summary>
     [DataContract]
+    [Display("Mouse Axis")]
     public class MouseAxisGesture : AxisGestureBase, IInputEventListener<PointerEvent>, IInputEventListener<MouseWheelEvent>
     {
         private float lastValue = 0.0f;

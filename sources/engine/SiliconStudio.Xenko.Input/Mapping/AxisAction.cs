@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// An action that generates a floating point value in the range -1 to 1
     /// </summary>
     [DataContract]
+    [Display("Axis")]
     public class AxisAction : InputAction
     {
         private readonly List<AxisGestureEventArgs> events = new List<AxisGestureEventArgs>();

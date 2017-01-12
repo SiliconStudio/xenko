@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Represents a single keyboard key
     /// </summary>
     [DataContract]
+    [Display("Key")]
     public class KeyGesture : ButtonGestureBase, IInputEventListener<KeyEvent>
     {
         /// <summary>

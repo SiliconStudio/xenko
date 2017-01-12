@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A direction or a 0-1 value generated from a gamepad pov controller
     /// </summary>
     [DataContract]
+    [Display("Point-of-view Switch")]
     public class PovControllerGesture : DirectionGestureBase, IInputEventListener<PovControllerEvent>, IGameControllerGesture
     {
         /// <summary>

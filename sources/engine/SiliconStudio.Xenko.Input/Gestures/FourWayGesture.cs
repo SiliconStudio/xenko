@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A direction gesture generated from 2 <see cref="IAxisGesture"/>s (X and Y axis)
     /// </summary>
     [DataContract]
+    [Display("Axes to Direction")]
     public class FourWayGesture : DirectionGestureBase
     {
         private IAxisGesture y;

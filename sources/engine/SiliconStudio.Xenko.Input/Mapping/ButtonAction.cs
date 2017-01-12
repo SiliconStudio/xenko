@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// An action that triggers on a certain condition
     /// </summary>
     [DataContract]
+    [Display("Button")]
     public class ButtonAction : InputAction
     {
         private readonly List<ButtonGestureEventArgs> events = new List<ButtonGestureEventArgs>();

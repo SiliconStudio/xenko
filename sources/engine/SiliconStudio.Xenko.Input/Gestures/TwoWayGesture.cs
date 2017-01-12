@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A virtual axis that is calculated from a negative and positive button
     /// </summary>
     [DataContract]
+    [Display("Positive & Negative Axes")]
     public class TwoWayGesture : AxisGestureBase
     {
         private IButtonGesture positive;

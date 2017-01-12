@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Input.Mapping
     /// An action that generates a direction and velocity
     /// </summary>
     [DataContract]
+    [Display("Direction")]
     public class DirectionAction : InputAction
     {
         private readonly List<DirectionGestureEventArgs> events = new List<DirectionGestureEventArgs>();

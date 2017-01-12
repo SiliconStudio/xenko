@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A button gesture generated from a game controller button press
     /// </summary>
     [DataContract]
+    [Display("Controller Button")]
     public class GameControllerButtonGesture : ButtonGestureBase, IInputEventListener<GameControllerButtonEvent>, IGameControllerGesture
     {
         /// <summary>

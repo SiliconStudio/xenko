@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// A gesture that detects a mouse button being pressed or released
     /// </summary>
     [DataContract]
+    [Display("Mouse Button")]
     public class MouseButtonGesture : ButtonGestureBase, IInputEventListener<MouseButtonEvent>
     {
         /// <summary>

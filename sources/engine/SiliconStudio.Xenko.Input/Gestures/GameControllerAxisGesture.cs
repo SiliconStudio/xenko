@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Input.Gestures
     /// Represents a game controller axis reading
     /// </summary>
     [DataContract]
+    [Display("Controller Axis")]
     public class GameControllerAxisGesture : AxisGestureBase, IInputEventListener<GameControllerAxisEvent>, IGameControllerGesture
     {
         /// <summary>
