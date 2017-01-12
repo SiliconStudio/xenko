@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     {
         public RenderStage RenderStage;
 
-        public override void Collect(RenderContext context)
+        protected override void CollectCore(RenderContext context)
         {
             // Fill RenderStage formats
             RenderStage.Output = context.RenderOutputs.Peek();

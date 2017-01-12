@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             shadowMapRenderer = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
         }
 
-        public override void Collect(RenderContext context)
+        protected override void CollectCore(RenderContext context)
         {
             // Mark this view as requiring shadows
             shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);

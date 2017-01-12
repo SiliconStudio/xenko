@@ -31,7 +31,18 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         }
 
         /// <inheritdoc/>
-        public virtual void Collect(RenderContext renderContext)
+        public void Collect(RenderContext context)
+        {
+            EnsureContext(context);
+
+            CollectCore(context);
+        }
+
+        /// <summary>
+        /// Main collect method.
+        /// </summary>
+        /// <param name="renderContext"></param>
+        protected virtual void CollectCore(RenderContext renderContext)
         {
         }
     }

@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public List<ISceneRenderer> PostGizmoCompositors { get; } = new List<ISceneRenderer>();
 
-        public override void Collect(RenderContext context)
+        protected override void CollectCore(RenderContext context)
         {
             context.RenderView = TopLevel.MainRenderView;
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMemberIgnore]
         public RenderView MainRenderView { get; } = new RenderView();
 
-        public override void Collect(RenderContext context)
+        protected override void CollectCore(RenderContext context)
         {
             context.RenderSystem.Views.Add(MainRenderView);
             context.RenderView = MainRenderView;
@@ -108,9 +108,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public ISceneRenderer Child { get; set; }
 
-        public override void Collect(RenderContext renderContext)
+        protected override void CollectCore(RenderContext renderContext)
         {
-            base.Collect(renderContext);
+            base.CollectCore(renderContext);
 
             renderContext.RenderSystem.Views.Add(MainRenderView);
 
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         public Color4 ClearColor { get; set; } = Color.Green;
 
-        public override void Collect(RenderContext context)
+        protected override void CollectCore(RenderContext context)
         {
             if (PostEffects != null)
             {
@@ -247,9 +247,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     {
         public List<ISceneRenderer> Children { get; } = new List<ISceneRenderer>();
 
-        public override void Collect(RenderContext renderContext)
+        protected override void CollectCore(RenderContext renderContext)
         {
-            base.Collect(renderContext);
+            base.CollectCore(renderContext);
 
             foreach (var child in Children)
                 child.Collect(renderContext);
