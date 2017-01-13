@@ -44,6 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();
                 if (nodeLinkComponent != null)
                 {
+                    nodeLinkComponent.ValidityCheck();
                     if (!nodeLinkComponent.IsValid)
                     {
                         result.Warning($"The Model Node Link between {entityData.Entity.Name} and {nodeLinkComponent.Target?.Entity.Name} is invalid.");

@@ -14,16 +14,18 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(1500)]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
-        private ModelComponent internalTarget;
-        private ModelComponent target;
+        public void ValidityCheck()
+        {
+            IsValid =   Target == null ||
+                        Entity == null ||
+                        (Target.Entity.Id != Entity.Id
+                        && RecurseCheckChildren(Entity.Transform.Children, Target.Entity.Transform)
+                        && CheckParent(Target.Entity.Transform)
+                        );
+        }
 
-        public bool IsValid => 
-            target == null || 
-            Entity == null || 
-            (target.Entity.Id != Entity.Id 
-            && RecurseCheckChildren(Entity.Transform.Children, target.Entity.Transform)
-            && CheckParent(target.Entity.Transform)
-            );
+        [DataMemberIgnore]
+        public bool IsValid { get; private set; }
 
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
@@ -33,19 +35,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The reference to the target entity to which attach the current entity. If null, parent will be used.</userdoc>
         [Display("Target (Parent if not set)")]
-        public ModelComponent Target
-        {
-            get { return target; }
-            set
-            {
-                internalTarget = value;
-                target = value;
-                if (!IsValid)
-                {
-                    target = null;
-                }
-            }
-        }
+        public ModelComponent Target { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the node.
@@ -92,11 +82,8 @@ namespace SiliconStudio.Xenko.Engine
 
         internal void OnHierarchyChanged(object sender, Entity entity)
         {
-            //currently this won't work with refs because the editor internally is using entity clones so ref comparison is useless
-            if (entity == null || entity.Id != internalTarget?.Entity.Id) return;
-
-            //possibly now it is fine to have a link
-            Target = internalTarget;
+            if (entity == null || entity.Id != Target?.Entity.Id) return;
+            ValidityCheck();
         }
     }
 }

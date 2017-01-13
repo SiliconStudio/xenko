@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Engine.Processors
         
         protected override void OnEntityComponentAdding(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
         {
-            component.Target = component.Target; //ugly but this will actually update the internal target
+            //populate the valid property
+            component.ValidityCheck();
 
             entity.Owner.HierarchyChanged += component.OnHierarchyChanged;
         }
@@ -36,27 +37,35 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public override void Draw(RenderContext context)
         {
             foreach (var item in ComponentDatas)
-            {
-                var entity = item.Key.Entity;
-                var modelNodeLink = item.Value;
+            {           
+                var entity = item.Key.Entity;              
                 var transformComponent = entity.Transform;
-                var transformLink = transformComponent.TransformLink as ModelNodeTransformLink;
-
-                // Try to use Target, otherwise Parent
-                var modelComponent = modelNodeLink.Target;
-                var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
-
-                // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
-                if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))
+                
+                if (item.Value.IsValid)
                 {
-                    // In case we use parent, modelComponent still needs to be resolved
-                    if (modelComponent == null)
-                        modelComponent = modelEntity?.Get<ModelComponent>();
+                    var modelNodeLink = item.Value;
+                    var transformLink = transformComponent.TransformLink as ModelNodeTransformLink;
 
-                    // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
-                    transformComponent.TransformLink = modelComponent != null ? 
-                        new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) 
-                        : null;
+                    // Try to use Target, otherwise Parent
+                    var modelComponent = modelNodeLink.Target;
+                    var modelEntity = modelComponent?.Entity ?? transformComponent.Parent?.Entity;
+
+                    // Check against Entity instead of ModelComponent to avoid having to get ModelComponent when nothing changed)
+                    if (transformLink == null || transformLink.NeedsRecreate(modelEntity, modelNodeLink.NodeName))
+                    {
+                        // In case we use parent, modelComponent still needs to be resolved
+                        if (modelComponent == null)
+                            modelComponent = modelEntity?.Get<ModelComponent>();
+
+                        // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
+                        transformComponent.TransformLink = modelComponent != null
+                            ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity)
+                            : null;
+                    }
+                }
+                else
+                {
+                    transformComponent.TransformLink = null;
                 }
             }
         }
