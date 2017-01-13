@@ -79,7 +79,6 @@ namespace SiliconStudio.Xenko.Engine
             return true;
         }
 
-
         internal void OnHierarchyChanged(object sender, Entity entity)
         {
             if (entity == null || entity.Id != Target?.Entity.Id) return;
