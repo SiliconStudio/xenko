@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using SiliconStudio.Quantum.Contents;
 
@@ -12,44 +13,21 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class NodeContainer : INodeContainer
     {
-        private readonly Dictionary<Guid, IGraphNode> nodesByGuid = new Dictionary<Guid, IGraphNode>();
-        private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
         private readonly ThreadLocal<HashSet<IGraphNode>> processedNodes = new ThreadLocal<HashSet<IGraphNode>>();
+        private ConditionalWeakTable<object, IGraphNode> nodesByObject = new ConditionalWeakTable<object, IGraphNode>();
         private NodeFactoryDelegate defaultNodeFactory = DefaultNodeFactory;
 
         /// <summary>
         /// Creates a new instance of <see cref="NodeContainer"/> class.
         /// </summary>
         public NodeContainer()
-            : this(new GuidContainer())
         {
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="NodeContainer"/> class. This constructor allows to provide a custom implementation
-        /// of <see cref="IGuidContainer"/> in order to share <see cref="Guid"/> of objects.
-        /// </summary>
-        /// <param name="guidContainer">A <see cref="IGuidContainer"/> to use to ensure the unicity of guid associated to data objects. Cannot be <c>null</c></param>
-        public NodeContainer(IGuidContainer guidContainer)
-        {
-            if (guidContainer == null) throw new ArgumentNullException(nameof(guidContainer));
-            this.guidContainer = guidContainer;
             NodeBuilder = CreateDefaultNodeBuilder();
         }
 
         /// <inheritdoc/>
         public INodeBuilder NodeBuilder { get; set; }
-
-        /// <summary>
-        /// Gets an enumerable of the registered nodes.
-        /// </summary>
-        public IEnumerable<IGraphNode> Nodes => nodesByGuid.Values;
-
-        /// <summary>
-        /// Gets an enumerable of the registered node guids.
-        /// </summary>
-        public IEnumerable<Guid> Guids => nodesByGuid.Keys;
 
         /// <inheritdoc/>
         public void OverrideNodeFactory(NodeFactoryDelegate nodeFactory)
@@ -126,8 +104,7 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                guidContainer?.Clear();
-                nodesByGuid.Clear();
+                nodesByObject = new ConditionalWeakTable<object, IGraphNode>();
             }
         }
 
@@ -140,13 +117,11 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                if (guidContainer == null) throw new InvalidOperationException("This NodeContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-                var guid = guidContainer.GetGuid(rootObject);
-                if (guid == Guid.Empty)
+                if (rootObject == null)
                     return null;
 
                 IGraphNode node;
-                nodesByGuid.TryGetValue(guid, out node);
+                nodesByObject.TryGetValue(rootObject, out node);
                 return node;
             }
         }
@@ -174,13 +149,12 @@ namespace SiliconStudio.Quantum
                         return result;
                 }
 
-                var guid = !rootObject.GetType().IsValueType ? guidContainer.GetOrCreateGuid(rootObject) : Guid.NewGuid();
-                result = NodeBuilder.Build(rootObject, guid, nodeFactory);
+                result = NodeBuilder.Build(rootObject, Guid.NewGuid(), nodeFactory);
 
                 if (result != null)
                 {
                     // Register reference objects
-                    nodesByGuid.Add(result.Guid, result);
+                    nodesByObject.Add(rootObject, result);
                     // Create or update nodes of referenced objects
                     UpdateReferencesInternal(result);
                 }

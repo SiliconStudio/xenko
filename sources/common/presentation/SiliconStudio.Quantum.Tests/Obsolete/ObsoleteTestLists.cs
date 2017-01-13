@@ -128,7 +128,6 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             }
 
             Assert.That(container.GetNode(obj.ClassList[0]), !Is.Null);
-            Assert.That(container.Guids.Count(), Is.EqualTo(18));
             Helper.ConsistencyCheck(container, obj);
         }
 
