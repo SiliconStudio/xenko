@@ -8,8 +8,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A collection of <see cref="IGraphicsRenderer"/>.
     /// </summary>
-    [DataContract("SceneRendererCollection")]
-    public sealed class SceneRendererCollection : GraphicsRendererCollection<ISceneRendererOld>, IRenderCollector
+    [DataContract("SceneRendererCollectionOld")]
+    public sealed class SceneRendererCollectionOld : GraphicsRendererCollection<ISceneRendererOld>, IRenderCollector
     {
         /// <inheritdoc/>
         public void Collect(RenderContext context)

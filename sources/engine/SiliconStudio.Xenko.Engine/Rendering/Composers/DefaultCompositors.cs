@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         }
     }
 
-    public partial class CompositeSceneRenderer : SceneRendererBase, IEnumerable<ISceneRenderer>
+    public partial class SceneRendererCollection : SceneRendererBase, IEnumerable<ISceneRenderer>
     {
         public List<ISceneRenderer> Children { get; } = new List<ISceneRenderer>();
 

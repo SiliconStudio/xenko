@@ -1577,7 +1577,7 @@
     <Compile Include="Rendering\Composers\SceneGraphicsLayerCollection.cs" />
     <Compile Include="Rendering\SceneEffectRenderer.cs" />
     <Compile Include="Rendering\SceneRendererBaseOld.cs" />
-    <Compile Include="Rendering\SceneRendererCollection.cs" />
+    <Compile Include="Rendering\SceneRendererCollectionOld.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />

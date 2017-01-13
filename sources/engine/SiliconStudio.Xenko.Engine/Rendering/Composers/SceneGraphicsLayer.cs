@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public SceneGraphicsLayer()
         {
             Output = CurrentRenderFrameProvider.Instance;
-            Renderers = new SceneRendererCollection();
+            Renderers = new SceneRendererCollectionOld();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMember(50)]
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        public SceneRendererCollection Renderers { get; private set; }
+        public SceneRendererCollectionOld Renderers { get; private set; }
 
         internal bool IsMaster { get; set; }
 
