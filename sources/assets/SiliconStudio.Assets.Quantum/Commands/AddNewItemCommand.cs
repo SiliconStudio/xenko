@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
 
-namespace SiliconStudio.Quantum.Commands
+namespace SiliconStudio.Assets.Quantum.Commands
 {
     /// <summary>
     /// This command construct a new item and add it to the list contained in the value of the node. In order to be used,
@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum.Commands
             if (memberDescriptor != null)
             {
                 var attrib = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<MemberCollectionAttribute>(memberDescriptor.MemberInfo);
-                if (attrib != null && attrib.ReadOnly)
+                if (attrib?.ReadOnly == true)
                     return false;
             }
             
@@ -41,7 +41,7 @@ namespace SiliconStudio.Quantum.Commands
                 return false;
 
             var elementType = collectionDescriptor.ElementType;
-            return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any() || elementType == typeof(string));
+            return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
         protected override void ExecuteSync(IContent content, Index index, object parameter)
@@ -50,23 +50,20 @@ namespace SiliconStudio.Quantum.Commands
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd = null;
-            // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
-            // TODO: Fix this for asset part types that are also references
-            if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
+
+            // First, check if parameter is an AbstractNodeEntry
+            var abstractNodeEntry = parameter as AbstractNodeEntry;
+            if (abstractNodeEntry != null)
             {
-                // If the parameter is a type instead of an instance, try to construct an instance of this type
-                var type = parameter as Type;
-                if (type?.GetConstructor(Type.EmptyTypes) != null)
-                    itemToAdd = Activator.CreateInstance(type);
+                itemToAdd = abstractNodeEntry.GenerateValue(null);
             }
-            else if (collectionDescriptor.ElementType == typeof(string))
-            {
-                itemToAdd = parameter ?? "";
-            }
+            // Otherwise, assume it's an object
             else
             {
-                itemToAdd = parameter ?? ObjectFactory.NewInstance(collectionDescriptor.ElementType);
+                var elementType = collectionDescriptor.ElementType;
+                itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
+
             if (index.IsEmpty)
             {
                 content.Add(itemToAdd);
@@ -79,5 +76,9 @@ namespace SiliconStudio.Quantum.Commands
                 collectionNode.Content.Add(itemToAdd);
             }
         }
+
+        private static bool CanConstruct(Type elementType) => !elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType == typeof(string);
+
+        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsAssetPartType(elementType) || AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
     }
 }

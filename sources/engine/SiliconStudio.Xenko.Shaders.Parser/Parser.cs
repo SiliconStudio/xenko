@@ -123,21 +123,26 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     if (constantBuffer != null)
                     {
                         var variables = new List<Node>();
-                        foreach (var variable in constantBuffer.Members.OfType<Variable>())
+                        for (var index = 0; index < constantBuffer.Members.Count; index++)
                         {
-                            foreach (var subVariable in variable.Instances())
+                            var variable = constantBuffer.Members[index] as Variable;
+                            if (variable != null)
                             {
-                                subVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
-                                if (variable.IsGroup && !ReferenceEquals(variable, subVariable))
+                                foreach (var subVariable in variable.Instances())
                                 {
-                                    subVariable.Qualifiers |= variable.Qualifiers;
-                                    subVariable.Attributes.AddRange(variable.Attributes);
-                                }
+                                    subVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer);
+                                    subVariable.SetTag(XenkoTags.ConstantBufferIndex, index);
+                                    if (variable.IsGroup && !ReferenceEquals(variable, subVariable))
+                                    {
+                                        subVariable.Qualifiers |= variable.Qualifiers;
+                                        subVariable.Attributes.AddRange(variable.Attributes);
+                                    }
 
-                                variables.Add(subVariable);
+                                    variables.Add(subVariable);
+                                }
                             }
                         }
-                    
+
                         members.AddRange(variables);
                     } 
                     else
