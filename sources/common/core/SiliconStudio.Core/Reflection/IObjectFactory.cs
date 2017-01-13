@@ -6,14 +6,14 @@ using System;
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
-    /// Interface to create default instance of a type.
+    /// Interface of a factory that can create instances of a type.
     /// </summary>
     public interface IObjectFactory
     {
         /// <summary>
-        /// Creates a new default instance of a type.
+        /// Creates a new instance of a type.
         /// </summary>
-        /// <param name="type">Type of the instance to create</param>
+        /// <param name="type">The type of the instance to create.</param>
         /// <returns>A new default instance of a type.</returns>
         object New(Type type);
     }
