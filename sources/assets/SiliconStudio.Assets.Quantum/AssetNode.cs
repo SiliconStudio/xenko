@@ -9,7 +9,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class AssetNode : GraphNode
+    public abstract class AssetNode : GraphNode
     {
         internal bool contentUpdating;
         private AssetPropertyGraph propertyGraph;
@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Quantum
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetNode(string name, IContent content, Guid guid)
+        protected AssetNode(string name, IContent content, Guid guid)
             : base(name, content, guid)
         {
             Content.PrepareChange += (sender, e) => contentUpdating = true;
@@ -661,6 +661,27 @@ namespace SiliconStudio.Assets.Quantum
             var result = CollectionItemIdHelper.TryGetCollectionItemIds(instance, out collectionItemIdentifiers);
             itemIds = collectionItemIdentifiers;
             return result;
+        }
+    }
+
+    public class AssetMemberNode : AssetNode
+    {
+        public AssetMemberNode(string name, IContent content, Guid guid) : base(name, content, guid)
+        {
+        }
+    }
+
+    public class AssetObjectNode : AssetNode
+    {
+        public AssetObjectNode(string name, IContent content, Guid guid) : base(name, content, guid)
+        {
+        }
+    }
+
+    public class AssetBoxedNode : AssetNode
+    {
+        public AssetBoxedNode(string name, IContent content, Guid guid) : base(name, content, guid)
+        {
         }
     }
 }

@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -44,7 +45,19 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
-            OverrideNodeFactory((name, content, guid) => new AssetNode(name, content, guid));
+            OverrideNodeFactory(AssetNodeFactory);
+        }
+
+        private static AssetNode AssetNodeFactory(string name, IContent content, Guid guid)
+        {
+            if (content is MemberContent)
+                return new AssetMemberNode(name, content, guid);
+            if (content is BoxedContent)
+                return new AssetBoxedNode(name, content, guid);
+            if (content is ObjectContent)
+                return new AssetObjectNode(name, content, guid);
+
+            throw new NotSupportedException();
         }
     }
 }
