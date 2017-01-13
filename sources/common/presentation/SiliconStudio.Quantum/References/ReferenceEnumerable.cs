@@ -188,7 +188,13 @@ namespace SiliconStudio.Quantum.References
                 if (!items2.TryGetValue(item.Key, out otherItem))
                     return false;
 
-                if (!otherItem.Equals(item.Value))
+                if (!otherItem.Index.Equals(item.Value.Index))
+                    return false;
+
+                if (otherItem.ObjectValue == null && item.Value.ObjectValue != null)
+                    return false;
+
+                if (otherItem.ObjectValue != null && !otherItem.ObjectValue.Equals(item.Value.ObjectValue))
                     return false;
             }
 
