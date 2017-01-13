@@ -16,9 +16,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             return component;
         }
-
+        
         protected override void OnEntityComponentAdding(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
         {
+            component.Target = component.Target; //ugly but this will actually update the internal target
+
             entity.Owner.HierarchyChanged += component.OnHierarchyChanged;
         }
 
@@ -52,7 +54,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
                         modelComponent = modelEntity?.Get<ModelComponent>();
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
-                    transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;
+                    transformComponent.TransformLink = modelComponent != null ? 
+                        new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) 
+                        : null;
                 }
             }
         }

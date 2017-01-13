@@ -14,7 +14,16 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(1500)]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
+        private ModelComponent internalTarget;
         private ModelComponent target;
+
+        public bool IsValid => 
+            target == null || 
+            Entity == null || 
+            (target.Entity.Id != Entity.Id 
+            && RecurseCheckChildren(Entity.Transform.Children, target.Entity.Transform)
+            && CheckParent(target.Entity.Transform)
+            );
 
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
@@ -26,14 +35,15 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Target (Parent if not set)")]
         public ModelComponent Target
         {
-            get
-            {
-                return target;
-            }
+            get { return target; }
             set
             {
-                if (value != null && Entity != null && (value.Entity == Entity || !RecurseCheckChildren(Entity.Transform.Children, value.Entity.Transform))) return;
+                internalTarget = value;
                 target = value;
+                if (!IsValid)
+                {
+                    target = null;
+                }
             }
         }
 
@@ -46,14 +56,32 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName { get; set; }
 
+        private bool CheckParent(TransformComponent targetTransform)
+        {
+            var parent = targetTransform.Parent;
+            while (parent != null)
+            {
+                if (targetTransform.Entity.Id == parent.Entity.Id)
+                {
+                    return false;
+                }
+
+                parent = parent.Parent;
+            }
+
+            return true;
+        }
+
         private bool RecurseCheckChildren(FastCollection<TransformComponent> children, TransformComponent targetTransform)
         {
             foreach (var transformComponentChild in children)
             {
+                if (transformComponentChild.Parent == null) continue; // skip this case, the parent has not updated it's list yet
+
                 if (!RecurseCheckChildren(transformComponentChild.Children, targetTransform))
                     return false;
 
-                if (targetTransform != transformComponentChild)
+                if (targetTransform.Entity.Id != transformComponentChild.Entity.Id)
                     continue;
 
                 return false;
@@ -61,26 +89,14 @@ namespace SiliconStudio.Xenko.Engine
             return true;
         }
 
+
         internal void OnHierarchyChanged(object sender, Entity entity)
         {
-            if (entity != Target.Entity) return;
+            //currently this won't work with refs because the editor internally is using entity clones so ref comparison is useless
+            if (entity == null || entity.Id != internalTarget?.Entity.Id) return;
 
-            //we want to either throw or clean the target if we target self or a child
-            var transformToCheck = entity.Transform;
-            var modelTransform = Target?.Entity.Transform;
-            if (modelTransform == null) return;
-
-            while (transformToCheck != null)
-            {
-                if (transformToCheck == modelTransform)
-                {
-                    Target = null;
-                    //todo throw exception or so when we finally have some feedback in the editor
-                    return;
-                }
-
-                transformToCheck = transformToCheck.Parent;
-            }
+            //possibly now it is fine to have a link
+            Target = internalTarget;
         }
     }
 }

@@ -1,8 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
+
+using System.Linq;
+using System.Threading.Tasks;
+using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Extensions;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -16,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private class SceneCommand : EntityHierarchyCommandBase
         {
             public SceneCommand(string url, SceneAsset parameters) : base(url, parameters)
-            {
+            {               
             }
 
             protected override PrefabBase Create(SceneAsset prefabAsset)
