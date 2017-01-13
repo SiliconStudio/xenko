@@ -30,24 +30,28 @@ namespace SiliconStudio.Assets.Quantum
             }
 
             var path = ConvertPath(currentPath, inNonIdentifiableType);
-            if (assetNode.IsContentOverridden())
+            var memberNode = assetNode as AssetMemberNode;
+            if (memberNode != null)
             {
-                Result.Add(path, assetNode.GetContentOverride());
-            }
+                if (memberNode.IsContentOverridden())
+                {
+                    Result.Add(path, memberNode.GetContentOverride());
+                }
 
-            foreach (var index in assetNode.GetOverriddenItemIndices())
-            {
-                var id = assetNode.IndexToId(index);
-                var itemPath = path.Clone();
-                itemPath.PushItemId(id);
-                Result.Add(itemPath, assetNode.GetItemOverride(index));
-            }
-            foreach (var index in assetNode.GetOverriddenKeyIndices())
-            {
-                var id = assetNode.IndexToId(index);
-                var itemPath = path.Clone();
-                itemPath.PushIndex(id);
-                Result.Add(itemPath, assetNode.GetKeyOverride(index));
+                foreach (var index in memberNode.GetOverriddenItemIndices())
+                {
+                    var id = memberNode.IndexToId(index);
+                    var itemPath = path.Clone();
+                    itemPath.PushItemId(id);
+                    Result.Add(itemPath, memberNode.GetItemOverride(index));
+                }
+                foreach (var index in memberNode.GetOverriddenKeyIndices())
+                {
+                    var id = memberNode.IndexToId(index);
+                    var itemPath = path.Clone();
+                    itemPath.PushIndex(id);
+                    Result.Add(itemPath, memberNode.GetKeyOverride(index));
+                }
             }
             base.VisitNode(node, currentPath);
 
@@ -77,13 +81,14 @@ namespace SiliconStudio.Assets.Quantum
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        if (inNonIdentifiableType > 0 || currentNode.IsNonIdentifiableCollectionContent)
+                        var memberNode = (AssetMemberNode)currentNode;
+                        if (inNonIdentifiableType > 0 || memberNode.IsNonIdentifiableCollectionContent)
                         {
                             result.PushIndex(index.Value);
                         }
                         else
                         {
-                            var id = currentNode.IndexToId(index);
+                            var id = memberNode.IndexToId(index);
                             // Create a new id if we don't have any so far
                             if (id == ItemId.Empty)
                                 id = ItemId.New();

@@ -51,8 +51,7 @@ namespace SiliconStudio.Assets.Quantum
             if (part != null)
             {
                 // We need to find out for which entity we are cloning this (other) entity
-                var multiContentNode = node as MultiContentNode;
-                var owner = (TAssetPartDesign)multiContentNode?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
+                var owner = (TAssetPartDesign)node?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
                 if (owner != null)
                 {
                     // Then instead of creating a clone, we just return the corresponding part in this asset (in term of base and base instance)

@@ -20,13 +20,13 @@ namespace SiliconStudio.Assets.Quantum
     {
         public struct NodeOverride
         {
-            public NodeOverride(AssetNode overriddenNode, Index overriddenIndex, OverrideTarget target)
+            public NodeOverride(AssetMemberNode overriddenNode, Index overriddenIndex, OverrideTarget target)
             {
                 Node = overriddenNode;
                 Index = overriddenIndex;
                 Target = target;
             }
-            public readonly AssetNode Node;
+            public readonly AssetMemberNode Node;
             public readonly Index Index;
             public readonly OverrideTarget Target;
         }
@@ -123,7 +123,7 @@ namespace SiliconStudio.Assets.Quantum
         public void ReconcileWithBase(AssetNode rootNode)
         {
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
             visitor.Visit(rootNode);
         }
 
@@ -175,7 +175,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 Index index;
                 bool overrideOnKey;
-                var node = rootNode.ResolveObjectPath(overrideInfo.Key, out index, out overrideOnKey);
+                var node = AssetNode.ResolveObjectPath(rootNode, overrideInfo.Key, out index, out overrideOnKey) as AssetMemberNode;
                 // The node is unreachable, skip this override.
                 if (node == null)
                     continue;
@@ -211,7 +211,10 @@ namespace SiliconStudio.Assets.Quantum
                 var visitor = new GraphVisitorBase { SkipRootNode = true };
                 visitor.Visiting += (node, path) =>
                 {
-                    var assetNode = (AssetNode)node;
+                    var assetNode = node as AssetMemberNode;
+                    if (assetNode == null)
+                        return;
+
                     if (assetNode.IsContentOverridden())
                     {
                         assetNode.OverrideContent(false);
@@ -295,7 +298,7 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetContentChanging(object sender, ContentChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetNode)e.Content.OwnerNode;
+            var node = (AssetMemberNode)e.Content.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
                 // For value change and remove, we store the current override state.
@@ -334,7 +337,7 @@ namespace SiliconStudio.Assets.Quantum
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (AssetNode)e.Content.OwnerNode;
+            var node = (AssetMemberNode)e.Content.OwnerNode;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
                 if (e.Index == Index.Empty)
@@ -360,7 +363,7 @@ namespace SiliconStudio.Assets.Quantum
             else
             {
                 // When deleting we are always overriding (unless there is no base)
-                overrideValue = !((AssetNode)node.BaseContent?.OwnerNode)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
+                overrideValue = !((AssetMemberNode)node.BaseContent?.OwnerNode)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
                 itemId = removedItemIds[e.Content.OwnerNode];
                 removedItemIds.Remove(e.Content.OwnerNode);
             }
@@ -379,19 +382,19 @@ namespace SiliconStudio.Assets.Quantum
             RefreshBase(baseGraph);
             var rootNode = (AssetNode)assetContent.OwnerNode;
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode((AssetNode)node);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
             visitor.Visit(rootNode);
             UpdatingPropertyFromBase = false;
 
             BaseContentChanged?.Invoke(e, assetContent);
         }
 
-        private void ReconcileWithBaseNode(AssetNode assetNode)
+        private void ReconcileWithBaseNode(AssetMemberNode assetNode)
         {
-            if (assetNode.Content is ObjectContent || assetNode.BaseContent == null || !assetNode.CanOverride)
+            if (assetNode?.BaseContent == null || !assetNode.CanOverride)
                 return;
 
-            var baseNode = (AssetNode)assetNode.BaseContent.OwnerNode;
+            var baseNode = (AssetMemberNode)assetNode.BaseContent.OwnerNode;
             var localValue = assetNode.Content.Retrieve();
             var baseValue = assetNode.BaseContent.Retrieve();
 
