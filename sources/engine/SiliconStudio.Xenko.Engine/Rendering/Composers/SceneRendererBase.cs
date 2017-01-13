@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     {
     }
 
-    public interface ISharedRenderer : IIdentifiable
+    public interface ISharedRenderer : IIdentifiable, IGraphicsRendererBase
     {
         string Name { get; }
     }
