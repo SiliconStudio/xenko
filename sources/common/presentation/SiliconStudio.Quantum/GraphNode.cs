@@ -66,6 +66,7 @@ namespace SiliconStudio.Quantum
         public IGraphNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
+            if (!(Content.Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
             return Content.Reference.AsEnumerable[index].TargetNode;
         }
 
