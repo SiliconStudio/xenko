@@ -346,6 +346,7 @@ namespace SiliconStudio.Core.Design.Tests
         {
             Assert.AreEqual("test", new UFile("test.txt").GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", new UFile("test.txt").GetFileExtension());
+            Assert.AreEqual(null, new UFile(".txt").GetFileNameWithoutExtension());
 
             Assert.AreEqual("test.another", new UFile("test.another.txt").GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", new UFile("test.another.txt").GetFileExtension());
