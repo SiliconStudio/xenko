@@ -48,7 +48,7 @@ namespace SiliconStudio.Quantum
                 {
                     foreach (var child in node.Children)
                     {
-                        if (ShouldVisitNode(child.Content as MemberContent, child))
+                        if (ShouldVisitNode(child, child))
                         {
                             string name = child.Name;
                             VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));

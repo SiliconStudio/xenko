@@ -15,8 +15,8 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentBase : IContentNode
     {
-        private readonly List<IContentNode> children = new List<IContentNode>();
-        private readonly HybridDictionary<string, IContentNode> childrenMap = new HybridDictionary<string, IContentNode>();
+        private readonly List<MemberContent> children = new List<MemberContent>();
+        private readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         private bool isSealed;
 
@@ -31,9 +31,6 @@ namespace SiliconStudio.Quantum.Contents
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
         }
-
-        /// <inheritdoc/>
-        public IContentNode OwnerNode => this;
 
         /// <inheritdoc/>
         public Type Type => Descriptor.Type;
@@ -72,13 +69,13 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode Target { get { if (!(Content.Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Content.Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IContentNode> Children => children;
+        public IReadOnlyCollection<MemberContent> Children => children;
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public IContentNode this[string name] => childrenMap[name];
+        public MemberContent this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
         public event EventHandler<ContentChangeEventArgs> PrepareChange;
@@ -195,7 +192,7 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         /// <param name="child">The child node to add.</param>
         /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
-        public void AddChild(ContentBase child, bool allowIfReference = false)
+        public void AddChild(MemberContent child, bool allowIfReference = false)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
@@ -236,9 +233,9 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public IContentNode TryGetChild(string name)
+        public MemberContent TryGetChild(string name)
         {
-            IContentNode child;
+            MemberContent child;
             childrenMap.TryGetValue(name, out child);
             return child;
         }

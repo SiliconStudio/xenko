@@ -39,7 +39,7 @@ namespace SiliconStudio.Quantum
         /// <param name="name">The name of the child to retrieves.</param>
         /// <returns>The child corresponding to the given name.</returns>
         /// <exception cref="KeyNotFoundException">This node has no child that matches the given name.</exception>
-        IContentNode this[string name] { get; }
+        MemberContent this[string name] { get; }
 
         /// <summary>
         /// Gets or sets the parent node.
@@ -49,7 +49,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets the children collection.
         /// </summary>
-        IReadOnlyCollection<IContentNode> Children { get; }
+        IReadOnlyCollection<MemberContent> Children { get; }
 
         /// <summary>
         /// Gets the target of this node, if this node contains a reference to another node. 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        IContentNode TryGetChild(string name);
+        MemberContent TryGetChild(string name);
 
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.

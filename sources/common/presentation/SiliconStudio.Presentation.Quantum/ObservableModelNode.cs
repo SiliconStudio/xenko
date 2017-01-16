@@ -358,9 +358,8 @@ namespace SiliconStudio.Presentation.Quantum
             // Node containing a single non-reference primitive object
             else
             {
-                foreach (var child in targetNode.Children)
+                foreach (var memberContent in targetNode.Children)
                 {
-                    var memberContent = (MemberContent)child.Content;
                     var descriptor = (MemberDescriptorBase)memberContent.Member;
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                     if (displayAttribute == null || displayAttribute.Browsable)
@@ -368,8 +367,8 @@ namespace SiliconStudio.Presentation.Quantum
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
-                            var childPath = targetNodePath.PushMember(child.Name);
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
+                            var childPath = targetNodePath.PushMember(memberContent.Name);
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, memberContent.Name, memberContent.Content.IsPrimitive, memberContent, childPath, memberContent.Content.Type, Index.Empty);
                             AddChild(observableChild);
                             observableChild.Initialize();
                         }

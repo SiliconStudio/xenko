@@ -79,7 +79,7 @@ namespace SiliconStudio.Quantum
             foreach (var child in node.Children)
             {
                 var childPath = currentPath.PushMember(child.Name);
-                if (ShouldVisitNode(child.Content as MemberContent, child))
+                if (ShouldVisitNode(child, child))
                 {
                     VisitNode(child, childPath);
                 }

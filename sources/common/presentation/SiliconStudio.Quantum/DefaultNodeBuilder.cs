@@ -168,7 +168,7 @@ namespace SiliconStudio.Quantum
             ContentBase containerNode = GetContextNode();
             var guid = Guid.NewGuid();
             IContentNode content = ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
-            var node = (ContentBase)content;
+            var node = (MemberContent)content;
             containerNode.AddChild(node);
 
             if (content.IsReference)
