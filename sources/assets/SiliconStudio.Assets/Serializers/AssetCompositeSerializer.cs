@@ -17,10 +17,12 @@ namespace SiliconStudio.Assets.Serializers
     [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class AssetCompositeSerializer : ObjectSerializer, IDataCustomVisitor
     {
+        // Exposed temporarily for the use of AssetCompositePartReferenceCollector
+        // TODO: Unify IDataCustomVisitor and AssetVisitorBase?
         /// <summary>
         /// Context containing information about asset parts being serialized.
         /// </summary>
-        private static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
+        internal static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
