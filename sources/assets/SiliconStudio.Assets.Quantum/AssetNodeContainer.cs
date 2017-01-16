@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Quantum
             OverrideNodeFactory(AssetNodeFactory);
         }
 
-        private static AssetNode AssetNodeFactory(string name, IContent content, Guid guid)
+        private static IAssetNode AssetNodeFactory(string name, IContent content, Guid guid)
         {
             if (content is MemberContent)
                 return new AssetMemberNode(name, content, guid);

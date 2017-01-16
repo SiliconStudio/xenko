@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var asset = new Types.MyAsset1 { MyString = "String" };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
+            Assert.IsAssignableFrom<IAssetNode>(graph.RootNode);
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
+            Assert.IsAssignableFrom<IAssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
             Assert.AreEqual(3, ids.KeyCount);
@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var asset = new Types.MyAsset7 { MyAsset2 = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } } };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
+            Assert.IsAssignableFrom<IAssetNode>(graph.RootNode);
             CollectionItemIdentifiers ids;
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyAsset2.MyStrings, out ids));
             Assert.AreEqual(3, ids.KeyCount);
@@ -64,7 +64,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(IdentifierGenerator.Get(200), ids[1]);
             Assert.AreEqual(IdentifierGenerator.Get(100), ids[2]);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            Assert.IsAssignableFrom<AssetNode>(graph.RootNode);
+            Assert.IsAssignableFrom<IAssetNode>(graph.RootNode);
             Assert.True(CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out ids));
             Assert.AreEqual(3, ids.KeyCount);
             Assert.AreEqual(0, ids.DeletedCount);

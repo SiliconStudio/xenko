@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
-        private readonly Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<AssetNode, EventHandler<ContentChangeEventArgs>>();
+        private readonly Dictionary<IAssetNode, EventHandler<ContentChangeEventArgs>> baseLinkedNodes = new Dictionary<IAssetNode, EventHandler<ContentChangeEventArgs>>();
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets.Quantum
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             Asset = assetItem.Asset;
-            RootNode = (AssetNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
+            RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides(RootNode, assetItem.Overrides);
             nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.Dispose();
         }
 
-        public AssetNode RootNode { get; }
+        public AssetObjectNode RootNode { get; }
 
         public AssetPropertyGraphContainer Container { get; }
 
@@ -121,7 +121,7 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(RootNode);
         }
 
-        public void ReconcileWithBase(AssetNode rootNode)
+        public void ReconcileWithBase(IAssetNode rootNode)
         {
             var visitor = CreateReconcilierVisitor();
             visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
@@ -133,7 +133,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="rootNode">The node for which to reset overrides.</param>
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
-        public void ResetOverride(AssetNode rootNode, Index indexToReset)
+        public void ResetOverride(IAssetNode rootNode, Index indexToReset)
         {
             var visitor = CreateReconcilierVisitor();
             visitor.SkipRootNode = true;
@@ -188,7 +188,7 @@ namespace SiliconStudio.Assets.Quantum
 
         // TODO: check if this can/should be turned private
         [CanBeNull]
-        public static AssetNode ResolveObjectPath([NotNull] AssetNode rootNode, [NotNull] YamlAssetPath path, out Index index, out bool overrideOnKey)
+        public static IAssetNode ResolveObjectPath([NotNull] IAssetNode rootNode, [NotNull] YamlAssetPath path, out Index index, out bool overrideOnKey)
         {
             var currentNode = rootNode;
             index = Index.Empty;
@@ -203,10 +203,10 @@ namespace SiliconStudio.Assets.Quantum
                         overrideOnKey = false;
                         if (currentNode.Content.IsReference)
                         {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
+                            currentNode = (IAssetNode)currentNode.Target;
                         }
                         string name = item.AsMember();
-                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
+                        currentNode = (IAssetNode)currentNode.TryGetChild(name);
                         break;
                     case YamlAssetPath.ItemType.Index:
                         index = new Index(item.Value);
@@ -214,7 +214,7 @@ namespace SiliconStudio.Assets.Quantum
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
                             Index index1 = new Index(item.Value);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
                         }
                         break;
                     case YamlAssetPath.ItemType.ItemId:
@@ -225,7 +225,7 @@ namespace SiliconStudio.Assets.Quantum
                         if (currentNode.Content.IsReference && i < path.Items.Count - 1)
                         {
                             Index index1 = new Index(key);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
                         }
                         break;
                     default:
@@ -249,7 +249,7 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.Result;
         }
 
-        public static void ApplyOverrides(AssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
+        public static void ApplyOverrides(IAssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
@@ -346,28 +346,50 @@ namespace SiliconStudio.Assets.Quantum
 
 
         // TODO: turn private
-        public void LinkToBase(AssetNode sourceRootNode, AssetNode targetRootNode)
+        public void LinkToBase(IAssetNode sourceRootNode, IAssetNode targetRootNode)
         {
-            baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((AssetNode)node)) && ShouldListenToTargetNode(member, node);
+            baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((IAssetNode)node)) && ShouldListenToTargetNode(member, node);
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
 
         // TODO: this method is should be called in every scenario of ReconcileWithBase, it is not the case yet.
-        protected virtual bool CanUpdate(AssetNode node, ContentChangeType changeType, Index index, object value)
+        protected virtual bool CanUpdate(IAssetNode node, ContentChangeType changeType, Index index, object value)
         {
             return true;
         }
 
-        protected internal virtual object CloneValueFromBase(object value, AssetNode node)
+        protected internal virtual object CloneValueFromBase(object value, IAssetNode node)
         {
-            return AssetNode.CloneFromBase(value);
+            return CloneFromBase(value);
+        }
+
+        /// <summary>
+        /// Clones the given object, remove any override information on it, and propagate its id (from <see cref="IdentifiableHelper"/>) to the cloned object.
+        /// </summary>
+        /// <param name="value">The object to clone.</param>
+        /// <returns>A clone of the given object.</returns>
+        /// <remarks>If the given object is null, this method returns null.</remarks>
+        /// <remarks>If the given object is a content reference, the given object won't be cloned but directly returned.</remarks>
+        private static object CloneFromBase(object value)
+        {
+            if (value == null)
+                return null;
+
+            // TODO: check if the cloner is aware of the content type (attached reference) and does not already avoid cloning them.
+
+            // TODO FIXME
+            //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
+            //    return value;
+
+            var result = AssetCloner.Clone(value);
+            return result;
         }
 
         private void LinkBaseNode(IGraphNode currentNode, IGraphNode baseNode)
         {
-            var assetNode = (AssetNode)currentNode;
-            assetNode.PropertyGraph = this;
-            assetNode.SetBase(baseNode?.Content);
+            var assetNode = (IAssetNode)currentNode;
+            ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
+            ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode?.Content);
             if (!baseLinkedNodes.ContainsKey(assetNode))
             {
                 EventHandler<ContentChangeEventArgs> action = null;
@@ -465,7 +487,7 @@ namespace SiliconStudio.Assets.Quantum
             UpdatingPropertyFromBase = true;
             // TODO: we want to refresh the base only starting from the modified node!
             RefreshBase(baseGraph);
-            var rootNode = (AssetNode)assetContent.OwnerNode;
+            var rootNode = (IAssetNode)assetContent.OwnerNode;
             var visitor = CreateReconcilierVisitor();
             visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
             visitor.Visit(rootNode);

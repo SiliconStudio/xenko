@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
-            var assetNode = (AssetNode)node;
+            var assetNode = (IAssetNode)node;
 
             bool localInNonIdentifiableType = false;
             if ((node.Content.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public static YamlAssetPath ConvertPath(GraphNodePath path, int inNonIdentifiableType)
         {
-            var currentNode = (AssetNode)path.RootNode;
+            var currentNode = (IAssetNode)path.RootNode;
             var result = new YamlAssetPath();
             var i = 0;
             foreach (var item in path.Path)
@@ -71,12 +71,12 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(member);
+                        currentNode = (IAssetNode)currentNode.TryGetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
+                            currentNode = (IAssetNode)currentNode.Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:
@@ -96,7 +96,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(index);
                         }
                         break;
                     default:

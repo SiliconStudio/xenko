@@ -45,7 +45,7 @@ namespace SiliconStudio.Quantum
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        public virtual IContent Content { get; }
+        public IContent Content { get; }
 
         /// <inheritdoc/>
         public virtual IGraphNode Parent { get; private set; }

@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum
             return base.FindTarget(sourceNode, target);
         }
 
-        protected internal override object CloneValueFromBase(object value, AssetNode node)
+        protected internal override object CloneValueFromBase(object value, IAssetNode node)
         {
             var part = value as TAssetPart;
             // Part reference

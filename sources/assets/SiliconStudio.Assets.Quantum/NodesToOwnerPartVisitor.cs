@@ -33,7 +33,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
-            var assetNode = node as AssetNode;
+            var assetNode = node as IAssetNode;
             assetNode?.SetContent(NodesToOwnerPartVisitor.OwnerPartContentName, partDesignNode.Content);
 
             base.VisitNode(node, currentPath);

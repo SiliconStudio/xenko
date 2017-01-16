@@ -227,8 +227,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            var basePropertyNode = (AssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (IAssetNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (IAssetNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
 
             derivedPropertyNode.Content.Add("String3.5", new Index(3));
             derivedPropertyNode.Content.Add("String1.5", new Index(1));

@@ -47,7 +47,7 @@ namespace SiliconStudio.Assets.Quantum
                     return targetNode.Content.Reference.AsObject;
                 }
 
-                var sourceAssetNode = (AssetNode)sourceNode;
+                var sourceAssetNode = (IAssetNode)sourceNode;
                 if ((sourceAssetNode as AssetMemberNode)?.IsNonIdentifiableCollectionContent ?? false)
                     return null;
 
