@@ -23,17 +23,13 @@ namespace SiliconStudio.Quantum
         /// Initializes a new instance of the <see cref="GraphNode"/> class.
         /// </summary>
         /// <param name="name">The name of this node.</param>
-        /// <param name="content">The content of this node.</param>
         /// <param name="guid">An unique identifier for this node.</param>
-        public GraphNode(string name, IContent content, Guid guid)
+        protected GraphNode(string name, Guid guid)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(content));
+            if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             Name = name;
             Guid = guid;
-
-            var updatableContent = content as ContentBase ?? this as ContentBase;
-            updatableContent?.RegisterOwner(this);
         }
 
         /// <inheritdoc/>
