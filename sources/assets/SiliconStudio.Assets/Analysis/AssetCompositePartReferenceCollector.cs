@@ -44,6 +44,19 @@ namespace SiliconStudio.Assets.Analysis
             context = null;
         }
 
+        public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+        {
+            var removeLastEnteredNode = context.EnterNode(member);
+            try
+            {
+                base.VisitObjectMember(container, containerDescriptor, member, value);
+            }
+            finally
+            {
+                context.LeaveNode(removeLastEnteredNode);
+            }
+        }
+
         /// <inheritdoc/>
         public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
         {
@@ -56,7 +69,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitObject(obj, descriptor, visitMembers);
             }
-            context.LeaveNode(descriptor.Type, shouldRemove);
+            context.LeaveNode(shouldRemove);
         }
     }
 }

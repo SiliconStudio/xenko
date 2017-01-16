@@ -43,5 +43,10 @@ namespace SiliconStudio.Assets.Serializers
         /// The default value is <see cref="IdentifiableAssetPartReference"/>.
         /// </remarks>
         public Type ReferenceType { get; set; } = typeof(IdentifiableAssetPartReference);
+
+        /// <summary>
+        /// A boolean that specifies if the type <see cref="ReferenceableType"/> is fully serialized when found at the top level. If set to false (default), <see cref="AssetPartContainedAttribute"/> will be necessary on containing members.
+        /// </summary>
+        public bool ExistsTopLevel { get; set; } = false;
     }
 }
