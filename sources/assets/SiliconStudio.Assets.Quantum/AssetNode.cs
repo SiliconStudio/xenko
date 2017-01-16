@@ -40,11 +40,6 @@ namespace SiliconStudio.Assets.Quantum
 
         public IContent BaseContent { get; private set; }
 
-        public bool HasContent(string key)
-        {
-            return contents.ContainsKey(key);
-        }
-
         public void SetContent(string key, IContent content)
         {
             contents[key] = content;
@@ -90,79 +85,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
         public virtual void ResetOverride(Index indexToReset)
         {
-            var visitor = PropertyGraph.CreateReconcilierVisitor();
-            visitor.SkipRootNode = true;
-            visitor.Visiting += (node, path) =>
-            {
-                var childNode = node as AssetMemberNode;
-                if (childNode == null)
-                    return;
-
-                childNode.OverrideContent(false);
-                foreach (var overrideItem in childNode.GetOverriddenItemIndices())
-                {
-                    childNode.OverrideItem(false, overrideItem);
-                }
-                foreach (var overrideKey in childNode.GetOverriddenKeyIndices())
-                {
-                    childNode.OverrideKey(false, overrideKey);
-                }
-            };
-            visitor.Visit(this);
-
-            PropertyGraph.ReconcileWithBase(this);
-        }
-
-        public static AssetNode ResolveObjectPath(AssetNode rootNode, YamlAssetPath path, out Index index, out bool overrideOnKey)
-        {
-            var currentNode = rootNode;
-            index = Index.Empty;
-            overrideOnKey = false;
-            for (var i = 0; i < path.Items.Count; i++)
-            {
-                var item = path.Items[i];
-                switch (item.Type)
-                {
-                    case YamlAssetPath.ItemType.Member:
-                        index = Index.Empty;
-                        overrideOnKey = false;
-                        if (currentNode.Content.IsReference)
-                        {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
-                        }
-                        string name = item.AsMember();
-                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
-                        break;
-                    case YamlAssetPath.ItemType.Index:
-                        index = new Index(item.Value);
-                        overrideOnKey = true;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
-                        {
-                            Index index1 = new Index(item.Value);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
-                        }
-                        break;
-                    case YamlAssetPath.ItemType.ItemId:
-                        var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
-                        var key = ids.GetKey(item.AsItemId());
-                        index = new Index(key);
-                        overrideOnKey = false;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
-                        {
-                            Index index1 = new Index(key);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                // Something wrong happen, the node is unreachable.
-                if (currentNode == null)
-                    return null;
-            }
-
-            return currentNode;
+            PropertyGraph.ResetOverride(this, indexToReset);
         }
     }
 
@@ -632,84 +555,6 @@ namespace SiliconStudio.Assets.Quantum
         internal Dictionary<ItemId, OverrideType> GetAllOverrides()
         {
             return itemOverrides;
-        }
-
-        // TODO: move this in AssetPropertyGraph as a private method, it's the only usage (could also be inlined or split in 3 methods)
-        internal Index RetrieveDerivedIndex(Index baseIndex, ContentChangeType changeType)
-        {
-            var baseMemberContent = BaseContent as MemberContent;
-            if (baseMemberContent == null)
-                return Index.Empty;
-
-            switch (changeType)
-            {
-                case ContentChangeType.ValueChange:
-                    {
-                        if (baseIndex.IsEmpty)
-                            return baseIndex;
-
-                        var baseNode = (AssetMemberNode)BaseContent.OwnerNode;
-                        ItemId baseId;
-                        if (!baseNode.TryIndexToId(baseIndex, out baseId))
-                            return Index.Empty;
-
-                        Index index;
-                        // Find the index of the item in this instance corresponding to the modified item in the base.
-                        return TryIdToIndex(baseId, out index) ? index : Index.Empty;
-                    }
-                case ContentChangeType.CollectionAdd:
-                    {
-                        if (baseIndex.IsEmpty)
-                            return Index.Empty;
-
-                        var baseNode = (AssetMemberNode)BaseContent.OwnerNode;
-                        ItemId baseId;
-                        if (!baseNode.TryIndexToId(baseIndex, out baseId))
-                            throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
-
-                        if (BaseContent.Descriptor is CollectionDescriptor)
-                        {
-                            var currentBaseIndex = baseIndex.Int - 1;
-                            // Find the first item before the new one that also exists (in term of id) in the local node
-                            while (currentBaseIndex >= 0)
-                            {
-                                if (!baseNode.TryIndexToId(new Index(currentBaseIndex), out baseId))
-                                    throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
-
-                                Index localIndex;
-                                // If we have an matching item, we want to insert right after it
-                                if (TryIdToIndex(baseId, out localIndex))
-                                    return new Index(localIndex.Int + 1);
-
-                                currentBaseIndex--;
-                            }
-                            // Otherwise, insert at 0
-                            return new Index(0);
-                        }
-                        return baseIndex;
-                    }
-                case ContentChangeType.CollectionRemove:
-                    {
-                        // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
-                        var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseMemberContent.Retrieve());
-                        var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(Content.Retrieve());
-                        var missingIds = baseIds.FindMissingIds(instanceIds);
-                        var foundUnique = false;
-                        var index = Index.Empty;
-                        foreach (var id in missingIds)
-                        {
-                            if (TryIdToIndex(id, out index))
-                            {
-                                if (foundUnique)
-                                    throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
-                                foundUnique = true;
-                            }
-                        }
-                        return index;
-                    }
-                default:
-                    throw new ArgumentException(@"Cannot retrieve index in derived asset for a remove operation.", nameof(changeType));
-            }
         }
     }
 }

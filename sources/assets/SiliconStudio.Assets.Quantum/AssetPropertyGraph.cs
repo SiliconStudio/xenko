@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -127,6 +128,36 @@ namespace SiliconStudio.Assets.Quantum
             visitor.Visit(rootNode);
         }
 
+        /// <summary>
+        /// Resets the overrides attached to the given node and its descendants, recursively.
+        /// </summary>
+        /// <param name="rootNode">The node for which to reset overrides.</param>
+        /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
+        public void ResetOverride(AssetNode rootNode, Index indexToReset)
+        {
+            var visitor = CreateReconcilierVisitor();
+            visitor.SkipRootNode = true;
+            visitor.Visiting += (node, path) =>
+            {
+                var childNode = node as AssetMemberNode;
+                if (childNode == null)
+                    return;
+
+                childNode.OverrideContent(false);
+                foreach (var overrideItem in childNode.GetOverriddenItemIndices())
+                {
+                    childNode.OverrideItem(false, overrideItem);
+                }
+                foreach (var overrideKey in childNode.GetOverriddenKeyIndices())
+                {
+                    childNode.OverrideKey(false, overrideKey);
+                }
+            };
+            visitor.Visit(rootNode);
+
+            ReconcileWithBase(rootNode);
+        }
+
         // TODO: turn protected
         public virtual bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
         {
@@ -155,6 +186,60 @@ namespace SiliconStudio.Assets.Quantum
             assetItem.Overrides = GenerateOverridesForSerialization(RootNode);
         }
 
+        // TODO: check if this can/should be turned private
+        [CanBeNull]
+        public static AssetNode ResolveObjectPath([NotNull] AssetNode rootNode, [NotNull] YamlAssetPath path, out Index index, out bool overrideOnKey)
+        {
+            var currentNode = rootNode;
+            index = Index.Empty;
+            overrideOnKey = false;
+            for (var i = 0; i < path.Items.Count; i++)
+            {
+                var item = path.Items[i];
+                switch (item.Type)
+                {
+                    case YamlAssetPath.ItemType.Member:
+                        index = Index.Empty;
+                        overrideOnKey = false;
+                        if (currentNode.Content.IsReference)
+                        {
+                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
+                        }
+                        string name = item.AsMember();
+                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
+                        break;
+                    case YamlAssetPath.ItemType.Index:
+                        index = new Index(item.Value);
+                        overrideOnKey = true;
+                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
+                        {
+                            Index index1 = new Index(item.Value);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
+                        }
+                        break;
+                    case YamlAssetPath.ItemType.ItemId:
+                        var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
+                        var key = ids.GetKey(item.AsItemId());
+                        index = new Index(key);
+                        overrideOnKey = false;
+                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
+                        {
+                            Index index1 = new Index(key);
+                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                // Something wrong happen, the node is unreachable.
+                if (currentNode == null)
+                    return null;
+            }
+
+            return currentNode;
+        }
+
         public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
@@ -175,7 +260,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 Index index;
                 bool overrideOnKey;
-                var node = AssetNode.ResolveObjectPath(rootNode, overrideInfo.Key, out index, out overrideOnKey) as AssetMemberNode;
+                var node = ResolveObjectPath(rootNode, overrideInfo.Key, out index, out overrideOnKey) as AssetMemberNode;
                 // The node is unreachable, skip this override.
                 if (node == null)
                     continue;
