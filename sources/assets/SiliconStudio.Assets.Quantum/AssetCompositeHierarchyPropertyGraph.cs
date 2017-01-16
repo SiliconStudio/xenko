@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Quantum
             if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))
             {
                 // Check if we're the part referenced by a part design - other cases are references
-                return member.Container.Content.Type != typeof(TAssetPartDesign);
+                return member.Parent.Type != typeof(TAssetPartDesign);
             }
             return base.IsReferencedPart(member, targetNode);
         }

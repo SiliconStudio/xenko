@@ -132,7 +132,7 @@ namespace SiliconStudio.Assets.Quantum
         private ItemId restoringId;
 
         public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, container, member, isPrimitive, reference)
+            : base(nodeBuilder, guid, member, isPrimitive, reference)
         {
             Content.PrepareChange += (sender, e) => contentUpdating = true;
             Content.FinalizeChange += (sender, e) => contentUpdating = false;

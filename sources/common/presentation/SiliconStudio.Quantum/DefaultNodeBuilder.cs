@@ -167,14 +167,13 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             ContentBase containerNode = GetContextNode();
             var guid = Guid.NewGuid();
-            IContentNode content = ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
-            var node = (MemberContent)content;
-            containerNode.AddChild(node);
+            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            containerNode.AddChild(content);
 
             if (content.IsReference)
                 referenceContents.Add(content);
 
-            PushContextNode(node);
+            PushContextNode(content);
             if (!(content.Reference is ObjectReference))
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
@@ -182,9 +181,9 @@ namespace SiliconStudio.Quantum
             }
             PopContextNode();
 
-            AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
+            AvailableCommands.Where(x => x.CanAttach(content.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
 
-            node.Seal();
+            content.Seal();
         }
 
         public IReference CreateReferenceForNode(Type type, object value)

@@ -60,10 +60,10 @@ namespace SiliconStudio.Quantum.Contents
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        public IContentNode Content => this as IContentNode;
+        public IContentNode Content => this;
 
         /// <inheritdoc/>
-        public virtual IContentNode Parent { get; private set; }
+        public IContentNode Parent { get; private set; }
 
         /// <inheritdoc/>
         public IContentNode Target { get { if (!(Content.Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Content.Reference.AsObject.TargetNode; } }
