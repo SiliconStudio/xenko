@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                 foreach (var renderFeature in Parameters.RenderFeatures)
                     graphicsCompositor.RenderFeatures.Add(renderFeature);
                 graphicsCompositor.TopLevel = Parameters.TopLevel;
+                graphicsCompositor.SingleView = Parameters.SingleView;
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, graphicsCompositor);
