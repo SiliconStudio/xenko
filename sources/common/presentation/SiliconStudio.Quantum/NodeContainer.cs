@@ -14,8 +14,8 @@ namespace SiliconStudio.Quantum
     public class NodeContainer : INodeContainer
     {
         private readonly object lockObject = new object();
-        private readonly ThreadLocal<HashSet<IGraphNode>> processedNodes = new ThreadLocal<HashSet<IGraphNode>>();
-        private ConditionalWeakTable<object, IGraphNode> nodesByObject = new ConditionalWeakTable<object, IGraphNode>();
+        private readonly ThreadLocal<HashSet<IContentNode>> processedNodes = new ThreadLocal<HashSet<IContentNode>>();
+        private ConditionalWeakTable<object, IContentNode> nodesByObject = new ConditionalWeakTable<object, IContentNode>();
 
         /// <summary>
         /// Creates a new instance of <see cref="NodeContainer"/> class.
@@ -29,7 +29,7 @@ namespace SiliconStudio.Quantum
         public INodeBuilder NodeBuilder { get; set; }
 
         /// <inheritdoc/>
-        public IGraphNode GetOrCreateNode(object rootObject)
+        public IContentNode GetOrCreateNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IGraphNode>();
+                    processedNodes.Value = new HashSet<IContentNode>();
 
                 var node = GetOrCreateNodeInternal(rootObject);
 
@@ -47,12 +47,12 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode GetNode(object rootObject)
+        public IContentNode GetNode(object rootObject)
         {
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IGraphNode>();
+                    processedNodes.Value = new HashSet<IContentNode>();
 
                 var node = GetNodeInternal(rootObject);
 
@@ -65,12 +65,12 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        internal void UpdateReferences(IGraphNode node)
+        internal void UpdateReferences(IContentNode node)
         {
             lock (lockObject)
             {
                 if (!processedNodes.IsValueCreated)
-                    processedNodes.Value = new HashSet<IGraphNode>();
+                    processedNodes.Value = new HashSet<IContentNode>();
 
                 UpdateReferencesInternal(node);
 
@@ -85,23 +85,23 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                nodesByObject = new ConditionalWeakTable<object, IGraphNode>();
+                nodesByObject = new ConditionalWeakTable<object, IContentNode>();
             }
         }
 
         /// <summary>
-        /// Gets the <see cref="IGraphNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
+        /// Gets the <see cref="IContentNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
-        internal IGraphNode GetNodeInternal(object rootObject)
+        /// <returns>The <see cref="IContentNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
+        internal IContentNode GetNodeInternal(object rootObject)
         {
             lock (lockObject)
             {
                 if (rootObject == null)
                     return null;
 
-                IGraphNode node;
+                IContentNode node;
                 nodesByObject.TryGetValue(rootObject, out node);
                 return node;
             }
@@ -111,15 +111,15 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        internal IGraphNode GetOrCreateNodeInternal(object rootObject)
+        /// <returns>The <see cref="IContentNode"/> associated to the given object.</returns>
+        internal IContentNode GetOrCreateNodeInternal(object rootObject)
         {
             if (rootObject == null)
                 return null;
 
             lock (lockObject)
             {
-                IGraphNode result;
+                IContentNode result;
                 if (!rootObject.GetType().IsValueType)
                 {
                     result = GetNodeInternal(rootObject);
@@ -144,7 +144,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        private void UpdateReferencesInternal(IGraphNode node)
+        private void UpdateReferencesInternal(IContentNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
 

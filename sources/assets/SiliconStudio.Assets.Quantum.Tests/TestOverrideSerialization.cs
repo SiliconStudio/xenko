@@ -290,8 +290,8 @@ MyObjects:
         {
             var asset = new Types.MyAsset1 { MyString = "String" };
             var context = DeriveAssetTest<Types.MyAsset1>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
 
             basePropertyNode.Content.Update("MyBaseString");
             derivedPropertyNode.Content.Update("MyDerivedString");
@@ -299,8 +299,8 @@ MyObjects:
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyUpdateDerivedYaml, true);
 
             context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
-            basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
-            derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
 
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve());
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve());
@@ -312,8 +312,8 @@ MyObjects:
         public void TestSimplePropertyDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
 
             Assert.AreEqual("MyBaseString", basePropertyNode.Content.Retrieve());
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Content.Retrieve());
@@ -329,8 +329,8 @@ MyObjects:
             ids.Add(0, IdentifierGenerator.Get(10));
             ids.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
 
             basePropertyNode.Content.Update("MyBaseString", new Index(1));
             derivedPropertyNode.Content.Update("MyDerivedString", new Index(0));
@@ -342,8 +342,8 @@ MyObjects:
         public void TestSimpleCollectionUpdateDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(SimpleCollectionUpdateBaseYaml, SimpleCollectionUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
 
@@ -376,8 +376,8 @@ MyObjects:
             ids.Add("Key1", IdentifierGenerator.Get(10));
             ids.Add("Key2", IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
 
             basePropertyNode.Content.Update("MyBaseString", new Index("Key2"));
             derivedPropertyNode.Content.Update("MyDerivedString", new Index("Key1"));
@@ -385,8 +385,8 @@ MyObjects:
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleDictionaryUpdateDerivedYaml, true);
 
             context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
-            basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
 
@@ -415,8 +415,8 @@ MyObjects:
         public void TestSimpleDictionaryDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
 
@@ -451,8 +451,8 @@ MyObjects:
             ids.Add(0, IdentifierGenerator.Get(10));
             ids.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
 
             basePropertyNode.Content.Update("MyBaseString", new Index(1));
             derivedPropertyNode.Content.Update("MyDerivedString", new Index(0));
@@ -464,8 +464,8 @@ MyObjects:
         public void TestCollectionInStructUpdateDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(CollectionInStructBaseYaml, CollectionInStructDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.Struct.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.Struct.MyStrings);
 
@@ -498,8 +498,8 @@ MyObjects:
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
 
             derivedPropertyNode.Content.Add("String3");
             basePropertyNode.Content.Add("String4");
@@ -516,8 +516,8 @@ MyObjects:
             var expectedBaseYaml = string.Format(SimpleCollectionAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(SimpleCollectionAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
             var context = DeriveAssetTest<Types.MyAsset2>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
 
@@ -556,8 +556,8 @@ MyObjects:
             baseIds.Add("Key1", IdentifierGenerator.Get(10));
             baseIds.Add("Key2", IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
 
             // Update derived and check
             derivedPropertyNode.Content.Add("String3", new Index("Key3"));
@@ -576,8 +576,8 @@ MyObjects:
             var expectedBaseYaml = string.Format(SimpleDictionaryAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(SimpleDictionaryAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
             var context = DeriveAssetTest<Types.MyAsset3>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
 
@@ -619,8 +619,8 @@ MyObjects:
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
 
             basePropertyNode.Content.Update(new Types.SomeObject { Value = "MyBaseString" }, new Index(1));
             derivedPropertyNode.Content.Update(new Types.SomeObject { Value = "MyDerivedString" }, new Index(0));
@@ -632,8 +632,8 @@ MyObjects:
         public void TestObjectCollectionUpdateDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(ObjectCollectionUpdateBaseYaml, ObjectCollectionUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
 
@@ -671,8 +671,8 @@ MyObjects:
             baseIds.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
 
             derivedPropertyNode.Content.Add(new Types.SomeObject { Value = "String3" });
             basePropertyNode.Content.Add(new Types.SomeObject { Value = "String4" });
@@ -688,8 +688,8 @@ MyObjects:
             var expectedBaseYaml = string.Format(ObjectCollectionAddBaseYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30));
             var expectedDerivedYaml = string.Format(ObjectCollectionAddDerivedYaml.Replace("{}", "{{}}"), IdentifierGenerator.Get(30), IdentifierGenerator.Get(40));
             var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(expectedBaseYaml, expectedDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
 
@@ -735,8 +735,8 @@ MyObjects:
             baseIds.Add(0, IdentifierGenerator.Get(10));
             baseIds.Add(1, IdentifierGenerator.Get(20));
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
 
             basePropertyNode.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Content.Update("MyBaseString");
             derivedPropertyNode.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Content.Update("MyDerivedString");
@@ -748,8 +748,8 @@ MyObjects:
         public void TestObjectCollectionPropertyUpdateDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset4>.LoadFromYaml(ObjectCollectionPropertyUpdateBaseYaml, ObjectCollectionPropertyUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyObjects);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
 
@@ -783,8 +783,8 @@ MyObjects:
         {
             var asset = new Types.MyAsset8 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
             var context = DeriveAssetTest<Types.MyAsset8>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(0)), basePropertyNode.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(1)), basePropertyNode.IndexedTarget(new Index(1)));
@@ -800,8 +800,8 @@ MyObjects:
         public void TestNonIdentifiableObjectCollectionUpdateDeserialization()
         {
             var context = DeriveAssetTest<Types.MyAsset8>.LoadFromYaml(NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml);
-            var basePropertyNode = (AssetMemberNode)((IGraphNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset8.MyObjects));
             // Manually link base of non-identifiable items - this simulates a scenario similar to prefabs
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(0)), basePropertyNode.IndexedTarget(new Index(0)));
             context.DerivedGraph.RegisterCustomBaseLink(derivedPropertyNode.IndexedTarget(new Index(1)), basePropertyNode.IndexedTarget(new Index(1)));
@@ -833,7 +833,7 @@ Value*: OverriddenString
 ";
             var asset = new Types.MyAsset9 { MyObject = new Types.SomeObject { Value = "String1" } };
             var context = DeriveAssetTest<Types.MyAsset9>.DeriveAsset(asset);
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset9.MyObject)];
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset9.MyObject)];
             derivedPropertyNode.Target[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
             var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
@@ -867,7 +867,7 @@ Value*: OverriddenString
 ";
             var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
-            var derivedPropertyNode = (AssetMemberNode)((IGraphNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
+            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
             derivedPropertyNode[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
             var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));

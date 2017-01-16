@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableModelNode : SingleObservableNode
     {
-        public readonly IGraphNode SourceNode;
+        public readonly IContentNode SourceNode;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
+        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
             return node;
@@ -176,11 +176,11 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid => SourceNode.Guid;
 
         /// <summary>
-        /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
+        /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IContentNode"/>.
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
-        public bool MatchNode(IGraphNode node)
+        public bool MatchNode(IContentNode node)
         {
             return SourceNode == node;
         }
@@ -274,7 +274,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Sets the value of the model content associated to this <see cref="ObservableModelNode"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected bool SetModelContentValue(IGraphNode node, object newValue)
+        protected bool SetModelContentValue(IContentNode node, object newValue)
         {
             var oldValue = node.Content.Retrieve(Index);
             if (!Equals(oldValue, newValue))
@@ -285,7 +285,7 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
+        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath)
         {
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.Content.IsReference)
@@ -418,7 +418,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
+        protected static IContentNode GetTargetNode(IContentNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
@@ -445,7 +445,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
         /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
+        protected static GraphNodePath GetTargetNodePath(IContentNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
@@ -477,7 +477,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection.<see cref="Index.Empty"/> must be passed otherwise</param>
-        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
+        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor

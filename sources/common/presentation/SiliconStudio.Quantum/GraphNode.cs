@@ -10,12 +10,12 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// This class is the default implementation of the <see cref="IGraphNode"/>.
+    /// This class is the default implementation of the <see cref="IContentNode"/>.
     /// </summary>
-    public class GraphNode : IGraphNode
+    public class GraphNode : IContentNode
     {
-        private readonly List<IGraphNode> children = new List<IGraphNode>();
-        private readonly HybridDictionary<string, IGraphNode> childrenMap = new HybridDictionary<string, IGraphNode>();
+        private readonly List<IContentNode> children = new List<IContentNode>();
+        private readonly HybridDictionary<string, IContentNode> childrenMap = new HybridDictionary<string, IContentNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         private bool isSealed;
 
@@ -42,22 +42,22 @@ namespace SiliconStudio.Quantum
         public IContent Content => this as IContent;
 
         /// <inheritdoc/>
-        public virtual IGraphNode Parent { get; private set; }
+        public virtual IContentNode Parent { get; private set; }
 
         /// <inheritdoc/>
-        public IGraphNode Target { get { if (!(Content.Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Content.Reference.AsObject.TargetNode; } }
+        public IContentNode Target { get { if (!(Content.Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Content.Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IGraphNode> Children => children;
+        public IReadOnlyCollection<IContentNode> Children => children;
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public IGraphNode this[string name] => childrenMap[name];
+        public IContentNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
-        public IGraphNode IndexedTarget(Index index)
+        public IContentNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
             if (!(Content.Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
@@ -110,9 +110,9 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode TryGetChild(string name)
+        public IContentNode TryGetChild(string name)
         {
-            IGraphNode child;
+            IContentNode child;
             childrenMap.TryGetValue(name, out child);
             return child;
         }

@@ -159,7 +159,7 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         // TODO: turn protected
-        public virtual bool ShouldListenToTargetNode(MemberContent member, IGraphNode targetNode)
+        public virtual bool ShouldListenToTargetNode(MemberContent member, IContentNode targetNode)
         {
             return true;
         }
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets.Quantum
             return new GraphVisitorBase();
         }
 
-        public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public virtual IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
         {
             return target;
         }
@@ -240,7 +240,7 @@ namespace SiliconStudio.Assets.Quantum
             return currentNode;
         }
 
-        public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
+        public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IContentNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
@@ -385,7 +385,7 @@ namespace SiliconStudio.Assets.Quantum
             return result;
         }
 
-        private void LinkBaseNode(IGraphNode currentNode, IGraphNode baseNode)
+        private void LinkBaseNode(IContentNode currentNode, IContentNode baseNode)
         {
             var assetNode = (IAssetNode)currentNode;
             ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
@@ -692,7 +692,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        protected virtual bool ShouldReconcileItem(MemberContent member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
+        protected virtual bool ShouldReconcileItem(MemberContent member, IContentNode targetNode, object localValue, object baseValue, bool isReference)
         {
             if (isReference)
             {

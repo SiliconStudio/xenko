@@ -77,7 +77,7 @@ namespace SiliconStudio.Quantum
         /// <param name="obj">The object. Can be <c>null</c>.</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IGraphNode Build(object obj, Guid rootGuid);
+        IContentNode Build(object obj, Guid rootGuid);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.

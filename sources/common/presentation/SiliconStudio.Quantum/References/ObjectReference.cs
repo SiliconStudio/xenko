@@ -33,7 +33,7 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IGraphNode TargetNode { get; private set; }
+        public IContentNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
         public object ObjectValue => TargetNode != null ? TargetNode.Content.Value : orphanObject;
@@ -61,12 +61,12 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
+        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
         {
             Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
+        internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Content.Retrieve(index);
             if (TargetNode?.Content.Value != objectValue)
@@ -111,10 +111,10 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer)
+        internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
+            IContentNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }
@@ -123,7 +123,7 @@ namespace SiliconStudio.Quantum.References
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IGraphNode SetTarget(IGraphNode targetNode)
+        internal IContentNode SetTarget(IContentNode targetNode)
         {
             if (targetNode != null)
             {

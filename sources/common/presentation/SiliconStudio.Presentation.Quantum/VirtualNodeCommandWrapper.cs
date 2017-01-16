@@ -11,11 +11,11 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class VirtualNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IGraphNode node;
+        private readonly IContentNode node;
         private readonly Index index;
         protected readonly ObservableViewModelService Service;
 
-        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IGraphNode node, Index index)
+        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IContentNode node, Index index)
             : base(serviceProvider)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));

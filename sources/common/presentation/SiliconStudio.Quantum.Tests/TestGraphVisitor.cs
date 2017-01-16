@@ -53,15 +53,15 @@ namespace SiliconStudio.Quantum.Tests
 
         public class TestVisitor : GraphVisitorBase
         {
-            public readonly List<Tuple<IGraphNode, GraphNodePath>> Result = new List<Tuple<IGraphNode, GraphNodePath>>();
+            public readonly List<Tuple<IContentNode, GraphNodePath>> Result = new List<Tuple<IContentNode, GraphNodePath>>();
 
-            public override void Visit(IGraphNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
+            public override void Visit(IContentNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
             {
                 Result.Clear();
                 base.Visit(node, memberContent, initialPath);
             }
 
-            protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IContentNode node, GraphNodePath currentPath)
             {
                 Result.Add(Tuple.Create(node, currentPath));
                 base.VisitNode(node, currentPath);
@@ -212,17 +212,17 @@ namespace SiliconStudio.Quantum.Tests
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
             Index index = new Index(2);
-            IGraphNode tempQualifier = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index1 = new Index(2);
-            IGraphNode tempQualifier1 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier1 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index2 = new Index(2);
-            IGraphNode tempQualifier2 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier2 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index3 = new Index(0);
-            IGraphNode tempQualifier3 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier3 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index4 = new Index(0);
-            IGraphNode tempQualifier4 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index5 = new Index(0);
-            IGraphNode tempQualifier5 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             var expectedNodes = new[]
             {
                 rootNode,
@@ -260,17 +260,17 @@ namespace SiliconStudio.Quantum.Tests
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
             Index index = new Index(0);
-            IGraphNode tempQualifier = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index1 = new Index(0);
-            IGraphNode tempQualifier1 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier1 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index2 = new Index(0);
-            IGraphNode tempQualifier2 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier2 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index3 = new Index(1);
-            IGraphNode tempQualifier3 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier3 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index4 = new Index(1);
-            IGraphNode tempQualifier4 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index5 = new Index(1);
-            IGraphNode tempQualifier5 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             var expectedNodes = new[]
             {
                 rootNode,
@@ -402,7 +402,7 @@ namespace SiliconStudio.Quantum.Tests
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
 
-        private static void VerifyNodesAndPath(IReadOnlyList<IGraphNode> expectedNodes, IReadOnlyList<GraphNodePath> expectedPaths, TestVisitor visitor)
+        private static void VerifyNodesAndPath(IReadOnlyList<IContentNode> expectedNodes, IReadOnlyList<GraphNodePath> expectedPaths, TestVisitor visitor)
         {
             Assert.AreEqual(expectedNodes.Count, visitor.Result.Count);
             Assert.AreEqual(expectedPaths.Count, visitor.Result.Count);

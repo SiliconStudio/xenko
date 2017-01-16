@@ -9,7 +9,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public interface IAssetNode : IGraphNode
+    public interface IAssetNode : IContentNode
     {
         AssetPropertyGraph PropertyGraph { get; }
 

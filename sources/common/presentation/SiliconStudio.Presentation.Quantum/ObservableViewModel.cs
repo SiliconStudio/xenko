@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise.</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index);
 
     /// <summary>
     /// A factory that creates a <see cref="CombinedObservableNode"/> from a set of parameters.
@@ -70,7 +70,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
         /// <param name="propertyProvider">The object providing properties to display</param>
         /// <param name="graphNode">The root node of the view model to generate.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IGraphNode graphNode)
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, IPropertiesProviderViewModel propertyProvider, IContentNode graphNode)
             : this(serviceProvider)
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
@@ -224,7 +224,7 @@ namespace SiliconStudio.Presentation.Quantum
             combinedNodeChanges.Clear();
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }

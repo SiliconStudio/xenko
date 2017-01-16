@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// Content of a <see cref="IGraphNode"/>.
+    /// Content of a <see cref="IContentNode"/>.
     /// </summary>
     public interface IContent
     {

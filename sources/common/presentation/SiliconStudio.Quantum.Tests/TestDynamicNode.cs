@@ -369,7 +369,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
             Index index = new Index(1);
-            IGraphNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member6));
+            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member6));
             tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1)).Content.Update(obj[2]);
             Assert.AreEqual(obj[2], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
@@ -491,7 +491,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);
             Index index = new Index(1);
-            IGraphNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member7));
+            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member7));
             tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1)).Content.Update(obj[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);

@@ -9,8 +9,8 @@ namespace SiliconStudio.Quantum
     /// <param name="name">The name of the node to create.</param>
     /// <param name="content">The content for which to create a node.</param>
     /// <param name="guid">The unique identifier of the node to create.</param>
-    /// <returns>A new instance of <see cref="IGraphNode"/> containing the given content.</returns>
-    public delegate IGraphNode NodeFactoryDelegate(string name, IContent content, Guid guid);
+    /// <returns>A new instance of <see cref="IContentNode"/> containing the given content.</returns>
+    public delegate IContentNode NodeFactoryDelegate(string name, IContent content, Guid guid);
 
     /// <summary>
     /// An interface representing a container for graph nodes.
@@ -26,15 +26,15 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        IGraphNode GetOrCreateNode(object rootObject);
+        /// <returns>The <see cref="IContentNode"/> associated to the given object.</returns>
+        IContentNode GetOrCreateNode(object rootObject);
 
         /// <summary>
-        /// Gets the <see cref="IGraphNode"/> associated to a data object, if it exists.
+        /// Gets the <see cref="IContentNode"/> associated to a data object, if it exists.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
+        /// <returns>The <see cref="IContentNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
         /// <remarks>Calling this method will update references of the returned node and its children, recursively.</remarks>
-        IGraphNode GetNode(object rootObject);
+        IContentNode GetNode(object rootObject);
     }
 }

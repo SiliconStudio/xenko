@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode Build(object obj, Guid guid)
+        public IContentNode Build(object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Reset();

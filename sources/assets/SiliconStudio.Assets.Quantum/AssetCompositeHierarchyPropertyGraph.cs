@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Asset;
 
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
@@ -69,7 +69,7 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
+        public override bool IsReferencedPart(MemberContent member, IContentNode targetNode)
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.

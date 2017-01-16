@@ -199,7 +199,7 @@ namespace SiliconStudio.Quantum.Contents
 
         private void UpdateReferences()
         {
-            var graphNode = OwnerNode as IGraphNode;
+            var graphNode = OwnerNode as IContentNode;
             if (graphNode != null)
             {
                 nodeContainer?.UpdateReferences(graphNode);

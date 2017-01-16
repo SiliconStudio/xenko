@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="node">The node to validate.</param>
         /// <param name="obj">The value represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestNonCollectionObjectContentNode(IGraphNode node, object obj, int childCount)
+        public static void TestNonCollectionObjectContentNode(IContentNode node, object obj, int childCount)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
@@ -44,7 +44,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="node">The node to validate.</param>
         /// <param name="obj">The value represented by this node.</param>
         /// <param name="isReference">Indicate whether the node is expected to contain an enumerable reference to the collection items.</param>
-        public static void TestCollectionObjectContentNode(IGraphNode node, object obj, bool isReference)
+        public static void TestCollectionObjectContentNode(IContentNode node, object obj, bool isReference)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="member">The value of the member represented by the member node.</param>
         /// <param name="memberName">The name of the member to validate.</param>
         /// <param name="isReference">Indicate whether the member node is expected to contain a reference to the value it represents.</param>
-        public static void TestMemberContentNode(IGraphNode containerNode, IGraphNode memberNode, object container, object member, string memberName, bool isReference)
+        public static void TestMemberContentNode(IContentNode containerNode, IContentNode memberNode, object container, object member, string memberName, bool isReference)
         {
             if (containerNode == null) throw new ArgumentNullException(nameof(containerNode));
             if (memberNode == null) throw new ArgumentNullException(nameof(memberNode));
@@ -131,7 +131,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetNode">The node that is supposed to be the target of the reference.</param>
         /// <param name="targetValue">The actual value pointed by the reference.</param>
-        public static void TestNonNullObjectReference(IReference reference, IGraphNode targetNode, object targetValue)
+        public static void TestNonNullObjectReference(IReference reference, IContentNode targetNode, object targetValue)
         {
             if (targetNode == null) throw new ArgumentNullException(nameof(targetNode));
             var objReference = reference as ObjectReference;
@@ -204,7 +204,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="structNode">The structure node to test.</param>
         /// <param name="structValue">The value of the structure represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestStructContentNode(IGraphNode structNode, object structValue, int childCount)
+        public static void TestStructContentNode(IContentNode structNode, object structValue, int childCount)
         {
             if (structNode == null) throw new ArgumentNullException(nameof(structNode));
             if (structValue == null) throw new ArgumentNullException(nameof(structValue));
@@ -219,7 +219,7 @@ namespace SiliconStudio.Quantum.Tests
         }
 
         [Obsolete]
-        public static void PrintModelContainerContent(NodeContainer container, IGraphNode rootNode = null)
+        public static void PrintModelContainerContent(NodeContainer container, IContentNode rootNode = null)
         {
             Console.WriteLine(@"Container content:");
             Console.WriteLine(@"------------------");
