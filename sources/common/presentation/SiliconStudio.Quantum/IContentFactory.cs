@@ -42,6 +42,6 @@ namespace SiliconStudio.Quantum
         /// <param name="isPrimitive">Indicates if this object should be considered as a primitive type. This is <c>true</c> if the member type is a primitve .NET type, or if it is a type that has been registered as a primitive type in the <see cref="INodeBuilder"/> instance.</param>
         /// <param name="value">The value of this object.</param>
         /// <returns>A new <see cref="IContentNode"/> instance representing the given member property.</returns>
-        IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, object value);
+        IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentNode container, IMemberDescriptor member, bool isPrimitive, object value);
     }
 }

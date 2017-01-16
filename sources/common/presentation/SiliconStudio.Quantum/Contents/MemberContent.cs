@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase
+    public class MemberContent : ContentNode
     {
         private readonly NodeContainer nodeContainer;
 
@@ -181,7 +181,7 @@ namespace SiliconStudio.Quantum.Contents
                 Member.Set(containerValue, newValue);
 
                 if (Parent.Value.GetType().GetTypeInfo().IsValueType)
-                    ((ContentBase)Parent).UpdateFromMember(containerValue, Index.Empty);
+                    ((ContentNode)Parent).UpdateFromMember(containerValue, Index.Empty);
             }
             UpdateReferences();
             if (sendNotification)

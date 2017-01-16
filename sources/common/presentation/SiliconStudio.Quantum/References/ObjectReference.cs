@@ -75,7 +75,7 @@ namespace SiliconStudio.Quantum.References
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var ownerContent = (ContentBase)ownerNode.Content;
+                    var ownerContent = (ContentNode)ownerNode.Content;
                     var boxedContent = target.Content as BoxedContent;
                     boxedContent?.SetOwnerContent(ownerContent, index);
                 }

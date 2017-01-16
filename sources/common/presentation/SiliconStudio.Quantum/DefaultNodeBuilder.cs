@@ -17,10 +17,10 @@ namespace SiliconStudio.Quantum
     /// </summary>
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
-        private readonly Stack<ContentBase> contextStack = new Stack<ContentBase>();
+        private readonly Stack<ContentNode> contextStack = new Stack<ContentNode>();
         private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
-        private ContentBase rootNode;
+        private ContentNode rootNode;
         private Guid rootGuid;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
@@ -106,7 +106,7 @@ namespace SiliconStudio.Quantum
                 var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
                                 : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 currentDescriptor = content.Descriptor;
-                rootNode = (ContentBase)content;
+                rootNode = (ContentNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -165,9 +165,9 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             // If this member should contains a reference, create it now.
-            ContentBase containerNode = GetContextNode();
+            ContentNode containerNode = GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, (ContentNode)containerNode.Content, member, IsPrimitiveType(member.Type), value);
             containerNode.AddChild(content);
 
             if (content.IsReference)
@@ -203,7 +203,7 @@ namespace SiliconStudio.Quantum
             return null;
         }
         
-        private void PushContextNode(ContentBase node)
+        private void PushContextNode(ContentNode node)
         {
             contextStack.Push(node);
         }
@@ -213,7 +213,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ContentBase GetContextNode()
+        private ContentNode GetContextNode()
         {
             return contextStack.Peek();
         }

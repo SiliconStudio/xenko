@@ -13,14 +13,14 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentBase : IContentNode
+    public abstract class ContentNode : IContentNode
     {
         private readonly List<MemberContent> children = new List<MemberContent>();
         private readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         private bool isSealed;
 
-        protected ContentBase(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentNode(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));

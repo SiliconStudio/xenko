@@ -27,10 +27,10 @@ namespace SiliconStudio.Quantum
         }
 
         private readonly DefaultNodeBuilder nodeBuilder;
-        private readonly Stack<ContentBase> contextStack = new Stack<ContentBase>();
+        private readonly Stack<ContentNode> contextStack = new Stack<ContentNode>();
         private readonly Queue<ObjectReference> references = new Queue<ObjectReference>();
-        private readonly List<ContentBase> checkedNodes = new List<ContentBase>();
-        private ContentBase rootNode;
+        private readonly List<ContentNode> checkedNodes = new List<ContentNode>();
+        private ContentNode rootNode;
 
         public ModelConsistencyCheckVisitor(INodeBuilder nodeBuilder)
         {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Quantum
             base.Reset();
         }
 
-        public void Check(ContentBase node, object obj, Type type, bool checkReferences)
+        public void Check(ContentNode node, object obj, Type type, bool checkReferences)
         {
             Reset();
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Quantum
                         var reference = references.Dequeue();
                         if (!checkedNodes.Contains(reference.TargetNode))
                         {
-                            rootNode = (ContentBase)reference.TargetNode;
+                            rootNode = (ContentNode)reference.TargetNode;
                             break;
                         }
                     }
@@ -126,10 +126,10 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             var node = GetContextNode();
-            ContentBase child;
+            ContentNode child;
             try
             {
-                child = (ContentBase)node.Children.Single(x => x.Name == member.Name);
+                child = (ContentNode)node.Children.Single(x => x.Name == member.Name);
             }
             catch (InvalidOperationException)
             {
@@ -227,7 +227,7 @@ namespace SiliconStudio.Quantum
             references.Enqueue(reference);
         }
 
-        private void PushContextNode(ContentBase node)
+        private void PushContextNode(ContentNode node)
         {
             contextStack.Push(node);
         }
@@ -237,7 +237,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ContentBase GetContextNode()
+        private ContentNode GetContextNode()
         {
             return contextStack.Peek();
         }

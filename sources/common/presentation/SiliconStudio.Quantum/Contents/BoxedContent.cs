@@ -7,7 +7,7 @@ namespace SiliconStudio.Quantum.Contents
 {
     public class BoxedContent : ObjectContent
     {
-        private ContentBase boxedStructureOwner;
+        private ContentNode boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
         public BoxedContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
@@ -41,7 +41,7 @@ namespace SiliconStudio.Quantum.Contents
 
         internal void SetOwnerContent(IContentNode ownerContent, Index index)
         {
-            boxedStructureOwner = (ContentBase)ownerContent;
+            boxedStructureOwner = (ContentNode)ownerContent;
             boxedStructureOwnerIndex = index;
         }
     }
