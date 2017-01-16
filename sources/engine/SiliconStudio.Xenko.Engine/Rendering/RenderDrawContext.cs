@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Pushes render targets and viewport state.
         /// </summary>
-        public void PushRenderTargets()
+        public RenderTargetRestore PushRenderTargetsAndRestore()
         {
             // Check if we need to allocate a new StateAndTargets
             RenderTargetsState newState;
@@ -79,6 +79,8 @@ namespace SiliconStudio.Xenko.Rendering
                 newState = allocatedStates[currentStateIndex];
             }
             newState.Capture(CommandList);
+
+            return new RenderTargetRestore(this);
         }
 
         /// <summary>
@@ -147,6 +149,21 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 commandList.SetRenderTargets(DepthStencilBuffer, RenderTargetCount, RenderTargets);
                 commandList.SetViewports(RenderTargetCount, Viewports);
+            }
+        }
+
+        public struct RenderTargetRestore : IDisposable
+        {
+            private readonly RenderDrawContext context;
+
+            public RenderTargetRestore(RenderDrawContext context)
+            {
+                this.context = context;
+            }
+
+            public void Dispose()
+            {
+                context.PopRenderTargets();
             }
         }
     }

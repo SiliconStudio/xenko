@@ -180,7 +180,7 @@
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Composers\ClearRenderer.cs" />
     <Compile Include="Rendering\Composers\CompositorLayersBase.cs" />
-    <Compile Include="Rendering\Composers\DefaultCompositors.cs" />
+    <Compile Include="Rendering\Composers\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Composers\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Composers\ForwardRenderer.cs" />
     <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
@@ -188,6 +188,7 @@
     <Compile Include="Rendering\Composers\PipelineCollection.cs" />
     <Compile Include="Rendering\Composers\PipelineCompositorLayers.cs" />
     <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
+    <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
     <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />

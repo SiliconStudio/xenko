@@ -1,17 +1,15 @@
 using System.Linq;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
-    /// Renders object with proper opaque/transparent separation using Forward or Forward+ rendering.
+    /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
-    /// <remarks>
-    /// Later, we might split this class to be able to reuse "shared" shadow maps.
-    /// </remarks>
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         private IShadowMapRenderer shadowMapRenderer;
@@ -20,10 +18,15 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         // TODO This should be exposed to the user at some point
         private bool enableDepthAsShaderResource = true;
 
-        public RenderStage MainRenderStage;
-        public RenderStage TransparentRenderStage;
 
-        public RenderStage ShadowMapRenderStage;
+        public ClearRenderer Clear { get; set; } = new ClearRenderer();
+
+        // Render stages
+        public RenderStage MainRenderStage { get; set; }
+        public RenderStage TransparentRenderStage { get; set; }
+        public RenderStage ShadowMapRenderStage { get; set; }
+
+        public PostProcessingEffects PostEffects { get; set; }
 
         protected override void InitializeCore()
         {
@@ -32,75 +35,104 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             shadowMapRenderer = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
         }
 
+
         protected override void CollectCore(RenderContext context)
         {
-            // Mark this view as requiring shadows
-            shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
-
-            // Fill RenderStage formats and register render stages to main view
-            if (MainRenderStage != null)
+            // Setup pixel formats for RenderStage
+            using (context.SaveRenderOutputAndRestore())
             {
-                context.RenderView.RenderStages.Add(MainRenderStage);
-                MainRenderStage.Output = context.RenderOutput;
-            }
-            if (TransparentRenderStage != null)
-            {
-                context.RenderView.RenderStages.Add(TransparentRenderStage);
-                TransparentRenderStage.Output = context.RenderOutput;
-            }
+                if (PostEffects != null)
+                {
+                    context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
+                }
 
-            if (ShadowMapRenderStage != null)
-                ShadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+                // Mark this view as requiring shadows
+                shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
+
+                // Fill RenderStage formats and register render stages to main view
+                if (MainRenderStage != null)
+                {
+                    context.RenderView.RenderStages.Add(MainRenderStage);
+                    MainRenderStage.Output = context.RenderOutput;
+                }
+                if (TransparentRenderStage != null)
+                {
+                    context.RenderView.RenderStages.Add(TransparentRenderStage);
+                    TransparentRenderStage.Output = context.RenderOutput;
+                }
+
+                if (ShadowMapRenderStage != null)
+                    ShadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+            }
         }
 
         protected override void DrawCore(RenderDrawContext context)
         {
             var renderSystem = context.RenderContext.RenderSystem;
+            var viewport = context.CommandList.Viewport;
 
-            // Render Shadow maps
-            if (ShadowMapRenderStage != null && shadowMapRenderer != null)
+            var currentRenderTarget = context.CommandList.RenderTarget;
+            var currentDepthStencil = context.CommandList.DepthStencilBuffer;
+
+            // Allocate render targets
+            var renderTarget = PostEffects != null ? PushScopedResource(context.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : currentRenderTarget;
+
+            using (context.PushRenderTargetsAndRestore())
             {
-                // Clear atlases
-                shadowMapRenderer.PrepareAtlasAsRenderTargets(context.CommandList);
 
-                context.PushRenderTargets();
+                Clear?.Draw(context);
+                context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
 
-                // Draw all shadow views generated for the current view
-                foreach (var renderView in renderSystem.Views)
+                // Render Shadow maps
+                if (ShadowMapRenderStage != null && shadowMapRenderer != null)
                 {
-                    var shadowmapRenderView = renderView as ShadowMapRenderView;
-                    if (shadowmapRenderView != null && shadowmapRenderView.RenderView == context.RenderContext.RenderView)
-                    {
-                        var shadowMapRectangle = shadowmapRenderView.Rectangle;
-                        shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
-                        shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
-                        context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+                    // Clear atlases
+                    shadowMapRenderer.PrepareAtlasAsRenderTargets(context.CommandList);
 
-                        renderSystem.Draw(context, shadowmapRenderView, ShadowMapRenderStage);
+                    using (context.PushRenderTargetsAndRestore())
+                    {
+                        // Draw all shadow views generated for the current view
+                        foreach (var renderView in renderSystem.Views)
+                        {
+                            var shadowmapRenderView = renderView as ShadowMapRenderView;
+                            if (shadowmapRenderView != null && shadowmapRenderView.RenderView == context.RenderContext.RenderView)
+                            {
+                                var shadowMapRectangle = shadowmapRenderView.Rectangle;
+                                shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
+                                shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
+                                context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+
+                                renderSystem.Draw(context, shadowmapRenderView, ShadowMapRenderStage);
+                            }
+                        }
+                    }
+
+                    shadowMapRenderer.PrepareAtlasAsShaderResourceViews(context.CommandList);
+                }
+
+                // Draw [main view | main stage]
+                if (MainRenderStage != null)
+                    renderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
+
+                // Draw [main view | transparent stage]
+                if (TransparentRenderStage != null)
+                {
+                    // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
+                    var depthStencilSRV = ResolveDepthAsSRV(context);
+
+                    renderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
+
+                    // Free the depth texture since we won't need it anymore
+                    if (depthStencilSRV != null)
+                    {
+                        context.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
                     }
                 }
 
-                context.PopRenderTargets();
-
-                shadowMapRenderer.PrepareAtlasAsShaderResourceViews(context.CommandList);
-            }
-
-            // Draw [main view | main stage]
-            if (MainRenderStage != null)
-                renderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
-
-            // Draw [main view | transparent stage]
-            if (TransparentRenderStage != null)
-            {
-                // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
-                var depthStencilSRV = ResolveDepthAsSRV(context);
-
-                renderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
-
-                // Free the depth texture since we won't need it anymore
-                if (depthStencilSRV != null)
+                // Run post effects
+                if (PostEffects != null)
                 {
-                    context.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
+                    PostEffects.Draw(context, renderTarget, currentDepthStencil, currentRenderTarget);
                 }
             }
         }
@@ -110,42 +142,40 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             if (!enableDepthAsShaderResource)
                 return null;
 
-            context.PushRenderTargets();
-
-            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-            var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
-
-            var renderView = context.RenderContext.RenderView;
-
-            foreach (var renderFeature in context.RenderContext.RenderSystem.RenderFeatures)
+            using (context.PushRenderTargetsAndRestore())
             {
-                if (!(renderFeature is RootEffectRenderFeature))
-                    continue;
+                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
+                var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
 
-                var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
-                var viewFeature = renderView.Features[renderFeature.Index];
+                var renderView = context.RenderContext.RenderView;
 
-                // Copy ViewProjection to PerFrame cbuffer
-                foreach (var viewLayout in viewFeature.Layouts)
+                foreach (var renderFeature in context.RenderContext.RenderSystem.RenderFeatures)
                 {
-                    var resourceGroup = viewLayout.Entries[renderView.Index].Resources;
-
-                    var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
-                    if (depthLogicalGroup.Hash == ObjectId.Empty)
+                    if (!(renderFeature is RootEffectRenderFeature))
                         continue;
 
-                    // Might want to use ProcessLogicalGroup if more than 1 Recource
-                    resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
+                    var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
+                    var viewFeature = renderView.Features[renderFeature.Index];
+
+                    // Copy ViewProjection to PerFrame cbuffer
+                    foreach (var viewLayout in viewFeature.Layouts)
+                    {
+                        var resourceGroup = viewLayout.Entries[renderView.Index].Resources;
+
+                        var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
+                        if (depthLogicalGroup.Hash == ObjectId.Empty)
+                            continue;
+
+                        // Might want to use ProcessLogicalGroup if more than 1 Recource
+                        resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
+                    }
                 }
+
+                depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
+                currentRenderFrame.Activate(context, depthStencilROCached);
+
+                return depthStencilSRV;
             }
-
-            depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
-            currentRenderFrame.Activate(context, depthStencilROCached);
-
-            context.PopRenderTargets();
-
-            return depthStencilSRV;
         }
-
     }
 }

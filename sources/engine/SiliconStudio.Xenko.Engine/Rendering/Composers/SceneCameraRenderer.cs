@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.CollectCore(renderContext);
 
             renderContext.RenderSystem.Views.Add(MainRenderView);
-            
+
             // Setup renderview
+            var camera = ResolveCamera(renderContext);
             MainRenderView.SceneInstance = renderContext.SceneInstance;
-            var camera = renderContext.GetCameraFromSlot(Camera);
             UpdateCameraToRenderView(renderContext, MainRenderView, camera);
 
             using (renderContext.PushRenderViewAndRestore(MainRenderView))
@@ -40,6 +40,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             {
                 CollectInner(renderContext);
             }
+        }
+
+        protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
+        {
+            return renderContext.GetCameraFromSlot(Camera);
         }
 
         protected override void DrawCore(RenderDrawContext renderContext)

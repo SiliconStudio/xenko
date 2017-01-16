@@ -172,6 +172,26 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
 
+            var singleView = new ForwardRenderer
+            {
+                Clear = { Color = clearColor ?? Color.CornflowerBlue },
+                MainRenderStage = mainRenderStage,
+                TransparentRenderStage = transparentRenderStage,
+                ShadowMapRenderStage = shadowCasterRenderStage,
+                PostEffects = enablePostEffects
+                    ? new PostProcessingEffects
+                    {
+                        ColorTransforms =
+                        {
+                            Transforms =
+                            {
+                                new ToneMap()
+                            },
+                        },
+                    }
+                    : null,
+            };
+
             return new GraphicsCompositor
             {
                 Cameras =
@@ -241,27 +261,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 },
                 TopLevel = new SceneCameraRenderer()
                 {
-                    Child = new SingleViewPostProcessed
-                    {
-                        Clear = { Color = clearColor ?? Color.CornflowerBlue },
-                        UnitRenderer = new ForwardRenderer
-                        {
-                            MainRenderStage = mainRenderStage,
-                            TransparentRenderStage = transparentRenderStage,
-                            ShadowMapRenderStage = shadowCasterRenderStage,
-                        },
-                        PostEffects = enablePostEffects ? new PostProcessingEffects
-                        {
-                            ColorTransforms =
-                            {
-                                Transforms =
-                                {
-                                    new ToneMap()
-                                },
-                            },
-                        } : null,
-                    }
+                    Child = singleView,
                 },
+                SingleView = singleView,
             };
         }
     }
