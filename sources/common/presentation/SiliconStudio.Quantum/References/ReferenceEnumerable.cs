@@ -71,7 +71,7 @@ namespace SiliconStudio.Quantum.References
             return items?.ContainsKey(index) ?? false;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
             var newObjectValue = ownerNode.Content.Value;
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
@@ -133,7 +133,7 @@ namespace SiliconStudio.Quantum.References
                         if (!found)
                         {
                             // Otherwise, do a full update that will properly initialize the new reference.
-                            newReference.Value.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Key);
+                            newReference.Value.Refresh(ownerNode, nodeContainer, newReference.Key);
                         }
                     }
                 }

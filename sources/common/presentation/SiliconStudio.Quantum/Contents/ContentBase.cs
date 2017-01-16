@@ -11,9 +11,10 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContent"/> interface.
     /// </summary>
-    public abstract class ContentBase : IContent
+    public abstract class ContentBase : GraphNode, IContent
     {
-        protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentBase(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(name, null, guid)
         {
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
             Reference = reference;
@@ -60,13 +61,13 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public virtual object Retrieve()
         {
-            return Content.Retrieve(Value, Index.Empty, Descriptor);
+            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, Index.Empty, Descriptor);
         }
 
         /// <inheritdoc/>
         public virtual object Retrieve(Index index)
         {
-            return Content.Retrieve(Value, index, Descriptor);
+            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, index, Descriptor);
         }
 
         /// <inheritdoc/>

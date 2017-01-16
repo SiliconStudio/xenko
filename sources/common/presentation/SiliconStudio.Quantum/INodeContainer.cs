@@ -23,20 +23,6 @@ namespace SiliconStudio.Quantum
         INodeBuilder NodeBuilder { get; set; }
 
         /// <summary>
-        /// Overrides the default factory to use to create <see cref="IGraphNode"/> instances.
-        /// </summary>
-        /// <param name="nodeFactory">The new factory to use to create <see cref="IGraphNode"/> instances.</param>
-        /// <seealso cref="RestoreDefaultNodeFactory"/>
-        void OverrideNodeFactory(NodeFactoryDelegate nodeFactory);
-
-        /// <summary>
-        /// Clears any override made to the default factory with <see cref="OverrideNodeFactory"/>.
-        /// This method will restore the default factory of this class.
-        /// </summary>
-        /// <seealso cref="OverrideNodeFactory"/>
-        void RestoreDefaultNodeFactory();
-
-        /// <summary>
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>

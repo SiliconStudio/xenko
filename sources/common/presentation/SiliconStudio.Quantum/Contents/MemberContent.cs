@@ -16,8 +16,8 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly NodeContainer nodeContainer;
 
-        public MemberContent(INodeBuilder nodeBuilder, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
+        public MemberContent(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
+            : base(member.Name, guid, nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             Member = member;
@@ -29,11 +29,6 @@ namespace SiliconStudio.Quantum.Contents
         /// The <see cref="IMemberDescriptor"/> used to access the member of the container represented by this content.
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
-
-        /// <summary>
-        /// Gets the name of the node holding this content.
-        /// </summary>
-        public string Name => OwnerNode?.Name;
 
         /// <summary>
         /// Gets the container content of this member content.

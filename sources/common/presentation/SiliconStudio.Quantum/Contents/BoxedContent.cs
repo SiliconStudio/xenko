@@ -10,8 +10,8 @@ namespace SiliconStudio.Quantum.Contents
         private ContentBase boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
-        public BoxedContent(object value, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(value, descriptor, isPrimitive, null)
+        public BoxedContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(value, guid, descriptor, isPrimitive, null)
         {
         }
 

@@ -3,10 +3,11 @@ using SiliconStudio.Assets.Quantum.Commands;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
+using IReference = SiliconStudio.Core.Serialization.Contents.IReference;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -45,19 +46,29 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
-            OverrideNodeFactory(AssetNodeFactory);
+        }
+    }
+
+    public class AssetNodeFactory : IContentFactory
+    {
+        /// <inheritdoc/>
+        public IContent CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        {
+            var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
+            return new AssetObjectNode(obj, guid, descriptor, isPrimitive, reference);
         }
 
-        private static IAssetNode AssetNodeFactory(string name, IContent content, Guid guid)
+        /// <inheritdoc/>
+        public IContent CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
-            if (content is MemberContent)
-                return new AssetMemberNode(name, content, guid);
-            if (content is BoxedContent)
-                return new AssetBoxedNode(name, content, guid);
-            if (content is ObjectContent)
-                return new AssetObjectNode(name, content, guid);
+            return new AssetBoxedNode(structure, guid, descriptor, isPrimitive);
+        }
 
-            throw new NotSupportedException();
+        /// <inheritdoc/>
+        public IContent CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, object value)
+        {
+            var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
+            return new AssetMemberNode(nodeBuilder, guid, container, member, isPrimitive, reference);
         }
     }
 }

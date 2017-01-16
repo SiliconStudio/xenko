@@ -16,7 +16,6 @@ namespace SiliconStudio.Quantum
         private readonly object lockObject = new object();
         private readonly ThreadLocal<HashSet<IGraphNode>> processedNodes = new ThreadLocal<HashSet<IGraphNode>>();
         private ConditionalWeakTable<object, IGraphNode> nodesByObject = new ConditionalWeakTable<object, IGraphNode>();
-        private NodeFactoryDelegate defaultNodeFactory = DefaultNodeFactory;
 
         /// <summary>
         /// Creates a new instance of <see cref="NodeContainer"/> class.
@@ -30,24 +29,6 @@ namespace SiliconStudio.Quantum
         public INodeBuilder NodeBuilder { get; set; }
 
         /// <inheritdoc/>
-        public void OverrideNodeFactory(NodeFactoryDelegate nodeFactory)
-        {
-            lock (lockObject)
-            {
-                defaultNodeFactory = nodeFactory;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void RestoreDefaultNodeFactory()
-        {
-            lock (lockObject)
-            {
-                OverrideNodeFactory(DefaultNodeFactory);
-            }
-        }
-
-        /// <inheritdoc/>
         public IGraphNode GetOrCreateNode(object rootObject)
         {
             if (rootObject == null)
@@ -58,7 +39,7 @@ namespace SiliconStudio.Quantum
                 if (!processedNodes.IsValueCreated)
                     processedNodes.Value = new HashSet<IGraphNode>();
 
-                var node = GetOrCreateNodeInternal(rootObject, defaultNodeFactory);
+                var node = GetOrCreateNodeInternal(rootObject);
 
                 processedNodes.Value.Clear();
                 return node;
@@ -130,12 +111,9 @@ namespace SiliconStudio.Quantum
         /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <param name="nodeFactory">The factory to use to create nodes.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        internal IGraphNode GetOrCreateNodeInternal(object rootObject, NodeFactoryDelegate nodeFactory)
+        internal IGraphNode GetOrCreateNodeInternal(object rootObject)
         {
-            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
-
             if (rootObject == null)
                 return null;
 
@@ -149,7 +127,7 @@ namespace SiliconStudio.Quantum
                         return result;
                 }
 
-                result = NodeBuilder.Build(rootObject, Guid.NewGuid(), nodeFactory);
+                result = NodeBuilder.Build(rootObject, Guid.NewGuid());
 
                 if (result != null)
                 {
@@ -180,7 +158,7 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.Content.IsReference)
                 {
-                    node.Content.Reference.Refresh(node, this, defaultNodeFactory);
+                    node.Content.Reference.Refresh(node, this);
                 }
                 else
                 {
@@ -197,11 +175,6 @@ namespace SiliconStudio.Quantum
         {
             var nodeBuilder = new DefaultNodeBuilder(this);
             return nodeBuilder;
-        }
-
-        private static IGraphNode DefaultNodeFactory(string name, IContent content, Guid guid)
-        {
-            return new GraphNode(name, content, guid);
         }
     }
 }

@@ -5,6 +5,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -32,12 +33,12 @@ namespace SiliconStudio.Assets.Quantum
         void SetBaseContent(IContent content);
     }
 
-    public class AssetObjectNode : GraphNode, IAssetNode, IAssetNodeInternal
+    public class AssetObjectNode : ObjectContent, IAssetNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
 
-        public AssetObjectNode(string name, IContent content, Guid guid)
-            : base(name, content, guid)
+        public AssetObjectNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(value, guid, descriptor, isPrimitive, reference)
         {
         }
 
@@ -75,12 +76,12 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    public class AssetBoxedNode : GraphNode, IAssetNode, IAssetNodeInternal
+    public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
 
-        public AssetBoxedNode(string name, IContent content, Guid guid)
-            : base(name, content, guid)
+        public AssetBoxedNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(value, guid, descriptor, isPrimitive)
         {
         }
 
@@ -118,7 +119,7 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    public class AssetMemberNode : GraphNode, IAssetNode, IAssetNodeInternal
+    public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
     {
         private AssetPropertyGraph propertyGraph;
         private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
@@ -130,7 +131,8 @@ namespace SiliconStudio.Assets.Quantum
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetMemberNode(string name, IContent content, Guid guid) : base(name, content, guid)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, container, member, isPrimitive, reference)
         {
             Content.PrepareChange += (sender, e) => contentUpdating = true;
             Content.FinalizeChange += (sender, e) => contentUpdating = false;

@@ -22,7 +22,6 @@ namespace SiliconStudio.Quantum
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private GraphNode rootNode;
         private Guid rootGuid;
-        private NodeFactoryDelegate currentNodeFactory;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
@@ -84,16 +83,13 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode Build(object obj, Guid guid, NodeFactoryDelegate nodeFactory)
+        public IGraphNode Build(object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
             Reset();
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj.GetType());
-            currentNodeFactory = nodeFactory;
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
-            currentNodeFactory = null;
             return rootNode;
         }
 
@@ -107,10 +103,10 @@ namespace SiliconStudio.Quantum
             {
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                                : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                                : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 currentDescriptor = content.Descriptor;
-                rootNode = (GraphNode)currentNodeFactory(currentDescriptor.Type.Name, content, rootGuid);
+                rootNode = (GraphNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -170,8 +166,9 @@ namespace SiliconStudio.Quantum
         {
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
-            var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
+            var guid = Guid.NewGuid();
+            IContent content = ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            var node = (GraphNode)content;
             containerNode.AddChild(node);
 
             if (content.IsReference)

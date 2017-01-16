@@ -61,18 +61,18 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
-            Refresh(ownerNode, nodeContainer, nodeFactory, Index.Empty);
+            Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory, Index index)
+        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Content.Retrieve(index);
             if (TargetNode?.Content.Value != objectValue)
             {
                 // This call will recursively update the references.
-                var target = SetTarget(objectValue, nodeContainer, nodeFactory);
+                var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
                     var ownerContent = (ContentBase)ownerNode.Content;
@@ -111,11 +111,10 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        /// <param name="nodeFactory">The factory to use to create nodes.</param>
-        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue, nodeFactory);
+            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }

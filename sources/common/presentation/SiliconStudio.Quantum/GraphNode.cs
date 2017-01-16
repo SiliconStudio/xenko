@@ -28,13 +28,11 @@ namespace SiliconStudio.Quantum
         public GraphNode(string name, IContent content, Guid guid)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
-            if (content == null) throw new ArgumentNullException(nameof(content));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(content));
-            Content = content;
             Name = name;
             Guid = guid;
 
-            var updatableContent = content as ContentBase;
+            var updatableContent = content as ContentBase ?? this as ContentBase;
             updatableContent?.RegisterOwner(this);
         }
 
@@ -45,7 +43,7 @@ namespace SiliconStudio.Quantum
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        public IContent Content { get; }
+        public IContent Content => this as IContent;
 
         /// <inheritdoc/>
         public virtual IGraphNode Parent { get; private set; }
