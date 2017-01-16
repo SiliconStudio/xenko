@@ -96,7 +96,7 @@ namespace SiliconStudio.Quantum
 
         private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
         {
-            var node = e.Content.OwnerNode as IContentNode;
+            var node = e.Content;
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
@@ -127,7 +127,7 @@ namespace SiliconStudio.Quantum
 
         private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
         {
-            var node = e.Content.OwnerNode as IContentNode;
+            var node = e.Content;
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();

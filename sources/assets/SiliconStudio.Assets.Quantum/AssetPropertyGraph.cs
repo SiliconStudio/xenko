@@ -405,7 +405,7 @@ namespace SiliconStudio.Assets.Quantum
         private void AssetContentChanging(object sender, ContentChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetMemberNode)e.Content.OwnerNode;
+            var node = (AssetMemberNode)e.Content;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
             {
                 // For value change and remove, we store the current override state.
@@ -427,24 +427,24 @@ namespace SiliconStudio.Assets.Quantum
                 {
                     ids.TryGet(e.Index.Value, out itemId);
                 }
-                removedItemIds[e.Content.OwnerNode] = itemId;
+                removedItemIds[e.Content] = itemId;
             }
             if (e.ChangeType == ContentChangeType.CollectionAdd && !node.IsNonIdentifiableCollectionContent)
             {
                 // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
-                previousOverrides[e.Content.OwnerNode] = OverrideType.New;
+                previousOverrides[e.Content] = OverrideType.New;
             }
-            previousOverrides[e.Content.OwnerNode] = overrideValue;
+            previousOverrides[e.Content] = overrideValue;
         }
 
         private void AssetContentChanged(object sender, ContentChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Content.OwnerNode];
-            previousOverrides.Remove(e.Content.OwnerNode);
+            var previousOverride = previousOverrides[e.Content];
+            previousOverrides.Remove(e.Content);
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (AssetMemberNode)e.Content.OwnerNode;
+            var node = (AssetMemberNode)e.Content;
             if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
             {
                 if (e.Index == Index.Empty)
@@ -470,9 +470,9 @@ namespace SiliconStudio.Assets.Quantum
             else
             {
                 // When deleting we are always overriding (unless there is no base)
-                overrideValue = !((AssetMemberNode)node.BaseContent?.OwnerNode)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
-                itemId = removedItemIds[e.Content.OwnerNode];
-                removedItemIds.Remove(e.Content.OwnerNode);
+                overrideValue = !((AssetMemberNode)node.BaseContent)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
+                itemId = removedItemIds[e.Content];
+                removedItemIds.Remove(e.Content);
             }
 
             Changed?.Invoke(sender, new AssetContentChangeEventArgs(e, previousOverride, overrideValue, itemId));
@@ -487,7 +487,7 @@ namespace SiliconStudio.Assets.Quantum
             UpdatingPropertyFromBase = true;
             // TODO: we want to refresh the base only starting from the modified node!
             RefreshBase(baseGraph);
-            var rootNode = (IAssetNode)assetContent.OwnerNode;
+            var rootNode = (IAssetNode)assetContent;
             var visitor = CreateReconcilierVisitor();
             visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
             visitor.Visit(rootNode);
@@ -501,7 +501,7 @@ namespace SiliconStudio.Assets.Quantum
             if (assetNode?.BaseContent == null || !assetNode.CanOverride)
                 return;
 
-            var baseNode = (AssetMemberNode)assetNode.BaseContent.OwnerNode;
+            var baseNode = (AssetMemberNode)assetNode.BaseContent;
             var localValue = assetNode.Content.Retrieve();
             var baseValue = assetNode.BaseContent.Retrieve();
 

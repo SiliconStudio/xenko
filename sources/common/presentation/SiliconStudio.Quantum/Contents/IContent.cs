@@ -10,13 +10,8 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// Content of a <see cref="IContentNode"/>.
     /// </summary>
-    public interface IContent
+    public interface IContent : IContentNode
     {
-        /// <summary>
-        /// Gets the <see cref="IContentNode"/> owning this content.
-        /// </summary>
-        IContentNode OwnerNode { get; }
-
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
         /// </summary>

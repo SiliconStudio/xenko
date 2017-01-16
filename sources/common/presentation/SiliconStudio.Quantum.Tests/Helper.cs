@@ -24,8 +24,6 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the content is of the expected type.
             Assert.IsInstanceOf<ObjectContent>(node.Content);
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(node, node.Content.OwnerNode);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
@@ -51,8 +49,6 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the content is of the expected type.
             Assert.IsInstanceOf<ObjectContent>(node.Content);
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(node, node.Content.OwnerNode);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
@@ -91,8 +87,6 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the content is of the expected type.
             Assert.AreEqual(typeof(MemberContent), memberNode.Content.GetType());
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(memberNode, memberNode.Content.OwnerNode);
             // A node with a MemberContent should have the same name that the member in the container.
             Assert.AreEqual(memberName, memberNode.Name);
             // A node with a MemberContent should have its container as parent.
@@ -208,8 +202,6 @@ namespace SiliconStudio.Quantum.Tests
         {
             if (structNode == null) throw new ArgumentNullException(nameof(structNode));
             if (structValue == null) throw new ArgumentNullException(nameof(structValue));
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(structNode, structNode.Content.OwnerNode);
             // A struct node should have the related struct as value of its content.
             Assert.AreEqual(structValue, structNode.Content.Retrieve());
             // A struct node should not contain a reference.

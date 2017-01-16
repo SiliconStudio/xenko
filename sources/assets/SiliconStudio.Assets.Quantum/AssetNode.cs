@@ -374,12 +374,12 @@ namespace SiliconStudio.Assets.Quantum
             // Make sure that we have item ids everywhere we're supposed to.
             AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
 
-            var node = (AssetMemberNode)e.Content.OwnerNode;
+            var node = (AssetMemberNode)e.Content;
             if (node.IsNonIdentifiableCollectionContent)
                 return;
 
             // Create new ids for collection items
-            var baseNode = (AssetMemberNode)BaseContent?.OwnerNode;
+            var baseNode = (AssetMemberNode)BaseContent;
             var isOverriding = !baseNode?.contentUpdating == true;
             var removedId = ItemId.Empty;
             switch (e.ChangeType)
