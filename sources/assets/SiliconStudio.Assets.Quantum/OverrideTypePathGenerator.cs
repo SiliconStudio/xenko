@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum
             var assetNode = (IAssetNode)node;
 
             bool localInNonIdentifiableType = false;
-            if ((node.Content.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
+            if ((node.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
             {
                 localInNonIdentifiableType = true;
                 inNonIdentifiableType++;

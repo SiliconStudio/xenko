@@ -60,7 +60,7 @@ namespace SiliconStudio.Quantum
 
             protected override void VisitReference(IContentNode referencer, ObjectReference reference, GraphNodePath targetPath)
             {
-                if (ShouldVisitNode(referencer.Content as MemberContent, reference.TargetNode))
+                if (ShouldVisitNode(referencer as MemberContent, reference.TargetNode))
                 {
                     if (reference.TargetNode != null)
                     {
@@ -164,9 +164,9 @@ namespace SiliconStudio.Quantum
         protected virtual ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.Content.Reference as ObjectReference;
+                return targetNode.Reference as ObjectReference;
 
-            var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
+            var targetReference = targetNode.Reference as ReferenceEnumerable;
             return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }

@@ -22,8 +22,8 @@ namespace SiliconStudio.Assets.Quantum
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
-            var part = sourceNode.Content.Value as TAssetPart;
-            if (part != null && sourceNode.Content is ObjectContent)
+            var part = sourceNode.Value as TAssetPart;
+            if (part != null && sourceNode is ObjectContent)
             {
                 TAssetPartDesign partDesign;
                 // The part might be being moved and could possibly be currently not into the Parts collection.
@@ -73,10 +73,10 @@ namespace SiliconStudio.Assets.Quantum
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || targetNode == null || member == targetNode.Content)
+            if (member == null || targetNode == null || member == targetNode)
                 return false;
 
-            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))
+            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Type))
             {
                 // Check if we're the part referenced by a part design - other cases are references
                 return member.Parent.Type != typeof(TAssetPartDesign);

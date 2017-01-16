@@ -75,7 +75,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.Content.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
+            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Content.Type, Index.Empty);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();

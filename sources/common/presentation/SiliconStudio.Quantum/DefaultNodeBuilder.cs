@@ -165,9 +165,9 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             // If this member should contains a reference, create it now.
-            ContentNode containerNode = GetContextNode();
+            var containerNode = GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, (ContentNode)containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
             containerNode.AddChild(content);
 
             if (content.IsReference)
@@ -181,7 +181,7 @@ namespace SiliconStudio.Quantum
             }
             PopContextNode();
 
-            AvailableCommands.Where(x => x.CanAttach(content.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
+            AvailableCommands.Where(x => x.CanAttach(content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
 
             content.Seal();
         }

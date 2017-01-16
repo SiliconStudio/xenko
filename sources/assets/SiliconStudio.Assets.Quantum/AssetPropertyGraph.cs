@@ -201,7 +201,7 @@ namespace SiliconStudio.Assets.Quantum
                     case YamlAssetPath.ItemType.Member:
                         index = Index.Empty;
                         overrideOnKey = false;
-                        if (currentNode.Content.IsReference)
+                        if (currentNode.IsReference)
                         {
                             currentNode = (IAssetNode)currentNode.Target;
                         }
@@ -211,18 +211,18 @@ namespace SiliconStudio.Assets.Quantum
                     case YamlAssetPath.ItemType.Index:
                         index = new Index(item.Value);
                         overrideOnKey = true;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
+                        if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
                             Index index1 = new Index(item.Value);
                             currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
                         }
                         break;
                     case YamlAssetPath.ItemType.ItemId:
-                        var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
+                        var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
                         index = new Index(key);
                         overrideOnKey = false;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
+                        if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
                             Index index1 = new Index(key);
                             currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
@@ -389,13 +389,13 @@ namespace SiliconStudio.Assets.Quantum
         {
             var assetNode = (IAssetNode)currentNode;
             ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
-            ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode?.Content);
+            ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode);
             if (!baseLinkedNodes.ContainsKey(assetNode))
             {
                 EventHandler<ContentChangeEventArgs> action = null;
                 if (baseNode != null)
                 {
-                    action = (s, e) => OnBaseContentChanged(e, currentNode.Content);
+                    action = (s, e) => OnBaseContentChanged(e, currentNode);
                     assetNode.BaseContent.Changed += action;
                 }
                 baseLinkedNodes.Add(assetNode, action);
@@ -502,7 +502,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             var baseNode = (AssetMemberNode)assetNode.BaseContent;
-            var localValue = assetNode.Content.Retrieve();
+            var localValue = assetNode.Retrieve();
             var baseValue = assetNode.BaseContent.Retrieve();
 
             // Reconcile occurs only when the node is not overridden.
@@ -515,22 +515,22 @@ namespace SiliconStudio.Assets.Quantum
                     if (localValue == null && baseValue != null)
                     {
                         var clonedValue = CloneValueFromBase(baseValue, assetNode);
-                        assetNode.Content.Update(clonedValue);
+                        assetNode.Update(clonedValue);
                     }
                     else if (localValue != null /*&& baseValue == null*/)
                     {
-                        assetNode.Content.Update(null);
+                        assetNode.Update(null);
                     }
                 }
                 // Then handle collection and dictionary cases
-                else if (assetNode.Content.Descriptor is CollectionDescriptor || assetNode.Content.Descriptor is DictionaryDescriptor)
+                else if (assetNode.Descriptor is CollectionDescriptor || assetNode.Descriptor is DictionaryDescriptor)
                 {
                     // Items to add and to remove are stored in local collections and processed later, since they might affect indices
                     var itemsToRemove = new List<ItemId>();
                     var itemsToAdd = new SortedList<object, ItemId>(new DefaultKeyComparer());
 
                     // Check for item present in the instance and absent from the base.
-                    foreach (var index in assetNode.Content.Indices)
+                    foreach (var index in assetNode.Indices)
                     {
                         // Skip overridden items
                         if (assetNode.IsItemOverridden(index))
@@ -577,14 +577,14 @@ namespace SiliconStudio.Assets.Quantum
                         if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
                             // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
-                            var keyCollision = assetNode.Content.Descriptor is DictionaryDescriptor && (assetNode.Content.Reference?.HasIndex(index) == true || assetNode.Content.Indices.Any(x => index.Equals(x)));
+                            var keyCollision = assetNode.Descriptor is DictionaryDescriptor && (assetNode.Reference?.HasIndex(index) == true || assetNode.Indices.Any(x => index.Equals(x)));
                             // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
-                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Content.Retrieve(index));
+                            var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Retrieve(index));
 
                             // We cannot add the item, let's mark it as deleted.
                             if (keyCollision || itemRejected)
                             {
-                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Content.Retrieve());
+                                var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(assetNode.Retrieve());
                                 instanceIds.MarkAsDeleted(itemId);
                             }
                             else
@@ -596,29 +596,29 @@ namespace SiliconStudio.Assets.Quantum
                         else
                         {
                             // If the item is present in both the instance and the base, check if we need to reconcile the value
-                            var member = assetNode.Content as MemberContent;
-                            var targetNode = assetNode.Content.Reference?.AsEnumerable?[localIndex]?.TargetNode;
+                            var member = assetNode as MemberContent;
+                            var targetNode = assetNode.Reference?.AsEnumerable?[localIndex]?.TargetNode;
                             // Skip it if it's overridden
                             if (!assetNode.IsItemOverridden(localIndex))
                             {
-                                var localItemValue = assetNode.Content.Retrieve(localIndex);
-                                var baseItemValue = baseNode.Content.Retrieve(index);
-                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Content.Reference is ReferenceEnumerable))
+                                var localItemValue = assetNode.Retrieve(localIndex);
+                                var baseItemValue = baseNode.Retrieve(index);
+                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Reference is ReferenceEnumerable))
                                 {
                                     var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
-                                    assetNode.Content.Update(clonedValue, localIndex);
+                                    assetNode.Update(clonedValue, localIndex);
                                 }
                             }
                             // In dictionaries, the keys might be different between the instance and the base. We need to reconcile them too
-                            if (assetNode.Content.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
+                            if (assetNode.Descriptor is DictionaryDescriptor && !assetNode.IsKeyOverridden(localIndex))
                             {
                                 if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
                                 {
                                     // Reconcile using a move (Remove + Add) of the key-value pair
                                     var clonedIndex = new Index(CloneValueFromBase(index.Value, assetNode));
-                                    var localItemValue = assetNode.Content.Retrieve(localIndex);
-                                    assetNode.Content.Remove(localItemValue, localIndex);
-                                    assetNode.Content.Add(localItemValue, clonedIndex);
+                                    var localItemValue = assetNode.Retrieve(localIndex);
+                                    assetNode.Remove(localItemValue, localIndex);
+                                    assetNode.Add(localItemValue, clonedIndex);
                                     ids[clonedIndex.Value] = itemId;
                                 }
                             }
@@ -629,8 +629,8 @@ namespace SiliconStudio.Assets.Quantum
                     foreach (var item in itemsToRemove)
                     {
                         var index = assetNode.IdToIndex(item);
-                        var value = assetNode.Content.Retrieve(index);
-                        assetNode.Content.Remove(value, index);
+                        var value = assetNode.Retrieve(index);
+                        assetNode.Remove(value, index);
                         // We're reconciling, so let's hack the normal behavior of marking the removed item as deleted.
                         ids.UnmarkAsDeleted(item);
                     }
@@ -639,9 +639,9 @@ namespace SiliconStudio.Assets.Quantum
                     foreach (var item in itemsToAdd)
                     {
                         var baseIndex = baseNode.IdToIndex(item.Value);
-                        var baseItemValue = baseNode.Content.Retrieve(baseIndex);
+                        var baseItemValue = baseNode.Retrieve(baseIndex);
                         var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
-                        if (assetNode.Content.Descriptor is CollectionDescriptor)
+                        if (assetNode.Descriptor is CollectionDescriptor)
                         {
                             // In a collection, we need to find an index that matches the index on the base to maintain order.
                             // To do so, we iterate from the index in the base to zero.
@@ -680,12 +680,12 @@ namespace SiliconStudio.Assets.Quantum
                 // Finally, handle single properties
                 else
                 {
-                    var member = assetNode.Content as MemberContent;
-                    var targetNode = assetNode.Content.Reference?.AsObject?.TargetNode;
-                    if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Content.Reference is ObjectReference))
+                    var member = assetNode as MemberContent;
+                    var targetNode = assetNode.Reference?.AsObject?.TargetNode;
+                    if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Reference is ObjectReference))
                     {
                         var clonedValue = CloneValueFromBase(baseValue, assetNode);
-                        assetNode.Content.Update(clonedValue);
+                        assetNode.Update(clonedValue);
                     }
                 }
                 assetNode.ResettingOverride = false;

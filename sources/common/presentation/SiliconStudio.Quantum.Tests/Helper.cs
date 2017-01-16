@@ -23,15 +23,15 @@ namespace SiliconStudio.Quantum.Tests
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             // Check that the content is of the expected type.
-            Assert.IsInstanceOf<ObjectContent>(node.Content);
+            Assert.IsInstanceOf<ObjectContent>(node);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, node.Content.Retrieve());
+            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
             // A node with an ObjectContent should not contain a reference if it does not represent a collection.
-            Assert.AreEqual(false, node.Content.IsReference);
+            Assert.AreEqual(false, ((ContentNode)node).IsReference);
             // Check that we have the expected number of children.
             Assert.AreEqual(childCount, node.Children.Count);
         }
@@ -48,23 +48,23 @@ namespace SiliconStudio.Quantum.Tests
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             // Check that the content is of the expected type.
-            Assert.IsInstanceOf<ObjectContent>(node.Content);
+            Assert.IsInstanceOf<ObjectContent>(node);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, node.Content.Retrieve());
+            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
             if (isReference)
             {
                 // A node with an ObjectContent representing a collection of reference types should contain an enumerable reference.
-                Assert.AreEqual(true, node.Content.IsReference);
-                Assert.IsInstanceOf<ReferenceEnumerable>(node.Content.Reference);
+                Assert.AreEqual(true, ((ContentNode)node).IsReference);
+                Assert.IsInstanceOf<ReferenceEnumerable>(((ContentNode)node).Reference);
             }
             else
             {
                 // A node with an ObjectContent representing a collection of primitive or struct types should not contain a refernce.
-                Assert.AreEqual(false, node.Content.IsReference);            
+                Assert.AreEqual(false, ((ContentNode)node).IsReference);            
             }
             // A node with an ObjectContent representing a collection should not have any child.
             Assert.AreEqual(0, node.Children.Count);
@@ -86,15 +86,15 @@ namespace SiliconStudio.Quantum.Tests
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             // Check that the content is of the expected type.
-            Assert.AreEqual(typeof(MemberContent), memberNode.Content.GetType());
+            Assert.AreEqual(typeof(MemberContent), memberNode.GetType());
             // A node with a MemberContent should have the same name that the member in the container.
             Assert.AreEqual(memberName, memberNode.Name);
             // A node with a MemberContent should have its container as parent.
             Assert.AreEqual(containerNode, memberNode.Parent);
             // A node with a MemberContent should have the member value as value of its content.
-            Assert.AreEqual(member, memberNode.Content.Retrieve());
+            Assert.AreEqual(member, ((ContentNode)memberNode).Retrieve());
             // A node with a primitive MemberContent should not contain a reference.
-            Assert.AreEqual(isReference, memberNode.Content.IsReference);
+            Assert.AreEqual(isReference, ((ContentNode)memberNode).IsReference);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the reference is not null.
             Assert.IsNotNull(objReference);
             // Check that the values match.
-            Assert.AreEqual(targetValue, objReference.TargetNode.Content.Retrieve());
+            Assert.AreEqual(targetValue, ((ContentNode)objReference.TargetNode).Retrieve());
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
             // Check that that we have an index if expected.
@@ -203,9 +203,9 @@ namespace SiliconStudio.Quantum.Tests
             if (structNode == null) throw new ArgumentNullException(nameof(structNode));
             if (structValue == null) throw new ArgumentNullException(nameof(structValue));
             // A struct node should have the related struct as value of its content.
-            Assert.AreEqual(structValue, structNode.Content.Retrieve());
+            Assert.AreEqual(structValue, ((ContentNode)structNode).Retrieve());
             // A struct node should not contain a reference.
-            Assert.AreEqual(false, structNode.Content.IsReference);
+            Assert.AreEqual(false, ((ContentNode)structNode).IsReference);
             // Check that we have the expected number of children.
             Assert.AreEqual(childCount, structNode.Children.Count);
         }

@@ -21,25 +21,25 @@ namespace SiliconStudio.Quantum
             PrintIndentation(indentation, builder);
             builder.Append(node.Name ?? "<untitled>");
             builder.Append(": [");
-            builder.Append(node.Content.GetType().Name);
+            builder.Append(node.GetType().Name);
             builder.Append("] = ");
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                if (node.Content.Value != null)
+                if (node.Value != null)
                 {
-                    builder.Append(node.Content.Value.ToString().Replace(Environment.NewLine, " "));
+                    builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
                     builder.Append(" > ");
                 }
                 builder.Append("Reference -> ");
-                builder.Append(node.Content.Reference);
+                builder.Append(node.Reference);
             }
-            else if (node.Content.Value == null)
+            else if (node.Value == null)
             {
                 builder.Append("(null)");
             }
             else
             {
-                builder.Append(node.Content.Value.ToString().Replace(Environment.NewLine, " "));
+                builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
             }
             builder.AppendLine();
             foreach (var child in node.Children)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -74,7 +75,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new StructContainer { Struct = new SimpleStruct { Name = "Test", Value = 1 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var memberNode = containerNode.Children.First();
-            memberNode.Content.Update(new SimpleStruct { Name = "Test2", Value = 2 });
+            memberNode.Update(new SimpleStruct { Name = "Test2", Value = 2 });
 
             Assert.AreEqual("Test2", container.Struct.Name);
             Assert.AreEqual(2, container.Struct.Value);
@@ -97,7 +98,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestStructContentNode(memberNode, container.Struct, 2);
             var structMember1Node = memberNode.Children.First();
             Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
-            structMember1Node.Content.Update("Test2");
+            structMember1Node.Update("Test2");
             Assert.AreEqual("Test2", container.Struct.Name);
             Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberContentNode(memberNode, memberNode.Children.First(), container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
@@ -116,7 +117,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestStructContentNode(memberNode, container.Struct, 1);
             var structMember1Node = memberNode.Children.First();
             Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
-            structMember1Node.Content.Update("ddd", new Index(1));
+            structMember1Node.Update("ddd", new Index(1));
             Assert.AreEqual("ddd", container.Struct.Strings[1]);
             Helper.TestMemberContentNode(memberNode, structMember1Node, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
             Helper.TestMemberContentNode(memberNode, memberNode.Children.First(), container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
@@ -154,7 +155,7 @@ namespace SiliconStudio.Quantum.Tests
             var memberNode = containerNode.Children.First();
 
             var newStruct = new FirstNestingStruct { Struct1 = new SecondNestingStruct { Struct2 = new SimpleStruct { Name = "Test2", Value = 2 } } };
-            memberNode.Content.Update(newStruct);
+            memberNode.Update(newStruct);
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 
@@ -182,7 +183,7 @@ namespace SiliconStudio.Quantum.Tests
             var memberNode = containerNode.Children.First();
 
             var newStruct = new SecondNestingStruct { Struct2 = new SimpleStruct { Name = "Test2", Value = 2 } };
-            memberNode.Children.First().Content.Update(newStruct);
+            memberNode.Children.First().Update(newStruct);
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 
@@ -209,8 +210,8 @@ namespace SiliconStudio.Quantum.Tests
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var memberNode = containerNode.Children.First();
 
-            memberNode.Children.First().Children.First().Children.First().Content.Update("Test2");
-            memberNode.Children.First().Children.First().Children.Last().Content.Update(2);
+            memberNode.Children.First().Children.First().Children.First().Update("Test2");
+            memberNode.Children.First().Children.First().Children.Last().Update(2);
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 

@@ -73,7 +73,7 @@ namespace SiliconStudio.Quantum.References
 
         public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
         {
-            var newObjectValue = ownerNode.Content.Value;
+            var newObjectValue = ownerNode.Value;
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
                 }
 
                 foreach (var newReference in newReferences)

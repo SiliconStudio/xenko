@@ -37,14 +37,14 @@ namespace SiliconStudio.Assets.Quantum
         protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.Content.Reference as ObjectReference;
+                return targetNode.Reference as ObjectReference;
 
             // Special case for objects that are identifiable: the object must be linked to the base only if it has the same id
             if (sourceReference.ObjectValue != null)
             {
                 if (sourceReference.Index.IsEmpty)
                 {
-                    return targetNode.Content.Reference.AsObject;
+                    return targetNode.Reference.AsObject;
                 }
 
                 var sourceAssetNode = (IAssetNode)sourceNode;
@@ -52,9 +52,9 @@ namespace SiliconStudio.Assets.Quantum
                     return null;
 
                 // Enumerable reference: we look for an object with the same id
-                var targetReference = targetNode.Content.Reference.AsEnumerable;
-                var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Content.Retrieve());
-                var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Content.Retrieve());
+                var targetReference = targetNode.Reference.AsEnumerable;
+                var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Retrieve());
+                var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Retrieve());
                 var itemId = sourceIds[sourceReference.Index.Value];
                 var targetKey = targetIds.GetKey(itemId);
                 return targetReference.FirstOrDefault(x => Equals(x.Index.Value, targetKey));

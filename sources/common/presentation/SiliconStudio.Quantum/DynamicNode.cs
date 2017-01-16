@@ -28,7 +28,7 @@ namespace SiliconStudio.Quantum
         /// <returns>A <see cref="DynamicNode"/> representing the given node.</returns>
         public static dynamic FromNode(IContentNode node)
         {
-            if (node.Content is MemberContent)
+            if (node is MemberContent)
                 throw new ArgumentException("Cannot create a dynamic node from a member node.");
 
             return new DynamicDirectNode(node);
@@ -60,7 +60,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Add)} on this property.");
-            targetNode.Content.Add(item);
+            targetNode.Add(item);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Insert)} on this property.");
-            targetNode.Content.Add(item, index);
+            targetNode.Add(item, index);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SiliconStudio.Quantum
             var targetNode = GetTargetNode();
             if (targetNode == null)
                 throw new InvalidOperationException($"Cannot invoke {nameof(Remove)} on this property.");
-            targetNode.Content.Remove(item, index);
+            targetNode.Remove(item, index);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace SiliconStudio.Quantum
             try
             {
                 // TODO: "changing" notifications will still be sent even if the update fails (but not the "changed") - we should detect preemptively if we can update (implements a bool TryUpdate?)
-                memberNode.Content.Update(value);
+                memberNode.Update(value);
                 return true;
             }
             catch (Exception)
@@ -176,27 +176,27 @@ namespace SiliconStudio.Quantum
 
         protected static IEnumerable GetAllIndices(IContentNode node)
         {
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                var reference = node.Content.Reference as ReferenceEnumerable;
+                var reference = node.Reference as ReferenceEnumerable;
                 return reference?.Indices.Select(x => x.Value);
             }
-            var value = node.Content.Retrieve();
-            var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+            var value = node.Retrieve();
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
                 var count = collectionDescriptor.GetCollectionCount(value);
                 return Enumerable.Range(0, count);
             }
-            var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
             return dictionaryDescriptor?.GetKeys(value).Cast<object>();
         }
 
         protected static bool IsIndexExisting(IContentNode node, Index index)
         {
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                var reference = node.Content.Reference as ReferenceEnumerable;
+                var reference = node.Reference as ReferenceEnumerable;
                 if (reference?.HasIndex(index) ?? false)
                 {
                     return true;
@@ -204,13 +204,13 @@ namespace SiliconStudio.Quantum
             }
             else
             {
-                var value = node.Content.Retrieve();
-                var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+                var value = node.Retrieve();
+                var collectionDescriptor = node.Descriptor as CollectionDescriptor;
                 if (collectionDescriptor != null && index.IsInt && index.Int >= 0 && index.Int < collectionDescriptor.GetCollectionCount(value))
                 {
                     return true;
                 }
-                var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+                var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
                 if (dictionaryDescriptor != null && dictionaryDescriptor.KeyType.IsInstanceOfType(index.Value) && dictionaryDescriptor.ContainsKey(value, index.Value))
                 {
                     return true;
@@ -221,17 +221,17 @@ namespace SiliconStudio.Quantum
 
         protected static bool IsIndexValid(IContentNode node, Index index)
         {
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                var reference = node.Content.Reference as ReferenceEnumerable;
+                var reference = node.Reference as ReferenceEnumerable;
                 return reference != null;
             }
-            var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
                 return index.IsInt && index.Int >= 0;
             }
-            var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
             if (dictionaryDescriptor != null)
             {
                 return dictionaryDescriptor.KeyType.IsInstanceOfType(index.Value);
@@ -243,12 +243,12 @@ namespace SiliconStudio.Quantum
         {
             if (IsIndexExisting(node, index))
             {
-                node.Content.Update(value, index);
+                node.Update(value, index);
                 return true;
             }
             if (IsIndexValid(node, index))
             {
-                node.Content.Add(value, index);
+                node.Add(value, index);
                 return true;
             }
             return false;
@@ -289,13 +289,13 @@ namespace SiliconStudio.Quantum
 
         protected override object RetrieveValue()
         {
-            return Node.Content.Retrieve();
+            return Node.Retrieve();
         }
 
         protected override IContentNode GetTargetNode()
         {
-            var objectReference = Node.Content.Reference as ObjectReference;
-            if (Node.Content.IsReference && objectReference != null)
+            var objectReference = Node.Reference as ObjectReference;
+            if (Node.IsReference && objectReference != null)
             {
                 return objectReference.TargetNode;
             }
@@ -342,13 +342,13 @@ namespace SiliconStudio.Quantum
 
         protected override object RetrieveValue()
         {
-            return Node.Content.Retrieve(index);
+            return Node.Retrieve(index);
         }
 
         protected override IContentNode GetTargetNode()
         {
-            var reference = Node.Content.Reference as ReferenceEnumerable;
-            if (Node.Content.IsReference && (reference?.HasIndex(index) ?? false))
+            var reference = Node.Reference as ReferenceEnumerable;
+            if (Node.IsReference && (reference?.HasIndex(index) ?? false))
             {
                 return reference[index].TargetNode;
             }

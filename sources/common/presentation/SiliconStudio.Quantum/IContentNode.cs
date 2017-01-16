@@ -26,6 +26,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets the content of the <see cref="IContentNode"/>.
         /// </summary>
+        [Obsolete("This accessor is obsolete, use \"this\"")]
         IContentNode Content { get; }
 
         /// <summary>

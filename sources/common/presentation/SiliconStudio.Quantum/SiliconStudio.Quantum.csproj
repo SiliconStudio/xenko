@@ -40,7 +40,6 @@
     <Compile Include="INodeContainer.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
-    <Compile Include="ModelConsistencyCheckVisitor.cs" />
     <Compile Include="GraphNodePath.cs" />
     <Compile Include="Contents\BoxedContent.cs" />
     <Compile Include="References\IReference.cs" />

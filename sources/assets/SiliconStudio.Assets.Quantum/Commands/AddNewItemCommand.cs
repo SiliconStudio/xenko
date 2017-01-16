@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             var value = content.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
-            object itemToAdd = null;
+            object itemToAdd;
 
             // First, check if parameter is an AbstractNodeEntry
             var abstractNodeEntry = parameter as AbstractNodeEntry;
@@ -72,7 +72,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
                 var collectionNode = content.Reference.AsEnumerable[index].TargetNode;
-                collectionNode.Content.Add(itemToAdd);
+                collectionNode.Add(itemToAdd);
             }
         }
 

@@ -93,7 +93,7 @@ namespace SiliconStudio.Quantum.Tests
 
             protected override IContentNode FindTarget(IContentNode sourceNode)
             {
-                if (sourceNode.Content is ObjectContent && sourceNode.Content.Type == typeof(SimpleClass) && sourceNode != root)
+                if ((ContentNode)sourceNode is ObjectContent && ((ContentNode)sourceNode).Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
@@ -110,10 +110,10 @@ namespace SiliconStudio.Quantum.Tests
 
                 var matchValue = 0;
                 if (sourceReference.TargetNode != null)
-                    matchValue = (int)sourceReference.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Content.Value;
+                    matchValue = (int)sourceReference.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value;
 
-                var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
-                return targetReference?.FirstOrDefault(x => (int)x.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Content.Value == matchValue);
+                var targetReference = ((ContentNode)targetNode).Reference as ReferenceEnumerable;
+                return targetReference?.FirstOrDefault(x => (int)x.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value == matchValue);
 
             }
         }

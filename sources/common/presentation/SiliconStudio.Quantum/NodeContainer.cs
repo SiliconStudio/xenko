@@ -156,9 +156,9 @@ namespace SiliconStudio.Quantum
                 processedNodes.Value.Add(node);
 
                 // If the node was holding a reference, refresh the reference
-                if (node.Content.IsReference)
+                if (node.IsReference)
                 {
-                    node.Content.Reference.Refresh(node, this);
+                    node.Reference.Refresh(node, this);
                 }
                 else
                 {

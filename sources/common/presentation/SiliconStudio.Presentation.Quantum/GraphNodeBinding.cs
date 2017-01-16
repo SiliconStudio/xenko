@@ -39,15 +39,15 @@ namespace SiliconStudio.Presentation.Quantum
             this.propertyChanged = propertyChanged;
             this.converter = converter;
             this.notifyChangesOnly = notifyChangesOnly;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            node.Changing += ContentChanging;
+            node.Changed += ContentChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            node.Changing -= ContentChanging;
+            node.Changed -= ContentChanged;
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method can be invoked from a property getter.</remarks>
         public TTargetType GetNodeValue()
         {
-            var value = (TContentType)node.Content.Retrieve();
+            var value = (TContentType)node.Retrieve();
             return converter(value);
         }
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method will invoke the delegates passed to the constructor of this instance if the new value is different from the previous one.</remarks>
         public void SetNodeValue(TContentType value)
         {
-            node.Content.Update(value);
+            node.Update(value);
         }
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)

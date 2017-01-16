@@ -60,13 +60,14 @@ namespace SiliconStudio.Quantum.Contents
         public Guid Guid { get; }
 
         /// <inheritdoc/>
+        [Obsolete("This accessor is obsolete, use \"this\"")]
         public IContentNode Content => this;
 
         /// <inheritdoc/>
         public IContentNode Parent { get; private set; }
 
         /// <inheritdoc/>
-        public IContentNode Target { get { if (!(Content.Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Content.Reference.AsObject.TargetNode; } }
+        public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
         public IReadOnlyCollection<MemberContent> Children => children;
@@ -123,14 +124,14 @@ namespace SiliconStudio.Quantum.Contents
         public override string ToString()
         {
             string type = null;
-            if (Content is MemberContent)
+            if (this is MemberContent)
                 type = "Member";
-            else if (Content is ObjectContent)
+            else if (this is ObjectContent)
                 type = "Object";
-            else if (Content is BoxedContent)
+            else if (this is BoxedContent)
                 type = "Boxed";
 
-            return $"{{Node: {type} {Name} = [{Content.Value}]}}";
+            return $"{{Node: {type} {Name} = [{Value}]}}";
         }
 
         /// <summary>
@@ -183,8 +184,8 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
-            if (!(Content.Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
-            return Content.Reference.AsEnumerable[index].TargetNode;
+            if (!(Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
+            return Reference.AsEnumerable[index].TargetNode;
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace SiliconStudio.Quantum.Contents
             if (child.Parent != null)
                 throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
 
-            if (Content.Reference != null && !allowIfReference)
+            if (Reference != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 
             child.Parent = this;

@@ -36,7 +36,7 @@ namespace SiliconStudio.Quantum.References
         public IContentNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
-        public object ObjectValue => TargetNode != null ? TargetNode.Content.Value : orphanObject;
+        public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
 
         /// <inheritdoc/>
         public Type Type { get; }
@@ -68,15 +68,15 @@ namespace SiliconStudio.Quantum.References
 
         internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
         {
-            var objectValue = ownerNode.Content.Retrieve(index);
-            if (TargetNode?.Content.Value != objectValue)
+            var objectValue = ownerNode.Retrieve(index);
+            if (TargetNode?.Value != objectValue)
             {
                 // This call will recursively update the references.
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var ownerContent = (ContentNode)ownerNode.Content;
-                    var boxedContent = target.Content as BoxedContent;
+                    var ownerContent = (ContentNode)ownerNode;
+                    var boxedContent = target as BoxedContent;
                     boxedContent?.SetOwnerContent(ownerContent, index);
                 }
             }
@@ -127,14 +127,14 @@ namespace SiliconStudio.Quantum.References
         {
             if (targetNode != null)
             {
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
                 // TODO: Disabled this exception which is triggered when a circular reference is made. This will be properly fixed when we'll get rid of the ShouldProcessReference mechanism.
                 //if (TargetNode != null || TargetGuid != Guid.Empty)
                 //    throw new InvalidOperationException("TargetNode has already been set.");
 
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
 
                 TargetNode = targetNode;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
+using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests.Obsolete
@@ -101,28 +102,28 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             Helper.PrintModelContainerContent(container, model);
 
             Assert.That(model.TryGetChild("IntList").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("IntList").Content.Value, Is.SameAs(obj.IntList));
-            Assert.That(model.TryGetChild("IntList").Content.IsReference, Is.False);
+            Assert.That(model.TryGetChild("IntList").Value, Is.SameAs(obj.IntList));
+            Assert.That(model.TryGetChild("IntList").IsReference, Is.False);
             Assert.That(model.TryGetChild("ClassList").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("ClassList").Content.Value, Is.SameAs(obj.ClassList));
-            Assert.That(model.TryGetChild("ClassList").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            Assert.That(model.TryGetChild("ClassList").Value, Is.SameAs(obj.ClassList));
+            Assert.That(model.TryGetChild("ClassList").Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             Assert.That(model.TryGetChild("SimpleStructList").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("SimpleStructList").Content.Value, Is.SameAs(obj.SimpleStructList));
-            Assert.That(model.TryGetChild("SimpleStructList").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            Assert.That(model.TryGetChild("SimpleStructList").Value, Is.SameAs(obj.SimpleStructList));
+            Assert.That(model.TryGetChild("SimpleStructList").Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             Assert.That(model.TryGetChild("NestedStructList").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("NestedStructList").Content.Value, Is.SameAs(obj.NestedStructList));
-            Assert.That(model.TryGetChild("NestedStructList").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            Assert.That(model.TryGetChild("NestedStructList").Value, Is.SameAs(obj.NestedStructList));
+            Assert.That(model.TryGetChild("NestedStructList").Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             Assert.That(model.TryGetChild("ListOfSimpleStructLists").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("ListOfSimpleStructLists").Content.Value, Is.SameAs(obj.ListOfSimpleStructLists));
-            Assert.That(model.TryGetChild("ListOfSimpleStructLists").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model.TryGetChild("ListOfSimpleStructLists").Content.Reference.AsEnumerable)
+            Assert.That(model.TryGetChild("ListOfSimpleStructLists").Value, Is.SameAs(obj.ListOfSimpleStructLists));
+            Assert.That(model.TryGetChild("ListOfSimpleStructLists").Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            foreach (var reference in model.TryGetChild("ListOfSimpleStructLists").Reference.AsEnumerable)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
             Assert.That(model.TryGetChild("ListOfNestedStructLists").Children.Count, Is.EqualTo(0));
-            Assert.That(model.TryGetChild("ListOfNestedStructLists").Content.Value, Is.SameAs(obj.ListOfNestedStructLists));
-            Assert.That(model.TryGetChild("ListOfNestedStructLists").Content.Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model.TryGetChild("ListOfNestedStructLists").Content.Reference.AsEnumerable)
+            Assert.That(model.TryGetChild("ListOfNestedStructLists").Value, Is.SameAs(obj.ListOfNestedStructLists));
+            Assert.That(model.TryGetChild("ListOfNestedStructLists").Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
+            foreach (var reference in model.TryGetChild("ListOfNestedStructLists").Reference.AsEnumerable)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
@@ -148,8 +149,8 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Console.WriteLine(model.PrintHierarchy());
-            ((List<int>)model.TryGetChild("IntList").Content.Value)[1] = 42;
-            ((List<int>)model.TryGetChild("IntList").Content.Value).Add(26);
+            ((List<int>)model.TryGetChild("IntList").Value)[1] = 42;
+            ((List<int>)model.TryGetChild("IntList").Value).Add(26);
             Assert.That(obj.IntList.Count, Is.EqualTo(4));
             Assert.That(obj.IntList[1], Is.EqualTo(42));
             Assert.That(obj.IntList[3], Is.EqualTo(26));
@@ -163,8 +164,8 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
-            var objRef = ((ReferenceEnumerable)model.TryGetChild("ClassList").Content.Reference).First();
-            objRef.TargetNode.TryGetChild("SecondValue").Content.Update(32);
+            var objRef = ((ReferenceEnumerable)model.TryGetChild("ClassList").Reference).First();
+            objRef.TargetNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ClassList[0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -177,8 +178,8 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
-            var objRef = ((ReferenceEnumerable)model.TryGetChild("SimpleStructList").Content.Reference).First();
-            objRef.TargetNode.TryGetChild("SecondValue").Content.Update(32);
+            var objRef = ((ReferenceEnumerable)model.TryGetChild("SimpleStructList").Reference).First();
+            objRef.TargetNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.SimpleStructList[0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -191,9 +192,9 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
-            var objRef = ((ReferenceEnumerable)model.TryGetChild("NestedStructList").Content.Reference).First();
-            var structNode = container.GetNode(((ObjectReference)objRef.TargetNode.TryGetChild("Struct").Content.Reference).TargetGuid);
-            structNode.TryGetChild("SecondValue").Content.Update(32);
+            var objRef = ((ReferenceEnumerable)model.TryGetChild("NestedStructList").Reference).First();
+            var structNode = container.GetNode(((ObjectReference)objRef.TargetNode.TryGetChild("Struct").Reference).TargetGuid);
+            structNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.NestedStructList[0].Struct.SecondValue, Is.EqualTo(32));
             //var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
@@ -208,9 +209,9 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
-            var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfSimpleStructLists").Content.Reference).Last();
-            var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
-            objRef.TargetNode.TryGetChild("SecondValue").Content.Update(32);
+            var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfSimpleStructLists").Reference).Last();
+            var objRef = ((ReferenceEnumerable)((ContentNode)listRef.TargetNode).Reference).Last();
+            objRef.TargetNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfSimpleStructLists[1][0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -223,10 +224,10 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var container = new NodeContainer();
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
-            var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfNestedStructLists").Content.Reference).Last();
-            var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
-            var structNode = container.GetNode(((ObjectReference)objRef.TargetNode.TryGetChild("Struct").Content.Reference).TargetGuid);
-            structNode.TryGetChild("SecondValue").Content.Update(32);
+            var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfNestedStructLists").Reference).Last();
+            var objRef = ((ReferenceEnumerable)((ContentNode)listRef.TargetNode).Reference).Last();
+            var structNode = container.GetNode(((ObjectReference)objRef.TargetNode.TryGetChild("Struct").Reference).TargetGuid);
+            structNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfNestedStructLists[1][0].Struct.SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);

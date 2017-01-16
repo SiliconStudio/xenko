@@ -64,10 +64,10 @@ namespace SiliconStudio.Quantum
             // A node can be registered multiple times when it is referenced via multiple paths
             if (RegisteredNodes.Add(node))
             {
-                node.Content.PrepareChange += ContentPrepareChange;
-                node.Content.FinalizeChange += ContentFinalizeChange;
-                node.Content.Changing += ContentChanging;
-                node.Content.Changed += ContentChanged;
+                node.PrepareChange += ContentPrepareChange;
+                node.FinalizeChange += ContentFinalizeChange;
+                node.Changing += ContentChanging;
+                node.Changed += ContentChanged;
                 return true;
             }
             return false;
@@ -77,10 +77,10 @@ namespace SiliconStudio.Quantum
         {
             if (RegisteredNodes.Remove(node))
             {
-                node.Content.PrepareChange -= ContentPrepareChange;
-                node.Content.FinalizeChange -= ContentFinalizeChange;
-                node.Content.Changing -= ContentChanging;
-                node.Content.Changed -= ContentChanged;
+                node.PrepareChange -= ContentPrepareChange;
+                node.FinalizeChange -= ContentFinalizeChange;
+                node.Changing -= ContentChanging;
+                node.Changed -= ContentChanged;
                 return true;
             }
             return false;
@@ -110,12 +110,12 @@ namespace SiliconStudio.Quantum
                         visitor.Visit(node);
                         break;
                     case ContentChangeType.CollectionRemove:
-                        if (node.Content.IsReference && e.OldValue != null)
+                        if (node.IsReference && e.OldValue != null)
                         {
-                            var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
+                            var removedNode = node.Reference.AsEnumerable[e.Index].TargetNode;
                             if (removedNode != null)
                             {
-                                visitor.Visit(removedNode, node.Content as MemberContent);
+                                visitor.Visit(removedNode, node as MemberContent);
                             }
                         }
                         break;
@@ -141,18 +141,18 @@ namespace SiliconStudio.Quantum
                         visitor.Visit(node);
                         break;
                     case ContentChangeType.CollectionAdd:
-                        if (node.Content.IsReference && e.NewValue != null)
+                        if (node.IsReference && e.NewValue != null)
                         {
                             IContentNode addedNode;
                             Index index;
                             if (!e.Index.IsEmpty)
                             {
                                 index = e.Index;
-                                addedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
+                                addedNode = node.Reference.AsEnumerable[e.Index].TargetNode;
                             }
                             else
                             {
-                                var reference = node.Content.Reference.AsEnumerable.First(x => x.TargetNode.Content.Retrieve() == e.NewValue);
+                                var reference = node.Reference.AsEnumerable.First(x => x.TargetNode.Retrieve() == e.NewValue);
                                 index = reference.Index;
                                 addedNode = reference.TargetNode;
                             }
@@ -160,7 +160,7 @@ namespace SiliconStudio.Quantum
                             if (addedNode != null)
                             {
                                 var path = new GraphNodePath(node).PushIndex(index);
-                                visitor.Visit(addedNode, node.Content as MemberContent, path);
+                                visitor.Visit(addedNode, node as MemberContent, path);
                             }
                         }
                         break;
