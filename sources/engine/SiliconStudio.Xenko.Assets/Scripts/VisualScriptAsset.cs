@@ -50,12 +50,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// The list of member variables (properties and fields).
         /// </summary>
         [DataMember(50)]
+        [AssetPartContained(typeof(Property))]
         public TrackingCollection<Property> Properties { get; } = new TrackingCollection<Property>();
 
         /// <summary>
         /// The list of functions.
         /// </summary>
         [DataMember(60)]
+        [AssetPartContained(typeof(Method))]
         public TrackingCollection<Method> Methods { get; } = new TrackingCollection<Method>();
 
         #region IProjectFileGeneratorAsset implementation
