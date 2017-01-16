@@ -87,8 +87,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 renderer.Reset();
             }
 
-            var shadowPipelinePlugin = RenderSystem.PipelinePlugins.GetPlugin<ShadowPipelinePlugin>();
-
             foreach (var renderViewData in renderViewLightDatas)
             {
                 renderViewData.Value.LightComponentsWithShadows.Clear();

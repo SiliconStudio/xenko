@@ -71,11 +71,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The services registry.</value>
         public IServiceRegistry Services => registry;
 
-        public PipelinePluginManager PipelinePlugins { get; }
-
         public RenderSystem()
         {
-            PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
@@ -482,18 +479,6 @@ namespace SiliconStudio.Xenko.Rendering
                 // Found it
                 renderFeature.AddRenderObject(renderObject);
             }
-            else
-            {
-                // New type without render feature, let's do auto pipeline setup
-                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
-                {
-                    // Try again, after pipeline plugin setup
-                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
-                    {
-                        renderFeature.AddRenderObject(renderObject);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -563,22 +548,6 @@ namespace SiliconStudio.Xenko.Rendering
                     ((RenderView)e.Item).Index = e.Index;
                     break;
             }
-        }
-
-        private bool InstantiateDefaultPipelinePlugin(Type renderObjectType)
-        {
-            // Already processed
-            if (!renderObjectsDefaultPipelinePlugins.Add(renderObjectType))
-                return false;
-
-            var autoPipelineAttribute = renderObjectType.GetTypeInfo().GetCustomAttribute<DefaultPipelinePluginAttribute>();
-            if (autoPipelineAttribute != null)
-            {
-                PipelinePlugins.InstantiatePlugin(autoPipelineAttribute.PipelinePluginType);
-                return true;
-            }
-
-            return false;
         }
 
         private class ExtractThreadLocals

@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering
         [ModuleInitializer]
         internal static void Initialize()
         {
-            PipelinePluginManager.RegisterAutomaticPlugin(typeof(ShadowMeshPipelinePlugin), typeof(MeshPipelinePlugin), typeof(ShadowPipelinePlugin));
+            //PipelinePluginManager.RegisterAutomaticPlugin(typeof(ShadowMeshPipelinePlugin), typeof(MeshPipelinePlugin), typeof(ShadowPipelinePlugin));
         }
 
         /// <inheritdoc/>

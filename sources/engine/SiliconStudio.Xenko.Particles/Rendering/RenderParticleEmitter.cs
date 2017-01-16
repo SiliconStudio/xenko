@@ -9,7 +9,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     /// <summary>
     /// Defines a particle emitter to render.
     /// </summary>
-    [DefaultPipelinePlugin(typeof(ParticleEmitterPipelinePlugin))]
     public class RenderParticleEmitter : RenderObject
     {
         public RenderParticleSystem RenderParticleSystem;

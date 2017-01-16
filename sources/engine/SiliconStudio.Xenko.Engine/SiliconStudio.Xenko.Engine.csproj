@@ -190,7 +190,6 @@
     <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
-    <Compile Include="Rendering\DefaultPipelinePluginAttribute.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
@@ -446,7 +445,6 @@
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
     <Compile Include="Rendering\PickingPipelinePlugin.cs" />
     <Compile Include="Rendering\PipelinePluginContext.cs" />
-    <Compile Include="Rendering\PipelinePluginManager.cs" />
     <Compile Include="Rendering\Properties.cs">
       <DependentUpon>Properties.tt</DependentUpon>
       <AutoGen>True</AutoGen>

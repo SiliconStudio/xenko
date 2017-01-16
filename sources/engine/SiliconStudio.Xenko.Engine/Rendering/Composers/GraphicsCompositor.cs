@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
@@ -257,7 +258,18 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                                 TransparentRenderStage = transparentRenderStage,
                             }
                         },
-                    }
+                    },
+                    new SkyboxRenderFeature
+                    {
+                        RenderStageSelectors =
+                        {
+                            new SimpleGroupToRenderStageSelector
+                            {
+                                RenderStage = mainRenderStage,
+                                EffectName = "SkyboxEffect",
+                            }
+                        },
+                    },
                 },
                 TopLevel = new SceneCameraRenderer()
                 {
