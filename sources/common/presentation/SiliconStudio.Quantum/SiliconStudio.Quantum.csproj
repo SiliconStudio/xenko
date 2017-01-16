@@ -34,7 +34,6 @@
     <Compile Include="GraphVisitorBase.cs" />
     <Compile Include="IContentFactory.cs" />
     <Compile Include="IContentNode.cs" />
-    <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />
@@ -59,7 +58,6 @@
     <Compile Include="NodeContainer.cs" />
     <Compile Include="DebugExtensions.cs" />
     <Compile Include="GuidContainer.cs" />
-    <Compile Include="GraphNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
