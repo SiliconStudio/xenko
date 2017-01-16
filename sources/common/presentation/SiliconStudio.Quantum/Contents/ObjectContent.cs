@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// An implementation of <see cref="IContent"/> that gives access to an object or a boxed struct.
+    /// An implementation of <see cref="IContentNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
     public class ObjectContent : ContentBase

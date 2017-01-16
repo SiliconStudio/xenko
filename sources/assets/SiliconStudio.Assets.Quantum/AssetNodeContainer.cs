@@ -52,20 +52,20 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetNodeFactory : IContentFactory
     {
         /// <inheritdoc/>
-        public IContent CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        public IContentNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
         {
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
             return new AssetObjectNode(obj, guid, descriptor, isPrimitive, reference);
         }
 
         /// <inheritdoc/>
-        public IContent CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
+        public IContentNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
             return new AssetBoxedNode(structure, guid, descriptor, isPrimitive);
         }
 
         /// <inheritdoc/>
-        public IContent CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, object value)
+        public IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentBase container, IMemberDescriptor member, bool isPrimitive, object value)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
             return new AssetMemberNode(nodeBuilder, guid, container, member, isPrimitive, reference);

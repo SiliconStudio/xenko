@@ -11,9 +11,9 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// A base abstract implementation of the <see cref="IContent"/> interface.
+    /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentBase : IContentNode, IContent
+    public abstract class ContentBase : IContentNode
     {
         private readonly List<IContentNode> children = new List<IContentNode>();
         private readonly HybridDictionary<string, IContentNode> childrenMap = new HybridDictionary<string, IContentNode>();
@@ -63,7 +63,7 @@ namespace SiliconStudio.Quantum.Contents
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        public IContent Content => this as IContent;
+        public IContentNode Content => this as IContentNode;
 
         /// <inheritdoc/>
         public virtual IContentNode Parent { get; private set; }
@@ -194,7 +194,7 @@ namespace SiliconStudio.Quantum.Contents
         /// Add a child to this node. The node must not have been sealed yet.
         /// </summary>
         /// <param name="child">The child node to add.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContent.Reference"/> is not null.</param>
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
         public void AddChild(ContentBase child, bool allowIfReference = false)
         {
             if (isSealed)

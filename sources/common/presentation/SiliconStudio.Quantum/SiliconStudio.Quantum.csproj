@@ -46,7 +46,6 @@
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
     <Compile Include="References\ObjectReference.cs" />
-    <Compile Include="Contents\IContent.cs" />
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />
     <Compile Include="Contents\ContentBase.cs" />

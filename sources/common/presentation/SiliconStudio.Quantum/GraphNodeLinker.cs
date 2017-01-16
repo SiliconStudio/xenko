@@ -156,8 +156,8 @@ namespace SiliconStudio.Quantum
         /// <param name="sourceReference">The reference in the source node for which to look for a correspondance in the target node.</param>
         /// <returns>A reference of the target node corresponding to the given reference in the source node, or null if there is no match.</returns>
         /// <remarks>
-        /// The source reference can either be directly the <see cref="IContent.Reference"/> of the source node if this reference is
-        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IContent.Reference"/> if this reference
+        /// The source reference can either be directly the <see cref="IContentNode.Reference"/> of the source node if this reference is
+        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IContentNode.Reference"/> if this reference
         /// is a <see cref="ReferenceEnumerable"/>. The <see cref="IReference.Index"/> property indicates the index of the reference in this case.
         /// The default implementation returns a reference in the target node that matches the index of the source reference, if available.
         /// </remarks>

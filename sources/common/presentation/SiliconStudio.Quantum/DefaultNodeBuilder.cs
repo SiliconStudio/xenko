@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
         private readonly Stack<ContentBase> contextStack = new Stack<ContentBase>();
-        private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
+        private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private ContentBase rootNode;
         private Guid rootGuid;
@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             ContentBase containerNode = GetContextNode();
             var guid = Guid.NewGuid();
-            IContent content = ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
+            IContentNode content = ContentFactory.CreateMemberContent(this, guid, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
             var node = (ContentBase)content;
             containerNode.AddChild(node);
 

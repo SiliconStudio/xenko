@@ -39,7 +39,7 @@ namespace SiliconStudio.Quantum.Contents
             }
         }
 
-        internal void SetOwnerContent(IContent ownerContent, Index index)
+        internal void SetOwnerContent(IContentNode ownerContent, Index index)
         {
             boxedStructureOwner = (ContentBase)ownerContent;
             boxedStructureOwnerIndex = index;

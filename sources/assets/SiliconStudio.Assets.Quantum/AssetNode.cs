@@ -13,11 +13,11 @@ namespace SiliconStudio.Assets.Quantum
     {
         AssetPropertyGraph PropertyGraph { get; }
 
-        IContent BaseContent { get; }
+        IContentNode BaseContent { get; }
 
-        void SetContent(string key, IContent content);
+        void SetContent(string key, IContentNode content);
 
-        IContent GetContent(string key);
+        IContentNode GetContent(string key);
 
         /// <summary>
         /// Resets the overrides attached to this node and its descendants, recursively.
@@ -30,12 +30,12 @@ namespace SiliconStudio.Assets.Quantum
     {
         void SetPropertyGraph([NotNull] AssetPropertyGraph assetPropertyGraph);
 
-        void SetBaseContent(IContent content);
+        void SetBaseContent(IContentNode content);
     }
 
     public class AssetObjectNode : ObjectContent, IAssetNode, IAssetNodeInternal
     {
-        private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
         public AssetObjectNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
             : base(value, guid, descriptor, isPrimitive, reference)
@@ -44,16 +44,16 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph { get; private set; }
 
-        public IContent BaseContent { get; private set; }
+        public IContentNode BaseContent { get; private set; }
 
-        public void SetContent(string key, IContent content)
+        public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
         }
 
-        public IContent GetContent(string key)
+        public IContentNode GetContent(string key)
         {
-            IContent content;
+            IContentNode content;
             contents.TryGetValue(key, out content);
             return content;
         }
@@ -70,7 +70,7 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph = assetPropertyGraph;
         }
 
-        void IAssetNodeInternal.SetBaseContent(IContent content)
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
         {
             BaseContent = content;
         }
@@ -78,7 +78,7 @@ namespace SiliconStudio.Assets.Quantum
 
     public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
     {
-        private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
         public AssetBoxedNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
             : base(value, guid, descriptor, isPrimitive)
@@ -87,16 +87,16 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph { get; private set; }
 
-        public IContent BaseContent { get; private set; }
+        public IContentNode BaseContent { get; private set; }
 
-        public void SetContent(string key, IContent content)
+        public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
         }
 
-        public IContent GetContent(string key)
+        public IContentNode GetContent(string key)
         {
-            IContent content;
+            IContentNode content;
             contents.TryGetValue(key, out content);
             return content;
         }
@@ -113,7 +113,7 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph = assetPropertyGraph;
         }
 
-        void IAssetNodeInternal.SetBaseContent(IContent content)
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
         {
             BaseContent = content;
         }
@@ -122,7 +122,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
     {
         private AssetPropertyGraph propertyGraph;
-        private readonly Dictionary<string, IContent> contents = new Dictionary<string, IContent>();
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
         internal bool contentUpdating;
         private OverrideType contentOverride;
@@ -153,16 +153,16 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
 
-        public IContent BaseContent { get; private set; }
+        public IContentNode BaseContent { get; private set; }
 
-        public void SetContent(string key, IContent content)
+        public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
         }
 
-        public IContent GetContent(string key)
+        public IContentNode GetContent(string key)
         {
-            IContent content;
+            IContentNode content;
             contents.TryGetValue(key, out content);
             return content;
         }
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph = assetPropertyGraph;
         }
 
-        void IAssetNodeInternal.SetBaseContent(IContent content)
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
         {
             BaseContent = content;
         }

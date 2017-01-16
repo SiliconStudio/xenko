@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -280,7 +279,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(baseIds[8], derivedIds[10]);
         }
 
-        private static void AssertCollection(IContent content, params string[] items)
+        private static void AssertCollection(IContentNode content, params string[] items)
         {
             for (var i = 0; i < items.Length; i++)
             {

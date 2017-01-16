@@ -1,5 +1,4 @@
 using System;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -10,7 +9,7 @@ namespace SiliconStudio.Quantum
     /// <param name="content">The content for which to create a node.</param>
     /// <param name="guid">The unique identifier of the node to create.</param>
     /// <returns>A new instance of <see cref="IContentNode"/> containing the given content.</returns>
-    public delegate IContentNode NodeFactoryDelegate(string name, IContent content, Guid guid);
+    public delegate IContentNode NodeFactoryDelegate(string name, IContentNode content, Guid guid);
 
     /// <summary>
     /// An interface representing a container for graph nodes.

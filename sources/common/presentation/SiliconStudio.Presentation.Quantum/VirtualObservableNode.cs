@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
-        private IContent associatedContent;
+        private IContentNode associatedContent;
         private bool updatingValue;
 
         static VirtualObservableNode()
@@ -62,12 +62,12 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Registers an <see cref="IContent"/> object to this virtual node so when the content is modified, this node will trigger notifications
+        /// Registers an <see cref="IContentNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
         /// of property changes for the <see cref="VirtualObservableNode{T}.TypedValue"/> property.
         /// </summary>
         /// <param name="content">The content to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterContentForNotifications(IContent content)
+        public void RegisterContentForNotifications(IContentNode content)
         {
             if (associatedContent != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");

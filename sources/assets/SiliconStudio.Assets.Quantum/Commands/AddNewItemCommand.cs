@@ -6,7 +6,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Commands
 {
@@ -44,7 +43,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
-        protected override void ExecuteSync(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
             var value = content.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
