@@ -867,7 +867,7 @@ Value*: OverriddenString
 ";
             var asset = new Types.MyAsset4 { MyObjects = { new Types.SomeObject { Value = "String1" }, new Types.SomeObject { Value = "String2" } } };
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode)[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
+            var derivedPropertyNode = (AssetObjectNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)].IndexedTarget(new Index(1));
             derivedPropertyNode[nameof(Types.SomeObject.Value)].Content.Update("OverriddenString");
             var expectedPath = new YamlAssetPath();
             expectedPath.PushMember(nameof(Types.SomeObject.Value));

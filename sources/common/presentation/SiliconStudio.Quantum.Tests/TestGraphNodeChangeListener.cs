@@ -134,7 +134,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new ComplexClass { Member4 = new Struct { Member1 = obj[0] } };
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
-            //var node = rootNode[nameof(ComplexClass.Member4)][nameof(Struct.Member1)];
+            var node = rootNode[nameof(ComplexClass.Member4)][nameof(Struct.Member1)];
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member4)][nameof(Struct.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Content.Update(obj[1], Index.Empty));
             // TODO: would be nice to be able to keep the same boxed node!
             //Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member4)]);
@@ -338,11 +338,12 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[2][0], node.Content.Retrieve(new Index(0)));
             var newItem = new Struct();
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
+            var itemNode = rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0));
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.ValueChange, new Index(0), obj[2][0], newItem, x => x.Content.Update(newItem, new Index(0)));
             Assert.AreEqual(newItem, node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
             // TODO: would be nice to be able to keep the same boxed node!
-            //Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
+            Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
         }
 
         [Test]
@@ -354,17 +355,18 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var listener = new GraphNodeChangeListener(rootNode);
             var node = rootNode[nameof(ComplexClass.Member7)];
+            var itemNode = rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0));
             Assert.AreEqual(obj[0], node.Content.Retrieve(new Index(0)));
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.ValueChange, new Index(0), obj[0], obj[1], x => x.Content.Update(obj[1], new Index(0)));
             Assert.AreEqual(obj[1], node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
             // TODO: would be nice to be able to keep the same boxed node!
-            //Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
+            //Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)], ContentChangeType.ValueChange, new Index(0), obj[1], obj[2], x => x.Content.Update(obj[2], new Index(0)));
             Assert.AreEqual(obj[2], node.Content.Retrieve(new Index(0)));
             Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)]);
             // TODO: would be nice to be able to keep the same boxed node!
-            //Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
+            //Assert.AreEqual(itemNode, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(0)));
         }
 
         [Test]
@@ -420,10 +422,10 @@ namespace SiliconStudio.Quantum.Tests
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[0], obj[1], x => x.Content.Update(obj[1], Index.Empty));
             Assert.AreEqual(obj[1], node.Content.Retrieve());
             // TODO: would be nice to be able to keep the same boxed node!
-            //Assert.AreEqual(node, rootNode.GetChild(nameof(ComplexClass.Member7)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member1)));
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
             TestContentChange(listener, () => rootNode[nameof(ComplexClass.Member7)].IndexedTarget(index)[nameof(SimpleClass.Member1)], ContentChangeType.ValueChange, Index.Empty, obj[1], obj[2], x => x.Content.Update(obj[2], Index.Empty));
             Assert.AreEqual(obj[2], node.Content.Retrieve());
-            //Assert.AreEqual(node, rootNode.GetChild(nameof(ComplexClass.Member7)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member1)));
+            Assert.AreEqual(node, rootNode[nameof(ComplexClass.Member7)].IndexedTarget(new Index(1))[nameof(SimpleClass.Member1)]);
         }
 
         [Test]
@@ -454,7 +456,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(3, changedCount);
         }
 
-        private static void VerifyListenerEvent(GraphContentChangeEventArgs e, IGraphNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
+        private static void VerifyListenerEvent(GraphContentChangeEventArgs e, IContentNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
         {
             Assert.NotNull(e);
             Assert.NotNull(contentOwner);
@@ -469,7 +471,7 @@ namespace SiliconStudio.Quantum.Tests
             }
         }
 
-        private static void TestContentChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IGraphNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IGraphNode> change)
+        private static void TestContentChange([NotNull] GraphNodeChangeListener listener, [NotNull] Func<IContentNode> fetchNode, ContentChangeType type, Index index, object oldValue, object newValue, [NotNull] Action<IContentNode> change)
         {
             var i = 0;
             var contentOwner = fetchNode();
