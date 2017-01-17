@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum
         void ResetOverride(Index indexToReset);
     }
 
-    public interface IAssetNodeInternal : IAssetNode
+    internal interface IAssetNodeInternal : IAssetNode
     {
         void SetPropertyGraph([NotNull] AssetPropertyGraph assetPropertyGraph);
 

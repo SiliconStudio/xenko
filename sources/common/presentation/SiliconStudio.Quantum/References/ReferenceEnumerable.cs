@@ -184,17 +184,17 @@ namespace SiliconStudio.Quantum.References
 
             foreach (var item in items1)
             {
-                ObjectReference otherItem;
-                if (!items2.TryGetValue(item.Key, out otherItem))
+                ObjectReference otherValue;
+                if (!items2.TryGetValue(item.Key, out otherValue))
                     return false;
 
-                if (!otherItem.Index.Equals(item.Value.Index))
+                if (!otherValue.Index.Equals(item.Value.Index))
                     return false;
 
-                if (otherItem.ObjectValue == null && item.Value.ObjectValue != null)
+                if (otherValue.ObjectValue == null && item.Value.ObjectValue != null)
                     return false;
 
-                if (otherItem.ObjectValue != null && !otherItem.ObjectValue.Equals(item.Value.ObjectValue))
+                if (otherValue.ObjectValue != null && !otherValue.ObjectValue.Equals(item.Value.ObjectValue))
                     return false;
             }
 
