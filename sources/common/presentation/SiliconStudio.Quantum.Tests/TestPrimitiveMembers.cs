@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -60,7 +61,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
@@ -70,7 +71,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.First().Content.Update(7);
+            containerNode.Children.First().Update(7);
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
         }
 
@@ -81,7 +82,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
@@ -91,7 +92,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.First().Content.Update("ccc");
+            containerNode.Children.First().Update("ccc");
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
         }
 
@@ -102,7 +103,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(GuidMember.Member), false);
@@ -112,7 +113,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.First().Content.Update(Guid.NewGuid());
+            containerNode.Children.First().Update(Guid.NewGuid());
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
         }
 
@@ -123,7 +124,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
@@ -133,7 +134,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.First().Content.Update(TestEnum.Value3);
+            containerNode.Children.First().Update(TestEnum.Value3);
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
         }
 
@@ -145,7 +146,7 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveClass));
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
@@ -155,7 +156,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.First().Content.Update(new PrimitiveClass { Value = 3 });
+            containerNode.Children.First().Update(new PrimitiveClass { Value = 3 });
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
         }
 
@@ -167,7 +168,7 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveStruct));
 
             // Construction
-            var containerNode = (GraphNode)container.GetOrCreateNode(obj);
+            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveStructMember.Member), false);
@@ -177,7 +178,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
             // Update from Quantum
-            containerNode.Children.Last().Content.Update(new PrimitiveStruct { Value = 3 });
+            containerNode.Children.Last().Update(new PrimitiveStruct { Value = 3 });
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
         }
     }

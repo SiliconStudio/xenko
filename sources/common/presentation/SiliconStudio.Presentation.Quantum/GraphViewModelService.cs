@@ -6,34 +6,34 @@ using System.Collections.Generic;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// A class that provides various services to <see cref="ObservableViewModel"/> objects
+    /// A class that provides various services to <see cref="GraphViewModel"/> objects
     /// </summary>
-    public class ObservableViewModelService
+    public class GraphViewModelService
     {
         private readonly List<IPropertyNodeUpdater> propertyNodeUpdaters = new List<IPropertyNodeUpdater>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObservableViewModelService"/> class.
+        /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
         /// </summary>
-        public ObservableViewModelService()
+        public GraphViewModelService()
         {
-            ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
-            CombinedNodeFactory = ObservableViewModel.DefaultCombinedNodeFactory;
+            GraphNodeViewModelFactory = GraphViewModel.DefaultGraphNodeViewModelFactory;
+            CombinedNodeViewModelFactory = GraphViewModel.DefaultCombinedNodeViewModelFactory;
         }
 
         /// <summary>
-        /// Gets or sets the observable node factory.
+        /// Gets or sets the graph node factory.
         /// </summary>
-        public CreateNodeDelegate ObservableNodeFactory { get; set; }
+        public CreateNodeDelegate GraphNodeViewModelFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets the observable node factory.
+        /// Gets or sets the combined node factory.
         /// </summary>
-        public CreateCombinedNodeDelegate CombinedNodeFactory { get; set; }
+        public CreateCombinedNodeDelegate CombinedNodeViewModelFactory { get; set; }
 
         /// <summary>
-        /// Raised when a node is initialized, either during the construction of the <see cref="ObservableViewModel"/> or during the refresh of a
-        /// node that has been modified. This event is raised once for each modified <see cref="SingleObservableNode"/> and their recursive children.
+        /// Raised when a node is initialized, either during the construction of the <see cref="GraphViewModel"/> or during the refresh of a
+        /// node that has been modified. This event is raised once for each modified <see cref="SingleNodeViewModel"/> and their recursive children.
         /// </summary>
         /// <remarks>
         /// This event is intended to allow to customize nodes (by adding associated data, altering hierarchy, etc.). Subscribers should
@@ -63,7 +63,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Raise the <see cref="NodeInitialized"/> event.
         /// </summary>
         /// <param name="node">The node that has been modified.</param>
-        internal void NotifyNodeInitialized(SingleObservableNode node)
+        internal void NotifyNodeInitialized(SingleNodeViewModel node)
         {
             foreach (var updater in propertyNodeUpdaters)
             {

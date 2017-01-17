@@ -8,7 +8,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Commands
 {
@@ -45,7 +44,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType);
         }
 
-        protected override void ExecuteSync(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
             var value = content.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
