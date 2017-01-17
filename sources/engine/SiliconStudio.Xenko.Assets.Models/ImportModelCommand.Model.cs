@@ -235,9 +235,9 @@ namespace SiliconStudio.Xenko.Assets.Models
             var uniqueDrawMeshes = model.Meshes.Select(x => x.Draw).Distinct();
 
             // Count unique vertex buffers and squish them together in a single buffer
-            var uniqueVB = uniqueDrawMeshes.SelectMany(x => x.VertexBuffers).Distinct();
+            var uniqueVB = uniqueDrawMeshes.SelectMany(x => x.VertexBuffers).Distinct().ToArray();
 
-            Dictionary<VertexBufferBinding, VertexBufferBinding> vbMap = new Dictionary<VertexBufferBinding, VertexBufferBinding>();
+            var vbMap = new Dictionary<VertexBufferBinding, VertexBufferBinding>();
             var sizeVertexBuffer = uniqueVB.Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
             var vertexBuffer = new BufferData(BufferFlags.VertexBuffer, new byte[sizeVertexBuffer]);
             var vertexBufferSerializable = vertexBuffer.ToSerializableVersion();
@@ -254,18 +254,18 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
 
             // Count unique index buffers and squish them together in a single buffer
-            var uniqueIB = uniqueDrawMeshes.Select(x => x.IndexBuffer).Distinct();
+            var uniqueIB = uniqueDrawMeshes.Select(x => x.IndexBuffer).Distinct().ToArray();
             var sizeIndexBuffer = 0;
             foreach (var ibBinding in uniqueIB)
             {
-                // Let's be aligned (if there was 16bit indices before, we might be off)
+                // Make sure 32bit indices are properly aligned to 4 bytes in case the last alignment was 2 bytes
                 if (ibBinding.Is32Bit && sizeIndexBuffer % 4 != 0)
                     sizeIndexBuffer += 2;
 
                 sizeIndexBuffer += ibBinding.Buffer.GetSerializationData().Content.Length;
             }
 
-            Dictionary<IndexBufferBinding, IndexBufferBinding> ibMap = new Dictionary<IndexBufferBinding, IndexBufferBinding>();
+            var ibMap = new Dictionary<IndexBufferBinding, IndexBufferBinding>();
             var indexBuffer = new BufferData(BufferFlags.IndexBuffer, new byte[sizeIndexBuffer]);
             var indexBufferSerializable = indexBuffer.ToSerializableVersion();
             var indexBufferNextIndex = 0;
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 var oldIndexBuffer = ibBinding.Buffer.GetSerializationData().Content;
 
-                // Let's be aligned (if there was 16bit indices before, we might be off)
+                // Make sure 32bit indices are properly aligned to 4 bytes in case the last alignment was 2 bytes
                 if (ibBinding.Is32Bit && indexBufferNextIndex % 4 != 0)
                     indexBufferNextIndex += 2;
 
