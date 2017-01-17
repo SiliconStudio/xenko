@@ -5,13 +5,13 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// Implementation of <see cref="IPropertiesProviderViewModel"/> with a given <see cref="IGraphNode"/>.
+    /// Implementation of <see cref="IPropertiesProviderViewModel"/> with a given <see cref="IContentNode"/>.
     /// </summary>
     public class SinglePropertyProvider : IPropertiesProviderViewModel
     {
-        private readonly IGraphNode rootNode;
+        private readonly IContentNode rootNode;
 
-        public SinglePropertyProvider(IGraphNode rootNode)
+        public SinglePropertyProvider(IContentNode rootNode)
         {
             this.rootNode = rootNode;
         }
@@ -21,7 +21,7 @@ namespace SiliconStudio.Presentation.Quantum
         public bool CanProvidePropertiesViewModel => true;
 
         /// <inheritdoc/>
-        public IGraphNode GetRootNode() => rootNode;
+        public IContentNode GetRootNode() => rootNode;
 
         /// <inheritdoc/>
         public ExpandReferencePolicy ShouldExpandReference(MemberContent member, ObjectReference reference) => ExpandReferencePolicy.Full;

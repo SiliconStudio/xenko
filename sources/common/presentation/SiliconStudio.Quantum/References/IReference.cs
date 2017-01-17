@@ -47,8 +47,7 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="ownerNode">The node owning this reference.</param>
         /// <param name="nodeContainer">The node container containing the <paramref name="ownerNode"/> and the target nodes.</param>
-        /// <param name="nodeFactory">The factory to use to create missing target nodes.</param>
-        void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory);
+        void Refresh(IContentNode ownerNode, NodeContainer nodeContainer);
 
         /// <summary>
         /// Enumerates all <see cref="ObjectReference"/> contained in the reference.

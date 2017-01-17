@@ -66,7 +66,6 @@
     <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="MultiContentNode.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
     <Compile Include="OverrideTypePathGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

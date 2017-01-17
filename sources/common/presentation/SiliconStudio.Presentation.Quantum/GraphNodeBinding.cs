@@ -5,7 +5,7 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// This class allows to bind a property of a view model to a <see cref="IGraphNode"/> and properly trigger property change notifications
+    /// This class allows to bind a property of a view model to a <see cref="IContentNode"/> and properly trigger property change notifications
     /// when the node value is modified.
     /// </summary>
     /// <typeparam name="TTargetType">The type of property bound to the graph node.</typeparam>
@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
     public class GraphNodeBinding<TTargetType, TContentType> : IDisposable
     {
         public delegate void PropertyChangeDelegate(string[] propertyNames);
-        private readonly IGraphNode node;
+        private readonly IContentNode node;
         private readonly string propertyName;
         private readonly PropertyChangeDelegate propertyChanging;
         private readonly PropertyChangeDelegate propertyChanged;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
         /// <param name="converter">A converter function to convert between the content type and the property type.</param>
         /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TContentType, TTargetType> converter, bool notifyChangesOnly = true)
+        public GraphNodeBinding(IContentNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TContentType, TTargetType> converter, bool notifyChangesOnly = true)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (converter == null) throw new ArgumentNullException(nameof(converter));
@@ -39,15 +39,15 @@ namespace SiliconStudio.Presentation.Quantum
             this.propertyChanged = propertyChanged;
             this.converter = converter;
             this.notifyChangesOnly = notifyChangesOnly;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            node.Changing += ContentChanging;
+            node.Changed += ContentChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            node.Changing -= ContentChanging;
+            node.Changed -= ContentChanged;
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method can be invoked from a property getter.</remarks>
         public TTargetType GetNodeValue()
         {
-            var value = (TContentType)node.Content.Retrieve();
+            var value = (TContentType)node.Retrieve();
             return converter(value);
         }
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method will invoke the delegates passed to the constructor of this instance if the new value is different from the previous one.</remarks>
         public void SetNodeValue(TContentType value)
         {
-            node.Content.Update(value);
+            node.Update(value);
         }
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
@@ -92,7 +92,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <summary>
     /// This is a specialization of the <see cref="GraphNodeBinding{TTargetType, TContentType}"/> class, when the target type is the same that the
     /// content type.
-    /// This class allows to bind a property of a view model to a <see cref="IGraphNode"/> and properly trigger property change notifications
+    /// This class allows to bind a property of a view model to a <see cref="IContentNode"/> and properly trigger property change notifications
     /// when the node value is modified.
     /// </summary>
     /// <typeparam name="TContentType">The type of the node content and the property bound to the graph node.</typeparam>
@@ -106,7 +106,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
         /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, bool notifyChangesOnly = true)
+        public GraphNodeBinding(IContentNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, bool notifyChangesOnly = true)
             : base(node, propertyName, propertyChanging, propertyChanged, x => x, notifyChangesOnly)
         {
         }

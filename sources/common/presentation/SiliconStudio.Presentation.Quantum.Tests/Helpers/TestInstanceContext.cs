@@ -7,7 +7,7 @@ namespace SiliconStudio.Presentation.Tests.Helpers
     {
         private readonly TestContext context;
 
-        public TestInstanceContext(TestContext context, IGraphNode rootNode)
+        public TestInstanceContext(TestContext context, IContentNode rootNode)
         {
             this.context = context;
             RootNode = rootNode;
@@ -16,11 +16,11 @@ namespace SiliconStudio.Presentation.Tests.Helpers
 
         public IPropertiesProviderViewModel PropertiesProvider { get; }
 
-        public IGraphNode RootNode { get; }
+        public IContentNode RootNode { get; }
 
-        public ObservableViewModel CreateViewModel()
+        public GraphViewModel CreateViewModel()
         {
-            return ObservableViewModel.Create(context.ServiceProvider, PropertiesProvider);
+            return GraphViewModel.Create(context.ServiceProvider, PropertiesProvider);
         }
     }
 }

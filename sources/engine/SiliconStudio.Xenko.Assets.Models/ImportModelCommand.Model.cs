@@ -234,13 +234,13 @@ namespace SiliconStudio.Xenko.Assets.Models
             // merges all the Draw VB and IB together to produce one final VB and IB by entity.
             var sizeVertexBuffer = model.Meshes.SelectMany(x => x.Draw.VertexBuffers).Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
             var sizeIndexBuffer = 0;
-            foreach (var x in model.Meshes)
+            foreach (var drawMesh in model.Meshes.Select(x => x.Draw).Distinct())
             {
                 // Let's be aligned (if there was 16bit indices before, we might be off)
-                if (x.Draw.IndexBuffer.Is32Bit && sizeIndexBuffer % 4 != 0)
+                if (drawMesh.IndexBuffer.Is32Bit && sizeIndexBuffer % 4 != 0)
                     sizeIndexBuffer += 2;
 
-                sizeIndexBuffer += x.Draw.IndexBuffer.Buffer.GetSerializationData().Content.Length;
+                sizeIndexBuffer += drawMesh.IndexBuffer.Buffer.GetSerializationData().Content.Length;
             }
             var vertexBuffer = new BufferData(BufferFlags.VertexBuffer, new byte[sizeVertexBuffer]);
             var indexBuffer = new BufferData(BufferFlags.IndexBuffer, new byte[sizeIndexBuffer]);
@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             var vertexBufferNextIndex = 0;
             var indexBufferNextIndex = 0;
-            foreach (var drawMesh in model.Meshes.Select(x => x.Draw))
+            foreach (var drawMesh in model.Meshes.Select(x => x.Draw).Distinct())
             {
                 // the index buffer
                 var oldIndexBuffer = drawMesh.IndexBuffer.Buffer.GetSerializationData().Content;

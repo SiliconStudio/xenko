@@ -115,21 +115,21 @@ namespace SiliconStudio.Assets.Quantum.Tests
     [AssetPropertyGraph(typeof(Types.MyAssetBase))]
     public class MyAssetBasePropertyGraph : AssetPropertyGraph
     {
-        private readonly Dictionary<IGraphNode, IGraphNode> customBases = new Dictionary<IGraphNode, IGraphNode>();
+        private readonly Dictionary<IContentNode, IContentNode> customBases = new Dictionary<IContentNode, IContentNode>();
 
         public MyAssetBasePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
         {
         }
 
-        public void RegisterCustomBaseLink(IGraphNode node, IGraphNode baseNode)
+        public void RegisterCustomBaseLink(IContentNode node, IContentNode baseNode)
         {
             customBases.Add(node, baseNode);
         }
 
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
         {
-            IGraphNode baseNode;
+            IContentNode baseNode;
             return customBases.TryGetValue(sourceNode, out baseNode) ? baseNode : base.FindTarget(sourceNode, target);
         }
     }

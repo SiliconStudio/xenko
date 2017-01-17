@@ -352,6 +352,24 @@ namespace SiliconStudio.AssemblyProcessor
             ilProcessor4.Emit(OpCodes.Ldc_I4_0);
             ilProcessor4.Emit(OpCodes.Ceq);
             ilProcessor4.Emit(OpCodes.Brfalse_S, retInstruction);
+            // Clear fields
+            foreach (var field in closureType.Fields)
+            {
+                if (field.IsStatic || field.FieldType.IsPrimitive || field == countField)
+                    continue;
+
+                ilProcessor4.Emit(OpCodes.Ldarg_0);
+                if (field.FieldType.IsValueType)
+                {
+                    ilProcessor4.Emit(OpCodes.Ldflda, field.MakeGeneric(genericParameters));
+                    ilProcessor4.Emit(OpCodes.Initobj, field.FieldType);
+                }
+                else
+                {
+                    ilProcessor4.Emit(OpCodes.Ldnull);
+                    ilProcessor4.Emit(OpCodes.Stfld, field.MakeGeneric(genericParameters));
+                }
+            }
             // Release this to pool
             ilProcessor4.Emit(OpCodes.Ldsfld, poolFieldReference);
             ilProcessor4.Emit(OpCodes.Ldarg_0);
