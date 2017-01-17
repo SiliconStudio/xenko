@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets
     [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        private const string DefaultGraphicsCompositorUrl = "Composers/DefaultGraphicsCompositor";
+        public static readonly string DefaultGraphicsCompositorUrl = "Composers/DefaultGraphicsCompositor";
 
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
