@@ -10,12 +10,12 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDestroyable
+    public interface INodeViewModel : INotifyPropertyChanging, INotifyPropertyChanged, IDestroyable
     {
         /// <summary>
-        /// Gets the <see cref="ObservableViewModel"/> that owns this node.
+        /// Gets the <see cref="GraphViewModel"/> that owns this node.
         /// </summary>
-        ObservableViewModel Owner { get; }
+        GraphViewModel Owner { get; }
 
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
@@ -35,12 +35,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or the parent of this node.
         /// </summary>
-        IObservableNode Parent { get; }
+        INodeViewModel Parent { get; }
 
         /// <summary>
         /// Gets the root of this node.
         /// </summary>
-        IObservableNode Root { get; }
+        INodeViewModel Root { get; }
 
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
-        IReadOnlyCollection<IObservableNode> Children { get; }
+        IReadOnlyCollection<INodeViewModel> Children { get; }
 
         /// <summary>
         /// Gets the list of commands available in this node.
@@ -115,7 +115,7 @@ namespace SiliconStudio.Presentation.Quantum
         bool HasDictionary { get; }
 
         /// <summary>
-        /// Gets the number of <see cref="IObservableNode"/> in the <see cref="Children"/> collection that are visible according to their <see cref="IsVisible"/> property.
+        /// Gets the number of <see cref="INodeViewModel"/> in the <see cref="Children"/> collection that are visible according to their <see cref="IsVisible"/> property.
         /// </summary>
         int VisibleChildrenCount { get; }
 
@@ -132,9 +132,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
-        /// <param name="name">The name of the <see cref="ObservableNode"/> to look for.</param>
+        /// <param name="name">The name of the <see cref="NodeViewModel"/> to look for.</param>
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
-        ObservableNode GetChild(string name);
+        NodeViewModel GetChild(string name);
 
         /// <summary>
         /// Returns the command with the matching name.
@@ -148,13 +148,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
         /// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
-        bool CanMove(IObservableNode newParent);
+        bool CanMove(INodeViewModel newParent);
 
         /// <summary>
         /// Moves the node by setting it a new parent.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
         /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
-        void Move(IObservableNode newParent, string newName = null);
+        void Move(INodeViewModel newParent, string newName = null);
     }
 }

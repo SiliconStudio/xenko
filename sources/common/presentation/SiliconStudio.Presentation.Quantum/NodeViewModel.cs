@@ -18,10 +18,10 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
+    public abstract class NodeViewModel : DispatcherViewModel, INodeViewModel, IDynamicMetaObjectProvider
     {
         protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
-        private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
+        private readonly AutoUpdatingSortedObservableCollection<INodeViewModel> children = new AutoUpdatingSortedObservableCollection<INodeViewModel>(new AnonymousComparer<INodeViewModel>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private readonly List<string> changingProperties = new List<string>();
@@ -29,16 +29,16 @@ namespace SiliconStudio.Presentation.Quantum
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
-        private List<IObservableNode> initializingChildren = new List<IObservableNode>();
+        private List<INodeViewModel> initializingChildren = new List<INodeViewModel>();
 
-        static ObservableNode()
+        static NodeViewModel()
         {
-            typeof(ObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+            typeof(NodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
             ReservedNames.Add("TypedValue");
             ReservedNames.Add("Type");
         }
 
-        protected ObservableNode(ObservableViewModel ownerViewModel, Index index)
+        protected NodeViewModel(GraphViewModel ownerViewModel, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
             Owner = ownerViewModel;
@@ -49,9 +49,9 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Gets the <see cref="ObservableViewModel"/> that owns this node.
+        /// Gets the <see cref="GraphViewModel"/> that owns this node.
         /// </summary>
-        public ObservableViewModel Owner { get; }
+        public GraphViewModel Owner { get; }
 
         /// <summary>
         /// Gets or sets the name of this node. Note that the name can be used to access this node from its parent using a dynamic object.
@@ -71,12 +71,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the parent of this node.
         /// </summary>
-        public IObservableNode Parent { get; private set; }
+        public INodeViewModel Parent { get; private set; }
 
         /// <summary>
         /// Gets the root of this node.
         /// </summary>
-        public IObservableNode Root { get { IObservableNode root = this; while (root.Parent != null) root = root.Parent; return root; } }
+        public INodeViewModel Root { get { INodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
 
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
@@ -109,14 +109,14 @@ namespace SiliconStudio.Presentation.Quantum
         public Index Index { get; }
 
         /// <summary>
-        /// Gets a unique identifier for this observable node.
+        /// Gets a unique identifier for this node view model.
         /// </summary>
         public Guid Guid { get; }
 
         /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
-        public IReadOnlyCollection<IObservableNode> Children => initializingChildren != null ? (IReadOnlyCollection<IObservableNode>)initializingChildren : children;
+        public IReadOnlyCollection<INodeViewModel> Children => initializingChildren != null ? (IReadOnlyCollection<INodeViewModel>)initializingChildren : children;
 
         /// <summary>
         /// Gets the list of commands available in this node.
@@ -170,7 +170,7 @@ namespace SiliconStudio.Presentation.Quantum
         public event EventHandler<EventArgs> IsVisibleChanged;
 
         /// <summary>
-        /// Indicates whether the given name is reserved for the name of a property in an <see cref="ObservableNode"/>. Any children node with a colliding name will
+        /// Indicates whether the given name is reserved for the name of a property in an <see cref="NodeViewModel"/>. Any children node with a colliding name will
         /// be escaped with the <see cref="EscapeName"/> method.
         /// </summary>
         /// <param name="name">The name to check.</param>
@@ -249,9 +249,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
         /// <returns><c>true</c> if the node can be moved, <c>fals</c> otherwise.</returns>
-        public bool CanMove(IObservableNode newParent)
+        public bool CanMove(INodeViewModel newParent)
         {
-            if (newParent is CombinedObservableNode)
+            if (newParent is CombinedNodeViewModel)
                 return false;
 
             var parent = newParent;
@@ -269,19 +269,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>
         /// <param name="newName">The new name to give to the node once moved. This will modify its path. If <c>null</c>, it does not modify the name.</param>
-        public void Move(IObservableNode newParent, string newName = null)
+        public void Move(INodeViewModel newParent, string newName = null)
         {
-            if (this is CombinedObservableNode)
-                throw new InvalidOperationException("A CombinedObservableNode cannot be moved.");
-            if (newParent is CombinedObservableNode)
-                throw new ArgumentException("The new parent cannot be a CombinedObservableNode");
+            if (this is CombinedNodeViewModel)
+                throw new InvalidOperationException("A CombinedNodeViewModel cannot be moved.");
+            if (newParent is CombinedNodeViewModel)
+                throw new ArgumentException("The new parent cannot be a CombinedNodeViewModel");
 
-            var parent = (ObservableNode)newParent;
+            var parent = (NodeViewModel)newParent;
             while (parent != null)
             {
                 if (parent == this)
                     throw new InvalidOperationException("A node cannot be moved into itself or one of its children.");
-                parent = (ObservableNode)parent.Parent;
+                parent = (NodeViewModel)parent.Parent;
             }
 
             if (newParent.Children.Any(x => (newName == null && x.Name == Name) || x.Name == newName))
@@ -289,7 +289,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (Parent != null)
             {
-                parent = (ObservableNode)Parent;
+                parent = (NodeViewModel)Parent;
                 parent.RemoveChild(this);
             }
 
@@ -297,18 +297,18 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 Name = newName;
             }
-            ((ObservableNode)newParent).AddChild(this);
+            ((NodeViewModel)newParent).AddChild(this);
         }
         
         /// <summary>
         /// Returns the child node with the matching name.
         /// </summary>
-        /// <param name="name">The name of the <see cref="ObservableNode"/> to look for.</param>
+        /// <param name="name">The name of the <see cref="NodeViewModel"/> to look for.</param>
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
-        public ObservableNode GetChild(string name)
+        public NodeViewModel GetChild(string name)
         {
             name = EscapeName(name);
-            return (ObservableNode)Children.FirstOrDefault(x => x.Name == name);
+            return (NodeViewModel)Children.FirstOrDefault(x => x.Name == name);
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new ObservableNodeDynamicMetaObject(parameter, this);
+            return new NodeViewModelDynamicMetaObject(parameter, this);
         }
 
         internal void NotifyPropertyChanging(string propertyName)
@@ -355,7 +355,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!changingProperties.Contains(propertyName))
             {
                 changingProperties.Add(propertyName);
-                OnPropertyChanging(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanging(propertyName, GraphViewModel.HasChildPrefix + propertyName);
             }
         }
 
@@ -363,7 +363,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (changingProperties.Remove(propertyName))
             {
-                OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+                OnPropertyChanged(propertyName, GraphViewModel.HasChildPrefix + propertyName);
             }
         }
 
@@ -381,7 +381,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void AddChild(ObservableNode node)
+        protected void AddChild(NodeViewModel node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
@@ -406,7 +406,7 @@ namespace SiliconStudio.Presentation.Quantum
             node.IsVisibleChanged += ChildVisibilityChanged;
         }
 
-        protected void RemoveChild(ObservableNode node)
+        protected void RemoveChild(NodeViewModel node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (!Children.Contains(node)) throw new InvalidOperationException("The node is not in the children list of its parent.");
@@ -435,11 +435,11 @@ namespace SiliconStudio.Presentation.Quantum
         protected void AddCommand(INodeCommandWrapper command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            OnPropertyChanging($"{ObservableViewModel.HasCommandPrefix}{command.Name}");
+            OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{command.Name}");
             OnPropertyChanging(command.Name);
             commands.Add(command);
             OnPropertyChanged(command.Name);
-            OnPropertyChanged($"{ObservableViewModel.HasCommandPrefix}{command.Name}");
+            OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{command.Name}");
         }
 
         protected void ClearCommands()
@@ -447,14 +447,14 @@ namespace SiliconStudio.Presentation.Quantum
             var commandNames = commands.Select(x => x.Name).ToList();
             foreach (string commandName in commandNames)
             {
-                OnPropertyChanging($"{ObservableViewModel.HasCommandPrefix}{commandName}");
+                OnPropertyChanging($"{GraphViewModel.HasCommandPrefix}{commandName}");
                 OnPropertyChanging(commandName);
             }
             commands.Clear();
             for (int i = commandNames.Count - 1; i >= 0; --i)
             {
                 OnPropertyChanged(commandNames[i]);
-                OnPropertyChanged($"{ObservableViewModel.HasCommandPrefix}{commandNames[i]}");
+                OnPropertyChanged($"{GraphViewModel.HasCommandPrefix}{commandNames[i]}");
             }
         }
 
@@ -528,14 +528,14 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ChildVisibilityChanged(object sender, EventArgs e)
         {
-            var node = (IObservableNode)sender;
+            var node = (INodeViewModel)sender;
             if (node.IsVisible)
                 ++VisibleChildrenCount;
             else
                 --VisibleChildrenCount;
         }
 
-        private static int CompareChildren(IObservableNode a, IObservableNode b)
+        private static int CompareChildren(INodeViewModel a, INodeViewModel b)
         {
             // Order has the best priority for comparison, if set.
             if ((a.Order ?? 0) != (b.Order ?? 0))

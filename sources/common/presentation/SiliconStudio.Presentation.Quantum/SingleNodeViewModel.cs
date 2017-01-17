@@ -11,23 +11,23 @@ using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public abstract class SingleObservableNode : ObservableNode
+    public abstract class SingleNodeViewModel : NodeViewModel
     {
         protected string[] DisplayNameDependentProperties;
         protected Func<string> DisplayNameProvider;
 
-        static SingleObservableNode()
+        static SingleNodeViewModel()
         {
-            typeof(SingleObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
+            typeof(SingleNodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SingleObservableNode"/> class.
+        /// Initializes a new instance of the <see cref="SingleNodeViewModel"/> class.
         /// </summary>
-        /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="SingleObservableNode"/>.</param>
+        /// <param name="ownerViewModel">The <see cref="GraphViewModel"/> that owns the new <see cref="SingleNodeViewModel"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected SingleObservableNode(ObservableViewModel ownerViewModel, string baseName, Index index)
+        protected SingleNodeViewModel(GraphViewModel ownerViewModel, string baseName, Index index)
             : base(ownerViewModel, index)
         {
             if (baseName == null && index == null)
@@ -61,13 +61,13 @@ namespace SiliconStudio.Presentation.Quantum
                 DisplayName = provider();
         }
 
-        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
+        public VirtualNodeViewModel CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, Index index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = (VirtualObservableNode)Activator.CreateInstance(typeof(VirtualObservableNode<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
-            nodeAssociatedData?.ForEach(x => observableChild.AddAssociatedData(x.Key, x.Value));
-            observableChild.FinalizeChildrenInitialization();
-            AddChild(observableChild);
-            return observableChild;
+            var child = (VirtualNodeViewModel)Activator.CreateInstance(typeof(VirtualNodeViewModel<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
+            nodeAssociatedData?.ForEach(x => child.AddAssociatedData(x.Key, x.Value));
+            child.FinalizeChildrenInitialization();
+            AddChild(child);
+            return child;
         }
 
         protected override void OnPropertyChanged(params string[] propertyNames)
