@@ -368,7 +368,7 @@ namespace SiliconStudio.Presentation.Quantum
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
                             var childPath = targetNodePath.PushMember(memberContent.Name);
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
+                            var observableChild = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
                             AddChild(observableChild);
                             observableChild.Initialize();
                         }
