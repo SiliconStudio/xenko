@@ -18,36 +18,40 @@ namespace SiliconStudio.Assets.Quantum
             Result.Clear();
         }
 
-        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+        protected override void VisitNode(IContentNode node, GraphNodePath currentPath)
         {
-            var assetNode = (AssetNode)node;
+            var assetNode = (IAssetNode)node;
 
             bool localInNonIdentifiableType = false;
-            if ((node.Content.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
+            if ((node.Descriptor as ObjectDescriptor)?.Attributes.OfType<NonIdentifiableCollectionItemsAttribute>().Any() ?? false)
             {
                 localInNonIdentifiableType = true;
                 inNonIdentifiableType++;
             }
 
             var path = ConvertPath(currentPath, inNonIdentifiableType);
-            if (assetNode.IsContentOverridden())
+            var memberNode = assetNode as AssetMemberNode;
+            if (memberNode != null)
             {
-                Result.Add(path, assetNode.GetContentOverride());
-            }
+                if (memberNode.IsContentOverridden())
+                {
+                    Result.Add(path, memberNode.GetContentOverride());
+                }
 
-            foreach (var index in assetNode.GetOverriddenItemIndices())
-            {
-                var id = assetNode.IndexToId(index);
-                var itemPath = path.Clone();
-                itemPath.PushItemId(id);
-                Result.Add(itemPath, assetNode.GetItemOverride(index));
-            }
-            foreach (var index in assetNode.GetOverriddenKeyIndices())
-            {
-                var id = assetNode.IndexToId(index);
-                var itemPath = path.Clone();
-                itemPath.PushIndex(id);
-                Result.Add(itemPath, assetNode.GetKeyOverride(index));
+                foreach (var index in memberNode.GetOverriddenItemIndices())
+                {
+                    var id = memberNode.IndexToId(index);
+                    var itemPath = path.Clone();
+                    itemPath.PushItemId(id);
+                    Result.Add(itemPath, memberNode.GetItemOverride(index));
+                }
+                foreach (var index in memberNode.GetOverriddenKeyIndices())
+                {
+                    var id = memberNode.IndexToId(index);
+                    var itemPath = path.Clone();
+                    itemPath.PushIndex(id);
+                    Result.Add(itemPath, memberNode.GetKeyOverride(index));
+                }
             }
             base.VisitNode(node, currentPath);
 
@@ -57,7 +61,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public static YamlAssetPath ConvertPath(GraphNodePath path, int inNonIdentifiableType)
         {
-            var currentNode = (AssetNode)path.RootNode;
+            var currentNode = (IAssetNode)path.RootNode;
             var result = new YamlAssetPath();
             var i = 0;
             foreach (var item in path.Path)
@@ -67,23 +71,24 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(member);
+                        currentNode = (IAssetNode)currentNode.TryGetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
+                            currentNode = (IAssetNode)currentNode.Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        if (inNonIdentifiableType > 0 || currentNode.IsNonIdentifiableCollectionContent)
+                        var memberNode = (AssetMemberNode)currentNode;
+                        if (inNonIdentifiableType > 0 || memberNode.IsNonIdentifiableCollectionContent)
                         {
                             result.PushIndex(index.Value);
                         }
                         else
                         {
-                            var id = currentNode.IndexToId(index);
+                            var id = memberNode.IndexToId(index);
                             // Create a new id if we don't have any so far
                             if (id == ItemId.Empty)
                                 id = ItemId.New();
@@ -91,7 +96,7 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(index);
                         }
                         break;
                     default:

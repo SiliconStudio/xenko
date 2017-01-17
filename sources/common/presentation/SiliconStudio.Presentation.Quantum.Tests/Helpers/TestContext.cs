@@ -10,16 +10,16 @@ namespace SiliconStudio.Presentation.Tests.Helpers
     {
         public TestContext()
         {
-            ObservableViewModelService = new ObservableViewModelService();
+            GraphViewModelService = new GraphViewModelService();
             ServiceProvider = new ViewModelServiceProvider();
             ServiceProvider.RegisterService(new DispatcherService(Dispatcher.CurrentDispatcher));
-            ServiceProvider.RegisterService(ObservableViewModelService);
+            ServiceProvider.RegisterService(GraphViewModelService);
             NodeContainer = new NodeContainer();
         }
 
         public ViewModelServiceProvider ServiceProvider { get; }
 
-        public ObservableViewModelService ObservableViewModelService { get; }
+        public GraphViewModelService GraphViewModelService { get; }
 
         public NodeContainer NodeContainer { get; }
 
