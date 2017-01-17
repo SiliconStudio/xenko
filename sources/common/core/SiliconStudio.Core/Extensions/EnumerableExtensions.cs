@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Extensions
         /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
         [Obsolete("Use string.IsNullOrEmpty() instead")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty(this string value)
+        public static bool IsNullOrEmpty([CanBeNull] this string value)
         {
             return string.IsNullOrEmpty(value);
         }
@@ -126,7 +126,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
         /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
-        [Pure]
+        [ItemNotNull, NotNull, Pure]
         public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T> source) where T : class
         {
             return source.Where(x => x != null);
@@ -138,7 +138,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The linked list.</param>
         /// <returns>An enumeration of the linked list nodes.</returns>
-        [Pure]
+        [ItemNotNull, NotNull, Pure]
         internal static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>([NotNull] this LinkedList<T> list)
         {
             var node = list.First;

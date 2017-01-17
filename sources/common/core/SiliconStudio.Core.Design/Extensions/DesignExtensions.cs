@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on.</param>
         /// <returns>Returns an enumerable that can be consume in a foreach statement.</returns>
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator<T> enumerator)
         {
             while (enumerator.MoveNext())
@@ -53,14 +53,14 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on. (subtype is casted to T)</param>
         /// <returns>Returns a typed enumerable that can be consume in a foreach statement.</returns>
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator enumerator)
         {
             while (enumerator.MoveNext())
                 yield return (T)enumerator.Current;
         }
 
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<Tuple<T1, T2>> Zip<T1, T2>([NotNull] this IEnumerable<T1> enumerable1, [NotNull] IEnumerable<T2> enumerable2)
         {
             if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
@@ -94,7 +94,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The source.</param>
         /// <param name="childrenSelector">The children selector.</param>
         /// <returns></returns>
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
@@ -122,7 +122,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in breadth-first order.</returns>
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> BreadthFirst<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
@@ -151,7 +151,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in depth-first order.</returns>
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> DepthFirst<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -173,7 +173,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        [Pure]
+        [NotNull, Pure]
         public static IEnumerable<T> Distinct<T, TKey>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, TKey> selector)
         {
             return source.Distinct(new SelectorEqualityComparer<T, TKey>(selector));
