@@ -17,10 +17,12 @@ namespace SiliconStudio.Assets.Serializers
     [YamlSerializerFactory(YamlAssetProfile.Name)]
     public class AssetCompositeSerializer : ObjectSerializer, IDataCustomVisitor
     {
+        // Exposed temporarily for the use of AssetCompositePartReferenceCollector
+        // TODO: Unify IDataCustomVisitor and AssetVisitorBase?
         /// <summary>
         /// Context containing information about asset parts being serialized.
         /// </summary>
-        private static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
+        internal static readonly ThreadLocal<AssetCompositeVisitorContext> LocalContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
@@ -61,7 +63,7 @@ namespace SiliconStudio.Assets.Serializers
         {
             if (LocalContext.Value.SerializeAsReference)
             {
-                var attribute = LocalContext.Value.EnteredTypes.Peek();
+                var attribute = LocalContext.Value.GetLastEnteredType();
                 var referenceType = attribute.ReferenceType;
                 var reference = (IAssetPartReference)Activator.CreateInstance(referenceType);
 
@@ -145,10 +147,38 @@ namespace SiliconStudio.Assets.Serializers
             }
         }
 
+        protected override object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType)
+        {
+            // Note: no need to create context (nor restore it in finally), as it should have been done by the container type
+            var removeLastEnteredNode = LocalContext.Value?.EnterNode(member) ?? false;
+            try
+            {
+                return base.ReadMemberValue(ref objectContext, member, memberValue, memberType);
+            }
+            finally
+            {
+                LocalContext.Value?.LeaveNode(removeLastEnteredNode);
+            }
+        }
+
+        protected override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType)
+        {
+            // Note: no need to create context (nor restore it in finally), as it should have been done by the container type
+            var removeLastEnteredNode = LocalContext.Value?.EnterNode(member) ?? false;
+            try
+            {
+                base.WriteMemberValue(ref objectContext, member, memberValue, memberType);
+            }
+            finally
+            {
+                LocalContext.Value?.LeaveNode(removeLastEnteredNode);
+            }
+        }
+
         private struct LocalContextToken
         {
             public Type Type;
-            public bool RemoveLastEnteredType;
+            public bool RemoveLastEnteredNode;
             public bool ClearLocalContext;
             public AssetCompositeVisitorContext OldContext;
         }
@@ -175,13 +205,13 @@ namespace SiliconStudio.Assets.Serializers
                 token.ClearLocalContext = true;
             }
 
-            token.RemoveLastEnteredType = LocalContext.Value?.EnterNode(token.Type) ?? false;
+            token.RemoveLastEnteredNode = LocalContext.Value?.EnterNode(token.Type) ?? false;
             return token;
         }
 
         private static void CleanLocalContext(LocalContextToken token)
         {
-            LocalContext.Value?.LeaveNode(token.Type, token.RemoveLastEnteredType);
+            LocalContext.Value?.LeaveNode(token.RemoveLastEnteredNode);
 
             if (token.ClearLocalContext)
             {

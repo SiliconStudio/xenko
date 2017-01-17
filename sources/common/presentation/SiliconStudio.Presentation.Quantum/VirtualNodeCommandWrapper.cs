@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private readonly IContentNode node;
         private readonly Index index;
-        protected readonly ObservableViewModelService Service;
+        protected readonly GraphViewModelService Service;
 
         public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IContentNode node, Index index)
             : base(serviceProvider)
@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum
             this.node = node;
             this.index = index;
             NodeCommand = nodeCommand;
-            Service = serviceProvider.Get<ObservableViewModelService>();
+            Service = serviceProvider.Get<GraphViewModelService>();
         }
 
         public override string Name => NodeCommand.Name;

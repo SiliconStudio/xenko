@@ -4,15 +4,15 @@ using System;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class ObservableViewModelNodeValueChangedArgs : EventArgs
+    public class GraphViewModelNodeValueChanged : EventArgs
     {
-        public ObservableViewModelNodeValueChangedArgs(ObservableViewModel viewModel, string nodePath)
+        public GraphViewModelNodeValueChanged(GraphViewModel viewModel, string nodePath)
         {
             ViewModel = viewModel;
             NodePath = nodePath;
         }
 
-        public ObservableViewModel ViewModel { get; private set; }
+        public GraphViewModel ViewModel { get; private set; }
 
         public string NodePath { get; private set; }
     }

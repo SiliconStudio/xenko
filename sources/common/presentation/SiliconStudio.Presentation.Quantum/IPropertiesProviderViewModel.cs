@@ -5,7 +5,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// An interface representing an view model that can provide properties to build an <see cref="ObservableViewModel"/>.
+    /// An interface representing an view model that can provide properties to build an <see cref="GraphViewModel"/>.
     /// </summary>
     public interface IPropertiesProviderViewModel
     {
