@@ -308,7 +308,7 @@ namespace SiliconStudio.Assets
             // Make sure to use a full path.
             filePath = FileUtility.GetAbsolutePath(filePath);
 
-            if (!File.Exists(filePath)) throw new ArgumentException($"File [{filePath}] must exist", nameof(filePath));
+            if (!File.Exists(filePath)) throw new ArgumentException($@"File [{filePath}] must exist", nameof(filePath));
 
             try
             {
@@ -335,7 +335,7 @@ namespace SiliconStudio.Assets
                     }
                     else
                     {
-                        sessionResult.Error("Unsupported file extension (only .sln or {0} are supported)", Package.PackageFileExtension);
+                        sessionResult.Error($"Unsupported file extension (only .sln or {Package.PackageFileExtension} are supported)");
                         return;
                     }
 
@@ -867,7 +867,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, filePath);
+                log.Error($"Error while pre-loading package [{filePath}]", ex);
             }
 
             return null;
@@ -951,7 +951,7 @@ namespace SiliconStudio.Assets
 
                     if (!upgradeAllowed)
                     {
-                        log.Error("Necessary package migration for [{0}] has not been allowed", package.Meta.Name);
+                        log.Error($"Necessary package migration for [{package.Meta.Name}] has not been allowed");
                         return false;
                     }
 
@@ -962,7 +962,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.UpgradeBeforeAssembliesLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
                     }
@@ -987,7 +987,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.Upgrade(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, newLoadParameters.AssetFiles))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
 
@@ -1014,7 +1014,7 @@ namespace SiliconStudio.Assets
                         var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
                         if (!packageUpgrader.UpgradeAfterAssetsLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage, pendingPackageUpgrade.DependencyVersionBeforeUpgrade))
                         {
-                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            log.Error($"Error while upgrading package [{package.Meta.Name}] for [{dependencyPackage.Meta.Name}] from version [{pendingPackageUpgrade.Dependency.Version}] to [{dependencyPackage.Meta.Version}]");
                             return false;
                         }
                     }
@@ -1033,7 +1033,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while loading package [{0}]", ex, package);
+                log.Error($"Error while pre-loading package [{package}]", ex);
                 return false;
             }
         }
@@ -1067,7 +1067,7 @@ namespace SiliconStudio.Assets
                         throw new InvalidOperationException($"Upgrading package [{dependentPackage.Meta.Name}] to use [{dependencyPackage.Meta.Name}] from version [{dependentPackagePreviousMinimumVersion}] to [{dependencyPackage.Meta.Version}] is not supported");
                     }
 
-                    log.Info("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] will be required", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version);
+                    log.Info($"Upgrading package [{dependentPackage.Meta.Name}] to use [{dependencyPackage.Meta.Name}] from version [{dependentPackagePreviousMinimumVersion}] to [{dependencyPackage.Meta.Version}] will be required");
                     return packageUpgrader;
                 }
             }

@@ -144,20 +144,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         public static void PrintResult()
         {
             Logger.Info(@"---------------------------------MIX ANALYZER-----------------------------------");
-            Logger.Info(@"Whole mix took {0} ms", Global.ElapsedMilliseconds);
-            Logger.Info(@"AddDefaultCompositions took {0} ms", AddDefaultCompositions.ElapsedMilliseconds);
-            Logger.Info(@"CreateReferencesStructures took {0} ms", CreateReferencesStructures.ElapsedMilliseconds);
-            Logger.Info(@"RegenKeys took {0} ms", RegenKeys.ElapsedMilliseconds);
-            Logger.Info(@"BuildMixinInheritance took {0} ms", BuildMixinInheritance.ElapsedMilliseconds);
-            Logger.Info(@"ComputeMixinOccurrence took {0} ms", ComputeMixinOccurrence.ElapsedMilliseconds);
-            Logger.Info(@"BuildStageInheritance took {0} ms", BuildStageInheritance.ElapsedMilliseconds);
-            Logger.Info(@"LinkVariables took {0} ms", LinkVariables.ElapsedMilliseconds);
-            Logger.Info(@"ProcessExterns took {0} ms", ProcessExterns.ElapsedMilliseconds);
-            Logger.Info(@"PatchAllMethodInferences took {0} ms", PatchAllMethodInferences.ElapsedMilliseconds);
-            Logger.Info(@"MergeReferences took {0} ms", MergeReferences.ElapsedMilliseconds);
-            Logger.Info(@"RenameAllVariables took {0} ms", RenameAllVariables.ElapsedMilliseconds);
-            Logger.Info(@"RenameAllMethods took {0} ms", RenameAllMethods.ElapsedMilliseconds);
-            Logger.Info(@"GenerateShader took {0} ms", GenerateShader.ElapsedMilliseconds);
+            Logger.Info($"Whole mix took {Global.ElapsedMilliseconds} ms");
+            Logger.Info($"AddDefaultCompositions took {AddDefaultCompositions.ElapsedMilliseconds} ms");
+            Logger.Info($"CreateReferencesStructures took {CreateReferencesStructures.ElapsedMilliseconds} ms");
+            Logger.Info($"RegenKeys took {RegenKeys.ElapsedMilliseconds} ms");
+            Logger.Info($"BuildMixinInheritance took {BuildMixinInheritance.ElapsedMilliseconds} ms");
+            Logger.Info($"ComputeMixinOccurrence took {ComputeMixinOccurrence.ElapsedMilliseconds} ms");
+            Logger.Info($"BuildStageInheritance took {BuildStageInheritance.ElapsedMilliseconds} ms");
+            Logger.Info($"LinkVariables took {LinkVariables.ElapsedMilliseconds} ms");
+            Logger.Info($"ProcessExterns took {ProcessExterns.ElapsedMilliseconds} ms");
+            Logger.Info($"PatchAllMethodInferences took {PatchAllMethodInferences.ElapsedMilliseconds} ms");
+            Logger.Info($"MergeReferences took {MergeReferences.ElapsedMilliseconds} ms");
+            Logger.Info($"RenameAllVariables took {RenameAllVariables.ElapsedMilliseconds} ms");
+            Logger.Info($"RenameAllMethods took {RenameAllMethods.ElapsedMilliseconds} ms");
+            Logger.Info($"GenerateShader took {GenerateShader.ElapsedMilliseconds} ms");
             Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }

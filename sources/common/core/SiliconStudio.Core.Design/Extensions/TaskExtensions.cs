@@ -4,13 +4,14 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
     public static class TaskExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Forget(this Task task)
+        public static void Forget([NotNull] this Task task)
         {
             if (task == null) throw new ArgumentNullException();
         }

@@ -146,7 +146,7 @@ namespace SiliconStudio.BuildEngine
                     }
                     catch (Exception ex)
                     {
-                        log.Debug("Cannot calculate hash for file [{0}]", ex, filePath);
+                        log.Debug($"Cannot calculate hash for file [{filePath}]", ex);
                     }
                     storage[inputVersionKey] = hash;
                 }

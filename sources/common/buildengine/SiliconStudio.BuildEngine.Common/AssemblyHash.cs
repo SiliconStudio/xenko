@@ -30,7 +30,7 @@ namespace SiliconStudio.BuildEngine
                     ComputeAssemblyHash(assembly, assemblies, text);
                     hash = ObjectId.FromBytes(Encoding.UTF8.GetBytes(text.ToString())).ToString();
                     assemblyToHash.Add(assembly, hash);
-                    Log.Debug("Assembly Hash [{0}] => [{1}]", assembly.GetName().Name, hash);
+                    Log.Debug($"Assembly Hash [{assembly.GetName().Name}] => [{hash}]");
                 }
             }
             return hash;

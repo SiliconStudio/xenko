@@ -182,7 +182,7 @@ namespace SiliconStudio.Core.Reflection
                 {
                     if (string.IsNullOrWhiteSpace(category))
                     {
-                        Log.Error("Invalid empty category for assembly [{0}]", assembly);
+                        Log.Error($"Invalid empty category for assembly [{assembly}]");
                         continue;
                     }
 

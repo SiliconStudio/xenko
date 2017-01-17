@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 return false;
 
             var elementType = collectionDescriptor.ElementType;
-            return collectionDescriptor.HasAdd && (CanConstruct(elementType) || CanAddNull(elementType) || IsReferenceType(elementType));
+            return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
         protected override void ExecuteSync(IContent content, Index index, object parameter)
@@ -60,7 +60,8 @@ namespace SiliconStudio.Assets.Quantum.Commands
             // Otherwise, assume it's an object
             else
             {
-                itemToAdd = parameter ?? ObjectFactoryRegistry.NewInstance(collectionDescriptor.ElementType);
+                var elementType = collectionDescriptor.ElementType;
+                itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
 
             if (index.IsEmpty)
@@ -78,8 +79,6 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         private static bool CanConstruct(Type elementType) => !elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType == typeof(string);
 
-        private static bool CanAddNull(Type elementType) => elementType.IsAbstract || elementType.IsNullable();
-
-        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
+        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsAssetPartType(elementType) || AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
     }
 }
