@@ -285,7 +285,7 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath)
+        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath, Index index)
         {
             // Set the default policy for expanding reference children.
             ExpandReferencePolicy = ExpandReferencePolicy.Full;

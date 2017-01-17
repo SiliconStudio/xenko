@@ -82,7 +82,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // Safety check
             if (initialized) throw new InvalidOperationException("This node has already been initialized.");
-            Owner.ObservableViewModelService.NotifyNodeInitialized(this);
+            Owner.GraphViewModelService.NotifyNodeInitialized(this);
             initialized = true;
         }
 

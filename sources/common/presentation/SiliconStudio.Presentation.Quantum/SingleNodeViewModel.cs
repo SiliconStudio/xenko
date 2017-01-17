@@ -159,7 +159,7 @@ namespace SiliconStudio.Presentation.Quantum
             Name = EscapeName(Name);
         }
 
-        private void DependencyNodeValueChanged(object sender, ObservableViewModelNodeValueChangedArgs e)
+        private void DependencyNodeValueChanged(object sender, GraphViewModelNodeValueChanged e)
         {
             if (dependencies?.Any(x => x.ShouldRefresh(e.NodePath)) ?? false)
             {
