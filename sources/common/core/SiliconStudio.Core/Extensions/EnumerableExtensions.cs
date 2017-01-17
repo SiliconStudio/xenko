@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Extensions
         /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
         [Obsolete("Use string.IsNullOrEmpty() instead")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty([CanBeNull] this string value)
+        public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
         }
