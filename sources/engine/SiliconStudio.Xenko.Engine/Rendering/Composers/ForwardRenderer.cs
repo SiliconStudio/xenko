@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
@@ -15,18 +16,39 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
 
-        // TODO This should be exposed to the user at some point
-        private bool enableDepthAsShaderResource = true;
-
-
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
 
-        // Render stages
+        /// <summary>
+        /// The main render stage for opaque geometry.
+        /// </summary>
         public RenderStage MainRenderStage { get; set; }
+
+        /// <summary>
+        /// The transparent render stage for transparent geometry.
+        /// </summary>
         public RenderStage TransparentRenderStage { get; set; }
+
+        /// <summary>
+        /// The shadow map render stage for shadow casters. No shadows rendering will happen if null.
+        /// </summary>
         public RenderStage ShadowMapRenderStage { get; set; }
 
+        /// <summary>
+        /// The post effects renderer.
+        /// </summary>
         public PostProcessingEffects PostEffects { get; set; }
+
+        /// <summary>
+        /// If true, depth buffer generated during <see cref="MainRenderStage"/> will be available as a shader resource named DepthBase.DepthStencil during <see cref="TransparentRenderStage"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is needed by some effects such as particles soft edges.
+        /// 
+        /// On recent platforms that can bind depth buffer as read-only (<see cref="GraphicsDeviceFeatures.HasDepthAsReadOnlyRT"/>), depth buffer will be used as is. Otherwise, a copy will be generated.
+        /// </remarks>
+        [DefaultValue(true)]
+        public bool BindDepthAsResourceDuringTransparentRendering { get; set; } = true;
+
 
         protected override void InitializeCore()
         {
@@ -139,7 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         private Texture ResolveDepthAsSRV(RenderDrawContext context)
         {
-            if (!enableDepthAsShaderResource)
+            if (!BindDepthAsResourceDuringTransparentRendering)
                 return null;
 
             using (context.PushRenderTargetsAndRestore())
