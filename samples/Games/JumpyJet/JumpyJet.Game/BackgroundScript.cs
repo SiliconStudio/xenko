@@ -44,7 +44,7 @@ namespace JumpyJet
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
 
             // register the renderer in the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Insert(1, delegateRenderer = new SceneDelegateRenderer(DrawParallax));
         }
@@ -61,7 +61,7 @@ namespace JumpyJet
         public override void Cancel()
         {
             // remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Remove(delegateRenderer);
 

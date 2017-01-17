@@ -17,7 +17,7 @@ namespace GameMenu
             if (Input.PointerEvents.Any(e => e.State == PointerState.Down))
             {
                 // Next scene
-                SceneSystem.SceneInstance.Scene = Content.Load<Scene>("MainScene");
+                SceneSystem.SceneInstance.RootScene = Content.Load<Scene>("MainScene");
                 Cancel();
             }
         }

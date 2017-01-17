@@ -114,7 +114,7 @@ at full size and full measure";
             screenRenderers.Add(DrawAnimationCategory);
             
             // Add Graphics Layer
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(DrawFont));
         }
@@ -129,7 +129,7 @@ at full size and full measure";
         public override void Cancel()
         {
             // Remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Remove(delegateRenderer);
 

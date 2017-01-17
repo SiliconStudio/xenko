@@ -73,7 +73,7 @@ namespace SimpleDynamicTexture
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // insert the custom renderer in between the 2 camera renderer.
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Insert(2, new SceneDelegateRenderer(RenderTexture));
             
@@ -119,7 +119,7 @@ namespace SimpleDynamicTexture
         public override void Cancel()
         {
             // Remove the custom renderer from the pipeline.
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.RemoveAt(2);
 

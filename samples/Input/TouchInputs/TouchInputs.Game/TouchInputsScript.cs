@@ -89,7 +89,7 @@ namespace TouchInputs
             }
 
             // Add Graphics Layer
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(Render));
         }
@@ -97,7 +97,7 @@ namespace TouchInputs
         public override void Cancel()
         {
             // remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Remove(delegateRenderer);
 

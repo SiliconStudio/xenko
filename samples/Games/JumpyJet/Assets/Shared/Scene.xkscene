@@ -1,34 +1,8 @@
 !SceneAsset
 Id: b07987b2-a262-45fb-9da6-ba05fc7aaf74
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 142dc57f-0a87-4097-9abd-27d88e13bdb4
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            5985711bbb63464899a0a2c3e8dbdf34:
-                Name: null
-                Camera: 6ec17338-026d-4ad3-9615-4975281cf3ba/360f48ca-45bf-4b70-97ee-4d9531d642f6
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                a5ae7bda8ddf0b419d838fc23d23fe05: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                7eedd467d5da1141b77e17c7a9bf44c0: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 10.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 6ec17338-026d-4ad3-9615-4975281cf3ba
@@ -70,10 +44,12 @@ Hierarchy:
                         Children: {}
                     ca480f36bf45704b97ee4d9531d642f6: !CameraComponent
                         Id: 360f48ca-45bf-4b70-97ee-4d9531d642f6
+                        Name: null
                         Projection: Orthographic
                         OrthographicSize: 1136.0
                         NearClipPlane: 1.0
                         AspectRatio: 0.56338
+                        Slot: {Index: 0}
         -   Entity:
                 Id: c2306322-b9da-4756-8c50-0415142c6dd1
                 Name: Background

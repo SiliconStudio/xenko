@@ -1,7 +1,6 @@
 !Package
 Id: 1adf36a6-5e90-4da5-9e31-2c9fe29cad18
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: TopDownRPG
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: TopDownRPG
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.10.0-alpha02
             RootAssets: []
 LocalDependencies:
     - ec64fd24-824f-4da4-b077-3661cf988027:../../Packs/mannequinModel/mannequinModel/mannequinModel.xkpkg

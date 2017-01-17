@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta05}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -33,7 +33,7 @@ Hierarchy:
                                     ShapeBuilder: !ShapeBuilderTrail
                                         SmoothingPolicy: Best
                                         Segments: 15
-                                        EdgePolicy: Center
+                                        EdgePolicy: Edge
                                         TextureCoordinatePolicy: Stretched
                                         TexCoordsFactor: 1.0
                                         UVRotate:

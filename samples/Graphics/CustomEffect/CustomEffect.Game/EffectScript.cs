@@ -40,7 +40,7 @@ namespace CustomEffect
             samplerState = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp));
             
             // Add Effect rendering to the end of the pipeline
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             renderer = new SceneDelegateRenderer(RenderQuad);
             compositor.Master.Renderers.Add(renderer);
@@ -49,7 +49,7 @@ namespace CustomEffect
         public override void Cancel()
         {
             // Cleanup when script is removed
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
             compositor.Master.Renderers.Remove(renderer);
 
