@@ -3,9 +3,7 @@ Id: 823a81bf-bac0-4552-9267-aeed499c40df
 Tags: []
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
-        Name: Test123
-    38ed2128317e47a253bc9c64b80f48de:
-        Name: Test456
+        Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
         Id: 50671147-a5c1-49d4-b4ad-3625f71439b3
