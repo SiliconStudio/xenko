@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
@@ -28,6 +29,18 @@ namespace SiliconStudio.Core.Extensions
                 throw new ArgumentException("Invalid 'source' IEnumerable.");
 
             return enumerator.MoveNext() == false;
+        }
+
+        /// <summary>
+        /// Indicates whether the specified string is null or an empty string.
+        /// </summary>
+        /// <param name="value">The string to test.</param>
+        /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
+        [Obsolete("Use string.IsNullOrEmpty() instead")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
         }
 
         /// <summary>
