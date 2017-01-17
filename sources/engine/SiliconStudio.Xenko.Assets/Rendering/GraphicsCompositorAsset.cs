@@ -67,6 +67,14 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
+        /// The list of graphics compositors.
+        /// </summary>
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
+        [AssetPartContained(typeof(ISharedRenderer))]
+        public List<ISharedRenderer> SharedRenderers { get; } = new List<ISharedRenderer>();
+
+        /// <summary>
         /// The entry point for the game compositor.
         /// </summary>
         public ISceneRenderer TopLevel { get; set; }
@@ -80,14 +88,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// The entry point for a compositor used by the scene editor.
         /// </summary>
         public ISceneRenderer Editor { get; set; }
-
-        /// <summary>
-        /// The list of graphics compositors.
-        /// </summary>
-        [Category]
-        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        [AssetPartContained(typeof(ISharedRenderer))]
-        public List<ISharedRenderer> SharedRenderers { get; } = new List<ISharedRenderer>();
 
         /// <inheritdoc/>
         public override IEnumerable<AssetPart> CollectParts()
