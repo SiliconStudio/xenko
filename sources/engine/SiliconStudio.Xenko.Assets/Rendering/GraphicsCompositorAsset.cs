@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetPartReference(typeof(RenderStage))]
     // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
-    [AssetPartReference(typeof(RootRenderFeature))]
     [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
     public class GraphicsCompositorAsset : AssetComposite
