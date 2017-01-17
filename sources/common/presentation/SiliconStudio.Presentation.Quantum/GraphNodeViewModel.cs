@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class GraphNodeViewModel : SingleNodeViewModel
     {
-        public readonly IGraphNode SourceNode;
+        public readonly IContentNode SourceNode;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -33,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
+        protected GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
@@ -73,7 +73,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="contentType">The type of content contained by the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="GraphNodeViewModel{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        internal static GraphNodeViewModel Create(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
             var node = (GraphNodeViewModel)Activator.CreateInstance(typeof(GraphNodeViewModel<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
             return node;
@@ -131,7 +131,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (CustomOrder != null)
                     return CustomOrder;
 
-                var memberContent = SourceNode.Content as MemberContent;
+                var memberContent = SourceNode as MemberContent;
                 if (memberContent == null || !Index.IsEmpty)
                     return null;
 
@@ -145,7 +145,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                var memberContent = SourceNode.Content as MemberContent;
+                var memberContent = SourceNode as MemberContent;
                 var memberDescriptorBase = memberContent?.Member as MemberDescriptorBase;
                 return memberDescriptorBase?.MemberInfo;
             }
@@ -168,19 +168,19 @@ namespace SiliconStudio.Presentation.Quantum
         // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history. 
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
-        //public sealed override bool HasList => (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable);
+        //public sealed override bool HasList => (targetNode.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable);
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
-        //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
+        //public sealed override bool HasDictionary => (targetNode.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Value != targetNode.Value))) || (targetNode.ShouldProcessReference && targetNode.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Reference).IsDictionary);
 
         internal Guid ModelGuid => SourceNode.Guid;
 
         /// <summary>
-        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IGraphNode"/>.
+        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IContentNode"/>.
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
-        public bool MatchNode(IGraphNode node)
+        public bool MatchNode(IContentNode node)
         {
             return SourceNode == node;
         }
@@ -188,7 +188,7 @@ namespace SiliconStudio.Presentation.Quantum
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
-            var memberContent = SourceNode.Content as MemberContent;
+            var memberContent = SourceNode as MemberContent;
             return memberContent?.Member;
         }
 
@@ -198,8 +198,8 @@ namespace SiliconStudio.Presentation.Quantum
             var targetNode = GetTargetNode(SourceNode, Index);
             if (SourceNode != targetNode)
             {
-                var objectReference = SourceNode.Content.Reference as ObjectReference;
-                var referenceEnumerable = SourceNode.Content.Reference as ReferenceEnumerable;
+                var objectReference = SourceNode.Reference as ObjectReference;
+                var referenceEnumerable = SourceNode.Reference as ReferenceEnumerable;
                 if (objectReference != null && targetNode != objectReference.TargetNode)
                 {
                     throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -225,9 +225,9 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var child in Children.OfType<GraphNodeViewModel>())
             {
-                if (targetNode.Content.IsReference)
+                if (targetNode.IsReference)
                 {
-                    var objectReference = targetNode.Content.Reference as ObjectReference;
+                    var objectReference = targetNode.Reference as ObjectReference;
                     if (objectReference != null)
                     {
                         throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -267,53 +267,53 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The value of the model content associated to this <see cref="GraphNodeViewModel"/>.</returns>
         protected object GetModelContentValue()
         {
-            return SourceNode.Content.Retrieve(Index);
+            return SourceNode.Retrieve(Index);
         }
 
         /// <summary>
         /// Sets the value of the model content associated to this <see cref="GraphNodeViewModel"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected bool SetModelContentValue(IGraphNode node, object newValue)
+        protected bool SetModelContentValue(IContentNode node, object newValue)
         {
-            var oldValue = node.Content.Retrieve(Index);
+            var oldValue = node.Retrieve(Index);
             if (!Equals(oldValue, newValue))
             {
-                node.Content.Update(newValue, Index);
+                node.Update(newValue, Index);
                 return true;
             }
             return false;
         }
 
-        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
+        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath)
         {
             // Node representing a member with a reference to another object
-            if (SourceNode != targetNode && SourceNode.Content.IsReference)
+            if (SourceNode != targetNode && SourceNode.IsReference)
             {
-                var objectReference = SourceNode.Content.Reference as ObjectReference;
+                var objectReference = SourceNode.Reference as ObjectReference;
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
+                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference))
                     return;
 
-                var refEnum = SourceNode.Content.Reference as ReferenceEnumerable;
+                var refEnum = SourceNode.Reference as ReferenceEnumerable;
                 if (refEnum != null)
                 {
                     foreach (var reference in refEnum)
                     {
                         // Discard the children of the referenced object if requested by the property provider
-                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
+                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, reference))
                             return;
                     }
                 }
             }
 
-            var dictionary = targetNode.Content.Descriptor as DictionaryDescriptor;
-            var list = targetNode.Content.Descriptor as CollectionDescriptor;
+            var dictionary = targetNode.Descriptor as DictionaryDescriptor;
+            var list = targetNode.Descriptor as CollectionDescriptor;
 
             // Node containing a collection of references to other objects
-            if (SourceNode == targetNode && targetNode.Content.IsReference)
+            if (SourceNode == targetNode && targetNode.IsReference)
             {
-                var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
+                var referenceEnumerable = targetNode.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
                     // We create one node per item of the collection, unless requested by the property provide to not expand the reference.
@@ -322,7 +322,7 @@ namespace SiliconStudio.Presentation.Quantum
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-                        var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
+                        var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : reference.Type;
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                         AddChild(child);
                         child.Initialize();
@@ -330,11 +330,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a dictionary of primitive values
-            else if (dictionary != null && targetNode.Content.Value != null)
+            else if (dictionary != null && targetNode.Value != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
+                foreach (var key in dictionary.GetKeys(targetNode.Value))
                 {
                     var index = new Index(key);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
@@ -343,11 +343,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a list of primitive values
-            else if (list != null && targetNode.Content.Value != null)
+            else if (list != null && targetNode.Value != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (var i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Value); ++i)
                 {
                     var index = new Index(i);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
@@ -358,9 +358,8 @@ namespace SiliconStudio.Presentation.Quantum
             // Node containing a single non-reference primitive object
             else
             {
-                foreach (var targetChild in targetNode.Children)
+                foreach (var memberContent in targetNode.Children)
                 {
-                    var memberContent = (MemberContent)targetChild.Content;
                     var descriptor = (MemberDescriptorBase)memberContent.Member;
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                     if (displayAttribute == null || displayAttribute.Browsable)
@@ -368,10 +367,10 @@ namespace SiliconStudio.Presentation.Quantum
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
-                            var childPath = targetNodePath.PushMember(targetChild.Name);
-                            var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, targetChild.Name, targetChild.Content.IsPrimitive, targetChild, childPath, targetChild.Content.Type, Index.Empty);
-                            AddChild(child);
-                            child.Initialize();
+                            var childPath = targetNodePath.PushMember(memberContent.Name);
+                            var observableChild = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
+                            AddChild(observableChild);
+                            observableChild.Initialize();
                         }
                     }
                 }
@@ -418,17 +417,17 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
+        protected static IContentNode GetTargetNode(IContentNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
-            var objectReference = sourceNode.Content.Reference as ObjectReference;
+            var objectReference = sourceNode.Reference as ObjectReference;
             if (objectReference != null)
             {
                 return objectReference.TargetNode;
             }
 
-            var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
+            var referenceEnumerable = sourceNode.Reference as ReferenceEnumerable;
             if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return referenceEnumerable[index].TargetNode;
@@ -445,18 +444,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
         /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
+        protected static GraphNodePath GetTargetNodePath(IContentNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
-            var objectReference = sourceNode.Content.Reference as ObjectReference;
+            var objectReference = sourceNode.Reference as ObjectReference;
             if (objectReference != null)
             {
                 return sourceNodePath.PushTarget();
             }
 
-            var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
+            var referenceEnumerable = sourceNode.Reference as ReferenceEnumerable;
             if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return sourceNodePath.PushIndex(index);
@@ -477,13 +476,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="modelNode">The model node bound to the new <see cref="GraphNodeViewModel"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection.<see cref="Index.Empty"/> must be passed otherwise</param>
-        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
+        public GraphNodeViewModel(GraphViewModel ownerViewModel, string baseName, bool isPrimitive, IContentNode modelNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
-            SourceNode.Content.Changing += ContentChanging;
-            SourceNode.Content.Changed += ContentChanged;
+            SourceNode.Changing += ContentChanging;
+            SourceNode.Changed += ContentChanged;
         }
 
         /// <summary>
@@ -500,8 +499,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            SourceNode.Content.Changing -= ContentChanging;
-            SourceNode.Content.Changed -= ContentChanged;
+            SourceNode.Changing -= ContentChanging;
+            SourceNode.Changed -= ContentChanged;
             base.Destroy();
         }
 

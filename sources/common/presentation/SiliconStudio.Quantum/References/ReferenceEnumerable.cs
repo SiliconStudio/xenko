@@ -71,9 +71,9 @@ namespace SiliconStudio.Quantum.References
             return items?.ContainsKey(index) ?? false;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
         {
-            var newObjectValue = ownerNode.Content.Value;
+            var newObjectValue = ownerNode.Value;
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
                 }
 
                 foreach (var newReference in newReferences)
@@ -133,7 +133,7 @@ namespace SiliconStudio.Quantum.References
                         if (!found)
                         {
                             // Otherwise, do a full update that will properly initialize the new reference.
-                            newReference.Value.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Key);
+                            newReference.Value.Refresh(ownerNode, nodeContainer, newReference.Key);
                         }
                     }
                 }
@@ -184,11 +184,17 @@ namespace SiliconStudio.Quantum.References
 
             foreach (var item in items1)
             {
-                ObjectReference otherItem;
-                if (!items2.TryGetValue(item.Key, out otherItem))
+                ObjectReference otherValue;
+                if (!items2.TryGetValue(item.Key, out otherValue))
                     return false;
 
-                if (!otherItem.Equals(item.Value))
+                if (!otherValue.Index.Equals(item.Value.Index))
+                    return false;
+
+                if (otherValue.ObjectValue == null && item.Value.ObjectValue != null)
+                    return false;
+
+                if (otherValue.ObjectValue != null && !otherValue.ObjectValue.Equals(item.Value.ObjectValue))
                     return false;
             }
 
