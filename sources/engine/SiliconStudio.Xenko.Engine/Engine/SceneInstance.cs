@@ -122,26 +122,6 @@ namespace SiliconStudio.Xenko.Engine
             return context.Tags.GetSafe(Current);
         }
 
-        public VisibilityGroup GetOrCreateVisibilityGroup(RenderSystem renderSystem)
-        {
-            // Find if it exists
-            VisibilityGroup visibilityGroup = null;
-            foreach (var currentVisibilityGroup in VisibilityGroups)
-            {
-                if (currentVisibilityGroup.RenderSystem == renderSystem)
-                {
-                    visibilityGroup = currentVisibilityGroup;
-                    break;
-                }
-            }
-
-            // If first time, let's create and register it
-            if (visibilityGroup == null)
-                VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(renderSystem));
-
-            return visibilityGroup;
-        }
-
         private void Add(Scene scene)
         {
             foreach (var entity in scene.Entities)

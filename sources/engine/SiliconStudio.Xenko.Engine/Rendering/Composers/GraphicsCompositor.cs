@@ -27,6 +27,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     [DataSerializerGlobal(null, typeof(FastTrackingCollection<RootRenderFeature>))]
     public class GraphicsCompositor : RendererBase
     {
+        private readonly List<SceneInstance> initializedSceneInstances = new List<SceneInstance>();
+
         [Obsolete]
         public ISceneGraphicsCompositor Instance { get; set; }
 
@@ -86,6 +88,20 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             // Dispose renderers
             TopLevel?.Dispose();
 
+            // Cleanup created visibility groups
+            foreach (var sceneInstance in initializedSceneInstances)
+            {
+                for (var i = 0; i < sceneInstance.VisibilityGroups.Count; i++)
+                {
+                    var visibilityGroup = sceneInstance.VisibilityGroups[i];
+                    if (visibilityGroup.RenderSystem == RenderSystem)
+                    {
+                        sceneInstance.VisibilityGroups.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+
             RenderSystem.Dispose();
 
             base.Destroy();
@@ -98,7 +114,24 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             {
                 // Get or create VisibilityGroup for this RenderSystem + SceneInstance
                 var sceneInstance = SceneInstance.GetCurrent(context.RenderContext);
-                var visibilityGroup = sceneInstance.GetOrCreateVisibilityGroup(RenderSystem);
+
+                // Find if it exists
+                VisibilityGroup visibilityGroup = null;
+                foreach (var currentVisibilityGroup in sceneInstance.VisibilityGroups)
+                {
+                    if (currentVisibilityGroup.RenderSystem == RenderSystem)
+                    {
+                        visibilityGroup = currentVisibilityGroup;
+                        break;
+                    }
+                }
+
+                // If first time, let's create and register it
+                if (visibilityGroup == null)
+                {
+                    sceneInstance.VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(RenderSystem));
+                    initializedSceneInstances.Add(sceneInstance);
+                }
 
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))

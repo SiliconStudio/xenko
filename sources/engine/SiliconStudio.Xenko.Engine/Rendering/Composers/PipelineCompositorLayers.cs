@@ -49,7 +49,21 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         {
             // Get or create VisibilityGroup for this RenderSystem
             var sceneInstance = SceneInstance.GetCurrent(context.RenderContext);
-            var visibilityGroup = sceneInstance.GetOrCreateVisibilityGroup(RenderSystem);
+
+            // Find if it exists
+            VisibilityGroup visibilityGroup = null;
+            foreach (var currentVisibilityGroup in sceneInstance.VisibilityGroups)
+            {
+                if (currentVisibilityGroup.RenderSystem == RenderSystem)
+                {
+                    visibilityGroup = currentVisibilityGroup;
+                    break;
+                }
+            }
+
+            // If first time, let's create and register it
+            if (visibilityGroup == null)
+                sceneInstance.VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(RenderSystem));
 
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
             using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
