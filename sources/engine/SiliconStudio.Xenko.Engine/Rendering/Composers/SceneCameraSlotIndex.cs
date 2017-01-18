@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <summary>
         /// Index of the camera in <see cref="SceneGraphicsCompositorLayers.Cameras"/>
         /// </summary>
-        public readonly int Index;
+        public int Index { get; set; }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SceneCameraSlotIndex"/> to <see cref="System.Int32"/>.
