@@ -43,11 +43,6 @@ namespace SiliconStudio.Quantum
         MemberContent this[string name] { get; }
 
         /// <summary>
-        /// Gets or sets the parent node.
-        /// </summary>
-        IObjectNode Parent { get; }
-
-        /// <summary>
         /// Gets the children collection.
         /// </summary>
         IReadOnlyCollection<MemberContent> Children { get; }

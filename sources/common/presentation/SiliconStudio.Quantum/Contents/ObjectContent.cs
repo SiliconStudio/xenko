@@ -25,27 +25,6 @@ namespace SiliconStudio.Quantum.Contents
 
         public override object Value => value;
 
-        /// <summary>
-        /// Add a child to this node. The node must not have been sealed yet.
-        /// </summary>
-        /// <param name="child">The child node to add.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
-        public void AddMember(MemberContent child, bool allowIfReference = false)
-        {
-            if (isSealed)
-                throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
-
-            if (child.Parent != null)
-                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
-
-            if (Reference != null && !allowIfReference)
-                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
-
-            child.Parent = this;
-            children.Add(child);
-            childrenMap.Add(child.Name, child);
-        }
-
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)
         {
@@ -79,6 +58,23 @@ namespace SiliconStudio.Quantum.Contents
         protected void SetValue(object newValue)
         {
             value = newValue;
+        }
+
+        /// <inheritdoc/>
+        void IInitializingObjectNode.AddMember(IInitializingMemberNode member, bool allowIfReference = false)
+        {
+            if (isSealed)
+                throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
+
+            if (member.Parent != null)
+                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(member));
+
+            if (Reference != null && !allowIfReference)
+                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
+
+            member.SetParent(this);
+            children.Add((MemberContent)member);
+            childrenMap.Add(member.Name, (MemberContent)member);
         }
     }
 }

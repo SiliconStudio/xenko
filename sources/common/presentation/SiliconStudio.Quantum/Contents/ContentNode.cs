@@ -65,9 +65,6 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode Content => this;
 
         /// <inheritdoc/>
-        public IObjectNode Parent { get; internal set; }
-
-        /// <inheritdoc/>
         public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>

@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentNode, IMemberNode
+    public class MemberContent : ContentNode, IMemberNode, IInitializingMemberNode
     {
         private readonly NodeContainer nodeContainer;
 
@@ -22,6 +22,9 @@ namespace SiliconStudio.Quantum.Contents
             Member = member;
             nodeContainer = nodeBuilder.NodeContainer;
         }
+
+        /// <inheritdoc/>
+        public IObjectNode Parent { get; private set; }
 
         /// <summary>
         /// The <see cref="IMemberDescriptor"/> used to access the member of the container represented by this content.
@@ -193,6 +196,12 @@ namespace SiliconStudio.Quantum.Contents
         private void UpdateReferences()
         {
             nodeContainer?.UpdateReferences(this);
+        }
+
+        /// <inheritdoc/>
+        void IInitializingMemberNode.SetParent(IObjectNode parent)
+        {
+            Parent = parent;
         }
     }
 }
