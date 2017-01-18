@@ -54,11 +54,34 @@ RenderFeatures:
                     Renderers:
                         7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine {}
                         1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine {}
+    28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
+        RenderStageSelectors:
+            d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
+                MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
+                EffectName: Test
     e9267aaffdfeb308d632ae267eb49b08: !SiliconStudio.Xenko.Rendering.Skyboxes.SkyboxRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             bfbf0c6faecbfc15c4ace31f498fa051: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
                 RenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
                 EffectName: SkyboxEffect
+        PipelineProcessors: {}
+    60780391e205770513fdd53e07279a01: !SiliconStudio.Xenko.Rendering.Background.BackgroundRenderFeature,SiliconStudio.Xenko.Engine
+        RenderStageSelectors:
+            11c8b8ccb522e3cd1dd6688016062a6d: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
+                RenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                EffectName: Test
+    93933ad00d0c357d4915ad462cbfd04c: !SiliconStudio.Xenko.Rendering.UI.UIRenderFeature,SiliconStudio.Xenko.UI
+        RenderStageSelectors:
+            14a071694411235038a102ac3794bb4d: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
+                RenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
+                EffectName: Test
+    9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
+        RenderStageSelectors:
+            af1bd241305893ef8ff7952184e1cb0b: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterTransparentRenderStageSelector,SiliconStudio.Xenko.Particles
+                MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
+                EffectName: null
         PipelineProcessors: {}
 SharedRenderers:
     60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine
