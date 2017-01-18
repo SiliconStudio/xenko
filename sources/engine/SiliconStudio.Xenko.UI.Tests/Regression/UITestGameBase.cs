@@ -27,13 +27,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         
         private Vector2 lastTouchPosition;
 
-        protected readonly CameraRendererModeForward SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera Renderers" };
-
         protected Scene Scene;
         protected Entity Camera = new Entity("Scene camera") { new CameraComponent() };
         protected Entity UIRoot = new Entity("Root entity of camera UI") { new UIComponent()  };
-
-        private readonly SceneGraphicsCompositorLayers graphicsCompositor;
 
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
 
@@ -69,7 +65,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     Camera.Add(value);
                 }
 
-                graphicsCompositor.Cameras[0] = value;
+                SceneSystem.NewGraphicsCompositor.Cameras[0] = value;
             }
         }
 
@@ -86,23 +82,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             StopOnFrameCount = -1;
 
-            graphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Cameras = { Camera.Get<CameraComponent>() },
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-
-                        new SceneDelegateRendererOld(SpecificDrawBeforeUI) { Name = "Delegate before main UI" },
-
-                        new SceneCameraRenderer { Mode = SceneCameraRenderer },
-                    }
-                }
-            };
             Scene = new Scene();
-            SceneSystem.GraphicsCompositor = graphicsCompositor;
 
             Scene.Entities.Add(UIRoot);
             Scene.Entities.Add(Camera);
@@ -128,6 +108,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             // Default styles
             // Note: this is temporary and should be replaced with default template of UI elements

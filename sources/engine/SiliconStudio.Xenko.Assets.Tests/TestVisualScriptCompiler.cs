@@ -23,17 +23,20 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var visualScript = new VisualScriptAsset();
 
             // Build blocks
-            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
+            var functionStart = new FunctionStartBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
-            visualScript.Blocks.Add(functionStart);
-            visualScript.Blocks.Add(writeTrue);
+            var method = new Method();
+            method.Blocks.Add(functionStart);
+            method.Blocks.Add(writeTrue);
 
             // Generate slots
-            foreach (var block in visualScript.Blocks)
+            foreach (var block in method.Blocks)
                 block.GenerateSlots(block.Slots, new SlotGeneratorContext());
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart, writeTrue));
+            method.Links.Add(new Link(functionStart, writeTrue));
+
+            visualScript.Methods.Add(method);
 
             // Test
             TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
@@ -45,29 +48,32 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var visualScript = new VisualScriptAsset();
 
             // Build blocks
-            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
+            var functionStart = new FunctionStartBlock();
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            visualScript.Blocks.Add(functionStart);
-            visualScript.Blocks.Add(conditionalBranch);
-            visualScript.Blocks.Add(writeTrue);
-            visualScript.Blocks.Add(writeFalse);
+            var method = new Method();
+            method.Blocks.Add(functionStart);
+            method.Blocks.Add(conditionalBranch);
+            method.Blocks.Add(writeTrue);
+            method.Blocks.Add(writeFalse);
 
             // Generate slots
-            foreach (var block in visualScript.Blocks)
+            foreach (var block in method.Blocks)
                 block.GenerateSlots(block.Slots, new SlotGeneratorContext());
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart, conditionalBranch));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+            method.Links.Add(new Link(functionStart, conditionalBranch));
+            method.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            method.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+
+            visualScript.Methods.Add(method);
 
             // Test
-            conditionalBranch.ConditionSlot.Value = true;
+            conditionalBranch.ConditionSlot.Value = "true";
             TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
 
-            conditionalBranch.ConditionSlot.Value = false;
+            conditionalBranch.ConditionSlot.Value = "false";
             TestAndCompareOutput(visualScript, "False", testInstance => testInstance.Test());
         }
 
@@ -76,31 +82,34 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Symbol("bool", "Condition");
+            var condition = new Property("bool", "Condition");
             visualScript.Properties.Add(condition);
 
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
-            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new VariableGet { Symbol = condition };
+            var functionStart = new FunctionStartBlock();
+            var conditionGet = new VariableGet { Name = condition.Name };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            visualScript.Blocks.Add(functionStart);
-            visualScript.Blocks.Add(conditionGet);
-            visualScript.Blocks.Add(conditionalBranch);
-            visualScript.Blocks.Add(writeTrue);
-            visualScript.Blocks.Add(writeFalse);
+            var method = new Method();
+            method.Blocks.Add(functionStart);
+            method.Blocks.Add(conditionGet);
+            method.Blocks.Add(conditionalBranch);
+            method.Blocks.Add(writeTrue);
+            method.Blocks.Add(writeFalse);
 
             // Generate slots
-            foreach (var block in visualScript.Blocks)
+            foreach (var block in method.Blocks)
                 block.GenerateSlots(block.Slots, new SlotGeneratorContext());
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart, conditionalBranch));
-            visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+            method.Links.Add(new Link(functionStart, conditionalBranch));
+            method.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
+            method.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            method.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+
+            visualScript.Methods.Add(method);
 
             // Test
             TestAndCompareOutput(visualScript, "True", testInstance =>
@@ -121,43 +130,46 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Symbol("bool", "Condition");
+            var condition = new Property("bool", "Condition");
             visualScript.Properties.Add(condition);
 
             // Build blocks
             // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
-            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
-            var conditionGet = new VariableGet { Symbol = condition };
-            var conditionSet = new VariableSet { Property = condition };
+            var functionStart = new FunctionStartBlock();
+            var conditionGet = new VariableGet { Name = condition.Name };
+            var conditionSet = new VariableSet { Name = condition.Name };
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            visualScript.Blocks.Add(functionStart);
-            visualScript.Blocks.Add(conditionGet);
-            visualScript.Blocks.Add(conditionSet);
-            visualScript.Blocks.Add(conditionalBranch);
-            visualScript.Blocks.Add(writeTrue);
-            visualScript.Blocks.Add(writeFalse);
+            var method = new Method();
+            method.Blocks.Add(functionStart);
+            method.Blocks.Add(conditionGet);
+            method.Blocks.Add(conditionSet);
+            method.Blocks.Add(conditionalBranch);
+            method.Blocks.Add(writeTrue);
+            method.Blocks.Add(writeFalse);
 
             // Generate slots
-            foreach (var block in visualScript.Blocks)
+            foreach (var block in method.Blocks)
                 block.GenerateSlots(block.Slots, new SlotGeneratorContext());
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart, conditionSet));
-            visualScript.Links.Add(new Link(conditionSet, conditionalBranch));
-            visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+            method.Links.Add(new Link(functionStart, conditionSet));
+            method.Links.Add(new Link(conditionSet, conditionalBranch));
+            method.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
+            method.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            method.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
+
+            visualScript.Methods.Add(method);
 
             // Test
-            conditionSet.InputSlot.Value = true;
+            conditionSet.InputSlot.Value = "true";
             TestAndCompareOutput(visualScript, "True", testInstance =>
             {
                 testInstance.Test();
             });
 
-            conditionSet.InputSlot.Value = false;
+            conditionSet.InputSlot.Value = "false";
             TestAndCompareOutput(visualScript, "False", testInstance =>
             {
                 testInstance.Test();

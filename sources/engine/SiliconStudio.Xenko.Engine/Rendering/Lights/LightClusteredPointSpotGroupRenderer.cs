@@ -415,9 +415,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var renderViewInfo = renderViewInfos[viewIndex];
 
                 // Upload data to texture
-                fixed (Int2* dataPtr = renderViewInfo.LightClusters)
-                    context.CommandList.UpdateSubresource(clusteredGroupRenderer.lightClusters, 0, new DataBox((IntPtr)dataPtr, sizeof(Int2) * renderViewInfo.ClusterCount.X, sizeof(Int2) * renderViewInfo.ClusterCount.X * renderViewInfo.ClusterCount.Y),
-                        new ResourceRegion(0, 0, 0, renderViewInfo.ClusterCount.X, renderViewInfo.ClusterCount.Y, ClusterSlices));
+                if (renderViewInfo.LightClusters != null && renderViewInfo.LightClusters.Length > 0)
+                {
+                    fixed (Int2* dataPtr = renderViewInfo.LightClusters)
+                        context.CommandList.UpdateSubresource(clusteredGroupRenderer.lightClusters, 0, new DataBox((IntPtr)dataPtr, sizeof(Int2) * renderViewInfo.ClusterCount.X, sizeof(Int2) * renderViewInfo.ClusterCount.X * renderViewInfo.ClusterCount.Y),
+                            new ResourceRegion(0, 0, 0, renderViewInfo.ClusterCount.X, renderViewInfo.ClusterCount.Y, ClusterSlices));
+                }
 
                 // PointLights: Ensure size and update
                 if (renderViewInfo.PointLights.Count > 0)

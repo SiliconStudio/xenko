@@ -5,14 +5,3 @@ Tags: []
 Source: ../../../data/tests/knight/sourceimages/c100_body_em.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 PremultiplyAlpha: false
-~Base:
-    ~Id: 85db61ad-9d89-4f3e-aa65-9b7811fe0995
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-        PremultiplyAlpha: false

@@ -77,32 +77,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
             scene.Entities.Add(lightEntity);
 
-            // Create a graphics compositor
-            var compositor = new SceneGraphicsCompositorLayers();
-
-            bool isLDR = false;
-            if (isLDR)
-            {
-                compositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
-                compositor.Master.Renderers.Add(new SceneCameraRenderer() {});
-            }
-            else
-            {
-                var layer = new SceneGraphicsLayer();
-                var renderHDROutput = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared} };
-                layer.Output = renderHDROutput;
-                layer.Renderers.Add(new ClearRenderFrameRenderer());
-                layer.Renderers.Add(new SceneCameraRenderer());
-                compositor.Layers.Add(layer);
-                compositor.Master.Renderers.Add(new SceneEffectRenderer()
-                {
-                    Effect = new PostProcessingEffects()
-                });
-            }
-            compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
-
             // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = compositor;
+            SceneSystem.NewGraphicsCompositor = GraphicsCompositor.CreateDefault(MeshPipelinePlugin.DefaultEffectName, true);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

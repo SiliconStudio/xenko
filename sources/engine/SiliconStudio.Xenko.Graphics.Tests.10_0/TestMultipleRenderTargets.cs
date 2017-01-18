@@ -119,21 +119,22 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene = new Scene();
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
-            SceneSystem.GraphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Cameras = { mainCamera.Get<CameraComponent>() },
-                ModelEffect = "MultipleRenderTargetsEffect",
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames },
-                        new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
-                        new SceneDelegateRendererOld(DisplayGBuffer) { Name = "DisplayGBuffer" },
-                    }
-                }
-            };
+            throw new NotImplementedException();
+            //SceneSystem.GraphicsCompositor = new SceneGraphicsCompositorLayers
+            //{
+            //    Cameras = { mainCamera.Get<CameraComponent>() },
+            //    ModelEffect = "MultipleRenderTargetsEffect",
+            //    Master =
+            //    {
+            //        Renderers =
+            //        {
+            //            new ClearRenderFrameRenderer { Color = Color.Lavender, Output = multipleRenderFrames },
+            //            new SceneCameraRenderer { Mode = new CameraRendererModeForward(), Output = multipleRenderFrames },
+            //            new ClearRenderFrameRenderer { Output = new MasterRenderFrameProvider() },
+            //            new SceneDelegateRendererOld(DisplayGBuffer) { Name = "DisplayGBuffer" },
+            //        }
+            //    }
+            //};
         }
 
         private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)

@@ -200,7 +200,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         // TODO GFXCOMP: Move that somewhere else; or even better: starts from user gfx compositor
         [Obsolete]
-        internal static GraphicsCompositor CreateDefault(string modelEffectName, bool enablePostEffects, CameraComponent camera = null, Color4? clearColor = null)
+        public static GraphicsCompositor CreateDefault(string modelEffectName, bool enablePostEffects, CameraComponent camera = null, Color4? clearColor = null)
         {
             var mainRenderStage = new RenderStage("Main", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };

@@ -46,37 +46,19 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     Camera.Add(value);
                 }
-                graphicsCompositor.Cameras[0] = value;
+                SceneSystem.NewGraphicsCompositor.Cameras[0] = value;
             }
         }
 
-        protected readonly CameraRendererModeForward SceneCameraRenderer;
-
-        private SceneGraphicsCompositorLayers graphicsCompositor;
-
         public EngineTestBase()
         {
-            SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer" };
         }
 
         protected override async Task LoadContent()
         {
             await base.LoadContent();
 
-            graphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Cameras = { Camera.Get<CameraComponent>() },
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneDelegateRendererOld(PreCameraRendererDraw),
-                        new SceneCameraRenderer { Mode = SceneCameraRenderer },
-                        new SceneDelegateRendererOld(PostCameraRendererDraw),
-                    }
-                }
-            };
+            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             Scene = new Scene();
             Scene.Entities.Add(Camera);
@@ -86,16 +68,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Scene.Entities.Add(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
-            SceneSystem.GraphicsCompositor = graphicsCompositor;
-        }
-
-        protected virtual void PreCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
-        {
-            
-        }
-
-        protected virtual void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
-        {
         }
     }
 }
