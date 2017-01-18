@@ -358,7 +358,8 @@ namespace SiliconStudio.Presentation.Quantum
             // Node containing a single non-reference primitive object
             else
             {
-                foreach (var memberContent in targetNode.Children)
+                var objectContent = (IObjectNode)targetNode;
+                foreach (var memberContent in objectContent.Members)
                 {
                     var descriptor = (MemberDescriptorBase)memberContent.MemberDescriptor;
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);

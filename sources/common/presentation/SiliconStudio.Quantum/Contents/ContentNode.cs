@@ -14,9 +14,8 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentNode : IContentNode
+    public abstract class ContentNode : IContentNode, IInitializingGraphNode
     {
-        protected readonly List<IMemberNode> children = new List<IMemberNode>();
         protected readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         protected bool isSealed;
@@ -65,10 +64,7 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode Content => this;
 
         /// <inheritdoc/>
-        public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
-
-        /// <inheritdoc/>
-        public IReadOnlyCollection<IMemberNode> Children => children;
+        public IObjectNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;

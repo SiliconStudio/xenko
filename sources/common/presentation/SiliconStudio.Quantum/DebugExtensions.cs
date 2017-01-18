@@ -42,9 +42,13 @@ namespace SiliconStudio.Quantum
                 builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
             }
             builder.AppendLine();
-            foreach (var child in node.Children)
+            var objNode = node as IObjectNode;
+            if (objNode != null)
             {
-                PrintHierarchyInternal(child, indentation + 4, builder);
+                foreach (var child in objNode.Members)
+                {
+                    PrintHierarchyInternal(child, indentation + 4, builder);
+                }
             }
         }
 

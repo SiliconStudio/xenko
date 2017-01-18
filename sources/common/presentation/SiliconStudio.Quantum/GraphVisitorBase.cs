@@ -63,7 +63,11 @@ namespace SiliconStudio.Quantum
             {
                 Visiting?.Invoke(node, currentPath);
             }
-            VisitChildren(node, currentPath);
+            var objectNode = node as IObjectNode;
+            if (objectNode != null)
+            {
+                VisitChildren(objectNode, currentPath);
+            }
             VisitSingleTarget(node, currentPath);
             VisitEnumerableTargets(node, currentPath);
             visitedNodes.Remove(node);
@@ -74,9 +78,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node being visited.</param>
         /// <param name="currentPath">The path of the node being visited.</param>
-        protected virtual void VisitChildren(IContentNode node, GraphNodePath currentPath)
+        protected virtual void VisitChildren(IObjectNode node, GraphNodePath currentPath)
         {
-            foreach (var child in node.Children)
+            foreach (var child in node.Members)
             {
                 var childPath = currentPath.PushMember(child.Name);
                 if (ShouldVisitNode(child, child))

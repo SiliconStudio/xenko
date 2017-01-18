@@ -160,7 +160,7 @@ namespace SiliconStudio.Quantum
                     switch (element.Type)
                     {
                         case ElementType.Member:
-                            Current = Current.Children.Single(x => string.Equals(x.Name, element.Value));
+                            Current = ((IObjectNode)Current).Members.Single(x => string.Equals(x.Name, element.Value));
                             break;
                         case ElementType.Target:
                             Current = Current.Reference.AsObject.TargetNode;
@@ -438,7 +438,7 @@ namespace SiliconStudio.Quantum
                 {
                     case ElementType.Member:
                         var name = (string)itemPath.Value;
-                        node = node.Children.Single(x => x.Name == name);
+                        node = ((IObjectNode)node).Members.Single(x => x.Name == name);
                         memberPath.Push(((MemberContent)node).MemberDescriptor);
                         break;
                     case ElementType.Target:

@@ -29,7 +29,7 @@ namespace SiliconStudio.Quantum.Tests
             // A node with an ObjectContent should not contain a reference if it does not represent a collection.
             Assert.AreEqual(false, node.IsReference);
             // Check that we have the expected number of children.
-            Assert.AreEqual(childCount, node.Children.Count);
+            Assert.AreEqual(childCount, ((IObjectNode)node).Members.Count);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SiliconStudio.Quantum.Tests
                 Assert.AreEqual(false, node.IsReference);            
             }
             // A node with an ObjectContent representing a collection should not have any child.
-            Assert.AreEqual(0, node.Children.Count);
+            Assert.AreEqual(0, ((IObjectNode)node).Members.Count);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that that we have an index if expected.
             Assert.AreEqual(hasIndex, !reference.Index.IsEmpty);
             // Check that the target is an object content node.
-            TestNonCollectionObjectContentNode(objReference.TargetNode, targetValue, objReference.TargetNode.Children.Count);
+            TestNonCollectionObjectContentNode(objReference.TargetNode, targetValue, objReference.TargetNode.Members.Count);
         }
 
         /// <summary>
@@ -124,6 +124,8 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the reference is not null.
             Assert.IsNotNull(objReference);
+            // Check that the target node is of the expected type.
+            Assert.IsInstanceOf<ObjectContent>(targetNode);
             // Check that the Guids match.
             Assert.AreEqual(targetNode.Guid, objReference.TargetGuid);
             // Check that the nodes match.
@@ -131,7 +133,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
             // Check that the target is an object content node.
-            TestNonCollectionObjectContentNode(targetNode, targetValue, targetNode.Children.Count);
+            TestNonCollectionObjectContentNode(targetNode, targetValue, ((IObjectNode)targetNode).Members.Count);
         }
 
         /// <summary>
@@ -182,55 +184,6 @@ namespace SiliconStudio.Quantum.Tests
             }
             // TODO: rework reference system and enable this
             //Assert.IsNull(reference.Index);
-        }
-
-        /// <summary>
-        /// Tests the validity of a node that represents a structure.
-        /// </summary>
-        /// <param name="structNode">The structure node to test.</param>
-        /// <param name="structValue">The value of the structure represented by this node.</param>
-        /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestStructContentNode(MemberContent structNode, object structValue, int childCount)
-        {
-            if (structNode == null) throw new ArgumentNullException(nameof(structNode));
-            if (structValue == null) throw new ArgumentNullException(nameof(structValue));
-            // A struct node should have the related struct as value of its content.
-            Assert.AreEqual(structValue, structNode.Retrieve());
-            // A struct node should not contain a reference.
-            Assert.AreEqual(false, structNode.IsReference);
-            // Check that we have the expected number of children.
-            Assert.AreEqual(0, structNode.Children.Count);
-        }
-
-        [Obsolete]
-        public static void PrintModelContainerContent(NodeContainer container, IContentNode rootNode = null)
-        {
-            Console.WriteLine(@"Container content:");
-            Console.WriteLine(@"------------------");
-            // Print the root node first, if specified
-            if (rootNode != null)
-                Console.WriteLine(rootNode.PrintHierarchy());
-
-            // Print other nodes next
-            // TODO: FIXME
-            //foreach (var node in container.Guids.Select(container.GetNode).Where(x => x != rootNode))
-            //{
-            //    Console.WriteLine(node.PrintHierarchy());
-            //}
-            Console.WriteLine(@"------------------");
-        }
-
-        [Obsolete]
-        public static void ConsistencyCheck(NodeContainer container, object rootObject)
-        {
-            return;
-            //var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            //var model = container.GetNode(rootObject);
-            //visitor.Check((GraphNode)model, rootObject, rootObject.GetType(), true);
-            //foreach (var node in container.Nodes)
-            //{
-            //    visitor.Check((GraphNode)node, node.Content.Value, node.Content.Type, true);
-            //}
         }
     }
 }

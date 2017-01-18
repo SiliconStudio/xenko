@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -13,6 +13,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <remarks>This content is not serialized by default.</remarks>
     public class ObjectContent : ContentNode, IObjectNode, IInitializingObjectNode
     {
+        private readonly List<IMemberNode> children = new List<IMemberNode>();
         private object value;
 
         public ObjectContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
@@ -22,6 +23,9 @@ namespace SiliconStudio.Quantum.Contents
                 throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
             this.value = value;
         }
+
+        /// <inheritdoc/>
+        public IReadOnlyCollection<IMemberNode> Members => children;
 
         public override object Value => value;
 
@@ -61,7 +65,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        void IInitializingObjectNode.AddMember(IInitializingMemberNode member, bool allowIfReference = false)
+        void IInitializingObjectNode.AddMember(IInitializingMemberNode member, bool allowIfReference)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
@@ -69,6 +73,7 @@ namespace SiliconStudio.Quantum.Contents
             if (member.Parent != null)
                 throw new ArgumentException(@"This node has already been registered to a different parent", nameof(member));
 
+            // ReSharper disable once HeuristicUnreachableCode - this code is reachable only at the specific moment we call this method!
             if (Reference != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 

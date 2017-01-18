@@ -148,7 +148,7 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return GetTargetNode()?.Children.Select(x => x.Name) ?? Enumerable.Empty<string>();
+            return (GetTargetNode() as IObjectNode)?.Members.Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
         /// <inheritdoc/>
@@ -166,7 +166,7 @@ namespace SiliconStudio.Quantum
         protected IContentNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
-            var memberNode = targetNode?.Children.FirstOrDefault(x => x.Name == memberName);
+            var memberNode = (targetNode as IObjectNode)?.Members.FirstOrDefault(x => x.Name == memberName);
             return memberNode;
         }
 

@@ -17,10 +17,10 @@ namespace SiliconStudio.Quantum
     /// </summary>
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
-        private readonly Stack<ContentNode> contextStack = new Stack<ContentNode>();
+        private readonly Stack<IInitializingGraphNode> contextStack = new Stack<IInitializingGraphNode>();
         private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
-        private ContentNode rootNode;
+        private IInitializingObjectNode rootNode;
         private Guid rootGuid;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IContentNode Build(object obj, Guid guid)
+        public IObjectNode Build(object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Reset();
@@ -106,7 +106,7 @@ namespace SiliconStudio.Quantum
                 var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
                                 : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 currentDescriptor = content.Descriptor;
-                rootNode = (ContentNode)content;
+                rootNode = (IInitializingObjectNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -204,7 +204,7 @@ namespace SiliconStudio.Quantum
             return Reference.CreateReference(value, type, Index.Empty);
         }
 
-        private void PushContextNode(ContentNode node)
+        private void PushContextNode(IInitializingGraphNode node)
         {
             contextStack.Push(node);
         }
@@ -214,7 +214,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ContentNode GetContextNode()
+        private IInitializingGraphNode GetContextNode()
         {
             return contextStack.Peek();
         }

@@ -113,7 +113,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(structMember1Node, memberNode.Target[nameof(SimpleStruct.Name)]);
             Assert.AreEqual(structMember2Node, memberNode.Target[nameof(SimpleStruct.Value)]);
             Helper.TestMemberContentNode(memberNode.Target, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
-            Helper.TestMemberContentNode(memberNode.Target, memberNode.Target.Children.First(), container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
+            Helper.TestMemberContentNode(memberNode.Target, memberNode.Target.Members.First(), container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
         }
 
         [Test]

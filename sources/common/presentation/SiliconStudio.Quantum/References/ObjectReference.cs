@@ -34,7 +34,7 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IContentNode TargetNode { get; private set; }
+        public IObjectNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
         public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Quantum.References
                 // If we are boxing a struct, we reuse the same nodes and just overwrite the struct value.
                 boxedTarget.UpdateFromOwner(objectValue);
                 // But we still need to refresh inner references!
-                foreach (var member in TargetNode.Children.Where(x => x.IsReference))
+                foreach (var member in TargetNode.Members.Where(x => x.IsReference))
                 {
                     nodeContainer?.UpdateReferences(member);
                 }
@@ -126,7 +126,7 @@ namespace SiliconStudio.Quantum.References
         internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IContentNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
+            IObjectNode targetNode = (IObjectNode)nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }
@@ -135,7 +135,7 @@ namespace SiliconStudio.Quantum.References
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IContentNode SetTarget(IContentNode targetNode)
+        internal IObjectNode SetTarget(IObjectNode targetNode)
         {
             if (targetNode != null)
             {

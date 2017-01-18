@@ -76,7 +76,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(SimpleClass.Member1)),
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.Tests
             var initialPath = new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget();
             var visitor = new TestVisitor();
             visitor.Visit(rootNode, null, initialPath);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(SimpleClass.Member1)),
@@ -137,7 +137,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(SimpleClass.Member1)),
@@ -160,7 +160,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(StructClass.Member1)),
@@ -189,7 +189,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(PrimitiveListClass.Member1)),
@@ -312,7 +312,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode2 = nodeContainer.GetOrCreateNode(obj2);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode1);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode1,
                 rootNode1.TryGetChild(nameof(SimpleClass.Member1)),
@@ -333,7 +333,7 @@ namespace SiliconStudio.Quantum.Tests
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
 
             visitor.Visit(rootNode2);
-            expectedNodes = new[]
+            expectedNodes = new IContentNode[]
             {
                 rootNode2,
                 rootNode2.TryGetChild(nameof(SimpleClass.Member1)),
@@ -363,7 +363,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(instance);
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(SimpleClass2.Member1)),

@@ -41,12 +41,12 @@ namespace SiliconStudio.Quantum
                 base.VisitNode(node, currentPath);
             }
 
-            protected override void VisitChildren(IContentNode node, GraphNodePath currentPath)
+            protected override void VisitChildren(IObjectNode node, GraphNodePath currentPath)
             {
                 IContentNode targetNodeParent;
                 if (VisitedLinks.TryGetValue(node, out targetNodeParent))
                 {
-                    foreach (var child in node.Children)
+                    foreach (var child in node.Members)
                     {
                         if (ShouldVisitNode(child, child))
                         {

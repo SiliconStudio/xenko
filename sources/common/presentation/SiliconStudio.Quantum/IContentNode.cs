@@ -38,15 +38,10 @@ namespace SiliconStudio.Quantum
         IMemberNode this[string name] { get; }
 
         /// <summary>
-        /// Gets the children collection.
-        /// </summary>
-        IReadOnlyCollection<IMemberNode> Children { get; }
-
-        /// <summary>
         /// Gets the target of this node, if this node contains a reference to another node. 
         /// </summary>
         /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
-        IContentNode Target { get; }
+        IObjectNode Target { get; }
 
         /// <summary>
         /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
