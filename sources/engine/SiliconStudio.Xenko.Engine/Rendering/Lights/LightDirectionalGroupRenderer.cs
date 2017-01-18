@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public class LightDirectionalGroupRenderer : LightGroupRendererDynamic
     {
-        public override Type LightType => typeof(LightDirectional);
+        public override Type[] LightTypes { get; } = { typeof(LightDirectional) };
 
         public override void Initialize(RenderContext context)
         {

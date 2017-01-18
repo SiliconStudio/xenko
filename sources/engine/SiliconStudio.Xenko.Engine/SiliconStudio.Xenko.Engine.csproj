@@ -383,7 +383,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightClusteredPointGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightClusteredPointSpotGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbientKeys.cs" />
     <Compile Include="Rendering\LogicalGroup.cs" />
     <Compile Include="Rendering\LogicalGroupReference.cs" />

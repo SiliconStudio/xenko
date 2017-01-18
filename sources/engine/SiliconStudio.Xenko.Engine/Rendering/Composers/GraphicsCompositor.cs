@@ -249,6 +249,13 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                             new MaterialRenderFeature(),
                             new ForwardLightingRenderFeature
                             {
+                                LightRenderers =
+                                {
+                                    new LightAmbientRenderer(),
+                                    new LightDirectionalGroupRenderer(),
+                                    new LightSkyboxRenderer(),
+                                    new LightClusteredPointSpotGroupRenderer(),
+                                },
                                 ShadowMapRenderer = new ShadowMapRenderer
                                 {
                                     Renderers =

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly Dictionary<LightComponent, LightSkyBoxShaderGroup> lightShaderGroupsPerSkybox = new Dictionary<LightComponent, LightSkyBoxShaderGroup>();
         private PoolListStruct<LightSkyBoxShaderGroup> pool = new PoolListStruct<LightSkyBoxShaderGroup>(8, CreateLightSkyBoxShaderGroup);
 
-        public override Type LightType => typeof(LightSkybox);
+        public override Type[] LightTypes { get; } = { typeof(LightSkybox) };
 
         public LightSkyboxRenderer()
         {

@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public byte LightRendererId { get; private set; }
 
-        public abstract Type LightType { get; }
+        public abstract Type[] LightTypes { get; }
 
         public virtual void Initialize(RenderContext context)
         {

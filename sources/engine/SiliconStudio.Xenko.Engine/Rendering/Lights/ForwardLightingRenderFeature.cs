@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -67,9 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private LightProcessor lightProcessor;
 
-        // Might be null if shadow mapping is not enabled (i.e. graphics device feature level too low)
-
-        private readonly List<LightGroupRendererBase> lightRenderers = new List<LightGroupRendererBase>(16);
+        private readonly TrackingCollection<LightGroupRendererBase> lightRenderers = new TrackingCollection<LightGroupRendererBase>();
 
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
 
@@ -87,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         [DataMember]
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        public List<LightGroupRendererBase> LightRenderers => lightRenderers;
+        public TrackingCollection<LightGroupRendererBase> LightRenderers => lightRenderers;
 
         [DataMember]
         public IShadowMapRenderer ShadowMapRenderer
@@ -122,34 +121,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        public ForwardLightingRenderFeature()
-        {
-            //directLightGroup = new LightGroupRenderer("directLightGroups", LightingKeys.DirectLightGroups);
-            //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
-        }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            // TODO: Make this pluggable
-            if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
+            // Initialize light renderers
+            foreach (var lightRenderer in lightRenderers)
             {
-                // Note: this renderer supports both Point and Spot lights
-                var clusteredLightRenderer = new LightClusteredPointGroupRenderer();
-
-                RegisterLightGroupRenderer(clusteredLightRenderer);
-                RegisterLightGroupRenderer(new LightSpotGroupRenderer { NonShadowRenderer = clusteredLightRenderer.SpotRenderer });
+                lightRenderer.Initialize(Context);
             }
-            else
-            {
-                RegisterLightGroupRenderer(new LightPointGroupRenderer());
-                RegisterLightGroupRenderer(new LightSpotGroupRenderer());
-            }
-
-            RegisterLightGroupRenderer(new LightDirectionalGroupRenderer());
-            RegisterLightGroupRenderer(new LightAmbientRenderer());
-            RegisterLightGroupRenderer(new LightSkyboxRenderer());
+            // Track changes
+            lightRenderers.CollectionChanged += LightRenderers_CollectionChanged;
 
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
@@ -164,6 +146,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 lightRenderer.Unload();
             }
+            lightRenderers.CollectionChanged -= LightRenderers_CollectionChanged;
 
             base.Unload();
         }
@@ -467,15 +450,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var viewData = renderViewData.Value;
                 viewData.ActiveRenderers.Clear();
 
-                foreach (var lightTypeAndRenderer in lightRenderers)
+                foreach (var lightRenderer in lightRenderers)
                 {
-                    LightComponentCollectionGroup lightGroup;
-                    viewData.ActiveLightGroups.TryGetValue(lightTypeAndRenderer.LightType, out lightGroup);
-
-                    var renderer = lightTypeAndRenderer;
-                    if (lightGroup != null && lightGroup.Count > 0)
+                    foreach (var lightType in lightRenderer.LightTypes)
                     {
-                        viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
+                        LightComponentCollectionGroup lightGroup;
+                        viewData.ActiveLightGroups.TryGetValue(lightType, out lightGroup);
+
+                        var renderer = lightRenderer;
+                        if (lightGroup != null && lightGroup.Count > 0)
+                        {
+                            viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
+                        }
                     }
                 }
             }
@@ -616,6 +602,25 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightGroups.Add(type, lightGroup);
             }
             return lightGroup;
+        }
+
+        private void LightRenderers_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                {
+                    var item = e.Item as LightGroupRendererBase;
+                    item?.Initialize(Context);
+                    break;
+                }
+                case NotifyCollectionChangedAction.Remove:
+                {
+                    var item = e.OldItem as LightGroupRendererBase;
+                    item?.Unload();
+                    break;
+                }
+            }
         }
 
         public class LightShaderPermutationEntry
