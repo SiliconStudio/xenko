@@ -19,7 +19,7 @@ namespace SiliconStudio.Quantum
             PrintIndentation(indentation, builder);
             builder.Append(node.Guid + " ");
             PrintIndentation(indentation, builder);
-            builder.Append(node.Name ?? "<untitled>");
+            builder.Append((node as IMemberNode)?.Name ?? node.Type.Name);
             builder.Append(": [");
             builder.Append(node.GetType().Name);
             builder.Append("] = ");

@@ -16,15 +16,22 @@ namespace SiliconStudio.Quantum
 
     public interface IMemberNode : IContentNode
     {
-       /// <summary>
-       /// Gets the <see cref="IObjectNode"/> containing this member node.
-       /// </summary>
-       [NotNull]
-       IObjectNode Parent { get; }
+        /// <summary>
+        /// Gets the member name.
+        /// </summary>
+        [NotNull]
+        string Name { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IObjectNode"/> containing this member node.
+        /// </summary>
+        [NotNull]
+        IObjectNode Parent { get; }
 
         /// <summary>
         /// Gets the member descriptor corresponding to this member node.
         /// </summary>
+        [NotNull]
         IMemberDescriptor MemberDescriptor { get; }
     }
 

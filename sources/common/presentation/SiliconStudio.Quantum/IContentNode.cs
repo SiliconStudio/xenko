@@ -14,12 +14,6 @@ namespace SiliconStudio.Quantum
     public interface IContentNode
     {
         /// <summary>
-        /// Gets or sets the node name.
-        /// </summary>
-        [NotNull]
-        string Name { get; }
-
-        /// <summary>
         /// Gets or sets the <see cref="System.Guid"/>.
         /// </summary>
         Guid Guid { get; }

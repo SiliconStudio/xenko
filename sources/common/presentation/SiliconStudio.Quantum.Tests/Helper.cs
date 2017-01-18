@@ -24,8 +24,6 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the content is of the expected type.
             Assert.IsInstanceOf<ObjectContent>(node);
-            // A node with an ObjectContent should have the same name that the type of its content.
-            Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should have the related object as value of its content.
             Assert.AreEqual(obj, node.Retrieve());
             // A node with an ObjectContent should not contain a reference if it does not represent a collection.
@@ -47,8 +45,6 @@ namespace SiliconStudio.Quantum.Tests
 
             // Check that the content is of the expected type.
             Assert.IsInstanceOf<ObjectContent>(node);
-            // A node with an ObjectContent should have the same name that the type of its content.
-            Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should have the related object as value of its content.
             Assert.AreEqual(obj, node.Retrieve());
             if (isReference)
@@ -84,7 +80,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the content is of the expected type.
             Assert.AreEqual(typeof(MemberContent), memberNode.GetType());
             // A node with a MemberContent should have the same name that the member in the container.
-            Assert.AreEqual(memberName, memberNode.Name);
+            Assert.AreEqual(memberName, ((IMemberNode)memberNode).Name);
             // A node with a MemberContent should have its container as parent.
             Assert.AreEqual(containerNode, ((IMemberNode)memberNode).Parent);
             // A node with a MemberContent should have the member value as value of its content.
