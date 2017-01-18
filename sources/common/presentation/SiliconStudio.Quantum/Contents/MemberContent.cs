@@ -50,7 +50,7 @@ namespace SiliconStudio.Quantum.Contents
                 // Better send a null index in this case than sending a wrong value.
                 var value = Value;
                 var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
-                var args = new ContentChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 collectionDescriptor.Add(value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
@@ -74,7 +74,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
                 var value = Value;
-                var args = new ContentChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
                 {
@@ -94,7 +94,7 @@ namespace SiliconStudio.Quantum.Contents
             }
             else if (dictionaryDescriptor != null)
             {
-                var args = new ContentChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+                var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
                 NotifyContentChanging(args);
                 var value = Value;
                 dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
@@ -115,7 +115,7 @@ namespace SiliconStudio.Quantum.Contents
         public override void Remove(object item, Index itemIndex)
         {
             if (itemIndex.IsEmpty) throw new ArgumentException(@"The given index should not be empty.", nameof(itemIndex));
-            var args = new ContentChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
+            var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
             NotifyContentChanging(args);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
@@ -155,10 +155,10 @@ namespace SiliconStudio.Quantum.Contents
         private void Update(object newValue, Index index, bool sendNotification)
         {
             var oldValue = Retrieve(index);
-            ContentChangeEventArgs args = null;
+            MemberNodeChangeEventArgs args = null;
             if (sendNotification)
             {
-                args = new ContentChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
+                args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
                 NotifyContentChanging(args);
             }
 

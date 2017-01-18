@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 
@@ -18,7 +19,8 @@ namespace SiliconStudio.Quantum
        /// <summary>
        /// Gets the <see cref="IObjectNode"/> containing this member node.
        /// </summary>
-        IObjectNode Parent { get; }
+       [NotNull]
+       IObjectNode Parent { get; }
 
         /// <summary>
         /// Gets the member descriptor corresponding to this member node.

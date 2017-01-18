@@ -72,7 +72,7 @@ namespace SiliconStudio.Presentation.Quantum
             node.Update(value);
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
@@ -80,7 +80,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {

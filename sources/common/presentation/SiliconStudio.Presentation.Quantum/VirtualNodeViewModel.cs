@@ -84,13 +84,13 @@ namespace SiliconStudio.Presentation.Quantum
             updatingValue = false;
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanging(nameof(VirtualNodeViewModel<object>.TypedValue));
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanged(nameof(VirtualNodeViewModel<object>.TypedValue));

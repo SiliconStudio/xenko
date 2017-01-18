@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
@@ -15,6 +16,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the node name.
         /// </summary>
+        [NotNull]
         string Name { get; }
 
         /// <summary>
@@ -106,22 +108,22 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before the <see cref="Value"/> of this content changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        event EventHandler<ContentChangeEventArgs> PrepareChange;
+        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
 
         /// <summary>
         /// Raised after the <see cref="Value"/> of this content has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        event EventHandler<ContentChangeEventArgs> FinalizeChange;
+        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
 
         /// <summary>
         /// Raised just before the <see cref="Value"/> of this content changes.
         /// </summary>
-        event EventHandler<ContentChangeEventArgs> Changing;
+        event EventHandler<MemberNodeChangeEventArgs> Changing;
 
         /// <summary>
         /// Raised when the <see cref="Value"/> of this content has changed.
         /// </summary>
-        event EventHandler<ContentChangeEventArgs> Changed;
+        event EventHandler<MemberNodeChangeEventArgs> Changed;
 
         /// <summary>
         /// Retrieves the value of this content.

@@ -504,7 +504,7 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -513,7 +513,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -532,7 +532,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private bool IsValidChange(ContentChangeEventArgs e)
+        private bool IsValidChange(MemberNodeChangeEventArgs e)
         {
             switch (e.ChangeType)
             {

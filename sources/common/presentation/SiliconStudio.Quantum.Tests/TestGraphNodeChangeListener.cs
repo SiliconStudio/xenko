@@ -453,12 +453,12 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(3, changedCount);
         }
 
-        private static void VerifyListenerEvent(GraphContentChangeEventArgs e, IContentNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
+        private static void VerifyListenerEvent(GraphMemberNodeChangeEventArgs e, IContentNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
         {
             Assert.NotNull(e);
             Assert.NotNull(contentOwner);
             Assert.AreEqual(type, e.ChangeType);
-            Assert.AreEqual(contentOwner, e.Content);
+            Assert.AreEqual(contentOwner, e.Member);
             Assert.AreEqual(index, e.Index);
             Assert.AreEqual(newValue, e.NewValue);
             Assert.AreEqual(oldValue, e.OldValue);
@@ -472,10 +472,10 @@ namespace SiliconStudio.Quantum.Tests
         {
             var i = 0;
             var contentOwner = fetchNode();
-            var prepareChange = new EventHandler<GraphContentChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
-            var changing = new EventHandler<GraphContentChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
-            var changed = new EventHandler<GraphContentChangeEventArgs>((sender, e) => { Assert.AreEqual(2, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
-            var finalizeChange = new EventHandler<GraphContentChangeEventArgs>((sender, e) => { Assert.AreEqual(3, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
+            var prepareChange = new EventHandler<GraphMemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
+            var changing = new EventHandler<GraphMemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
+            var changed = new EventHandler<GraphMemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(2, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
+            var finalizeChange = new EventHandler<GraphMemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(3, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
             listener.PrepareChange += prepareChange;
             listener.Changing += changing;
             listener.Changed += changed;

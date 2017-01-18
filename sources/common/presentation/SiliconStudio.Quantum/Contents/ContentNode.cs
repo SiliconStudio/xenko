@@ -77,16 +77,16 @@ namespace SiliconStudio.Quantum.Contents
         public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> PrepareChange;
+        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
 
         /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
+        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
 
         /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> Changing;
+        public event EventHandler<MemberNodeChangeEventArgs> Changing;
 
         /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> Changed;
+        public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public object Retrieve() => Retrieve(Index.Empty);
@@ -144,7 +144,7 @@ namespace SiliconStudio.Quantum.Contents
         /// Raises the <see cref="Changing"/> event with the given parameters.
         /// </summary>
         /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanging(ContentChangeEventArgs args)
+        protected void NotifyContentChanging(MemberNodeChangeEventArgs args)
         {
             PrepareChange?.Invoke(this, args);
             Changing?.Invoke(this, args);
@@ -154,7 +154,7 @@ namespace SiliconStudio.Quantum.Contents
         /// Raises the <see cref="Changed"/> event with the given arguments.
         /// </summary>
         /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanged(ContentChangeEventArgs args)
+        protected void NotifyContentChanged(MemberNodeChangeEventArgs args)
         {
             Changed?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);

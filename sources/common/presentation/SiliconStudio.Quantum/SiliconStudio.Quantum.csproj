@@ -25,8 +25,8 @@
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Contents\Content.cs" />
-    <Compile Include="Contents\ContentChangeEventArgs.cs" />
-    <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
+    <Compile Include="Contents\MemberNodeChangeEventArgs.cs" />
+    <Compile Include="Contents\GraphMemberNodeChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="DynamicNode.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />

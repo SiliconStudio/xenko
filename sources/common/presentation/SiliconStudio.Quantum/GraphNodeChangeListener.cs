@@ -34,22 +34,22 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> PrepareChange;
+        public event EventHandler<GraphMemberNodeChangeEventArgs> PrepareChange;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> FinalizeChange;
+        public event EventHandler<GraphMemberNodeChangeEventArgs> FinalizeChange;
 
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> Changing;
+        public event EventHandler<GraphMemberNodeChangeEventArgs> Changing;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<GraphContentChangeEventArgs> Changed;
+        public event EventHandler<GraphMemberNodeChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -94,40 +94,37 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
+        private void ContentPrepareChange(object sender, MemberNodeChangeEventArgs e)
         {
-            var node = e.Content;
-            if (node != null)
+            var node = e.Member;
+            var visitor = new GraphVisitorBase();
+            visitor.Visiting += (node1, path) => UnregisterNode(node1);
+            visitor.ShouldVisit = shouldRegisterNode;
+            switch (e.ChangeType)
             {
-                var visitor = new GraphVisitorBase();
-                visitor.Visiting += (node1, path) => UnregisterNode(node1);
-                visitor.ShouldVisit = shouldRegisterNode;
-                switch (e.ChangeType)
-                {
-                    case ContentChangeType.ValueChange:
-                        // The changed node itself is still valid, we don't want to unregister it
-                        visitor.SkipRootNode = true;
-                        visitor.Visit(node);
-                        break;
-                    case ContentChangeType.CollectionRemove:
-                        if (node.IsReference && e.OldValue != null)
+                case ContentChangeType.ValueChange:
+                    // The changed node itself is still valid, we don't want to unregister it
+                    visitor.SkipRootNode = true;
+                    visitor.Visit(node);
+                    break;
+                case ContentChangeType.CollectionRemove:
+                    if (node.IsReference && e.OldValue != null)
+                    {
+                        var removedNode = node.Reference.AsEnumerable[e.Index].TargetNode;
+                        if (removedNode != null)
                         {
-                            var removedNode = node.Reference.AsEnumerable[e.Index].TargetNode;
-                            if (removedNode != null)
-                            {
-                                visitor.Visit(removedNode, node as MemberContent);
-                            }
+                            visitor.Visit(removedNode, node as MemberContent);
                         }
-                        break;
-                }
+                    }
+                    break;
             }
 
-            PrepareChange?.Invoke(sender, new GraphContentChangeEventArgs(e));
+            PrepareChange?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
         }
 
-        private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
+        private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
         {
-            var node = e.Content;
+            var node = e.Member;
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
@@ -167,17 +164,17 @@ namespace SiliconStudio.Quantum
                 }
             }
 
-            FinalizeChange?.Invoke(sender, new GraphContentChangeEventArgs(e));
+            FinalizeChange?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
         {
-            Changing?.Invoke(sender, new GraphContentChangeEventArgs(e));
+            Changing?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
-            Changed?.Invoke(sender, new GraphContentChangeEventArgs(e));
+            Changed?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
         }
     }
 }

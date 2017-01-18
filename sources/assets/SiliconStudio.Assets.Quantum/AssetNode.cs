@@ -369,12 +369,12 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph.ResetOverride(this, indexToReset);
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());
 
-            var node = (AssetMemberNode)e.Content;
+            var node = (AssetMemberNode)e.Member;
             if (node.IsNonIdentifiableCollectionContent)
                 return;
 
@@ -388,8 +388,8 @@ namespace SiliconStudio.Assets.Quantum
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
-                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                         // Compute the id we will add for this item
                         ItemId itemId;
                         if (baseNode?.contentUpdating == true)
@@ -422,15 +422,15 @@ namespace SiliconStudio.Assets.Quantum
                     break;
                 case ContentChangeType.CollectionRemove:
                     {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                             removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
                         }
                         else
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                             removedId = itemIds.Delete(e.Index.Value, isOverriding);
                         }
                     }
