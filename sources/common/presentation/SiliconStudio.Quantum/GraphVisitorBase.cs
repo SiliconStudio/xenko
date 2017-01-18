@@ -139,7 +139,7 @@ namespace SiliconStudio.Quantum
         /// <param name="memberContent">The member content referencing the node to evaluate.</param>
         /// <param name="targetNode">The node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, False otherwise.</returns>
-        protected virtual bool ShouldVisitNode(MemberContent memberContent, IContentNode targetNode)
+        protected virtual bool ShouldVisitNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return !visitedNodes.Contains(targetNode) && (ShouldVisit?.Invoke(memberContent, targetNode) ?? true);
         }

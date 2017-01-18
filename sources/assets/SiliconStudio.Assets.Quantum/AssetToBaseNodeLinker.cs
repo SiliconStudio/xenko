@@ -21,9 +21,9 @@ namespace SiliconStudio.Assets.Quantum
             this.propertyGraph = propertyGraph;
         }
 
-        public Func<MemberContent, IContentNode, bool> ShouldVisit { get; set; }
+        public Func<IMemberNode, IContentNode, bool> ShouldVisit { get; set; }
 
-        protected override bool ShouldVisitSourceNode(MemberContent memberContent, IContentNode targetNode)
+        protected override bool ShouldVisitSourceNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return (ShouldVisit?.Invoke(memberContent, targetNode) ?? true) && base.ShouldVisitSourceNode(memberContent, targetNode);
         }

@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentNode
+    public class MemberContent : ContentNode, IMemberNode
     {
         private readonly NodeContainer nodeContainer;
 

@@ -11,7 +11,7 @@ namespace SiliconStudio.Quantum.Contents
     /// An implementation of <see cref="IContentNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
-    public class ObjectContent : ContentNode
+    public class ObjectContent : ContentNode, IObjectNode
     {
         private object value;
 

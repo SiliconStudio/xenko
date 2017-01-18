@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets.Quantum
             Asset = assetItem.Asset;
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides(RootNode, assetItem.Overrides);
-            nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
+            nodeListener = new GraphNodeChangeListener(RootNode, (member, targetNode) => ShouldListenToTargetNode(member, targetNode));
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
 
@@ -159,7 +159,7 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         // TODO: turn protected
-        public virtual bool ShouldListenToTargetNode(MemberContent member, IContentNode targetNode)
+        public virtual bool ShouldListenToTargetNode(IMemberNode member, IContentNode targetNode)
         {
             return true;
         }
@@ -596,7 +596,7 @@ namespace SiliconStudio.Assets.Quantum
                         else
                         {
                             // If the item is present in both the instance and the base, check if we need to reconcile the value
-                            var member = assetNode as MemberContent;
+                            var member = assetNode as IMemberNode;
                             var targetNode = assetNode.Reference?.AsEnumerable?[localIndex]?.TargetNode;
                             // Skip it if it's overridden
                             if (!assetNode.IsItemOverridden(localIndex))
@@ -680,7 +680,7 @@ namespace SiliconStudio.Assets.Quantum
                 // Finally, handle single properties
                 else
                 {
-                    var member = assetNode as MemberContent;
+                    var member = assetNode as IMemberNode;
                     var targetNode = assetNode.Reference?.AsObject?.TargetNode;
                     if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Reference is ObjectReference))
                     {
@@ -692,7 +692,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        protected virtual bool ShouldReconcileItem(MemberContent member, IContentNode targetNode, object localValue, object baseValue, bool isReference)
+        protected virtual bool ShouldReconcileItem(IMemberNode member, IContentNode targetNode, object localValue, object baseValue, bool isReference)
         {
             if (isReference)
             {

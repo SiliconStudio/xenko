@@ -90,7 +90,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = ShouldVisitSourceNode };
+            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = (memberContent, targetNode) => ShouldVisitSourceNode(memberContent, targetNode) };
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace SiliconStudio.Quantum
         /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
         /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, false otherwise.</returns>
-        protected virtual bool ShouldVisitSourceNode(MemberContent memberContent, IContentNode targetNode)
+        protected virtual bool ShouldVisitSourceNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return true;
         }

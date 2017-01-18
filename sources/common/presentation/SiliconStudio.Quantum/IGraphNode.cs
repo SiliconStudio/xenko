@@ -4,3 +4,15 @@
 using System;
 using System.Collections.Generic;
 
+namespace SiliconStudio.Quantum
+{
+    public interface IObjectNode : IContentNode
+    {
+
+    }
+
+    public interface IMemberNode : IContentNode
+    {
+
+    }
+}
