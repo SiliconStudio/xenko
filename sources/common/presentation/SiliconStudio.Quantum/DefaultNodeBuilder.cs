@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             var containerNode = GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, member, IsPrimitiveType(member.Type), value);
             containerNode.AddChild(content);
 
             if (content.IsReference)
