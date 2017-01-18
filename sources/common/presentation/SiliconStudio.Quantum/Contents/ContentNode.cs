@@ -70,18 +70,6 @@ namespace SiliconStudio.Quantum.Contents
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
-
-        /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing;
-
-        /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> Changed;
-
-        /// <inheritdoc/>
         public object Retrieve() => Retrieve(Index.Empty);
 
         /// <inheritdoc/>
@@ -132,26 +120,6 @@ namespace SiliconStudio.Quantum.Contents
         /// It allows to properly update boxed structs.
         /// </remarks>
         protected internal abstract void UpdateFromMember(object newValue, Index index);
-
-        /// <summary>
-        /// Raises the <see cref="Changing"/> event with the given parameters.
-        /// </summary>
-        /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanging(MemberNodeChangeEventArgs args)
-        {
-            PrepareChange?.Invoke(this, args);
-            Changing?.Invoke(this, args);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="Changed"/> event with the given arguments.
-        /// </summary>
-        /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanged(MemberNodeChangeEventArgs args)
-        {
-            Changed?.Invoke(this, args);
-            FinalizeChange?.Invoke(this, args);
-        }
 
         private IEnumerable<Index> GetIndices()
         {

@@ -62,12 +62,13 @@ namespace SiliconStudio.Quantum
         protected virtual bool RegisterNode(IContentNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
-            if (RegisteredNodes.Add(node))
+            var memberNode = node as IMemberNode;
+            if (memberNode != null && RegisteredNodes.Add(node))
             {
-                node.PrepareChange += ContentPrepareChange;
-                node.FinalizeChange += ContentFinalizeChange;
-                node.Changing += ContentChanging;
-                node.Changed += ContentChanged;
+                memberNode.PrepareChange += ContentPrepareChange;
+                memberNode.FinalizeChange += ContentFinalizeChange;
+                memberNode.Changing += ContentChanging;
+                memberNode.Changed += ContentChanged;
                 return true;
             }
             return false;
@@ -75,12 +76,13 @@ namespace SiliconStudio.Quantum
 
         protected virtual bool UnregisterNode(IContentNode node)
         {
-            if (RegisteredNodes.Remove(node))
+            var memberNode = node as IMemberNode;
+            if (memberNode != null && RegisteredNodes.Remove(node))
             {
-                node.PrepareChange -= ContentPrepareChange;
-                node.FinalizeChange -= ContentFinalizeChange;
-                node.Changing -= ContentChanging;
-                node.Changed -= ContentChanged;
+                memberNode.PrepareChange -= ContentPrepareChange;
+                memberNode.FinalizeChange -= ContentFinalizeChange;
+                memberNode.Changing -= ContentChanging;
+                memberNode.Changed -= ContentChanged;
                 return true;
             }
             return false;
@@ -124,44 +126,40 @@ namespace SiliconStudio.Quantum
 
         private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
         {
-            var node = e.Member;
-            if (node != null)
+            var visitor = new GraphVisitorBase();
+            visitor.Visiting += (node, path) => RegisterNode(node);
+            visitor.ShouldVisit = shouldRegisterNode;
+            switch (e.ChangeType)
             {
-                var visitor = new GraphVisitorBase();
-                visitor.Visiting += (node1, path) => RegisterNode(node1);
-                visitor.ShouldVisit = shouldRegisterNode;
-                switch (e.ChangeType)
-                {
-                    case ContentChangeType.ValueChange:
-                        // The changed node itself is still valid, we don't want to re-register it
-                        visitor.SkipRootNode = true;
-                        visitor.Visit(node);
-                        break;
-                    case ContentChangeType.CollectionAdd:
-                        if (node.IsReference && e.NewValue != null)
+                case ContentChangeType.ValueChange:
+                    // The changed node itself is still valid, we don't want to re-register it
+                    visitor.SkipRootNode = true;
+                    visitor.Visit(e.Member);
+                    break;
+                case ContentChangeType.CollectionAdd:
+                    if (e.Member.IsReference && e.NewValue != null)
+                    {
+                        IContentNode addedNode;
+                        Index index;
+                        if (!e.Index.IsEmpty)
                         {
-                            IContentNode addedNode;
-                            Index index;
-                            if (!e.Index.IsEmpty)
-                            {
-                                index = e.Index;
-                                addedNode = node.Reference.AsEnumerable[e.Index].TargetNode;
-                            }
-                            else
-                            {
-                                var reference = node.Reference.AsEnumerable.First(x => x.TargetNode.Retrieve() == e.NewValue);
-                                index = reference.Index;
-                                addedNode = reference.TargetNode;
-                            }
-
-                            if (addedNode != null)
-                            {
-                                var path = new GraphNodePath(node).PushIndex(index);
-                                visitor.Visit(addedNode, node as MemberContent, path);
-                            }
+                            index = e.Index;
+                            addedNode = e.Member.Reference.AsEnumerable[e.Index].TargetNode;
                         }
-                        break;
-                }
+                        else
+                        {
+                            var reference = e.Member.Reference.AsEnumerable.First(x => x.TargetNode.Retrieve() == e.NewValue);
+                            index = reference.Index;
+                            addedNode = reference.TargetNode;
+                        }
+
+                        if (addedNode != null)
+                        {
+                            var path = new GraphNodePath(e.Member).PushIndex(index);
+                            visitor.Visit(addedNode, e.Member as MemberContent, path);
+                        }
+                    }
+                    break;
             }
 
             FinalizeChange?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));

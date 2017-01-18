@@ -482,8 +482,12 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
-            SourceNode.Changing += ContentChanging;
-            SourceNode.Changed += ContentChanged;
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing += ContentChanging;
+                memberNode.Changed += ContentChanged;
+            }
         }
 
         /// <summary>
@@ -500,8 +504,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            SourceNode.Changing -= ContentChanging;
-            SourceNode.Changed -= ContentChanged;
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing -= ContentChanging;
+                memberNode.Changed -= ContentChanged;
+            }
             base.Destroy();
         }
 

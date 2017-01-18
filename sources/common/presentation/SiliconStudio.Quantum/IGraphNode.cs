@@ -45,6 +45,26 @@ namespace SiliconStudio.Quantum
         /// </summary>
         [NotNull]
         IMemberDescriptor MemberDescriptor { get; }
+
+        /// <summary>
+        /// Raised before a change to this node occurs and before the <see cref="Changing"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+
+        /// <summary>
+        /// Raised after a change to this node has occurred and after the <see cref="Changed"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+
+        /// <summary>
+        /// Raised just before a change to this node occurs.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> Changing;
+
+        /// <summary>
+        /// Raised when a change to this node has occurred.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> Changed;
     }
 
     public interface IInitializingGraphNode : IContentNode

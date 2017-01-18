@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
-        private IContentNode associatedContent;
+        private IMemberNode associatedContent;
         private bool updatingValue;
 
         static VirtualNodeViewModel()
@@ -67,7 +67,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="content">The content to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterContentForNotifications(IContentNode content)
+        public void RegisterContentForNotifications(IMemberNode content)
         {
             if (associatedContent != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");

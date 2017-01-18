@@ -104,7 +104,9 @@ namespace SiliconStudio.Assets.Quantum
             // Unlink previously linked nodes
             foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
             {
-                linkedNode.Key.BaseContent.Changed -= linkedNode.Value;
+                var member = linkedNode.Key.BaseContent as IMemberNode;
+                if (member != null)
+                    member.Changed -= linkedNode.Value;
             }
             baseLinkedNodes.Clear();
 
@@ -285,7 +287,9 @@ namespace SiliconStudio.Assets.Quantum
             // Unregister handlers - must be done first!
             foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
             {
-                linkedNode.Key.BaseContent.Changed -= linkedNode.Value;
+                var member = linkedNode.Key.BaseContent as IMemberNode;
+                if (member != null)
+                    member.Changed -= linkedNode.Value;
             }
             baseLinkedNodes.Clear();
 
@@ -396,7 +400,9 @@ namespace SiliconStudio.Assets.Quantum
                 if (baseNode != null)
                 {
                     action = (s, e) => OnBaseContentChanged(e, currentNode);
-                    assetNode.BaseContent.Changed += action;
+                    var member = assetNode.BaseContent as IMemberNode;
+                    if (member != null)
+                        member.Changed += action;
                 }
                 baseLinkedNodes.Add(assetNode, action);
             }

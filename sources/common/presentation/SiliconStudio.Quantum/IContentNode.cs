@@ -87,26 +87,6 @@ namespace SiliconStudio.Quantum
         IEnumerable<Index> Indices { get; }
 
         /// <summary>
-        /// Raised before the <see cref="Value"/> of this content changes and before the <see cref="Changing"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <summary>
-        /// Raised after the <see cref="Value"/> of this content has changed and after the <see cref="Changed"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
-
-        /// <summary>
-        /// Raised just before the <see cref="Value"/> of this content changes.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changing;
-
-        /// <summary>
-        /// Raised when the <see cref="Value"/> of this content has changed.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changed;
-
-        /// <summary>
         /// Retrieves the value of this content.
         /// </summary>
         object Retrieve();

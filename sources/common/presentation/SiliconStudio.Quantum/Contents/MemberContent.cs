@@ -35,6 +35,18 @@ namespace SiliconStudio.Quantum.Contents
         public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Value); } }
 
         /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> Changing;
+
+        /// <inheritdoc/>
+        public event EventHandler<MemberNodeChangeEventArgs> Changed;
+
+        /// <inheritdoc/>
         public override void Update(object newValue, Index index)
         {
             Update(newValue, index, true);
@@ -145,6 +157,26 @@ namespace SiliconStudio.Quantum.Contents
             }
             UpdateReferences();
             NotifyContentChanged(args);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Changing"/> event with the given parameters.
+        /// </summary>
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanging(MemberNodeChangeEventArgs args)
+        {
+            PrepareChange?.Invoke(this, args);
+            Changing?.Invoke(this, args);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Changed"/> event with the given arguments.
+        /// </summary>
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanged(MemberNodeChangeEventArgs args)
+        {
+            Changed?.Invoke(this, args);
+            FinalizeChange?.Invoke(this, args);
         }
 
         protected internal override void UpdateFromMember(object newValue, Index index)
