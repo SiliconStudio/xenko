@@ -5,7 +5,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// An interface representing an view model that can provide properties to build an <see cref="ObservableViewModel"/>.
+    /// An interface representing an view model that can provide properties to build an <see cref="GraphViewModel"/>.
     /// </summary>
     public interface IPropertiesProviderViewModel
     {
@@ -15,10 +15,10 @@ namespace SiliconStudio.Presentation.Quantum
         bool CanProvidePropertiesViewModel { get; }
 
         /// <summary>
-        /// Retrieves the root <see cref="IGraphNode"/> to use to generate properties.
+        /// Retrieves the root <see cref="IContentNode"/> to use to generate properties.
         /// </summary>
-        /// <returns>The root <see cref="IGraphNode"/> to use to generate properties.</returns>
-        IGraphNode GetRootNode();
+        /// <returns>The root <see cref="IContentNode"/> to use to generate properties.</returns>
+        IContentNode GetRootNode();
 
         /// <summary>
         /// Indicates whether the members of the given reference should be constructed for the view model.

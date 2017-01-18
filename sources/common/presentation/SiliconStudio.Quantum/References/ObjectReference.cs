@@ -33,10 +33,10 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IGraphNode TargetNode { get; private set; }
+        public IContentNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
-        public object ObjectValue => TargetNode != null ? TargetNode.Content.Value : orphanObject;
+        public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
 
         /// <inheritdoc/>
         public Type Type { get; }
@@ -61,22 +61,22 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
         {
-            Refresh(ownerNode, nodeContainer, nodeFactory, Index.Empty);
+            Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory, Index index)
+        internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
         {
-            var objectValue = ownerNode.Content.Retrieve(index);
-            if (TargetNode?.Content.Value != objectValue)
+            var objectValue = ownerNode.Retrieve(index);
+            if (TargetNode?.Value != objectValue)
             {
                 // This call will recursively update the references.
-                var target = SetTarget(objectValue, nodeContainer, nodeFactory);
+                var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var ownerContent = (ContentBase)ownerNode.Content;
-                    var boxedContent = target.Content as BoxedContent;
+                    var ownerContent = (ContentNode)ownerNode;
+                    var boxedContent = target as BoxedContent;
                     boxedContent?.SetOwnerContent(ownerContent, index);
                 }
             }
@@ -111,11 +111,10 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        /// <param name="nodeFactory">The factory to use to create nodes.</param>
-        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue, nodeFactory);
+            IContentNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }
@@ -124,18 +123,18 @@ namespace SiliconStudio.Quantum.References
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IGraphNode SetTarget(IGraphNode targetNode)
+        internal IContentNode SetTarget(IContentNode targetNode)
         {
             if (targetNode != null)
             {
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
                 // TODO: Disabled this exception which is triggered when a circular reference is made. This will be properly fixed when we'll get rid of the ShouldProcessReference mechanism.
                 //if (TargetNode != null || TargetGuid != Guid.Empty)
                 //    throw new InvalidOperationException("TargetNode has already been set.");
 
-                if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
+                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
 
                 TargetNode = targetNode;

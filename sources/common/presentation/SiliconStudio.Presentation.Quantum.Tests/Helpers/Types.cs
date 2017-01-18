@@ -9,15 +9,15 @@ namespace SiliconStudio.Presentation.Tests.Helpers
     {
         public class TestPropertiesProvider : IPropertiesProviderViewModel
         {
-            private readonly IGraphNode rootNode;
+            private readonly IContentNode rootNode;
 
-            public TestPropertiesProvider(IGraphNode rootNode)
+            public TestPropertiesProvider(IContentNode rootNode)
             {
                 this.rootNode = rootNode;
             }
             public bool CanProvidePropertiesViewModel => true;
 
-            public IGraphNode GetRootNode()
+            public IContentNode GetRootNode()
             {
                 return rootNode;
             }

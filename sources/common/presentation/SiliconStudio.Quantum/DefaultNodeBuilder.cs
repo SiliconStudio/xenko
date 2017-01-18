@@ -17,12 +17,11 @@ namespace SiliconStudio.Quantum
     /// </summary>
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
-        private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
-        private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
+        private readonly Stack<ContentNode> contextStack = new Stack<ContentNode>();
+        private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
-        private GraphNode rootNode;
+        private ContentNode rootNode;
         private Guid rootGuid;
-        private NodeFactoryDelegate currentNodeFactory;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
@@ -84,16 +83,13 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IGraphNode Build(object obj, Guid guid, NodeFactoryDelegate nodeFactory)
+        public IContentNode Build(object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            if (nodeFactory == null) throw new ArgumentNullException(nameof(nodeFactory));
             Reset();
             rootGuid = guid;
             var typeDescriptor = TypeDescriptorFactory.Find(obj.GetType());
-            currentNodeFactory = nodeFactory;
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
-            currentNodeFactory = null;
             return rootNode;
         }
 
@@ -107,10 +103,10 @@ namespace SiliconStudio.Quantum
             {
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                                : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                                : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 currentDescriptor = content.Descriptor;
-                rootNode = (GraphNode)currentNodeFactory(currentDescriptor.Type.Name, content, rootGuid);
+                rootNode = (ContentNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -169,15 +165,15 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             // If this member should contains a reference, create it now.
-            GraphNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
-            var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
-            containerNode.AddChild(node);
+            var containerNode = GetContextNode();
+            var guid = Guid.NewGuid();
+            var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
+            containerNode.AddChild(content);
 
             if (content.IsReference)
                 referenceContents.Add(content);
 
-            PushContextNode(node);
+            PushContextNode(content);
             if (!(content.Reference is ObjectReference))
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
@@ -185,9 +181,9 @@ namespace SiliconStudio.Quantum
             }
             PopContextNode();
 
-            AvailableCommands.Where(x => x.CanAttach(node.Content.Descriptor, (MemberDescriptorBase)member)).ForEach(node.AddCommand);
+            AvailableCommands.Where(x => x.CanAttach(content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
 
-            node.Seal();
+            content.Seal();
         }
 
         public IReference CreateReferenceForNode(Type type, object value)
@@ -207,7 +203,7 @@ namespace SiliconStudio.Quantum
             return null;
         }
         
-        private void PushContextNode(GraphNode node)
+        private void PushContextNode(ContentNode node)
         {
             contextStack.Push(node);
         }
@@ -217,7 +213,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private GraphNode GetContextNode()
+        private ContentNode GetContextNode()
         {
             return contextStack.Peek();
         }

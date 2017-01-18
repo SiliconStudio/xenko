@@ -2602,7 +2602,6 @@
     <Compile Include="Engine\EntityManager.cs" />
     <Compile Include="Engine\Entity.cs" />
     <Compile Include="Engine\EntityProcessor.cs" />
-    <Compile Include="Extensions\EntityExtensions.cs" />
     <Compile Include="Extensions\IndexExtensions.cs" />
     <Compile Include="Extensions\TNBExtensions.cs" />
     <Compile Include="Extensions\VertexExtensions.cs" />

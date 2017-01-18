@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Particles
         public float ScaleUniform { get; set; } = 1f;
 
         // Order of these members should be *after* the fields they control (own offset and inherited field)
-        // The visibility is controlled from EntityViewModel.UpdateObservableNode(...)
+        // The visibility is controlled from EntityViewModel.UpdateNodeViewModel(...)
         [DataMember(10)]
         public bool DisplayParticlePosition = false;
 
