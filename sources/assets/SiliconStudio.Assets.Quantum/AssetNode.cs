@@ -131,14 +131,14 @@ namespace SiliconStudio.Assets.Quantum
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, member, isPrimitive, reference)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, memberDescriptor, isPrimitive, reference)
         {
             PrepareChange += (sender, e) => contentUpdating = true;
             FinalizeChange += (sender, e) => contentUpdating = false;
             Changed += ContentChanged;
-            IsNonIdentifiableCollectionContent = Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-            CanOverride =Member.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+            IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+            CanOverride =MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }
 
         public bool IsNonIdentifiableCollectionContent { get; }

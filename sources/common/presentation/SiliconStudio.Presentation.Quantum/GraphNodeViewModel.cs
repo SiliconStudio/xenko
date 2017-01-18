@@ -135,7 +135,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (memberContent == null || !Index.IsEmpty)
                     return null;
 
-                var descriptor = (MemberDescriptorBase)memberContent.Member;
+                var descriptor = (MemberDescriptorBase)memberContent.MemberDescriptor;
                 var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                 return displayAttribute?.Order ?? descriptor.Order;
             }
@@ -146,7 +146,7 @@ namespace SiliconStudio.Presentation.Quantum
             get
             {
                 var memberContent = SourceNode as MemberContent;
-                var memberDescriptorBase = memberContent?.Member as MemberDescriptorBase;
+                var memberDescriptorBase = memberContent?.MemberDescriptor as MemberDescriptorBase;
                 return memberDescriptorBase?.MemberInfo;
             }
         }
@@ -189,7 +189,7 @@ namespace SiliconStudio.Presentation.Quantum
         public IMemberDescriptor GetMemberDescriptor()
         {
             var memberContent = SourceNode as MemberContent;
-            return memberContent?.Member;
+            return memberContent?.MemberDescriptor;
         }
 
         internal void CheckConsistency()
@@ -360,7 +360,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 foreach (var memberContent in targetNode.Children)
                 {
-                    var descriptor = (MemberDescriptorBase)memberContent.Member;
+                    var descriptor = (MemberDescriptorBase)memberContent.MemberDescriptor;
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {

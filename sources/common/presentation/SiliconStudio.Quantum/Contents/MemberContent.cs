@@ -16,10 +16,10 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly NodeContainer nodeContainer;
 
-        public MemberContent(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(member.Name, guid, nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
+        public MemberContent(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(memberDescriptor.Name, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive, reference)
         {
-            Member = member;
+            MemberDescriptor = memberDescriptor;
             nodeContainer = nodeBuilder.NodeContainer;
         }
 
@@ -29,10 +29,10 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// The <see cref="IMemberDescriptor"/> used to access the member of the container represented by this content.
         /// </summary>
-        public IMemberDescriptor Member { get; protected set; }
+        public IMemberDescriptor MemberDescriptor { get; protected set; }
 
         /// <inheritdoc/>
-        public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Parent.Value); } }
+        public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Value); } }
 
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)
@@ -56,7 +56,7 @@ namespace SiliconStudio.Quantum.Contents
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
                     var containerValue = Parent.Value;
-                    Member.Set(containerValue, value);
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
@@ -87,7 +87,7 @@ namespace SiliconStudio.Quantum.Contents
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
                     var containerValue = Parent.Value;
-                    Member.Set(containerValue, value);
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
@@ -101,7 +101,7 @@ namespace SiliconStudio.Quantum.Contents
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
                     var containerValue = Parent.Value;
-                    Member.Set(containerValue, value);
+                    MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
                 NotifyContentChanged(args);
@@ -141,7 +141,7 @@ namespace SiliconStudio.Quantum.Contents
             if (value.GetType().GetTypeInfo().IsValueType)
             {
                 var containerValue = Parent.Value;
-                Member.Set(containerValue, value);
+                MemberDescriptor.Set(containerValue, value);
             }
             UpdateReferences();
             NotifyContentChanged(args);
@@ -181,7 +181,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 if (Parent.Value == null) throw new InvalidOperationException("Container's value is null");
                 var containerValue = Parent.Value;
-                Member.Set(containerValue, newValue);
+                MemberDescriptor.Set(containerValue, newValue);
 
                 if (Parent.Value.GetType().GetTypeInfo().IsValueType)
                     ((ContentNode)Parent).UpdateFromMember(containerValue, Index.Empty);

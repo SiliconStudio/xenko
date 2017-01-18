@@ -439,7 +439,7 @@ namespace SiliconStudio.Quantum
                     case ElementType.Member:
                         var name = (string)itemPath.Value;
                         node = node.Children.Single(x => x.Name == name);
-                        memberPath.Push(((MemberContent)node).Member);
+                        memberPath.Push(((MemberContent)node).MemberDescriptor);
                         break;
                     case ElementType.Target:
                         if (i != path.Count - 1)

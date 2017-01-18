@@ -16,8 +16,8 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentNode : IContentNode
     {
-        protected readonly List<MemberContent> children = new List<MemberContent>();
-        protected readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
+        protected readonly List<IMemberNode> children = new List<IMemberNode>();
+        protected readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         protected bool isSealed;
 
@@ -68,13 +68,13 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<MemberContent> Children => children;
+        public IReadOnlyCollection<IMemberNode> Children => children;
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public MemberContent this[string name] => childrenMap[name];
+        public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
         public event EventHandler<ContentChangeEventArgs> PrepareChange;
@@ -213,9 +213,9 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public MemberContent TryGetChild(string name)
+        public IMemberNode TryGetChild(string name)
         {
-            MemberContent child;
+            IMemberNode child;
             childrenMap.TryGetValue(name, out child);
             return child;
         }

@@ -9,7 +9,6 @@ namespace SiliconStudio.Quantum
 {
     /// <summary>
     /// The <see cref="IContentNode"/> interface represents a node in a Quantum object graph. This node can represent an object or a member of an object.
-    /// The value behind the node can be accessed and modified with the <see cref="Content"/> property.
     /// </summary>
     public interface IContentNode
     {
@@ -40,12 +39,12 @@ namespace SiliconStudio.Quantum
         /// <param name="name">The name of the child to retrieves.</param>
         /// <returns>The child corresponding to the given name.</returns>
         /// <exception cref="KeyNotFoundException">This node has no child that matches the given name.</exception>
-        MemberContent this[string name] { get; }
+        IMemberNode this[string name] { get; }
 
         /// <summary>
         /// Gets the children collection.
         /// </summary>
-        IReadOnlyCollection<MemberContent> Children { get; }
+        IReadOnlyCollection<IMemberNode> Children { get; }
 
         /// <summary>
         /// Gets the target of this node, if this node contains a reference to another node. 
@@ -66,7 +65,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        MemberContent TryGetChild(string name);
+        IMemberNode TryGetChild(string name);
 
         /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
