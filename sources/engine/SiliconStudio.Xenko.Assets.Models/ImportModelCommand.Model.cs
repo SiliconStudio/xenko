@@ -235,7 +235,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var uniqueDrawMeshes = model.Meshes.Select(x => x.Draw).Distinct();
 
             // Count unique vertex buffers and squish them together in a single buffer
-            var uniqueVB = uniqueDrawMeshes.SelectMany(x => x.VertexBuffers).Distinct().ToArray();
+            var uniqueVB = uniqueDrawMeshes.SelectMany(x => x.VertexBuffers).Distinct().ToList();
 
             var vbMap = new Dictionary<VertexBufferBinding, VertexBufferBinding>();
             var sizeVertexBuffer = uniqueVB.Select(x => x.Buffer.GetSerializationData().Content.Length).Sum();
@@ -254,7 +254,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
 
             // Count unique index buffers and squish them together in a single buffer
-            var uniqueIB = uniqueDrawMeshes.Select(x => x.IndexBuffer).Distinct().ToArray();
+            var uniqueIB = uniqueDrawMeshes.Select(x => x.IndexBuffer).Distinct().ToList();
             var sizeIndexBuffer = 0;
             foreach (var ibBinding in uniqueIB)
             {
