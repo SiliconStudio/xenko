@@ -21,7 +21,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
         /// </summary>
-        internal Func<MemberContent, IContentNode, bool> ShouldVisit { get; set; }
+        internal Func<IMemberNode, IContentNode, bool> ShouldVisit { get; set; }
 
         /// <summary>
         /// Gets the root node of the current visit.

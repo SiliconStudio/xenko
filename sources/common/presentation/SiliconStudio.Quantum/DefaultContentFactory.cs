@@ -28,7 +28,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public virtual IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, ContentNode container, IMemberDescriptor member, bool isPrimitive, object value)
+        public virtual IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor member, bool isPrimitive, object value)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
             return new MemberContent(nodeBuilder, guid, member, isPrimitive, reference);

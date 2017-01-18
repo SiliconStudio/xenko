@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -14,5 +15,15 @@ namespace SiliconStudio.Quantum
     public interface IMemberNode : IContentNode
     {
 
+    }
+
+    public interface IInitializingObjectNode : IObjectNode
+    {
+        /// <summary>
+        /// Add a child to this node. The node must not have been sealed yet.
+        /// </summary>
+        /// <param name="child">The child node to add.</param>
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
+        void AddMember(MemberContent child, bool allowIfReference = false);
     }
 }

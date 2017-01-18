@@ -165,10 +165,10 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             // If this member should contains a reference, create it now.
-            var containerNode = GetContextNode();
+            var containerNode = (IInitializingObjectNode)GetContextNode();
             var guid = Guid.NewGuid();
             var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, member, IsPrimitiveType(member.Type), value);
-            containerNode.AddChild(content);
+            containerNode.AddMember(content);
 
             if (content.IsReference)
                 referenceContents.Add(content);

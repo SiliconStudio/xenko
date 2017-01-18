@@ -11,7 +11,7 @@ namespace SiliconStudio.Quantum.Contents
     /// An implementation of <see cref="IContentNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
-    public class ObjectContent : ContentNode, IObjectNode
+    public class ObjectContent : ContentNode, IObjectNode, IInitializingObjectNode
     {
         private object value;
 
@@ -24,6 +24,27 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         public override object Value => value;
+
+        /// <summary>
+        /// Add a child to this node. The node must not have been sealed yet.
+        /// </summary>
+        /// <param name="child">The child node to add.</param>
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
+        public void AddMember(MemberContent child, bool allowIfReference = false)
+        {
+            if (isSealed)
+                throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
+
+            if (child.Parent != null)
+                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
+
+            if (Reference != null && !allowIfReference)
+                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
+
+            child.Parent = this;
+            children.Add(child);
+            childrenMap.Add(child.Name, child);
+        }
 
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)

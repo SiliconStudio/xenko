@@ -16,10 +16,10 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentNode : IContentNode
     {
-        private readonly List<MemberContent> children = new List<MemberContent>();
-        private readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
+        protected readonly List<MemberContent> children = new List<MemberContent>();
+        protected readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
-        private bool isSealed;
+        protected bool isSealed;
 
         protected ContentNode(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
@@ -65,7 +65,7 @@ namespace SiliconStudio.Quantum.Contents
         public IContentNode Content => this;
 
         /// <inheritdoc/>
-        public IContentNode Parent { get; private set; }
+        public IObjectNode Parent { get; internal set; }
 
         /// <inheritdoc/>
         public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
@@ -189,27 +189,6 @@ namespace SiliconStudio.Quantum.Contents
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
             if (!(Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
             return Reference.AsEnumerable[index].TargetNode;
-        }
-
-        /// <summary>
-        /// Add a child to this node. The node must not have been sealed yet.
-        /// </summary>
-        /// <param name="child">The child node to add.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
-        public void AddChild(MemberContent child, bool allowIfReference = false)
-        {
-            if (isSealed)
-                throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
-
-            if (child.Parent != null)
-                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
-
-            if (Reference != null && !allowIfReference)
-                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
-
-            child.Parent = this;
-            children.Add(child);
-            childrenMap.Add(child.Name, child);
         }
 
         /// <summary>

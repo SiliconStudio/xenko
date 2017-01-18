@@ -45,7 +45,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the parent node.
         /// </summary>
-        IContentNode Parent { get; }
+        IObjectNode Parent { get; }
 
         /// <summary>
         /// Gets the children collection.
