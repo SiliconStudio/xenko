@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
@@ -91,15 +92,12 @@ namespace SiliconStudio.Quantum.Contents
         public event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <inheritdoc/>
-        public virtual object Retrieve()
-        {
-            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, Index.Empty, Descriptor);
-        }
+        public object Retrieve() => Retrieve(Index.Empty);
 
         /// <inheritdoc/>
         public virtual object Retrieve(Index index)
         {
-            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, index, Descriptor);
+            return Contents.Content.Retrieve(Value, index, Descriptor);
         }
 
         /// <inheritdoc/>
@@ -171,13 +169,18 @@ namespace SiliconStudio.Quantum.Contents
             if (enumRef != null)
                 return enumRef.Indices;
 
-            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            return GetIndices(this);
+        }
+
+        public static IEnumerable<Index> GetIndices([NotNull] IContentNode node)
+        {
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Select(x => new Index(x));
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Value)).Select(x => new Index(x));
             }
-            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(Value).Cast<object>().Select(x => new Index(x));
+            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
+            return dictionaryDescriptor?.GetKeys(node.Value).Cast<object>().Select(x => new Index(x));
         }
 
         /// <inheritdoc/>

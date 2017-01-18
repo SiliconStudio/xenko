@@ -147,7 +147,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member4.Member1 = obj[1];
             Assert.AreEqual(obj[1], (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
-            rootNode.TryGetChild(nameof(ComplexClass.Member4)).TryGetChild(nameof(Struct.Member1)).Update(obj[2]);
+            rootNode.TryGetChild(nameof(ComplexClass.Member4)).Target.TryGetChild(nameof(Struct.Member1)).Update(obj[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
         }

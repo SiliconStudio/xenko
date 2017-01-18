@@ -210,7 +210,7 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfSimpleStructLists").Reference).Last();
-            var objRef = ((ReferenceEnumerable)((ContentNode)listRef.TargetNode).Reference).Last();
+            var objRef = ((ReferenceEnumerable)listRef.TargetNode.Reference).Last();
             objRef.TargetNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfSimpleStructLists[1][0].SecondValue, Is.EqualTo(32));
@@ -225,7 +225,7 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             IContentNode model = container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.TryGetChild("ListOfNestedStructLists").Reference).Last();
-            var objRef = ((ReferenceEnumerable)((ContentNode)listRef.TargetNode).Reference).Last();
+            var objRef = ((ReferenceEnumerable)listRef.TargetNode.Reference).Last();
             var structNode = container.GetNode(((ObjectReference)objRef.TargetNode.TryGetChild("Struct").Reference).TargetGuid);
             structNode.TryGetChild("SecondValue").Update(32);
             Helper.PrintModelContainerContent(container, model);

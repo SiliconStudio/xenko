@@ -93,7 +93,7 @@ namespace SiliconStudio.Quantum.Tests
 
             protected override IContentNode FindTarget(IContentNode sourceNode)
             {
-                if ((ContentNode)sourceNode is ObjectContent && ((ContentNode)sourceNode).Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is ObjectContent && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
@@ -112,7 +112,7 @@ namespace SiliconStudio.Quantum.Tests
                 if (sourceReference.TargetNode != null)
                     matchValue = (int)sourceReference.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value;
 
-                var targetReference = ((ContentNode)targetNode).Reference as ReferenceEnumerable;
+                var targetReference = targetNode.Reference as ReferenceEnumerable;
                 return targetReference?.FirstOrDefault(x => (int)x.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value == matchValue);
 
             }
@@ -226,11 +226,12 @@ namespace SiliconStudio.Quantum.Tests
                 { source, target },
                 { source.TryGetChild(nameof(StructClass.Member1)), target.TryGetChild(nameof(StructClass.Member1)) },
                 { source.TryGetChild(nameof(StructClass.Member2)), target.TryGetChild(nameof(StructClass.Member2)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member1)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member1)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target, target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target, target.TryGetChild(nameof(StructClass.Member2)).Target },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member1)), target.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member1)) },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)), target.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)) },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target, target.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)) },
+                { source.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)) },
             };
             VerifyLinks(expectedLinks, linker);
         }

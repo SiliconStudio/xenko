@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -230,36 +229,36 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var basePropertyNode = (IAssetNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
             var derivedPropertyNode = (IAssetNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
 
-            ((ContentNode)derivedPropertyNode).Add("String3.5", new Index(3));
-            ((ContentNode)derivedPropertyNode).Add("String1.5", new Index(1));
+            derivedPropertyNode.Add("String3.5", new Index(3));
+            derivedPropertyNode.Add("String1.5", new Index(1));
             Assert.AreEqual(6, context.DerivedAsset.MyStrings.Count);
             AssertCollection(derivedPropertyNode, "String1", "String1.5", "String2", "String3", "String3.5", "String4");
 
-            ((ContentNode)basePropertyNode).Add("String0.1", new Index(0));
+            basePropertyNode.Add("String0.1", new Index(0));
             Assert.AreEqual(5, context.BaseAsset.MyStrings.Count);
             AssertCollection(basePropertyNode, "String0.1", "String1", "String2", "String3", "String4");
             Assert.AreEqual(7, context.DerivedAsset.MyStrings.Count);
             AssertCollection(derivedPropertyNode, "String0.1", "String1", "String1.5", "String2", "String3", "String3.5", "String4");
 
-            ((ContentNode)basePropertyNode).Add("String1.1", new Index(2));
+            basePropertyNode.Add("String1.1", new Index(2));
             Assert.AreEqual(6, context.BaseAsset.MyStrings.Count);
             AssertCollection(basePropertyNode, "String0.1", "String1", "String1.1", "String2", "String3", "String4");
             Assert.AreEqual(8, context.DerivedAsset.MyStrings.Count);
             AssertCollection(derivedPropertyNode, "String0.1", "String1", "String1.1", "String1.5", "String2", "String3", "String3.5", "String4");
 
-            ((ContentNode)basePropertyNode).Add("String2.1", new Index(4));
+            basePropertyNode.Add("String2.1", new Index(4));
             Assert.AreEqual(7, context.BaseAsset.MyStrings.Count);
             AssertCollection(basePropertyNode, "String0.1", "String1", "String1.1", "String2", "String2.1", "String3", "String4");
             Assert.AreEqual(9, context.DerivedAsset.MyStrings.Count);
             AssertCollection(derivedPropertyNode, "String0.1", "String1", "String1.1", "String1.5", "String2", "String2.1", "String3", "String3.5", "String4");
 
-            ((ContentNode)basePropertyNode).Add("String3.1", new Index(6));
+            basePropertyNode.Add("String3.1", new Index(6));
             Assert.AreEqual(8, context.BaseAsset.MyStrings.Count);
             AssertCollection(basePropertyNode, "String0.1", "String1", "String1.1", "String2", "String2.1", "String3", "String3.1", "String4");
             Assert.AreEqual(10, context.DerivedAsset.MyStrings.Count);
             AssertCollection(derivedPropertyNode, "String0.1", "String1", "String1.1", "String1.5", "String2", "String2.1", "String3", "String3.1", "String3.5", "String4");
 
-            ((ContentNode)basePropertyNode).Add("String4.1", new Index(8));
+            basePropertyNode.Add("String4.1", new Index(8));
             Assert.AreEqual(9, context.BaseAsset.MyStrings.Count);
             AssertCollection(basePropertyNode, "String0.1", "String1", "String1.1", "String2", "String2.1", "String3", "String3.1", "String4", "String4.1");
             Assert.AreEqual(11, context.DerivedAsset.MyStrings.Count);

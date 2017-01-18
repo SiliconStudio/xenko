@@ -159,10 +159,12 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new Class { StructMember = { StringMember = "aa" } };
             var nodeContainer = new NodeContainer();
             var rootNode = nodeContainer.GetOrCreateNode(obj);
-            var path = new GraphNodePath(rootNode).PushMember(nameof(Class.StructMember)).PushMember(nameof(Struct.StringMember));
+            var path = new GraphNodePath(rootNode).PushMember(nameof(Class.StructMember)).PushTarget().PushMember(nameof(Struct.StringMember));
             var structNode = rootNode.TryGetChild(nameof(Class.StructMember));
-            var memberNode = rootNode.TryGetChild(nameof(Class.StructMember)).TryGetChild(nameof(Struct.StringMember));
-            var nodes = new[] { rootNode, structNode, memberNode };
+            var targetNode = rootNode.TryGetChild(nameof(Class.StructMember)).Target;
+            var memberNode = rootNode.TryGetChild(nameof(Class.StructMember)).Target.TryGetChild(nameof(Struct.StringMember));
+            var nodes = new[] { rootNode, structNode, targetNode, memberNode };
+            Assert.NotNull(targetNode);
             Assert.NotNull(memberNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);

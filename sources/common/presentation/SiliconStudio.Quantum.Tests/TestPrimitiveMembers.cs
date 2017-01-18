@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -61,7 +60,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
@@ -82,7 +81,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
@@ -103,7 +102,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(GuidMember.Member), false);
@@ -124,7 +123,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new NodeContainer();
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
@@ -146,7 +145,7 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveClass));
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
@@ -168,7 +167,7 @@ namespace SiliconStudio.Quantum.Tests
             container.NodeBuilder.RegisterPrimitiveType(typeof(PrimitiveStruct));
 
             // Construction
-            var containerNode = (ContentNode)container.GetOrCreateNode(obj);
+            var containerNode = container.GetOrCreateNode(obj);
             Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveStructMember.Member), false);

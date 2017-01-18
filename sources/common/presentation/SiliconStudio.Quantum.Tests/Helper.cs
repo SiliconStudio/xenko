@@ -29,9 +29,9 @@ namespace SiliconStudio.Quantum.Tests
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
+            Assert.AreEqual(obj, node.Retrieve());
             // A node with an ObjectContent should not contain a reference if it does not represent a collection.
-            Assert.AreEqual(false, ((ContentNode)node).IsReference);
+            Assert.AreEqual(false, node.IsReference);
             // Check that we have the expected number of children.
             Assert.AreEqual(childCount, node.Children.Count);
         }
@@ -54,17 +54,17 @@ namespace SiliconStudio.Quantum.Tests
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
+            Assert.AreEqual(obj, node.Retrieve());
             if (isReference)
             {
                 // A node with an ObjectContent representing a collection of reference types should contain an enumerable reference.
-                Assert.AreEqual(true, ((ContentNode)node).IsReference);
-                Assert.IsInstanceOf<ReferenceEnumerable>(((ContentNode)node).Reference);
+                Assert.AreEqual(true, node.IsReference);
+                Assert.IsInstanceOf<ReferenceEnumerable>(node.Reference);
             }
             else
             {
                 // A node with an ObjectContent representing a collection of primitive or struct types should not contain a refernce.
-                Assert.AreEqual(false, ((ContentNode)node).IsReference);            
+                Assert.AreEqual(false, node.IsReference);            
             }
             // A node with an ObjectContent representing a collection should not have any child.
             Assert.AreEqual(0, node.Children.Count);
@@ -92,9 +92,9 @@ namespace SiliconStudio.Quantum.Tests
             // A node with a MemberContent should have its container as parent.
             Assert.AreEqual(containerNode, memberNode.Parent);
             // A node with a MemberContent should have the member value as value of its content.
-            Assert.AreEqual(member, ((ContentNode)memberNode).Retrieve());
+            Assert.AreEqual(member, memberNode.Retrieve());
             // A node with a primitive MemberContent should not contain a reference.
-            Assert.AreEqual(isReference, ((ContentNode)memberNode).IsReference);
+            Assert.AreEqual(isReference, memberNode.IsReference);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the reference is not null.
             Assert.IsNotNull(objReference);
             // Check that the values match.
-            Assert.AreEqual(targetValue, ((ContentNode)objReference.TargetNode).Retrieve());
+            Assert.AreEqual(targetValue, objReference.TargetNode.Retrieve());
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
             // Check that that we have an index if expected.
@@ -198,16 +198,16 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="structNode">The structure node to test.</param>
         /// <param name="structValue">The value of the structure represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestStructContentNode(IContentNode structNode, object structValue, int childCount)
+        public static void TestStructContentNode(MemberContent structNode, object structValue, int childCount)
         {
             if (structNode == null) throw new ArgumentNullException(nameof(structNode));
             if (structValue == null) throw new ArgumentNullException(nameof(structValue));
             // A struct node should have the related struct as value of its content.
-            Assert.AreEqual(structValue, ((ContentNode)structNode).Retrieve());
+            Assert.AreEqual(structValue, structNode.Retrieve());
             // A struct node should not contain a reference.
-            Assert.AreEqual(false, ((ContentNode)structNode).IsReference);
+            Assert.AreEqual(false, structNode.IsReference);
             // Check that we have the expected number of children.
-            Assert.AreEqual(childCount, structNode.Children.Count);
+            Assert.AreEqual(0, structNode.Children.Count);
         }
 
         [Obsolete]

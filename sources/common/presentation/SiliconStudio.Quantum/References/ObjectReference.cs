@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.References
@@ -69,15 +70,26 @@ namespace SiliconStudio.Quantum.References
         internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Retrieve(index);
-            if (TargetNode?.Value != objectValue)
+
+            var boxedTarget = TargetNode as BoxedContent;
+            if (boxedTarget != null)
+            {
+                // If we are boxing a struct, we reuse the same nodes and just overwrite the struct value.
+                boxedTarget.UpdateFromOwner(objectValue);
+                // But we still need to refresh inner references!
+                foreach (var member in TargetNode.Children.Where(x => x.IsReference))
+                {
+                    nodeContainer?.UpdateReferences(member);
+                }
+            }
+            else if (TargetNode?.Value != objectValue)
             {
                 // This call will recursively update the references.
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var ownerContent = (ContentNode)ownerNode;
                     var boxedContent = target as BoxedContent;
-                    boxedContent?.SetOwnerContent(ownerContent, index);
+                    boxedContent?.SetOwnerContent(ownerNode, index);
                 }
             }
             // This reference is not orphan anymore.

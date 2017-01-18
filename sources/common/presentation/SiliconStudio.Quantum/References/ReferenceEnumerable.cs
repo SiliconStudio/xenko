@@ -22,6 +22,7 @@ namespace SiliconStudio.Quantum.References
         internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
         {
             Reference.CheckReferenceCreationSafeGuard();
+            if (Index != Index.Empty) throw new ArgumentException();
             Type = enumerableType;
             Index = index;
             ObjectValue = enumerable;
@@ -108,7 +109,21 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    oldReferenceMapping.AddRange(items.Values.Where(x => x.ObjectValue != null && !(x.TargetNode is BoxedContent)).Select(x => new KeyValuePair<object, ObjectReference>(x.ObjectValue, x)));
+                    var existingIndices = ContentNode.GetIndices(ownerNode).ToList();
+                    foreach (var item in items)
+                    {
+                        var boxedTarget = item.Value.TargetNode as BoxedContent;
+                        // For collection of struct, we need to update the target nodes first so equity comparer will work. Careful tho, we need to skip removed items!
+                        if (boxedTarget != null && existingIndices.Contains(item.Key))
+                        {
+                            // If we are boxing a struct, we reuse the same nodes and just overwrite the struct value.
+                            boxedTarget.UpdateFromOwner(ownerNode.Retrieve(item.Key));
+                        }
+                        if (item.Value.ObjectValue != null)
+                        {
+                            oldReferenceMapping.Add(new KeyValuePair<object, ObjectReference>(item.Value.ObjectValue, item.Value));
+                        }
+                    }
                 }
 
                 foreach (var newReference in newReferences)

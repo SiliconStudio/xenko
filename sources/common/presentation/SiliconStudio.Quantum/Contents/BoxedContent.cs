@@ -17,6 +17,22 @@ namespace SiliconStudio.Quantum.Contents
 
         protected internal override void UpdateFromMember(object newValue, Index index)
         {
+            Update(newValue, index, true);
+        }
+
+        internal void UpdateFromOwner(object newValue)
+        {
+            Update(newValue, Index.Empty, false);
+        }
+
+        internal void SetOwnerContent(IContentNode ownerContent, Index index)
+        {
+            boxedStructureOwner = (ContentNode)ownerContent;
+            boxedStructureOwnerIndex = index;
+        }
+
+        private void Update(object newValue, Index index, bool updateStructureOwner)
+        {
             if (!index.IsEmpty)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -35,14 +51,11 @@ namespace SiliconStudio.Quantum.Contents
             else
             {
                 SetValue(newValue);
-                boxedStructureOwner?.UpdateFromMember(newValue, boxedStructureOwnerIndex);
+                if (updateStructureOwner)
+                {
+                    boxedStructureOwner?.UpdateFromMember(newValue, boxedStructureOwnerIndex);
+                }
             }
-        }
-
-        internal void SetOwnerContent(IContentNode ownerContent, Index index)
-        {
-            boxedStructureOwner = (ContentNode)ownerContent;
-            boxedStructureOwnerIndex = index;
         }
     }
 }

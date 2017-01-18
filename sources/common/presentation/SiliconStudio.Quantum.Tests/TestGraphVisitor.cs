@@ -165,16 +165,18 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode,
                 rootNode.TryGetChild(nameof(StructClass.Member1)),
                 rootNode.TryGetChild(nameof(StructClass.Member2)),
-                rootNode.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member1)),
-                rootNode.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)),
+                rootNode.TryGetChild(nameof(StructClass.Member2)).Target,
+                rootNode.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member1)),
+                rootNode.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)),
             };
             var expectedPaths = new[]
             {
                 new GraphNodePath(rootNode),
                 new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member1)),
                 new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushMember(nameof(Struct.Member1)),
-                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushMember(nameof(Struct.Member2)),
+                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget(),
+                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget().PushMember(nameof(Struct.Member1)),
+                new GraphNodePath(rootNode).PushMember(nameof(StructClass.Member2)).PushTarget().PushMember(nameof(Struct.Member2)),
             };
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }
