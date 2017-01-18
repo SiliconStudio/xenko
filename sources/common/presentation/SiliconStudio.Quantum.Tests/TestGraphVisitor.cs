@@ -225,7 +225,7 @@ namespace SiliconStudio.Quantum.Tests
             IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
             Index index5 = new Index(0);
             IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(ObjectListClass.Member1)),
@@ -273,7 +273,7 @@ namespace SiliconStudio.Quantum.Tests
             IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(StructListClass.Member2));
             Index index5 = new Index(1);
             IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(StructListClass.Member2));
-            var expectedNodes = new[]
+            var expectedNodes = new IContentNode[]
             {
                 rootNode,
                 rootNode.TryGetChild(nameof(StructListClass.Member1)),

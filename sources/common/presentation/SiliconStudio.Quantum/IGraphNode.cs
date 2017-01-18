@@ -13,6 +13,14 @@ namespace SiliconStudio.Quantum
     public interface IObjectNode : IContentNode
     {
         /// <summary>
+        /// Gets the member corresponding to the given name.
+        /// </summary>
+        /// <param name="name">The name of the member to retrieve.</param>
+        /// <returns>The member corresponding to the given name.</returns>
+        /// <exception cref="KeyNotFoundException">This node has no member that matches the given name.</exception>
+        IMemberNode this[string name] { get; }
+
+        /// <summary>
         /// Gets the collection of members of this node.
         /// </summary>
         IReadOnlyCollection<IMemberNode> Members { get; }

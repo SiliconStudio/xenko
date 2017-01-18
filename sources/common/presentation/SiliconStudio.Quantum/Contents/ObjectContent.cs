@@ -25,6 +25,9 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
+        public IMemberNode this[string name] => childrenMap[name];
+
+        /// <inheritdoc/>
         public IReadOnlyCollection<IMemberNode> Members => children;
 
         public override object Value => value;

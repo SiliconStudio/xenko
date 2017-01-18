@@ -70,9 +70,6 @@ namespace SiliconStudio.Quantum.Contents
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public IMemberNode this[string name] => childrenMap[name];
-
-        /// <inheritdoc/>
         public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
 
         /// <inheritdoc/>
@@ -177,7 +174,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public IContentNode IndexedTarget(Index index)
+        public IObjectNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
             if (!(Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
