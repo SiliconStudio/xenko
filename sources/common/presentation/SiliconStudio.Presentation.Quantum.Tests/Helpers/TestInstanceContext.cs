@@ -1,7 +1,6 @@
-﻿using SiliconStudio.Presentation.Quantum;
-using SiliconStudio.Quantum;
+﻿using SiliconStudio.Quantum;
 
-namespace SiliconStudio.Presentation.Tests.Helpers
+namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public class TestInstanceContext
     {

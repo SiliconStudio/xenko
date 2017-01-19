@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
-using SiliconStudio.Presentation.Quantum;
-using SiliconStudio.Presentation.Tests.Helpers;
-using TestContext = SiliconStudio.Presentation.Tests.Helpers.TestContext;
+using SiliconStudio.Presentation.Quantum.Tests.Helpers;
+using TestContext = SiliconStudio.Presentation.Quantum.Tests.Helpers.TestContext;
 
-namespace SiliconStudio.Presentation.Tests
+namespace SiliconStudio.Presentation.Quantum.Tests
 {
     [TestFixture]
     public class TestDependentProperties
