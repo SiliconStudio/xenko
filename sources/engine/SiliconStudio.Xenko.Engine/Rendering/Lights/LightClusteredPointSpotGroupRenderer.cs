@@ -216,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var clusterCountY = ((int)viewSize.Y + ClusterSize - 1) / ClusterSize;
                 var totalClusterCount = clusterCountX * clusterCountY * ClusterSlices;
                 renderViewInfo.ClusterCount = new Int2(clusterCountX, clusterCountY);
-                if (renderViewInfo.LightClusters == null || totalClusterCount < renderViewInfo.LightClusters.Length)
+                if (renderViewInfo.LightClusters == null || totalClusterCount > renderViewInfo.LightClusters.Length)
                     renderViewInfo.LightClusters = new Int2[totalClusterCount];
 
                 // TODO: Additional culling on x/y (to remove corner clusters)
