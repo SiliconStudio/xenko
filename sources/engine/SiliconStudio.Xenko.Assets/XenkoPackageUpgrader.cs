@@ -24,13 +24,15 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
     [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public static readonly string DefaultGraphicsCompositorUrl = "Composers/DefaultGraphicsCompositor";
+        public static readonly string DefaultGraphicsCompositorLevel9Url = "Composers/DefaultGraphicsCompositorLevel9";
+        public static readonly string DefaultGraphicsCompositorLevel10Url = "Composers/DefaultGraphicsCompositorLevel10";
 
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
@@ -316,29 +318,49 @@ namespace SiliconStudio.Xenko.Assets
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetPath == GameSettingsAsset.GameSettingsLocation);
                 if (gameSettings != null)
                 {
-                    // Add graphics compositor asset by creating a derived asset of Composers/DefaultGraphicsCompositor.xkgfxcomp
-                    var defaultGraphicsCompositor = dependencyPackage.Assets.Find(DefaultGraphicsCompositorUrl);
-                    if (defaultGraphicsCompositor == null)
-                    {
-                        log.Error($"Could not find graphics compositor in Xenko package at location [{DefaultGraphicsCompositorUrl}]");
-                        return false;
-                    }
-
-                    // Note: we create a derived asset without its content
-                    // We don't use defaultGraphicsCompositor content because it might be a newer version that next upgrades might not understand.
-                    // The override system will restore all the properties for us.
-                    var graphicsCompositorAssetId = AssetId.New();
-                    var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
-                    {
-                        AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
-                    };
-
-                    assetFiles.Add(graphicsCompositorAsset);
-
-                    // Update game settings to point to our newly created compositor
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
                     {
-                        gameSettingsYaml.DynamicRootNode["GraphicsCompositor"] = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetPath).ToString();
+                        // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
+                        var graphicsProfile = GraphicsProfile.Level_10_0;
+                        try
+                        {
+                            foreach (var mapping in gameSettingsYaml.DynamicRootNode.Defaults)
+                            {
+                                if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics")
+                                {
+                                    if (mapping.DefaultGraphicsProfile != null)
+                                        Enum.TryParse((string)mapping.DefaultGraphicsProfile, out graphicsProfile);
+                                    break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If something goes wrong, keep going with the default value
+                        }
+
+                        // Add graphics compositor asset by creating a derived asset of Composers/DefaultGraphicsCompositor.xkgfxcomp
+                        var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
+                        var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
+                        if (defaultGraphicsCompositor == null)
+                        {
+                            log.Error($"Could not find graphics compositor in Xenko package at location [{graphicsCompositorUrl}]");
+                            return false;
+                        }
+
+                        // Note: we create a derived asset without its content
+                        // We don't use defaultGraphicsCompositor content because it might be a newer version that next upgrades might not understand.
+                        // The override system will restore all the properties for us.
+                        var graphicsCompositorAssetId = AssetId.New();
+                        var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
+                        {
+                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
+                        };
+
+                        assetFiles.Add(graphicsCompositorAsset);
+
+                        // Update game settings to point to our newly created compositor
+                        gameSettingsYaml.DynamicRootNode.GraphicsCompositor = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetPath).ToString();
                     }
                 }
             }

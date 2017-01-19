@@ -1,7 +1,7 @@
 !GraphicsCompositorAsset
 Id: 991d85cd-5087-4f4c-8cdd-36f48a145bf6
 Tags: []
-Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Composers/DefaultGraphicsCompositor
+Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Composers/DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -49,9 +49,8 @@ RenderFeatures:
                     7ac2775468f53c4399b2f3f6357c85c9: !SiliconStudio.Xenko.Rendering.Lights.LightAmbientRenderer,SiliconStudio.Xenko.Engine {}
                     7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine {}
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
-                    5890e37af0e4bbc2cfdc1de648ff07d4*: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
-                    2eda85523d76b3f9e1e7d3e55aab5280*: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
-                    dd1f1a507851fc458e94f428ac7ae06d: ~(Deleted)
+                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
+                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
                 ShadowMapRenderer: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderer,SiliconStudio.Xenko.Engine
                     ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
                     Renderers:
@@ -95,8 +94,6 @@ SharedRenderers:
         MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
-        PostEffects*: null
-    34ecb9b2633eacfc439ba8744fe05102: ~(Deleted)
 TopLevel: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}

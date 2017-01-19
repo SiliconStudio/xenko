@@ -106,33 +106,8 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         private void SetupScene()
         {
-            throw new NotImplementedException();
-            //graphicsCompositor = new SceneGraphicsCompositorLayers
-            //{
-            //    Cameras = { Camera.Get<CameraComponent>() },
-            //    Master =
-            //    {
-            //        Renderers =
-            //        {
-            //            new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-            //            //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-
-            //            new SceneCameraRenderer
-            //            {
-            //                Mode = new CameraRendererModeForward { Name = "Camera renderer", Shadows = true },
-            //                IsViewportInPercentage = true,
-            //                Viewport = new RectangleF(0, 0, 100, 100),
-            //            },
-
-            //            new SceneCameraRenderer
-            //            {
-            //                Mode = new CameraRendererModeForward { Name = "Camera renderer", Shadows = true },
-            //                IsViewportInPercentage = true,
-            //                Viewport = new RectangleF(60, 60, 35, 35)
-            //            },
-            //        }
-            //    }
-            //};
+            // Load default graphics compositor
+            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             Scene = new Scene();
             Scene.Entities.Add(Camera);
