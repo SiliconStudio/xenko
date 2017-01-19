@@ -51,8 +51,9 @@ namespace SiliconStudio.Quantum
                 Type = type;
             }
 
-            public static NodePathElement CreateMember(string name)
+            public static NodePathElement CreateMember([NotNull] string name)
             {
+                if (name == null) throw new ArgumentNullException(nameof(name));
                 return new NodePathElement(name, ElementType.Member);
             }
 

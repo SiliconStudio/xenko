@@ -79,11 +79,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass.Member2)],
+                rootNode[nameof(SimpleClass.Member2)].Target,
+                rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -111,11 +111,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass.Member2)],
+                rootNode[nameof(SimpleClass.Member2)].Target,
+                rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -140,8 +140,8 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -163,11 +163,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(StructClass.Member1)),
-                rootNode.TryGetChild(nameof(StructClass.Member2)),
-                rootNode.TryGetChild(nameof(StructClass.Member2)).Target,
-                rootNode.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member1)),
-                rootNode.TryGetChild(nameof(StructClass.Member2)).Target.TryGetChild(nameof(Struct.Member2)),
+                rootNode[nameof(StructClass.Member1)],
+                rootNode[nameof(StructClass.Member2)],
+                rootNode[nameof(StructClass.Member2)].Target,
+                rootNode[nameof(StructClass.Member2)].Target[nameof(Struct.Member1)],
+                rootNode[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -192,8 +192,8 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(PrimitiveListClass.Member1)),
-                rootNode.TryGetChild(nameof(PrimitiveListClass.Member2)),
+                rootNode[nameof(PrimitiveListClass.Member1)],
+                rootNode[nameof(PrimitiveListClass.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -214,28 +214,28 @@ namespace SiliconStudio.Quantum.Tests
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
             Index index = new Index(2);
-            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier = rootNode[nameof(ObjectListClass.Member2)];
             Index index1 = new Index(2);
-            IContentNode tempQualifier1 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier1 = rootNode[nameof(ObjectListClass.Member2)];
             Index index2 = new Index(2);
-            IContentNode tempQualifier2 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier2 = rootNode[nameof(ObjectListClass.Member2)];
             Index index3 = new Index(0);
-            IContentNode tempQualifier3 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier3 = rootNode[nameof(ObjectListClass.Member2)];
             Index index4 = new Index(0);
-            IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier4 = rootNode[nameof(ObjectListClass.Member2)];
             Index index5 = new Index(0);
-            IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(ObjectListClass.Member2));
+            IContentNode tempQualifier5 = rootNode[nameof(ObjectListClass.Member2)];
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(ObjectListClass.Member1)),
-                rootNode.TryGetChild(nameof(ObjectListClass.Member2)),
+                rootNode[nameof(ObjectListClass.Member1)],
+                rootNode[nameof(ObjectListClass.Member2)],
                 tempQualifier4.IndexedTarget(index4),
-                tempQualifier5.IndexedTarget(index5).TryGetChild(nameof(ObjectListClass.Member1)),
-                tempQualifier3.IndexedTarget(index3).TryGetChild(nameof(ObjectListClass.Member2)),
+                tempQualifier5.IndexedTarget(index5)[nameof(ObjectListClass.Member1)],
+                tempQualifier3.IndexedTarget(index3)[nameof(ObjectListClass.Member2)],
                 tempQualifier1.IndexedTarget(index1),
-                tempQualifier2.IndexedTarget(index2).TryGetChild(nameof(ObjectListClass.Member1)),
-                tempQualifier.IndexedTarget(index).TryGetChild(nameof(ObjectListClass.Member2)),
+                tempQualifier2.IndexedTarget(index2)[nameof(ObjectListClass.Member1)],
+                tempQualifier.IndexedTarget(index)[nameof(ObjectListClass.Member2)],
               };
             var expectedPaths = new[]
             {
@@ -262,28 +262,28 @@ namespace SiliconStudio.Quantum.Tests
             var visitor = new TestVisitor();
             visitor.Visit(rootNode);
             Index index = new Index(0);
-            IContentNode tempQualifier = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier = rootNode[nameof(StructListClass.Member2)];
             Index index1 = new Index(0);
-            IContentNode tempQualifier1 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier1 = rootNode[nameof(StructListClass.Member2)];
             Index index2 = new Index(0);
-            IContentNode tempQualifier2 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier2 = rootNode[nameof(StructListClass.Member2)];
             Index index3 = new Index(1);
-            IContentNode tempQualifier3 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier3 = rootNode[nameof(StructListClass.Member2)];
             Index index4 = new Index(1);
-            IContentNode tempQualifier4 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier4 = rootNode[nameof(StructListClass.Member2)];
             Index index5 = new Index(1);
-            IContentNode tempQualifier5 = rootNode.TryGetChild(nameof(StructListClass.Member2));
+            IContentNode tempQualifier5 = rootNode[nameof(StructListClass.Member2)];
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(StructListClass.Member1)),
-                rootNode.TryGetChild(nameof(StructListClass.Member2)),
+                rootNode[nameof(StructListClass.Member1)],
+                rootNode[nameof(StructListClass.Member2)],
                 tempQualifier.IndexedTarget(index),
-                tempQualifier1.IndexedTarget(index1).TryGetChild(nameof(StructListClass.Member1)),
-                tempQualifier2.IndexedTarget(index2).TryGetChild(nameof(StructListClass.Member2)),
+                tempQualifier1.IndexedTarget(index1)[nameof(StructListClass.Member1)],
+                tempQualifier2.IndexedTarget(index2)[nameof(StructListClass.Member2)],
                 tempQualifier3.IndexedTarget(index3),
-                tempQualifier4.IndexedTarget(index4).TryGetChild(nameof(StructListClass.Member1)),
-                tempQualifier5.IndexedTarget(index5).TryGetChild(nameof(StructListClass.Member2)),
+                tempQualifier4.IndexedTarget(index4)[nameof(StructListClass.Member1)],
+                tempQualifier5.IndexedTarget(index5)[nameof(StructListClass.Member2)],
               };
             var expectedPaths = new[]
             {
@@ -315,11 +315,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode1,
-                rootNode1.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode1.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode1[nameof(SimpleClass.Member1)],
+                rootNode1[nameof(SimpleClass.Member2)],
                 rootNode2,
-                rootNode2.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode2.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode2[nameof(SimpleClass.Member1)],
+                rootNode2[nameof(SimpleClass.Member2)],
             };
             var expectedPaths = new[]
             {
@@ -336,11 +336,11 @@ namespace SiliconStudio.Quantum.Tests
             expectedNodes = new IContentNode[]
             {
                 rootNode2,
-                rootNode2.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode2.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode2[nameof(SimpleClass.Member1)],
+                rootNode2[nameof(SimpleClass.Member2)],
                 rootNode1,
-                rootNode1.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode1.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode1[nameof(SimpleClass.Member1)],
+                rootNode1[nameof(SimpleClass.Member2)],
             };
             expectedPaths = new[]
             {
@@ -366,21 +366,21 @@ namespace SiliconStudio.Quantum.Tests
             var expectedNodes = new IContentNode[]
             {
                 rootNode,
-                rootNode.TryGetChild(nameof(SimpleClass2.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target.TryGetChild(nameof(SimpleClass.Member2)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target,
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)),
-                rootNode.TryGetChild(nameof(SimpleClass2.Member3)).Target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)),
+                rootNode[nameof(SimpleClass2.Member1)],
+                rootNode[nameof(SimpleClass2.Member2)],
+                rootNode[nameof(SimpleClass2.Member2)].Target,
+                rootNode[nameof(SimpleClass2.Member2)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass2.Member2)].Target[nameof(SimpleClass.Member2)],
+                rootNode[nameof(SimpleClass2.Member2)].Target[nameof(SimpleClass.Member2)].Target,
+                rootNode[nameof(SimpleClass2.Member2)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass2.Member2)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
+                rootNode[nameof(SimpleClass2.Member3)],
+                rootNode[nameof(SimpleClass2.Member3)].Target,
+                rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)],
+                rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)].Target,
+                rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)],
+                rootNode[nameof(SimpleClass2.Member3)].Target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)],
             };
             var expectedPaths = new[]
             {

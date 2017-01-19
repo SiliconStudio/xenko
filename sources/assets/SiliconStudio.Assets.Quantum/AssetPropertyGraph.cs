@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets.Quantum
             Asset = assetItem.Asset;
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             ApplyOverrides(RootNode, assetItem.Overrides);
-            nodeListener = new GraphNodeChangeListener(RootNode, (member, targetNode) => ShouldListenToTargetNode(member, targetNode));
+            nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
 
@@ -207,16 +207,17 @@ namespace SiliconStudio.Assets.Quantum
                         {
                             currentNode = (IAssetNode)currentNode.Target;
                         }
-                        string name = item.AsMember();
-                        currentNode = (IAssetNode)currentNode.TryGetChild(name);
+                        var objectNode = currentNode as IObjectNode;
+                        if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
+                        var name = item.AsMember();
+                        currentNode = (IAssetNode)objectNode.TryGetChild(name);
                         break;
                     case YamlAssetPath.ItemType.Index:
                         index = new Index(item.Value);
                         overrideOnKey = true;
                         if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
-                            Index index1 = new Index(item.Value);
-                            currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(new Index(item.Value));
                         }
                         break;
                     case YamlAssetPath.ItemType.ItemId:
@@ -226,8 +227,7 @@ namespace SiliconStudio.Assets.Quantum
                         overrideOnKey = false;
                         if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
-                            Index index1 = new Index(key);
-                            currentNode = (IAssetNode)currentNode.IndexedTarget(index1);
+                            currentNode = (IAssetNode)currentNode.IndexedTarget(new Index(key));
                         }
                         break;
                     default:

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -31,6 +32,15 @@ namespace SiliconStudio.Quantum.Contents
         public IReadOnlyCollection<IMemberNode> Members => children;
 
         public override object Value => value;
+
+        /// <inheritdoc/>
+        [CanBeNull]
+        public IMemberNode TryGetChild([NotNull] string name)
+        {
+            IMemberNode child;
+            childrenMap.TryGetValue(name, out child);
+            return child;
+        }
 
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)
@@ -81,7 +91,7 @@ namespace SiliconStudio.Quantum.Contents
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 
             member.SetParent(this);
-            children.Add((MemberContent)member);
+            children.Add(member);
             childrenMap.Add(member.Name, (MemberContent)member);
         }
     }

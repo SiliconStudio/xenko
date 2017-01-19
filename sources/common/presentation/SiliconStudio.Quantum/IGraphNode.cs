@@ -24,6 +24,13 @@ namespace SiliconStudio.Quantum
         /// Gets the collection of members of this node.
         /// </summary>
         IReadOnlyCollection<IMemberNode> Members { get; }
+
+        /// <summary>
+        /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
+        /// </summary>
+        /// <param name="name">The name of the child to retrieve.</param>
+        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
+        IMemberNode TryGetChild(string name);
     }
 
     public interface IMemberNode : IContentNode

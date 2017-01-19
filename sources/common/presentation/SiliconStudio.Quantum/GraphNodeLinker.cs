@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
@@ -51,7 +50,7 @@ namespace SiliconStudio.Quantum
                         if (ShouldVisitNode(child, child))
                         {
                             string name = child.Name;
-                            VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));
+                            VisitedLinks.Add(child, ((IObjectNode)targetNodeParent)?.TryGetChild(name));
                         }
                     }
                 }

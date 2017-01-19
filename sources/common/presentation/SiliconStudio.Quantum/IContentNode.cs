@@ -44,13 +44,6 @@ namespace SiliconStudio.Quantum
         IObjectNode IndexedTarget(Index index);
 
         /// <summary>
-        /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
-        /// </summary>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        IMemberNode TryGetChild(string name);
-
-        /// <summary>
         /// Gets the expected type of <see cref="Value"/>.
         /// </summary>
         Type Type { get; }

@@ -173,14 +173,6 @@ namespace SiliconStudio.Quantum.Contents
             commands.Remove(command);
         }
 
-        /// <inheritdoc/>
-        public IMemberNode TryGetChild(string name)
-        {
-            IMemberNode child;
-            childrenMap.TryGetValue(name, out child);
-            return child;
-        }
-
         /// <summary>
         /// Seal the node, indicating its construction is finished and that no more children or commands will be added.
         /// </summary>
