@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </value>
         public Texture RenderTarget => renderTargets[0];
 
-        public IReadOnlyList<Texture> RenderTargets => renderTargets;
+        public Texture[] RenderTargets => renderTargets;
 
         public int RenderTargetCount => renderTargetCount;
 

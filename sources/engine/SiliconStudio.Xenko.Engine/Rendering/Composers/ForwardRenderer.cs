@@ -167,8 +167,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             using (context.PushRenderTargetsAndRestore())
             {
-                var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-                var depthStencilSRV = context.Resolver.ResolveDepthStencil(currentRenderFrame.DepthStencil);
+                var depthStencilSRV = context.Resolver.ResolveDepthStencil(context.CommandList.DepthStencilBuffer);
 
                 var renderView = context.RenderContext.RenderView;
 
@@ -194,8 +193,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     }
                 }
 
-                depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
-                currentRenderFrame.Activate(context, depthStencilROCached);
+                depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(context.CommandList.DepthStencilBuffer, depthStencilROCached);
+                context.CommandList.SetRenderTargets(depthStencilROCached, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
                 return depthStencilSRV;
             }
