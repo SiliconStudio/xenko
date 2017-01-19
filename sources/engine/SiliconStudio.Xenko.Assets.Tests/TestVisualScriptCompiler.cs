@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Build blocks
             var functionStart = new FunctionStartBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
-            var method = new Method();
+            var method = new Method { Name = "Test" };
             method.Blocks.Add(functionStart);
             method.Blocks.Add(writeTrue);
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            var method = new Method();
+            var method = new Method { Name = "Test" };
             method.Blocks.Add(functionStart);
             method.Blocks.Add(conditionalBranch);
             method.Blocks.Add(writeTrue);
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            var method = new Method();
+            var method = new Method { Name = "Test" };
             method.Blocks.Add(functionStart);
             method.Blocks.Add(conditionGet);
             method.Blocks.Add(conditionalBranch);
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var conditionalBranch = new ConditionalBranchBlock();
             var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
             var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
-            var method = new Method();
+            var method = new Method { Name = "Test" };
             method.Blocks.Add(functionStart);
             method.Blocks.Add(conditionGet);
             method.Blocks.Add(conditionSet);

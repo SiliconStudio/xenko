@@ -551,13 +551,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     parameters.Add(
                         Parameter(Identifier(parameter.Name))
                         .WithModifiers(ConvertRefKind(parameter.RefKind))
-                        .WithType(IdentifierName(parameter.Type)));
+                        .WithType(ParseTypeName(parameter.Type)));
                 }
 
                 // Generate method
                 var methodDeclaration =
                     MethodDeclaration(
-                        ParseTypeName(method.ReturnType),
+                        method.ReturnType == "void" ? PredefinedType(Token(SyntaxKind.VoidKeyword)) : ParseTypeName(method.ReturnType),
                         Identifier(method.Name))
                     .WithModifiers(methodModifiers)
                     .WithParameterList(ParameterList(
@@ -608,7 +608,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             // Generate actual source code
             result.GeneratedSource = compilationUnit.ToFullString();
-            result.SyntaxTree = SyntaxTree(compilationUnit, path: options.FilePath);
+            result.SyntaxTree = SyntaxTree(compilationUnit, path: options.FilePath ?? string.Empty);
 
             return result;
         }
