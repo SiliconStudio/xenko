@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
@@ -8,6 +10,7 @@ namespace SiliconStudio.Assets
     /// Attribute that describes what a package upgrader can do.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [BaseTypeRequired(typeof(PackageUpgrader))]
     public class PackageUpgraderAttribute : Attribute
     {
         private readonly PackageVersionRange packageUpdatedVersionRange;

@@ -8,15 +8,15 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// An implementation of <see cref="IContent"/> that gives access to an object or a boxed struct.
+    /// An implementation of <see cref="IContentNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
-    public class ObjectContent : ContentBase
+    public class ObjectContent : ContentNode
     {
         private object value;
 
-        public ObjectContent(object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(descriptor, isPrimitive, reference)
+        public ObjectContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(descriptor.Type.Name, guid, descriptor, isPrimitive, reference)
         {
             if (reference is ObjectReference)
                 throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
