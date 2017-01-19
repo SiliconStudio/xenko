@@ -566,7 +566,6 @@
     <Compile Include="Engine\AudioListenerComponent.cs" />
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
-    <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneInstance.cs" />
@@ -2495,8 +2494,6 @@
     </Compile>
     <Compile Include="Engine\Design\ISceneEditorGraphicsModeSettings.cs" />
     <Compile Include="Rendering\Sprites\ISpriteProvider.cs" />
-    <Compile Include="Engine\Processors\ChildSceneComponentChangedEventArgs.cs" />
-    <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />

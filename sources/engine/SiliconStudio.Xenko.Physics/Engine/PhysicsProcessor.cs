@@ -51,16 +51,16 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                var mainCompositor = sceneSystem.GraphicsCompositor;
-                var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
-
-                foreach (var element in elements)
-                {
-                    element.RemoveDebugEntity(scene);
-                }
-
-                sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
                 throw new NotImplementedException();
+                //var mainCompositor = sceneSystem.GraphicsCompositor;
+                //var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
+                //
+                //foreach (var element in elements)
+                //{
+                //    element.RemoveDebugEntity(scene);
+                //}
+                //
+                //sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
                 //mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
