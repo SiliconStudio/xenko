@@ -140,10 +140,10 @@ Value: World!
             Assert.AreEqual(new Color() {R = 255, G = 255, B = 255, A = 255}, value.Color);
             var text = serializer.Serialize(value, typeof(TestStructColor));
             Assert.AreEqual(@"Color:
-  A: 255
-  B: 255
-  G: 255
   R: 255
+  G: 255
+  B: 255
+  A: 255
 ", text);
         }
 
@@ -227,26 +227,26 @@ Value: World!
         public void TestSimpleObjectAndPrimitive()
         {
             var text = @"!MyObject
-A0Anchor: &o1 Test
-A1Alias: *o1
-Array: [1, 2, 3]
-ArrayContent: [1, 2]
-Bool: true
-BoolFalse: false
+String: This is a test
+SByte: 1
 Byte: 2
+Int16: 3
+UInt16: 4
+Int32: 5
+UInt32: 6
+Int64: 7
+UInt64: 8
 Decimal: 4623451.0232342352463856744563
+Float: 5.5
 Double: 6.6
 Enum: B
 EnumWithFlags: A, B
-Float: 5.5
-Int16: 3
-Int32: 5
-Int64: 7
-SByte: 1
-String: This is a test
-UInt16: 4
-UInt32: 6
-UInt64: 8
+Bool: true
+BoolFalse: false
+A0Anchor: &o2 Test
+A1Alias: *o2
+Array: [1, 2, 3]
+ArrayContent: [1, 2]
 ";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 20};
@@ -388,8 +388,8 @@ UInt64: 8
             settings.RegisterTagMapping("ObjectFloatDoublePrecision", typeof(ObjectFloatDoublePrecision));
 
             var text = @"!ObjectFloatDoublePrecision
-Double: 1E-05
 Float: 1E-05
+Double: 1E-05
 ";
 
             SerialRoundTrip(settings, text);
@@ -614,29 +614,29 @@ c: true
         public void TestMyCustomClassWithSpecialMembers()
         {
             var text = @"!MyCustomClassWithSpecialMembers
+Name: Yes
+Value: 0
 BasicList:
   - 1
   - 2
-BasicMap:
-  a: 1
-  b: 2
-ListByContent:
-  - a
-  - b
-Name: Yes
 StringList:
   - 1
   - 2
 StringListByContent:
   - 3
   - 4
+BasicMap:
+  a: 1
+  b: 2
 StringMap:
   c: yes
   d: 3
 StringMapbyContent:
   e: 4
   f: no
-Value: 0
+ListByContent:
+  - a
+  - b
 ";
 
             var settings = new SerializerSettings() {LimitPrimitiveFlowSequence = 0};
