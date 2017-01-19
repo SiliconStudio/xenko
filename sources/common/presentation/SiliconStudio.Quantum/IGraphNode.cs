@@ -106,11 +106,5 @@ namespace SiliconStudio.Quantum
 
     public interface IInitializingMemberNode : IInitializingGraphNode, IMemberNode
     {
-        /// <summary>
-        /// Sets the <see cref="IObjectNode"/> containing this member node.
-        /// </summary>
-        /// <param name="parent">The parent node containing this member node.</param>
-        /// <seealso cref="IMemberNode.Parent"/>
-        void SetParent(IObjectNode parent);
     }
 }

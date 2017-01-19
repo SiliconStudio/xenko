@@ -3,7 +3,7 @@
 using System;
 
 using System.Reflection;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -12,19 +12,27 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentNode, IMemberNode, IInitializingMemberNode
+    public class MemberContent : ContentNode, IInitializingMemberNode
     {
         private readonly NodeContainer nodeContainer;
 
-        public MemberContent(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(memberDescriptor.Name, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive, reference)
+        public MemberContent([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive, reference)
         {
+            if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
+            if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
+            Parent = parent;
             MemberDescriptor = memberDescriptor;
+            Name = memberDescriptor.Name;
             nodeContainer = nodeBuilder.NodeContainer;
         }
 
         /// <inheritdoc/>
-        public IObjectNode Parent { get; private set; }
+        public string Name { get; }
+
+        /// <inheritdoc/>
+        public IObjectNode Parent { get; }
 
         /// <summary>
         /// The <see cref="IMemberDescriptor"/> used to access the member of the container represented by this content.
@@ -32,7 +40,11 @@ namespace SiliconStudio.Quantum.Contents
         public IMemberDescriptor MemberDescriptor { get; protected set; }
 
         /// <inheritdoc/>
+        [Obsolete("Use method Retrieve()")]
         public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Value); } }
+
+        /// <inheritdoc/>
+        public IObjectNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
         public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
@@ -230,10 +242,9 @@ namespace SiliconStudio.Quantum.Contents
             nodeContainer?.UpdateReferences(this);
         }
 
-        /// <inheritdoc/>
-        void IInitializingMemberNode.SetParent(IObjectNode parent)
+        public override string ToString()
         {
-            Parent = parent;
+            return $"{{Node: Member {Name} = [{Value}]}}";
         }
     }
 }

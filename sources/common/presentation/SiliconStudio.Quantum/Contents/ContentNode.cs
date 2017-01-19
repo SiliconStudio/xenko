@@ -14,18 +14,15 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentNode : IContentNode, IInitializingGraphNode
+    public abstract class ContentNode : IInitializingGraphNode
     {
-        protected readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         protected bool isSealed;
 
-        protected ContentNode(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
-            Name = name;
             Guid = guid;
             Reference = reference;
             Descriptor = descriptor;
@@ -36,6 +33,7 @@ namespace SiliconStudio.Quantum.Contents
         public Type Type => Descriptor.Type;
 
         /// <inheritdoc/>
+        [Obsolete("Use method Retrieve()")] 
         public abstract object Value { get; }
 
         /// <inheritdoc/>
@@ -54,17 +52,11 @@ namespace SiliconStudio.Quantum.Contents
         public IEnumerable<Index> Indices => GetIndices();
 
         /// <inheritdoc/>
-        public string Name { get; }
-
-        /// <inheritdoc/>
         public Guid Guid { get; }
 
         /// <inheritdoc/>
         [Obsolete("This accessor is obsolete, use \"this\"")]
         public IContentNode Content => this;
-
-        /// <inheritdoc/>
-        public IObjectNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
@@ -95,20 +87,6 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public abstract void Remove(object item, Index itemIndex);
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            string type = null;
-            if (this is MemberContent)
-                type = "Member";
-            else if (this is ObjectContent)
-                type = "Object";
-            else if (this is BoxedContent)
-                type = "Boxed";
-
-            return $"{{Node: {type} {Name} = [{Value}]}}";
-        }
 
         /// <summary>
         /// Updates this content from one of its member.

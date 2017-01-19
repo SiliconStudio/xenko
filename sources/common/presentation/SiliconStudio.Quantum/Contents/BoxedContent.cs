@@ -57,5 +57,10 @@ namespace SiliconStudio.Quantum.Contents
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"{{Node: Boxed {Type.Name} = [{Value}]}}";
+        }
     }
 }

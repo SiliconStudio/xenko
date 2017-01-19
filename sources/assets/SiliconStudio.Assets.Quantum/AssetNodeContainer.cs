@@ -65,10 +65,10 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor member, bool isPrimitive, object value)
+        public IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
-            return new AssetMemberNode(nodeBuilder, guid, member, isPrimitive, reference);
+            return new AssetMemberNode(nodeBuilder, guid, parent, member, isPrimitive, reference);
         }
     }
 }

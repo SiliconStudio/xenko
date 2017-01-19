@@ -131,8 +131,8 @@ namespace SiliconStudio.Assets.Quantum
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, memberDescriptor, isPrimitive, reference)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
             PrepareChange += (sender, e) => contentUpdating = true;
             FinalizeChange += (sender, e) => contentUpdating = false;
