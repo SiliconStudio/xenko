@@ -48,6 +48,12 @@ namespace SiliconStudio.Quantum
         IObjectNode Parent { get; }
 
         /// <summary>
+        /// Gets the target of this node, if this node contains a reference to another node. 
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
+        IObjectNode Target { get; }
+
+        /// <summary>
         /// Gets the member descriptor corresponding to this member node.
         /// </summary>
         [NotNull]

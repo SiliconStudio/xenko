@@ -30,12 +30,6 @@ namespace SiliconStudio.Quantum
         IReadOnlyCollection<INodeCommand> Commands { get; }
 
         /// <summary>
-        /// Gets the target of this node, if this node contains a reference to another node. 
-        /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
-        IObjectNode Target { get; }
-
-        /// <summary>
         /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
         /// </summary>
         /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>

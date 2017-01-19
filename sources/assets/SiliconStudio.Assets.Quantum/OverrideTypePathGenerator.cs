@@ -78,7 +78,9 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Target:
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (IAssetNode)currentNode.Target;
+                            var targetingMemberNode = currentNode as IMemberNode;
+                            if (targetingMemberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
+                            currentNode = (IAssetNode)targetingMemberNode.Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:

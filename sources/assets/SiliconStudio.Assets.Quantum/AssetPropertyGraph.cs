@@ -205,7 +205,9 @@ namespace SiliconStudio.Assets.Quantum
                         overrideOnKey = false;
                         if (currentNode.IsReference)
                         {
-                            currentNode = (IAssetNode)currentNode.Target;
+                            var memberNode = currentNode as IMemberNode;
+                            if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
+                            currentNode = (IAssetNode)memberNode.Target;
                         }
                         var objectNode = currentNode as IObjectNode;
                         if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
@@ -583,7 +585,7 @@ namespace SiliconStudio.Assets.Quantum
                         if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
                             // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
-                            var keyCollision = assetNode.Descriptor is DictionaryDescriptor && (assetNode.Reference?.HasIndex(index) == true || assetNode.Indices.Any(x => index.Equals(x)));
+                            var keyCollision = assetNode.Descriptor is DictionaryDescriptor && (assetNode.Reference?.AsEnumerable.HasIndex(index) == true || assetNode.Indices.Any(x => index.Equals(x)));
                             // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
                             var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Retrieve(index));
 
