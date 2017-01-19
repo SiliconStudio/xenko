@@ -44,6 +44,7 @@
     <Compile Include="Contents\BoxedContent.cs" />
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
+    <Compile Include="References\IReferenceInternal.cs" />
     <Compile Include="References\ObjectReference.cs" />
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />

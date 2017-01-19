@@ -13,31 +13,27 @@ namespace SiliconStudio.Quantum.References
     /// <summary>
     /// A class representing an enumeration of references to multiple objects.
     /// </summary>
-    public sealed class ReferenceEnumerable : IReference, IEnumerable<ObjectReference>
+    public sealed class ReferenceEnumerable : IReferenceInternal, IEnumerable<ObjectReference>
     {
-        private readonly Type elementType;
-
         private HybridDictionary<Index, ObjectReference> items;
 
         internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType)
         {
             Reference.CheckReferenceCreationSafeGuard();
-            Type = enumerableType;
             ObjectValue = enumerable;
 
             if (enumerableType.HasInterface(typeof(IDictionary<,>)))
-                elementType = enumerableType.GetInterface(typeof(IDictionary<,>)).GetGenericArguments()[1];
+                ElementType = enumerableType.GetInterface(typeof(IDictionary<,>)).GetGenericArguments()[1];
             else if (enumerableType.HasInterface(typeof(IEnumerable<>)))
-                elementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
+                ElementType = enumerableType.GetInterface(typeof(IEnumerable<>)).GetGenericArguments()[0];
             else
-                elementType = typeof(object);
+                ElementType = typeof(object);
         }
 
         /// <inheritdoc/>
         public object ObjectValue { get; private set; }
 
-        /// <inheritdoc/>
-        public Type Type { get; }
+        public Type ElementType { get; }
 
         /// <inheritdoc/>
         public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
@@ -61,7 +57,12 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public ObjectReference this[Index index] => items[index];
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the reference contains the given index.
+        /// </summary>
+        /// <param name="index">The index to check.</param>
+        /// <returns><c>True</c> if the reference contains the given index, <c>False</c> otherwise.</returns>
+        /// <remarks>If it is an <see cref="ObjectReference"/> it will return true only for <c>null</c>.</remarks>
         public bool HasIndex(Index index)
         {
             return items?.ContainsKey(index) ?? false;
@@ -80,7 +81,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = GetKey(item);
-                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), elementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key);
                     newReferences.Add(key, value);
                 }
             }
@@ -90,7 +91,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = new Index(i);
-                    var value = (ObjectReference)Reference.CreateReference(item, elementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key);
                     newReferences.Add(key, value);
                     ++i;
                 }

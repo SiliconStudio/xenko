@@ -322,7 +322,7 @@ namespace SiliconStudio.Presentation.Quantum
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
                         // In this case, we must set the actual type to have type converter working, since they usually can't convert
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-                        var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : reference.Type;
+                        var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : referenceEnumerable.ElementType;
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                         AddChild(child);
                         child.Initialize();
