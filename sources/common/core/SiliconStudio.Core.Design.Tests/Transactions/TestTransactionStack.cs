@@ -120,13 +120,17 @@ namespace SiliconStudio.Core.Design.Tests.Transactions
             transaction1.Complete();
 
             // transaction1 is still kept alive by transaction2
-            Assert.AreEqual(2, stack.Transactions.Count);
+            Assert.That(stack.TransactionInProgress);
 
             stack.PushOperation(operation);
 
             transaction2.Complete();
 
-            Assert.AreEqual(true, stack.IsEmpty);
+            // All transactions should be done now
+            Assert.That(!stack.TransactionInProgress);
+
+            // And stack has one transaction
+            Assert.That(!stack.IsEmpty);
         }
     }
 }
