@@ -421,7 +421,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     return;
 
                 PerformDrawTest(
-                    (game, context, frame) =>
+                    (game, context) =>
                     {
                         var device = game.GraphicsDevice;
                         var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";

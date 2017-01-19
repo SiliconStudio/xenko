@@ -187,7 +187,6 @@
     <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
     <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
-    <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
@@ -1395,7 +1394,6 @@
     </Compile>
     <Compile Include="Rendering\GraphicsRendererCollection.cs" />
     <Compile Include="Rendering\IImageEffectRenderer.cs" />
-    <Compile Include="Rendering\IImageEffectRendererInput.cs" />
     <Compile Include="Rendering\Images\LensFlare\FlareArtifactEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1430,10 +1428,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LightStreakShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\ISceneRendererOutput.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\IScreenSpaceAntiAliasingEffect.cs" />
     <Compile Include="Rendering\Images\IImageEffect.cs" />
-    <Compile Include="Rendering\IRenderFrameProvider.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryColor.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeBinaryScalar.cs" />
@@ -1554,12 +1550,8 @@
     <Compile Include="Rendering\ProceduralModels\TeapotProceduralModel.cs" />
     <Compile Include="Rendering\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
-    <Compile Include="Rendering\RenderFrameProviderBase.cs" />
-    <Compile Include="Rendering\ClearRenderFrameFlags.cs" />
-    <Compile Include="Rendering\Composers\CurrentRenderFrameProvider.cs" />
-    <Compile Include="Rendering\SharedRenderFrameProvider.cs" />
+    <Compile Include="Rendering\ClearRendererFlags.cs" />
     <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
-    <Compile Include="Rendering\Composers\IGraphicsLayerOutput.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
     <Compile Include="Rendering\IGraphicsRenderer.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAEffect.cs" />
@@ -1926,7 +1918,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\RendererBase.cs" />
-    <Compile Include="Rendering\RenderFrame.cs" />
     <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">
       <DependentUpon>IMaterialSpecularMicrofacetFresnelFunction.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2188,10 +2179,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\RenderFrameDepthFormat.cs" />
-    <Compile Include="Rendering\RenderFrameDescriptor.cs" />
-    <Compile Include="Rendering\RenderFrameFormat.cs" />
-    <Compile Include="Rendering\RenderFrameSizeMode.cs" />
     <Compile Include="Rendering\Shadows\ShadowGroup.cs">
       <DependentUpon>ShadowGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2492,11 +2479,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Engine\Design\ISceneEditorGraphicsModeSettings.cs" />
     <Compile Include="Rendering\Sprites\ISpriteProvider.cs" />
-    <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
-    <Compile Include="Engine\Design\SceneEditorGraphicsModeLDRSettings.cs" />
-    <Compile Include="Engine\Design\SceneEditorGraphicsModeSettingsBase.cs" />
     <Compile Include="Engine\Processors\ScriptProcessor.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromSheet.cs" />
     <Compile Include="Rendering\Sprites\SpriteFromTexture.cs" />

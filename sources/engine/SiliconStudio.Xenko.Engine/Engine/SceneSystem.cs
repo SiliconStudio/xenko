@@ -35,11 +35,6 @@ namespace SiliconStudio.Xenko.Engine
         private int previousHeight;
 
         /// <summary>
-        /// The main render frame of the scene system
-        /// </summary>
-        public RenderFrame MainRenderFrame { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
         /// </summary>
         /// <param name="registry">The registry.</param>
@@ -85,17 +80,6 @@ namespace SiliconStudio.Xenko.Engine
                 GraphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
-            if (MainRenderFrame == null)
-            {
-                // TODO GRAPHICS REFACTOR Check if this is a good idea to use Presenter targets
-                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter?.BackBuffer, GraphicsDevice.Presenter?.DepthStencilBuffer);
-                if (MainRenderFrame != null)
-                {
-                    previousWidth = MainRenderFrame.Width;
-                    previousHeight = MainRenderFrame.Height;
-                }
-            }
-
             // Create the drawing context
             renderContext = RenderContext.GetShared(Services);
             renderDrawContext = new RenderDrawContext(Services, renderContext, graphicsContext);
@@ -119,7 +103,7 @@ namespace SiliconStudio.Xenko.Engine
 
         public override void Draw(GameTime gameTime)
         {
-            if (SceneInstance == null || MainRenderFrame == null)
+            if (SceneInstance == null)
             {
                 return;
             }
@@ -127,16 +111,18 @@ namespace SiliconStudio.Xenko.Engine
             // Reset the context
             renderContext.Reset();
 
+            var renderTarget = renderDrawContext.CommandList.RenderTarget;
+
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.
-            if (previousWidth != MainRenderFrame.Width || previousHeight != MainRenderFrame.Height)
+            if (previousWidth != renderTarget.ViewWidth || previousHeight != renderTarget.ViewHeight)
             {
                 // Force a recycle of all allocated temporary textures
                 renderContext.Allocator.Recycle(link => true);
             }
 
-            previousWidth = MainRenderFrame.Width;
-            previousHeight = MainRenderFrame.Height;
+            previousWidth = renderTarget.ViewWidth;
+            previousHeight = renderTarget.ViewHeight;
 
             // Update the entities at draw time.
             renderContext.Time = gameTime;
@@ -149,11 +135,7 @@ namespace SiliconStudio.Xenko.Engine
 
             try
             {
-                // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
-                renderDrawContext.CommandList.ClearState();
-
                 // Push context (pop after using)
-                using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
                 using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
                 {
                     GraphicsCompositor?.Draw(renderDrawContext);

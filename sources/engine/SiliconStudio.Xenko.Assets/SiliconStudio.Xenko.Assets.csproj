@@ -422,8 +422,6 @@
     <Compile Include="XenkoConfig.cs" />
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
-    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
-    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />

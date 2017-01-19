@@ -111,9 +111,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource)
             };
 
-            var depthBuffer = Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
+            //var depthBuffer = Texture.New2D(GraphicsDevice, TargetWidth, TargetHeight, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
 
-            var multipleRenderFrames = new DirectRenderFrameProvider(RenderFrame.FromTexture(textures, depthBuffer));
+            //var multipleRenderFrames = new DirectRenderFrameProvider(RenderFrame.FromTexture(textures, depthBuffer));
 
             // Setup the default rendering pipeline
             scene = new Scene();
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             //};
         }
 
-        private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
+        private void DisplayGBuffer(RenderDrawContext context)
         {
             GraphicsContext.DrawTexture(textures[renderTargetToDisplayIndex]);
         }

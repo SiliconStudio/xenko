@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public ClearRenderer()
         {
             Name = "Clear";
-            ClearFlags = ClearRenderFrameFlags.ColorAndDepth;
+            ClearFlags = ClearRendererFlags.ColorAndDepth;
             Color = Core.Mathematics.Color.CornflowerBlue;
             Depth = 1.0f;
             Stencil = 0;
@@ -29,9 +29,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <value>The clear flags.</value>
         /// <userdoc>Flag indicating which buffers to clear.</userdoc>
         [DataMember(10)]
-        [DefaultValue(ClearRenderFrameFlags.ColorAndDepth)]
+        [DefaultValue(ClearRendererFlags.ColorAndDepth)]
         [Display("Clear Flags")]
-        public ClearRenderFrameFlags ClearFlags { get; set; }
+        public ClearRendererFlags ClearFlags { get; set; }
 
         /// <summary>
         /// Gets or sets the clear color.
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             var depthStencil = commandList.DepthStencilBuffer;
 
             // clear the targets
-            if (depthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
+            if (depthStencil != null && (ClearFlags == ClearRendererFlags.ColorAndDepth || ClearFlags == ClearRendererFlags.DepthOnly))
             {
                 var clearOptions = DepthStencilClearOptions.DepthBuffer;
                 if (depthStencil.HasStencil)
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 commandList.Clear(depthStencil, clearOptions, Depth, Stencil);
             }
 
-            if (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.ColorOnly)
+            if (ClearFlags == ClearRendererFlags.ColorAndDepth || ClearFlags == ClearRendererFlags.ColorOnly)
             {
                 for (var index = 0; index < commandList.RenderTargetCount; index++)
                 {

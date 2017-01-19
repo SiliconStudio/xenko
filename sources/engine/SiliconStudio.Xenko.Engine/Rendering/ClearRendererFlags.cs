@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Flags used to clear a render frame.
     /// </summary>
     [DataContract("ClearRenderFrameFlags")]
-    public enum ClearRenderFrameFlags
+    public enum ClearRendererFlags
     {
         /// <summary>
         /// Clears both the Color and DepthStencil buffer.

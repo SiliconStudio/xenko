@@ -29,9 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     {
         private readonly List<SceneInstance> initializedSceneInstances = new List<SceneInstance>();
 
-        [Obsolete]
-        public ISceneGraphicsCompositor Instance { get; set; }
-
         /// <summary>
         /// Gets the render system used with this graphics compositor.
         /// </summary>
@@ -191,10 +188,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         RenderSystem.Reset();
                     }
                 }
-            }
-            else
-            {
-                Instance?.Draw(context);
             }
         }
 

@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                             if (shadowmapRenderView != null && shadowmapRenderView.RenderView == context.RenderContext.RenderView)
                             {
                                 var shadowMapRectangle = shadowmapRenderView.Rectangle;
-                                shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
+                                context.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
                                 shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                                 context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 

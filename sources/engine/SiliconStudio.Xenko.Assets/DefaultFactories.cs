@@ -3,7 +3,6 @@ using SiliconStudio.Xenko.Assets.Audio;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Assets.RenderFrames;
 using SiliconStudio.Xenko.Assets.Rendering;
 using SiliconStudio.Xenko.Assets.Scripts;
 using SiliconStudio.Xenko.Assets.Skyboxes;
@@ -25,10 +24,6 @@ namespace SiliconStudio.Xenko.Assets
     }
 
     public class DefaultRawAssetFactory : DefaultAssetFactory<RawAsset>
-    {
-    }
-
-    public class DefaultRenderFrameFactory : DefaultAssetFactory<RenderFrameAsset>
     {
     }
 
