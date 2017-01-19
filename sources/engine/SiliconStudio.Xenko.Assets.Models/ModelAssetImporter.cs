@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <param name="logger">The logger to use to log import message.</param>
         /// <param name="importParameters">The import parameters.</param>
         /// <returns>The EntityInfo.</returns>
-        public abstract TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters);
+        public abstract TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime);
 
         /// <summary>
         /// Imports the model.
@@ -92,9 +92,10 @@ namespace SiliconStudio.Xenko.Assets.Models
             // 3. Animation
             if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
             {
-                var animationDuration = GetAnimationDuration(localPath, importParameters.Logger, importParameters);
+                TimeSpan startTime;
+                var animationDuration = GetAnimationDuration(localPath, importParameters.Logger, importParameters, out startTime);
 
-                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset, animationDuration);
+                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset, animationDuration, startTime);
             }
 
             // 4. Materials
@@ -134,15 +135,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             return assetItem;
         }
 
-        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset, TimeSpan animationDuration)
+        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset, TimeSpan animationDuration, TimeSpan animationStartTime)
         {
             if (animationNodes != null && animationNodes.Count > 0)
             {
                 var assetSource = localPath;
 
+                long firstFrame = (long)(animationStartTime.TotalSeconds * 30 + 0.1);
                 long lastFrame = (long)(animationDuration.TotalSeconds * 30 + 0.1);
 
-                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = lastFrame };
+                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = lastFrame, AnimationFrameMinimum = firstFrame };
                 var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)

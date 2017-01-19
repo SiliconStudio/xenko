@@ -35,6 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         #region Animation frames
         // Please note that animation frames are edited using the AnimationFrameTemplateProvider
         //  All 3 properties are required with the exact same names 
+        //  AnimationFrameMinimum should be set to match the actual first frame of the animation
         //  AnimationFrameMaximum should be set to match the actual length of the animation frame sequence
 
         /// <summary>
@@ -50,6 +51,9 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMember(4)]
         [Display("End frame")]
         public long EndAnimationFrame { get; set; } = 1000;
+
+        // TODO Hide it
+        public long AnimationFrameMinimum { get; set; }
 
         // TODO Hide it
         public long AnimationFrameMaximum { get; set; }

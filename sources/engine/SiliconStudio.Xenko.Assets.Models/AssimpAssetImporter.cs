@@ -4,6 +4,7 @@ using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Importer.Common;
 
@@ -31,12 +32,38 @@ namespace SiliconStudio.Xenko.Assets.Models
         }
 
         /// <inheritdoc/>
-        public override TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters)
+        public override TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime)
         {
             var meshConverter = new Importer.AssimpNET.MeshConverter(logger);
             var sceneData = meshConverter.ConvertAnimation(localPath.FullPath, "");
 
-            return sceneData.Duration;
+            startTime = CompressedTimeSpan.MaxValue; // This will go down, so we start from positive infinity
+            CompressedTimeSpan endTime = CompressedTimeSpan.MinValue;   // This will go up, so we start from negative infinity
+
+            foreach (var animationClip in sceneData.AnimationClips)
+            {
+                foreach (var animationCurve in animationClip.Value.Curves)
+                {
+                    foreach (var compressedTimeSpan in animationCurve.Keys)
+                    {
+                        if (compressedTimeSpan < startTime)
+                            startTime = compressedTimeSpan;
+                        if (compressedTimeSpan > endTime)
+                            endTime = compressedTimeSpan;
+                    }
+                }
+            }
+
+            if (startTime == CompressedTimeSpan.MaxValue)
+                startTime = CompressedTimeSpan.Zero;
+            if (endTime == CompressedTimeSpan.MinValue)
+                endTime = CompressedTimeSpan.Zero;
+
+//            TimeSpan duration = new TimeSpan(endTime.Ticks - startTime.Ticks);
+
+            return endTime;
+
+//            return sceneData.Duration;
         }
     }
 }

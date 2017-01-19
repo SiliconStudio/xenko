@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -44,6 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         #region Animation frames
         // Please note that animation frames are edited using the AnimationFrameTemplateProvider
         //  All 3 properties are required with the exact same names 
+        //  AnimationFrameMinimum should be set to match the actual first frame of the animation 
         //  AnimationFrameMaximum should be set to match the actual length of the animation frame sequence
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         [DataMember(32)]
         [Display("Start frame")]
+        [DefaultValue(0)]
         public long StartAnimationFrame { get; set; } = 0;
 
         /// <summary>
@@ -58,10 +61,17 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         [DataMember(34)]
         [Display("End frame")]
+        [DefaultValue(1000)]
         public long EndAnimationFrame { get; set; } = 1000;
 
         // TODO Hide it later
+        [DefaultValue(0)]
+        public long AnimationFrameMinimum { get; set; } = 0;
+
+        // TODO Hide it later
+        [DefaultValue(1000)]
         public long AnimationFrameMaximum { get; set; } = 1000;
+
         #endregion
 
         /// <userdoc>Specifies how to use the base animation.</userdoc>
