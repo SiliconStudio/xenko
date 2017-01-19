@@ -101,9 +101,10 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             using (context.PushRenderTargetsAndRestore())
             {
-
-                Clear?.Draw(context);
                 context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
+
+                // Clear render target and depth stencil
+                Clear?.Draw(context);
 
                 // Render Shadow maps
                 if (ShadowMapRenderStage != null && shadowMapRenderer != null)
