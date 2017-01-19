@@ -19,9 +19,6 @@ namespace SiliconStudio.Assets
         private UFile location;
         private Asset asset;
         private bool isDirty;
-        private Package package;
-        private UDirectory sourceFolder;
-        private UFile sourceProject;
 
         /// <summary>
         /// The default comparer use only the id of an assetitem to match assets.
@@ -53,7 +50,7 @@ namespace SiliconStudio.Assets
             if (asset == null) throw new ArgumentException("asset");
             this.location = location;
             this.asset = asset;
-            this.package = package;
+            this.Package = package;
             isDirty = true;
         }
 
@@ -79,58 +76,21 @@ namespace SiliconStudio.Assets
         /// will update the list found in <see cref="PackageProfile.AssetFolders"/>
         /// </summary>
         /// <value>The directory.</value>
-        public UDirectory SourceFolder
-        {
-            get
-            {
-                return sourceFolder;
-            }
-            set
-            {
-                sourceFolder = value;
-            }
-        }
+        public UDirectory SourceFolder { get; set; }
 
-        public UFile SourceProject
-        {
-            get
-            {
-                return sourceProject;
-                
-            }
-            set
-            {
-                sourceProject = value;
-            }
-        }
+        public UFile SourceProject { get; set; }
 
         /// <summary>
         /// Gets the unique identifier of this asset.
         /// </summary>
         /// <value>The unique identifier.</value>
-        public AssetId Id
-        {
-            get
-            {
-                return asset.Id;
-            }
-        }
+        public AssetId Id => asset.Id;
 
         /// <summary>
         /// Gets the package where this asset is stored.
         /// </summary>
         /// <value>The package.</value>
-        public Package Package
-        {
-            get
-            {
-                return package;
-            }
-            internal set
-            {
-                package = value;
-            }
-        }
+        public Package Package { get; internal set; }
 
         /// <summary>
         /// Gets the collection of overridden members in this asset. It is filled on Load, and must be synchronized before Save.
@@ -166,12 +126,12 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones this instance without the attached package.
         /// </summary>
+        /// <param name="keepPackage"></param>
         /// <param name="newLocation">The new location that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it keeps the original location of the asset.</param>
         /// <param name="newAsset">The new asset that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it clones the original asset. otherwise, the specified asset is used as-is in the new <see cref="AssetItem" />
         /// (no clone on newAsset is performed)</param>
-        /// <param name="copyPackage">if set to <c>true</c> copy package information, only used by the <see cref="AssetDependencyManager" />.</param>
         /// <param name="flags">Flags used with <see cref="AssetCloner.Clone"/>.</param>
         /// <returns>A clone of this instance.</returns>
         internal AssetItem Clone(bool keepPackage, UFile newLocation = null, Asset newAsset = null, AssetClonerFlags flags = AssetClonerFlags.None)

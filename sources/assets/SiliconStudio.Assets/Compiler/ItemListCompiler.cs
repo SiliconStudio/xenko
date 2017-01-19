@@ -2,22 +2,42 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
+    public interface IBuildStepsQueue
+    {
+        IDictionary<string, ListBuildStep> BuildSteps { get; }
+
+        AssetCompilerResult CompileAndSubmit(CompilerContext context, ListBuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler);
+    }
+
+    public class BuildStepsQueue
+    {
+        public static PropertyKey<IBuildStepsQueue> PropertyKey = new PropertyKey<IBuildStepsQueue>("BuildStepsDatabase", typeof(IBuildStepsQueue));
+    }
+
     /// <summary>
     /// The base class to compile a series of <see cref="AssetItem"/>s using associated <see cref="IAssetCompiler"/>s.
     /// An item list compiler only creates the build steps required to creates some output items.
     /// The result of a compilation has then to be executed by the build engine to effectively create the outputs items.
     /// </summary>
-    public abstract class ItemListCompiler
+    public abstract class ItemListCompiler : IBuildStepsQueue
     {
+        public IDictionary<string, ListBuildStep> BuildSteps { get; } = new ConcurrentDictionary<string, ListBuildStep>();
+
+        public AssetCompilerResult CompileAndSubmit(CompilerContext context, ListBuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler)
+        {
+            throw new NotImplementedException();
+        }
+
         private readonly ICompilerRegistry<IAssetCompiler> compilerRegistry;
         private int latestPriority;
 
@@ -59,7 +79,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context.</param>
         /// <param name="compilationResult">The compilation result.</param>
         /// <param name="assetItem">The asset item.</param>
-        protected ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
+        public ListBuildStep CompileItem(CompilerContext context, AssetCompilerResult compilationResult, AssetItem assetItem)
         {
             // First try to find an asset compiler for this particular asset.
             IAssetCompiler compiler;
@@ -81,6 +101,7 @@ namespace SiliconStudio.Assets.Compiler
             // Second we are compiling the asset (generating a build step)
             try
             {
+                context.Properties.Set(BuildStepsQueue.PropertyKey, this);
                 var resultPerAssetType = compiler.Compile(context, assetItem);
 
                 // Raise the AssetCompiled event.

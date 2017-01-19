@@ -77,13 +77,15 @@ namespace SiliconStudio.BuildEngine
         /// List of commands that must be executed prior this one (direct dependence only).
         /// </summary>
         // TODO: this is probably obsolete now
-        public IList<BuildStep> PrerequisiteSteps { get { return prerequisiteSteps; } }
+        public IList<BuildStep> PrerequisiteSteps => prerequisiteSteps;
+
         private readonly List<BuildStep> prerequisiteSteps = new List<BuildStep>();
 
         /// <summary>
         /// List of commands that needs this command to be successfully executed before being processed
         /// </summary>
-        public IEnumerable<CommandBuildStep> SpawnedSteps { get { return SpawnedStepsList; } }
+        public IEnumerable<CommandBuildStep> SpawnedSteps => SpawnedStepsList;
+
         protected readonly List<CommandBuildStep> SpawnedStepsList = new List<CommandBuildStep>();
 
         /// <summary>

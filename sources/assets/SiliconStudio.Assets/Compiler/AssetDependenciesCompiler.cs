@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
@@ -15,6 +16,8 @@ namespace SiliconStudio.Assets.Compiler
     /// <remarks>This class is stateless and can reused or be shared amongst multiple asset compilation</remarks>
     public class AssetDependenciesCompiler : IAssetCompiler
     {
+        private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
+
         /// <inheritdoc/>
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
@@ -31,46 +34,41 @@ namespace SiliconStudio.Assets.Compiler
 
             var assetCompilerContext = (AssetCompilerContext)context;
 
-            // create the a package that contains only the asset and its the dependencies
-            var dependenciesCompilePackage = assetItem.Package.Session.CreateCompilePackageFromAsset(assetItem);
-            var clonedAsset = dependenciesCompilePackage.FindAsset(assetItem.Id);
-
-            CompileWithDependencies(assetCompilerContext, clonedAsset, assetItem, compilerResult);
-
-            // Check unloadable items
-            foreach (var currentAssetItem in dependenciesCompilePackage.Assets)
+            IAssetCompiler compiler;
+            try
             {
-                var unloadableItems = UnloadableObjectRemover.Run(currentAssetItem.Asset);
-                foreach (var unloadableItem in unloadableItems)
-                {
-                    compilerResult.Log(new AssetLogMessage(dependenciesCompilePackage, currentAssetItem.ToReference(), LogMessageType.Warning, $"Unable to load the object of type {unloadableItem.UnloadableObject.TypeName} which is located at [{unloadableItem.MemberPath}] in the asset"));
-                }
+                compiler = assetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
+            }
+            catch (Exception ex)
+            {
+                compilerResult.Error($"Cannot find a compiler for asset [{assetItem.Id}] from path [{assetItem.Location}]", ex);
+                return compilerResult;
             }
 
-            // Find AssetBuildStep
-            var assetBuildSteps = new Dictionary<AssetId, AssetBuildStep>();
-            foreach (var step in compilerResult.BuildSteps.EnumerateRecursively())
+            if (compiler == null)
             {
-                var assetStep = step as AssetBuildStep;
-                if (assetStep != null)
-                {
-                    assetBuildSteps[assetStep.AssetItem.Id] = assetStep;
-                }
+                return compilerResult;
             }
 
-            // TODO: Refactor logging of CompilerApp and BuildEngine
-            // Copy log top-level to proper asset build steps
-            foreach (var message in compilerResult.Messages)
+            compilerResult = compiler.Compile(assetCompilerContext, assetItem);
+            if (compilerResult.HasErrors)
             {
-                var assetMessage = message as AssetLogMessage;
+                return compilerResult;
+            }
 
-                // Find asset (if nothing found, default to main asset)
-                var assetId = assetMessage?.AssetReference.Id ?? assetItem.Id;
-                AssetBuildStep assetBuildStep;
-                if (assetBuildSteps.TryGetValue(assetId, out assetBuildStep))
+            var depsCompiler = context.Properties.Get(BuildStepsQueue.PropertyKey);
+
+            depsCompiler.BuildSteps[assetItem.Location] = compilerResult.BuildSteps;
+
+            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
+            foreach (var assetDependency in dependencies.LinksOut)
+            {
+                compiler = assetCompilerRegistry.GetCompiler(assetDependency.Item.Asset.GetType());
+                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, compiler);
+                if (result.HasErrors)
                 {
-                    // Log to AssetBuildStep
-                    assetBuildStep.Logger?.Log(message);
+                    result.CopyTo(compilerResult);
+                    return compilerResult;
                 }
             }
 

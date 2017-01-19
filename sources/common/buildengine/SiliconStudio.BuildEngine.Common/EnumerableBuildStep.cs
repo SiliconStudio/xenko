@@ -163,7 +163,7 @@ namespace SiliconStudio.BuildEngine
             mergeCounter++;
         }
 
-        internal protected static async Task WaitCommands(List<BuildStep> buildStepsToWait)
+        protected internal static async Task WaitCommands(List<BuildStep> buildStepsToWait)
         {
             // Wait for steps to be finished
             if (buildStepsToWait.Count > 0)
