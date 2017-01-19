@@ -41,12 +41,6 @@ namespace SiliconStudio.Quantum.References
             return type.IsArray || CollectionDescriptor.IsCollection(type) || DictionaryDescriptor.IsDictionary(type);
         }
 
-        [Obsolete]
-        internal static Type GetReferenceType(object objectValue, Index index)
-        {
-            return objectValue != null && HasCollectionReference(objectValue.GetType()) && index.IsEmpty ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
-        }
-
         internal static void CheckReferenceCreationSafeGuard()
         {
             if (!CreatingReference.IsValueCreated || CreatingReference.Value == 0)

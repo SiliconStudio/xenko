@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="node">The node to validate.</param>
         /// <param name="obj">The value represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestNonCollectionObjectContentNode(IContentNode node, object obj, int childCount)
+        public static void TestNonCollectionObjectNode(IContentNode node, object obj, int childCount)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
@@ -71,7 +71,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="member">The value of the member represented by the member node.</param>
         /// <param name="memberName">The name of the member to validate.</param>
         /// <param name="isReference">Indicate whether the member node is expected to contain a reference to the value it represents.</param>
-        public static void TestMemberContentNode(IContentNode containerNode, IContentNode memberNode, object container, object member, string memberName, bool isReference)
+        public static void TestMemberNode(IContentNode containerNode, IContentNode memberNode, object container, object member, string memberName, bool isReference)
         {
             if (containerNode == null) throw new ArgumentNullException(nameof(containerNode));
             if (memberNode == null) throw new ArgumentNullException(nameof(memberNode));
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that that we have an index if expected.
             Assert.AreEqual(hasIndex, !reference.Index.IsEmpty);
             // Check that the target is an object content node.
-            TestNonCollectionObjectContentNode(objReference.TargetNode, targetValue, objReference.TargetNode.Members.Count);
+            TestNonCollectionObjectNode(objReference.TargetNode, targetValue, objReference.TargetNode.Members.Count);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
             // Check that the target is an object content node.
-            TestNonCollectionObjectContentNode(targetNode, targetValue, ((IObjectNode)targetNode).Members.Count);
+            TestNonCollectionObjectNode(targetNode, targetValue, ((IObjectNode)targetNode).Members.Count);
         }
 
         /// <summary>

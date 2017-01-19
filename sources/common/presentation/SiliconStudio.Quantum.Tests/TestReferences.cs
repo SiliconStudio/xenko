@@ -43,16 +43,16 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new ObjectContainer { Instance = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 1);
 
             var memberNode = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
             Helper.TestNonNullObjectReference(memberNode.Reference, instance, false);
             var instanceNode = nodeContainer.GetNode(instance);
             Helper.TestNonNullObjectReference(memberNode.Reference, instanceNode, instance);
 
             memberNode = instanceNode.Members.First();
-            Helper.TestMemberContentNode(instanceNode, memberNode, instance, instance.Name, nameof(TestObject.Name), false);
+            Helper.TestMemberNode(instanceNode, memberNode, instance, instance.Name, nameof(TestObject.Name), false);
         }
 
         /// <summary>
@@ -64,10 +64,10 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new ObjectContainer { Instance = null };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 1);
 
             var memberNode = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
             Helper.TestNullObjectReference(memberNode.Reference);
         }
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Quantum.Tests
             // Update to a new instance
             var newInstance = new TestObject { Name = "Test2" };
             memberNode.Update(newInstance);
-            Helper.TestMemberContentNode(containerNode, memberNode, container, newInstance, nameof(ObjectContainer.Instance), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, newInstance, nameof(ObjectContainer.Instance), true);
             Helper.TestNonNullObjectReference(memberNode.Reference, newInstance, false);
 
             var newInstanceNode = nodeContainer.GetNode(newInstance);
@@ -96,12 +96,12 @@ namespace SiliconStudio.Quantum.Tests
 
             // Update to null
             memberNode.Update(null);
-            Helper.TestMemberContentNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
             Helper.TestNullObjectReference(memberNode.Reference);
 
             // Update back to the initial instance
             memberNode.Update(instance);
-            Helper.TestMemberContentNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
             Helper.TestNonNullObjectReference(memberNode.Reference, instanceNode, instance);
         }
 
@@ -117,10 +117,10 @@ namespace SiliconStudio.Quantum.Tests
             var instance2 = new TestObject { Name = "Test2" };
             var container = new MultipleObjectContainer { Instances = { instance1, instance2 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 1);
 
             var memberNode = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
             Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
@@ -128,10 +128,10 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance2, memberNode.Retrieve(new Index(1)));
 
             var reference1 = memberNode.Reference.AsEnumerable.First();
-            Helper.TestMemberContentNode(reference1.TargetNode, reference1.TargetNode.Members.First(), instance1, instance1.Name, nameof(TestObject.Name), false);
+            Helper.TestMemberNode(reference1.TargetNode, reference1.TargetNode.Members.First(), instance1, instance1.Name, nameof(TestObject.Name), false);
 
             var reference2 = memberNode.Reference.AsEnumerable.Last();
-            Helper.TestMemberContentNode(reference2.TargetNode, reference2.TargetNode.Members.First(), instance2, instance2.Name, nameof(TestObject.Name), false);
+            Helper.TestMemberNode(reference2.TargetNode, reference2.TargetNode.Members.First(), instance2, instance2.Name, nameof(TestObject.Name), false);
         }
 
         /// <summary>
@@ -144,10 +144,10 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new MultipleObjectContainer { Instances = { null, null } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 1);
 
             var memberNode = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
             Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
@@ -207,14 +207,14 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new ObjectsContainer { Instance1 = instance, Instance2 = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 2);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 2);
 
             var member1Node = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, member1Node, container, instance, nameof(ObjectsContainer.Instance1), true);
+            Helper.TestMemberNode(containerNode, member1Node, container, instance, nameof(ObjectsContainer.Instance1), true);
             Helper.TestNonNullObjectReference(member1Node.Reference, instance, false);
 
             var member2Node = containerNode.Members.Last();
-            Helper.TestMemberContentNode(containerNode, member2Node, container, instance, nameof(ObjectsContainer.Instance2), true);
+            Helper.TestMemberNode(containerNode, member2Node, container, instance, nameof(ObjectsContainer.Instance2), true);
             Helper.TestNonNullObjectReference(member2Node.Reference, instance, false);
 
             var reference1 = member1Node.Reference.AsObject;
@@ -235,10 +235,10 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new MultipleObjectContainer { Instances = { instance, instance } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectNode(containerNode, container, 1);
 
             var memberNode = containerNode.Members.First();
-            Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
+            Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
             Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
 
             var reference = memberNode.Reference.AsEnumerable;
