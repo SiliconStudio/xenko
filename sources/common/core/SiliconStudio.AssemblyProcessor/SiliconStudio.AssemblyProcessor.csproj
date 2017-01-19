@@ -161,6 +161,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SiliconStudio.Core\DataMemberMode.cs">
+      <Link>Core\DataMemberMode.cs</Link>
+    </Compile>
     <Compile Include="..\SiliconStudio.Core\PlatformType.cs">
       <Link>Core\PlatformType.cs</Link>
     </Compile>

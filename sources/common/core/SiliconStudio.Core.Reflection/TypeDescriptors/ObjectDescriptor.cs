@@ -50,6 +50,20 @@ namespace SiliconStudio.Core.Reflection
                     Style = styleAttribute.Style;
                 }
             }
+
+            // Get DefaultMemberMode from DataContract
+            DefaultMemberMode = DataMemberMode.Default;
+            var currentType = type;
+            while (currentType != null)
+            {
+                var dataContractAttribute = AttributeRegistry.GetAttribute<DataContractAttribute>(currentType);
+                if (dataContractAttribute != null && (dataContractAttribute.Inherited || currentType == type))
+                {
+                    DefaultMemberMode = dataContractAttribute.DefaultMemberMode;
+                    break;
+                }
+                currentType = currentType.BaseType;
+            }
         }
 
         protected IAttributeRegistry AttributeRegistry => factory.AttributeRegistry;
@@ -76,6 +90,8 @@ namespace SiliconStudio.Core.Reflection
         public List<Attribute> Attributes { get; }
 
         public DataStyle Style { get; }
+
+        public DataMemberMode DefaultMemberMode { get; }
 
         public bool IsCompilerGenerated { get; }
 
@@ -206,15 +222,10 @@ namespace SiliconStudio.Core.Reflection
         {
             var memberType = member.Type;
 
-            // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
-            member.Mode = DataMemberMode.Content;
+            // Start with DataContractAttribute.DefaultMemberMode (if set)
+            member.Mode = DefaultMemberMode;
             member.Mask = 1;
 
-            if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
-            {
-                // If there is no setter, and the value is a string or a value type, we won't write the object at all.
-                member.Mode = DataMemberMode.Never;
-            }
 
             // Gets the style
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
@@ -236,11 +247,20 @@ namespace SiliconStudio.Core.Reflection
                         throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
                 }
 
-                if (memberAttribute.Mode != DataMemberMode.Default)
-                {
-                    member.Mode = memberAttribute.Mode;
-                }
+                member.Mode = memberAttribute.Mode;
                 member.Order = memberAttribute.Order;
+            }
+
+            // If mode is Default, let's resolve to the actual mode depending on getter/setter existence and object type
+            if (member.Mode == DataMemberMode.Default)
+            {
+                // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
+                member.Mode = DataMemberMode.Content;
+                if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
+                {
+                    // If there is no setter, and the value is a string or a value type, we won't write the object at all.
+                    member.Mode = DataMemberMode.Never;
+                }
             }
 
             // Process all attributes just once instead of getting them one by one
