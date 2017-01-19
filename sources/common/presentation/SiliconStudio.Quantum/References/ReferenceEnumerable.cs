@@ -19,12 +19,10 @@ namespace SiliconStudio.Quantum.References
 
         private HybridDictionary<Index, ObjectReference> items;
 
-        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
+        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType)
         {
             Reference.CheckReferenceCreationSafeGuard();
-            if (Index != Index.Empty) throw new ArgumentException();
             Type = enumerableType;
-            Index = index;
             ObjectValue = enumerable;
 
             if (enumerableType.HasInterface(typeof(IDictionary<,>)))
@@ -40,9 +38,6 @@ namespace SiliconStudio.Quantum.References
 
         /// <inheritdoc/>
         public Type Type { get; }
-
-        /// <inheritdoc/>
-        public Index Index { get; }
 
         /// <inheritdoc/>
         public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }

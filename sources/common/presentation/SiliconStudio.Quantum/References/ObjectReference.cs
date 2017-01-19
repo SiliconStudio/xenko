@@ -42,7 +42,9 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public Type Type { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Quantum.Index.Empty"/>.
+        /// </summary>
         public Index Index { get; }
 
         /// <inheritdoc/>
@@ -126,7 +128,7 @@ namespace SiliconStudio.Quantum.References
         internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IObjectNode targetNode = (IObjectNode)nodeContainer.GetOrCreateNodeInternal(objectValue);
+            var targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }

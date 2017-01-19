@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.References
             var isCollection = HasCollectionReference(objectValue?.GetType() ?? objectType);
             if (objectValue != null && isCollection && index.IsEmpty)
             {
-                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType, index);
+                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType);
             }
             else
             {
