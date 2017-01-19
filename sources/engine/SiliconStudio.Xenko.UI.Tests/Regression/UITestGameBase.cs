@@ -101,10 +101,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             }
         }
 
-        protected virtual void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
-        {
-        }
-
         protected override async Task LoadContent()
         {
             await base.LoadContent();
