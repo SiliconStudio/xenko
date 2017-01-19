@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         private TestCamera camera;
         protected Scene Scene;
         protected Entity Camera = new Entity();
-        private SceneGraphicsCompositorLayers graphicsCompositor;
 
         private Model model;
         private Material material1, material2;
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             set
             {
                 Camera.Add(value);
-                graphicsCompositor.Cameras[0] = value;
+                SceneSystem.NewGraphicsCompositor.Cameras[0] = value;
             }
         }
 
@@ -162,7 +161,9 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
-            SceneSystem.GraphicsCompositor = graphicsCompositor;
+
+            // Load default graphics compositor
+            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             camera = new TestCamera();
             CameraComponent = camera.Camera;

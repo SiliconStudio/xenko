@@ -167,7 +167,6 @@ namespace SiliconStudio.Xenko.Engine
 
                 // Push context (pop after using)
                 using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
-                using (renderDrawContext.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, MainRenderFrame))
                 using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
                 {
                     NewGraphicsCompositor?.Draw(renderDrawContext);

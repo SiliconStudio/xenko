@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     public class ClearRenderer : SceneRendererBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClearRenderFrameRenderer"/> class.
+        /// Initializes a new instance of the <see cref="ClearRenderer"/> class.
         /// </summary>
         public ClearRenderer()
         {

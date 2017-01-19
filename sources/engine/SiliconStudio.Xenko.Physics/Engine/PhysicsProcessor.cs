@@ -35,7 +35,6 @@ namespace SiliconStudio.Xenko.Physics
 
         private bool colliderShapesRendering;
 
-        private SceneChildRenderer debugSceneRenderer;
         private PhysicsShapesRenderingService debugShapeRendering;
 
         public PhysicsProcessor()
@@ -52,7 +51,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                var mainCompositor = (SceneGraphicsCompositorLayers)sceneSystem.GraphicsCompositor;
+                var mainCompositor = sceneSystem.NewGraphicsCompositor;
                 var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
 
                 foreach (var element in elements)
@@ -61,7 +60,8 @@ namespace SiliconStudio.Xenko.Physics
                 }
 
                 sceneSystem.SceneInstance.RootScene.Entities.Remove(debugEntityScene);
-                mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
+                throw new NotImplementedException();
+                //mainCompositor.Master.Renderers.Remove(debugSceneRenderer);
             }
             else
             {
