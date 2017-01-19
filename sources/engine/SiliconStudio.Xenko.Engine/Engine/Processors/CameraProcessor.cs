@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
 
             // Assign cameras to camera slots based on name
-            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.NewGraphicsCompositor;
+            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
             if (graphicsCompositor != null)
             {
                 foreach (var camera in Cameras)

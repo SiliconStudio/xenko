@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // Also draw a texture during the clear renderer
             // TODO: Use a custom compositor as soon as we have visual scripting?
-            var forwardRenderer = (ForwardRenderer)((SceneCameraRenderer)SceneSystem.NewGraphicsCompositor.TopLevel).Child;
+            var forwardRenderer = (ForwardRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.TopLevel).Child;
             forwardRenderer.Clear = new ClearAndDrawTextureRenderer { Color = forwardRenderer.Clear.Color, Texture = sprites["GameScreen"].Texture };
 
             var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };

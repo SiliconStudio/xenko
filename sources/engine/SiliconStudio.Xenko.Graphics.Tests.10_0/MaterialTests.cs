@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             // Load default graphics compositor
-            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             var cube = SceneSystem.SceneInstance.First(x => x.Name == "Cube");
             var sphere = SceneSystem.SceneInstance.First(x => x.Name == "Sphere");

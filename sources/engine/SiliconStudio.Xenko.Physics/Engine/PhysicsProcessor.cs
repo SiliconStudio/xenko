@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (!colliderShapesRendering)
             {
-                var mainCompositor = sceneSystem.NewGraphicsCompositor;
+                var mainCompositor = sceneSystem.GraphicsCompositor;
                 var scene = debugEntityScene.Get<ChildSceneComponent>().Scene;
 
                 foreach (var element in elements)

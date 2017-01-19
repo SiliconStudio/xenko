@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             // Load default graphics compositor
-            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             // Setup camera script
             var camera = SceneSystem.SceneInstance.First(x => x.Name == "Camera");

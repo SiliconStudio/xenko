@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Engine
             registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
-            graphicsCompositor = new GraphicsCompositor();
+            GraphicsCompositor = new GraphicsCompositor();
         }
 
         /// <summary>
@@ -67,20 +67,7 @@ namespace SiliconStudio.Xenko.Engine
 
         public string InitialGraphicsCompositorUrl { get; set; }
 
-        [Obsolete]
-        public ISceneGraphicsCompositor GraphicsCompositor
-        {
-            get { return graphicsCompositor.Instance; }
-            set { graphicsCompositor.Instance = value; }
-        }
-
-        public GraphicsCompositor NewGraphicsCompositor
-        {
-            get { return graphicsCompositor; }
-            set { graphicsCompositor = value; }
-        }
-
-        private GraphicsCompositor graphicsCompositor;
+        public GraphicsCompositor GraphicsCompositor { get; set; }
 
         protected override void LoadContent()
         {
@@ -95,7 +82,7 @@ namespace SiliconStudio.Xenko.Engine
 
             if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
             {
-                graphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                GraphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
             if (MainRenderFrame == null)
@@ -169,7 +156,7 @@ namespace SiliconStudio.Xenko.Engine
                 using (renderDrawContext.RenderContext.PushTagAndRestore(RenderFrame.Current, MainRenderFrame))
                 using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
                 {
-                    NewGraphicsCompositor?.Draw(renderDrawContext);
+                    GraphicsCompositor?.Draw(renderDrawContext);
                 }
             }
             catch (Exception ex)

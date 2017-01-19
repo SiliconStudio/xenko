@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 {
                     Camera.Add(value);
                 }
-                SceneSystem.NewGraphicsCompositor.Cameras[0] = value;
+                SceneSystem.GraphicsCompositor.Cameras[0] = value;
             }
         }
 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             Scene = new Scene();
             Scene.Entities.Add(Camera);

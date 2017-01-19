@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     Camera.Add(value);
                 }
 
-                SceneSystem.NewGraphicsCompositor.Cameras[0] = value;
+                SceneSystem.GraphicsCompositor.Cameras[0] = value;
             }
         }
 
@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            SceneSystem.NewGraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             // Default styles
             // Note: this is temporary and should be replaced with default template of UI elements
