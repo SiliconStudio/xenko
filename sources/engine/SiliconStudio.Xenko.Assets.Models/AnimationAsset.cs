@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -43,20 +44,20 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         [DataMember(2)]
         [Display("Start frame")]
-        public long StartAnimationFrame { get; set; } = 0;
+        public TimeSpan StartAnimationFrame { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Gets or sets the end frame of the animation.
         /// </summary>
         [DataMember(4)]
         [Display("End frame")]
-        public long EndAnimationFrame { get; set; } = 1000;
+        public TimeSpan EndAnimationFrame { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
 
-        // TODO Hide it
-        public long AnimationFrameMinimum { get; set; }
+        // This property is marked as hidden by the AnimationViewModel
+        public TimeSpan AnimationFrameMinimum { get; set; }
 
-        // TODO Hide it
-        public long AnimationFrameMaximum { get; set; }
+        // This property is marked as hidden by the AnimationViewModel
+        public TimeSpan AnimationFrameMaximum { get; set; }
         #endregion
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace SiliconStudio.Presentation.Quantum.View
 
         public override bool MatchNode(INodeViewModel node)
         {
-            return node.Type.IsNumeric() && (node.Name.Equals("StartAnimationFrame") || node.Name.Equals("EndAnimationFrame"));
+            return (node.Name.Equals("StartAnimationFrame") || node.Name.Equals("EndAnimationFrame"));
         }
     }
 }

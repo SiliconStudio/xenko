@@ -141,10 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 var assetSource = localPath;
 
-                long firstFrame = (long)(animationStartTime.TotalSeconds * 30 + 0.1);
-                long lastFrame = (long)(animationDuration.TotalSeconds * 30 + 0.1);
-
-                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = lastFrame, AnimationFrameMinimum = firstFrame };
+                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = animationDuration, AnimationFrameMinimum = animationStartTime };
                 var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)

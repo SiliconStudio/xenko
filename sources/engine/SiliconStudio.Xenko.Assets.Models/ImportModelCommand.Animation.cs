@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
         public bool AnimationRootMotion { get; set; }
-        public long StartFrame { get; set; } = 0;
-        public long EndFrame { get; set; } = long.MaxValue;
+        public TimeSpan StartFrame { get; set; } = TimeSpan.Zero;
+        public TimeSpan EndFrame { get; set; } = TimeSpan.MaxValue;
 
         private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
         {
@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Assets.Models
             var animationClips = LoadAnimation(commandContext, contentManager, out duration);
 
             // Fix the animation frames
-            double startFrameSeconds = StartFrame / 30.0;
-            double endFrameSeconds = EndFrame / 30.0;
+            double startFrameSeconds = StartFrame.TotalSeconds;
+            double endFrameSeconds = EndFrame.TotalSeconds;
             var startTime = CompressedTimeSpan.FromSeconds(-startFrameSeconds);
 
             foreach (var clip in animationClips)
