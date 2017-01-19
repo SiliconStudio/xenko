@@ -58,7 +58,6 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    // ReSharper disable once RequiredBaseTypesIsNotInherited
     public sealed partial class Package : IIdentifiable, IFileSynchronizable
     {
         private const int PackageFileVersion = 4;
