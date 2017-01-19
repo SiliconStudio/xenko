@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -17,12 +15,6 @@ namespace SiliconStudio.Quantum
         /// Gets or sets the <see cref="System.Guid"/>.
         /// </summary>
         Guid Guid { get; }
-
-        /// <summary>
-        /// Gets the content of the <see cref="IContentNode"/>.
-        /// </summary>
-        [Obsolete("This accessor is obsolete, use \"this\"")]
-        IContentNode Content { get; }
 
         /// <summary>
         /// Gets the command collection.

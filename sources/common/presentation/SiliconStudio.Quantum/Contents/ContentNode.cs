@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.References;
@@ -55,10 +54,6 @@ namespace SiliconStudio.Quantum.Contents
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        [Obsolete("This accessor is obsolete, use \"this\"")]
-        public IContentNode Content => this;
-
-        /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
@@ -67,7 +62,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public virtual object Retrieve(Index index)
         {
-            return Contents.Content.Retrieve(Value, index, Descriptor);
+            return Content.Retrieve(Value, index, Descriptor);
         }
 
         /// <inheritdoc/>
