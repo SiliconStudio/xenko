@@ -4,11 +4,11 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Presentation.Quantum.View
 {
-    public class AnimationFrameTemplateProvider : ObservableNodeTemplateProvider
+    public class AnimationFrameTemplateProvider : NodeViewModelTemplateProvider
     {
         public override string Name { get { return "AnimationFrameTemplateProvider"; } }
 
-        public override bool MatchNode(IObservableNode node)
+        public override bool MatchNode(INodeViewModel node)
         {
             return node.Type.IsNumeric() && (node.Name.Equals("StartAnimationFrame") || node.Name.Equals("EndAnimationFrame"));
         }
