@@ -93,33 +93,8 @@ SharedRenderers:
         MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
-        PostEffects: 608bf04d-8640-469d-b710-1ecf6a46f794
-    34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
-        Id: 608bf04d-8640-469d-b710-1ecf6a46f794
-        AmbientOcclusion:
-            Enabled: false
-        DepthOfField:
-            Enabled: false
-            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-        BrightFilter:
-            Color: {R: 1.0, G: 1.0, B: 1.0}
-        Bloom:
-            Distortion: {X: 1.0, Y: 1.0}
-            Afterimage:
-                Enabled: false
-        LightStreak:
-            Attenuation: 0.7
-        LensFlare: {}
-        ColorTransforms:
-            Transforms:
-                1e06f805f8b2e949a06c30d45fe413ef: !ToneMap
-                    Operator: !ToneMapHejl2Operator {}
-                c57351444609d14ea258b3f511ec8a74: !FilmGrain
-                    Enabled: false
-                e86e22e9a5d65545b8b55fca26e0afee: !Vignetting
-                    Enabled: false
-                    Color: {R: 0.0, G: 0.0, B: 0.0}
-        Antialiasing: !FXAAEffect {}
+        PostEffects*: null
+    34ecb9b2633eacfc439ba8744fe05102: ~(Deleted)
 TopLevel: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
