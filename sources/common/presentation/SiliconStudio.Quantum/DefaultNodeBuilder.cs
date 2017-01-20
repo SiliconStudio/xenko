@@ -101,10 +101,10 @@ namespace SiliconStudio.Quantum
             bool isRootNode = contextStack.Count == 0;
             if (isRootNode)
             {
-                // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
-                // This would be the case for each collection within the base collection.
-                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                                : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                // If we're visiting a value type as "object" we need to use a special "boxed" node.
+                var content = descriptor.Type.IsValueType ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                    : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+
                 currentDescriptor = content.Descriptor;
                 rootNode = (IInitializingObjectNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
