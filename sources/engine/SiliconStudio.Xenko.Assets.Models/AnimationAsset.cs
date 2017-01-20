@@ -24,9 +24,10 @@ namespace SiliconStudio.Xenko.Assets.Models
     [Display(1805, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.10.0-alpha01", typeof(AnimationAssetUpgraderFramerate))]     // Force re-import for Min/Max frames
     public partial class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
-        private const string CurrentVersion = "1.5.0-alpha02";
+        private const string CurrentVersion = "1.10.0-alpha01";
 
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
