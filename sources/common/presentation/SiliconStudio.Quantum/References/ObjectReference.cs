@@ -72,9 +72,9 @@ namespace SiliconStudio.Quantum.References
             var objectValue = ownerNode.Retrieve(index);
 
             var boxedTarget = TargetNode as BoxedContent;
-            if (boxedTarget != null)
+            if (boxedTarget != null && objectValue?.GetType() == TargetNode.Type)
             {
-                // If we are boxing a struct, we reuse the same nodes and just overwrite the struct value.
+                // If we are boxing a struct, and the targeted type didn't change, we reuse the same nodes and just overwrite the struct value.
                 boxedTarget.UpdateFromOwner(objectValue);
                 // But we still need to refresh inner references!
                 foreach (var member in TargetNode.Members.Where(x => x.IsReference))
@@ -141,9 +141,6 @@ namespace SiliconStudio.Quantum.References
             {
                 if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
-
-                if (TargetNode != null || TargetGuid != Guid.Empty)
-                    throw new InvalidOperationException("TargetNode has already been set.");
 
                 if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");

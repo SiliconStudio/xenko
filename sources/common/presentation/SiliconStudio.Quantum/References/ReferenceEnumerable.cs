@@ -112,8 +112,12 @@ namespace SiliconStudio.Quantum.References
                         // For collection of struct, we need to update the target nodes first so equity comparer will work. Careful tho, we need to skip removed items!
                         if (boxedTarget != null && existingIndices.Contains(item.Key))
                         {
-                            // If we are boxing a struct, we reuse the same nodes and just overwrite the struct value.
-                            boxedTarget.UpdateFromOwner(ownerNode.Retrieve(item.Key));
+                            // If we are boxing a struct, we reuse the same nodes if they are type-compatible and just overwrite the struct value.
+                            var value = ownerNode.Retrieve(item.Key);
+                            if (value?.GetType() == item.Value.TargetNode?.Type)
+                            {
+                                boxedTarget.UpdateFromOwner(ownerNode.Retrieve(item.Key));
+                            }
                         }
                         if (item.Value.ObjectValue != null)
                         {
