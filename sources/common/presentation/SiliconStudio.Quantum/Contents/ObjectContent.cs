@@ -90,9 +90,6 @@ namespace SiliconStudio.Quantum.Contents
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
 
-            if (member.Parent != null)
-                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(member));
-
             // ReSharper disable once HeuristicUnreachableCode - this code is reachable only at the specific moment we call this method!
             if (Reference != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
