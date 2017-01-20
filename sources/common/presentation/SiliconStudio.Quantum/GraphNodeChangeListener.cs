@@ -34,22 +34,22 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> PrepareChange;
+        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> FinalizeChange;
+        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
 
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> Changing;
+        public event EventHandler<MemberNodeChangeEventArgs> Changing;
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> Changed;
+        public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -121,7 +121,7 @@ namespace SiliconStudio.Quantum
                     break;
             }
 
-            PrepareChange?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
+            PrepareChange?.Invoke(sender, e);
         }
 
         private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
@@ -162,17 +162,17 @@ namespace SiliconStudio.Quantum
                     break;
             }
 
-            FinalizeChange?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
+            FinalizeChange?.Invoke(sender, e);
         }
 
         private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
         {
-            Changing?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
+            Changing?.Invoke(sender, e);
         }
 
         private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
-            Changed?.Invoke(sender, new GraphMemberNodeChangeEventArgs(e));
+            Changed?.Invoke(sender, e);
         }
     }
 }

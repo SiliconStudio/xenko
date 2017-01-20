@@ -4,7 +4,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class AssetMemberNodeChangeEventArgs : GraphMemberNodeChangeEventArgs
+    public class AssetMemberNodeChangeEventArgs : MemberNodeChangeEventArgs
     {
         public AssetMemberNodeChangeEventArgs([NotNull] MemberNodeChangeEventArgs e, OverrideType previousOverride, OverrideType newOverride, ItemId itemId)
             : base(e.Member, e.Index, e.ChangeType, e.OldValue, e.NewValue)

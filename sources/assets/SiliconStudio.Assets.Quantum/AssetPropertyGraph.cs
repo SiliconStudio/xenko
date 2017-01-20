@@ -75,17 +75,17 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> PrepareChange { add { nodeListener.PrepareChange += value; } remove { nodeListener.PrepareChange -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange { add { nodeListener.PrepareChange += value; } remove { nodeListener.PrepareChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> FinalizeChange { add { nodeListener.FinalizeChange += value; } remove { nodeListener.FinalizeChange -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange { add { nodeListener.FinalizeChange += value; } remove { nodeListener.FinalizeChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
-        public event EventHandler<GraphMemberNodeChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
+        public event EventHandler<MemberNodeChangeEventArgs> Changing { add { nodeListener.Changing += value; } remove { nodeListener.Changing -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.
