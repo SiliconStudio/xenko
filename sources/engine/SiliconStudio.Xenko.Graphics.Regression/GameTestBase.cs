@@ -273,22 +273,15 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot(null, testName);
 
+            // setup empty scene
+            var scene = new Scene();
+            game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+
             // add the render callback
-            throw new NotImplementedException();
-            //var graphicsCompositor = new GraphicsCompositor
-            //{
-            //    Master =
-            //    {
-            //        Renderers =
-            //        {
-            //            new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-            //            new SceneDelegateRendererOld((context, frame) => drawTestAction(game, context, frame)),
-            //        }
-            //    }
-            //};
-            //var scene = new Scene();
-            //game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
-            //game.SceneSystem.GraphicsCompositor = graphicsCompositor;
+            game.SceneSystem.GraphicsCompositor = new GraphicsCompositor
+            {
+                TopLevel = new DelegateSceneRenderer(context => drawTestAction(game, context)),
+            };
 
             RunGameTest(game);
         }
