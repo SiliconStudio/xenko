@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             PickingClear();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetRenderTargets(context.CommandList.DepthStencilBuffer, context.CommandList.RenderTargets);
+            context.CommandList.SetRenderTargets(context.CommandList.DepthStencilBuffer, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
             // Release scroped texture
             if (scopedDepthBuffer != null)
