@@ -478,7 +478,7 @@ namespace SiliconStudio.Assets.Quantum
             else
             {
                 // When deleting we are always overriding (unless there is no base)
-                overrideValue = !((AssetMemberNode)node.BaseContent)?.contentUpdating == true ? OverrideType.New : OverrideType.Base;
+                overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
                 itemId = removedItemIds[e.Member];
                 removedItemIds.Remove(e.Member);
             }

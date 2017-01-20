@@ -124,7 +124,6 @@ namespace SiliconStudio.Assets.Quantum
         private AssetPropertyGraph propertyGraph;
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
-        internal bool contentUpdating;
         private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
@@ -134,8 +133,6 @@ namespace SiliconStudio.Assets.Quantum
         public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
             : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
-            PrepareChange += (sender, e) => contentUpdating = true;
-            FinalizeChange += (sender, e) => contentUpdating = false;
             Changed += ContentChanged;
             IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
             CanOverride =MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
@@ -380,7 +377,7 @@ namespace SiliconStudio.Assets.Quantum
 
             // Create new ids for collection items
             var baseNode = (AssetMemberNode)BaseContent;
-            var isOverriding = !baseNode?.contentUpdating == true;
+            var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
             var removedId = ItemId.Empty;
             switch (e.ChangeType)
             {
@@ -392,7 +389,7 @@ namespace SiliconStudio.Assets.Quantum
                         var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                         // Compute the id we will add for this item
                         ItemId itemId;
-                        if (baseNode?.contentUpdating == true)
+                        if (baseNode != null && PropertyGraph.UpdatingPropertyFromBase)
                         {
                             var baseCollection = baseNode.Retrieve();
                             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
@@ -445,7 +442,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             // Mark it as New if it does not come from the base
-            if (!baseNode?.contentUpdating == true && !ResettingOverride)
+            if (baseNode != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
             {
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
                 {
