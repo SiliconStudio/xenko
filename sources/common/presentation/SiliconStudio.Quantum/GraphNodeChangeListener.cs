@@ -65,12 +65,13 @@ namespace SiliconStudio.Quantum
             var memberNode = node as IMemberNode;
             if (memberNode != null && RegisteredNodes.Add(node))
             {
-                memberNode.PrepareChange += ContentPrepareChange;
-                memberNode.FinalizeChange += ContentFinalizeChange;
+                ((IMemberNodeInternal)memberNode).PrepareChange += ContentPrepareChange;
+                ((IMemberNodeInternal)memberNode).FinalizeChange += ContentFinalizeChange;
                 memberNode.Changing += ContentChanging;
                 memberNode.Changed += ContentChanged;
                 return true;
             }
+
             return false;
         }
 
@@ -79,8 +80,8 @@ namespace SiliconStudio.Quantum
             var memberNode = node as IMemberNode;
             if (memberNode != null && RegisteredNodes.Remove(node))
             {
-                memberNode.PrepareChange -= ContentPrepareChange;
-                memberNode.FinalizeChange -= ContentFinalizeChange;
+                ((IMemberNodeInternal)memberNode).PrepareChange -= ContentPrepareChange;
+                ((IMemberNodeInternal)memberNode).FinalizeChange -= ContentFinalizeChange;
                 memberNode.Changing -= ContentChanging;
                 memberNode.Changed -= ContentChanged;
                 return true;

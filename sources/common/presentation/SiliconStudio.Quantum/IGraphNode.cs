@@ -60,16 +60,6 @@ namespace SiliconStudio.Quantum
         IMemberDescriptor MemberDescriptor { get; }
 
         /// <summary>
-        /// Raised before a change to this node occurs and before the <see cref="Changing"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <summary>
-        /// Raised after a change to this node has occurred and after the <see cref="Changed"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
-
-        /// <summary>
         /// Raised just before a change to this node occurs.
         /// </summary>
         event EventHandler<MemberNodeChangeEventArgs> Changing;
@@ -101,10 +91,19 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="member">The member to add to this node.</param>
         /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.TargetReference"/> or <see cref="IContentNode.ItemReferences"/> is not null.</param>
-        void AddMember(IInitializingMemberNode member, bool allowIfReference = false);
+        void AddMember(IMemberNodeInternal member, bool allowIfReference = false);
     }
 
-    public interface IInitializingMemberNode : IInitializingGraphNode, IMemberNode
+    public interface IMemberNodeInternal : IInitializingGraphNode, IMemberNode
     {
+        /// <summary>
+        /// Raised before a change to this node occurs and before the <see cref="IMemberNode.Changing"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+
+        /// <summary>
+        /// Raised after a change to this node has occurred and after the <see cref="IMemberNode.Changed"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
     }
 }
