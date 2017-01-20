@@ -181,6 +181,7 @@
     <Compile Include="Rendering\Composers\ClearRenderer.cs" />
     <Compile Include="Rendering\Composers\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Composers\DelegateSceneRenderer.cs" />
+    <Compile Include="Rendering\Composers\ForceAspectRatioSceneRenderer.cs" />
     <Compile Include="Rendering\Composers\ForwardRenderer.cs" />
     <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />

@@ -101,7 +101,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             using (context.PushRenderTargetsAndRestore())
             {
-                context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
+                if (PostEffects != null)
+                    context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
 
                 // Clear render target and depth stencil
                 Clear?.Draw(context);
@@ -155,6 +156,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 // Run post effects
                 if (PostEffects != null)
                 {
+                    // TODO: output in proper renderTarget location according to viewport
                     PostEffects.Draw(context, renderTarget, currentDepthStencil, currentRenderTarget);
                 }
             }

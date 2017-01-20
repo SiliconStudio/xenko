@@ -25,18 +25,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            throw new NotImplementedException();
-            //graphicsCompositor = new SceneGraphicsCompositorLayers
-            //{
-            //    Master =
-            //    {
-            //        Renderers =
-            //        {
-            //            new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-            //            new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" }, FixedAspectRatio = 3.0f, ForceAspectRatio = true }
-            //        }
-            //    }
-            //};
+            // Force aspect ratio
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(MeshPipelinePlugin.DefaultEffectName, false, clearColor: Color.Green);
+            SceneSystem.GraphicsCompositor.TopLevel = new ForceAspectRatioSceneRenderer { Child = SceneSystem.GraphicsCompositor.TopLevel, FixedAspectRatio = 3.0f, ForceAspectRatio = true };
 
             Scene = new Scene();
 

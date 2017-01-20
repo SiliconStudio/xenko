@@ -9,6 +9,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Background;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -300,6 +301,17 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                             {
                                 RenderStage = mainRenderStage,
                                 EffectName = "SkyboxEffect",
+                            }
+                        },
+                    },
+                    new BackgroundRenderFeature
+                    {
+                        RenderStageSelectors =
+                        {
+                            new SimpleGroupToRenderStageSelector
+                            {
+                                RenderStage = mainRenderStage,
+                                EffectName = "Test",
                             }
                         },
                     },
