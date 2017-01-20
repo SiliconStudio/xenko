@@ -7,39 +7,39 @@ namespace SiliconStudio.Quantum
 {
     public static class DebugExtensions
     {
-        public static string PrintHierarchy(this IGraphNode node)
+        public static string PrintHierarchy(this IContentNode node)
         {
             var builder = new StringBuilder();
             PrintHierarchyInternal(node, 0, builder);
             return builder.ToString();
         }
 
-        private static void PrintHierarchyInternal(IGraphNode node, int indentation, StringBuilder builder)
+        private static void PrintHierarchyInternal(IContentNode node, int indentation, StringBuilder builder)
         {
             PrintIndentation(indentation, builder);
             builder.Append(node.Guid + " ");
             PrintIndentation(indentation, builder);
             builder.Append(node.Name ?? "<untitled>");
             builder.Append(": [");
-            builder.Append(node.Content.GetType().Name);
+            builder.Append(node.GetType().Name);
             builder.Append("] = ");
-            if (node.Content.IsReference)
+            if (node.IsReference)
             {
-                if (node.Content.Value != null)
+                if (node.Value != null)
                 {
-                    builder.Append(node.Content.Value.ToString().Replace(Environment.NewLine, " "));
+                    builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
                     builder.Append(" > ");
                 }
                 builder.Append("Reference -> ");
-                builder.Append(node.Content.Reference);
+                builder.Append(node.Reference);
             }
-            else if (node.Content.Value == null)
+            else if (node.Value == null)
             {
                 builder.Append("(null)");
             }
             else
             {
-                builder.Append(node.Content.Value.ToString().Replace(Environment.NewLine, " "));
+                builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
             }
             builder.AppendLine();
             foreach (var child in node.Children)

@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 testResultImage.Write(binaryWriter);
 
                 sw.Stop();
-                GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
+                GameTestBase.TestGameLogger.Info($"Total calculation time: {sw.Elapsed}");
 
                 return binaryReader.ReadBoolean();
             }

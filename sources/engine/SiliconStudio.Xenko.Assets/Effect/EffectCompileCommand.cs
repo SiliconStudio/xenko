@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                 permutationCount++;
                 PermutationCount[effectName] = permutationCount;
             }
-            commandContext.Logger.Verbose("Trying permutation #{0} for effect [{1}]: \n{2}", permutationCount, effectName, compilerParameters.ToStringPermutationsDetailed());
+            commandContext.Logger.Verbose($"Trying permutation #{permutationCount} for effect [{effectName}]: \n{compilerParameters.ToStringPermutationsDetailed()}");
 
             var compilerResults = compiler.Compile(source, compilerParameters);
 
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                 var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.EffectParameters.Platform + "." + compilerParameters.EffectParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
-                commandContext.Logger.Verbose("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
+                commandContext.Logger.Verbose($"Writing shader bytecode to .cs source [{fullOutputClassFile}]");
                 using (var stream = new FileStream(fullOutputClassFile, FileMode.Create, FileAccess.Write, FileShare.Write))
                     EffectByteCodeToSourceCodeWriter.Write(effectName, compilerParameters, compilerResults.Bytecode.WaitForResult().Bytecode, new StreamWriter(stream, System.Text.Encoding.UTF8));
             }

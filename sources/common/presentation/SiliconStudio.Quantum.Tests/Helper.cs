@@ -17,23 +17,21 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="node">The node to validate.</param>
         /// <param name="obj">The value represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestNonCollectionObjectContentNode(IGraphNode node, object obj, int childCount)
+        public static void TestNonCollectionObjectContentNode(IContentNode node, object obj, int childCount)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             // Check that the content is of the expected type.
-            Assert.IsInstanceOf<ObjectContent>(node.Content);
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(node, node.Content.OwnerNode);
+            Assert.IsInstanceOf<ObjectContent>(node);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, node.Content.Retrieve());
+            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
             // A node with an ObjectContent should not contain a reference if it does not represent a collection.
-            Assert.AreEqual(false, node.Content.IsReference);
+            Assert.AreEqual(false, ((ContentNode)node).IsReference);
             // Check that we have the expected number of children.
             Assert.AreEqual(childCount, node.Children.Count);
         }
@@ -44,31 +42,29 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="node">The node to validate.</param>
         /// <param name="obj">The value represented by this node.</param>
         /// <param name="isReference">Indicate whether the node is expected to contain an enumerable reference to the collection items.</param>
-        public static void TestCollectionObjectContentNode(IGraphNode node, object obj, bool isReference)
+        public static void TestCollectionObjectContentNode(IContentNode node, object obj, bool isReference)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             // Check that the content is of the expected type.
-            Assert.IsInstanceOf<ObjectContent>(node.Content);
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(node, node.Content.OwnerNode);
+            Assert.IsInstanceOf<ObjectContent>(node);
             // A node with an ObjectContent should have the same name that the type of its content.
             Assert.AreEqual(obj.GetType().Name, node.Name);
             // A node with an ObjectContent should be a root node.
             Assert.IsNull(node.Parent);
             // A node with an ObjectContent should have the related object as value of its content.
-            Assert.AreEqual(obj, node.Content.Retrieve());
+            Assert.AreEqual(obj, ((ContentNode)node).Retrieve());
             if (isReference)
             {
                 // A node with an ObjectContent representing a collection of reference types should contain an enumerable reference.
-                Assert.AreEqual(true, node.Content.IsReference);
-                Assert.IsInstanceOf<ReferenceEnumerable>(node.Content.Reference);
+                Assert.AreEqual(true, ((ContentNode)node).IsReference);
+                Assert.IsInstanceOf<ReferenceEnumerable>(((ContentNode)node).Reference);
             }
             else
             {
                 // A node with an ObjectContent representing a collection of primitive or struct types should not contain a refernce.
-                Assert.AreEqual(false, node.Content.IsReference);            
+                Assert.AreEqual(false, ((ContentNode)node).IsReference);            
             }
             // A node with an ObjectContent representing a collection should not have any child.
             Assert.AreEqual(0, node.Children.Count);
@@ -83,24 +79,22 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="member">The value of the member represented by the member node.</param>
         /// <param name="memberName">The name of the member to validate.</param>
         /// <param name="isReference">Indicate whether the member node is expected to contain a reference to the value it represents.</param>
-        public static void TestMemberContentNode(IGraphNode containerNode, IGraphNode memberNode, object container, object member, string memberName, bool isReference)
+        public static void TestMemberContentNode(IContentNode containerNode, IContentNode memberNode, object container, object member, string memberName, bool isReference)
         {
             if (containerNode == null) throw new ArgumentNullException(nameof(containerNode));
             if (memberNode == null) throw new ArgumentNullException(nameof(memberNode));
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             // Check that the content is of the expected type.
-            Assert.AreEqual(typeof(MemberContent), memberNode.Content.GetType());
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(memberNode, memberNode.Content.OwnerNode);
+            Assert.AreEqual(typeof(MemberContent), memberNode.GetType());
             // A node with a MemberContent should have the same name that the member in the container.
             Assert.AreEqual(memberName, memberNode.Name);
             // A node with a MemberContent should have its container as parent.
             Assert.AreEqual(containerNode, memberNode.Parent);
             // A node with a MemberContent should have the member value as value of its content.
-            Assert.AreEqual(member, memberNode.Content.Retrieve());
+            Assert.AreEqual(member, ((ContentNode)memberNode).Retrieve());
             // A node with a primitive MemberContent should not contain a reference.
-            Assert.AreEqual(isReference, memberNode.Content.IsReference);
+            Assert.AreEqual(isReference, ((ContentNode)memberNode).IsReference);
         }
 
         /// <summary>
@@ -116,7 +110,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the reference is not null.
             Assert.IsNotNull(objReference);
             // Check that the values match.
-            Assert.AreEqual(targetValue, objReference.TargetNode.Content.Retrieve());
+            Assert.AreEqual(targetValue, ((ContentNode)objReference.TargetNode).Retrieve());
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
             // Check that that we have an index if expected.
@@ -131,7 +125,7 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetNode">The node that is supposed to be the target of the reference.</param>
         /// <param name="targetValue">The actual value pointed by the reference.</param>
-        public static void TestNonNullObjectReference(IReference reference, IGraphNode targetNode, object targetValue)
+        public static void TestNonNullObjectReference(IReference reference, IContentNode targetNode, object targetValue)
         {
             if (targetNode == null) throw new ArgumentNullException(nameof(targetNode));
             var objReference = reference as ObjectReference;
@@ -204,22 +198,20 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="structNode">The structure node to test.</param>
         /// <param name="structValue">The value of the structure represented by this node.</param>
         /// <param name="childCount">The number of members expected in the node.</param>
-        public static void TestStructContentNode(IGraphNode structNode, object structValue, int childCount)
+        public static void TestStructContentNode(IContentNode structNode, object structValue, int childCount)
         {
             if (structNode == null) throw new ArgumentNullException(nameof(structNode));
             if (structValue == null) throw new ArgumentNullException(nameof(structValue));
-            // Check that the content is properly referencing its node.
-            Assert.AreEqual(structNode, structNode.Content.OwnerNode);
             // A struct node should have the related struct as value of its content.
-            Assert.AreEqual(structValue, structNode.Content.Retrieve());
+            Assert.AreEqual(structValue, ((ContentNode)structNode).Retrieve());
             // A struct node should not contain a reference.
-            Assert.AreEqual(false, structNode.Content.IsReference);
+            Assert.AreEqual(false, ((ContentNode)structNode).IsReference);
             // Check that we have the expected number of children.
             Assert.AreEqual(childCount, structNode.Children.Count);
         }
 
         [Obsolete]
-        public static void PrintModelContainerContent(NodeContainer container, IGraphNode rootNode = null)
+        public static void PrintModelContainerContent(NodeContainer container, IContentNode rootNode = null)
         {
             Console.WriteLine(@"Container content:");
             Console.WriteLine(@"------------------");

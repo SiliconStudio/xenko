@@ -66,12 +66,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (Input.IsKeyDown(Keys.Left))
             {
                 postProcessingEffects.BrightFilter.Threshold -= 10.0f;
-                Log.Info("BrightFilter Threshold: {0}", postProcessingEffects.BrightFilter.Threshold);
+                Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
             else if (Input.IsKeyDown(Keys.Right))
             {
                 postProcessingEffects.BrightFilter.Threshold += 10.0f;
-                Log.Info("BrightFilter Threshold: {0}", postProcessingEffects.BrightFilter.Threshold);
+                Log.Info($"BrightFilter Threshold: {postProcessingEffects.BrightFilter.Threshold}");
             }
 
             postProcessingEffects.Bloom.Enabled = !Input.IsKeyDown(Keys.Space);
@@ -79,12 +79,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (Input.IsKeyDown(Keys.Down))
             {
                 postProcessingEffects.Bloom.Amount += -0.01f;
-                Log.Info("Bloom Amount: {0}", postProcessingEffects.Bloom.Amount);
+                Log.Info($"Bloom Amount: {postProcessingEffects.Bloom.Amount}");
             }
             else if (Input.IsKeyDown(Keys.Up))
             {
                 postProcessingEffects.Bloom.Amount += +0.01f;
-                Log.Info("Bloom Amount: {0}", postProcessingEffects.Bloom.Amount);
+                Log.Info($"Bloom Amount: {postProcessingEffects.Bloom.Amount}");
             }
         }
         private void DrawCustomEffect(RenderDrawContext context)

@@ -69,8 +69,7 @@ namespace SiliconStudio.Assets.Compiler
             }
             catch (Exception ex)
             {
-                compilationResult.Error("Cannot find a compiler for asset [{0}] from path [{1}]", ex, assetItem.Id,
-                    assetItem.Location);
+                compilationResult.Error($"Cannot find a compiler for asset [{assetItem.Id}] from path [{assetItem.Location}]", ex);
                 return null;
             }
 
@@ -121,8 +120,7 @@ namespace SiliconStudio.Assets.Compiler
             }
             catch (Exception ex)
             {
-                compilationResult.Error("Unexpected exception while compiling asset [{0}] from path [{1}]", ex, assetItem.Id,
-                    assetItem.Location);
+                compilationResult.Error($"Unexpected exception while compiling asset [{assetItem.Id}] from path [{assetItem.Location}]", ex);
                 return null;
             }
         }

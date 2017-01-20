@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             fixScaling = new Vector2(1, 1);
 
             if (!CharacterToGlyph.ContainsKey(character))
-                Logger.Warning("Character '{0}' is not available in the static font character map", character);
+                Logger.Warning($"Character '{character}' is not available in the static font character map");
             else
                 glyph = CharacterToGlyph[character];
 

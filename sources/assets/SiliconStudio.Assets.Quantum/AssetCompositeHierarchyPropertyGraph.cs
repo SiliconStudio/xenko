@@ -18,12 +18,12 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> AssetHierarchy => (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Asset;
 
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
-            var part = sourceNode.Content.Value as TAssetPart;
-            if (part != null && sourceNode.Content is ObjectContent)
+            var part = sourceNode.Value as TAssetPart;
+            if (part != null && sourceNode is ObjectContent)
             {
                 TAssetPartDesign partDesign;
                 // The part might be being moved and could possibly be currently not into the Parts collection.
@@ -44,15 +44,14 @@ namespace SiliconStudio.Assets.Quantum
             return base.FindTarget(sourceNode, target);
         }
 
-        protected internal override object CloneValueFromBase(object value, AssetNode node)
+        protected internal override object CloneValueFromBase(object value, IAssetNode node)
         {
             var part = value as TAssetPart;
             // Part reference
             if (part != null)
             {
                 // We need to find out for which entity we are cloning this (other) entity
-                var multiContentNode = node as MultiContentNode;
-                var owner = (TAssetPartDesign)multiContentNode?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
+                var owner = (TAssetPartDesign)node?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
                 if (owner != null)
                 {
                     // Then instead of creating a clone, we just return the corresponding part in this asset (in term of base and base instance)
@@ -70,17 +69,17 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsReferencedPart(MemberContent member, IGraphNode targetNode)
+        public override bool IsReferencedPart(MemberContent member, IContentNode targetNode)
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
-            if (member == null || member == targetNode.Content)
+            if (member == null || targetNode == null || member == targetNode)
                 return false;
 
-            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Content.Type))
+            if (typeof(TAssetPart).IsAssignableFrom(targetNode.Type))
             {
                 // Check if we're the part referenced by a part design - other cases are references
-                return member.Container.OwnerNode.Content.Type != typeof(TAssetPartDesign);
+                return member.Parent.Type != typeof(TAssetPartDesign);
             }
             return base.IsReferencedPart(member, targetNode);
         }

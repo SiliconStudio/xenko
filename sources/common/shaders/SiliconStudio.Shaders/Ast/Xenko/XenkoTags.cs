@@ -6,6 +6,8 @@ namespace SiliconStudio.Shaders.Ast.Xenko
     {
         public const string ConstantBuffer = "ConstantBuffer";
 
+        public const string ConstantBufferIndex = "ConstantBufferIndex";
+
         public const string LogicalGroup = "LogicalGroup";
 
         public const string ClassRef = "ClassReference";
