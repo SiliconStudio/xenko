@@ -106,7 +106,6 @@ TemplateFolders:
         - samples\Graphics\AnimatedModel\AnimatedModel.xktpl
         - samples\Graphics\CustomEffect\CustomEffect.xktpl
         - samples\Graphics\MaterialShader\MaterialShader.xktpl
-        - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.xktpl
         - samples\Graphics\SpriteFonts\SpriteFonts.xktpl
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
