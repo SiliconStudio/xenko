@@ -91,7 +91,7 @@ at full size and full measure";
 
         private Vector2 virtualResolution = new Vector2(1920, 1080);
 
-        private SceneDelegateRenderer delegateRenderer;
+        private DelegateSceneRenderer delegateRenderer;
 
         /// <summary>
         /// Draw all text groups with SpriteBatch
@@ -116,7 +116,7 @@ at full size and full measure";
             // Add Graphics Layer
             var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(DrawFont));
+            compositor.Master.Renderers.Add(delegateRenderer = new DelegateSceneRenderer(DrawFont));
         }
 
         public override void Update()
@@ -139,7 +139,7 @@ at full size and full measure";
 
         #region Draw Methods
 
-        private void DrawFont(RenderDrawContext context, RenderFrame frame)
+        private void DrawFont(RenderDrawContext context)
         {
             if(isPlaying)
                 currentTime += (float)Game.UpdateTime.Elapsed.TotalSeconds;

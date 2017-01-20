@@ -95,8 +95,10 @@ SharedRenderers:
         PostEffects: 608bf04d-8640-469d-b710-1ecf6a46f794
     34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794
-        AmbientOcclusion: {}
+        AmbientOcclusion:
+            Enabled: false
         DepthOfField:
+            Enabled: false
             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
         BrightFilter:
             Color: {R: 1.0, G: 1.0, B: 1.0}

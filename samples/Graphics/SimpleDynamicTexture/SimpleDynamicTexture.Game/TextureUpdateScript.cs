@@ -75,7 +75,7 @@ namespace SimpleDynamicTexture
             // insert the custom renderer in between the 2 camera renderer.
             var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Insert(2, new SceneDelegateRenderer(RenderTexture));
+            compositor.Master.Renderers.Insert(2, new DelegateSceneRenderer(RenderTexture));
             
             // Create and initialize the dynamic texture
             renderTexture = Texture.New2D(GraphicsDevice, RenderTextureSize, RenderTextureSize, 1, PixelFormat.R8G8B8A8_UNorm_SRgb, usage: GraphicsResourceUsage.Dynamic);
@@ -145,7 +145,7 @@ namespace SimpleDynamicTexture
         /// </summary>
         /// <param name="renderContext">The render context</param>
         /// <param name="frame">The render frame</param>
-        private void RenderTexture(RenderDrawContext renderContext, RenderFrame frame)
+        private void RenderTexture(RenderDrawContext renderContext)
         {
             spriteBatch.Begin(renderContext.GraphicsContext, SpriteSortMode.Texture, null, GraphicsDevice.SamplerStates.PointClamp, DepthStencilStates.None);
 

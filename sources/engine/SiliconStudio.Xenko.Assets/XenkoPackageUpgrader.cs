@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Assets
 
             if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
             {
-                // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
+                // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
                     if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
@@ -361,6 +361,15 @@ namespace SiliconStudio.Xenko.Assets
 
                         // Update game settings to point to our newly created compositor
                         gameSettingsYaml.DynamicRootNode.GraphicsCompositor = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetPath).ToString();
+                    }
+                }
+
+                // Delete EffectLogAsset
+                foreach (var assetFile in assetFiles)
+                {
+                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    {
+                        assetFile.Deleted = true;
                     }
                 }
             }

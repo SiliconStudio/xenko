@@ -14,7 +14,7 @@ namespace CustomEffect
         private Effect customEffect;
         private SpriteBatch spriteBatch;
         private EffectInstance customEffectInstance;
-        private SceneDelegateRenderer renderer;
+        private DelegateSceneRenderer renderer;
         private SamplerState samplerState;
 
         public Texture Logo;
@@ -42,7 +42,7 @@ namespace CustomEffect
             // Add Effect rendering to the end of the pipeline
             var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            renderer = new SceneDelegateRenderer(RenderQuad);
+            renderer = new DelegateSceneRenderer(RenderQuad);
             compositor.Master.Renderers.Add(renderer);
         }
 
@@ -56,7 +56,7 @@ namespace CustomEffect
             base.Cancel();
         }
 
-        private void RenderQuad(RenderDrawContext renderContext, RenderFrame frame)
+        private void RenderQuad(RenderDrawContext renderContext)
         {
             customEffectInstance.Parameters.Set(EffectKeys.Phase, -3 * (float)Game.UpdateTime.Total.TotalSeconds);
 

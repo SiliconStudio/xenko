@@ -24,7 +24,7 @@ namespace JumpyJet
 
         private readonly List<BackgroundSection> backgroundParallax = new List<BackgroundSection>();
 
-        private SceneDelegateRenderer delegateRenderer;
+        private DelegateSceneRenderer delegateRenderer;
 
         public override void Start()
         {
@@ -46,7 +46,7 @@ namespace JumpyJet
             // register the renderer in the pipeline
             var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Insert(1, delegateRenderer = new SceneDelegateRenderer(DrawParallax));
+            compositor.Master.Renderers.Insert(1, delegateRenderer = new DelegateSceneRenderer(DrawParallax));
         }
 
         public override void Update()
@@ -69,7 +69,7 @@ namespace JumpyJet
             spriteBatch.Dispose();
         }
 
-        public void DrawParallax(RenderDrawContext context, RenderFrame frame)
+        public void DrawParallax(RenderDrawContext context)
         {
             spriteBatch.Begin(context.GraphicsContext);
 

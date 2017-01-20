@@ -66,7 +66,7 @@ namespace TouchInputs
 
         private Vector2 virtualResolution = new Vector2(1920, 1080);
 
-        private SceneDelegateRenderer delegateRenderer;
+        private DelegateSceneRenderer delegateRenderer;
 
         public override void Start()
         {
@@ -91,7 +91,7 @@ namespace TouchInputs
             // Add Graphics Layer
             var scene = SceneSystem.SceneInstance.RootScene;
             var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Add(delegateRenderer = new SceneDelegateRenderer(Render));
+            compositor.Master.Renderers.Add(delegateRenderer = new DelegateSceneRenderer(Render));
         }
 
         public override void Cancel()
@@ -230,7 +230,7 @@ namespace TouchInputs
             }
         }
 
-        private void Render(RenderDrawContext context, RenderFrame frame)
+        private void Render(RenderDrawContext context)
         {
             // depth test off mode 
             spriteBatch.Begin(context.GraphicsContext, depthStencilState: DepthStencilStates.None);
