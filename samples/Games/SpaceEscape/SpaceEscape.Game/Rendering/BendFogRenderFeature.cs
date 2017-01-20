@@ -14,7 +14,7 @@ namespace SpaceEscape.Rendering
     /// <summary>
     /// Custom render feature, that uploads constants needed by the SpaceEscapeEffectMain effect
     /// </summary>
-    public class GameRenderFeature : SubRenderFeature
+    public class BendFogRenderFeature : SubRenderFeature
     {
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 

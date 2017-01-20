@@ -1,7 +1,7 @@
 !GraphicsCompositorAsset
-Id: 991d85cd-5087-4f4c-8cdd-36f48a145bf6
+Id: 00b33396-8cf3-431f-9283-df2c852a340d
 Tags: []
-Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Composers/DefaultGraphicsCompositorLevel9
+Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Composers/DefaultGraphicsCompositorLevel10
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -49,9 +49,12 @@ RenderFeatures:
                     7ac2775468f53c4399b2f3f6357c85c9: !SiliconStudio.Xenko.Rendering.Lights.LightAmbientRenderer,SiliconStudio.Xenko.Engine {}
                     7b68f9cd17404a4ba9e5f7df72e3b48d: !SiliconStudio.Xenko.Rendering.Lights.LightDirectionalGroupRenderer,SiliconStudio.Xenko.Engine {}
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
-                    5890e37af0e4bbc2cfdc1de648ff07d4: !SiliconStudio.Xenko.Rendering.Lights.LightPointGroupRenderer,SiliconStudio.Xenko.Engine {}
-                    2eda85523d76b3f9e1e7d3e55aab5280: !SiliconStudio.Xenko.Rendering.Lights.LightSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
-                ShadowMapRenderer: null
+                    dd1f1a507851fc458e94f428ac7ae06d: !SiliconStudio.Xenko.Rendering.Lights.LightClusteredPointSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
+                ShadowMapRenderer: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderer,SiliconStudio.Xenko.Engine
+                    ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+                    Renderers:
+                        7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine {}
+                        1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine {}
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -86,10 +89,37 @@ SharedRenderers:
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
-            Color*: {R: 0.0, G: 0.5019608, B: 0.0, A: 1.0}
+            Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
         MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+        PostEffects: 608bf04d-8640-469d-b710-1ecf6a46f794
+    34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
+        Id: 608bf04d-8640-469d-b710-1ecf6a46f794
+        AmbientOcclusion:
+            Enabled: false
+        DepthOfField:
+            Enabled: false
+            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
+        BrightFilter:
+            Color: {R: 1.0, G: 1.0, B: 1.0}
+        Bloom:
+            Distortion: {X: 1.0, Y: 1.0}
+            Afterimage:
+                Enabled: false
+        LightStreak:
+            Attenuation: 0.7
+        LensFlare: {}
+        ColorTransforms:
+            Transforms:
+                1e06f805f8b2e949a06c30d45fe413ef: !ToneMap
+                    Operator: !ToneMapHejl2Operator {}
+                c57351444609d14ea258b3f511ec8a74: !FilmGrain
+                    Enabled: false
+                e86e22e9a5d65545b8b55fca26e0afee: !Vignetting
+                    Enabled: false
+                    Color: {R: 0.0, G: 0.0, B: 0.0}
+        Antialiasing: !FXAAEffect {}
 TopLevel: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}

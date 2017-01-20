@@ -22,7 +22,7 @@ namespace SpriteFonts
     /// 6. Three alignment modes {Left, Center, Right}
     /// 7. Animated text
     /// </summary>
-    public class FontScript : SyncScript
+    public class FontRenderer : SceneRendererBase
     {
         // Time to display text groups where the first index corresponding to introduction text, and the rest corresponding to text groups
         private static readonly float[] TimeToDisplayTextGroups = { 3f /*Intro*/, 5f /*Static*/, 5f /*Dynamic*/, 4f /*Style*/, 5f /*Alias*/,
@@ -52,6 +52,8 @@ at full size and full measure";
         private Vector2 screenSize;
         private SpriteBatch spriteBatch;
 
+        public Texture Background;
+
         public SpriteFont StaticFont;
         public SpriteFont DynamicFont;
         public SpriteFont BoldFont;
@@ -63,25 +65,12 @@ at full size and full measure";
         public SpriteFont TimesNewRoman;
         public SpriteFont HeaderFont;
         
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private Vector2 animatedFontPosition;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private float animatedFontScale;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private float animatedFontRotation;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private float animatedFontAlpha;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private bool isPlaying = true;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private int currentScreenIndex;
-
-        [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private float currentTime;
 
         private readonly Vector2 headerPosition = new Vector2(0.5f, 0.25f);
@@ -91,13 +80,14 @@ at full size and full measure";
 
         private Vector2 virtualResolution = new Vector2(1920, 1080);
 
-        private DelegateSceneRenderer delegateRenderer;
+        private InputManager input;
 
-        /// <summary>
-        /// Draw all text groups with SpriteBatch
-        /// </summary>
-        public override void Start()
+        protected override void InitializeCore()
         {
+            base.InitializeCore();
+
+            input = Context.Services.GetServiceAs<InputManager>();
+
             // Create the SpriteBatch used to render them
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = new Vector3(virtualResolution, 1000) };
 
@@ -112,42 +102,35 @@ at full size and full measure";
             screenRenderers.Add(DrawLanguageCategory);
             screenRenderers.Add(DrawAlignmentCategory);
             screenRenderers.Add(DrawAnimationCategory);
-            
-            // Add Graphics Layer
-            var scene = SceneSystem.SceneInstance.RootScene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Add(delegateRenderer = new DelegateSceneRenderer(DrawFont));
         }
 
-        public override void Update()
+        protected override void DrawCore(RenderDrawContext context)
         {
+            // Clear
+            context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
+            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+
             UpdateAnimatedFontParameters();
             UpdateInput();
             UpdateCurrentScreenIndex();
-        }
 
-        public override void Cancel()
-        {
-            // Remove the delegate renderer from the pipeline
-            var scene = SceneSystem.SceneInstance.RootScene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Remove(delegateRenderer);
-
-            // Dispose graphic resource
-            spriteBatch.Dispose();
-        }
-
-        #region Draw Methods
-
-        private void DrawFont(RenderDrawContext context)
-        {
-            if(isPlaying)
-                currentTime += (float)Game.UpdateTime.Elapsed.TotalSeconds;
+            if (isPlaying)
+                currentTime += (float)context.RenderContext.Time.Elapsed.TotalSeconds;
 
             spriteBatch.Begin(context.GraphicsContext);
+            
+            // Draw background
+            var target = context.CommandList.RenderTarget;
+            var imageBufferMinRatio = Math.Min(Background.ViewWidth / (float)target.ViewWidth, Background.ViewHeight / (float)target.ViewHeight);
+            var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
+            var source = new RectangleF((Background.ViewWidth - sourceSize.X) / 2, (Background.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+            spriteBatch.Draw(Background, new RectangleF(0, 0, virtualResolution.X, virtualResolution.Y), source, Color.White, 0, Vector2.Zero);
+
             screenRenderers[currentScreenIndex]();
             spriteBatch.End();
         }
+
+        #region Draw Methods
 
         private void DrawHeader(string headerPart1, string headerPart2, string headerPart3)
         {
@@ -364,14 +347,14 @@ at full size and full measure";
         private void UpdateInput()
         {
             // Toggle play/not play
-            if (Input.IsKeyPressed(Keys.Space) || Input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down))
+            if (input.IsKeyPressed(Keys.Space) || input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down))
             {
                 isPlaying = !isPlaying;
             }
-            else if (Input.IsKeyPressed(Keys.Left) || Input.IsKeyPressed(Keys.Right))
+            else if (input.IsKeyPressed(Keys.Left) || input.IsKeyPressed(Keys.Right))
             {
                 currentTime = 0;
-                currentScreenIndex = (currentScreenIndex + (Input.IsKeyPressed(Keys.Left) ? -1 : +1) + screenRenderers.Count) % screenRenderers.Count;
+                currentScreenIndex = (currentScreenIndex + (input.IsKeyPressed(Keys.Left) ? -1 : +1) + screenRenderers.Count) % screenRenderers.Count;
             }
         }
 

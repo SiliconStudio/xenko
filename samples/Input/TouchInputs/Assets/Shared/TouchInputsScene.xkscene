@@ -5,22 +5,8 @@ Tags: []
 Parent: null
 Hierarchy:
     RootPartIds:
-        - 818ea3cc-e643-45c6-bff5-bd54c2730c76
         - 95d80bd6-50e5-4984-92ae-7b8eeec651a6
     Parts:
-        -   Entity:
-                Id: 818ea3cc-e643-45c6-bff5-bd54c2730c76
-                Name: Background
-                Components:
-                    0e0d50874190f548924e8c9cdd0039ef: !TransformComponent
-                        Id: 87500d0e-9041-48f5-924e-8c9cdd0039ef
-                        Position: {X: 0.0, Y: 0.0, Z: -2.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: {}
-                    07a4cd26293bbb42b3698191eebff7a5: !BackgroundComponent
-                        Id: 26cda407-3b29-42bb-b369-8191eebff7a5
-                        Texture: c70d3cb5-77d2-4400-a715-382d092a2e19:XenkoBackground
         -   Entity:
                 Id: 95d80bd6-50e5-4984-92ae-7b8eeec651a6
                 Name: FontUI

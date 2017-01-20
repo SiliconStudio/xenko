@@ -1,15 +1,16 @@
-using SiliconStudio.Core.Mathematics;
+﻿using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Graphics;
+using System;
 
 namespace CustomEffect
 {
     /// <summary>
-    /// The script in charge of rendering the custom effect
+    /// The renderer in charge of drawing the custom effect.
     /// </summary>
-    public class EffectScript : StartupScript
+    public class CustomEffectRenderer : SceneRendererBase
     {
         private Effect customEffect;
         private SpriteBatch spriteBatch;
@@ -17,11 +18,12 @@ namespace CustomEffect
         private DelegateSceneRenderer renderer;
         private SamplerState samplerState;
 
+        public Texture Background;
         public Texture Logo;
 
-        public override void Start()
+        protected override void InitializeCore()
         {
-            base.Start();
+            base.InitializeCore();
 
             customEffect = EffectSystem.LoadEffect("Effect").WaitForResult();
             customEffectInstance = new EffectInstance(customEffect);
@@ -38,29 +40,26 @@ namespace CustomEffect
 
             // NOTE: Linear-Wrap sampling is not available for non-square non-power-of-two textures on opengl es 2.0
             samplerState = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp));
-            
-            // Add Effect rendering to the end of the pipeline
-            var scene = SceneSystem.SceneInstance.RootScene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            renderer = new DelegateSceneRenderer(RenderQuad);
-            compositor.Master.Renderers.Add(renderer);
         }
 
-        public override void Cancel()
+        protected override void DrawCore(RenderDrawContext context)
         {
-            // Cleanup when script is removed
-            var scene = SceneSystem.SceneInstance.RootScene;
-            var compositor = ((SceneGraphicsCompositorLayers)scene.Settings.GraphicsCompositor);
-            compositor.Master.Renderers.Remove(renderer);
+            // Clear
+            context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
+            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
-            base.Cancel();
-        }
+            customEffectInstance.Parameters.Set(EffectKeys.Phase, -3 * (float)context.RenderContext.Time.Total.TotalSeconds);
 
-        private void RenderQuad(RenderDrawContext renderContext)
-        {
-            customEffectInstance.Parameters.Set(EffectKeys.Phase, -3 * (float)Game.UpdateTime.Total.TotalSeconds);
+            spriteBatch.Begin(context.GraphicsContext, blendState: BlendStates.NonPremultiplied, depthStencilState: DepthStencilStates.None, effect: customEffectInstance);
 
-            spriteBatch.Begin(renderContext.GraphicsContext, blendState: BlendStates.NonPremultiplied, depthStencilState: DepthStencilStates.None, effect: customEffectInstance);
+            // Draw background
+            var target = context.CommandList.RenderTarget;
+            var imageBufferMinRatio = Math.Min(Background.ViewWidth / (float)target.ViewWidth, Background.ViewHeight / (float)target.ViewHeight);
+            var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
+            var source = new RectangleF((Background.ViewWidth - sourceSize.X) / 2, (Background.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+            spriteBatch.Draw(Background, new RectangleF(0, 0, 1, 1), source, Color.White, 0, Vector2.Zero);
+
+
             spriteBatch.Draw(Logo, new RectangleF(0, 0, 1, 1), Color.White);
             spriteBatch.End();
         }
