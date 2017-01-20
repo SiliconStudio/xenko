@@ -31,7 +31,7 @@ namespace SiliconStudio.Core.Reflection
         }
 
         public TypeDescriptorFactory(IAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention)
-            : this(attributeRegistry, emitDefaultValues, namingConvention, new DefaultKeyComparer())
+            : this(attributeRegistry, emitDefaultValues, namingConvention, new DefaultMemberComparer())
         {
         }
 
