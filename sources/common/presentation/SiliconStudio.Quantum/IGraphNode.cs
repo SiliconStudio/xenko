@@ -100,7 +100,7 @@ namespace SiliconStudio.Quantum
         /// Add a member to this node. This node and the member node must not have been sealed yet.
         /// </summary>
         /// <param name="member">The member to add to this node.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.TargetReference"/> or <see cref="IContentNode.ItemReferences"/> is not null.</param>
         void AddMember(IInitializingMemberNode member, bool allowIfReference = false);
     }
 

@@ -23,9 +23,10 @@ namespace SiliconStudio.Quantum.Contents
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
             Guid = guid;
-            Reference = reference;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
+            TargetReference = reference as ObjectReference;
+            ItemReferences = reference as ReferenceEnumerable;
         }
 
         /// <inheritdoc/>
@@ -42,10 +43,11 @@ namespace SiliconStudio.Quantum.Contents
         public ITypeDescriptor Descriptor { get; }
 
         /// <inheritdoc/>
-        public bool IsReference => Reference != null;
+        public bool IsReference => TargetReference != null || ItemReferences != null;
 
-        /// <inheritdoc/>
-        public IReference Reference { get; }
+        public ObjectReference TargetReference { get; }
+
+        public ReferenceEnumerable ItemReferences { get; }
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();
@@ -96,7 +98,7 @@ namespace SiliconStudio.Quantum.Contents
 
         private IEnumerable<Index> GetIndices()
         {
-            var enumRef = Reference as ReferenceEnumerable;
+            var enumRef = ItemReferences;
             if (enumRef != null)
                 return enumRef.Indices;
 
@@ -118,8 +120,8 @@ namespace SiliconStudio.Quantum.Contents
         public IObjectNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
-            if (!(Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
-            return Reference.AsEnumerable[index].TargetNode;
+            if (ItemReferences == null) throw new InvalidOperationException(@"The node does not contain enumerable references.");
+            return ItemReferences[index].TargetNode;
         }
 
         /// <summary>

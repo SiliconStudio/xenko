@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum
                     builder.Append(" > ");
                 }
                 builder.Append("Reference -> ");
-                builder.Append(node.Reference);
+                //builder.Append(node.Reference);
             }
             else if (node.Value == null)
             {

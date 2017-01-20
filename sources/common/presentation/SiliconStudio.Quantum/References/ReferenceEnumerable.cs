@@ -35,12 +35,6 @@ namespace SiliconStudio.Quantum.References
 
         public Type ElementType { get; }
 
-        /// <inheritdoc/>
-        public ObjectReference AsObject { get { throw new InvalidCastException("This reference is not an ObjectReference"); } }
-
-        /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable => this;
-
         /// <summary>
         /// Gets whether this reference enumerates a dictionary collection.
         /// </summary>
@@ -52,7 +46,7 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the indices of each reference in this instance.
         /// </summary>
-        public IReadOnlyCollection<Index> Indices { get; private set; }
+        internal IReadOnlyCollection<Index> Indices { get; private set; }
 
         /// <inheritdoc/>
         public ObjectReference this[Index index] => items[index];

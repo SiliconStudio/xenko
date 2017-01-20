@@ -112,7 +112,7 @@ namespace SiliconStudio.Quantum.Tests
                 if (sourceReference.TargetNode != null)
                     matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Value;
 
-                var targetReference = targetNode.Reference as ReferenceEnumerable;
+                var targetReference = targetNode.ItemReferences;
                 return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Value == matchValue);
 
             }

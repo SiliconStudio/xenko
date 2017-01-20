@@ -47,9 +47,9 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, instance, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, instance, false);
             var instanceNode = nodeContainer.GetNode(instance);
-            Helper.TestNonNullObjectReference(memberNode.Reference, instanceNode, instance);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, instanceNode, instance);
 
             memberNode = instanceNode.Members.First();
             Helper.TestMemberNode(instanceNode, memberNode, instance, instance.Name, nameof(TestObject.Name), false);
@@ -68,7 +68,7 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
-            Helper.TestNullObjectReference(memberNode.Reference);
+            Helper.TestNullObjectReference(memberNode.TargetReference);
         }
 
         /// <summary>
@@ -82,27 +82,27 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ObjectContainer { Instance = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var memberNode = containerNode.Members.First();
-            var instanceNode = memberNode.Reference.AsObject.TargetNode;
+            var instanceNode = memberNode.TargetReference.TargetNode;
 
             // Update to a new instance
             var newInstance = new TestObject { Name = "Test2" };
             memberNode.Update(newInstance);
             Helper.TestMemberNode(containerNode, memberNode, container, newInstance, nameof(ObjectContainer.Instance), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, newInstance, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, newInstance, false);
 
             var newInstanceNode = nodeContainer.GetNode(newInstance);
-            Helper.TestNonNullObjectReference(memberNode.Reference, newInstanceNode, newInstance);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, newInstanceNode, newInstance);
             Assert.AreNotEqual(instanceNode.Guid, newInstanceNode.Guid);
 
             // Update to null
             memberNode.Update(null);
             Helper.TestMemberNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
-            Helper.TestNullObjectReference(memberNode.Reference);
+            Helper.TestNullObjectReference(memberNode.TargetReference);
 
             // Update back to the initial instance
             memberNode.Update(instance);
             Helper.TestMemberNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, instanceNode, instance);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, instanceNode, instance);
         }
 
         /// <summary>
@@ -121,16 +121,16 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
-            Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
+            Helper.TestReferenceEnumerable(memberNode.ItemReferences, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
             Assert.AreEqual(instance1, memberNode.Retrieve(new Index(0)));
             Assert.AreEqual(instance2, memberNode.Retrieve(new Index(1)));
 
-            var reference1 = memberNode.Reference.AsEnumerable.First();
+            var reference1 = memberNode.ItemReferences.First();
             Helper.TestMemberNode(reference1.TargetNode, reference1.TargetNode.Members.First(), instance1, instance1.Name, nameof(TestObject.Name), false);
 
-            var reference2 = memberNode.Reference.AsEnumerable.Last();
+            var reference2 = memberNode.ItemReferences.Last();
             Helper.TestMemberNode(reference2.TargetNode, reference2.TargetNode.Members.First(), instance2, instance2.Name, nameof(TestObject.Name), false);
         }
 
@@ -148,7 +148,7 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
-            Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
+            Helper.TestReferenceEnumerable(memberNode.ItemReferences, container.Instances);
 
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
             Assert.AreEqual(null, memberNode.Retrieve(new Index(0)));
@@ -168,7 +168,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new MultipleObjectContainer { Instances = { instance1, instance2 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
             var memberNode = containerNode.Members.First();
-            var reference = memberNode.Reference.AsEnumerable;
+            var reference = memberNode.ItemReferences;
             var reference1 = reference.First();
             var reference2 = reference.Last();
 
@@ -179,9 +179,9 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
             Assert.AreEqual(newInstance, memberNode.Retrieve(new Index(0)));
             Assert.AreEqual(null, memberNode.Retrieve(new Index(1)));
-            Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
+            Helper.TestReferenceEnumerable(memberNode.ItemReferences, container.Instances);
 
-            var newReference = memberNode.Reference.AsEnumerable;
+            var newReference = memberNode.ItemReferences;
             Assert.AreEqual(reference, newReference);
             Assert.AreEqual(2, newReference.Count);
             var newReference1 = newReference.First();
@@ -211,14 +211,14 @@ namespace SiliconStudio.Quantum.Tests
 
             var member1Node = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, member1Node, container, instance, nameof(ObjectsContainer.Instance1), true);
-            Helper.TestNonNullObjectReference(member1Node.Reference, instance, false);
+            Helper.TestNonNullObjectReference(member1Node.TargetReference, instance, false);
 
             var member2Node = containerNode.Members.Last();
             Helper.TestMemberNode(containerNode, member2Node, container, instance, nameof(ObjectsContainer.Instance2), true);
-            Helper.TestNonNullObjectReference(member2Node.Reference, instance, false);
+            Helper.TestNonNullObjectReference(member2Node.TargetReference, instance, false);
 
-            var reference1 = member1Node.Reference.AsObject;
-            var reference2 = member2Node.Reference.AsObject;
+            var reference1 = member1Node.TargetReference;
+            var reference2 = member2Node.TargetReference;
             Assert.AreEqual(reference1.TargetGuid, reference2.TargetGuid);
             Assert.AreEqual(reference1.TargetNode, reference2.TargetNode);
             Assert.AreEqual(reference1.ObjectValue, reference2.ObjectValue);
@@ -239,9 +239,9 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Members.First();
             Helper.TestMemberNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
-            Helper.TestReferenceEnumerable(memberNode.Reference, container.Instances);
+            Helper.TestReferenceEnumerable(memberNode.ItemReferences, container.Instances);
 
-            var reference = memberNode.Reference.AsEnumerable;
+            var reference = memberNode.ItemReferences;
             Assert.AreEqual(2, reference.Count);
             var reference1 = reference.First();
             var reference2 = reference.Last();
@@ -266,7 +266,7 @@ namespace SiliconStudio.Quantum.Tests
             var memberNode = containerNode.Members.First();
             Assert.AreEqual(instance, memberNode.Retrieve());
             Assert.AreEqual(true, memberNode.IsReference);
-            Assert.AreEqual(instanceNode, memberNode.Reference.AsObject.TargetNode);
+            Assert.AreEqual(instanceNode, memberNode.TargetReference.TargetNode);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace SiliconStudio.Quantum.Tests
             var memberNode = containerNode.Members.First();
             Assert.AreEqual(instance, memberNode.Retrieve());
             Assert.AreEqual(true, memberNode.IsReference);
-            Assert.AreEqual(instanceNode, memberNode.Reference.AsObject.TargetNode);
+            Assert.AreEqual(instanceNode, memberNode.TargetReference.TargetNode);
         }
 
         /// <summary>
@@ -305,7 +305,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(1, containerNode.Members.Count);
             var memberNode = containerNode.Members.First();
             Assert.AreEqual(true, memberNode.IsReference);
-            var reference = memberNode.Reference.AsEnumerable;
+            var reference = memberNode.ItemReferences;
             Assert.AreEqual(2, reference.Indices.Count);
             var reference1 = reference.First();
             var reference2 = reference.Last();
@@ -328,8 +328,8 @@ namespace SiliconStudio.Quantum.Tests
             var instance2Node = nodeContainer.GetOrCreateNode(instance2);
             Assert.AreEqual(1, instance1Node.Members.Count);
             Assert.AreEqual(1, instance2Node.Members.Count);
-            Assert.AreEqual(instance1Node.Members.First().Reference.AsObject.TargetNode, instance2Node);
-            Assert.AreEqual(instance2Node.Members.First().Reference.AsObject.TargetNode, instance1Node);
+            Assert.AreEqual(instance1Node.Members.First().TargetReference.TargetNode, instance2Node);
+            Assert.AreEqual(instance2Node.Members.First().TargetReference.TargetNode, instance1Node);
         }
 
         /// <summary>
@@ -345,8 +345,8 @@ namespace SiliconStudio.Quantum.Tests
             var instance2Node = nodeContainer.GetOrCreateNode(instance2);
             instance1Node.Members.First().Update(instance2);
             instance2Node.Members.First().Update(instance1);
-            Assert.AreEqual(instance1Node.Members.First().Reference.AsObject.TargetNode, instance2Node);
-            Assert.AreEqual(instance2Node.Members.First().Reference.AsObject.TargetNode, instance1Node);
+            Assert.AreEqual(instance1Node.Members.First().TargetReference.TargetNode, instance2Node);
+            Assert.AreEqual(instance2Node.Members.First().TargetReference.TargetNode, instance1Node);
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace SiliconStudio.Quantum.Tests
             instance.Instance = instance;
             var instanceNode = nodeContainer.GetOrCreateNode(instance);
             Assert.AreEqual(1, instanceNode.Members.Count);
-            Assert.AreEqual(instanceNode.Members.First().Reference.AsObject.TargetNode, instanceNode);
+            Assert.AreEqual(instanceNode.Members.First().TargetReference.TargetNode, instanceNode);
         }
 
         /// <summary>
@@ -375,7 +375,7 @@ namespace SiliconStudio.Quantum.Tests
             instanceNode.Members.First().Update(instance);
             instance.Instance = instance;
             Assert.AreEqual(1, instanceNode.Members.Count);
-            Assert.AreEqual(instanceNode.Members.First().Reference.AsObject.TargetNode, instanceNode);
+            Assert.AreEqual(instanceNode.Members.First().TargetReference.TargetNode, instanceNode);
         }
     }
 }

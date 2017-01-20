@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -158,7 +157,8 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.IsReference)
                 {
-                    ((IReferenceInternal)node.Reference).Refresh(node, this);
+                    node.TargetReference?.Refresh(node, this);
+                    node.ItemReferences?.Refresh(node, this);
                 }
                 else
                 {

@@ -174,7 +174,7 @@ namespace SiliconStudio.Quantum
                 referenceContents.Add(content);
 
             PushContextNode(content);
-            if (!(content.Reference is ObjectReference))
+            if (content.TargetReference == null)
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
                 Visit(content.Value);

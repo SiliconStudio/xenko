@@ -45,12 +45,6 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         public Index Index { get; }
 
-        /// <inheritdoc/>
-        public ObjectReference AsObject => this;
-
-        /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable { get { throw new InvalidCastException("This reference is not a ReferenceEnumerable"); } }
-
         /// <summary>
         /// Gets the <see cref="Guid"/> of the model node targeted by this reference, if available.
         /// </summary>

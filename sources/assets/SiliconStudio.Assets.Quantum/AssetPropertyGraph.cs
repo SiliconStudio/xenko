@@ -585,7 +585,7 @@ namespace SiliconStudio.Assets.Quantum
                         if (!assetNode.TryIdToIndex(itemId, out localIndex))
                         {
                             // For dictionary, we might have a key collision, if so, we consider that the new value from the base is deleted in the instance.
-                            var keyCollision = assetNode.Descriptor is DictionaryDescriptor && (assetNode.Reference?.AsEnumerable.HasIndex(index) == true || assetNode.Indices.Any(x => index.Equals(x)));
+                            var keyCollision = assetNode.Descriptor is DictionaryDescriptor && (assetNode.ItemReferences?.HasIndex(index) == true || assetNode.Indices.Any(x => index.Equals(x)));
                             // For specific collections (eg. EntityComponentCollection) it might not be possible to add due to other kinds of collisions or invalid value.
                             var itemRejected = !CanUpdate(assetNode, ContentChangeType.CollectionAdd, localIndex, baseNode.Retrieve(index));
 
@@ -605,13 +605,13 @@ namespace SiliconStudio.Assets.Quantum
                         {
                             // If the item is present in both the instance and the base, check if we need to reconcile the value
                             var member = assetNode as IMemberNode;
-                            var targetNode = assetNode.Reference?.AsEnumerable?[localIndex]?.TargetNode;
+                            var targetNode = assetNode.ItemReferences?[localIndex]?.TargetNode;
                             // Skip it if it's overridden
                             if (!assetNode.IsItemOverridden(localIndex))
                             {
                                 var localItemValue = assetNode.Retrieve(localIndex);
                                 var baseItemValue = baseNode.Retrieve(index);
-                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.Reference is ReferenceEnumerable))
+                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, assetNode.ItemReferences != null))
                                 {
                                     var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
                                     assetNode.Update(clonedValue, localIndex);
@@ -689,8 +689,8 @@ namespace SiliconStudio.Assets.Quantum
                 else
                 {
                     var member = assetNode as IMemberNode;
-                    var targetNode = assetNode.Reference?.AsObject?.TargetNode;
-                    if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.Reference is ObjectReference))
+                    var targetNode = assetNode.TargetReference?.TargetNode;
+                    if (ShouldReconcileItem(member, targetNode, localValue, baseValue, assetNode.TargetReference != null))
                     {
                         var clonedValue = CloneValueFromBase(baseValue, assetNode);
                         assetNode.Update(clonedValue);

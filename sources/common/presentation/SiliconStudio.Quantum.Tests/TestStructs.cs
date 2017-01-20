@@ -61,7 +61,7 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode[nameof(StructContainer.Struct)];
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             var structMember1Node = memberNode.Target[nameof(SimpleStruct.Name)];
             Helper.TestMemberNode(memberNode.Target, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
             var structMember2Node = memberNode.Target[nameof(SimpleStruct.Value)];
@@ -104,7 +104,7 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(memberNode.Target, structMember1Node, container.Struct, container.Struct.Name, nameof(SimpleStruct.Name), false);
 
             structMember1Node.Update("Test2");
@@ -128,7 +128,7 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructWithCollectionContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(targetNode, structMemberNode, container.Struct, container.Struct.Strings, nameof(StructWithCollection.Strings), false);
 
             structMemberNode.Update("ddd", new Index(1));
@@ -154,11 +154,11 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(memberNode.Target, firstNestingMemberNode, container.Struct, container.Struct.Struct1, nameof(FirstNestingStruct.Struct1), true);
-            Helper.TestNonNullObjectReference(firstNestingMemberNode.Reference, container.Struct.Struct1, false);
+            Helper.TestNonNullObjectReference(firstNestingMemberNode.TargetReference, container.Struct.Struct1, false);
             Helper.TestMemberNode(firstNestingMemberNode.Target, secondNestingMemberNode, container.Struct.Struct1, container.Struct.Struct1.Struct2, nameof(SecondNestingStruct.Struct2), true);
-            Helper.TestNonNullObjectReference(secondNestingMemberNode.Reference, container.Struct.Struct1.Struct2, false);
+            Helper.TestNonNullObjectReference(secondNestingMemberNode.TargetReference, container.Struct.Struct1.Struct2, false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember1Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember2Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Value, nameof(SimpleStruct.Value), false);
         }
@@ -190,11 +190,11 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(memberNode.Target, firstNestingMemberNode, container.Struct, container.Struct.Struct1, nameof(FirstNestingStruct.Struct1), true);
-            Helper.TestNonNullObjectReference(firstNestingMemberNode.Reference, container.Struct.Struct1, false);
+            Helper.TestNonNullObjectReference(firstNestingMemberNode.TargetReference, container.Struct.Struct1, false);
             Helper.TestMemberNode(firstNestingMemberNode.Target, secondNestingMemberNode, container.Struct.Struct1, container.Struct.Struct1.Struct2, nameof(SecondNestingStruct.Struct2), true);
-            Helper.TestNonNullObjectReference(secondNestingMemberNode.Reference, container.Struct.Struct1.Struct2, false);
+            Helper.TestNonNullObjectReference(secondNestingMemberNode.TargetReference, container.Struct.Struct1.Struct2, false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember1Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember2Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Value, nameof(SimpleStruct.Value), false);
         }
@@ -226,11 +226,11 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(firstTargetNode, firstNestingMemberNode, container.Struct, container.Struct.Struct1, nameof(FirstNestingStruct.Struct1), true);
-            Helper.TestNonNullObjectReference(firstNestingMemberNode.Reference, container.Struct.Struct1, false);
+            Helper.TestNonNullObjectReference(firstNestingMemberNode.TargetReference, container.Struct.Struct1, false);
             Helper.TestMemberNode(secondTargetNode, secondNestingMemberNode, container.Struct.Struct1, container.Struct.Struct1.Struct2, nameof(SecondNestingStruct.Struct2), true);
-            Helper.TestNonNullObjectReference(secondNestingMemberNode.Reference, container.Struct.Struct1.Struct2, false);
+            Helper.TestNonNullObjectReference(secondNestingMemberNode.TargetReference, container.Struct.Struct1.Struct2, false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember1Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember2Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Value, nameof(SimpleStruct.Value), false);
         }
@@ -262,11 +262,11 @@ namespace SiliconStudio.Quantum.Tests
 
             Helper.TestNonCollectionObjectNode(containerNode, container, 1);
             Helper.TestMemberNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), true);
-            Helper.TestNonNullObjectReference(memberNode.Reference, container.Struct, false);
+            Helper.TestNonNullObjectReference(memberNode.TargetReference, container.Struct, false);
             Helper.TestMemberNode(firstTargetNode, firstNestingMemberNode, container.Struct, container.Struct.Struct1, nameof(FirstNestingStruct.Struct1), true);
-            Helper.TestNonNullObjectReference(firstNestingMemberNode.Reference, container.Struct.Struct1, false);
+            Helper.TestNonNullObjectReference(firstNestingMemberNode.TargetReference, container.Struct.Struct1, false);
             Helper.TestMemberNode(secondTargetNode, secondNestingMemberNode, container.Struct.Struct1, container.Struct.Struct1.Struct2, nameof(SecondNestingStruct.Struct2), true);
-            Helper.TestNonNullObjectReference(secondNestingMemberNode.Reference, container.Struct.Struct1.Struct2, false);
+            Helper.TestNonNullObjectReference(secondNestingMemberNode.TargetReference, container.Struct.Struct1.Struct2, false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember1Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Name, nameof(SimpleStruct.Name), false);
             Helper.TestMemberNode(secondNestingMemberNode.Target, structMember2Node, container.Struct.Struct1.Struct2, container.Struct.Struct1.Struct2.Value, nameof(SimpleStruct.Value), false);
         }

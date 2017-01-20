@@ -44,7 +44,7 @@ namespace SiliconStudio.Quantum.Contents
         public sealed override object Value { get { if (Parent.Value == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Value); } }
 
         /// <inheritdoc/>
-        public IObjectNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
+        public IObjectNode Target { get { if (TargetReference == null) throw new InvalidOperationException("This node does not contain an ObjectReference"); return TargetReference.TargetNode; } }
 
         /// <inheritdoc/>
         public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;

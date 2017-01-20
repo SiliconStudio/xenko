@@ -55,10 +55,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         bool IsReference { get; }
 
-        /// <summary>
-        /// Gets the reference hold by this content, if applicable.
-        /// </summary>
-        IReference Reference { get; }
+        ObjectReference TargetReference { get; }
+
+        ReferenceEnumerable ItemReferences { get; }
 
         /// <summary>
         /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.

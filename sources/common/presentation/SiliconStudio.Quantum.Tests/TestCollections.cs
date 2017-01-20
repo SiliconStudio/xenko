@@ -152,7 +152,7 @@ namespace SiliconStudio.Quantum.Tests
 
         private static void VerifyItem(IMemberNode listMemberNode, int index, object expectedValue, bool isPrimitive)
         {
-            var enumRef = listMemberNode.Reference as ReferenceEnumerable;
+            var enumRef = listMemberNode.ItemReferences;
             var indexValue = new Index(index);
 
             Assert.NotNull(enumRef);
@@ -166,7 +166,8 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(expectedValue.GetType()), enumRef.ToList()[index].TargetNode.Descriptor);
             Assert.AreEqual(isPrimitive, enumRef.ToList()[index].TargetNode.IsPrimitive);
             Assert.AreEqual(false, enumRef.ToList()[index].TargetNode.IsReference);
-            Assert.Null(enumRef.ToList()[index].TargetNode.Reference);
+            Assert.Null(enumRef.ToList()[index].TargetNode.TargetReference);
+            Assert.Null(enumRef.ToList()[index].TargetNode.ItemReferences);
             Assert.AreEqual(expectedValue.GetType(), enumRef.ToList()[index].TargetNode.Type);
             Assert.AreEqual(expectedValue, enumRef.ToList()[index].TargetNode.Value);
         }

@@ -51,7 +51,8 @@ namespace SiliconStudio.Quantum.Tests
             {
                 // A node with an ObjectContent representing a collection of reference types should contain an enumerable reference.
                 Assert.AreEqual(true, node.IsReference);
-                Assert.IsInstanceOf<ReferenceEnumerable>(node.Reference);
+                Assert.Null(node.TargetReference);
+                Assert.NotNull(node.ItemReferences);
             }
             else
             {
@@ -95,20 +96,18 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetValue">The actual value pointed by the reference.</param>
         /// <param name="hasIndex">Indicates whether the reference has an index.</param>
-        public static void TestNonNullObjectReference(IReference reference, object targetValue, bool hasIndex)
+        public static void TestNonNullObjectReference(ObjectReference reference, object targetValue, bool hasIndex)
         {
-            var objReference = reference as ObjectReference;
-
             // Check that the reference is not null.
-            Assert.IsNotNull(objReference);
+            Assert.IsNotNull(reference);
             // Check that the values match.
-            Assert.AreEqual(targetValue, objReference.TargetNode.Retrieve());
+            Assert.AreEqual(targetValue, reference.TargetNode.Retrieve());
             // Check that the values match.
-            Assert.AreEqual(targetValue, objReference.ObjectValue);
+            Assert.AreEqual(targetValue, reference.ObjectValue);
             // Check that that we have an index if expected.
-            Assert.AreEqual(hasIndex, !objReference.Index.IsEmpty);
+            Assert.AreEqual(hasIndex, !reference.Index.IsEmpty);
             // Check that the target is an object content node.
-            TestNonCollectionObjectNode(objReference.TargetNode, targetValue, objReference.TargetNode.Members.Count);
+            TestNonCollectionObjectNode(reference.TargetNode, targetValue, reference.TargetNode.Members.Count);
         }
 
         /// <summary>
@@ -117,21 +116,20 @@ namespace SiliconStudio.Quantum.Tests
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetNode">The node that is supposed to be the target of the reference.</param>
         /// <param name="targetValue">The actual value pointed by the reference.</param>
-        public static void TestNonNullObjectReference(IReference reference, IContentNode targetNode, object targetValue)
+        public static void TestNonNullObjectReference(ObjectReference reference, IContentNode targetNode, object targetValue)
         {
             if (targetNode == null) throw new ArgumentNullException(nameof(targetNode));
-            var objReference = reference as ObjectReference;
 
             // Check that the reference is not null.
-            Assert.IsNotNull(objReference);
+            Assert.IsNotNull(reference);
             // Check that the target node is of the expected type.
             Assert.IsInstanceOf<ObjectContent>(targetNode);
             // Check that the Guids match.
-            Assert.AreEqual(targetNode.Guid, objReference.TargetGuid);
+            Assert.AreEqual(targetNode.Guid, reference.TargetGuid);
             // Check that the nodes match.
-            Assert.AreEqual(targetNode, objReference.TargetNode);
+            Assert.AreEqual(targetNode, reference.TargetNode);
             // Check that the values match.
-            Assert.AreEqual(targetValue, objReference.ObjectValue);
+            Assert.AreEqual(targetValue, reference.ObjectValue);
             // Check that the target is an object content node.
             TestNonCollectionObjectNode(targetNode, targetValue, ((IObjectNode)targetNode).Members.Count);
         }
@@ -140,18 +138,16 @@ namespace SiliconStudio.Quantum.Tests
         /// Tests the validity of a reference to a null target object.
         /// </summary>
         /// <param name="reference">The reference to test.</param>
-        public static void TestNullObjectReference(IReference reference)
+        public static void TestNullObjectReference(ObjectReference reference)
         {
-            var objReference = reference as ObjectReference;
-
             // Check that the reference is not null.
-            Assert.IsNotNull(objReference);
+            Assert.IsNotNull(reference);
             // Check that the Guids match.
-            Assert.AreEqual(Guid.Empty, objReference.TargetGuid);
+            Assert.AreEqual(Guid.Empty, reference.TargetGuid);
             // Check that the nodes match.
-            Assert.AreEqual(null, objReference.TargetNode);
+            Assert.AreEqual(null, reference.TargetNode);
             // Check that the values match.
-            Assert.AreEqual(null, objReference.ObjectValue);
+            Assert.AreEqual(null, reference.ObjectValue);
         }
 
         /// <summary>
@@ -159,18 +155,17 @@ namespace SiliconStudio.Quantum.Tests
         /// </summary>
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetValue">The actual collection pointed by the reference.</param>
-        public static void TestReferenceEnumerable(IReference reference, object targetValue)
+        public static void TestReferenceEnumerable(ReferenceEnumerable reference, object targetValue)
         {
-            var referenceEnum = reference as ReferenceEnumerable;
             var collection = (ICollection)targetValue;
 
             // Check that the reference is not null.
-            Assert.IsNotNull(referenceEnum);
+            Assert.IsNotNull(reference);
             // Check that the counts match.
-            Assert.AreEqual(collection.Count, referenceEnum.Count);
-            Assert.AreEqual(collection.Count, referenceEnum.Indices.Count);
+            Assert.AreEqual(collection.Count, reference.Count);
+            Assert.AreEqual(collection.Count, reference.Indices.Count);
             // Check that the object references match.
-            foreach (var objReference in referenceEnum.Zip(collection.Cast<object>(), Tuple.Create))
+            foreach (var objReference in reference.Zip(collection.Cast<object>(), Tuple.Create))
             {
                 Assert.AreEqual(objReference.Item2, objReference.Item1.ObjectValue);
                 if (objReference.Item2 != null)
