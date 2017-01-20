@@ -53,8 +53,9 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <param name="localPath">The path of the asset.</param>
         /// <param name="logger">The logger to use to log import message.</param>
         /// <param name="importParameters">The import parameters.</param>
-        /// <returns>The EntityInfo.</returns>
-        public abstract TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime);
+        /// <param name="startTime">Returns the first (start) keyframe's time for the animation</param>
+        /// <param name="endTime">Returns the last (end) keyframe's time for the animation</param>
+        public abstract void GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime, out TimeSpan endTime);
 
         /// <summary>
         /// Imports the model.
@@ -92,10 +93,10 @@ namespace SiliconStudio.Xenko.Assets.Models
             // 3. Animation
             if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
             {
-                TimeSpan startTime;
-                var animationDuration = GetAnimationDuration(localPath, importParameters.Logger, importParameters, out startTime);
+                TimeSpan startTime, endTime;
+                GetAnimationDuration(localPath, importParameters.Logger, importParameters, out startTime, out endTime);
 
-                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset, animationDuration, startTime);
+                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset, startTime, endTime);
             }
 
             // 4. Materials
@@ -135,13 +136,13 @@ namespace SiliconStudio.Xenko.Assets.Models
             return assetItem;
         }
 
-        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset, TimeSpan animationDuration, TimeSpan animationStartTime)
+        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset, TimeSpan animationStartTime, TimeSpan animationEndTime)
         {
             if (animationNodes != null && animationNodes.Count > 0)
             {
                 var assetSource = localPath;
 
-                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = animationDuration, AnimationFrameMinimum = animationStartTime };
+                var asset = new AnimationAsset { Source = assetSource, AnimationFrameMaximum = animationEndTime, AnimationFrameMinimum = animationStartTime };
                 var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)

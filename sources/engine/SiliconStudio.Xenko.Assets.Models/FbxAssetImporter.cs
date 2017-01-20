@@ -31,13 +31,13 @@ namespace SiliconStudio.Xenko.Assets.Models
         }
 
         /// <inheritdoc/>
-        public override TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime)
+        public override void GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime, out TimeSpan endTime)
         {
             var meshConverter = new Importer.FBX.MeshConverter(logger);
             var durationInSeconds = meshConverter.GetAnimationDuration(localPath.FullPath);
 
             startTime = TimeSpan.Zero;
-            return TimeSpan.FromSeconds(durationInSeconds);
+            endTime = TimeSpan.FromSeconds(durationInSeconds);
         }
     }
 }

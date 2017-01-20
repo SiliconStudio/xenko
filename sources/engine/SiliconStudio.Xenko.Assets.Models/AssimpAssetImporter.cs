@@ -32,13 +32,13 @@ namespace SiliconStudio.Xenko.Assets.Models
         }
 
         /// <inheritdoc/>
-        public override TimeSpan GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime)
+        public override void GetAnimationDuration(UFile localPath, Logger logger, AssetImporterParameters importParameters, out TimeSpan startTime, out TimeSpan endTime)
         {
             var meshConverter = new Importer.AssimpNET.MeshConverter(logger);
             var sceneData = meshConverter.ConvertAnimation(localPath.FullPath, "");
 
             startTime = CompressedTimeSpan.MaxValue; // This will go down, so we start from positive infinity
-            CompressedTimeSpan endTime = CompressedTimeSpan.MinValue;   // This will go up, so we start from negative infinity
+            endTime = CompressedTimeSpan.MinValue;   // This will go up, so we start from negative infinity
 
             foreach (var animationClip in sceneData.AnimationClips)
             {
@@ -58,12 +58,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 startTime = CompressedTimeSpan.Zero;
             if (endTime == CompressedTimeSpan.MinValue)
                 endTime = CompressedTimeSpan.Zero;
-
-//            TimeSpan duration = new TimeSpan(endTime.Ticks - startTime.Ticks);
-
-            return endTime;
-
-//            return sceneData.Duration;
         }
     }
 }

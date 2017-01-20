@@ -64,6 +64,10 @@ namespace SiliconStudio.Xenko.Animations
             InterpolationType = AnimationCurveInterpolationType.Linear;
         }
 
+        /// <summary>
+        /// Shifts all animation keys by the specified time, adding it to all <see cref="KeyFrameData.Time"/>
+        /// </summary>
+        /// <param name="shiftTimeSpan">The time span by which the keys should be shifted</param>
         public virtual void ShiftKeys(CompressedTimeSpan shiftTimeSpan) { }
     }
 
@@ -153,6 +157,7 @@ namespace SiliconStudio.Xenko.Animations
             return AnimationData<T>.FromAnimationChannels(animationChannelsByName.Select(x => new KeyValuePair<string, AnimationCurve<T>>(x.Key, (AnimationCurve<T>)x.Value)).ToList());
         }
 
+        /// <inheritdoc/>
         public override void ShiftKeys(CompressedTimeSpan shiftTimeSpan)
         {
             var siftedKeyFrames = new FastList<KeyFrameData<T>>();
