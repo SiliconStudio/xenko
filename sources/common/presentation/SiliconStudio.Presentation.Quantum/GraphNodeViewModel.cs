@@ -341,8 +341,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 foreach (var key in dictionary.GetKeys(targetNode.Value))
                 {
-                    var index = new Index(key);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    var newIndex = new Index(key);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
                     AddChild(child);
                     child.Initialize();
                     initializedChildren.Add(child);
@@ -355,8 +355,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 for (int i = 0; i < list.GetCollectionCount(targetNode.Value); ++i)
                 {
-                    var index = new Index(i);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    var newIndex = new Index(i);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
                     AddChild(child);
                     child.Initialize();
                     initializedChildren.Add(child);
