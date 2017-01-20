@@ -65,7 +65,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var child = (VirtualNodeViewModel)Activator.CreateInstance(typeof(VirtualNodeViewModel<>).MakeGenericType(contentType), Owner, name, isPrimitive, order, index, getter, setter);
             nodeAssociatedData?.ForEach(x => child.AddAssociatedData(x.Key, x.Value));
-            child.FinalizeChildrenInitialization();
+            child.FinalizeInitialization();
             AddChild(child);
             return child;
         }

@@ -137,7 +137,7 @@ namespace SiliconStudio.Presentation.Quantum
                 AddAssociatedData(singleData.Key, singleData.Value);
             }
 
-            FinalizeChildrenInitialization();
+            FinalizeInitialization();
 
             CheckDynamicMemberConsistency();
         }
