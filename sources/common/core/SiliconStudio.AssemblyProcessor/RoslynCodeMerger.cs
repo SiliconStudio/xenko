@@ -198,7 +198,7 @@ namespace SiliconStudio.AssemblyProcessor
             return MetadataReference.CreateFromFile(assembly.MainModule.FullyQualifiedName);
         }
 
-        public static string GenerateRolsynAssemblyLocation(string assemblyLocation)
+        public static string GenerateRoslynAssemblyLocation(string assemblyLocation)
         {
             if (!Regex.IsMatch(assemblyLocation, @"\.dll|\.exe", RegexOptions.IgnoreCase))
                 throw new InvalidOperationException();
