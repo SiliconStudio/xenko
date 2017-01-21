@@ -200,11 +200,11 @@ namespace SiliconStudio.AssemblyProcessor
 
         public static string GenerateRolsynAssemblyLocation(string assemblyLocation)
         {
-            if (!Regex.IsMatch(assemblyLocation, ".dll|.exe", RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(assemblyLocation, @"\.dll|\.exe", RegexOptions.IgnoreCase))
                 throw new InvalidOperationException();
 
             // For historic reason, it is named *.Serializers.dll
-            return Regex.Replace(assemblyLocation, ".dll|.exe", ".Serializers.dll", RegexOptions.IgnoreCase);
+            return Regex.Replace(assemblyLocation, @"\.dll|\.exe", ".Serializers.dll", RegexOptions.IgnoreCase);
         }
 
         public struct SourceCode
