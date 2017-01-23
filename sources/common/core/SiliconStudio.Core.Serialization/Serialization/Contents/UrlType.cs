@@ -20,11 +20,6 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// <summary>
         /// The location is a IReference and the content is used by the command
         /// </summary>
-        Content,
-
-        /// <summary>
-        /// TODO: Is it something still used?
-        /// </summary>
-        Virtual,
+        Content
     }
 }

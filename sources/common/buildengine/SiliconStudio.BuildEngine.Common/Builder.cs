@@ -256,20 +256,6 @@ namespace SiliconStudio.BuildEngine
                         if (!buildTransaction.TryGetValue(filePath, out hash))
                             Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
                         break;
-                    case UrlType.Virtual:
-                        var providerResult = VirtualFileSystem.ResolveProvider(filePath, true);
-                        var dbProvider = providerResult.Provider as DatabaseFileProvider;
-                        var microProvider = providerResult.Provider as MicroThreadFileProvider;
-                        if (microProvider != null)
-                        {
-                            dbProvider = microProvider.ThreadLocal.Value as DatabaseFileProvider;
-                        }
-
-                        if (dbProvider != null)
-                        {
-                            dbProvider.ContentIndexMap.TryGetValue(providerResult.Path, out hash);
-                        }
-                        break;
                 }
 
                 return hash;
