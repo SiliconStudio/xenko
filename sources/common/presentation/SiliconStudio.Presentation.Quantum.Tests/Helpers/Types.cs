@@ -1,9 +1,8 @@
-﻿using SiliconStudio.Presentation.Quantum;
-using SiliconStudio.Quantum;
+﻿using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
-namespace SiliconStudio.Presentation.Tests.Helpers
+namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
 {
     public static class Types
     {

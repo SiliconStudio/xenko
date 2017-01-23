@@ -2,8 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Extensions
@@ -185,7 +184,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="index">The start of the index to get the data from.</param>
         /// <param name="length">The length of elements to slice</param>
         /// <returns>A slice of the array.</returns>
-        public static T[] SubArray<T>(this T[] data, int index, int length)
+        [NotNull]
+        public static T[] SubArray<T>([NotNull] this T[] data, int index, int length)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var result = new T[length];
@@ -200,7 +200,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="array1">The array1 to concat</param>
         /// <param name="array2">The array2 to concat</param>
         /// <returns>The concat of the array.</returns>
-        public static T[] Concat<T>(this T[] array1, T[] array2)
+        [NotNull]
+        public static T[] Concat<T>([NotNull] this T[] array1, [NotNull] T[] array2)
         {
             if (array1 == null) throw new ArgumentNullException(nameof(array1));
             if (array2 == null) throw new ArgumentNullException(nameof(array2));

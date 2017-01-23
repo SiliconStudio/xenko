@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -20,10 +21,10 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="equals">The equality function to use for this equality comparer.</param>
         /// <param name="getHashCode">The function to use to compute hash codes for the objects to compare.</param>
-        public AnonymousEqualityComparer(Func<T, T, bool> equals, Func<T, int> getHashCode)
+        public AnonymousEqualityComparer([NotNull] Func<T, T, bool> equals, [NotNull] Func<T, int> getHashCode)
         {
-            if (equals == null) throw new ArgumentNullException("equals");
-            if (getHashCode == null) throw new ArgumentNullException("getHashCode");
+            if (equals == null) throw new ArgumentNullException(nameof(equals));
+            if (getHashCode == null) throw new ArgumentNullException(nameof(getHashCode));
             this.equals = equals;
             this.getHashCode = getHashCode;
         }
@@ -32,7 +33,7 @@ namespace SiliconStudio.Core.Extensions
         /// Initializes a new instance of the <see cref="AnonymousEqualityComparer{T}"/> class using the default <see cref="object.GetHashCode"/> method to get hash codes.
         /// </summary>
         /// <param name="equals">The equality function to use for this equality comparer.</param>
-        public AnonymousEqualityComparer(Func<T, T, bool> equals)
+        public AnonymousEqualityComparer([NotNull] Func<T, T, bool> equals)
             : this(equals, obj => obj.GetHashCode())
         {
         }

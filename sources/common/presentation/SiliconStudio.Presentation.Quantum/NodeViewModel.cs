@@ -372,7 +372,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void FinalizeChildrenInitialization()
+        /// <summary>
+        /// Finalizes the initialization of this node.
+        /// </summary>
+        /// <remarks>This method is called after all sibling of this node have been initialized.</remarks>
+        protected internal virtual void FinalizeInitialization()
         {
             if (initializingChildren != null)
             {
@@ -386,29 +390,33 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void AddChild(NodeViewModel node)
+        /// <summary>
+        /// Adds the given node to the list of children of this node.
+        /// </summary>
+        /// <param name="child">The node to add as child.</param>
+        protected void AddChild(NodeViewModel child)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
-            if (Children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
+            if (child == null) throw new ArgumentNullException(nameof(child));
+            if (child.Parent != null) throw new InvalidOperationException("The node already have a parent.");
+            if (Children.Contains(child)) throw new InvalidOperationException("The node is already in the children list of its parent.");
             if (initializingChildren == null)
             {
-                NotifyPropertyChanging(node.Name);
+                NotifyPropertyChanging(child.Name);
             }
-            node.Parent = this;
+            child.Parent = this;
 
             if (initializingChildren == null)
             {
-                children.Add(node);
-                NotifyPropertyChanged(node.Name);
+                children.Add(child);
+                NotifyPropertyChanged(child.Name);
             }
             else
             {
-                initializingChildren.Add(node);
+                initializingChildren.Add(child);
             }
-            if (node.IsVisible)
+            if (child.IsVisible)
                 ++VisibleChildrenCount;    
-            node.IsVisibleChanged += ChildVisibilityChanged;
+            child.IsVisibleChanged += ChildVisibilityChanged;
         }
 
         protected void RemoveChild(NodeViewModel node)

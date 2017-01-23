@@ -50,7 +50,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="action">Action performed for each item in the enumerable.</param>
         /// <remarks>This extension method do not yield. It acts just like a foreach statement, and performs a cast to a typed enumerable in the middle.</remarks>
-        public static void ForEach<T>([NotNull] this IEnumerable source, Action<T> action)
+        public static void ForEach<T>([NotNull] this IEnumerable source, [NotNull] Action<T> action)
         {
             source.Cast<T>().ForEach(action);
         }
@@ -62,7 +62,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="action">Action performed for each item in the enumerable.</param>
         /// <remarks>This extension method do not yield. It acts just like a foreach statement.</remarks>
-        public static void ForEach<T>([NotNull] this IEnumerable<T> source, Action<T> action)
+        public static void ForEach<T>([NotNull] this IEnumerable<T> source, [NotNull] Action<T> action)
         {
             foreach (var item in source)
                 action(item);
@@ -76,7 +76,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the first element matching.</returns>
         [Pure]
-        public static int IndexOf<T>([NotNull] this IEnumerable<T> source, Func<T, bool> predicate)
+        public static int IndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var index = 0;
             foreach (var item in source)
@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the last element matching.</returns>
         [Pure]
-        public static int LastIndexOf<T>([NotNull] this IEnumerable<T> source, Func<T, bool> predicate)
+        public static int LastIndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var list = source as IList<T>;
             if (list != null)

@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -31,7 +32,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <item>Use <see cref="VisualExtensions.RectToScreen(System.Windows.Media.Visual,Rect)"/></item>
         /// </list>
         /// </remarks>
-        public static void CenterToArea(this Window window, Rect area)
+        public static void CenterToArea([NotNull] this Window window, Rect area)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             if (area == Rect.Empty) return;
@@ -62,7 +63,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// </remarks>
         /// <seealso cref="NativeHelper.GetCursorPos"/>
         /// <seealso cref="System.Windows.Media.Visual.PointFromScreen"/>
-        public static Point GetCursorScreenPosition(this Window window)
+        public static Point GetCursorScreenPosition([NotNull] this Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -91,7 +92,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <item>Use <see cref="VisualExtensions.RectToScreen(System.Windows.Media.Visual,Rect)"/></item>
         /// </list>
         /// </remarks>
-        public static Rect GetScreenSize(this Window window)
+        public static Rect GetScreenSize([NotNull] this Window window)
         {
             var monitor = GetMonitorInfo(new WindowInteropHelper(window).Handle);
             if (monitor == null) return Rect.Empty;
@@ -120,7 +121,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <item>Use <see cref="VisualExtensions.RectToScreen(System.Windows.Media.Visual,Rect)"/></item>
         /// </list>
         /// </remarks>
-        public static Rect GetWorkArea(this Window window)
+        public static Rect GetWorkArea([NotNull] this Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -151,7 +152,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <item>Use <see cref="VisualExtensions.RectToScreen(System.Windows.Media.Visual,Rect)"/></item>
         /// </list>
         /// </remarks>
-        public static void FillArea(this Window window, Rect area)
+        public static void FillArea([NotNull] this Window window, Rect area)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
