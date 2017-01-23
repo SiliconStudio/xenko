@@ -254,7 +254,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 if (animationClip.Duration.Ticks == 0)
                 {
-                    commandContext.Logger.Info($"File {SourcePath} has a 0 tick long animation.");
+                    commandContext.Logger.Verbose($"File {SourcePath} has a 0 tick long animation.");
                 }
 
                 // Optimize and set common parameters
