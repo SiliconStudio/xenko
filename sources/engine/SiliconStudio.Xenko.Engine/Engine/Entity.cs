@@ -35,6 +35,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Internal owner of this entity
         /// </summary>
         internal IEntityComponentNotify Owner;
+        internal Scene scene;
 
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
@@ -90,6 +91,24 @@ namespace SiliconStudio.Xenko.Engine
             set
             {
                 base.Name = value;
+            }
+        }
+
+        /// <summary>
+        /// The parent scene.
+        /// </summary>
+        [DataMemberIgnore]
+        public Scene Scene
+        {
+            get { return scene; }
+            set
+            {
+                var oldScene = scene;
+                if (oldScene == value)
+                    return;
+
+                oldScene?.Entities.Remove(this);
+                value?.Entities.Add(this);
             }
         }
 
