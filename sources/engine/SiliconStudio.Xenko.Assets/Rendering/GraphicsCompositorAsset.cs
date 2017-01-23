@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// The entry point for the game compositor.
         /// </summary>
-        public ISceneRenderer TopLevel { get; set; }
+        public ISceneRenderer Game { get; set; }
 
         /// <summary>
         /// The entry point for a compositor that can render a single view.
@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
             if (copyRenderers)
             {
-                graphicsCompositor.TopLevel = TopLevel;
+                graphicsCompositor.Game = Game;
                 graphicsCompositor.SingleView = SingleView;
             }
 

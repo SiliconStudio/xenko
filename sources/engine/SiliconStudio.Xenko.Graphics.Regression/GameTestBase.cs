@@ -280,7 +280,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             // add the render callback
             game.SceneSystem.GraphicsCompositor = new GraphicsCompositor
             {
-                TopLevel = new DelegateSceneRenderer(context => drawTestAction(game, context)),
+                Game = new DelegateSceneRenderer(context => drawTestAction(game, context)),
             };
 
             RunGameTest(game);

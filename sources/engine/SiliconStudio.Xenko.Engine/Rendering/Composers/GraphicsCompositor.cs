@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <summary>
         /// The entry point for the game compositor.
         /// </summary>
-        public ISceneRenderer TopLevel { get; set; }
+        public ISceneRenderer Game { get; set; }
 
         /// <summary>
         /// The entry point for a compositor that can render a single view.
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         protected override void Destroy()
         {
             // Dispose renderers
-            TopLevel?.Dispose();
+            Game?.Dispose();
 
             // Cleanup created visibility groups
             foreach (var sceneInstance in initializedSceneInstances)
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <inheritdoc/>
         protected override void DrawCore(RenderDrawContext context)
         {
-            if (TopLevel != null)
+            if (Game != null)
             {
                 // Get or create VisibilityGroup for this RenderSystem + SceneInstance
                 var sceneInstance = SceneInstance.GetCurrent(context.RenderContext);
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     try
                     {
                         // Collect in the game graphics compositor: Setup features/stages, enumerate views and populates VisibilityGroup
-                        TopLevel.Collect(context.RenderContext);
+                        Game.Collect(context.RenderContext);
 
                         // Collect in render features
                         RenderSystem.Collect(context.RenderContext);
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         RenderSystem.Prepare(context);
 
                         // Draw using the game graphics compositor
-                        TopLevel.Draw(context);
+                        Game.Draw(context);
 
                         // Flush
                         RenderSystem.Flush(context);
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         },
                     },
                 },
-                TopLevel = new SceneCameraRenderer()
+                Game = new SceneCameraRenderer()
                 {
                     Child = singleView,
                 },

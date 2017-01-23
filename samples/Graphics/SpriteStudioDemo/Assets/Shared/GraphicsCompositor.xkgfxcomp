@@ -81,11 +81,6 @@ RenderFeatures:
                 TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: null
         PipelineProcessors: {}
-    e862c40fd76de01c98844cf1993c9444*: !SiliconStudio.Xenko.SpriteStudio.Runtime.SpriteStudioRenderFeature,SiliconStudio.Xenko.SpriteStudio.Runtime
-        RenderStageSelectors:
-            e19672898ea692a8449f5817a8e5a8df: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
-                RenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
-                EffectName: Test
 SharedRenderers:
     60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
@@ -96,7 +91,7 @@ SharedRenderers:
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null
-TopLevel: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
+Game: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
     Child: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

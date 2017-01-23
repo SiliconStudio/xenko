@@ -46,7 +46,7 @@ namespace JumpyJet
             UI.MenuButton.Click += StartMainMenuMode;
 
             // Find our JumpyJetRenderer to start/stop parallax background
-            renderer = (JumpyJetRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.TopLevel).Child;
+            renderer = (JumpyJetRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.Game).Child;
 
             StartMainMenuMode(this, EventArgs.Empty);
         }

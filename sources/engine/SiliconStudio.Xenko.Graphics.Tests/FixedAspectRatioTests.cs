@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // Force aspect ratio
             SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(MeshPipelinePlugin.DefaultEffectName, false, clearColor: Color.Green);
-            SceneSystem.GraphicsCompositor.TopLevel = new ForceAspectRatioSceneRenderer { Child = SceneSystem.GraphicsCompositor.TopLevel, FixedAspectRatio = 3.0f, ForceAspectRatio = true };
+            SceneSystem.GraphicsCompositor.Game = new ForceAspectRatioSceneRenderer { Child = SceneSystem.GraphicsCompositor.Game, FixedAspectRatio = 3.0f, ForceAspectRatio = true };
 
             Scene = new Scene();
 
