@@ -269,7 +269,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key of the value we are looking for.</param>
         /// <returns></returns>
-        public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key) where TValue : new()
+        public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key)
+            where TValue : new()
         {
             TValue value;
             if (!dictionary.TryGetValue(key, out value))
