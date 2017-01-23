@@ -91,9 +91,13 @@ SharedRenderers:
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null
-Game: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
-    Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
+Game*: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
+    Id: f192656f-8abd-44b0-80b4-1d3adea5bf51
     Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Child*: !JumpyJet.JumpyJetRenderer,JumpyJet.Game
+        Id: 8e5e594b-4add-4eef-a1cb-25042c9240c8
+        ParallaxBackgrounds: ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
+        MainRenderStage*: 50671147-a5c1-49d4-b4ad-3625f71439b3
+        TransparentRenderStage*: 0fa30591-02ee-486d-9347-2b6aee83d035
 SingleView: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 Editor: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
