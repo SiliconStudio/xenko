@@ -61,13 +61,13 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         [DataMember(34)]
         [Display("End frame")]
-        public TimeSpan EndAnimationTime { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
+        public TimeSpan EndAnimationTime { get; set; } = AnimationAsset.LongestTimeSpan;
 
         // This property is marked as hidden by the AnimationViewModel
         public TimeSpan AnimationTimeMinimum { get; set; } = TimeSpan.Zero;
 
         // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationTimeMaximum { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
+        public TimeSpan AnimationTimeMaximum { get; set; } = AnimationAsset.LongestTimeSpan;
 
         #endregion
 

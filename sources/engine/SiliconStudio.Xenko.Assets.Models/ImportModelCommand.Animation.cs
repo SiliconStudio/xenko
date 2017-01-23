@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
         public bool AnimationRootMotion { get; set; }
         public TimeSpan StartFrame { get; set; } = TimeSpan.Zero;
-        public TimeSpan EndFrame { get; set; } = TimeSpan.MaxValue;
+        public TimeSpan EndFrame { get; set; } = AnimationAsset.LongestTimeSpan;
 
         private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
         {
