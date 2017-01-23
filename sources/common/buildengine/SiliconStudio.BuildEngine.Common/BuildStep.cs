@@ -215,6 +215,15 @@ namespace SiliconStudio.BuildEngine
                 var enumBuildStep = currentBuildStep as EnumerableBuildStep;
                 if (enumBuildStep != null)
                     yield return enumBuildStep.OutputObjects;
+
+                foreach (var prerequisiteStep in currentBuildStep.PrerequisiteSteps)
+                {
+                    foreach (var outputObjectsGroup in prerequisiteStep.GetOutputObjectsGroups())
+                    {
+                        yield return outputObjectsGroup;
+                    }
+                }
+
                 currentBuildStep = currentBuildStep.Parent;
             }
         }

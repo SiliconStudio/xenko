@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets.Tracking;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
@@ -12,6 +14,11 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
+        public virtual IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem)
+        {
+            yield break;
+        }
+
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));

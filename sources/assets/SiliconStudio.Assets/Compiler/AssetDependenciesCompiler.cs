@@ -34,10 +34,10 @@ namespace SiliconStudio.Assets.Compiler
 
             var assetCompilerContext = (AssetCompilerContext)context;
 
-            IAssetCompiler compiler;
+            IAssetCompiler mainCompiler;
             try
             {
-                compiler = assetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
+                mainCompiler = assetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
             }
             catch (Exception ex)
             {
@@ -45,12 +45,12 @@ namespace SiliconStudio.Assets.Compiler
                 return compilerResult;
             }
 
-            if (compiler == null)
+            if (mainCompiler == null)
             {
                 return compilerResult;
             }
 
-            compilerResult = compiler.Compile(assetCompilerContext, assetItem);
+            compilerResult = mainCompiler.Compile(assetCompilerContext, assetItem);
             if (compilerResult.HasErrors)
             {
                 return compilerResult;
@@ -60,10 +60,11 @@ namespace SiliconStudio.Assets.Compiler
 
             depsCompiler.BuildSteps[assetItem.Location] = compilerResult.BuildSteps;
 
+            //run time deps
             var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             foreach (var assetDependency in dependencies.LinksOut)
             {
-                compiler = assetCompilerRegistry.GetCompiler(assetDependency.Item.Asset.GetType());
+                var compiler = assetCompilerRegistry.GetCompiler(assetDependency.Item.Asset.GetType());
                 var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, compiler);
                 if (result.HasErrors)
                 {
@@ -72,7 +73,18 @@ namespace SiliconStudio.Assets.Compiler
                 }
             }
 
+            //compile time deps
+            foreach (var buildDependency in mainCompiler.GetBuildDependencies(assetCompilerContext, assetItem))
+            {
+               depsCompiler.Submit(compilerResult.BuildSteps, buildDependency);
+            }
+
             return compilerResult;
+        }
+
+        public IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem)
+        {
+            yield break;
         }
 
         /// <summary>

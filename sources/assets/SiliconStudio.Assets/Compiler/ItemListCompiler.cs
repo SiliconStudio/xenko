@@ -16,7 +16,9 @@ namespace SiliconStudio.Assets.Compiler
     {
         IDictionary<string, ListBuildStep> BuildSteps { get; }
 
-        AssetCompilerResult CompileAndSubmit(CompilerContext context, ListBuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler);
+        AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler);
+
+        void Submit(BuildStep parentStep, AssetBuildStep childStep);
     }
 
     public class BuildStepsQueue
@@ -33,7 +35,12 @@ namespace SiliconStudio.Assets.Compiler
     {
         public IDictionary<string, ListBuildStep> BuildSteps { get; } = new ConcurrentDictionary<string, ListBuildStep>();
 
-        public AssetCompilerResult CompileAndSubmit(CompilerContext context, ListBuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler)
+        public AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Submit(BuildStep parentStep, AssetBuildStep childStep)
         {
             throw new NotImplementedException();
         }
