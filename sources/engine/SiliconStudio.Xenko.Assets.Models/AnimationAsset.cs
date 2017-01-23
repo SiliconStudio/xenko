@@ -63,8 +63,11 @@ namespace SiliconStudio.Xenko.Assets.Models
         public override UFile MainSource => Source;
 
         /// <summary>
-        /// 
+        /// Enable clipping of the animation duration
         /// </summary>
+        /// <userdoc>
+        /// Enable clipping of the animation duration, constraining start and end frames.
+        /// </userdoc>
         [DataMember(0)]
         [Display("Clip duration")]
         public AnimationAssetDuration ClipDuration { get; set; }
