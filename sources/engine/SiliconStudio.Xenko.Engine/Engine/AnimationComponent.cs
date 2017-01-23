@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -24,16 +25,13 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(2000)]
     public sealed class AnimationComponent : EntityComponent
     {
+        private static readonly object Lock = new object();
+
         private readonly Dictionary<string, AnimationClip> animations;
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
 
         [DataMemberIgnore]
         public AnimationBlender Blender { get; internal set; } = new AnimationBlender();
-
-        //Please note that this will be gone most likely when we renew the animation system.
-        //But for now it's the only way to allow user code to read animation results
-        [DataMemberIgnore]
-        public AnimationClipResult CurrentFrameResult;
 
         public AnimationComponent()
         {
@@ -47,25 +45,23 @@ namespace SiliconStudio.Xenko.Engine
             var item = (PlayingAnimation)e.Item;
             switch (e.Action)
             {
-                case NotifyCollectionChangedAction.Add:
-                {
-                    item.attached = true;
-                    break;
-                }
                 case NotifyCollectionChangedAction.Remove:
                 {
                     var evaluator = item.Evaluator;
                     if (evaluator != null)
                     {
+                        // TODO This is also released from the AnimationProcessor - one of them is probably 
                         Blender.ReleaseEvaluator(evaluator);
                         item.Evaluator = null;
                     }
 
                     item.endedTCS?.TrySetResult(true);
                     item.endedTCS = null;
-                    item.attached = false;
                     break;
                 }
+
+                default:
+                    break;
             }
         }
 
@@ -84,10 +80,34 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="name">The animation name.</param>
         public PlayingAnimation Play(string name)
         {
-            PlayingAnimations.Clear();
+            playingAnimations.Clear();
             var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
-            PlayingAnimations.Add(playingAnimation);
+            playingAnimations.Add(playingAnimation);
             return playingAnimation;
+        }
+
+        /// <summary>
+        /// Adds a new playing animation at the end of the list
+        /// </summary>
+        /// <param name="name">Name of the animation. If not found in <see cref="Animations"/>, an exception will be thrown</param>
+        /// <param name="timeScale">Speed at which the animation should play</param>
+        /// <param name="weight">Weight of the animation, in regard to all other playing animations.</param>
+        /// <param name="startTime">Time, in seconds, at which the animation starts playing</param>
+        /// <param name="blend">Blend mode - linear or additive</param>
+        /// <param name="repeatMode">Repeat mode - play once or loop indefinitely</param>
+        public void Add(AnimationClip clip, double startTime = 0, AnimationBlendOperation blend = AnimationBlendOperation.LinearBlend, 
+            float timeScale = 1f, float weight = 1f, AnimationRepeatMode ? repeatMode = null)
+        {
+            var playingAnimation = new PlayingAnimation("", clip)
+            {
+                TimeFactor = timeScale,
+                Weight = weight,
+                CurrentTime = TimeSpan.FromSeconds(startTime),
+                BlendOperation = blend,
+                RepeatMode = repeatMode ?? clip.RepeatMode,
+            };
+
+            playingAnimations.Add(playingAnimation);
         }
 
         /// <summary>
@@ -102,7 +122,7 @@ namespace SiliconStudio.Xenko.Engine
                 throw new ArgumentException("name");
 
             // Fade all animations
-            foreach (var otherPlayingAnimation in PlayingAnimations)
+            foreach (var otherPlayingAnimation in playingAnimations)
             {
                 otherPlayingAnimation.WeightTarget = 0.0f;
                 otherPlayingAnimation.CrossfadeRemainingTime = fadeTimeSpan;
@@ -125,7 +145,7 @@ namespace SiliconStudio.Xenko.Engine
                 throw new ArgumentException("name");
 
             var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 0.0f };
-            PlayingAnimations.Add(playingAnimation);
+            playingAnimations.Add(playingAnimation);
 
             if (fadeTimeSpan > TimeSpan.Zero)
             {
@@ -148,14 +168,33 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets list of active animations. Use this to customize startup animations.
         /// </summary>
-        /// <userdoc>
-        /// Active animations. Use this to customize startup animations.
-        /// </userdoc>
-        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
+        [DataMemberIgnore]
         public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
 
         [DataMemberIgnore]
         public IBlendTreeBuilder BlendTreeBuilder { get; set; }
+
+        /// <summary>
+        /// Returns an awaitable object that will be completed when the animation is removed from the PlayingAnimation list.
+        /// This happens when:
+        /// - RepeatMode is PlayOnce and animation reached end
+        /// - Animation faded out completely (due to blend to 0.0 or crossfade out)
+        /// - Animation was manually removed from AnimationComponent.PlayingAnimations
+        /// </summary>
+        /// <returns></returns>
+        public Task Ended(PlayingAnimation animation)
+        {
+            if (!playingAnimations.Contains(animation))
+                throw new InvalidOperationException("Trying to await end of an animation which is not playing");
+
+            lock (Lock)
+            {
+                if (animation.endedTCS == null)
+                    animation.endedTCS = new TaskCompletionSource<bool>();
+            }
+
+            return animation.endedTCS.Task;
+        }
     }
 
     public interface IBlendTreeBuilder

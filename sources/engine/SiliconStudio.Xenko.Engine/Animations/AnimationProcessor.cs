@@ -149,7 +149,6 @@ namespace SiliconStudio.Xenko.Animations
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
-                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
                     animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
