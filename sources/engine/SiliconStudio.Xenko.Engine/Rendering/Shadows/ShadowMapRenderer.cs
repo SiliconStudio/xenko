@@ -122,9 +122,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
-                // Collect shadow render views
-                var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
-
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;

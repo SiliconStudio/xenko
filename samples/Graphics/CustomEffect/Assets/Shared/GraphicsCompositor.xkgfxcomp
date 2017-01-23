@@ -91,9 +91,9 @@ SharedRenderers:
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null
-Game: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
-    Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+Game*: !CustomEffect.CustomEffectRenderer,CustomEffect.Game
+    Id: 354b2b3b-3c22-4079-84c6-12161d622ff2
+    Background: 464f4cc7-2978-4c47-ae31-6001c905c896:XenkoBackground
+    Logo: cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6:LogoXenko
 SingleView: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 Editor: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

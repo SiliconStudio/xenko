@@ -98,16 +98,13 @@ namespace SiliconStudio.Xenko.Engine
 
         public override void Update(GameTime gameTime)
         {
+            // Execute Update step of SceneInstance
+            // This will run entity processors
             SceneInstance?.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            if (SceneInstance == null)
-            {
-                return;
-            }
-
             // Reset the context
             renderContext.Reset();
 
@@ -126,7 +123,10 @@ namespace SiliconStudio.Xenko.Engine
 
             // Update the entities at draw time.
             renderContext.Time = gameTime;
-            SceneInstance.Draw(renderContext);
+
+            // Execute Draw step of SceneInstance
+            // This will run entity processors
+            SceneInstance?.Draw(renderContext);
 
             // Render phase
             // TODO GRAPHICS REFACTOR

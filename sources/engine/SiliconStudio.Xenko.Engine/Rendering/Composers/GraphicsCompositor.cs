@@ -112,32 +112,34 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             {
                 // Get or create VisibilityGroup for this RenderSystem + SceneInstance
                 var sceneInstance = SceneInstance.GetCurrent(context.RenderContext);
-
-                // Find if it exists
                 VisibilityGroup visibilityGroup = null;
-                foreach (var currentVisibilityGroup in sceneInstance.VisibilityGroups)
+                if (sceneInstance != null)
                 {
-                    if (currentVisibilityGroup.RenderSystem == RenderSystem)
+                    // Find if VisibilityGroup
+                    foreach (var currentVisibilityGroup in sceneInstance.VisibilityGroups)
                     {
-                        visibilityGroup = currentVisibilityGroup;
-                        break;
+                        if (currentVisibilityGroup.RenderSystem == RenderSystem)
+                        {
+                            visibilityGroup = currentVisibilityGroup;
+                            break;
+                        }
                     }
-                }
 
-                // If first time, let's create and register it
-                if (visibilityGroup == null)
-                {
-                    sceneInstance.VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(RenderSystem));
-                    initializedSceneInstances.Add(sceneInstance);
+                    // If first time, let's create and register it
+                    if (visibilityGroup == null)
+                    {
+                        sceneInstance.VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(RenderSystem));
+                        initializedSceneInstances.Add(sceneInstance);
+                    }
+
+                    // Reset & cleanup
+                    visibilityGroup.Reset();
                 }
 
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentVisibilityGroup, visibilityGroup))
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
                 using (context.RenderContext.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
                 {
-                    // Reset & cleanup
-                    visibilityGroup.Reset();
-
                     // Clear views
                     foreach (var renderView in RenderSystem.Views)
                     {
@@ -168,8 +170,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         RenderSystem.Collect(context.RenderContext);
 
                         // Collect visibile objects from each view (that were not properly collected previously)
-                        foreach (var view in RenderSystem.Views)
-                            visibilityGroup.TryCollect(view);
+                        if (visibilityGroup != null)
+                        {
+                            foreach (var view in RenderSystem.Views)
+                                visibilityGroup.TryCollect(view);
+                        }
 
                         // Extract
                         RenderSystem.Extract(context.RenderContext);

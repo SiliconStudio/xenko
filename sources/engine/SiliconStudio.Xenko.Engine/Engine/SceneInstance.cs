@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>SiliconStudio.Xenko.Engine.SceneInstance.</returns>
         public static SceneInstance GetCurrent(RenderContext context)
         {
-            return context.Tags.GetSafe(Current);
+            return context.Tags.Get(Current);
         }
 
         private void Add(Scene scene)
