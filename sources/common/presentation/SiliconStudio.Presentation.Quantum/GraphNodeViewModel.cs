@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
@@ -79,6 +80,9 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
+        /// <summary>
+        /// Initializes this node. This method is called right after construction of the node, and after <see cref="NodeViewModel.AddChild"/> as been called on its parent if this node has a parent.
+        /// </summary>
         protected internal void Initialize()
         {
             var targetNode = GetTargetNode(SourceNode, Index);
@@ -114,13 +118,16 @@ namespace SiliconStudio.Presentation.Quantum
 
             isInitialized = true;
 
-            Owner.GraphViewModelService?.NotifyNodeInitialized(this);
-
-            FinalizeChildrenInitialization();
-
             CheckDynamicMemberConsistency();
         }
-        
+
+        /// <inheritdoc/>
+        protected internal override void FinalizeInitialization()
+        {
+            base.FinalizeInitialization();
+            Owner.GraphViewModelService?.NotifyNodeInitialized(this);
+        }
+
         public GraphNodePath SourceNodePath { get; }
 
         /// <inheritdoc/>
@@ -309,6 +316,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             var dictionary = targetNode.Descriptor as DictionaryDescriptor;
             var list = targetNode.Descriptor as CollectionDescriptor;
+            var initializedChildren = new List<NodeViewModel>();
 
             // Node containing a collection of references to other objects
             if (SourceNode == targetNode && targetNode.IsReference)
@@ -326,6 +334,7 @@ namespace SiliconStudio.Presentation.Quantum
                         var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                         AddChild(child);
                         child.Initialize();
+                        initializedChildren.Add(child);
                     }
                 }
             }
@@ -340,6 +349,7 @@ namespace SiliconStudio.Presentation.Quantum
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
                     AddChild(child);
                     child.Initialize();
+                    initializedChildren.Add(child);
                 }
             }
             // Node containing a list of primitive values
@@ -353,6 +363,7 @@ namespace SiliconStudio.Presentation.Quantum
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
                     AddChild(child);
                     child.Initialize();
+                    initializedChildren.Add(child);
                 }
             }
             // Node containing a single non-reference primitive object
@@ -369,12 +380,19 @@ namespace SiliconStudio.Presentation.Quantum
                         if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
                             var childPath = targetNodePath.PushMember(memberContent.Name);
-                            var observableChild = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
-                            AddChild(observableChild);
-                            observableChild.Initialize();
+                            var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
+                            AddChild(child);
+                            child.Initialize();
+                            initializedChildren.Add(child);
                         }
                     }
                 }
+            }
+
+            // Call FinalizeInitialization on all created nodes after they were all initialized.
+            foreach (var child in initializedChildren)
+            {
+                child.FinalizeInitialization();
             }
         }
 
@@ -403,6 +421,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             Initialize();
+            FinalizeInitialization();
 
             if (DisplayNameProvider != null)
             {

@@ -80,6 +80,7 @@ namespace SiliconStudio.Presentation.Quantum
             var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Type, Index.Empty);
             node.Initialize();
             RootNode = node;
+            node.FinalizeInitialization();
             node.CheckConsistency();
         }
 
