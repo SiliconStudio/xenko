@@ -187,7 +187,6 @@
     <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
-    <Compile Include="Rendering\Background\BackgroundPipelinePlugin.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
@@ -416,7 +415,6 @@
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\EffectValidator.cs" />
-    <Compile Include="Rendering\IPipelinePlugin.cs" />
     <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
     <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
@@ -430,7 +428,6 @@
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
     <Compile Include="Rendering\MeshRenderFeature.cs" />
     <Compile Include="Rendering\MeshTransparentRenderStageSelector.cs" />
-    <Compile Include="Rendering\MeshPipelinePlugin.cs" />
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\LogicalGroupExtensions.cs" />
     <Compile Include="Rendering\RenderSystem.cs" />
@@ -439,7 +436,6 @@
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
-    <Compile Include="Rendering\PickingPipelinePlugin.cs" />
     <Compile Include="Rendering\PipelinePluginContext.cs" />
     <Compile Include="Rendering\Properties.cs">
       <DependentUpon>Properties.tt</DependentUpon>
@@ -449,7 +445,6 @@
     <Compile Include="Rendering\RenderDataHolder.cs" />
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\RenderFeature.cs" />
-    <Compile Include="Rendering\RenderFeaturePipelinePlugin.cs" />
     <Compile Include="Rendering\RenderMesh.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\RenderObject.cs" />
@@ -465,7 +460,6 @@
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
-    <Compile Include="Rendering\ShadowPipelinePlugin.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
@@ -480,7 +474,6 @@
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\SimpleGroupToRenderStageSelector.cs" />
     <Compile Include="Rendering\SkinningRenderFeature.cs" />
-    <Compile Include="Rendering\Skyboxes\SkyboxPipelinePlugin.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
@@ -488,7 +481,6 @@
     <Compile Include="Rendering\SortMode.cs" />
     <Compile Include="Rendering\SortModeDistance.cs" />
     <Compile Include="Rendering\Sprites\IAnimatableSpriteProvider.cs" />
-    <Compile Include="Rendering\Sprites\SpritePipelinePlugin.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderProcessor.cs" />
     <Compile Include="Rendering\Sprites\RenderSprite.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />

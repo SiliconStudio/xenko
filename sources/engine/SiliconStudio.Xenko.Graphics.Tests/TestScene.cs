@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(lightEntity);
 
             // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(MeshPipelinePlugin.DefaultEffectName, true);
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(true);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

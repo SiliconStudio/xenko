@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(cameraEntity);
 
             // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(MeshPipelinePlugin.DefaultEffectName, false);
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
