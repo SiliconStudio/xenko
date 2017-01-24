@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -211,6 +212,13 @@ namespace SiliconStudio.Assets
         /// </remarks>
         public DateTime ModifiedTime { get; internal set; }
 
+        private long version;
+
+        /// <summary>
+        /// Gets the asset version incremental counter, increased everytime the asset is edited.
+        /// </summary>
+        public long Version => Interlocked.Read(ref version);
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is dirty. See remarks.
         /// </summary>
@@ -230,6 +238,8 @@ namespace SiliconStudio.Assets
                 {
                     ModifiedTime = DateTime.Now;
                 }
+
+                Interlocked.Increment(ref version);
 
                 var oldValue = isDirty;
                 isDirty = value;

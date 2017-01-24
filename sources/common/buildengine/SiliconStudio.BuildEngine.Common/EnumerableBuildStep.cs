@@ -48,8 +48,8 @@ namespace SiliconStudio.BuildEngine
             var buildStepsToWait = new List<BuildStep>();
 
             // Process prerequisites build steps first
-            if (PrerequisiteSteps.Count > 0 && PrerequisiteSteps.Any(x => !x.ArePrerequisitesSuccessful))
-                await CompleteCommands(executeContext, PrerequisiteSteps.Where(x => !x.ArePrerequisitesSuccessful).ToList());
+            if (PrerequisiteSteps.Count > 0 && PrerequisiteSteps.Any(x => !x.ArePrerequisitesCompleted))
+                await CompleteCommands(executeContext, PrerequisiteSteps.Where(x => !x.ArePrerequisitesCompleted).ToList());
 
             foreach (var child in Steps)
             {
