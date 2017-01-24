@@ -160,16 +160,16 @@ namespace SiliconStudio.Xenko.Animations
         /// <inheritdoc/>
         public override void ShiftKeys(CompressedTimeSpan shiftTimeSpan)
         {
-            var siftedKeyFrames = new FastList<KeyFrameData<T>>();
+            var shiftedKeyFrames = new FastList<KeyFrameData<T>>();
 
             foreach (var keyFrameData in KeyFrames)
             {
-                siftedKeyFrames.Add(new KeyFrameData<T> { Time = keyFrameData.Time + shiftTimeSpan, Value = keyFrameData.Value });
+                shiftedKeyFrames.Add(new KeyFrameData<T> { Time = keyFrameData.Time + shiftTimeSpan, Value = keyFrameData.Value });
             }
 
             KeyFrames.Clear();
 
-            KeyFrames = siftedKeyFrames;
+            KeyFrames = shiftedKeyFrames;
         }
 
         internal override AnimationCurveEvaluatorDirectGroup CreateEvaluator()

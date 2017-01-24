@@ -16,6 +16,7 @@
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAsset.Upgrader.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
+    <Compile Include="AnimationAssetDuration.cs" />
     <Compile Include="AnimationAssetType.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
     <Compile Include="DefaultFactories.cs" />

@@ -9,6 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -25,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "1.10.0-alpha01", typeof(AnimationAssetUpgraderFramerate))]     // Force re-import for Min/Max frames
-    public partial class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
+    public partial class AnimationAsset : Asset, IAssetCompileTimeDependencies
     {
         private const string CurrentVersion = "1.10.0-alpha01";
 
@@ -34,32 +35,48 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         public const string FileExtension = ".xkanim;.pdxanim";
 
-        #region Animation frames
-        // Please note that animation frames are edited using the AnimationFrameTemplateProvider
-        //  All 3 properties are required with the exact same names 
-        //  AnimationFrameMinimum should be set to match the actual first frame of the animation
-        //  AnimationFrameMaximum should be set to match the actual length of the animation frame sequence
+        public static readonly TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
+
+        public AnimationAsset()
+        {
+            ClipDuration = new AnimationAssetDuration()
+            {
+                Enabled = false,
+                StartAnimationTime   = TimeSpan.Zero,
+                EndAnimationTime     = LongestTimeSpan,
+            };
+        }
 
         /// <summary>
-        /// Gets or sets the start frame of the animation.
+        /// Gets or sets the source file of this asset.
         /// </summary>
-        [DataMember(2)]
-        [Display("Start frame")]
-        public TimeSpan StartAnimationFrame { get; set; } = TimeSpan.Zero;
+        /// <value>The source.</value>
+        /// <userdoc>
+        /// The source file of this asset.
+        /// </userdoc>
+        [DataMember(-50)]
+        [DefaultValue(null)]
+        [SourceFileMember(true)]
+        public UFile Source { get; set; } = new UFile("");
+
+        [DataMemberIgnore]
+        public override UFile MainSource => Source;
 
         /// <summary>
-        /// Gets or sets the end frame of the animation.
+        /// Enable clipping of the animation duration
         /// </summary>
-        [DataMember(4)]
-        [Display("End frame")]
-        public TimeSpan EndAnimationFrame { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
+        /// <userdoc>
+        /// Enable clipping of the animation duration, constraining start and end frames.
+        /// </userdoc>
+        [DataMember(0)]
+        [Display("Clip duration")]
+        public AnimationAssetDuration ClipDuration { get; set; }
 
         // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationFrameMinimum { get; set; }
+        public TimeSpan AnimationTimeMinimum { get; set; }
 
         // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationFrameMaximum { get; set; }
-        #endregion
+        public TimeSpan AnimationTimeMaximum { get; set; }
 
         /// <summary>
         /// Gets or sets the pivot position, that will be used as center of object.
@@ -75,7 +92,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMember(15)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
-
 
         /// <summary>
         /// Gets or sets the animation repeat mode.

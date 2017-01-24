@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -29,7 +30,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="window"></param>
         /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
         /// <exception cref="InvalidOperationException">window is already registered.</exception>
-        public static void RegisterListener(Window window)
+        public static void RegisterListener([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -58,7 +59,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="window"></param>
         /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
         /// <exception cref="InvalidOperationException">window was not previously registered.</exception>
-        public static void UnregisterListener(Window window)
+        public static void UnregisterListener([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -75,7 +76,8 @@ namespace SiliconStudio.Presentation.Extensions
             });
         }
 
-        private static HwndSource GetHwndSource(Window window)
+        [CanBeNull]
+        private static HwndSource GetHwndSource([NotNull] Window window)
         {
             var handle = new WindowInteropHelper(window).Handle;
             return handle != IntPtr.Zero ? HwndSource.FromHwnd(handle) : null;

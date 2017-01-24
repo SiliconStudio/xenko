@@ -46,28 +46,28 @@ namespace SiliconStudio.Xenko.Assets.Models
         #region Animation frames
         // Please note that animation frames are edited using the AnimationFrameTemplateProvider
         //  All 3 properties are required with the exact same names 
-        //  AnimationFrameMinimum should be set to match the actual first frame of the animation 
-        //  AnimationFrameMaximum should be set to match the actual length of the animation frame sequence
+        //  AnimationTimeMinimum should be set to match the actual first frame of the animation 
+        //  AnimationTimeMaximum should be set to match the actual length of the animation frame sequence
 
         /// <summary>
         /// Gets or sets the start frame of the animation.
         /// </summary>
         [DataMember(32)]
         [Display("Start frame")]
-        public TimeSpan StartAnimationFrame { get; set; } = TimeSpan.Zero;
+        public TimeSpan StartAnimationTime { get; set; } = TimeSpan.Zero;
 
         /// <summary>
         /// Gets or sets the end frame of the animation.
         /// </summary>
         [DataMember(34)]
         [Display("End frame")]
-        public TimeSpan EndAnimationFrame { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
+        public TimeSpan EndAnimationTime { get; set; } = AnimationAsset.LongestTimeSpan;
 
         // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationFrameMinimum { get; set; } = TimeSpan.Zero;
+        public TimeSpan AnimationTimeMinimum { get; set; } = TimeSpan.Zero;
 
         // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationFrameMaximum { get; set; } = TimeSpan.FromMinutes(30); // Theoretical maximum for animations is 30 minutes
+        public TimeSpan AnimationTimeMaximum { get; set; } = AnimationAsset.LongestTimeSpan;
 
         #endregion
 

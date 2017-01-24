@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </userdoc>
         [DataMember(10)]
         [DefaultValue(30)]
-        [DataMemberRange(1, uint.MaxValue)]
+        [DataMemberRange(1, 1000)]
         public uint AnimationFrameRate = 30;
     }
 }
