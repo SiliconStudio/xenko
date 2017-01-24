@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         public const string FileExtension = ".xkanim;.pdxanim";
 
-        public static TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
+        public static readonly TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
 
         public AnimationAsset()
         {
