@@ -79,8 +79,5 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         [Display("Specular CubeMap Size")]
         [DataMember(30)]
         public int SpecularCubeMapSize { get; set; }
-
-        [DataMemberIgnore]
-        internal AssetBuildStep CompileTimeTexture { get; set; }
     }
 }

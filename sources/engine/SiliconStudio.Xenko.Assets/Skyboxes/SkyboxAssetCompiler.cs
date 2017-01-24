@@ -16,10 +16,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem)
+        public SkyboxAssetCompiler()
         {
-            var asset = (SkyboxAsset)assetItem.Asset;
-            yield return asset.CompileTimeTexture;
+            CompileTimeDependencyTypes.Add(typeof(TextureAsset));
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -50,11 +49,11 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     // Select the best graphics profile
                     var graphicsProfile = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? renderingSettings.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
 
-                    var buildTexture = new AssetItem(textureUrl, textureAsset);
+                    var textureAssetItem = new AssetItem(textureUrl, textureAsset);
 
                     // Create and add the texture command.
                     var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-                    asset.CompileTimeTexture = new AssetBuildStep(buildTexture) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) };
+                    result.BuildSteps.Add(new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
 
@@ -84,7 +83,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     foreach (var dependency in Parameters.Model.GetDependencies())
                     {
                         // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-                        yield return new ObjectUrl(UrlType.Content, dependency.Location);
                         yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
                     }
                 }
