@@ -50,7 +50,6 @@ namespace SiliconStudio.Xenko.Engine
                     var evaluator = item.Evaluator;
                     if (evaluator != null)
                     {
-                        // TODO This is also released from the AnimationProcessor - one of them is probably 
                         Blender.ReleaseEvaluator(evaluator);
                         item.Evaluator = null;
                     }
@@ -87,9 +86,9 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Adds a new playing animation at the end of the list
+        /// Adds a new playing animation at the end of the list. It doesn't alter currently playing animations.
         /// </summary>
-        /// <param name="name">Name of the animation. If not found in <see cref="Animations"/>, an exception will be thrown</param>
+        /// <param name="clip">Animation clip to add to the list of playing animations</param>
         /// <param name="timeScale">Speed at which the animation should play</param>
         /// <param name="weight">Weight of the animation, in regard to all other playing animations.</param>
         /// <param name="startTime">Time, in seconds, at which the animation starts playing</param>
@@ -119,7 +118,7 @@ namespace SiliconStudio.Xenko.Engine
         public PlayingAnimation Crossfade(string name, TimeSpan fadeTimeSpan)
         {
             if (!Animations.ContainsKey(name))
-                throw new ArgumentException("name");
+                throw new ArgumentException(nameof(name));
 
             // Fade all animations
             foreach (var otherPlayingAnimation in playingAnimations)

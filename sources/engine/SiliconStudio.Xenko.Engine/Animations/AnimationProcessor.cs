@@ -183,14 +183,7 @@ namespace SiliconStudio.Xenko.Animations
 
                         if (removeAnimation)
                         {
-                            animationComponent.PlayingAnimations.RemoveAt(index--);
-
-                            var evaluator = playingAnimation.Evaluator;
-                            if (evaluator != null)
-                            {
-                                animationComponent.Blender.ReleaseEvaluator(evaluator);
-                                playingAnimation.Evaluator = null;
-                            }
+                            animationComponent.PlayingAnimations.RemoveAt(index--); // Will also release its evaluator
                         }
                     }
                 }
