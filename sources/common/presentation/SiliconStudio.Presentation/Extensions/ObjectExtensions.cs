@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Extensions
     {
         private static readonly Dictionary<Type, Delegate> CachedMemberwiseCloneMethods = new Dictionary<Type, Delegate>();
 
+        [NotNull]
         public static object MemberwiseClone([NotNull] this object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
@@ -34,6 +35,7 @@ namespace SiliconStudio.Presentation.Extensions
             return method.DynamicInvoke(instance);
         }
 
+        [NotNull]
         public static T MemberwiseClone<T>([NotNull] this T instance)
         {
             if (instance == null)

@@ -141,9 +141,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     if (asset.DiffuseSHOrder == SkyboxPreFilteringDiffuseOrder.Order5)
                     {
-                        bases[9] = -(float)Math.Sqrt(7/PI64);
+                        bases[9] = -(float)Math.Sqrt(70/PI64);
                         bases[10] = (float)Math.Sqrt(105/PI4);
-                        bases[11] = -(float)Math.Sqrt(21/PI16);
+                        bases[11] = -(float)Math.Sqrt(24/PI16);
                         bases[12] = (float)Math.Sqrt(7/PI16);
                         bases[13] = -(float)Math.Sqrt(42/PI64);
                         bases[14] = (float)Math.Sqrt(105/PI16);
