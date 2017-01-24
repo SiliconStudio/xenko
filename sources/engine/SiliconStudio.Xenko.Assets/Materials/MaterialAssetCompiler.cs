@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -8,6 +9,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 
@@ -15,6 +17,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
+        public MaterialAssetCompiler()
+        {
+            CompileTimeDependencyTypes.Add(typeof(TextureAsset));
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;
