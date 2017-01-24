@@ -9,6 +9,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Data;
 using SiliconStudio.Xenko.Graphics;
@@ -17,6 +18,38 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class ModelAssetCompiler : AssetCompilerBase
     {
+        public ModelAssetCompiler()
+        {
+            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset));
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
+        }
+
+        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
+        {
+            var asset = (ModelAsset)assetItem.Asset;
+
+            if (asset.Skeleton != null)
+            {
+                var skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                if (skeleton != null)
+                {
+                    yield return skeleton;
+                }
+            }
+
+            if (asset.Materials.Count > 0)
+            {
+                foreach (var assetMaterial in asset.Materials)
+                {
+                    var material = assetItem.Package.FindAssetFromAttachedReference(assetMaterial.MaterialInstance.Material);
+                    if (material != null)
+                    {
+                        yield return material;
+                    }
+                }
+            }
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ModelAsset)assetItem.Asset;

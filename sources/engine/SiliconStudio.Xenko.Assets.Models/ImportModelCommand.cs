@@ -134,9 +134,9 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
-            // Skeleton is a compile time dependency
-            if (SkeletonUrl != null)
-                yield return new ObjectUrl(UrlType.Content, SkeletonUrl);
+//            // Skeleton is a compile time dependency
+//            if (SkeletonUrl != null)
+//                yield return new ObjectUrl(UrlType.Content, SkeletonUrl);
 
             yield return new ObjectUrl(UrlType.File, SourcePath);
         }

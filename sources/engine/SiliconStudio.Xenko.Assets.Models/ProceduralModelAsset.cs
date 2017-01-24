@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public List<ModelMaterial> Materials => Type?.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList() ?? new List<ModelMaterial>();
+        public List<ModelMaterial> Materials => Type.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList();
 
         private class Upgrader : AssetUpgraderBase
         {
