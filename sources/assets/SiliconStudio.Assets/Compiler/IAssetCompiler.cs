@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
-using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -19,6 +20,8 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem);
 
-        IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem);
+        IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem);
+
+        HashSet<Type> CompileTimeDependencyTypes { get; }
     }
 }

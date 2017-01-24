@@ -2,11 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -58,14 +55,30 @@ namespace SiliconStudio.Assets.Compiler
 
             var depsCompiler = context.Properties.Get(BuildStepsQueue.PropertyKey);
 
-            depsCompiler.BuildSteps[assetItem.Location] = compilerResult.BuildSteps;
+            depsCompiler.BuildSteps[new AssetBuildOperation(assetItem.Id, assetItem.Version)] = compilerResult.BuildSteps;
 
             //run time deps
             var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             foreach (var assetDependency in dependencies.LinksOut)
             {
-                var compiler = assetCompilerRegistry.GetCompiler(assetDependency.Item.Asset.GetType());
-                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, compiler);
+                var assetType = assetDependency.Item.Asset.GetType();
+                var compiler = assetCompilerRegistry.GetCompiler(assetType);
+                if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
+                {
+                    var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, compiler);
+                    if (result.HasErrors)
+                    {
+                        result.CopyTo(compilerResult);
+                        return compilerResult;
+                    }
+                }
+            }
+
+            //compile time
+            foreach (var compileTimeDependency in mainCompiler.GetCompileTimeDependencies(assetCompilerContext, assetItem))
+            {
+                var compiler = assetCompilerRegistry.GetCompiler(compileTimeDependency.Asset.GetType());
+                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, compileTimeDependency, compiler);
                 if (result.HasErrors)
                 {
                     result.CopyTo(compilerResult);
@@ -73,19 +86,15 @@ namespace SiliconStudio.Assets.Compiler
                 }
             }
 
-            //compile time deps
-            foreach (var buildDependency in mainCompiler.GetBuildDependencies(assetCompilerContext, assetItem))
-            {
-               depsCompiler.Submit(compilerResult.BuildSteps, buildDependency);
-            }
-
             return compilerResult;
         }
 
-        public IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem)
+        public IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
         {
             yield break;
         }
+
+        public HashSet<Type> CompileTimeDependencyTypes { get; } = new HashSet<Type>();
 
         /// <summary>
         /// Compiles the given asset with its dependencies.

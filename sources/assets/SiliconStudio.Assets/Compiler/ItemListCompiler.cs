@@ -12,13 +12,28 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
+    public struct AssetBuildOperation : IEquatable<AssetBuildOperation>
+    {
+        public AssetBuildOperation(AssetId assetId, long version)
+        {
+            Id = assetId;
+            Version = version;
+        }
+
+        public readonly AssetId Id;
+        public readonly long Version;
+
+        public bool Equals(AssetBuildOperation other)
+        {
+            return Id == other.Id && Version == other.Version;
+        }
+    }
+
     public interface IBuildStepsQueue
     {
-        IDictionary<string, ListBuildStep> BuildSteps { get; }
+        IDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; }
 
         AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler);
-
-        void Submit(BuildStep parentStep, AssetBuildStep childStep);
     }
 
     public class BuildStepsQueue
@@ -33,7 +48,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class ItemListCompiler : IBuildStepsQueue
     {
-        public IDictionary<string, ListBuildStep> BuildSteps { get; } = new ConcurrentDictionary<string, ListBuildStep>();
+        public IDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; } = new ConcurrentDictionary<AssetBuildOperation, ListBuildStep>();
 
         public AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler)
         {

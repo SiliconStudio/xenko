@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets.Tracking;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
@@ -14,11 +13,6 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public abstract class AssetCompilerBase : IAssetCompiler
     {
-        public virtual IEnumerable<AssetBuildStep> GetBuildDependencies(CompilerContext context, AssetItem assetItem)
-        {
-            yield break;
-        }
-
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -43,6 +37,13 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             return result;
+        }
+
+        public HashSet<Type> CompileTimeDependencyTypes { get; private set; } = new HashSet<Type>();
+
+        public virtual IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield break;
         }
 
         /// <summary>
