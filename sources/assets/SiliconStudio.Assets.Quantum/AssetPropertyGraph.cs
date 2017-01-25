@@ -403,14 +403,14 @@ namespace SiliconStudio.Assets.Quantum
         {
             var overrideValue = OverrideType.Base;
             var node = (AssetMemberNode)e.Member;
-            if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionRemove)
+            // For value change and remove, we store the current override state.
+            if (e.ChangeType == ContentChangeType.ValueChange)
             {
-                // For value change and remove, we store the current override state.
-                if (e.Index == Index.Empty)
-                {
-                    overrideValue = node.GetContentOverride();
-                }
-                else if (!node.IsNonIdentifiableCollectionContent)
+                overrideValue = node.GetContentOverride();
+            }
+            if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionRemove)
+            {
+                if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
                 }
@@ -442,26 +442,23 @@ namespace SiliconStudio.Assets.Quantum
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
             var node = (AssetMemberNode)e.Member;
-            if (e.ChangeType == ContentChangeType.ValueChange || e.ChangeType == ContentChangeType.CollectionAdd)
+            if (e.ChangeType == ContentChangeType.ValueChange)
             {
-                if (e.Index == Index.Empty)
+                // No index, we're changing an object that is not in a collection, let's just retrieve it's override status.
+                overrideValue = node.GetContentOverride();
+            }
+            else if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionAdd)
+            {
+                // We're changing an item of a collection. If the collection has identifiable items, retrieve the override status of the item.
+                if (!node.IsNonIdentifiableCollectionContent)
                 {
-                    // No index, we're changing an object that is not in a collection, let's just retrieve it's override status.
-                    overrideValue = node.GetContentOverride();
+                    overrideValue = node.GetItemOverride(e.Index);
                 }
-                else
+                // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
+                CollectionItemIdentifiers ids;
+                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
                 {
-                    // We're changing an item of a collection. If the collection has identifiable items, retrieve the override status of the item.
-                    if (!node.IsNonIdentifiableCollectionContent)
-                    {
-                        overrideValue = node.GetItemOverride(e.Index);
-                    }
-                    // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
-                    CollectionItemIdentifiers ids;
-                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
-                    {
-                        ids.TryGet(e.Index.Value, out itemId);
-                    }
+                    ids.TryGet(e.Index.Value, out itemId);
                 }
             }
             else

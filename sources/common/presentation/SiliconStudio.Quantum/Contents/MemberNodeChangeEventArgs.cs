@@ -7,6 +7,7 @@ namespace SiliconStudio.Quantum.Contents
     {
         None,
         ValueChange,
+        CollectionUpdate,
         CollectionAdd,
         CollectionRemove,
     }

@@ -96,9 +96,11 @@ namespace SiliconStudio.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
                     // The changed node itself is still valid, we don't want to unregister it
                     visitor.SkipRootNode = true;
                     visitor.Visit(node);
+                    // TODO: In case of CollectionUpdate we could probably visit only the target node of the corresponding index
                     break;
                 case ContentChangeType.CollectionRemove:
                     if (node.IsReference && e.OldValue != null)
@@ -121,9 +123,11 @@ namespace SiliconStudio.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
                     // The changed node itself is still valid, we don't want to re-register it
                     visitor.SkipRootNode = true;
                     visitor.Visit(e.Member);
+                    // TODO: In case of CollectionUpdate we could probably visit only the target node of the corresponding index
                     break;
                 case ContentChangeType.CollectionAdd:
                     if (e.Member.IsReference && e.NewValue != null)

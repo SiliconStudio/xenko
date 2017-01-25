@@ -565,6 +565,7 @@ namespace SiliconStudio.Presentation.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
                     return Equals(e.Index, Index);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:

@@ -382,6 +382,7 @@ namespace SiliconStudio.Assets.Quantum
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
