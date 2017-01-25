@@ -46,6 +46,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             sourceBuildStep.Location = targetUrlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
+            if (asset.ClipDuration.Enabled)
+            {
+                sourceBuildStep.StartFrame = asset.ClipDuration.StartAnimationTime;
+                sourceBuildStep.EndFrame = asset.ClipDuration.EndAnimationTime;
+            }
+            else
+            {
+                sourceBuildStep.StartFrame = TimeSpan.Zero;
+                sourceBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+            }
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.PivotPosition = asset.PivotPosition;
             sourceBuildStep.SkeletonUrl = skeleton?.Location;
@@ -81,6 +91,9 @@ namespace SiliconStudio.Xenko.Assets.Models
                 baseBuildStep.Location = baseUrlInStorage;
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
+
+                baseBuildStep.StartFrame = diffAnimationAsset.StartAnimationTime;
+                baseBuildStep.EndFrame = diffAnimationAsset.EndAnimationTime;
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;

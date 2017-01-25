@@ -69,7 +69,6 @@ namespace SiliconStudio.Presentation.Collections
         {
             return list.GetEnumerator();
         }
-        
         [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -82,10 +81,6 @@ namespace SiliconStudio.Presentation.Collections
             Insert(Count, item);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="items"/> is <c>null</c>.</exception>
         public void AddRange([NotNull] IEnumerable<T> items)
         {
             var itemList = items.ToList();
