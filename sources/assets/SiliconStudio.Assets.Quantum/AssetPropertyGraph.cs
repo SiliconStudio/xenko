@@ -408,28 +408,20 @@ namespace SiliconStudio.Assets.Quantum
             {
                 overrideValue = node.GetContentOverride();
             }
-            if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionRemove)
+            else if(!node.IsNonIdentifiableCollectionContent)
             {
-                if (!node.IsNonIdentifiableCollectionContent)
+                overrideValue = e.ChangeType == ContentChangeType.CollectionAdd ? node.GetItemOverride(e.Index) : OverrideType.New;
+                if (e.ChangeType == ContentChangeType.CollectionRemove)
                 {
-                    overrideValue = node.GetItemOverride(e.Index);
+                    // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
+                    var itemId = ItemId.Empty;
+                    CollectionItemIdentifiers ids;
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
+                    {
+                        ids.TryGet(e.Index.Value, out itemId);
+                    }
+                    removedItemIds[e.Member] = itemId;
                 }
-            }
-            if (e.ChangeType == ContentChangeType.CollectionRemove)
-            {
-                // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
-                var itemId = ItemId.Empty;
-                CollectionItemIdentifiers ids;
-                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
-                {
-                    ids.TryGet(e.Index.Value, out itemId);
-                }
-                removedItemIds[e.Member] = itemId;
-            }
-            if (e.ChangeType == ContentChangeType.CollectionAdd && !node.IsNonIdentifiableCollectionContent)
-            {
-                // If the change is an add, we set the previous override as New so the Undo will try to remove the item instead of resetting to the base value
-                previousOverrides[e.Member] = OverrideType.New;
             }
             previousOverrides[e.Member] = overrideValue;
         }
@@ -453,12 +445,13 @@ namespace SiliconStudio.Assets.Quantum
                 if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
-                }
-                // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
-                CollectionItemIdentifiers ids;
-                if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
-                {
-                    ids.TryGet(e.Index.Value, out itemId);
+ 
+                    // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
+                    CollectionItemIdentifiers ids;
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
+                    {
+                        ids.TryGet(e.Index.Value, out itemId);
+                    }
                 }
             }
             else
