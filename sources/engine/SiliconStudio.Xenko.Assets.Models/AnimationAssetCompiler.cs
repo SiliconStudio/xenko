@@ -94,8 +94,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 if (diffAnimationAsset.ClipDuration.Enabled)
                 {
-                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTime;
-                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTime;
+                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
+                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
                 }
                 else
                 {

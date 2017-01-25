@@ -33,11 +33,11 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         public DifferenceAnimationAssetType()
         {
-            ClipDuration = new AnimationAssetDuration()
+            ClipDuration = new AnimationAssetDurationUnchecked()
             {
                 Enabled = false,
-                StartAnimationTime = TimeSpan.Zero,
-                EndAnimationTime = AnimationAsset.LongestTimeSpan,
+                StartAnimationTimeBox = TimeSpan.Zero,
+                EndAnimationTimeBox = AnimationAsset.LongestTimeSpan,
             };
         }
 
@@ -53,28 +53,19 @@ namespace SiliconStudio.Xenko.Assets.Models
         [Display("Reference")]
         public UFile BaseSource { get; set; } = new UFile("");
 
+        /// <userdoc>Specifies how to use the base animation.</userdoc>
+        [DataMember(40)]
+        public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
+
         /// <summary>
         /// Enable clipping of the animation duration
         /// </summary>
         /// <userdoc>
         /// Enable clipping of the animation duration, constraining start and end frames.
         /// </userdoc>
-        [DataMember(0)]
+        [DataMember(50)]
         [Display("Clip duration")]
-        public AnimationAssetDuration ClipDuration { get; set; }
-
-        #region Animation frames
-        // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationTimeMinimum { get; set; } = TimeSpan.Zero;
-
-        // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationTimeMaximum { get; set; } = AnimationAsset.LongestTimeSpan;
-
-        #endregion
-
-        /// <userdoc>Specifies how to use the base animation.</userdoc>
-        [DataMember(40)]
-        public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
+        public AnimationAssetDurationUnchecked ClipDuration { get; set; }
     }
 
     /// <summary>
