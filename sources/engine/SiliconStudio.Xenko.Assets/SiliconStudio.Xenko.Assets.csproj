@@ -351,6 +351,8 @@
     <Compile Include="Scripts\ScriptVariableReferenceAttribute.cs" />
     <Compile Include="Scripts\SlotGeneratorContext.cs" />
     <Compile Include="Scripts\VirtualModifier.cs" />
+    <Compile Include="Textures\RenderTextureAsset.cs" />
+    <Compile Include="Textures\RenderTextureAssetCompiler.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />

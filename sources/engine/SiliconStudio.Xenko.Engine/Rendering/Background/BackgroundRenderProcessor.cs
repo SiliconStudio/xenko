@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
         {
-            return new RenderBackground();
+            return new RenderBackground { RenderGroup = entity.Group };
         }
 
         public override void Draw(RenderContext context)

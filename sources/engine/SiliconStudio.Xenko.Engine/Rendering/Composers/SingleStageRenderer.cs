@@ -3,7 +3,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// <summary>
     /// Renders a single stage with the current <see cref="RenderView"/>.
     /// </summary>
-    public partial class SingleStageRenderer : SceneRendererBase, ISharedRenderer
+    public partial class SingleStageRenderer : SceneRendererBase
     {
         public RenderStage MainRenderStage;
         public RenderStage TransparentRenderStage;

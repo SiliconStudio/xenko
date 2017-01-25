@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         protected override RenderUIElement GenerateComponentData(Entity entity, UIComponent component)
         {
-            return new RenderUIElement(component, entity.Transform);
+            return new RenderUIElement(component, entity.Transform) { RenderGroup = entity.Group };
         }
 
         protected override bool IsAssociatedDataValid(Entity entity, UIComponent component, RenderUIElement associatedData)

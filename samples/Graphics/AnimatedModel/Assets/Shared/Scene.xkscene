@@ -31,7 +31,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         AspectRatio: 0.56
-                        Slot: {Index: 0}
+                        Slot: {Index: 1}
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
                 Name: RenderToTexture
@@ -43,13 +43,10 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    1f8e1dc3f2536a45a02655ebe9720de5: !AnimatedModel.SetSpriteSource,AnimatedModel.Game
-                        Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
                     18d30692ec0eaa4bac05b1cd6e893efa: !SpriteComponent
                         Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
                         SpriteProvider: !SpriteFromTexture
-                            Texture: 99561296-5d13-4f43-b743-4f4c9bcf5502:Placeholder
+                            Texture: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderTexture
                             PixelsPerUnit: 450.0
                             Center: {X: 0.0, Y: 0.0}
                             CenterFromMiddle: false
@@ -132,13 +129,10 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.382683456, Z: 0.0, W: 0.9238795}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    1f8e1dc3f2536a45a02655ebe9720de5: !AnimatedModel.SetSpriteSource,AnimatedModel.Game
-                        Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
-                        RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
                     18d30692ec0eaa4bac05b1cd6e893efa: !SpriteComponent
                         Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
                         SpriteProvider: !SpriteFromTexture
-                            Texture: 99561296-5d13-4f43-b743-4f4c9bcf5502:Placeholder
+                            Texture: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderTexture
                             PixelsPerUnit: 450.0
                             Center: {X: 0.0, Y: 0.0}
                             CenterFromMiddle: false

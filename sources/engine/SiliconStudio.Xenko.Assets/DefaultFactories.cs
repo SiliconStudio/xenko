@@ -39,6 +39,10 @@ namespace SiliconStudio.Xenko.Assets
     {
     }
 
+    public class DefaultRenderTextureFactory : DefaultAssetFactory<RenderTextureAsset>
+    {
+    }
+
     public class DefaultUILibraryFactory : DefaultAssetFactory<UILibraryAsset>
     {
     }

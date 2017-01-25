@@ -184,6 +184,7 @@
     <Compile Include="Rendering\Composers\ForceAspectRatioSceneRenderer.cs" />
     <Compile Include="Rendering\Composers\ForwardRenderer.cs" />
     <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Composers\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
     <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
@@ -295,6 +296,8 @@
     <Compile Include="Rendering\MeshPipelineProcessor.cs" />
     <Compile Include="Rendering\PipelineProcessor.cs" />
     <Compile Include="Rendering\RenderStageFilter.cs" />
+    <Compile Include="Rendering\RenderTextures\RenderTextureDescriptor.cs" />
+    <Compile Include="Rendering\RenderTextures\RenderTextureFormat.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
