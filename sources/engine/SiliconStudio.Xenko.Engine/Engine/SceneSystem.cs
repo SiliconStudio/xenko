@@ -133,17 +133,10 @@ namespace SiliconStudio.Xenko.Engine
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
-            try
+            // Push context (pop after using)
+            using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
             {
-                // Push context (pop after using)
-                using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
-                {
-                    GraphicsCompositor?.Draw(renderDrawContext);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("An exception occurred while rendering", ex);
+                GraphicsCompositor?.Draw(renderDrawContext);
             }
         }
     }
