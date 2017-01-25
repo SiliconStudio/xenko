@@ -282,7 +282,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                         },
                         PipelineProcessors =
                         {
-                            new MeshPipelineProcessor(),
+                            new MeshPipelineProcessor { TransparentRenderStage = transparentRenderStage },
                             new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterRenderStage },
                         }
                     },
