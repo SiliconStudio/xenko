@@ -36,9 +36,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         internal IEntityComponentNotify Owner;
 
-        [DataMemberIgnore]
-        public Scene Scene { get; internal set; }
-
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
         /// </summary>
