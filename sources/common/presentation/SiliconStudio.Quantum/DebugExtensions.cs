@@ -19,7 +19,7 @@ namespace SiliconStudio.Quantum
             PrintIndentation(indentation, builder);
             builder.Append(node.Guid + " ");
             PrintIndentation(indentation, builder);
-            builder.Append(node.Name ?? "<untitled>");
+            builder.Append((node as IMemberNode)?.Name ?? node.Type.Name);
             builder.Append(": [");
             builder.Append(node.GetType().Name);
             builder.Append("] = ");
@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum
                     builder.Append(" > ");
                 }
                 builder.Append("Reference -> ");
-                builder.Append(node.Reference);
+                //builder.Append(node.Reference);
             }
             else if (node.Value == null)
             {
@@ -42,9 +42,13 @@ namespace SiliconStudio.Quantum
                 builder.Append(node.Value.ToString().Replace(Environment.NewLine, " "));
             }
             builder.AppendLine();
-            foreach (var child in node.Children)
+            var objNode = node as IObjectNode;
+            if (objNode != null)
             {
-                PrintHierarchyInternal(child, indentation + 4, builder);
+                foreach (var child in objNode.Members)
+                {
+                    PrintHierarchyInternal(child, indentation + 4, builder);
+                }
             }
         }
 

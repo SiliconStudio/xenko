@@ -124,21 +124,18 @@ namespace SiliconStudio.Assets.Quantum
         private AssetPropertyGraph propertyGraph;
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
-        internal bool contentUpdating;
         private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, ContentNode container, IMemberDescriptor member, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, member, isPrimitive, reference)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
-            PrepareChange += (sender, e) => contentUpdating = true;
-            FinalizeChange += (sender, e) => contentUpdating = false;
             Changed += ContentChanged;
-            IsNonIdentifiableCollectionContent = Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-            CanOverride =Member.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+            IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+            CanOverride =MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }
 
         public bool IsNonIdentifiableCollectionContent { get; }
@@ -369,30 +366,31 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph.ResetOverride(this, indexToReset);
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());
 
-            var node = (AssetMemberNode)e.Content;
+            var node = (AssetMemberNode)e.Member;
             if (node.IsNonIdentifiableCollectionContent)
                 return;
 
             // Create new ids for collection items
             var baseNode = (AssetMemberNode)BaseContent;
-            var isOverriding = !baseNode?.contentUpdating == true;
+            var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
             var removedId = ItemId.Empty;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
-                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                         // Compute the id we will add for this item
                         ItemId itemId;
-                        if (baseNode?.contentUpdating == true)
+                        if (baseNode != null && PropertyGraph.UpdatingPropertyFromBase)
                         {
                             var baseCollection = baseNode.Retrieve();
                             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
@@ -422,15 +420,15 @@ namespace SiliconStudio.Assets.Quantum
                     break;
                 case ContentChangeType.CollectionRemove:
                     {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                             removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
                         }
                         else
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
                             removedId = itemIds.Delete(e.Index.Value, isOverriding);
                         }
                     }
@@ -445,7 +443,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             // Mark it as New if it does not come from the base
-            if (!baseNode?.contentUpdating == true && !ResettingOverride)
+            if (baseNode != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
             {
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
                 {
