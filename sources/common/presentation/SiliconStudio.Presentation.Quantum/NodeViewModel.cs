@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Collections;
@@ -41,6 +42,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected NodeViewModel(GraphViewModel ownerViewModel, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
+            DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
             Index = index;
             Guid = Guid.NewGuid();
@@ -64,9 +66,14 @@ namespace SiliconStudio.Presentation.Quantum
         public string DisplayName { get { return displayName; } set { SetValue(ref displayName, value); } }
 
         /// <summary>
-        /// Gets the path of this node. The path is constructed from the name of all node from the root to this one, separated by periods.
+        /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
         /// </summary>
         public string Path => Parent != null ? Parent.Path + '.' + Name : Name;
+
+        /// <summary>
+        /// Gets the display path of this node. The path is constructed from the <see cref="DisplayName"/> of all nodes from the root to this one, separated by periods.
+        /// </summary>
+        public string DisplayPath { get { if (Parent == null) return string.Empty; var parentPath = Parent.DisplayPath; return parentPath != string.Empty ? parentPath + '.' + DisplayName : DisplayName; } }
 
         /// <summary>
         /// Gets the parent of this node.

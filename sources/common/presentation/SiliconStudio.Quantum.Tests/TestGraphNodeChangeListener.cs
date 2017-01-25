@@ -472,20 +472,14 @@ namespace SiliconStudio.Quantum.Tests
         {
             var i = 0;
             var contentOwner = fetchNode();
-            var prepareChange = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
-            var changing = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
-            var changed = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(2, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
-            var finalizeChange = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(3, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
-            listener.PrepareChange += prepareChange;
+            var changing = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(0, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, false); ++i; });
+            var changed = new EventHandler<MemberNodeChangeEventArgs>((sender, e) => { Assert.AreEqual(1, i); VerifyListenerEvent(e, contentOwner, type, index, oldValue, newValue, true); ++i; });
             listener.Changing += changing;
             listener.Changed += changed;
-            listener.FinalizeChange += finalizeChange;
             change(contentOwner);
-            Assert.AreEqual(4, i);
-            listener.PrepareChange -= prepareChange;
+            Assert.AreEqual(2, i);
             listener.Changing -= changing;
             listener.Changed -= changed;
-            listener.FinalizeChange -= finalizeChange;
         }
     }
 }

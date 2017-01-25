@@ -12,7 +12,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -71,16 +70,6 @@ namespace SiliconStudio.Assets.Quantum
         /// Gets or sets whether a property is currently being updated from a change in the base of this asset.
         /// </summary>
         public bool UpdatingPropertyFromBase { get; private set; }
-
-        /// <summary>
-        /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
-        /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange { add { nodeListener.PrepareChange += value; } remove { nodeListener.PrepareChange -= value; } }
-
-        /// <summary>
-        /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
-        /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange { add { nodeListener.FinalizeChange += value; } remove { nodeListener.FinalizeChange -= value; } }
 
         /// <summary>
         /// Raised after one of the node referenced by the related root node has changed.

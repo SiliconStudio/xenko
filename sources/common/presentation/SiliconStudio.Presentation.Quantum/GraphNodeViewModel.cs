@@ -281,7 +281,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Sets the value of the model content associated to this <see cref="GraphNodeViewModel"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected bool SetModelContentValue(IContentNode node, object newValue)
+        protected virtual bool SetModelContentValue(IContentNode node, object newValue)
         {
             var oldValue = node.Retrieve(Index);
             if (!Equals(oldValue, newValue))

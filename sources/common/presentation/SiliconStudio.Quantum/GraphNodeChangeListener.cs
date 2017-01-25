@@ -32,16 +32,6 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
-        /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <summary>
-        /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
-        /// </summary>
-        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
-
-        /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
         public event EventHandler<MemberNodeChangeEventArgs> Changing;
@@ -121,8 +111,6 @@ namespace SiliconStudio.Quantum
                     }
                     break;
             }
-
-            PrepareChange?.Invoke(sender, e);
         }
 
         private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
@@ -162,8 +150,6 @@ namespace SiliconStudio.Quantum
                     }
                     break;
             }
-
-            FinalizeChange?.Invoke(sender, e);
         }
 
         private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
