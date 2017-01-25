@@ -1,16 +1,13 @@
+using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     public class MeshTransparentRenderStageSelector : TransparentRenderStageSelector
     {
-        public EntityGroup EntityGroup { get; set; }
-
         public override void Process(RenderObject renderObject)
         {
-            var entityGroup = renderObject.RenderGroup;
-
-            if (entityGroup == EntityGroup)
+            if (((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & EntityGroup) != 0)
             {
                 var renderMesh = (RenderMesh)renderObject;
 

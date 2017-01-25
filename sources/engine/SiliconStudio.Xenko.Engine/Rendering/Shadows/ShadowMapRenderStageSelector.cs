@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
@@ -7,11 +8,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public RenderStage ShadowMapRenderStage { get; set; }
         public string EffectName { get; set; }
 
-        public EntityGroup EntityGroup { get; set; }
+        [DefaultValue(EntityGroupMask.Group0)]
+        public EntityGroupMask EntityGroup { get; set; } = EntityGroupMask.Group0;
 
         public override void Process(RenderObject renderObject)
         {
-            if (renderObject.RenderGroup == EntityGroup)
+            if (((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & EntityGroup) != 0)
             {
                 var renderMesh = (RenderMesh)renderObject;
 

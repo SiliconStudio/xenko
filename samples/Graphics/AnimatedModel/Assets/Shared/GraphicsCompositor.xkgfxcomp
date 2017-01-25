@@ -123,6 +123,6 @@ Game*: !SiliconStudio.Xenko.Rendering.Composers.SceneRendererCollection,SiliconS
                     8b3451f3d0b53f918c1872c82f6121eb: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
                     03645ddeafe2406cbeb097d7d2e77fed: !SiliconStudio.Xenko.Rendering.Composers.SingleStageRenderer,SiliconStudio.Xenko.Engine
                         Id: f90dbaaa-d050-4c2f-a63d-65a6a7d408ce
-                        MainRenderStage: e40ae29a-9b90-4288-8169-9e21506ee3d9
+                        RenderStage: e40ae29a-9b90-4288-8169-9e21506ee3d9
 SingleView: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 Editor: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

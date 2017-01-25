@@ -5,14 +5,14 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// </summary>
     public partial class SingleStageRenderer : SceneRendererBase
     {
-        public RenderStage MainRenderStage;
+        public RenderStage RenderStage;
         public RenderStage TransparentRenderStage;
 
         protected override void CollectCore(RenderContext context)
         {
             // Main
-            MainRenderStage.Output = context.RenderOutput;
-            context.RenderView.RenderStages.Add(MainRenderStage);
+            RenderStage.Output = context.RenderOutput;
+            context.RenderView.RenderStages.Add(RenderStage);
 
             // Transparent
             if (TransparentRenderStage != null)
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            context.RenderContext.RenderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
+            context.RenderContext.RenderSystem.Draw(context, context.RenderContext.RenderView, RenderStage);
 
             if (TransparentRenderStage != null)
                 context.RenderContext.RenderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
