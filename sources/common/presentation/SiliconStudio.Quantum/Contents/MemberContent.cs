@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentNode, IMemberNodeInternal
+    public class MemberContent : ContentNode, IInitializingMemberNode
     {
         private readonly NodeContainer nodeContainer;
 
@@ -47,10 +47,10 @@ namespace SiliconStudio.Quantum.Contents
         public IObjectNode Target { get { if (TargetReference == null) throw new InvalidOperationException("This node does not contain an ObjectReference"); return TargetReference.TargetNode; } }
 
         /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+        public event EventHandler<INodeChangeEventArgs> PrepareChange;
 
         /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+        public event EventHandler<INodeChangeEventArgs> FinalizeChange;
 
         /// <inheritdoc/>
         public event EventHandler<MemberNodeChangeEventArgs> Changing;

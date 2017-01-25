@@ -85,7 +85,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        void IInitializingObjectNode.AddMember(IMemberNodeInternal member, bool allowIfReference)
+        void IInitializingObjectNode.AddMember(IInitializingMemberNode member, bool allowIfReference)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");

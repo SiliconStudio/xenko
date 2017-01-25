@@ -10,6 +10,20 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
+    public interface INotifyContentValueChange
+    {
+        /// <summary>
+        /// Raised just before a change to this node occurs.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> Changing;
+
+        /// <summary>
+        /// Raised when a change to this node has occurred.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> Changed;
+
+    }
+
     public interface IObjectNode : IContentNode
     {
         /// <summary>
@@ -33,7 +47,7 @@ namespace SiliconStudio.Quantum
         IMemberNode TryGetChild(string name);
     }
 
-    public interface IMemberNode : IContentNode
+    public interface IMemberNode : IContentNode, INotifyContentValueChange
     {
         /// <summary>
         /// Gets the member name.
@@ -58,16 +72,6 @@ namespace SiliconStudio.Quantum
         /// </summary>
         [NotNull]
         IMemberDescriptor MemberDescriptor { get; }
-
-        /// <summary>
-        /// Raised just before a change to this node occurs.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changing;
-
-        /// <summary>
-        /// Raised when a change to this node has occurred.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> Changed;
     }
 
     public interface IInitializingGraphNode : IContentNode
@@ -91,19 +95,12 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="member">The member to add to this node.</param>
         /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.TargetReference"/> or <see cref="IContentNode.ItemReferences"/> is not null.</param>
-        void AddMember(IMemberNodeInternal member, bool allowIfReference = false);
+        void AddMember(IInitializingMemberNode member, bool allowIfReference = false);
     }
 
-    public interface IMemberNodeInternal : IInitializingGraphNode, IMemberNode
+    public interface IInitializingMemberNode : IInitializingGraphNode, IMemberNode
     {
-        /// <summary>
-        /// Raised before a change to this node occurs and before the <see cref="IMemberNode.Changing"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
-
-        /// <summary>
-        /// Raised after a change to this node has occurred and after the <see cref="IMemberNode.Changed"/> event is raised.
-        /// </summary>
-        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
+        event EventHandler<INodeChangeEventArgs> PrepareChange;
+        event EventHandler<INodeChangeEventArgs> FinalizeChange;
     }
 }

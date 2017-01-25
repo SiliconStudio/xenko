@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
-    public class GraphNodeChangeListener : IDisposable
+    public class GraphNodeChangeListener : INotifyContentValueChange, IDisposable
     {
         private readonly IContentNode rootNode;
         private readonly Func<IMemberNode, IContentNode, bool> shouldRegisterNode;
@@ -53,13 +53,16 @@ namespace SiliconStudio.Quantum
         {
             // A node can be registered multiple times when it is referenced via multiple paths
             var memberNode = node as IMemberNode;
-            if (memberNode != null && RegisteredNodes.Add(node))
+            if (RegisteredNodes.Add(node))
             {
-                ((IMemberNodeInternal)memberNode).PrepareChange += ContentPrepareChange;
-                ((IMemberNodeInternal)memberNode).FinalizeChange += ContentFinalizeChange;
-                memberNode.Changing += ContentChanging;
-                memberNode.Changed += ContentChanged;
-                return true;
+                if (memberNode != null)
+                {
+                    ((IInitializingMemberNode)memberNode).PrepareChange += ContentPrepareChange;
+                    ((IInitializingMemberNode)memberNode).FinalizeChange += ContentFinalizeChange;
+                    memberNode.Changing += ContentChanging;
+                    memberNode.Changed += ContentChanged;
+                    return true;
+                }
             }
 
             return false;
@@ -68,13 +71,16 @@ namespace SiliconStudio.Quantum
         protected virtual bool UnregisterNode(IContentNode node)
         {
             var memberNode = node as IMemberNode;
-            if (memberNode != null && RegisteredNodes.Remove(node))
+            if (RegisteredNodes.Remove(node))
             {
-                ((IMemberNodeInternal)memberNode).PrepareChange -= ContentPrepareChange;
-                ((IMemberNodeInternal)memberNode).FinalizeChange -= ContentFinalizeChange;
-                memberNode.Changing -= ContentChanging;
-                memberNode.Changed -= ContentChanged;
-                return true;
+                if (memberNode != null)
+                {
+                    ((IInitializingMemberNode)memberNode).PrepareChange -= ContentPrepareChange;
+                    ((IInitializingMemberNode)memberNode).FinalizeChange -= ContentFinalizeChange;
+                    memberNode.Changing -= ContentChanging;
+                    memberNode.Changed -= ContentChanged;
+                    return true;
+                }
             }
             return false;
         }
@@ -87,9 +93,9 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        private void ContentPrepareChange(object sender, MemberNodeChangeEventArgs e)
+        private void ContentPrepareChange(object sender, INodeChangeEventArgs e)
         {
-            var node = e.Member;
+            var node = e.Node;
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node1, path) => UnregisterNode(node1);
             visitor.ShouldVisit = shouldRegisterNode;
@@ -115,7 +121,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void ContentFinalizeChange(object sender, MemberNodeChangeEventArgs e)
+        private void ContentFinalizeChange(object sender, INodeChangeEventArgs e)
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => RegisterNode(node);
@@ -126,30 +132,30 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionUpdate:
                     // The changed node itself is still valid, we don't want to re-register it
                     visitor.SkipRootNode = true;
-                    visitor.Visit(e.Member);
+                    visitor.Visit(e.Node);
                     // TODO: In case of CollectionUpdate we could probably visit only the target node of the corresponding index
                     break;
                 case ContentChangeType.CollectionAdd:
-                    if (e.Member.IsReference && e.NewValue != null)
+                    if (e.Node.IsReference && e.NewValue != null)
                     {
                         IContentNode addedNode;
                         Index index;
                         if (!e.Index.IsEmpty)
                         {
                             index = e.Index;
-                            addedNode = e.Member.ItemReferences[e.Index].TargetNode;
+                            addedNode = e.Node.ItemReferences[e.Index].TargetNode;
                         }
                         else
                         {
-                            var reference = e.Member.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
+                            var reference = e.Node.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
                             index = reference.Index;
                             addedNode = reference.TargetNode;
                         }
 
                         if (addedNode != null)
                         {
-                            var path = new GraphNodePath(e.Member).PushIndex(index);
-                            visitor.Visit(addedNode, e.Member as MemberContent, path);
+                            var path = new GraphNodePath(e.Node).PushIndex(index);
+                            visitor.Visit(addedNode, e.Node as MemberContent, path);
                         }
                     }
                     break;

@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// Arguments of the <see cref="IContentNode.Changing"/> and <see cref="IContentNode.Changed"/> events.
     /// </summary>
-    public class MemberNodeChangeEventArgs : EventArgs
+    public class MemberNodeChangeEventArgs : EventArgs, INodeChangeEventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberNodeChangeEventArgs"/> class.
@@ -59,5 +59,7 @@ namespace SiliconStudio.Quantum.Contents
         /// Gets the new value of the member or the item of the member that has changed.
         /// </summary>
         public object NewValue { get; }
+
+        IContentNode INodeChangeEventArgs.Node => Member;
     }
 }
