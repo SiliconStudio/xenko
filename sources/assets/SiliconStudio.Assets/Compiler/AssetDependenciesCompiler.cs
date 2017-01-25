@@ -62,10 +62,9 @@ namespace SiliconStudio.Assets.Compiler
             foreach (var assetDependency in dependencies.LinksOut)
             {
                 var assetType = assetDependency.Item.Asset.GetType();
-                var compiler = assetCompilerRegistry.GetCompiler(assetType);
                 if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
                 {
-                    var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, compiler);
+                    var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
                     if (result.HasErrors)
                     {
                         result.CopyTo(compilerResult);
@@ -77,8 +76,7 @@ namespace SiliconStudio.Assets.Compiler
             //compile time
             foreach (var compileTimeDependency in mainCompiler.GetCompileTimeDependencies(assetCompilerContext, assetItem))
             {
-                var compiler = assetCompilerRegistry.GetCompiler(compileTimeDependency.Asset.GetType());
-                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, compileTimeDependency, compiler);
+                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, compileTimeDependency, this);
                 if (result.HasErrors)
                 {
                     result.CopyTo(compilerResult);
