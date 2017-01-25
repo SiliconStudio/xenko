@@ -81,11 +81,11 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
+                    var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                    var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureConvertParameters, assetItem.Package);
                     result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
                     {
-                        new TextureAssetCompiler.TextureConvertCommand(
-                            textureUrl,
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace))
+                        textureConvertCommand
                     });
                 }
             }
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             if (!result.HasErrors)
             {
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters) });
+                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package) });
             }
         }
 
@@ -102,8 +102,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            public SpriteSheetCommand(string url, SpriteSheetParameters parameters)
-                : base(url, parameters)
+            public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 

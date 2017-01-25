@@ -46,14 +46,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset, assetItem.Package) };
         }
 
-        protected abstract EntityHierarchyCommandBase Create(string url, T assetParameters);
+        protected abstract EntityHierarchyCommandBase Create(string url, T assetParameters, Package package);
 
         protected abstract class EntityHierarchyCommandBase : AssetCommand<T>
         {
-            protected EntityHierarchyCommandBase(string url, T parameters) : base(url, parameters)
+            protected EntityHierarchyCommandBase(string url, T parameters, Package package) : base(url, parameters, package)
             {
             }
 

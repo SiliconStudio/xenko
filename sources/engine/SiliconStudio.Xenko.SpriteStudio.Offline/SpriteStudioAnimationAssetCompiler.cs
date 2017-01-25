@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace)
+                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
             };
         }
 
@@ -37,8 +37,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private ColorSpace colorSpace;
 
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace)
-                : base(url, asset)
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, Package package)
+                : base(url, asset, package)
             {
                 this.colorSpace = colorSpace;
             }

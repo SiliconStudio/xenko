@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.FontSource = asset.FontSource;
                 fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(targetUrlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(targetUrlInStorage, assetClone, assetItem.Package) };
             }
             else
                 if (asset.FontType is RuntimeRasterizedSpriteFontType)
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     result.BuildSteps = new AssetBuildStep(assetItem)
                     {
                         new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
-                        new RuntimeRasterizedFontCommand(targetUrlInStorage, asset)
+                        new RuntimeRasterizedFontCommand(targetUrlInStorage, asset, assetItem.Package)
                     };  
                 }
                 else
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     assetClone.FontSource = asset.FontSource;
                     fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                    result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace) };
+                    result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package) };
                 }
         }
 
@@ -78,8 +78,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             private ColorSpace colorspace;
 
-            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace)
-                : base(url, description)
+            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace, Package package)
+                : base(url, description, package)
             {
                 this.colorspace = colorspace;
             }
@@ -135,27 +135,19 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         internal class SignedDistanceFieldFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description)
-                : base(url, description)
+            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, Package package)
+                : base(url, description, package)
             {
             }
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeSDF = Parameters.FontType as SignedDistanceFieldSpriteFontType;
-                if (fontTypeSDF == null)
+                var fontTypeSdf = Parameters.FontType as SignedDistanceFieldSpriteFontType;
+                if (fontTypeSdf == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
-                if (File.Exists(fontTypeSDF.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, fontTypeSDF.CharacterSet);
-            }
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-
-                // TODO Add parameter hash codes here
-                // writer.Write(colorspace);
+                if (File.Exists(fontTypeSdf.CharacterSet))
+                    yield return new ObjectUrl(UrlType.File, fontTypeSdf.CharacterSet);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -190,8 +182,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         internal class RuntimeRasterizedFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description)
-                : base(url, description)
+            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description, Package package)
+                : base(url, description, package)
             {
             }
 
@@ -214,7 +206,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         internal class FailedFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public FailedFontCommand() : base(null, null) { }
+            public FailedFontCommand() : base(null, null, null) { }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {

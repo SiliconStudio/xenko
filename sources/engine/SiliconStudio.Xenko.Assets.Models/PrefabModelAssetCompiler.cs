@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -23,23 +23,43 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
+        public PrefabModelAssetCompiler()
+        {
+            CompileTimeDependencyTypes.Add(typeof(PrefabAsset));
+            CompileTimeDependencyTypes.Add(typeof(ModelAsset));
+            CompileTimeDependencyTypes.Add(typeof(PrefabModelAsset));
+            CompileTimeDependencyTypes.Add(typeof(ProceduralModelAsset));
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
+            CompileTimeDependencyTypes.Add(typeof(SkeletonAsset));
+        }
+
+        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
+        {
+            foreach (var dependency in ((PrefabModelAsset)assetItem.Asset).EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            {
+                var dependencyItem = assetItem.Package.FindAsset(dependency.Location);
+                if (dependencyItem != null)
+                {
+                    yield return dependencyItem;
+                }
+            }
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
         {
-            private readonly Package package;
             private readonly RenderingSettings renderingSettings;
 
             public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings) 
-                : base(url, parameters)
+                : base(url, parameters, assetItem.Package)
             {
-                package = assetItem.Package;
                 this.renderingSettings = renderingSettings;
             }
 
@@ -57,18 +77,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 public Entity Entity;
                 public Model Model;
                 public int MaterialIndex;
-            }
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-
-                if (Parameters.Prefab == null) return;
-
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
-                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)

@@ -8,14 +8,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public class SceneAssetCompiler : EntityHierarchyCompilerBase<SceneAsset>
     {
-        protected override EntityHierarchyCommandBase Create(string url, SceneAsset assetParameters)
+        protected override EntityHierarchyCommandBase Create(string url, SceneAsset assetParameters, Package package)
         {
-            return new SceneCommand(url, assetParameters);
+            return new SceneCommand(url, assetParameters, package);
         }
 
         private class SceneCommand : EntityHierarchyCommandBase
         {
-            public SceneCommand(string url, SceneAsset parameters) : base(url, parameters)
+            public SceneCommand(string url, SceneAsset parameters, Package package) : base(url, parameters, package)
             {
             }
 

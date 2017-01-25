@@ -20,21 +20,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             CompileTimeDependencyTypes.Add(typeof(MaterialAsset));
         }
 
-        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
-        {
-            return base.GetCompileTimeDependencies(context, assetItem);
-        }
-
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ProceduralModelAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset, assetItem.Package) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters)
-                : base(url, parameters)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 

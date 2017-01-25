@@ -16,13 +16,13 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (RenderFrameAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(targetUrlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(targetUrlInStorage, asset, assetItem.Package) };
         }
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>
         {
-            public RenderFrameCompileCommand(string url, RenderFrameAsset parameters)
-                : base(url, parameters)
+            public RenderFrameCompileCommand(string url, RenderFrameAsset parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 

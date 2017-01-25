@@ -45,12 +45,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     Hint = TextureHint.Color
                 };
 
-                result.BuildSteps.Add(
-                    new TextureAssetCompiler.TextureConvertCommand(
-                        targetUrlInStorage + texIndex,
-                        new TextureConvertParameters(texture, textureAsset, context.Platform,
-                            context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
-                            gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
+                var textureConvertParameters = new TextureConvertParameters(texture, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(targetUrlInStorage + texIndex, textureConvertParameters, assetItem.Package);
+                result.BuildSteps.Add(textureConvertCommand);
 
                 asset.BuildTextures.Add(targetUrlInStorage + texIndex);
 
@@ -59,7 +56,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
-                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace)
+                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
             });
         }
 
@@ -70,8 +67,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private readonly ColorSpace colorSpace;
 
-            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace)
-                : base(url, asset)
+            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace, Package package)
+                : base(url, asset, package)
             {
                 this.colorSpace = colorSpace;
             }

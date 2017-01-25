@@ -26,35 +26,21 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 {
     class NavigationMeshAssetCompiler : AssetCompilerBase
     {
+        public NavigationMeshAssetCompiler()
+        {
+            CompileTimeDependencyTypes.Add(typeof(SceneAsset));
+            CompileTimeDependencyTypes.Add(typeof(ColliderShapeAsset));
+        }
+
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new ListBuildStep(); 
-
-            // Add navigation mesh dependencies
-            foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
-            {
-                var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
-                var colliderShapeAsset = colliderAssetItem.Asset as ColliderShapeAsset;
-                if (colliderShapeAsset != null)
-                {
-                    // Compile the collider assets first
-                    result.BuildSteps.Add(new AssetBuildStep(colliderAssetItem)
-                    {
-                        new ColliderShapeAssetCompiler.ColliderShapeCombineCommand(colliderAssetItem.Location, colliderShapeAsset, assetItem.Package)
-                    });
-                }
-            }
-
-            result.BuildSteps.Add(new WaitBuildStep());
 
             // Compile the navigation mesh itself
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
             });
-
-            result.ShouldWaitForPreviousBuilds = true;
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
@@ -68,7 +54,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public NavigationMeshInputBuilder NavigationMeshInputBuilder;
             }
 
-            private readonly Package package;
             private readonly ContentManager contentManager = new ContentManager();
             private readonly Dictionary<string, PhysicsColliderShape> loadedColliderShapes = new Dictionary<string, PhysicsColliderShape>();
             private readonly List<BoundingBox> updatedAreas = new List<BoundingBox>();
@@ -95,19 +80,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private NavigationMeshBuildSettings buildSettings;
 
             public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
-                : base(url, value)
+                : base(url, value, assetItem.Package)
             {
                 asset = value;
-                package = assetItem.Package;
                 assetUrl = url;
-            }
-
-            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                foreach (var compileTimeDependency in asset.EnumerateCompileTimeDependencies(package.Session))
-                {
-                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-                }
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -331,7 +307,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     if (asset.Scene != null)
                     {
                         string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-                        var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
+                        var sceneAsset = (SceneAsset)Package.Session.FindAsset(sceneUrl)?.Asset;
 
                         // Clone scene asset because we update the world transformation matrices
                         clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);

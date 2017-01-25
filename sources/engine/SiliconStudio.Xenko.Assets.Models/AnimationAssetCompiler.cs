@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 buildStep.Add(new WaitBuildStep());
 
                 // Generate the diff of those two animations
-                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode)));
+                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode), assetItem.Package));
             }
             else
             {
@@ -121,7 +121,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters) : base(url, parameters)
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, Package package) : 
+                base(url, parameters, package)
             {
             }
 

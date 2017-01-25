@@ -20,13 +20,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package) };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
         {
-            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description)
-                : base(url, description)
+            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description, Package package)
+                : base(url, description, package)
             {
             }
 

@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
             var asset = (SoundAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new DecodeSoundFileCommand(targetUrlInStorage, asset)
+                new DecodeSoundFileCommand(targetUrlInStorage, asset, assetItem.Package)
             };
         }
 
@@ -31,7 +31,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
         {
             private readonly TagSymbol disableCompressionSymbol;
 
-            public DecodeSoundFileCommand(string url, SoundAsset asset) : base(url, asset)
+            public DecodeSoundFileCommand(string url, SoundAsset asset, Package package) 
+                : base(url, asset, package)
             {
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
             }

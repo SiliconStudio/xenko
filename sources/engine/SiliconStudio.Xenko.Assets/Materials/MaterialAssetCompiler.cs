@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
     {
         public MaterialAssetCompiler()
         {
-            CompileTimeDependencyTypes.Add(typeof(TextureAsset));
+            CompileTimeDependencyTypes.Add(typeof(TextureAsset)); //textures
+            CompileTimeDependencyTypes.Add(typeof(MaterialAsset)); //sub-materials
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -33,25 +34,22 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             private readonly AssetItem assetItem;
 
-            private readonly Package package;
-
             private ColorSpace colorSpace;
 
             private UFile assetUrl;
 
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
-                : base(url, value)
+                : base(url, value, assetItem.Package)
             {
                 this.assetItem = assetItem;
-                package = assetItem.Package;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
             }
 
-            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO: Add textures when we will bake them
-                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
+                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(Package.Session))
                 {
                     yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
                 }
@@ -60,15 +58,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
+
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
                 // Write the 
                 writer.Write(colorSpace);
-                
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
-                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -107,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     Content = assetManager,
                     ColorSpace = colorSpace
                 };
-                materialContext.AddLoadingFromSession(package);
+                materialContext.AddLoadingFromSession(Package);
 
                 var materialClone = AssetCloner.Clone(Parameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));

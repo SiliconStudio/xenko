@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var colorSpace = context.GetColorSpace();
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter, assetItem.Package) };
         }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            public TextureConvertCommand(string url, TextureConvertParameters description)
-                : base(url, description)
+            public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
+                : base(url, description, package)
             {
             }
 

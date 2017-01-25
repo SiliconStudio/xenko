@@ -4,11 +4,9 @@
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Physics;
 using System;
@@ -18,7 +16,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Shaders.Ast;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -29,6 +26,32 @@ namespace SiliconStudio.Xenko.Assets.Physics
         static ColliderShapeAssetCompiler()
         {
             NativeLibrary.PreloadLibrary("VHACD.dll");
+        }
+
+        public ColliderShapeAssetCompiler()
+        {
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
+            {
+                CompileTimeDependencyTypes.Add(type);
+            }
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
+            {
+                CompileTimeDependencyTypes.Add(type);
+            }
+        }
+
+        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
+        {
+            var asset = (ColliderShapeAsset)assetItem.Asset;
+            var models = asset.ColliderShapes.Where(x => (x as ConvexHullColliderShapeDesc)?.Model != null).Select(x => ((ConvexHullColliderShapeDesc)x).Model);
+            foreach (var modelRef in models)
+            {
+                var model = assetItem.Package.FindAssetFromAttachedReference(modelRef);
+                if (model != null)
+                {
+                    yield return model;
+                }
+            }
         }
 
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -45,17 +68,8 @@ namespace SiliconStudio.Xenko.Assets.Physics
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
             public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
-                : base(url, parameters)
+                : base(url, parameters, package)
             {
-                this.package = package;
-            }
-
-            private readonly Package package;
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

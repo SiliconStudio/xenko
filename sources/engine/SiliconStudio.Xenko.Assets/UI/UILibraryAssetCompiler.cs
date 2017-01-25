@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 
@@ -8,15 +9,15 @@ namespace SiliconStudio.Xenko.Assets.UI
 {
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
-        protected override UIConvertCommand Create(string url, UILibraryAsset parameters)
+        protected override UIConvertCommand Create(string url, UILibraryAsset parameters, Package package)
         {
-            return new UILibraryCommand(url, parameters);
+            return new UILibraryCommand(url, parameters, package);
         }
 
         private sealed class UILibraryCommand : UIConvertCommand
         {
-            public UILibraryCommand(string url, UILibraryAsset parameters)
-                : base(url, parameters)
+            public UILibraryCommand(string url, UILibraryAsset parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 
