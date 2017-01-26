@@ -40,20 +40,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
-        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
-        {
-            var asset = (ColliderShapeAsset)assetItem.Asset;
-            var models = asset.ColliderShapes.Where(x => (x as ConvexHullColliderShapeDesc)?.Model != null).Select(x => ((ConvexHullColliderShapeDesc)x).Model);
-            foreach (var modelRef in models)
-            {
-                var model = assetItem.Package.FindAssetFromAttachedReference(modelRef);
-                if (model != null)
-                {
-                    yield return model;
-                }
-            }
-        }
-
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
