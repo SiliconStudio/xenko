@@ -39,12 +39,7 @@ namespace SiliconStudio.Assets.Compiler
             return result;
         }
 
-        public HashSet<Type> CompileTimeDependencyTypes { get; private set; } = new HashSet<Type>();
-
-        public virtual IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
-        {
-            yield break;
-        }
+        public HashSet<Type> CompileTimeDependencyTypes { get; } = new HashSet<Type>();
 
         /// <summary>
         /// Compiles the asset from the specified package.

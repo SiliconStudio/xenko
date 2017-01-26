@@ -32,18 +32,12 @@ namespace SiliconStudio.Assets.Compiler
             : base (url)
         {
             Parameters = parameters;
-            this.Package = package;
+            Package = package;
         }
 
         public T Parameters { get; set; }
         
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Asset command processing {0}", Url);
-            }
-        }
+        public override string Title => $"Asset command processing {Url}";
 
         protected void ComputeCompileTimeDependenciesHash(BinarySerializationWriter writer, Asset asset)
         {

@@ -33,7 +33,7 @@ namespace SiliconStudio.Assets.Compiler
     {
         IDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; }
 
-        AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler);
+        AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, AssetDependenciesCompiler compiler);
     }
 
     public class BuildStepsQueue
@@ -46,20 +46,8 @@ namespace SiliconStudio.Assets.Compiler
     /// An item list compiler only creates the build steps required to creates some output items.
     /// The result of a compilation has then to be executed by the build engine to effectively create the outputs items.
     /// </summary>
-    public abstract class ItemListCompiler : IBuildStepsQueue
+    public abstract class ItemListCompiler
     {
-        public IDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; } = new ConcurrentDictionary<AssetBuildOperation, ListBuildStep>();
-
-        public AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, IAssetCompiler compiler)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Submit(BuildStep parentStep, AssetBuildStep childStep)
-        {
-            throw new NotImplementedException();
-        }
-
         private readonly ICompilerRegistry<IAssetCompiler> compilerRegistry;
         private int latestPriority;
 
@@ -84,8 +72,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context">The context source.</param>
         /// <param name="assetItems">The list of items to compile</param>
         /// <param name="compilationResult">The current compilation result, containing the build steps and the logging</param>
-        protected void Compile(CompilerContext context, IEnumerable<AssetItem> assetItems,
-            AssetCompilerResult compilationResult)
+        protected void Compile(CompilerContext context, IEnumerable<AssetItem> assetItems, AssetCompilerResult compilationResult)
         {
             foreach (var assetItem in assetItems)
             {
@@ -123,7 +110,6 @@ namespace SiliconStudio.Assets.Compiler
             // Second we are compiling the asset (generating a build step)
             try
             {
-                context.Properties.Set(BuildStepsQueue.PropertyKey, this);
                 var resultPerAssetType = compiler.Compile(context, assetItem);
 
                 // Raise the AssetCompiled event.
@@ -169,10 +155,11 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
-        /// Sets recursively the <see cref="BuildStep.Module"/>.
+        /// Sets recursively the <see cref="Module"/>.
         /// </summary>
         /// <param name="buildStep">The build step.</param>
-        /// <param name="module">The module.</param>
+        /// <param name="assetReference"></param>
+        /// <param name="assetFullPath"></param>
         private void SetAssetLogger(BuildStep buildStep, Package package, IReference assetReference, string assetFullPath)
         {
             if (buildStep.TransformExecuteContextLogger == null)

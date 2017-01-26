@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -11,9 +12,20 @@ namespace SiliconStudio.Assets.Compiler
     /// An implementation of <see cref="IAssetCompiler"/> that will compile an asset with all its dependencies.
     /// </summary>
     /// <remarks>This class is stateless and can reused or be shared amongst multiple asset compilation</remarks>
-    public class AssetDependenciesCompiler : IAssetCompiler
+    public class AssetDependenciesCompiler
     {
-        private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
+        private static readonly AssetCompilerRegistry AssetCompilerRegistry = new AssetCompilerRegistry();
+
+        public IBuildStepsQueue BuildStepsQueue { get; set; }
+
+        public AssetDependenciesCompiler()
+        {        
+        }
+
+        public AssetDependenciesCompiler(IBuildStepsQueue buildStepsQueue)
+        {
+            BuildStepsQueue = buildStepsQueue;
+        }
 
         /// <inheritdoc/>
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
@@ -34,7 +46,7 @@ namespace SiliconStudio.Assets.Compiler
             IAssetCompiler mainCompiler;
             try
             {
-                mainCompiler = assetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
+                mainCompiler = AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType());
             }
             catch (Exception ex)
             {
@@ -53,9 +65,7 @@ namespace SiliconStudio.Assets.Compiler
                 return compilerResult;
             }
 
-            var depsCompiler = context.Properties.Get(BuildStepsQueue.PropertyKey);
-
-            depsCompiler.BuildSteps[new AssetBuildOperation(assetItem.Id, assetItem.Version)] = compilerResult.BuildSteps;
+            BuildStepsQueue.BuildSteps[new AssetBuildOperation(assetItem.Id, assetItem.Version)] = compilerResult.BuildSteps;
 
             //run time deps
             var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
@@ -64,7 +74,7 @@ namespace SiliconStudio.Assets.Compiler
                 var assetType = assetDependency.Item.Asset.GetType();
                 if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
                 {
-                    var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
+                    var result = BuildStepsQueue.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
                     if (result.HasErrors)
                     {
                         result.CopyTo(compilerResult);
@@ -74,22 +84,45 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             //compile time
-            foreach (var compileTimeDependency in mainCompiler.GetCompileTimeDependencies(assetCompilerContext, assetItem))
+            foreach (var commandStep in EnumerateCommandBuildSteps(compilerResult.BuildSteps))
             {
-                var result = depsCompiler.CompileAndSubmit(context, compilerResult.BuildSteps, compileTimeDependency, this);
-                if (result.HasErrors)
+                foreach (var inputFile in commandStep.Command.GetInputFiles())
                 {
-                    result.CopyTo(compilerResult);
-                    return compilerResult;
+                    if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
+                    {
+                        var asset = assetItem.Package.FindAsset(inputFile.Path);
+                        if(asset == null) continue; //this might be an error tho...
+                        var result = BuildStepsQueue.CompileAndSubmit(context, compilerResult.BuildSteps, asset, this);
+                        if (result.HasErrors)
+                        {
+                            result.CopyTo(compilerResult);
+                            return compilerResult;
+                        }
+                    }
                 }
             }
 
             return compilerResult;
         }
 
-        public IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
+        private IEnumerable<CommandBuildStep> EnumerateCommandBuildSteps(ListBuildStep enumerableBuildStep)
         {
-            yield break;
+            foreach (var buildStep in enumerableBuildStep)
+            {
+                var commandStep = buildStep as CommandBuildStep;
+                if (commandStep != null)
+                {
+                    yield return commandStep;
+                }
+                var listStep = buildStep as ListBuildStep;
+                if (listStep != null)
+                {
+                    foreach (var step in EnumerateCommandBuildSteps(listStep))
+                    {
+                        yield return step;
+                    }
+                }
+            }
         }
 
         public HashSet<Type> CompileTimeDependencyTypes { get; } = new HashSet<Type>();

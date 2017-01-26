@@ -20,8 +20,6 @@ namespace SiliconStudio.Assets.Compiler
         /// <returns>The result of the compilation.</returns>
         AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem);
 
-        IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem);
-
         HashSet<Type> CompileTimeDependencyTypes { get; }
     }
 }
