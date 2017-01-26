@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -25,8 +26,6 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(2000)]
     public sealed class AnimationComponent : EntityComponent
     {
-        private static readonly object Lock = new object();
-
         private readonly Dictionary<string, AnimationClip> animations;
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
 
@@ -186,11 +185,7 @@ namespace SiliconStudio.Xenko.Engine
             if (!playingAnimations.Contains(animation))
                 throw new InvalidOperationException("Trying to await end of an animation which is not playing");
 
-            lock (Lock)
-            {
-                if (animation.endedTCS == null)
-                    animation.endedTCS = new TaskCompletionSource<bool>();
-            }
+            Interlocked.CompareExchange(ref animation.endedTCS, new TaskCompletionSource<bool>(), null);
 
             return animation.endedTCS.Task;
         }
