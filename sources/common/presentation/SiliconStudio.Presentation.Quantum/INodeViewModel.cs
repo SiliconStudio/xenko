@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Quantum;
 
@@ -31,6 +32,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the path of this node. The path is constructed from the name of all node from the root to this one, separated by periods.
         /// </summary>
         string Path { get; }
+
+        /// <summary>
+        /// Gets the display path of this node. The path is constructed from the <see cref="DisplayName"/> of all nodes from the root to this one, separated by periods.
+        /// </summary>
+        [NotNull]
+        string DisplayPath { get; }
 
         /// <summary>
         /// Gets or the parent of this node.

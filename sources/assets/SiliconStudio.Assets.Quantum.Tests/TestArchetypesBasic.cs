@@ -3,7 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Tests
 {
@@ -45,8 +44,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var asset = new Types.MyAsset1 { MyString = "String" };
             var context = DeriveAssetTest<Types.MyAsset1>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset1.MyString));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -94,8 +93,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             var asset = new Types.MyAsset5 { MyInterface = new Types.SomeObject2 { Value = "String1" } };
             var context = DeriveAssetTest<Types.MyAsset5>.DeriveAsset(asset);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterface));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterface));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset5.MyInterface)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset5.MyInterface)];
 
             var objB = asset.MyInterface;
             var objD = context.DerivedAsset.MyInterface;
@@ -162,8 +161,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -263,8 +262,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -371,8 +370,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             ItemId derivedDeletedId = ItemId.Empty;
             ItemId baseDeletedId = ItemId.Empty;
 
@@ -500,8 +499,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset2>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.Struct.MyStrings);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.Struct.MyStrings);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset2.Struct)).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset2.Struct)].Target[nameof(Types.MyAsset2.MyStrings)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -601,8 +600,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -702,8 +701,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
 
             var test = new TestArchetypesRun(context)
             {
@@ -816,8 +815,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset3>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(context.BaseAsset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset3.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
             ItemId derivedDeletedId = ItemId.Empty;
             ItemId baseDeletedId = ItemId.Empty;
 
@@ -944,8 +943,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
 
             var objB0 = asset.MyObjects[0];
             var objB1 = asset.MyObjects[1];
@@ -971,13 +970,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1007,13 +1006,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1043,13 +1042,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1076,8 +1075,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset4>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyObjects);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyObjects);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset4.MyObjects));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset4.MyObjects)];
 
             var objB0 = asset.MyObjects[0];
             var objB1 = asset.MyObjects[1];
@@ -1103,13 +1102,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1141,15 +1140,15 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(2)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1185,18 +1184,18 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(2)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(3)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(3)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(3)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1224,8 +1223,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset5>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyInterfaces);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyInterfaces);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterfaces));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterfaces));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset5.MyInterfaces)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset5.MyInterfaces)];
 
             var objB0 = asset.MyInterfaces[0];
             var objB1 = asset.MyInterfaces[1];
@@ -1252,13 +1251,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1288,13 +1287,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1324,13 +1323,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1357,8 +1356,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset5>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyInterfaces);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyInterfaces);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterfaces));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset5.MyInterfaces));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset5.MyInterfaces)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset5.MyInterfaces)];
 
             var objB0 = asset.MyInterfaces[0];
             var objB1 = asset.MyInterfaces[1];
@@ -1384,13 +1383,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1422,15 +1421,15 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(2)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.SomeObject.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.SomeObject.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1466,18 +1465,18 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index(1)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(0)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(1)));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index(2)));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index(3)));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(0)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(1)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(2)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index(3)].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(0)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(1)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(2)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index(3)].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1505,8 +1504,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset6>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset6.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset6.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset6.MyDictionary)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset6.MyDictionary)];
 
             var objB0 = asset.MyDictionary["Key1"];
             var objB1 = asset.MyDictionary["Key2"];
@@ -1533,13 +1532,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1569,13 +1568,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1605,13 +1604,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1638,8 +1637,8 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var context = DeriveAssetTest<Types.MyAsset6>.DeriveAsset(asset);
             var baseIds = CollectionItemIdHelper.GetCollectionItemIds(asset.MyDictionary);
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
-            var basePropertyNode = (AssetMemberNode)((IContentNode)context.BaseGraph.RootNode).TryGetChild(nameof(Types.MyAsset6.MyDictionary));
-            var derivedPropertyNode = (AssetMemberNode)((IContentNode)context.DerivedGraph.RootNode).TryGetChild(nameof(Types.MyAsset6.MyDictionary));
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset6.MyDictionary)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset6.MyDictionary)];
 
             var objB0 = asset.MyDictionary["Key1"];
             var objB1 = asset.MyDictionary["Key2"];
@@ -1665,13 +1664,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1703,15 +1702,15 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key3")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key3")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key3")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
@@ -1747,18 +1746,18 @@ namespace SiliconStudio.Assets.Quantum.Tests
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, basePropertyNode.GetItemOverride(new Index("Key2")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.Reference.AsEnumerable[new Index("Key4")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)basePropertyNode.ItemReferences[new Index("Key4")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetContentOverride());
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key1")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key2")));
                     Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetItemOverride(new Index("Key3")));
                     Assert.AreEqual(OverrideType.Base, derivedPropertyNode.GetItemOverride(new Index("Key4")));
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key1")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key2")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key3")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
-                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.Reference.AsEnumerable[new Index("Key4")].TargetNode.TryGetChild(nameof(Types.IMyInterface.Value))).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key1")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key2")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key3")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
+                    Assert.AreEqual(OverrideType.Base, ((AssetMemberNode)derivedPropertyNode.ItemReferences[new Index("Key4")].TargetNode[nameof(Types.IMyInterface.Value)]).GetContentOverride());
                     Assert.AreEqual(1, derivedPropertyNode.GetOverriddenItemIndices().Count());
                     Assert.AreEqual(0, derivedPropertyNode.GetOverriddenKeyIndices().Count());
                     Assert.AreNotSame(baseIds, derivedIds);
