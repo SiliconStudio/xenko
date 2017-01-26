@@ -200,7 +200,7 @@ namespace SiliconStudio.AssemblyProcessor
 
         public static string GenerateRoslynAssemblyLocation(string assemblyLocation)
         {
-            if(!assemblyLocation.ToLower().EndsWith(".dll") && !assemblyLocation.ToLower().EndsWith(".exe"))
+            if (!assemblyLocation.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) && !assemblyLocation.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException();
 
             // For historic reason, it is named *.Serializers.dll
