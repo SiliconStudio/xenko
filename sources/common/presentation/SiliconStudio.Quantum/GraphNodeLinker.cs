@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
@@ -41,17 +40,17 @@ namespace SiliconStudio.Quantum
                 base.VisitNode(node, currentPath);
             }
 
-            protected override void VisitChildren(IContentNode node, GraphNodePath currentPath)
+            protected override void VisitChildren(IObjectNode node, GraphNodePath currentPath)
             {
                 IContentNode targetNodeParent;
                 if (VisitedLinks.TryGetValue(node, out targetNodeParent))
                 {
-                    foreach (var child in node.Children)
+                    foreach (var child in node.Members)
                     {
                         if (ShouldVisitNode(child, child))
                         {
                             string name = child.Name;
-                            VisitedLinks.Add(child, targetNodeParent?.TryGetChild(name));
+                            VisitedLinks.Add(child, ((IObjectNode)targetNodeParent)?.TryGetChild(name));
                         }
                     }
                 }
@@ -90,7 +89,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = ShouldVisitSourceNode };
+            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = (memberContent, targetNode) => ShouldVisitSourceNode(memberContent, targetNode) };
         }
 
         /// <summary>
@@ -115,7 +114,7 @@ namespace SiliconStudio.Quantum
         /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
         /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, false otherwise.</returns>
-        protected virtual bool ShouldVisitSourceNode(MemberContent memberContent, IContentNode targetNode)
+        protected virtual bool ShouldVisitSourceNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return true;
         }
@@ -156,17 +155,17 @@ namespace SiliconStudio.Quantum
         /// <param name="sourceReference">The reference in the source node for which to look for a correspondance in the target node.</param>
         /// <returns>A reference of the target node corresponding to the given reference in the source node, or null if there is no match.</returns>
         /// <remarks>
-        /// The source reference can either be directly the <see cref="IContentNode.Reference"/> of the source node if this reference is
-        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IContentNode.Reference"/> if this reference
+        /// The source reference can either be directly the <see cref="IContentNode.TargetReference"/> of the source node if this reference is
+        /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IContentNode.ItemReferences"/> if this reference
         /// is a <see cref="ReferenceEnumerable"/>. The <see cref="IReference.Index"/> property indicates the index of the reference in this case.
         /// The default implementation returns a reference in the target node that matches the index of the source reference, if available.
         /// </remarks>
         protected virtual ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.Reference as ObjectReference;
+                return targetNode.TargetReference;
 
-            var targetReference = targetNode.Reference as ReferenceEnumerable;
+            var targetReference = targetNode.ItemReferences;
             return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }

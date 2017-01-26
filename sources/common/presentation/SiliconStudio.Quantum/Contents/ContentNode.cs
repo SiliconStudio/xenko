@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.References;
@@ -13,29 +13,27 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentNode : IContentNode
+    public abstract class ContentNode : IInitializingGraphNode
     {
-        private readonly List<MemberContent> children = new List<MemberContent>();
-        private readonly HybridDictionary<string, MemberContent> childrenMap = new HybridDictionary<string, MemberContent>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
-        private bool isSealed;
+        protected bool isSealed;
 
-        protected ContentNode(string name, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
-            Name = name;
             Guid = guid;
-            Reference = reference;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
+            TargetReference = reference as ObjectReference;
+            ItemReferences = reference as ReferenceEnumerable;
         }
 
         /// <inheritdoc/>
         public Type Type => Descriptor.Type;
 
         /// <inheritdoc/>
+        [Obsolete("Use method Retrieve()")] 
         public abstract object Value { get; }
 
         /// <inheritdoc/>
@@ -45,61 +43,28 @@ namespace SiliconStudio.Quantum.Contents
         public ITypeDescriptor Descriptor { get; }
 
         /// <inheritdoc/>
-        public bool IsReference => Reference != null;
+        public bool IsReference => TargetReference != null || ItemReferences != null;
 
-        /// <inheritdoc/>
-        public IReference Reference { get; }
+        public ObjectReference TargetReference { get; }
+
+        public ReferenceEnumerable ItemReferences { get; }
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();
 
         /// <inheritdoc/>
-        public string Name { get; }
-
-        /// <inheritdoc/>
         public Guid Guid { get; }
-
-        /// <inheritdoc/>
-        [Obsolete("This accessor is obsolete, use \"this\"")]
-        public IContentNode Content => this;
-
-        /// <inheritdoc/>
-        public IContentNode Parent { get; private set; }
-
-        /// <inheritdoc/>
-        public IContentNode Target { get { if (!(Reference is ObjectReference)) throw new InvalidOperationException("This node does not contain an ObjectReference"); return Reference.AsObject.TargetNode; } }
-
-        /// <inheritdoc/>
-        public IReadOnlyCollection<MemberContent> Children => children;
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <inheritdoc/>
-        public MemberContent this[string name] => childrenMap[name];
-
-        /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> PrepareChange;
-
-        /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
-
-        /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> Changing;
-
-        /// <inheritdoc/>
-        public event EventHandler<ContentChangeEventArgs> Changed;
-
-        /// <inheritdoc/>
-        public virtual object Retrieve()
-        {
-            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, Index.Empty, Descriptor);
-        }
+        public object Retrieve() => Retrieve(Index.Empty);
 
         /// <inheritdoc/>
         public virtual object Retrieve(Index index)
         {
-            return SiliconStudio.Quantum.Contents.Content.Retrieve(Value, index, Descriptor);
+            return Content.Retrieve(Value, index, Descriptor);
         }
 
         /// <inheritdoc/>
@@ -120,20 +85,6 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public abstract void Remove(object item, Index itemIndex);
 
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            string type = null;
-            if (this is MemberContent)
-                type = "Member";
-            else if (this is ObjectContent)
-                type = "Object";
-            else if (this is BoxedContent)
-                type = "Boxed";
-
-            return $"{{Node: {type} {Name} = [{Value}]}}";
-        }
-
         /// <summary>
         /// Updates this content from one of its member.
         /// </summary>
@@ -145,68 +96,32 @@ namespace SiliconStudio.Quantum.Contents
         /// </remarks>
         protected internal abstract void UpdateFromMember(object newValue, Index index);
 
-        /// <summary>
-        /// Raises the <see cref="Changing"/> event with the given parameters.
-        /// </summary>
-        /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanging(ContentChangeEventArgs args)
-        {
-            PrepareChange?.Invoke(this, args);
-            Changing?.Invoke(this, args);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="Changed"/> event with the given arguments.
-        /// </summary>
-        /// <param name="args">The arguments of the event.</param>
-        protected void NotifyContentChanged(ContentChangeEventArgs args)
-        {
-            Changed?.Invoke(this, args);
-            FinalizeChange?.Invoke(this, args);
-        }
-
         private IEnumerable<Index> GetIndices()
         {
-            var enumRef = Reference as ReferenceEnumerable;
+            var enumRef = ItemReferences;
             if (enumRef != null)
                 return enumRef.Indices;
 
-            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            return GetIndices(this);
+        }
+
+        public static IEnumerable<Index> GetIndices([NotNull] IContentNode node)
+        {
+            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Select(x => new Index(x));
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Value)).Select(x => new Index(x));
             }
-            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(Value).Cast<object>().Select(x => new Index(x));
+            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
+            return dictionaryDescriptor?.GetKeys(node.Value).Cast<object>().Select(x => new Index(x));
         }
 
         /// <inheritdoc/>
-        public IContentNode IndexedTarget(Index index)
+        public IObjectNode IndexedTarget(Index index)
         {
             if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
-            if (!(Reference is ReferenceEnumerable)) throw new InvalidOperationException(@"The node does not contain enumerable references.");
-            return Reference.AsEnumerable[index].TargetNode;
-        }
-
-        /// <summary>
-        /// Add a child to this node. The node must not have been sealed yet.
-        /// </summary>
-        /// <param name="child">The child node to add.</param>
-        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.Reference"/> is not null.</param>
-        public void AddChild(MemberContent child, bool allowIfReference = false)
-        {
-            if (isSealed)
-                throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
-
-            if (child.Parent != null)
-                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
-
-            if (Reference != null && !allowIfReference)
-                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
-
-            child.Parent = this;
-            children.Add(child);
-            childrenMap.Add(child.Name, child);
+            if (ItemReferences == null) throw new InvalidOperationException(@"The node does not contain enumerable references.");
+            return ItemReferences[index].TargetNode;
         }
 
         /// <summary>
@@ -231,14 +146,6 @@ namespace SiliconStudio.Quantum.Contents
                 throw new InvalidOperationException("Unable to remove a command from a GraphNode that has been sealed");
 
             commands.Remove(command);
-        }
-
-        /// <inheritdoc/>
-        public MemberContent TryGetChild(string name)
-        {
-            MemberContent child;
-            childrenMap.TryGetValue(name, out child);
-            return child;
         }
 
         /// <summary>

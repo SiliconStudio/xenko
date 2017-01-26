@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var asset = new Types.MyAsset2 { MyStrings = { "aaa", "bbb", "ccc" } };
             var assetItem = new AssetItem("MyAsset", asset);
             var graph = AssetQuantumRegistry.ConstructPropertyGraph(container, assetItem, null);
-            var node = ((IContentNode)graph.RootNode).TryGetChild(nameof(Types.MyAsset2.MyStrings));
+            var node = graph.RootNode[nameof(Types.MyAsset2.MyStrings)];
             //var ids = CollectionItemIdHelper.TryGetCollectionItemIds(asset.MyStrings, out itemIds);
         }
     }

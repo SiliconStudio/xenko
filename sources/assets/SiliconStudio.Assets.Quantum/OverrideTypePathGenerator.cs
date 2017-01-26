@@ -71,17 +71,22 @@ namespace SiliconStudio.Assets.Quantum
                     case GraphNodePath.ElementType.Member:
                         var member = (string)item.Value;
                         result.PushMember(member);
-                        currentNode = (IAssetNode)currentNode.TryGetChild(member);
+                        var objectNode = currentNode as IObjectNode;
+                        if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
+                        currentNode = (IAssetNode)objectNode.TryGetChild(member);
                         break;
                     case GraphNodePath.ElementType.Target:
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (IAssetNode)currentNode.Target;
+                            var targetingMemberNode = currentNode as IMemberNode;
+                            if (targetingMemberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
+                            currentNode = (IAssetNode)targetingMemberNode.Target;
                         }
                         break;
                     case GraphNodePath.ElementType.Index:
                         var index = (Index)item.Value;
-                        var memberNode = (AssetMemberNode)currentNode;
+                        var memberNode = currentNode as AssetMemberNode;
+                        if (memberNode == null) throw new InvalidOperationException($"An AssetMemberNode was expected when processing the path [{path}]");
                         if (inNonIdentifiableType > 0 || memberNode.IsNonIdentifiableCollectionContent)
                         {
                             result.PushIndex(index.Value);

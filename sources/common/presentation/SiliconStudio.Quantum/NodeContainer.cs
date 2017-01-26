@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
@@ -15,7 +14,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly object lockObject = new object();
         private readonly ThreadLocal<HashSet<IContentNode>> processedNodes = new ThreadLocal<HashSet<IContentNode>>();
-        private ConditionalWeakTable<object, IContentNode> nodesByObject = new ConditionalWeakTable<object, IContentNode>();
+        private ConditionalWeakTable<object, IObjectNode> nodesByObject = new ConditionalWeakTable<object, IObjectNode>();
 
         /// <summary>
         /// Creates a new instance of <see cref="NodeContainer"/> class.
@@ -29,7 +28,7 @@ namespace SiliconStudio.Quantum
         public INodeBuilder NodeBuilder { get; set; }
 
         /// <inheritdoc/>
-        public IContentNode GetOrCreateNode(object rootObject)
+        public IObjectNode GetOrCreateNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
@@ -47,7 +46,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IContentNode GetNode(object rootObject)
+        public IObjectNode GetNode(object rootObject)
         {
             lock (lockObject)
             {
@@ -85,7 +84,7 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                nodesByObject = new ConditionalWeakTable<object, IContentNode>();
+                nodesByObject = new ConditionalWeakTable<object, IObjectNode>();
             }
         }
 
@@ -94,14 +93,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IContentNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
-        internal IContentNode GetNodeInternal(object rootObject)
+        internal IObjectNode GetNodeInternal(object rootObject)
         {
             lock (lockObject)
             {
                 if (rootObject == null)
                     return null;
 
-                IContentNode node;
+                IObjectNode node;
                 nodesByObject.TryGetValue(rootObject, out node);
                 return node;
             }
@@ -112,14 +111,14 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IContentNode"/> associated to the given object.</returns>
-        internal IContentNode GetOrCreateNodeInternal(object rootObject)
+        internal IObjectNode GetOrCreateNodeInternal(object rootObject)
         {
             if (rootObject == null)
                 return null;
 
             lock (lockObject)
             {
-                IContentNode result;
+                IObjectNode result;
                 if (!rootObject.GetType().IsValueType)
                 {
                     result = GetNodeInternal(rootObject);
@@ -158,14 +157,19 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.IsReference)
                 {
-                    node.Reference.Refresh(node, this);
+                    node.TargetReference?.Refresh(node, this);
+                    node.ItemReferences?.Refresh(node, this);
                 }
                 else
                 {
                     // Otherwise refresh potential references in its children.
-                    foreach (var child in node.Children)
+                    var objectNode = node as IObjectNode;
+                    if (objectNode != null)
                     {
-                        UpdateReferencesInternal(child);
+                        foreach (var child in objectNode.Members)
+                        {
+                            UpdateReferencesInternal(child);
+                        }
                     }
                 }
             }
