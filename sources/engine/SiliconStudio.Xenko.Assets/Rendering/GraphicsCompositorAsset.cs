@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         /// <value>The cameras.</value>
         /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
-        [Category]
+        [Category("Camera Slots")]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public SceneCameraSlotCollection Cameras { get; } = new SceneCameraSlotCollection();
 
