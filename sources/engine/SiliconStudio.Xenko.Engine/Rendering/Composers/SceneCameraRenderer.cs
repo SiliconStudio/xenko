@@ -46,18 +46,13 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
         }
 
-        protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
-        {
-            return renderContext.GetCameraFromSlot(Camera);
-        }
-
         protected override void DrawCore(RenderDrawContext renderContext)
         {
             var oldRenderView = renderContext.RenderContext.RenderView;
             renderContext.RenderContext.RenderView = RenderView;
 
             // Find camera
-            var camera = renderContext.RenderContext.GetCameraFromSlot(Camera);
+            var camera = ResolveCamera(renderContext.RenderContext);
             if (camera == null)
                 return;
 
@@ -68,6 +63,11 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
 
             renderContext.RenderContext.RenderView = oldRenderView;
+        }
+
+        protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
+        {
+            return renderContext.GetCameraFromSlot(Camera);
         }
 
         protected virtual void CollectInner(RenderContext renderContext)
