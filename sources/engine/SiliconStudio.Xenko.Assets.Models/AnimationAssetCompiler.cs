@@ -20,20 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public const string RefClipSuffix = "_reference_clip";
         public const string SrcClipSuffix = "_source_clip";
 
-        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
-        {
-            var asset = (AnimationAsset)assetItem.Asset;
-
-            if (asset.Skeleton != null)
-            {
-                var skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
-                if (skeleton != null)
-                {
-                    yield return skeleton;
-                }
-            }
-        }
-
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (AnimationAsset)assetItem.Asset;

@@ -33,18 +33,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             CompileTimeDependencyTypes.Add(typeof(SkeletonAsset));
         }
 
-        public override IEnumerable<AssetItem> GetCompileTimeDependencies(AssetCompilerContext context, AssetItem assetItem)
-        {
-            foreach (var dependency in ((PrefabModelAsset)assetItem.Asset).EnumerateCompileTimeDependencies(assetItem.Package.Session))
-            {
-                var dependencyItem = assetItem.Package.FindAsset(dependency.Location);
-                if (dependencyItem != null)
-                {
-                    yield return dependencyItem;
-                }
-            }
-        }
-
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
