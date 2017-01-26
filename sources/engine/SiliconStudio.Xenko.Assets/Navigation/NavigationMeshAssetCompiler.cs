@@ -35,6 +35,24 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
+            result.BuildSteps = new ListBuildStep();
+
+            // Add navigation mesh dependencies
+            foreach (var dep in asset.EnumerateCompileTimeDependencies(assetItem.Package.Session))
+            {
+                var colliderAssetItem = assetItem.Package.Session.FindAsset(dep.Id);
+                var colliderShapeAsset = colliderAssetItem.Asset as ColliderShapeAsset;
+                if (colliderShapeAsset != null)
+                {
+                    // Compile the collider assets first
+                    result.BuildSteps.Add(new AssetBuildStep(colliderAssetItem)
+                    {
+                        new ColliderShapeAssetCompiler.ColliderShapeCombineCommand(colliderAssetItem.Location, colliderShapeAsset, assetItem.Package)
+                    });
+                }
+            }
+
+            result.BuildSteps.Add(new WaitBuildStep());
 
             // Compile the navigation mesh itself
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
