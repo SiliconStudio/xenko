@@ -31,6 +31,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMemberIgnore]
         public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.DifferenceClip;
 
+        public DifferenceAnimationAssetType()
+        {
+            ClipDuration = new AnimationAssetDurationUnchecked()
+            {
+                Enabled = false,
+                StartAnimationTimeBox = TimeSpan.Zero,
+                EndAnimationTimeBox = AnimationAsset.LongestTimeSpan,
+            };
+        }
+
         /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
         /// </summary>
@@ -43,37 +53,19 @@ namespace SiliconStudio.Xenko.Assets.Models
         [Display("Reference")]
         public UFile BaseSource { get; set; } = new UFile("");
 
-        #region Animation frames
-        // Please note that animation frames are edited using the AnimationFrameTemplateProvider
-        //  All 3 properties are required with the exact same names 
-        //  AnimationTimeMinimum should be set to match the actual first frame of the animation 
-        //  AnimationTimeMaximum should be set to match the actual length of the animation frame sequence
-
-        /// <summary>
-        /// Gets or sets the start frame of the animation.
-        /// </summary>
-        [DataMember(32)]
-        [Display("Start frame")]
-        public TimeSpan StartAnimationTime { get; set; } = TimeSpan.Zero;
-
-        /// <summary>
-        /// Gets or sets the end frame of the animation.
-        /// </summary>
-        [DataMember(34)]
-        [Display("End frame")]
-        public TimeSpan EndAnimationTime { get; set; } = AnimationAsset.LongestTimeSpan;
-
-        // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationTimeMinimum { get; set; } = TimeSpan.Zero;
-
-        // This property is marked as hidden by the AnimationViewModel
-        public TimeSpan AnimationTimeMaximum { get; set; } = AnimationAsset.LongestTimeSpan;
-
-        #endregion
-
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
+
+        /// <summary>
+        /// Enable clipping of the animation duration
+        /// </summary>
+        /// <userdoc>
+        /// Enable clipping of the animation duration, constraining start and end frames.
+        /// </userdoc>
+        [DataMember(50)]
+        [Display("Clip duration")]
+        public AnimationAssetDurationUnchecked ClipDuration { get; set; }
     }
 
     /// <summary>
