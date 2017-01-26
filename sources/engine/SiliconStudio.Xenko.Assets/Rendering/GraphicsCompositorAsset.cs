@@ -52,13 +52,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public List<RenderStage> RenderStages { get; } = new List<RenderStage>();
 
         /// <summary>
-        ///  The list of render groups.
-        /// </summary>
-        [Category]
-        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        public List<string> RenderGroups { get; } = new List<string>();
-
-        /// <summary>
         /// The list of render features.
         /// </summary>
         [Category]

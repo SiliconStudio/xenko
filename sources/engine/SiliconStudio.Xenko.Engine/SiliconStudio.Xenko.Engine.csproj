@@ -2486,8 +2486,8 @@
     <Compile Include="Shaders.Compiler\EffectCompileRequest.cs" />
     <Compile Include="Extensions\GeometricPrimitiveExtension.cs" />
     <Compile Include="Engine\Design\DefaultEntityComponentRendererAttribute.cs" />
-    <Compile Include="Engine\EntityGroupMask.cs" />
-    <Compile Include="Engine\EntityGroupMaskExtensions.cs" />
+    <Compile Include="Engine\RenderGroupMask.cs" />
+    <Compile Include="Engine\RenderGroupMaskExtensions.cs" />
     <Compile Include="Extensions\SimpleExtensions.cs" />
     <Compile Include="Extensions\MergeExtensions.cs" />
     <Compile Include="Extensions\SplitExtensions.cs" />
@@ -2506,7 +2506,7 @@
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
-    <Compile Include="Engine\EntityGroup.cs" />
+    <Compile Include="Engine\RenderGroup.cs" />
     <Compile Include="Rendering\Mesh.cs" />
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />

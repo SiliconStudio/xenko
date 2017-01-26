@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Engine
     /// An entity group.
     /// </summary>
     [DataContract]
-    public enum EntityGroup : uint
+    public enum RenderGroup : uint
     {
         // NOTE: DO NOT CHANGE VALUES HERE
         Group0  = 0,

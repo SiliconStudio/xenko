@@ -1,6 +1,6 @@
 !SceneAsset
 Id: a8ddac34-2bf1-452c-bdf5-47e2d633e83a
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Parent: null
 Hierarchy:
@@ -16,7 +16,6 @@ Hierarchy:
         -   Entity:
                 Id: 40e61136-2407-4b10-b5db-f6002dc4f144
                 Name: Confetti
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -155,10 +154,10 @@ Hierarchy:
                                             ForceVortex: 1.0
                                             ForceRepulsive: -1.0
                                             ForceFixed: {X: 0.0, Y: 0.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 53722eae-cccf-407c-8cfd-c8f3b0a3506a
                 Name: Stars
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -268,10 +267,10 @@ Hierarchy:
                                             ForceVortex: 1.3
                                             ForceRepulsive: -2.0
                                             ForceFixed: {X: 0.0, Y: 0.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 7b1c3147-a30f-4141-a89b-7a55c35c2f2b
                 Name: Hit
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -337,6 +336,7 @@ Hierarchy:
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 5.0, Y: 5.0}
                                     Updaters: {}
+                        RenderGroup: Group1
         -   Entity:
                 Id: 820d34a8-2971-4381-abfa-2965d94ec672
                 Name: Splash
@@ -379,7 +379,6 @@ Hierarchy:
         -   Entity:
                 Id: a81bdcc6-04fd-4666-b58f-352cadc62179
                 Name: ConfettiBig
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -517,10 +516,10 @@ Hierarchy:
                                             ForceVortex: 0.0
                                             ForceRepulsive: 0.0
                                             ForceFixed: {X: 0.0, Y: -1.0, Z: 0.0}
+                        RenderGroup: Group1
         -   Entity:
                 Id: f9983d06-7e74-455c-b5a4-43161f0dd2f6
                 Name: Fire
-                Group: Group1
                 Components:
                     41575a96e881094999ff78aee26e65a5: !TransformComponent
                         Id: 965a5741-81e8-4909-99ff-78aee26e65a5
@@ -599,3 +598,4 @@ Hierarchy:
                                             VelocityMin: {X: -0.5, Y: 0.5, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.5, Z: 0.0}
                                     Updaters: {}
+                        RenderGroup: Group1

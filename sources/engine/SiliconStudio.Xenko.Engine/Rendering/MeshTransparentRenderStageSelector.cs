@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public override void Process(RenderObject renderObject)
         {
-            if (((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & EntityGroup) != 0)
+            if (((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & RenderGroup) != 0)
             {
                 var renderMesh = (RenderMesh)renderObject;
 

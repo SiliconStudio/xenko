@@ -7,11 +7,11 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// A mask for <see cref="EntityGroup"/>.
+    /// A mask for <see cref="RenderGroup"/>.
     /// </summary>
     [Flags]
     [DataContract]
-    public enum EntityGroupMask : uint
+    public enum RenderGroupMask : uint
     {
         None = 0,
         Group0  = 1 << 0,

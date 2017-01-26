@@ -85,7 +85,6 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             //// Copy scene camera renderer data
             //renderView.CullingMask = sceneCameraRenderer.CullingMask;
             //renderView.CullingMode = sceneCameraRenderer.CullingMode;
-            //renderView.ViewSize = new Vector2(sceneCameraRenderer.ComputedViewport.Width, sceneCameraRenderer.ComputedViewport.Height);
 
             // TODO: Multiple viewports?
             var currentViewport = context.ViewportState.Viewport0;
@@ -111,6 +110,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                 renderView.NearClipPlane = camera.NearClipPlane;
                 renderView.FarClipPlane = camera.FarClipPlane;
                 renderView.Frustum = camera.Frustum;
+
+                // Enable frustum culling
+                renderView.CullingMode = CameraCullingMode.Frustum;
 
                 Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
             }

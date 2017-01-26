@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
                     // For now we only set a center for sorting, but no extent (which disable culling)
                     renderSprite.BoundingBox = new BoundingBoxExt { Center = transform.WorldMatrix.TranslationVector };
-                    renderSprite.RenderGroup = renderSprite.SpriteComponent.Entity.Group;
+                    renderSprite.RenderGroup = renderSprite.SpriteComponent.RenderGroup;
                 }
 
                 // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Core.Serialization;
@@ -17,6 +18,13 @@ namespace SiliconStudio.Xenko.Engine
     {
         [DataMember(1)]
         public SpriteStudioSheet Sheet { get; set; }
+
+        /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(10)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
 
         [DataMemberIgnore]
         public SpriteStudioNodeState RootNode;

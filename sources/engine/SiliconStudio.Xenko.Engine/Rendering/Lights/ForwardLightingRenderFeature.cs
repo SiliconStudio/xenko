@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 // Prepare shader permutations
-                PrepareLightGroups(context, renderViews, view, renderViewData, ShadowMapRenderer, EntityGroup.Group0);
+                PrepareLightGroups(context, renderViews, view, renderViewData, ShadowMapRenderer, RenderGroup.Group0);
             }
 
             // Add light shader groups using lightRenderers order to make sure we generate same shaders independently of light order
@@ -535,12 +535,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var frustum = renderView.Frustum;
                 foreach (var light in lightProcessor.Lights)
                 {
+                    // TODO: New mechanism for light selection (probably in ForwardLighting configuration)
+                    //       Light should probably have their own LightGroup (separate from RenderGroup)
                     // If light is not part of the culling mask group, we can skip it
-                    var entityLightMask = (EntityGroupMask)(1 << (int)light.Entity.Group);
-                    if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
-                    {
-                        continue;
-                    }
+                    //var entityLightMask = (RenderGroupMask)(1 << (int)light.Entity.Group);
+                    //if ((entityLightMask & sceneCullingMask) == 0 && (light.CullingMask & sceneCullingMask) == 0)
+                    //{
+                    //    continue;
+                    //}
 
                     // If light is not in the frustum, we can skip it
                     var directLight = light.Type as IDirectLight;
@@ -576,7 +578,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, EntityGroup group)
+        private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)
         {
             foreach (var activeRenderer in renderViewData.ActiveRenderers)
             {

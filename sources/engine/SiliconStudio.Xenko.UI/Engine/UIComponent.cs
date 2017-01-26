@@ -103,6 +103,13 @@ namespace SiliconStudio.Xenko.Engine
         public bool IsFixedSize { get; set; } = false;
 
         /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(80)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
+
+        /// <summary>
         /// A fixed size UI component with height of 1 will be this much of the vertical resolution on screen
         /// </summary>
         [DataMemberIgnore]

@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 if(!renderSpriteStudio.Enabled || !renderSpriteStudio.SpriteStudioComponent.ValidState) continue;
 
                 renderSpriteStudio.BoundingBox = new BoundingBoxExt { Center = renderSpriteStudio.TransformComponent.WorldMatrix.TranslationVector };
-                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.Entity.Group;               
+                renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.RenderGroup;               
             }
         }
 

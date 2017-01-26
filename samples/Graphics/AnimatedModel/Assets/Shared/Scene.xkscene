@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Parent: null
 Hierarchy:
@@ -35,7 +35,6 @@ Hierarchy:
         -   Entity:
                 Id: 1c1ced43-f10b-4f46-93e7-9f75eb681c5e
                 Name: RenderToTexture
-                Group: Group1
                 Components:
                     d8db6c5da878184da0683a2cef4e0a19: !TransformComponent
                         Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
@@ -121,7 +120,6 @@ Hierarchy:
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
                 Name: RenderToTextureTilted
-                Group: Group1
                 Components:
                     d8db6c5da878184da0683a2cef4e0a19: !TransformComponent
                         Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
@@ -162,7 +160,6 @@ Hierarchy:
         -   Entity:
                 Id: df07ee24-de65-4561-8f4a-da086654e07b
                 Name: UI
-                Group: Group1
                 Components:
                     ad02fad211f25846b2ba715ede26d312: !TransformComponent
                         Id: d2fa02ad-f211-4658-b2ba-715ede26d312
@@ -176,6 +173,7 @@ Hierarchy:
                         Resolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
+                        RenderGroup: Group1
                     c4d0e397bc7bc2468a2cdc3bd4190c90: !AnimatedModel.UIScript,AnimatedModel.Game
                         Id: 97e3d0c4-7bbc-46c2-8a2c-dc3bd4190c90
                         Knight: f63efa01-c45a-4b81-ad59-e49391a813e4

@@ -83,7 +83,7 @@ RenderFeatures:
                 RenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: Test
             8d5b3699e5b44c008d415e378d5aaf64*: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
-                EntityGroup: Group1
+                RenderGroup: Group1
                 RenderStage: e40ae29a-9b90-4288-8169-9e21506ee3d9
                 EffectName: Test
     9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
@@ -103,7 +103,6 @@ SharedRenderers:
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null
-    11f84d856297b9c5fe71679e6c10668a: ~(Deleted)
 Game*: !SiliconStudio.Xenko.Rendering.Composers.SceneRendererCollection,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Children:

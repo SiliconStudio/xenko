@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var renderObject = RenderObjects[index];
 
                     // Skip not enabled objects
-                    if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
+                    if (!renderObject.Enabled || ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
                         return;
 
                     // Custom per-view filtering

@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             {
                 var entity1 = new Entity() { Name = "E1" };
-                var entity2 = new Entity() { Name = "E2", Group = EntityGroup.Group1 }; // Use group property to make sure that it is properly serialized
+                var entity2 = new Entity() { Name = "E2" }; // Use group property to make sure that it is properly serialized
                 var entity3 = new Entity() { Name = "E3" };
-                var entity4 = new Entity() { Name = "E4", Group = EntityGroup.Group2 };
+                var entity4 = new Entity() { Name = "E4" };
 
                 // TODO: Add script link
 
@@ -94,7 +94,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 // Check properties
                 Assert.AreEqual(entityDesign.Entity.Name, newEntityDesign.Entity.Name);
-                Assert.AreEqual(entityDesign.Entity.Group, newEntityDesign.Entity.Group);
 
                 // Check that we have the same amount of components
                 Assert.AreEqual(entityDesign.Entity.Components.Count, newEntityDesign.Entity.Components.Count);
