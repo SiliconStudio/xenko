@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
-    /// Defines and sets a <see cref="RenderView"/> and set it up using <see cref="Camera"/> or current context camera.
+    /// Defines and sets a <see cref="Rendering.RenderView"/> and set it up using <see cref="Camera"/> or current context camera.
     /// </summary>
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
-        public RenderView MainRenderView { get; } = new RenderView();
+        public RenderView RenderView { get; } = new RenderView();
 
         /// <summary>
         /// Gets or sets the camera.
@@ -28,14 +28,18 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         {
             base.CollectCore(renderContext);
 
-            renderContext.RenderSystem.Views.Add(MainRenderView);
+            renderContext.RenderSystem.Views.Add(RenderView);
 
-            // Setup renderview
+            // Find camera
             var camera = ResolveCamera(renderContext);
-            MainRenderView.SceneInstance = renderContext.SceneInstance;
-            UpdateCameraToRenderView(renderContext, MainRenderView, camera);
+            if (camera == null)
+                return;
 
-            using (renderContext.PushRenderViewAndRestore(MainRenderView))
+            // Setup render view
+            RenderView.SceneInstance = renderContext.SceneInstance;
+            UpdateCameraToRenderView(renderContext, RenderView, camera);
+
+            using (renderContext.PushRenderViewAndRestore(RenderView))
             using (renderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 CollectInner(renderContext);
@@ -50,10 +54,14 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         protected override void DrawCore(RenderDrawContext renderContext)
         {
             var oldRenderView = renderContext.RenderContext.RenderView;
-            renderContext.RenderContext.RenderView = MainRenderView;
+            renderContext.RenderContext.RenderView = RenderView;
 
+            // Find camera
             var camera = renderContext.RenderContext.GetCameraFromSlot(Camera);
-            using (renderContext.RenderContext.PushRenderViewAndRestore(MainRenderView))
+            if (camera == null)
+                return;
+
+            using (renderContext.RenderContext.PushRenderViewAndRestore(RenderView))
             using (renderContext.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
                 DrawInner(renderContext);
