@@ -446,7 +446,7 @@ namespace SiliconStudio.Assets.Quantum
                 if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
- 
+
                     // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
                     CollectionItemIdentifiers ids;
                     if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
@@ -457,10 +457,13 @@ namespace SiliconStudio.Assets.Quantum
             }
             else
             {
-                // When deleting we are always overriding (unless there is no base)
-                overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                itemId = removedItemIds[e.Member];
-                removedItemIds.Remove(e.Member);
+                // When deleting we are always overriding (unless there is no base or non-identifiable items)
+                if (!node.IsNonIdentifiableCollectionContent)
+                {
+                    overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
+                    itemId = removedItemIds[e.Member];
+                    removedItemIds.Remove(e.Member);
+                }
             }
 
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, itemId));
