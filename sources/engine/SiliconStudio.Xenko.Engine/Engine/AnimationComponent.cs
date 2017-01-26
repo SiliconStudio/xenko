@@ -185,7 +185,10 @@ namespace SiliconStudio.Xenko.Engine
             if (!playingAnimations.Contains(animation))
                 throw new InvalidOperationException("Trying to await end of an animation which is not playing");
 
-            Interlocked.CompareExchange(ref animation.endedTCS, new TaskCompletionSource<bool>(), null);
+            if (animation.endedTCS == null)
+            {
+                Interlocked.CompareExchange(ref animation.endedTCS, new TaskCompletionSource<bool>(), null);
+            }
 
             return animation.endedTCS.Task;
         }
