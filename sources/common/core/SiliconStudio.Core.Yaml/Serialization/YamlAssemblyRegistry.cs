@@ -258,12 +258,12 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     // Else try to use schema tag for scalars
                     // Else use full name of the type
                     var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
-                    tagName = schema.GetDefaultTag(type) ?? Uri.EscapeUriString(string.Format("!{0}", typeName));
+                    tagName = schema.GetDefaultTag(type) ?? $"!{typeName}";
                     typeToTag.Add(type, tagName);
                 }
             }
 
-            return tagName;
+            return Uri.EscapeUriString(tagName);
         }
 
         public virtual Type ResolveType(string typeName)
