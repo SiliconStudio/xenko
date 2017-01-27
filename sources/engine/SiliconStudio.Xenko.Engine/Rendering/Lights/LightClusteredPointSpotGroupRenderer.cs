@@ -88,6 +88,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
+        public override unsafe void PrepareResources(RenderDrawContext drawContext)
+        {
+            base.PrepareResources(drawContext);
+
+            pointGroup.ComputeViewsParameter(drawContext);
+        }
+
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
         {
             shaderEntry.DirectLightGroups.Add(pointGroup);
@@ -189,12 +196,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 return lightCount;
             }
 
-            /// <inheritdoc/>
-            public override void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            public void ComputeViewParameter(int viewIndex)
             {
-                // Note: no need to fill CurrentLights since we have no shadow maps
-                base.ApplyViewParameters(context, viewIndex, parameters);
-
                 // TODO ref locals when C# 7 is out
                 var renderViewInfo = renderViewInfos[viewIndex];
                 var renderView = renderViewInfo.RenderView;
@@ -204,13 +207,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // No screen size set?
                 if (viewSize.X == 0 || viewSize.Y == 0)
                     return;
-
-                if (clusteredGroupRenderer.lightClusters == null || clusteredGroupRenderer.lightClusters.Width < maxClusterCount.X || clusteredGroupRenderer.lightClusters.Height < maxClusterCount.Y)
-                {
-                    // First time?
-                    clusteredGroupRenderer.lightClusters?.Dispose();
-                    clusteredGroupRenderer.lightClusters = Texture.New3D(context.GraphicsDevice, maxClusterCount.X, maxClusterCount.Y, ClusterSlices, PixelFormat.R32G32_UInt);
-                }
 
                 var clusterCountX = ((int)viewSize.X + ClusterSize - 1) / ClusterSize;
                 var clusterCountY = ((int)viewSize.Y + ClusterSize - 1) / ClusterSize;
@@ -255,8 +251,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 //   log2(specialNear * scale + bias) == 1.0
                 //   log2(far * scale + bias) == ClusterSlices
                 // as a result:
-                float clusterDepthScale = (float)(Math.Pow(2.0f, ClusterSlices) - 2.0f) / (renderView.FarClipPlane - nearPlane);
-                float clusterDepthBias = 2.0f - clusterDepthScale * nearPlane;
+                float clusterDepthScale = renderViewInfo.ClusterDepthScale = (float)(Math.Pow(2.0f, ClusterSlices) - 2.0f) / (renderView.FarClipPlane - nearPlane);
+                float clusterDepthBias = renderViewInfo.ClusterDepthBias = 2.0f - clusterDepthScale * nearPlane;
 
                 //---------------- SPOT LIGHTS -------------------
                 var lightRange = clusteredGroupRenderer.spotGroup.LightRanges[viewIndex];
@@ -402,14 +398,79 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 // Struct, so copy back (TODO: remove this when C# 7 is out with ref locals)
                 renderViewInfos[viewIndex] = renderViewInfo;
+            }
 
-                parameters.Set(LightClusteredKeys.ClusterStride, viewSize / ClusterSize);
-                parameters.Set(LightClusteredKeys.ClusterDepthScale, clusterDepthScale);
-                parameters.Set(LightClusteredKeys.ClusterDepthBias, clusterDepthBias);
+            public unsafe void ComputeViewsParameter(RenderDrawContext drawContext)
+            {
+                var maxLightIndicesCount = 0;
+                var maxPointLightsCount = 0;
+                var maxSpotLightsCount = 0;
+
+                for (var viewIndex = 0; viewIndex < renderViewInfos.Length; viewIndex++)
+                {
+                    ComputeViewParameter(viewIndex);
+
+                    var renderViewInfo = renderViewInfos[viewIndex];
+
+                    // Update sizes
+                    maxLightIndicesCount = Math.Max(maxLightIndicesCount, renderViewInfo.LightIndices.Count);
+                    maxPointLightsCount = Math.Max(maxPointLightsCount, renderViewInfo.PointLights.Count);
+                    maxSpotLightsCount = Math.Max(maxSpotLightsCount, renderViewInfo.SpotLights.Count);
+                }
+
+                // (Re)allocate buffers if necessary
+                if (maxLightIndicesCount > 0 && (clusteredGroupRenderer.lightIndicesBuffer == null || clusteredGroupRenderer.lightIndicesBuffer.SizeInBytes < maxLightIndicesCount * sizeof(int)))
+                {
+                    clusteredGroupRenderer.lightIndicesBuffer?.Dispose();
+                    clusteredGroupRenderer.lightIndicesBuffer = Buffer.New(drawContext.GraphicsDevice, MathUtil.NextPowerOfTwo(maxLightIndicesCount * sizeof(int)), 0, BufferFlags.ShaderResource, PixelFormat.R32_UInt);
+                }
+                if (maxPointLightsCount > 0 && (clusteredGroupRenderer.pointLightsBuffer == null || clusteredGroupRenderer.pointLightsBuffer.SizeInBytes < maxPointLightsCount * sizeof(PointLightData)))
+                {
+                    clusteredGroupRenderer.pointLightsBuffer?.Dispose();
+                    clusteredGroupRenderer.pointLightsBuffer = Buffer.New(drawContext.GraphicsDevice, MathUtil.NextPowerOfTwo(maxPointLightsCount * sizeof(PointLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
+                }
+                if (maxSpotLightsCount > 0 && (clusteredGroupRenderer.spotLightsBuffer == null || clusteredGroupRenderer.spotLightsBuffer.SizeInBytes < maxSpotLightsCount * sizeof(SpotLightData)))
+                {
+                    clusteredGroupRenderer.spotLightsBuffer?.Dispose();
+                    clusteredGroupRenderer.spotLightsBuffer = Buffer.New(drawContext.GraphicsDevice, MathUtil.NextPowerOfTwo(maxSpotLightsCount * sizeof(SpotLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
+                }
+
+                if (maxClusterCount.X > 0 && maxClusterCount.Y > 0 && (clusteredGroupRenderer.lightClusters == null || clusteredGroupRenderer.lightClusters.Width < maxClusterCount.X || clusteredGroupRenderer.lightClusters.Height < maxClusterCount.Y))
+                {
+                    clusteredGroupRenderer.lightClusters?.Dispose();
+                    clusteredGroupRenderer.lightClusters = Texture.New3D(drawContext.GraphicsDevice, maxClusterCount.X, maxClusterCount.Y, ClusterSlices, PixelFormat.R32G32_UInt);
+                }
             }
 
             /// <inheritdoc/>
-            public override unsafe void UpdateViewResources(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            public override void ApplyViewParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters)
+            {
+                // Note: no need to fill CurrentLights since we have no shadow maps
+                base.ApplyViewParameters(context, viewIndex, parameters);
+
+                // TODO ref locals when C# 7 is out
+                var renderViewInfo = renderViewInfos[viewIndex];
+                var renderView = renderViewInfo.RenderView;
+
+                var viewSize = renderView.ViewSize;
+
+                // No screen size set?
+                if (viewSize.X == 0 || viewSize.Y == 0)
+                    return;
+
+                parameters.Set(LightClusteredKeys.ClusterStride, viewSize / ClusterSize);
+                parameters.Set(LightClusteredKeys.ClusterDepthScale, renderViewInfo.ClusterDepthScale);
+                parameters.Set(LightClusteredKeys.ClusterDepthBias, renderViewInfo.ClusterDepthBias);
+
+                // Set resources
+                parameters.Set(LightClusteredPointGroupKeys.PointLights, clusteredGroupRenderer.pointLightsBuffer);
+                parameters.Set(LightClusteredSpotGroupKeys.SpotLights, clusteredGroupRenderer.spotLightsBuffer);
+                parameters.Set(LightClusteredKeys.LightIndices, clusteredGroupRenderer.lightIndicesBuffer);
+                parameters.Set(LightClusteredKeys.LightClusters, clusteredGroupRenderer.lightClusters);
+            }
+
+            /// <inheritdoc/>
+            public override unsafe void UpdateViewResources(RenderDrawContext context, int viewIndex)
             {
                 // TODO ref locals when C# 7 is out
                 var renderViewInfo = renderViewInfos[viewIndex];
@@ -425,12 +486,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // PointLights: Ensure size and update
                 if (renderViewInfo.PointLights.Count > 0)
                 {
-                    if (clusteredGroupRenderer.pointLightsBuffer == null || clusteredGroupRenderer.pointLightsBuffer.SizeInBytes < renderViewInfo.PointLights.Count * sizeof(PointLightData))
-                    {
-                        clusteredGroupRenderer.pointLightsBuffer?.Dispose();
-                        clusteredGroupRenderer.pointLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(renderViewInfo.PointLights.Count * sizeof(PointLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
-                    }
-
                     fixed (PointLightData* pointLightsPtr = renderViewInfo.PointLights.Items)
                         context.CommandList.UpdateSubresource(clusteredGroupRenderer.pointLightsBuffer, 0, new DataBox((IntPtr)pointLightsPtr, 0, 0), new ResourceRegion(0, 0, 0, renderViewInfo.PointLights.Count * sizeof(PointLightData), 1, 1));
                 }
@@ -447,13 +502,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // SpotLights: Ensure size and update
                 if (renderViewInfo.SpotLights.Count > 0)
                 {
-                    if (clusteredGroupRenderer.spotLightsBuffer == null || clusteredGroupRenderer.spotLightsBuffer.SizeInBytes < renderViewInfo.SpotLights.Count * sizeof(SpotLightData))
-                    {
-                        clusteredGroupRenderer.spotLightsBuffer?.Dispose();
-                        clusteredGroupRenderer.spotLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(renderViewInfo.SpotLights.Count * sizeof(SpotLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
-                    }
-
-
                     fixed (SpotLightData* spotLightsPtr = renderViewInfo.SpotLights.Items)
                         context.CommandList.UpdateSubresource(clusteredGroupRenderer.spotLightsBuffer, 0, new DataBox((IntPtr)spotLightsPtr, 0, 0), new ResourceRegion(0, 0, 0, renderViewInfo.SpotLights.Count * sizeof(SpotLightData), 1, 1));
                 }
@@ -468,12 +516,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // LightIndices: Ensure size and update
                 if (renderViewInfo.LightIndices.Count > 0)
                 {
-                    if (clusteredGroupRenderer.lightIndicesBuffer == null || clusteredGroupRenderer.lightIndicesBuffer.SizeInBytes < renderViewInfo.LightIndices.Count * sizeof(int))
-                    {
-                        clusteredGroupRenderer.lightIndicesBuffer?.Dispose();
-                        clusteredGroupRenderer.lightIndicesBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(renderViewInfo.LightIndices.Count * sizeof(int)), 0, BufferFlags.ShaderResource, PixelFormat.R32_UInt);
-                    }
-
                     fixed (int* lightIndicesPtr = renderViewInfo.LightIndices.Items)
                         context.CommandList.UpdateSubresource(clusteredGroupRenderer.lightIndicesBuffer, 0, new DataBox((IntPtr)lightIndicesPtr, 0, 0), new ResourceRegion(0, 0, 0, renderViewInfo.LightIndices.Count * sizeof(int), 1, 1));
                 }
@@ -485,12 +527,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     clusteredGroupRenderer.lightIndicesBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(sizeof(int)), 0, BufferFlags.ShaderResource, PixelFormat.R32_UInt);
                 }
 #endif
-
-                // Set resources
-                parameters.Set(LightClusteredPointGroupKeys.PointLights, clusteredGroupRenderer.pointLightsBuffer);
-                parameters.Set(LightClusteredSpotGroupKeys.SpotLights, clusteredGroupRenderer.spotLightsBuffer);
-                parameters.Set(LightClusteredKeys.LightIndices, clusteredGroupRenderer.lightIndicesBuffer);
-                parameters.Set(LightClusteredKeys.LightClusters, clusteredGroupRenderer.lightClusters);
             }
 
             private void FinishCluster(Dictionary<LightClusterLinkedNode, int> movedClusters, ref FastListStruct<int> lightIndices, int clusterIndex)
@@ -662,6 +698,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private struct RenderViewInfo
             {
                 public RenderView RenderView;
+
+                public float ClusterDepthScale;
+                public float ClusterDepthBias;
 
                 public FastListStruct<PointLightData> PointLights;
                 public FastListStruct<SpotLightData> SpotLights;

@@ -80,5 +80,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         public abstract void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry);
+
+        public virtual void PrepareResources(RenderDrawContext drawContext)
+        {
+            
+        }
     }
 }

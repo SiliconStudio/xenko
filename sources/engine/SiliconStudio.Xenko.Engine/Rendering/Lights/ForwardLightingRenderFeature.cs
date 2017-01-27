@@ -223,6 +223,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Add light shader groups using lightRenderers order to make sure we generate same shaders independently of light order
             foreach (var lightRenderer in lightRenderers)
             {
+                lightRenderer.PrepareResources(context);
                 lightRenderer.UpdateShaderPermutationEntry(ShaderPermutation);
             }
 
@@ -439,12 +440,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Update PerView resources
             foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
             {
-                directLightGroup.UpdateViewResources(context, renderViewData.ViewIndex, renderViewData.ViewParameters);
+                directLightGroup.UpdateViewResources(context, renderViewData.ViewIndex);
             }
 
             foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
             {
-                environmentLight.UpdateViewResources(context, renderViewData.ViewIndex, renderViewData.ViewParameters);
+                environmentLight.UpdateViewResources(context, renderViewData.ViewIndex);
             }
 
             currentRenderView = renderView;
