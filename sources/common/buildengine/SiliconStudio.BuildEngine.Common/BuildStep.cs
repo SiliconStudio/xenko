@@ -76,10 +76,9 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// List of commands that must be executed prior this one (direct dependence only).
         /// </summary>
-        // TODO: this is probably obsolete now
-        public IList<BuildStep> PrerequisiteSteps => prerequisiteSteps;
+        public HashSet<BuildStep> PrerequisiteSteps => prerequisiteSteps;
 
-        private readonly List<BuildStep> prerequisiteSteps = new List<BuildStep>();
+        private readonly HashSet<BuildStep> prerequisiteSteps = new HashSet<BuildStep>();
 
         /// <summary>
         /// List of commands that needs this command to be successfully executed before being processed
@@ -92,6 +91,7 @@ namespace SiliconStudio.BuildEngine
         /// The parent build step, which will be the instigator of the step
         /// </summary>
         public BuildStep Parent { get { return parent; } protected internal set { if (parent != null && value != null) throw new InvalidOperationException("BuildStep already has a parent"); parent = value; } }
+
         private BuildStep parent;
 
         /// <summary>
