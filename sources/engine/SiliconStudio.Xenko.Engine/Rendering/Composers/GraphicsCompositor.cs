@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
         // TODO GFXCOMP: Move that somewhere else; or even better: starts from user gfx compositor
         [Obsolete]
-        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null)
+        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
         {
             var mainRenderStage = new RenderStage("Main", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
@@ -225,6 +225,37 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     : null,
             };
 
+            var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
+                ? new ForwardLightingRenderFeature
+                {
+                    LightRenderers =
+                    {
+                        new LightAmbientRenderer(),
+                        new LightDirectionalGroupRenderer(),
+                        new LightSkyboxRenderer(),
+                        new LightClusteredPointSpotGroupRenderer(),
+                    },
+                    ShadowMapRenderer = new ShadowMapRenderer
+                    {
+                        Renderers =
+                        {
+                            new LightDirectionalShadowMapRenderer(),
+                            new LightSpotShadowMapRenderer(),
+                        },
+                        ShadowMapRenderStage = shadowCasterRenderStage,
+                    },
+                }
+                : new ForwardLightingRenderFeature
+                {
+                    LightRenderers =
+                    {
+                        new LightAmbientRenderer(),
+                        new LightDirectionalGroupRenderer(),
+                        new LightSkyboxRenderer(),
+                        new LightPointGroupRenderer(),
+                        new LightSpotGroupRenderer(),
+                    },
+                };
             return new GraphicsCompositor
             {
                 Cameras =
@@ -246,25 +277,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                             new TransformRenderFeature(),
                             new SkinningRenderFeature(),
                             new MaterialRenderFeature(),
-                            new ForwardLightingRenderFeature
-                            {
-                                LightRenderers =
-                                {
-                                    new LightAmbientRenderer(),
-                                    new LightDirectionalGroupRenderer(),
-                                    new LightSkyboxRenderer(),
-                                    new LightClusteredPointSpotGroupRenderer(),
-                                },
-                                ShadowMapRenderer = new ShadowMapRenderer
-                                {
-                                    Renderers =
-                                    {
-                                        new LightDirectionalShadowMapRenderer(),
-                                        new LightSpotShadowMapRenderer(),
-                                    },
-                                    ShadowMapRenderStage = shadowCasterRenderStage,
-                                },
-                            }
+                            forwardLighting,
                         },
                         RenderStageSelectors =
                         {
