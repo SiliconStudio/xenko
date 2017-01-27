@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Compiler
 
     public interface IBuildStepsQueue
     {
-        IDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; }
+        ConcurrentDictionary<AssetBuildOperation, ListBuildStep> BuildSteps { get; }
 
         AssetCompilerResult CompileAndSubmit(CompilerContext context, BuildStep parentStep, AssetItem assetItem, AssetDependenciesCompiler compiler);
     }
