@@ -42,7 +42,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member1 = 4;
             Assert.AreEqual(4, instance.Member1);
             Assert.AreEqual(instance.Member1, (int)dynNode.Member1);
-            rootNode.TryGetChild(nameof(ComplexClass.Member1)).Update(5);
+            rootNode[nameof(ComplexClass.Member1)].Update(5);
             Assert.AreEqual(5, instance.Member1);
             Assert.AreEqual(instance.Member1, (int)dynNode.Member1);
         }
@@ -59,7 +59,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member2 = obj[1];
             Assert.AreEqual(obj[1], instance.Member2);
             Assert.AreEqual(instance.Member2, (SimpleClass)dynNode.Member2);
-            rootNode.TryGetChild(nameof(ComplexClass.Member2)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member2)].Update(obj[2]);
             Assert.AreEqual(obj[2], instance.Member2);
             Assert.AreEqual(instance.Member2, (SimpleClass)dynNode.Member2);
         }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member2 = obj[1];
             Assert.AreEqual(obj[1], instance.Member2);
             Assert.AreEqual(instance.Member2, (SimpleClass)dynNode.Member2);
-            rootNode.TryGetChild(nameof(ComplexClass.Member2)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member2)].Update(obj[2]);
             Assert.AreEqual(obj[2], instance.Member2);
             Assert.AreEqual(instance.Member2, (SimpleClass)dynNode.Member2);
         }
@@ -92,7 +92,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member3 = 4;
             Assert.AreEqual(4, instance.Member3);
             Assert.AreEqual(instance.Member3, (int)dynNode.Member3);
-            rootNode.TryGetChild(nameof(ComplexClass.Member3)).Update(5);
+            rootNode[nameof(ComplexClass.Member3)].Update(5);
             Assert.AreEqual(5, instance.Member3);
             Assert.AreEqual(instance.Member3, (int)dynNode.Member3);
         }
@@ -109,7 +109,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member3 = obj[1];
             Assert.AreEqual(obj[1], instance.Member3);
             Assert.AreEqual(instance.Member3, (SimpleClass)dynNode.Member3);
-            rootNode.TryGetChild(nameof(ComplexClass.Member3)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member3)].Update(obj[2]);
             Assert.AreEqual(obj[2], instance.Member3);
             Assert.AreEqual(instance.Member3, (SimpleClass)dynNode.Member3);
         }
@@ -128,7 +128,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], instance.Member4);
             Assert.AreEqual(obj[1].Member1, (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
-            rootNode.TryGetChild(nameof(ComplexClass.Member4)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member4)].Update(obj[2]);
             Assert.AreEqual(obj[2], instance.Member4);
             Assert.AreEqual(obj[2].Member1, (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
@@ -147,7 +147,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member4.Member1 = obj[1];
             Assert.AreEqual(obj[1], (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
-            rootNode.TryGetChild(nameof(ComplexClass.Member4)).TryGetChild(nameof(Struct.Member1)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member4)].Target[nameof(Struct.Member1)].Update(obj[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member4.Member1);
             Assert.AreEqual(instance.Member4, (Struct)dynNode.Member4);
         }
@@ -165,7 +165,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member5 = obj[1];
             Assert.AreEqual(instance.Member5, (List<string>)dynNode.Member5);
             Assert.AreEqual(obj[1], (List<string>)dynNode.Member5);
-            rootNode.TryGetChild(nameof(ComplexClass.Member5)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member5)].Update(obj[2]);
             Assert.AreEqual(instance.Member5, (List<string>)dynNode.Member5);
             Assert.AreEqual(obj[2], (List<string>)dynNode.Member5);
         }
@@ -183,7 +183,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member5[0] = obj[1];
             Assert.AreEqual(instance.Member5[0], (string)dynNode.Member5[0]);
             Assert.AreEqual(obj[1], (string)dynNode.Member5[0]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member5)).Update(obj[2], new Index(0));
+            rootNode[nameof(ComplexClass.Member5)].Update(obj[2], new Index(0));
             Assert.AreEqual(instance.Member5[0], (string)dynNode.Member5[0]);
             Assert.AreEqual(obj[2], (string)dynNode.Member5[0]);
         }
@@ -201,7 +201,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member5.Add(obj[1]);
             Assert.AreEqual(instance.Member5[1], (string)dynNode.Member5[1]);
             Assert.AreEqual(obj[1], (string)dynNode.Member5[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member5)).Add(obj[2], new Index(2));
+            rootNode[nameof(ComplexClass.Member5)].Add(obj[2], new Index(2));
             Assert.AreEqual(instance.Member5[2], (string)dynNode.Member5[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member5[2]);
         }
@@ -221,7 +221,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member5[1], (string)dynNode.Member5[1]);
             Assert.AreEqual(obj[1], (string)dynNode.Member5[0]);
             Assert.AreEqual(obj[0], (string)dynNode.Member5[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member5)).Add(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member5)].Add(obj[2], new Index(1));
             Assert.AreEqual(instance.Member5[0], (string)dynNode.Member5[0]);
             Assert.AreEqual(instance.Member5[1], (string)dynNode.Member5[1]);
             Assert.AreEqual(instance.Member5[2], (string)dynNode.Member5[2]);
@@ -249,7 +249,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member5[1], (string)dynNode.Member5[1]);
             Assert.AreEqual(obj[0], (string)dynNode.Member5[0]);
             Assert.AreEqual(obj[2], (string)dynNode.Member5[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member5)).Remove(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member5)].Remove(obj[2], new Index(1));
             Assert.AreEqual(instance.Member5[0], (string)dynNode.Member5[0]);
             Assert.AreEqual(obj[0], (string)dynNode.Member5[0]);
         }
@@ -267,7 +267,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member6 = obj[1];
             Assert.AreEqual(instance.Member6, (List<SimpleClass>)dynNode.Member6);
             Assert.AreEqual(obj[1], (List<SimpleClass>)dynNode.Member6);
-            rootNode.TryGetChild(nameof(ComplexClass.Member6)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member6)].Update(obj[2]);
             Assert.AreEqual(instance.Member6, (List<SimpleClass>)dynNode.Member6);
             Assert.AreEqual(obj[2], (List<SimpleClass>)dynNode.Member6);
         }
@@ -285,7 +285,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member6[0] = obj[1];
             Assert.AreEqual(instance.Member6[0], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(obj[1], (SimpleClass)dynNode.Member6[0]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member6)).Update(obj[2], new Index(0));
+            rootNode[nameof(ComplexClass.Member6)].Update(obj[2], new Index(0));
             Assert.AreEqual(instance.Member6[0], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(obj[2], (SimpleClass)dynNode.Member6[0]);
         }
@@ -303,7 +303,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member6.Add(obj[1]);
             Assert.AreEqual(instance.Member6[1], (SimpleClass)dynNode.Member6[1]);
             Assert.AreEqual(obj[1], (SimpleClass)dynNode.Member6[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member6)).Add(obj[2], new Index(2));
+            rootNode[nameof(ComplexClass.Member6)].Add(obj[2], new Index(2));
             Assert.AreEqual(instance.Member6[2], (SimpleClass)dynNode.Member6[2]);
             Assert.AreEqual(obj[2], (SimpleClass)dynNode.Member6[2]);
         }
@@ -323,7 +323,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member6[1], (SimpleClass)dynNode.Member6[1]);
             Assert.AreEqual(obj[1], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(obj[0], (SimpleClass)dynNode.Member6[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member6)).Add(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member6)].Add(obj[2], new Index(1));
             Assert.AreEqual(instance.Member6[0], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(instance.Member6[1], (SimpleClass)dynNode.Member6[1]);
             Assert.AreEqual(instance.Member6[2], (SimpleClass)dynNode.Member6[2]);
@@ -351,7 +351,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member6[1], (SimpleClass)dynNode.Member6[1]);
             Assert.AreEqual(obj[0], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(obj[2], (SimpleClass)dynNode.Member6[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member6)).Remove(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member6)].Remove(obj[2], new Index(1));
             Assert.AreEqual(instance.Member6[0], (SimpleClass)dynNode.Member6[0]);
             Assert.AreEqual(obj[0], (SimpleClass)dynNode.Member6[0]);
         }
@@ -370,8 +370,8 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
             Index index = new Index(1);
-            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member6));
-            tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1)).Update(obj[2]);
+            IContentNode tempQualifier = rootNode[nameof(ComplexClass.Member6)];
+            tempQualifier.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
             Assert.AreEqual(obj[2], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
         }
@@ -389,7 +389,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member7 = obj[1];
             Assert.AreEqual(instance.Member7, (List<Struct>)dynNode.Member7);
             Assert.AreEqual(obj[1], (List<Struct>)dynNode.Member7);
-            rootNode.TryGetChild(nameof(ComplexClass.Member7)).Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member7)].Update(obj[2]);
             Assert.AreEqual(instance.Member7, (List<Struct>)dynNode.Member7);
             Assert.AreEqual(obj[2], (List<Struct>)dynNode.Member7);
         }
@@ -407,7 +407,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member7[0] = obj[1];
             Assert.AreEqual(instance.Member7[0], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(obj[1], (Struct)dynNode.Member7[0]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member7)).Update(obj[2], new Index(0));
+            rootNode[nameof(ComplexClass.Member7)].Update(obj[2], new Index(0));
             Assert.AreEqual(instance.Member7[0], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(obj[2], (Struct)dynNode.Member7[0]);
         }
@@ -425,7 +425,7 @@ namespace SiliconStudio.Quantum.Tests
             dynNode.Member7.Add(obj[1]);
             Assert.AreEqual(instance.Member7[1], (Struct)dynNode.Member7[1]);
             Assert.AreEqual(obj[1], (Struct)dynNode.Member7[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member7)).Add(obj[2], new Index(2));
+            rootNode[nameof(ComplexClass.Member7)].Add(obj[2], new Index(2));
             Assert.AreEqual(instance.Member7[2], (Struct)dynNode.Member7[2]);
             Assert.AreEqual(obj[2], (Struct)dynNode.Member7[2]);
         }
@@ -445,7 +445,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member7[1], (Struct)dynNode.Member7[1]);
             Assert.AreEqual(obj[1], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(obj[0], (Struct)dynNode.Member7[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member7)).Add(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member7)].Add(obj[2], new Index(1));
             Assert.AreEqual(instance.Member7[0], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(instance.Member7[1], (Struct)dynNode.Member7[1]);
             Assert.AreEqual(instance.Member7[2], (Struct)dynNode.Member7[2]);
@@ -473,7 +473,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(instance.Member7[1], (Struct)dynNode.Member7[1]);
             Assert.AreEqual(obj[0], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(obj[2], (Struct)dynNode.Member7[1]);
-            rootNode.TryGetChild(nameof(ComplexClass.Member7)).Remove(obj[2], new Index(1));
+            rootNode[nameof(ComplexClass.Member7)].Remove(obj[2], new Index(1));
             Assert.AreEqual(instance.Member7[0], (Struct)dynNode.Member7[0]);
             Assert.AreEqual(obj[0], (Struct)dynNode.Member7[0]);
         }
@@ -492,8 +492,8 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);
             Index index = new Index(1);
-            IContentNode tempQualifier = rootNode.TryGetChild(nameof(ComplexClass.Member7));
-            tempQualifier.IndexedTarget(index).TryGetChild(nameof(SimpleClass.Member1)).Update(obj[2]);
+            IContentNode tempQualifier = rootNode[nameof(ComplexClass.Member7)];
+            tempQualifier.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);
         }

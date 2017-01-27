@@ -6,8 +6,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E8C458AE-7B42-4DCE-B326-7F3A9065EA19}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Presentation.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Presentation.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Presentation.Quantum.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Presentation.Quantum.Tests</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>

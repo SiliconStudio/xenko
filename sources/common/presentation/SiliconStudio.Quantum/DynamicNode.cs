@@ -148,14 +148,14 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return GetTargetNode()?.Children.Select(x => x.Name) ?? Enumerable.Empty<string>();
+            return (GetTargetNode() as IObjectNode)?.Members.Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
             var node = GetTargetNode();
-            var indices = GetAllIndices(Node);
+            var indices = Node.Indices.Select(x => x.Value);
             if (indices == null)
                 throw new InvalidOperationException("This node is not enumerable.");
 
@@ -166,7 +166,7 @@ namespace SiliconStudio.Quantum
         protected IContentNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
-            var memberNode = targetNode?.Children.FirstOrDefault(x => x.Name == memberName);
+            var memberNode = (targetNode as IObjectNode)?.Members.FirstOrDefault(x => x.Name == memberName);
             return memberNode;
         }
 
@@ -174,29 +174,11 @@ namespace SiliconStudio.Quantum
 
         protected abstract IContentNode GetTargetNode();
 
-        protected static IEnumerable GetAllIndices(IContentNode node)
-        {
-            if (node.IsReference)
-            {
-                var reference = node.Reference as ReferenceEnumerable;
-                return reference?.Indices.Select(x => x.Value);
-            }
-            var value = node.Retrieve();
-            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var count = collectionDescriptor.GetCollectionCount(value);
-                return Enumerable.Range(0, count);
-            }
-            var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(value).Cast<object>();
-        }
-
         protected static bool IsIndexExisting(IContentNode node, Index index)
         {
             if (node.IsReference)
             {
-                var reference = node.Reference as ReferenceEnumerable;
+                var reference = node.ItemReferences;
                 if (reference?.HasIndex(index) ?? false)
                 {
                     return true;
@@ -223,7 +205,7 @@ namespace SiliconStudio.Quantum
         {
             if (node.IsReference)
             {
-                var reference = node.Reference as ReferenceEnumerable;
+                var reference = node.ItemReferences;
                 return reference != null;
             }
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
@@ -294,7 +276,7 @@ namespace SiliconStudio.Quantum
 
         protected override IContentNode GetTargetNode()
         {
-            var objectReference = Node.Reference as ObjectReference;
+            var objectReference = Node.TargetReference;
             if (Node.IsReference && objectReference != null)
             {
                 return objectReference.TargetNode;
@@ -347,7 +329,7 @@ namespace SiliconStudio.Quantum
 
         protected override IContentNode GetTargetNode()
         {
-            var reference = Node.Reference as ReferenceEnumerable;
+            var reference = Node.ItemReferences;
             if (Node.IsReference && (reference?.HasIndex(index) ?? false))
             {
                 return reference[index].TargetNode;

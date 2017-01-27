@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.References
@@ -9,8 +10,9 @@ namespace SiliconStudio.Quantum.References
     /// <summary>
     /// A class representing a reference to another object that has a different model.
     /// </summary>
-    public sealed class ObjectReference : IReference
+    public sealed class ObjectReference : IReferenceInternal
     {
+        private readonly Type type;
         private object orphanObject;
 
         /// <summary>
@@ -26,29 +28,22 @@ namespace SiliconStudio.Quantum.References
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"The given type does not match the given object.", nameof(objectValue));
             orphanObject = objectValue;
-            Type = objectType;
+            type = objectType;
             Index = index;
         }
 
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IContentNode TargetNode { get; private set; }
+        public IObjectNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
         public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
 
-        /// <inheritdoc/>
-        public Type Type { get; }
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Quantum.Index.Empty"/>.
+        /// </summary>
         public Index Index { get; }
-
-        /// <inheritdoc/>
-        public ObjectReference AsObject => this;
-
-        /// <inheritdoc/>
-        public ReferenceEnumerable AsEnumerable { get { throw new InvalidCastException("This reference is not a ReferenceEnumerable"); } }
 
         /// <summary>
         /// Gets the <see cref="Guid"/> of the model node targeted by this reference, if available.
@@ -69,15 +64,26 @@ namespace SiliconStudio.Quantum.References
         internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Retrieve(index);
-            if (TargetNode?.Value != objectValue)
+
+            var boxedTarget = TargetNode as BoxedContent;
+            if (boxedTarget != null && objectValue?.GetType() == TargetNode.Type)
+            {
+                // If we are boxing a struct, and the targeted type didn't change, we reuse the same nodes and just overwrite the struct value.
+                boxedTarget.UpdateFromOwner(objectValue);
+                // But we still need to refresh inner references!
+                foreach (var member in TargetNode.Members.Where(x => x.IsReference))
+                {
+                    nodeContainer?.UpdateReferences(member);
+                }
+            }
+            else if (TargetNode?.Value != objectValue)
             {
                 // This call will recursively update the references.
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var ownerContent = (ContentNode)ownerNode;
                     var boxedContent = target as BoxedContent;
-                    boxedContent?.SetOwnerContent(ownerContent, index);
+                    boxedContent?.SetOwnerContent(ownerNode, index);
                 }
             }
             // This reference is not orphan anymore.
@@ -114,7 +120,7 @@ namespace SiliconStudio.Quantum.References
         internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IContentNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
+            var targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
             SetTarget(targetNode);
             return targetNode;
         }
@@ -123,18 +129,14 @@ namespace SiliconStudio.Quantum.References
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IContentNode SetTarget(IContentNode targetNode)
+        internal IObjectNode SetTarget(IObjectNode targetNode)
         {
             if (targetNode != null)
             {
-                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
+                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-                // TODO: Disabled this exception which is triggered when a circular reference is made. This will be properly fixed when we'll get rid of the ShouldProcessReference mechanism.
-                //if (TargetNode != null || TargetGuid != Guid.Empty)
-                //    throw new InvalidOperationException("TargetNode has already been set.");
-
-                if (targetNode.Value != null && !Type.IsInstanceOfType(targetNode.Value))
+                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
 
                 TargetNode = targetNode;

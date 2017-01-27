@@ -149,7 +149,6 @@ namespace SiliconStudio.Xenko.Animations
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
-                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
                     animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
@@ -184,14 +183,7 @@ namespace SiliconStudio.Xenko.Animations
 
                         if (removeAnimation)
                         {
-                            animationComponent.PlayingAnimations.RemoveAt(index--);
-
-                            var evaluator = playingAnimation.Evaluator;
-                            if (evaluator != null)
-                            {
-                                animationComponent.Blender.ReleaseEvaluator(evaluator);
-                                playingAnimation.Evaluator = null;
-                            }
+                            animationComponent.PlayingAnimations.RemoveAt(index--); // Will also release its evaluator
                         }
                     }
                 }

@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Collections;
@@ -41,6 +42,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected NodeViewModel(GraphViewModel ownerViewModel, Index index)
             : base(ownerViewModel.ServiceProvider)
         {
+            DependentProperties.Add(nameof(Path), new[] { nameof(DisplayPath) });
             Owner = ownerViewModel;
             Index = index;
             Guid = Guid.NewGuid();
@@ -64,9 +66,14 @@ namespace SiliconStudio.Presentation.Quantum
         public string DisplayName { get { return displayName; } set { SetValue(ref displayName, value); } }
 
         /// <summary>
-        /// Gets the path of this node. The path is constructed from the name of all node from the root to this one, separated by periods.
+        /// Gets the path of this node. The path is constructed from the name of all nodes from the root to this one, separated by periods.
         /// </summary>
         public string Path => Parent != null ? Parent.Path + '.' + Name : Name;
+
+        /// <summary>
+        /// Gets the display path of this node. The path is constructed from the <see cref="DisplayName"/> of all nodes from the root to this one, separated by periods.
+        /// </summary>
+        public string DisplayPath { get { if (Parent == null) return string.Empty; var parentPath = Parent.DisplayPath; return parentPath != string.Empty ? parentPath + '.' + DisplayName : DisplayName; } }
 
         /// <summary>
         /// Gets the parent of this node.
@@ -372,7 +379,11 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void FinalizeChildrenInitialization()
+        /// <summary>
+        /// Finalizes the initialization of this node.
+        /// </summary>
+        /// <remarks>This method is called after all sibling of this node have been initialized.</remarks>
+        protected internal virtual void FinalizeInitialization()
         {
             if (initializingChildren != null)
             {
@@ -386,29 +397,33 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void AddChild(NodeViewModel node)
+        /// <summary>
+        /// Adds the given node to the list of children of this node.
+        /// </summary>
+        /// <param name="child">The node to add as child.</param>
+        protected void AddChild(NodeViewModel child)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (node.Parent != null) throw new InvalidOperationException("The node already have a parent.");
-            if (Children.Contains(node)) throw new InvalidOperationException("The node is already in the children list of its parent.");
+            if (child == null) throw new ArgumentNullException(nameof(child));
+            if (child.Parent != null) throw new InvalidOperationException("The node already have a parent.");
+            if (Children.Contains(child)) throw new InvalidOperationException("The node is already in the children list of its parent.");
             if (initializingChildren == null)
             {
-                NotifyPropertyChanging(node.Name);
+                NotifyPropertyChanging(child.Name);
             }
-            node.Parent = this;
+            child.Parent = this;
 
             if (initializingChildren == null)
             {
-                children.Add(node);
-                NotifyPropertyChanged(node.Name);
+                children.Add(child);
+                NotifyPropertyChanged(child.Name);
             }
             else
             {
-                initializingChildren.Add(node);
+                initializingChildren.Add(child);
             }
-            if (node.IsVisible)
+            if (child.IsVisible)
                 ++VisibleChildrenCount;    
-            node.IsVisibleChanged += ChildVisibilityChanged;
+            child.IsVisibleChanged += ChildVisibilityChanged;
         }
 
         protected void RemoveChild(NodeViewModel node)

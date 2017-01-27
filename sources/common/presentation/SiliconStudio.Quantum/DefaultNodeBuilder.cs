@@ -17,10 +17,10 @@ namespace SiliconStudio.Quantum
     /// </summary>
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
-        private readonly Stack<ContentNode> contextStack = new Stack<ContentNode>();
+        private readonly Stack<IInitializingGraphNode> contextStack = new Stack<IInitializingGraphNode>();
         private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
-        private ContentNode rootNode;
+        private IInitializingObjectNode rootNode;
         private Guid rootGuid;
 
         public DefaultNodeBuilder(NodeContainer nodeContainer)
@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IContentNode Build(object obj, Guid guid)
+        public IObjectNode Build(object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Reset();
@@ -101,12 +101,12 @@ namespace SiliconStudio.Quantum
             bool isRootNode = contextStack.Count == 0;
             if (isRootNode)
             {
-                // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
-                // This would be the case for each collection within the base collection.
-                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                                : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                // If we're visiting a value type as "object" we need to use a special "boxed" node.
+                var content = descriptor.Type.IsValueType ? ContentFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                    : ContentFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+
                 currentDescriptor = content.Descriptor;
-                rootNode = (ContentNode)content;
+                rootNode = (IInitializingObjectNode)content;
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -165,16 +165,16 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             // If this member should contains a reference, create it now.
-            var containerNode = GetContextNode();
+            var containerNode = (IInitializingObjectNode)GetContextNode();
             var guid = Guid.NewGuid();
             var content = (MemberContent)ContentFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
-            containerNode.AddChild(content);
+            containerNode.AddMember(content);
 
             if (content.IsReference)
                 referenceContents.Add(content);
 
             PushContextNode(content);
-            if (!(content.Reference is ObjectReference))
+            if (content.TargetReference == null)
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
                 Visit(content.Value);
@@ -188,22 +188,23 @@ namespace SiliconStudio.Quantum
 
         public IReference CreateReferenceForNode(Type type, object value)
         {
-            // We don't create references for primitive types and structs
-            if (IsPrimitiveType(type) || type.IsStruct())
+            // We don't create references for primitive types
+            if (IsPrimitiveType(type))
                 return null;
 
-            // At this point it is either a reference type or a collection
-            ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
+            // At this point it is either a struct, a reference type or a collection
+            var descriptor = TypeDescriptorFactory.Find(value?.GetType());
             var valueType = GetElementValueType(descriptor);
 
-            // We create reference only for structs (in case of collection of structs) and classes (in a collection or not) 
-            if (valueType == null || !IsPrimitiveType(valueType))
-                return Reference.CreateReference(value, type, Index.Empty);
+            // We don't create references for collection of primitive types
+            if (IsPrimitiveType(valueType))
+                return null;
 
-            return null;
+            // In any other case, we create a reference
+            return Reference.CreateReference(value, type, Index.Empty);
         }
-        
-        private void PushContextNode(ContentNode node)
+
+        private void PushContextNode(IInitializingGraphNode node)
         {
             contextStack.Push(node);
         }
@@ -213,7 +214,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ContentNode GetContextNode()
+        private IInitializingGraphNode GetContextNode()
         {
             return contextStack.Peek();
         }
