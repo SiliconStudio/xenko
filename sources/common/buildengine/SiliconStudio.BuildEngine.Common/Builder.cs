@@ -750,6 +750,10 @@ namespace SiliconStudio.BuildEngine
                 {
                     contentBuildSteps.Add(outputLocation, new KeyValuePair<BuildStep, HashSet<string>>(step, dependencies));
                     CollectContentReferenceDependencies(step, dependencies);
+                    foreach (var prerequisiteStep in step.PrerequisiteSteps)
+                    {
+                        PrepareDependencyGraph(prerequisiteStep, contentBuildSteps);
+                    }
                 }
 
                 // If we have a reference, we don't need to iterate further
