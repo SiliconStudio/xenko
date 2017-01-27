@@ -25,8 +25,7 @@
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Contents\Content.cs" />
-    <Compile Include="Contents\ContentChangeEventArgs.cs" />
-    <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
+    <Compile Include="Contents\MemberNodeChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="DynamicNode.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
@@ -44,6 +43,7 @@
     <Compile Include="Contents\BoxedContent.cs" />
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
+    <Compile Include="References\IReferenceInternal.cs" />
     <Compile Include="References\ObjectReference.cs" />
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />

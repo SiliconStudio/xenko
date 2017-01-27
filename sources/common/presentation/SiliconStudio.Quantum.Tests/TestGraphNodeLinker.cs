@@ -81,19 +81,19 @@ namespace SiliconStudio.Quantum.Tests
 
         public class CustomFindTargetLinker : TestLinker
         {
-            private readonly IContentNode root;
+            private readonly IObjectNode root;
 
-            public CustomFindTargetLinker(NodeContainer container, IContentNode root)
+            public CustomFindTargetLinker(NodeContainer container, IObjectNode root)
             {
                 this.root = root;
                 CustomTarget = container.GetOrCreateNode(new SimpleClass());
             }
 
-            public IContentNode CustomTarget { get; }
+            public IObjectNode CustomTarget { get; }
 
             protected override IContentNode FindTarget(IContentNode sourceNode)
             {
-                if ((ContentNode)sourceNode is ObjectContent && ((ContentNode)sourceNode).Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is ObjectContent && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
@@ -110,10 +110,10 @@ namespace SiliconStudio.Quantum.Tests
 
                 var matchValue = 0;
                 if (sourceReference.TargetNode != null)
-                    matchValue = (int)sourceReference.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value;
+                    matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Value;
 
-                var targetReference = ((ContentNode)targetNode).Reference as ReferenceEnumerable;
-                return targetReference?.FirstOrDefault(x => (int)x.TargetNode.TryGetChild(nameof(SimpleClass.Member1)).Value == matchValue);
+                var targetReference = targetNode.ItemReferences;
+                return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Value == matchValue);
 
             }
         }
@@ -131,11 +131,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target, target.TryGetChild(nameof(SimpleClass.Member2)).Target },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target, target[nameof(SimpleClass.Member2)].Target },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -151,40 +151,40 @@ namespace SiliconStudio.Quantum.Tests
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
             Index index = new Index(0);
-            IContentNode tempQualifier = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier = source[nameof(SimpleClass.Member2)];
             Index index1 = new Index(0);
-            IContentNode tempQualifier1 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier1 = target[nameof(SimpleClass.Member2)];
             Index index2 = new Index(0);
-            IContentNode tempQualifier2 = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier2 = source[nameof(SimpleClass.Member2)];
             Index index3 = new Index(0);
-            IContentNode tempQualifier3 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier3 = target[nameof(SimpleClass.Member2)];
             Index index4 = new Index(0);
-            IContentNode tempQualifier4 = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier4 = source[nameof(SimpleClass.Member2)];
             Index index5 = new Index(0);
-            IContentNode tempQualifier5 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier5 = target[nameof(SimpleClass.Member2)];
             Index index6 = new Index(1);
-            IContentNode tempQualifier6 = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier6 = source[nameof(SimpleClass.Member2)];
             Index index7 = new Index(1);
-            IContentNode tempQualifier7 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier7 = target[nameof(SimpleClass.Member2)];
             Index index8 = new Index(1);
-            IContentNode tempQualifier8 = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier8 = source[nameof(SimpleClass.Member2)];
             Index index9 = new Index(1);
-            IContentNode tempQualifier9 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier9 = target[nameof(SimpleClass.Member2)];
             Index index10 = new Index(1);
-            IContentNode tempQualifier10 = source.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier10 = source[nameof(SimpleClass.Member2)];
             Index index11 = new Index(1);
-            IContentNode tempQualifier11 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier11 = target[nameof(SimpleClass.Member2)];
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
                 { tempQualifier.IndexedTarget(index), tempQualifier1.IndexedTarget(index1) },
-                { tempQualifier2.IndexedTarget(index2).TryGetChild(nameof(SimpleClass.Member1)), tempQualifier3.IndexedTarget(index3).TryGetChild(nameof(SimpleClass.Member1)) },
-                { tempQualifier4.IndexedTarget(index4).TryGetChild(nameof(SimpleClass.Member2)), tempQualifier5.IndexedTarget(index5).TryGetChild(nameof(SimpleClass.Member2)) },
+                { tempQualifier2.IndexedTarget(index2)[nameof(SimpleClass.Member1)], tempQualifier3.IndexedTarget(index3)[nameof(SimpleClass.Member1)] },
+                { tempQualifier4.IndexedTarget(index4)[nameof(SimpleClass.Member2)], tempQualifier5.IndexedTarget(index5)[nameof(SimpleClass.Member2)] },
                 { tempQualifier6.IndexedTarget(index6), tempQualifier7.IndexedTarget(index7) },
-                { tempQualifier8.IndexedTarget(index8).TryGetChild(nameof(SimpleClass.Member1)), tempQualifier9.IndexedTarget(index9).TryGetChild(nameof(SimpleClass.Member1)) },
-                { tempQualifier10.IndexedTarget(index10).TryGetChild(nameof(SimpleClass.Member2)), tempQualifier11.IndexedTarget(index11).TryGetChild(nameof(SimpleClass.Member2)) },
+                { tempQualifier8.IndexedTarget(index8)[nameof(SimpleClass.Member1)], tempQualifier9.IndexedTarget(index9)[nameof(SimpleClass.Member1)] },
+                { tempQualifier10.IndexedTarget(index10)[nameof(SimpleClass.Member2)], tempQualifier11.IndexedTarget(index11)[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -202,11 +202,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target, null },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), null },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), null },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target, null },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)], null },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)], null },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -224,13 +224,14 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(StructClass.Member1)), target.TryGetChild(nameof(StructClass.Member1)) },
-                { source.TryGetChild(nameof(StructClass.Member2)), target.TryGetChild(nameof(StructClass.Member2)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member1)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member1)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target, target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(StructClass.Member2)).TryGetChild(nameof(Struct.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(StructClass.Member1)], target[nameof(StructClass.Member1)] },
+                { source[nameof(StructClass.Member2)], target[nameof(StructClass.Member2)] },
+                { source[nameof(StructClass.Member2)].Target, target[nameof(StructClass.Member2)].Target },
+                { source[nameof(StructClass.Member2)].Target[nameof(Struct.Member1)], target[nameof(StructClass.Member2)].Target[nameof(Struct.Member1)] },
+                { source[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)], target[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)] },
+                { source[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target, target[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target },
+                { source[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target[nameof(SimpleClass.Member1)], target[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target[nameof(SimpleClass.Member1)] },
+                { source[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target[nameof(SimpleClass.Member2)], target[nameof(StructClass.Member2)].Target[nameof(Struct.Member2)].Target[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -248,14 +249,14 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(InterfaceMember.Member1)), target.TryGetChild(nameof(InterfaceMember.Member1)) },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)), target.TryGetChild(nameof(InterfaceMember.Member2)) },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target, target.TryGetChild(nameof(InterfaceMember.Member2)).Target },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member1Common)), target.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member1Common)) },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member2Implem1)), null },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member2Implem1)).Target, null },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member2Implem1)).Target.TryGetChild(nameof(SimpleClass.Member1)), null },
-                { source.TryGetChild(nameof(InterfaceMember.Member2)).Target.TryGetChild(nameof(Implem1.Member2Implem1)).Target.TryGetChild(nameof(SimpleClass.Member2)), null },
+                { source[nameof(InterfaceMember.Member1)], target[nameof(InterfaceMember.Member1)] },
+                { source[nameof(InterfaceMember.Member2)], target[nameof(InterfaceMember.Member2)] },
+                { source[nameof(InterfaceMember.Member2)].Target, target[nameof(InterfaceMember.Member2)].Target },
+                { source[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member1Common)], target[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member1Common)] },
+                { source[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member2Implem1)], null },
+                { source[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member2Implem1)].Target, null },
+                { source[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member2Implem1)].Target[nameof(SimpleClass.Member1)], null },
+                { source[nameof(InterfaceMember.Member2)].Target[nameof(Implem1.Member2Implem1)].Target[nameof(SimpleClass.Member2)], null },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -273,11 +274,11 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target, linker.CustomTarget },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member1)), linker.CustomTarget.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)).Target.TryGetChild(nameof(SimpleClass.Member2)), linker.CustomTarget.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
+                { source[nameof(SimpleClass.Member2)].Target, linker.CustomTarget },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member1)], linker.CustomTarget[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)].Target[nameof(SimpleClass.Member2)], linker.CustomTarget[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -308,7 +309,7 @@ namespace SiliconStudio.Quantum.Tests
             Index index6 = new Index(1);
             IContentNode tempQualifier6 = source[nameof(SimpleClass.Member2)];
             Index index7 = new Index(0);
-            IContentNode tempQualifier7 = target.TryGetChild(nameof(SimpleClass.Member2));
+            IContentNode tempQualifier7 = target[nameof(SimpleClass.Member2)];
             Index index8 = new Index(1);
             IContentNode tempQualifier8 = source[nameof(SimpleClass.Member2)];
             Index index9 = new Index(0);
@@ -326,8 +327,8 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source[nameof(SimpleClass.Member1)], target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source[nameof(SimpleClass.Member2)], target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
                 { tempQualifier.IndexedTarget(index), tempQualifier1.IndexedTarget(index1) },
                 { tempQualifier2.IndexedTarget(index2)[nameof(SimpleClass.Member1)], tempQualifier3.IndexedTarget(index3)[nameof(SimpleClass.Member1)] },
                 { tempQualifier4.IndexedTarget(index4)[nameof(SimpleClass.Member2)], tempQualifier5.IndexedTarget(index5)[nameof(SimpleClass.Member2)] },
@@ -356,8 +357,8 @@ namespace SiliconStudio.Quantum.Tests
             var expectedLinks = new Dictionary<IContentNode, IContentNode>
             {
                 { source, target },
-                { source.TryGetChild(nameof(SimpleClass.Member1)), target.TryGetChild(nameof(SimpleClass.Member1)) },
-                { source.TryGetChild(nameof(SimpleClass.Member2)), target.TryGetChild(nameof(SimpleClass.Member2)) },
+                { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
+                { source[nameof(SimpleClass.Member2)], target[nameof(SimpleClass.Member2)] },
             };
             VerifyLinks(expectedLinks, linker);
         }

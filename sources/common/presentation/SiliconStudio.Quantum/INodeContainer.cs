@@ -26,7 +26,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IContentNode"/> associated to the given object.</returns>
-        IContentNode GetOrCreateNode(object rootObject);
+        IObjectNode GetOrCreateNode(object rootObject);
 
         /// <summary>
         /// Gets the <see cref="IContentNode"/> associated to a data object, if it exists.
@@ -34,6 +34,6 @@ namespace SiliconStudio.Quantum
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IContentNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
         /// <remarks>Calling this method will update references of the returned node and its children, recursively.</remarks>
-        IContentNode GetNode(object rootObject);
+        IObjectNode GetNode(object rootObject);
     }
 }

@@ -21,9 +21,9 @@ namespace SiliconStudio.Assets.Quantum
             this.propertyGraph = propertyGraph;
         }
 
-        public Func<MemberContent, IContentNode, bool> ShouldVisit { get; set; }
+        public Func<IMemberNode, IContentNode, bool> ShouldVisit { get; set; }
 
-        protected override bool ShouldVisitSourceNode(MemberContent memberContent, IContentNode targetNode)
+        protected override bool ShouldVisitSourceNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return (ShouldVisit?.Invoke(memberContent, targetNode) ?? true) && base.ShouldVisitSourceNode(memberContent, targetNode);
         }
@@ -37,14 +37,14 @@ namespace SiliconStudio.Assets.Quantum
         protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.Reference as ObjectReference;
+                return targetNode.TargetReference;
 
             // Special case for objects that are identifiable: the object must be linked to the base only if it has the same id
             if (sourceReference.ObjectValue != null)
             {
                 if (sourceReference.Index.IsEmpty)
                 {
-                    return targetNode.Reference.AsObject;
+                    return targetNode.TargetReference;
                 }
 
                 var sourceAssetNode = (IAssetNode)sourceNode;
@@ -52,7 +52,7 @@ namespace SiliconStudio.Assets.Quantum
                     return null;
 
                 // Enumerable reference: we look for an object with the same id
-                var targetReference = targetNode.Reference.AsEnumerable;
+                var targetReference = targetNode.ItemReferences;
                 var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Retrieve());
                 var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Retrieve());
                 var itemId = sourceIds[sourceReference.Index.Value];

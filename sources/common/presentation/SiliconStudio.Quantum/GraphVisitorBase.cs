@@ -21,7 +21,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
         /// </summary>
-        internal Func<MemberContent, IContentNode, bool> ShouldVisit { get; set; }
+        internal Func<IMemberNode, IContentNode, bool> ShouldVisit { get; set; }
 
         /// <summary>
         /// Gets the root node of the current visit.
@@ -63,7 +63,11 @@ namespace SiliconStudio.Quantum
             {
                 Visiting?.Invoke(node, currentPath);
             }
-            VisitChildren(node, currentPath);
+            var objectNode = node as IObjectNode;
+            if (objectNode != null)
+            {
+                VisitChildren(objectNode, currentPath);
+            }
             VisitSingleTarget(node, currentPath);
             VisitEnumerableTargets(node, currentPath);
             visitedNodes.Remove(node);
@@ -74,9 +78,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node being visited.</param>
         /// <param name="currentPath">The path of the node being visited.</param>
-        protected virtual void VisitChildren(IContentNode node, GraphNodePath currentPath)
+        protected virtual void VisitChildren(IObjectNode node, GraphNodePath currentPath)
         {
-            foreach (var child in node.Children)
+            foreach (var child in node.Members)
             {
                 var childPath = currentPath.PushMember(child.Name);
                 if (ShouldVisitNode(child, child))
@@ -93,7 +97,7 @@ namespace SiliconStudio.Quantum
         /// <param name="currentPath">The path of the node being visited.</param>
         protected virtual void VisitSingleTarget(IContentNode node, GraphNodePath currentPath)
         {
-            var objectReference = node.Reference as ObjectReference;
+            var objectReference = node.TargetReference;
             if (objectReference?.TargetNode != null)
             {
                 var targetPath = currentPath.PushTarget();
@@ -108,7 +112,7 @@ namespace SiliconStudio.Quantum
         /// <param name="currentPath">The path of the node being visited.</param>
         public virtual void VisitEnumerableTargets(IContentNode node, GraphNodePath currentPath)
         {
-            var enumerableReference = node.Reference as ReferenceEnumerable;
+            var enumerableReference = node.ItemReferences;
             if (enumerableReference != null)
             {
                 foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))
@@ -139,7 +143,7 @@ namespace SiliconStudio.Quantum
         /// <param name="memberContent">The member content referencing the node to evaluate.</param>
         /// <param name="targetNode">The node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, False otherwise.</returns>
-        protected virtual bool ShouldVisitNode(MemberContent memberContent, IContentNode targetNode)
+        protected virtual bool ShouldVisitNode(IMemberNode memberContent, IContentNode targetNode)
         {
             return !visitedNodes.Contains(targetNode) && (ShouldVisit?.Invoke(memberContent, targetNode) ?? true);
         }

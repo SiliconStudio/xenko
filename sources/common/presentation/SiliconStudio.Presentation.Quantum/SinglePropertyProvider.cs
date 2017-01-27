@@ -23,10 +23,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public IContentNode GetRootNode() => rootNode;
 
-        /// <inheritdoc/>
-        public ExpandReferencePolicy ShouldExpandReference(MemberContent member, ObjectReference reference) => ExpandReferencePolicy.Full;
 
         /// <inheritdoc/>
-        public bool ShouldConstructMember(MemberContent content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+        public ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference) => ExpandReferencePolicy.Full;
+
+        /// <inheritdoc/>
+        public bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
     }
 }

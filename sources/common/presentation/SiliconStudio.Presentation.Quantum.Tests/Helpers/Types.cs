@@ -1,5 +1,4 @@
 ﻿using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
@@ -21,9 +20,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
                 return rootNode;
             }
 
-            public ExpandReferencePolicy ShouldExpandReference(MemberContent member, ObjectReference reference) => ExpandReferencePolicy.Full;
+            public ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference) => ExpandReferencePolicy.Full;
 
-            public bool ShouldConstructMember(MemberContent content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
+            public bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy) => expandReferencePolicy == ExpandReferencePolicy.Full;
         }
 
         public class SimpleObject

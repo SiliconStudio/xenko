@@ -92,8 +92,17 @@ namespace SiliconStudio.Xenko.Assets.Models
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
 
-                baseBuildStep.StartFrame = diffAnimationAsset.StartAnimationTime;
-                baseBuildStep.EndFrame = diffAnimationAsset.EndAnimationTime;
+                if (diffAnimationAsset.ClipDuration.Enabled)
+                {
+                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
+                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
+                }
+                else
+                {
+                    baseBuildStep.StartFrame = TimeSpan.Zero;
+                    baseBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+                }
+
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;

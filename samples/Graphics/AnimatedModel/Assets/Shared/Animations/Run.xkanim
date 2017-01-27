@@ -14,4 +14,6 @@ Skeleton: 1ce3c383-bb85-42f5-8341-626ccb59dbf8:Models/mannequinModel Skeleton
 RootMotion: false
 PreviewModel: cfb9a357-ac8d-4b98-b49b-923308cf386d:Models/mannequinModel
 AnimationTimeMinimum: 0:00:00:00.0000000
-AnimationTimeMaximum: 0:00:30:00.0000000
+AnimationTimeMaximum: 0:00:00:00.5330000
+~SourceHashes:
+    2eb4fec3c665f29ec6f26fe6c15cc157~../../../Resources/Animation/Run.fbx: 42d3e01b2a1e02183f01e280d2b58424
