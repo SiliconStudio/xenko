@@ -67,6 +67,8 @@ namespace SiliconStudio.Assets.Compiler
 
             BuildStepsQueue.BuildSteps[new AssetBuildOperation(assetItem.Id, assetItem.Version)] = compilerResult.BuildSteps;
 
+            var processedItems = new HashSet<string>();
+
             //run time deps
             var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
             foreach (var assetDependency in dependencies.LinksOut)
@@ -80,6 +82,7 @@ namespace SiliconStudio.Assets.Compiler
                         result.CopyTo(compilerResult);
                         return compilerResult;
                     }
+                    processedItems.Add(assetDependency.Item.Location);
                 }
             }
 
@@ -88,7 +91,7 @@ namespace SiliconStudio.Assets.Compiler
             {
                 foreach (var inputFile in commandStep.Command.GetInputFiles())
                 {
-                    if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
+                    if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink && !processedItems.Contains(inputFile.Path))
                     {
                         var asset = assetItem.Package.FindAsset(inputFile.Path);
                         if(asset == null) continue; //this might be an error tho...
