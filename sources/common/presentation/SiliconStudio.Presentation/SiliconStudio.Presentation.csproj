@@ -44,7 +44,8 @@
     <Compile Include="Dirtiables\EmptyDirtyingOperation.cs" />
     <Compile Include="Dirtiables\IDirtiable.cs" />
     <Compile Include="Dirtiables\IDirtyingOperation.cs" />
-    <Compile Include="Extensions\ClipboardMonitor.cs" />
+    <Compile Include="Interop\SafeClipboard.cs" />
+    <Compile Include="Interop\ClipboardMonitor.cs" />
     <Compile Include="MarkupExtensions\GuidExtension.cs" />
     <Compile Include="Resources\KeyGestures.Designer.cs">
       <AutoGen>True</AutoGen>
