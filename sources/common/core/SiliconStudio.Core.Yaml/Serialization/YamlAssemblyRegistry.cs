@@ -91,7 +91,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets or sets a value indicating whether [use short type name].
         /// </summary>
         /// <value><c>true</c> if [use short type name]; otherwise, <c>false</c>.</value>
-        public bool UseShortTypeName { get; set; }
+        public bool UseShortTypeName { get; set; } = true;
 
         public void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry)
         {
