@@ -1,6 +1,6 @@
 !PrefabAsset
 Id: 8e9236c1-dca5-49a8-8577-1ad6c63084d8
-SerializedVersion: {Xenko: 1.9.0-beta04}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
 Hierarchy:
     RootPartIds:
@@ -9,7 +9,6 @@ Hierarchy:
         -   Entity:
                 Id: d724d38f-f805-46f0-8224-85bafa364257
                 Name: Hit Effect Particle System
-                Group: Group1
                 Components:
                     ec8e6ecceff2a44f82c22886a2f25869: !TransformComponent
                         Id: cc6e8eec-f2ef-4fa4-82c2-2886a2f25869
@@ -74,3 +73,4 @@ Hierarchy:
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 5.0, Y: 5.0}
                                     Updaters: {}
+                        RenderGroup: Group1

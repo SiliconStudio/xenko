@@ -17,6 +17,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
+        /// <inheritdoc/>
+        public override Type LightType => typeof(LightDirectional);
+
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -329,21 +332,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (shadow.DepthRange.IsAutomatic)
             {
-                //var depthReadBack = DepthReadback.GetDepthReadback(context);
-                //if (depthReadBack.IsResultAvailable)
-                //{
-                //    var depthMinMax = depthReadBack.DepthMinMax;
-                    
-                //    minDistance = ToLinearDepth(depthMinMax.X, ref camera.ProjectionMatrix);
-                //    // Reserve 1/3 of the guard distance for the min distance
-                //    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
-
-                //    // Reserve 2/3 of the guard distance for the max distance
-                //    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                //    maxDistance = ToLinearDepth(depthMinMax.Y, ref camera.ProjectionMatrix);
-                //    maxDistance = Math.Max(maxDistance, guardMaxDistance);
-                //}
-
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
                 minDistance = LogFloor(minDistance);
@@ -408,60 +396,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             return new Vector2(minDistance, maxDistance);
-        }
-
-        private class DepthReadback : RendererBase
-        {
-            public static DepthReadback GetDepthReadback(RenderContext context)
-            {
-                var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
-                DepthReadback depthReadBack;
-                for (int i = 0; i < sceneCameraRenderer.PostRenderers.Count; i++)
-                {
-                    depthReadBack = sceneCameraRenderer.PostRenderers[i] as DepthReadback;
-                    if (depthReadBack != null)
-                    {
-                        return depthReadBack;
-                    }
-                }
-
-                depthReadBack = new DepthReadback();
-                sceneCameraRenderer.PostRenderers.Add(depthReadBack);
-                return depthReadBack;
-            }
-
-            private DepthMinMax minMax;
-
-            protected override void InitializeCore()
-            {
-                base.InitializeCore();
-
-                minMax = ToLoadAndUnload(new DepthMinMax());
-            }
-
-            public bool IsResultAvailable { get; private set; }
-
-            public Vector2 DepthMinMax { get; private set; }
-
-            protected override void DrawCore(RenderDrawContext context)
-            {
-                try
-                {
-                    context.PushRenderTargets();
-                    minMax.SetInput(context.CommandList.DepthStencilBuffer);
-                    ((RendererBase)minMax).Draw(context);
-
-                    IsResultAvailable = minMax.IsResultAvailable;
-                    if (IsResultAvailable)
-                    {
-                        DepthMinMax = minMax.Result;
-                    }
-                }
-                finally 
-                {
-                    context.PopRenderTargets();
-                }
-            }
         }
 
         private class LightDirectionalShadowMapShaderData : ILightShadowMapShaderData

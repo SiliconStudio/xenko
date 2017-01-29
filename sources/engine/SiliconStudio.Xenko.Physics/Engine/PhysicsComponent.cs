@@ -415,11 +415,11 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public Entity DebugEntity { get; set; }
 
-        public void AddDebugEntity(Scene scene, bool alwaysAddOffset = false)
+        public void AddDebugEntity(Scene scene, RenderGroup renderGroup = RenderGroup.Group0, bool alwaysAddOffset = false)
         {
             if (DebugEntity != null) return;
 
-            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, alwaysAddOffset);
+            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, renderGroup, alwaysAddOffset);
             DebugEntity = entity;
 
             if (DebugEntity == null) return;

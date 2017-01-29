@@ -4,8 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Threading;
@@ -49,6 +52,9 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
         /// </summary>
+        [DataMember]
+        [Category]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public FastTrackingCollection<RenderStageSelector> RenderStageSelectors { get; } = new FastTrackingCollection<RenderStageSelector>();
 
         /// <summary>

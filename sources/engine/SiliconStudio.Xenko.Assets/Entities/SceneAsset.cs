@@ -3,9 +3,9 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -51,23 +51,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta03", "1.9.0-beta04", typeof(BasePartsRemovalComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta04", "1.9.0-beta05", typeof(MaterialFromModelComponentUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta05", "1.9.0-beta06", typeof(ParticleTrailEdgeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta06", "1.10.0-beta01", typeof(RemoveSceneSettingsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "1.10.0-beta02", typeof(MoveRenderGroupInsideComponentUpgrader))]
     [Display(2000, "Scene")]
-    [AssetPartReference(typeof(SceneSettings))]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.9.0-beta06";
+        private const string CurrentVersion = "1.10.0-beta02";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
-        public SceneAsset()
-        {
-            SceneSettings = new SceneSettings();
-        }
-
         /// <summary>
-        /// Gets the scene settings for this instance.
+        /// The parent scene.
         /// </summary>
         [DataMember(10)]
-        public SceneSettings SceneSettings { get; private set; }
+        public Scene Parent { get; set; }
     }
 }

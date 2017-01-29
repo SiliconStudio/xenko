@@ -2,27 +2,41 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Describes render targets and depth stencil output formats.
     /// </summary>
+    [DataContract]
     public struct RenderOutputDescription : IEquatable<RenderOutputDescription>
     {
         // Render targets
+        [DefaultValue(0)]
         public int RenderTargetCount;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat0;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat1;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat2;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat3;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat4;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat5;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat6;
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat RenderTargetFormat7;
 
+        [DefaultValue(PixelFormat.None)]
         public PixelFormat DepthStencilFormat;
 
+        [DefaultValue(MSAALevel.None)]
         public MSAALevel MultiSampleLevel;
 
         public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None, MSAALevel multiSampleLevel = MSAALevel.None) : this()

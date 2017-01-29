@@ -64,7 +64,7 @@ namespace PhysicsSample
 
             button.Click += (sender, args) =>
             {
-                SceneSystem.SceneInstance.Scene = targetScene;
+                SceneSystem.SceneInstance.RootScene = targetScene;
                 Cancel();
             };
 

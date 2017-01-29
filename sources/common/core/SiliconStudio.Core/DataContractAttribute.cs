@@ -45,5 +45,10 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <value><c>true</c> if inherited; otherwise, <c>false</c>.</value>
         public bool Inherited { get; set; }
+
+        /// <summary>
+        /// The default member mode.
+        /// </summary>
+        public DataMemberMode DefaultMemberMode { get; set; } = DataMemberMode.Default;
     }
 }

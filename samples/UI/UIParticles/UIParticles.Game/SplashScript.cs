@@ -199,7 +199,7 @@ namespace UIParticles
 
                     clonedEntity.Transform.Position = ToOrthographicCamera(uiPosition);
 
-                    SceneSystem.SceneInstance.Scene.Entities.Add(clonedEntity);
+                    SceneSystem.SceneInstance.RootScene.Entities.Add(clonedEntity);
 
                     spawnedEntities.Add(clonedEntity);
                 }
@@ -215,7 +215,7 @@ namespace UIParticles
                 // Remove
                 foreach (var clonedEntity in spawnedEntities)
                 {
-                    SceneSystem.SceneInstance.Scene.Entities.Remove(clonedEntity);
+                    SceneSystem.SceneInstance.RootScene.Entities.Remove(clonedEntity);
 
                     var component = clonedEntity.Get<ParticleSystemComponent>();
                     if (component != null)
@@ -235,7 +235,7 @@ namespace UIParticles
             // Update camera
             //  The orthographic camera is centered at the center of the virtual grid and assumes positions in the 
             //  range (-0.5, 0.5) - (0.5, -0.5) to map to the virtual grid (0, 0) - (virtualWidth, virtualHeight)
-            var cameraEntity = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("UIParticlesCamera"));
+            var cameraEntity = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("UIParticlesCamera"));
             if (cameraEntity == null)
                 return;
 
@@ -262,14 +262,14 @@ namespace UIParticles
             currentState = GameState.NewGame;
             fusePercentage = 1f;
 
-            var particleFire = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
+            var particleFire = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
             if (particleFire != null)
             {
                 particleFire.Transform.Position = new Vector3(0, 0.65f, 0);
                 particleFire.Get<ParticleSystemComponent>().ParticleSystem.Play();
             }
 
-            var particleConfetti = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("ConfettiBig"));
+            var particleConfetti = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("ConfettiBig"));
             if (particleConfetti != null)
             {
                 particleConfetti.Transform.Position = new Vector3(10, 0, 0);
@@ -290,7 +290,7 @@ namespace UIParticles
             lifeBarGrid.ColumnDefinitions[1].SizeValue = gaugeCurrentRegion.Width / gaugeBarRegion.Width;
             lifeBarGrid.ColumnDefinitions[2].SizeValue = 1 - lifeBarGrid.ColumnDefinitions[1].SizeValue;
 
-            var particleFire = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
+            var particleFire = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
             if (particleFire == null)
                 return;
 
@@ -304,14 +304,14 @@ namespace UIParticles
             fusePercentage = 0;
             DrawFuse();
 
-            var particleFire = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
+            var particleFire = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("Fire"));
             if (particleFire != null)
             {
                 particleFire.Transform.Position = new Vector3(10, 0, 0);
                 particleFire.Get<ParticleSystemComponent>().ParticleSystem.Stop();
             }
 
-            var particleConfetti = SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(item => item.Name.Equals("ConfettiBig"));
+            var particleConfetti = SceneSystem.SceneInstance.RootScene.Entities.FirstOrDefault(item => item.Name.Equals("ConfettiBig"));
             if (particleConfetti != null)
             {
                 particleConfetti.Transform.Position = new Vector3(0, 0.5f, 0);

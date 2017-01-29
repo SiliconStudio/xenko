@@ -1,5 +1,5 @@
-﻿using System;
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
@@ -9,11 +9,13 @@ namespace SiliconStudio.Assets
     /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
     public interface IAssetPartDesign<TAssetPart> where TAssetPart : IIdentifiable
     {
+        [CanBeNull]
         BasePart Base { get; set; }
 
         /// <summary>
-        /// Gets the actual part.
+        /// The actual part.
         /// </summary>
+        [NotNull]
         TAssetPart Part { get; set; }
     }
 }

@@ -29,5 +29,10 @@ namespace SiliconStudio.Core.Transactions
         /// </summary>
         /// <remarks>This method is invoked by the <see cref="IDisposable.Dispose"/> method.</remarks>
         void Complete();
+
+        /// <summary>
+        /// Keep the transaction alive until an additional call to <see cref="Complete"/> is done.
+        /// </summary>
+        void AddReference();
     }
 }

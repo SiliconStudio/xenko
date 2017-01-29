@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2016, assimp team
 
 All rights reserved.
 
@@ -43,8 +43,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  @brief Declares the data structures in which the imported geometry is
     returned by ASSIMP: aiMesh, aiFace and aiBone data structures.
  */
-#ifndef INCLUDED_AI_MESH_H
-#define INCLUDED_AI_MESH_H
+#pragma once
+#ifndef AI_MESH_H_INC
+#define AI_MESH_H_INC
 
 #include "types.h"
 
@@ -249,7 +250,8 @@ struct aiBone
 
     //! Default constructor
     aiBone()
-      : mNumWeights( 0 )
+        : mName()
+        , mNumWeights( 0 )
       , mWeights( NULL )
     {
     }
@@ -521,7 +523,7 @@ struct aiMesh
     * mixed primitive types (i.e. lines and triangles) may have
     * normals, but the normals for vertices that are only referenced by
     * point or line primitives are undefined and set to qNaN.  See
-    * the #mNormals member for a detailled discussion of qNaNs.
+    * the #mNormals member for a detailed discussion of qNaNs.
     * @note If the mesh contains tangents, it automatically also
     * contains bitangents.
     */
@@ -578,7 +580,7 @@ struct aiMesh
     C_STRUCT aiBone** mBones;
 
     /** The material used by this mesh.
-     * A mesh does use only a single material. If an imported model uses
+     * A mesh uses only a single material. If an imported model uses
      * multiple materials, the import splits up the mesh. Use this value
      * as index into the scene's material list.
      */
@@ -735,5 +737,5 @@ struct aiMesh
 #ifdef __cplusplus
 }
 #endif //! extern "C"
-#endif // __AI_MESH_H_INC
+#endif // AI_MESH_H_INC
 

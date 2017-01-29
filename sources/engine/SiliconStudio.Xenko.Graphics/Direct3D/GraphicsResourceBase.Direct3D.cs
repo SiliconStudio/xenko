@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case GraphicsResourceUsage.Dynamic:
                     return SharpDX.Direct3D11.CpuAccessFlags.Write;
                 case GraphicsResourceUsage.Staging:
-                    return SharpDX.Direct3D11.CpuAccessFlags.Read;
+                    return SharpDX.Direct3D11.CpuAccessFlags.Read | SharpDX.Direct3D11.CpuAccessFlags.Write;
             }
             return SharpDX.Direct3D11.CpuAccessFlags.None;
         }

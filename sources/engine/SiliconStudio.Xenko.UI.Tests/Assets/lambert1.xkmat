@@ -5,7 +5,7 @@ Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 11b5077b-a953-478a-b25e-73ad3b1b294a/5c26c05f-77e8-4226-b86a-794c98c24c9b:Untitled
+            Texture: 5c26c05f-77e8-4226-b86a-794c98c24c9b:Untitled
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
@@ -17,4 +17,4 @@ Attributes:
             Value: 0.5
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

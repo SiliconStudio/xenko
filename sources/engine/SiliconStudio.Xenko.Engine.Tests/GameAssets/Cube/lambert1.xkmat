@@ -10,26 +10,8 @@ Attributes:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
-~Base:
-    ~Id: 80b1e7b9-4fe6-4a64-8d21-67d3ca6a1691
-    Location: --import--
-    Asset: !MaterialAsset
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Attributes:
-            Diffuse: !MaterialDiffuseMapFeature
-                DiffuseMap: !ComputeTextureColor
-                    Texture: f6728c9b-2d0d-4dfb-89eb-983e8f7a8831:Cube/Untitled
-                    FallbackValue:
-                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
-                    Scale: {X: 1.0, Y: 1.0}
-                    Offset: {X: 0.0, Y: 0.0}
-            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
-            Overrides:
-                UVScale: {X: 1.0, Y: 1.0}
-        Layers: []
+Layers: {}

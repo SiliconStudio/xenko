@@ -35,18 +35,18 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         [DataMember(10)]
         public string Name { get; set; }
 
-        [DataMember(20)]
+        [DataMemberIgnore]
         public CameraComponent Camera { get; set; }
 
         public override string ToString()
         {
             string name = Name;
-            if (name == null && Camera != null && Camera.Entity != null)
+            if (name == null && Camera?.Entity != null)
             {
                 name = Camera.Entity.Name;
             }
 
-            return string.Format("Camera [{0}]", name);
+            return $"Camera [{name}]";
         }
 
         /// <summary>

@@ -22,6 +22,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Physics;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Assets
 { 
@@ -59,6 +60,9 @@ namespace SiliconStudio.Xenko.Assets
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
         [DataMember(1000)]
         public Scene DefaultScene { get; set; }
+
+        [DataMember(1500)]
+        public GraphicsCompositor GraphicsCompositor { get; set; }
 
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]

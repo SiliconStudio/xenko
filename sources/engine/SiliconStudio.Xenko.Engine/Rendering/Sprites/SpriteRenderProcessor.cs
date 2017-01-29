@@ -27,16 +27,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             {
                 var renderSprite = spriteStateKeyPair.Value.RenderSprite;
 
-                // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)
-                if (spriteStateKeyPair.Value.Active != (spriteStateKeyPair.Key.CurrentSprite != null))
-                {
-                    spriteStateKeyPair.Value.Active = (spriteStateKeyPair.Key.CurrentSprite != null);
-                    if (spriteStateKeyPair.Value.Active)
-                        VisibilityGroup.RenderObjects.Add(renderSprite);
-                    else
-                        VisibilityGroup.RenderObjects.Remove(renderSprite);
-                }
-
                 renderSprite.Enabled = renderSprite.SpriteComponent.Enabled;
 
                 if (renderSprite.Enabled)
@@ -46,7 +36,17 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     // TODO GRAPHICS REFACTOR: Proper bounding box. Reuse calculations in sprite batch.
                     // For now we only set a center for sorting, but no extent (which disable culling)
                     renderSprite.BoundingBox = new BoundingBoxExt { Center = transform.WorldMatrix.TranslationVector };
-                    renderSprite.RenderGroup = renderSprite.SpriteComponent.Entity.Group;
+                    renderSprite.RenderGroup = renderSprite.SpriteComponent.RenderGroup;
+                }
+
+                // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)
+                if (spriteStateKeyPair.Value.Active != (spriteStateKeyPair.Key.CurrentSprite != null))
+                {
+                    spriteStateKeyPair.Value.Active = (spriteStateKeyPair.Key.CurrentSprite != null);
+                    if (spriteStateKeyPair.Value.Active)
+                        VisibilityGroup.RenderObjects.Add(renderSprite);
+                    else
+                        VisibilityGroup.RenderObjects.Remove(renderSprite);
                 }
             }
         }

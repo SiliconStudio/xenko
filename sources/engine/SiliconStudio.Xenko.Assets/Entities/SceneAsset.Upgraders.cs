@@ -1071,5 +1071,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        class RemoveSceneSettingsUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                asset.RemoveChild("SceneSettings");
+            }
+        }
     }
 }

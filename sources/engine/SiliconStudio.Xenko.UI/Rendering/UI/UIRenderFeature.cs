@@ -76,8 +76,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
-            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
-
             var uiProcessor = renderView.SceneInstance.GetProcessor<UIRenderProcessor>();
             if (uiProcessor == null)
                 return;
@@ -100,7 +98,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             // update the rendering context
             renderingContext.GraphicsContext = context.GraphicsContext;
             renderingContext.Time = drawTime;
-            renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
+            renderingContext.RenderTarget = context.CommandList.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
             // Prepare content required for Picking and MouseOver events
             PickingPrepare();
@@ -170,7 +168,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
                 renderingContext.ViewProjectionMatrix = uiElementState.WorldViewProjectionMatrix;
-                renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : currentRenderFrame.DepthStencil;
+                renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : context.CommandList.DepthStencilBuffer;
                 renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
@@ -236,7 +234,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             PickingClear();
 
             // revert the depth stencil buffer to the default value 
-            context.CommandList.SetRenderTargets(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
+            context.CommandList.SetRenderTargets(context.CommandList.DepthStencilBuffer, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
             // Release scroped texture
             if (scopedDepthBuffer != null)

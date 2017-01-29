@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         // [1] The index of the associated collection in the lightCollectionPool
         private readonly uint[] groupMasks;
 
-        private readonly HashSet<EntityGroupMask> allMasks;
+        private readonly HashSet<RenderGroupMask> allMasks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LightComponentCollectionGroup"/> class.
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             groupMasks = new uint[32 * 2];
             allLights = new List<LightComponent>(128);
             allLightsWithShadows = new List<LightComponent>(128);
-            allMasks = new HashSet<EntityGroupMask>();
+            allMasks = new HashSet<RenderGroupMask>();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         /// <param name="group">The group.</param>
         /// <returns>LightComponentCollection.</returns>
-        public LightComponentCollection FindLightCollectionByGroup(EntityGroup group)
+        public LightComponentCollection FindLightCollectionByGroup(RenderGroup group)
         {
             // If a mask is not zero, then we have a collection associated for this bit
             int groupBaseIndex = (int)group * 2;
@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var collection = lightCollectionPool.Add();
 
                     // The selected collection is associated with the specified mask
-                    collection.CullingMask = (EntityGroupMask)mask;
+                    collection.CullingMask = (RenderGroupMask)mask;
                 }
 
                 // Store the index of the collection for the current bit

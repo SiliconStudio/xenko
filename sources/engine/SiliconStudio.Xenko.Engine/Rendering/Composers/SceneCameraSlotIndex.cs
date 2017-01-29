@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Composers
@@ -9,7 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
     /// Identifies a camera slotIndex in a scene composition.
     /// </summary>
     [DataContract("SceneCameraSlotIndex")]
-    public class SceneCameraSlotIndex
+    [DataStyle(DataStyle.Compact)]
+    public struct SceneCameraSlotIndex : IEquatable<SceneCameraSlotIndex>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneCameraSlotIndex"/> class.
@@ -21,19 +23,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SceneCameraSlotIndex"/> class.
-        /// </summary>
-        public SceneCameraSlotIndex()
-        {
-        }
-
-        /// <summary>
         /// Index of the camera in <see cref="SceneGraphicsCompositorLayers.Cameras"/>
         /// </summary>
-        public int Index
-        {
-            get; set;
-        }
+        public int Index { get; set; }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="SceneCameraSlotIndex"/> to <see cref="System.Int32"/>.
@@ -58,6 +50,32 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         public override string ToString()
         {
             return $"Cameras[{Index}]";
+        }
+
+        public bool Equals(SceneCameraSlotIndex other)
+        {
+            return Index == other.Index;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is SceneCameraSlotIndex && Equals((SceneCameraSlotIndex)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Index.GetHashCode();
+        }
+
+        public static bool operator ==(SceneCameraSlotIndex left, SceneCameraSlotIndex right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(SceneCameraSlotIndex left, SceneCameraSlotIndex right)
+        {
+            return !left.Equals(right);
         }
     }
 }

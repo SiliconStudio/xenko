@@ -105,6 +105,13 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Swizzle")]
         public SwizzleMode Swizzle { get; set; } = SwizzleMode.None;
 
+        /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(90)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
+
         [DataMemberIgnore]
         internal double ElapsedTime;
 

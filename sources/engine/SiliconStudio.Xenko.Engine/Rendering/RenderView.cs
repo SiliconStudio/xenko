@@ -35,6 +35,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Index = -1;
 
+        internal int LastFrameCollected;
+
         internal float MinimumDistance;
 
         internal float MaximumDistance;
@@ -84,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The culling mask.
         /// </summary>
-        public EntityGroupMask CullingMask { get; set; } = EntityGroupMask.All;
+        public RenderGroupMask CullingMask { get; set; } = RenderGroupMask.All;
 
         /// <summary>
         /// The culling mode.

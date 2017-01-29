@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly ThreadLocal<ExtractThreadLocals> extractThreadLocals = new ThreadLocal<ExtractThreadLocals>(() => new ExtractThreadLocals());
         private readonly ConcurrentPool<PrepareThreadLocals> prepareThreadLocals = new ConcurrentPool<PrepareThreadLocals>(() => new PrepareThreadLocals());
         private CompiledCommandList[] commandLists;
+        private Texture[] renderTargets;
 
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
@@ -71,11 +72,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The services registry.</value>
         public IServiceRegistry Services => registry;
 
-        public PipelinePluginManager PipelinePlugins { get; }
-
         public RenderSystem()
         {
-            PipelinePlugins = new PipelinePluginManager(this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
             RenderFeatures.CollectionChanged += RenderFeatures_CollectionChanged;
         }
@@ -84,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Performs pipeline initialization, enumerates views and populates visibility groups.
         /// </summary>
         /// <param name="context"></param>
-        public void Collect(RenderDrawContext context)
+        public void Collect(RenderContext context)
         {
             foreach (var renderFeature in RenderFeatures)
             {
@@ -95,7 +93,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Extract data from entities, should be as fast as possible to not block simulation loop. It should be mostly copies, and the actual processing should be part of Prepare().
         /// </summary>
-        public void Extract(RenderDrawContext context)
+        public void Extract(RenderContext context)
         {
             // Prepare views
             for (int index = 0; index < Views.Count; index++)
@@ -147,7 +145,11 @@ namespace SiliconStudio.Xenko.Rendering
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
 
-                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
+                        var renderStage = renderViewStage.RenderStage;
+                        if (renderStage.Filter != null && !renderStage.Filter.IsVisible(renderObject, view, renderViewStage))
+                            continue;
+
+                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderStage);
 
                         // Note: Used mostly during updating
                         viewFeature.RenderNodes.Add(renderNode, batch.ViewFeatureRenderNodeCache);
@@ -302,6 +304,12 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
             }
 
+            // Perform updates once per change of RenderView
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Draw(renderDrawContext, renderView, renderViewStage);
+            }
+
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;
@@ -334,7 +342,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Remember state
                 var depthStencilBuffer = renderDrawContext.CommandList.DepthStencilBuffer;
-                var renderTargetView = renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null;
+                int renderTargetCount = renderDrawContext.CommandList.RenderTargetCount;
+                if (renderTargets == null)
+                    renderTargets = new Texture[renderDrawContext.CommandList.RenderTargets.Length];
+                for (int i = 0; i < renderTargetCount; ++i)
+                    renderTargets[i] = renderDrawContext.CommandList.RenderTargets[i];
                 var viewport = renderDrawContext.CommandList.Viewport;
 
                 // Collect one command list per batch and the main one up to this point
@@ -350,7 +362,7 @@ namespace SiliconStudio.Xenko.Rendering
                     threadContext.CommandList.ClearState();
 
                     // Transfer state to all command lists
-                    threadContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+                    threadContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                     threadContext.CommandList.SetViewport(viewport);
 
                     var currentStart = batchSize * batchIndex;
@@ -383,7 +395,7 @@ namespace SiliconStudio.Xenko.Rendering
                 renderDrawContext.CommandList.ClearState();
 
                 // Reapply previous state
-                renderDrawContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+                renderDrawContext.CommandList.SetRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
                 renderDrawContext.CommandList.SetViewport(viewport);
             }
         }
@@ -408,6 +420,7 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = graphicsDeviceService.GraphicsDevice;
             RenderContextOld = context;
 
+            // Initializes existing render features
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.Initialize(RenderContextOld);
@@ -416,6 +429,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected override void Destroy()
         {
+            RenderFeatures.CollectionChanged -= RenderFeatures_CollectionChanged;
+            Views.CollectionChanged -= Views_CollectionChanged;
+            RenderStages.CollectionChanged -= RenderStages_CollectionChanged;
+
             foreach (var renderFeature in RenderFeatures)
             {
                 renderFeature.Dispose();
@@ -472,18 +489,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Found it
                 renderFeature.AddRenderObject(renderObject);
-            }
-            else
-            {
-                // New type without render feature, let's do auto pipeline setup
-                if (InstantiateDefaultPipelinePlugin(renderObject.GetType()))
-                {
-                    // Try again, after pipeline plugin setup
-                    if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
-                    {
-                        renderFeature.AddRenderObject(renderObject);
-                    }
-                }
             }
         }
 
@@ -554,22 +559,6 @@ namespace SiliconStudio.Xenko.Rendering
                     ((RenderView)e.Item).Index = e.Index;
                     break;
             }
-        }
-
-        private bool InstantiateDefaultPipelinePlugin(Type renderObjectType)
-        {
-            // Already processed
-            if (!renderObjectsDefaultPipelinePlugins.Add(renderObjectType))
-                return false;
-
-            var autoPipelineAttribute = renderObjectType.GetTypeInfo().GetCustomAttribute<DefaultPipelinePluginAttribute>();
-            if (autoPipelineAttribute != null)
-            {
-                PipelinePlugins.InstantiatePlugin(autoPipelineAttribute.PipelinePluginType);
-                return true;
-            }
-
-            return false;
         }
 
         private class ExtractThreadLocals

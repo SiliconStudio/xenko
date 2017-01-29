@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         public string DefaultSceneUrl { get; set; }
 
+        public string DefaultGraphicsCompositorUrl { get; set; }
+
         /// <summary>
         /// Gets or sets the compilation mode used.
         /// </summary>

@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -14,7 +13,7 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        public override Task Execute(IContent content, Index index, object parameter)
+        public override Task Execute(IContentNode content, Index index, object parameter)
         {
             var hasIndex = content.Indices == null || content.Indices.Contains(index);
             var currentValue = hasIndex ? content.Retrieve(index) : (content.Type.IsValueType ? Activator.CreateInstance(content.Type) : null);

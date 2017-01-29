@@ -762,7 +762,6 @@ namespace SiliconStudio.Xenko.Games
                 if (GraphicsContext != null)
                 {
                     GraphicsContext.CommandList.Dispose();
-                    GraphicsContext.ResourceGroupAllocator.Dispose();
                     GraphicsContext = null;
                 }
 

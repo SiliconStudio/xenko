@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
+    <Compile Include="Controls\TextBlockFormatting.cs" />
     <Compile Include="Core\NaturalStringComparer.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
@@ -165,6 +166,9 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\ValueToUnset.cs" />
+    <Compile Include="ValueConverters\ToLower.cs" />
+    <Compile Include="ValueConverters\StringConcat.cs" />
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />

@@ -143,32 +143,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 
-            // Create a graphics compositor
-            var compositor = new SceneGraphicsCompositorLayers();
-
-            bool isLDR = true;
-            if (isLDR)
-            {
-                compositor.Master.Renderers.Add(new ClearRenderFrameRenderer());
-                compositor.Master.Renderers.Add(new SceneCameraRenderer() { });
-            }
-            else
-            {
-                var layer = new SceneGraphicsLayer();
-                var renderHDROutput = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared } };
-                layer.Output = renderHDROutput;
-                layer.Renderers.Add(new ClearRenderFrameRenderer());
-                layer.Renderers.Add(new SceneCameraRenderer());
-                compositor.Layers.Add(layer);
-                compositor.Master.Renderers.Add(new SceneEffectRenderer()
-                {
-                    Effect = new PostProcessingEffects()
-                });
-            }
-            compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
-
             // Use this graphics compositor
-            scene.Settings.GraphicsCompositor = compositor;
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

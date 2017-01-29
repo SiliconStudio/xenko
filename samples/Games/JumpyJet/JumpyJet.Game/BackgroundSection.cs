@@ -48,22 +48,19 @@ namespace JumpyJet
             CreateBackground(backgroundSprite.Texture, backgroundSprite.Region);
         }
 
-        public void Update(float elapsedTime)
+        public void DrawSprite(float elapsedTime, SpriteBatch spriteBatch)
         {
-            if (!IsUpdating)
-                return;
+            if (IsUpdating)
+            {
+                // Update Scroll position
+                if (ScrollPos > textureRegion.Width)
+                    ScrollPos = 0;
 
-            // Update Scroll position
-            if (ScrollPos > textureRegion.Width)
-                ScrollPos = 0;
+                ScrollPos += (int)(elapsedTime * ScrollSpeed);
 
-            ScrollPos += (int)(elapsedTime * ScrollSpeed);
+                UpdateSpriteQuads();
+            }
 
-            UpdateSpriteQuads();
-        }
-
-        public void DrawSprite(SpriteBatch spriteBatch)
-        {
             // DrawParallax the first quad
             spriteBatch.Draw(texture, firstQuadPos + screenCenter, firstQuadRegion, Color.White, 0f, firstQuadOrigin, 1f, SpriteEffects.None, ImageOrientation.AsIs, depth);
             

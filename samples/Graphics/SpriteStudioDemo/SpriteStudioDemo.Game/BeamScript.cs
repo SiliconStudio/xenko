@@ -24,7 +24,7 @@ namespace SpriteStudioDemo
 
                 if ((Entity.Transform.Position.X <= minWidthX) || (Entity.Transform.Position.X >= maxWidthX) || dead)
                 {
-                    SceneSystem.SceneInstance.Scene.Entities.Remove(Entity);
+                    SceneSystem.SceneInstance.RootScene.Entities.Remove(Entity);
                     return;
                 }
             }

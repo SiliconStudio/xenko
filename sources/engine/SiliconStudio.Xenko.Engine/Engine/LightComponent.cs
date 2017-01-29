@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             Type = new LightDirectional();
             Intensity = 1.0f;
-            CullingMask = EntityGroupMask.All;
+            CullingMask = RenderGroupMask.All;
             Id = Interlocked.Increment(ref LightComponentIds);
         }
 
@@ -73,8 +73,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The group of entities that this light belongs to.</userdoc>
         [DataMember(40)]
-        [DefaultValue(EntityGroupMask.All)]
-        public EntityGroupMask CullingMask { get; set; }
+        [DefaultValue(RenderGroupMask.All)]
+        public RenderGroupMask CullingMask { get; set; }
 
         /// <summary>
         /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field). See remarks.

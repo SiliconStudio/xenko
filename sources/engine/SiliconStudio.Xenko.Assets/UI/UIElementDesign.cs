@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
@@ -14,7 +15,11 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <summary>
         /// Initializes a new instance of <see cref="UIElementDesign"/>.
         /// </summary>
+        /// <remarks>
+        /// This constructor is used only for serialization.
+        /// </remarks>
         public UIElementDesign()
+            // ReSharper disable once AssignNullToNotNullAttribute
             : this(null)
         {
         }
@@ -23,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// Initializes a new instance of <see cref="UIElementDesign"/>.
         /// </summary>
         /// <param name="uiElement">The UI Element</param>
-        public UIElementDesign(UIElement uiElement)
+        public UIElementDesign([NotNull] UIElement uiElement)
         {
             UIElement = uiElement;
         }
@@ -32,6 +37,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// The UI element.
         /// </summary>
         [DataMember(10)]
+        [NotNull]
         public UIElement UIElement { get; set; }
 
         /// <inheritdoc/>

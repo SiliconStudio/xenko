@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -36,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (modelNode == null)
                     throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-                await NodeCommand.Execute(modelNode.Content, Index, parameter);
+                await NodeCommand.Execute(modelNode, Index, parameter);
                 ActionService?.SetName(transaction, ActionName);
             }
         }
