@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract Size2 OptimalRenderFrameSize { get; }
 
-        public abstract DirectRenderFrameProvider RenderFrameProvider { get; protected set; }
+        public abstract Texture RenderFrame { get; protected set; }
 
         public abstract Texture MirrorTexture { get; protected set; }
 

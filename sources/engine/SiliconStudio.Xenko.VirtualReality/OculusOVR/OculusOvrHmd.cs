@@ -58,16 +58,16 @@ namespace SiliconStudio.Xenko.VirtualReality
                 textures[i].InitializeFrom(new Texture2D(ptr), false);
             }
 
-            RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+            RenderFrame = Texture.New2D(GraphicsDevice, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
-            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
-            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
-            {
-                var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
-                x.CommandList.Copy(RenderFrameProvider.RenderFrame.RenderTargets[0], textures[index]);
-
-                OculusOvr.CommitFrame(ovrSession, null, 0);
-            }));
+//            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+//            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
+//            {
+//                var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
+//                x.CommandList.Copy(RenderFrameProvider.RenderFrame.RenderTargets[0], textures[index]);
+//
+//                OculusOvr.CommitFrame(ovrSession, null, 0);
+//            }));
 
             leftCamera.UseCustomProjectionMatrix = true;
             rightCamera.UseCustomProjectionMatrix = true;
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
 
-        public override DirectRenderFrameProvider RenderFrameProvider { get; protected set; }
+        public override Texture RenderFrame { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

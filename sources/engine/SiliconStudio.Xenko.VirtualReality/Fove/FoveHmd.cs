@@ -27,28 +27,28 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
         {
-            RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+            RenderFrame = Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             nonSrgbFrame = Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             if (requireMirror)
             {
-                MirrorTexture = RenderFrameProvider.RenderFrame.RenderTargets[0]; //assign the surface we submit as mirror if needed
+                MirrorTexture = RenderFrame; //assign the surface we submit as mirror if needed
             }
 
-            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
-            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
-            {
-                x.CommandList.Copy(RenderFrameProvider.RenderFrame.RenderTargets[0], nonSrgbFrame);
-                //send to hmd
-                var bounds0 = new Vector4(0.0f, 1.0f, 0.5f, 0.0f);
-                var bounds1 = new Vector4(0.5f, 1.0f, 1.0f, 0.0f);
-                if (!Fove.Submit(nonSrgbFrame.NativeResource.NativePointer, ref bounds0, 0) ||
-                    !Fove.Submit(nonSrgbFrame.NativeResource.NativePointer, ref bounds1, 1))
-                {
-                    //failed...
-                }
-
-                Fove.Commit();
-            }));
+//            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+//            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
+//            {
+//                x.CommandList.Copy(RenderFrameProvider.RenderFrame.RenderTargets[0], nonSrgbFrame);
+//                //send to hmd
+//                var bounds0 = new Vector4(0.0f, 1.0f, 0.5f, 0.0f);
+//                var bounds1 = new Vector4(0.5f, 1.0f, 1.0f, 0.0f);
+//                if (!Fove.Submit(nonSrgbFrame.NativeResource.NativePointer, ref bounds0, 0) ||
+//                    !Fove.Submit(nonSrgbFrame.NativeResource.NativePointer, ref bounds1, 1))
+//                {
+//                    //failed...
+//                }
+//
+//                Fove.Commit();
+//            }));
 
             leftCamera.UseCustomProjectionMatrix = true;
             rightCamera.UseCustomProjectionMatrix = true;
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Size2 OptimalRenderFrameSize => new Size2(2560, 1440);
 
-        public override DirectRenderFrameProvider RenderFrameProvider { get; protected set; }
+        public override Texture RenderFrame { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

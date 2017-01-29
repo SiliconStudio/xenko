@@ -30,26 +30,26 @@ namespace SiliconStudio.Xenko.VirtualReality
             var size = RenderFrameSize;
             var width = size.Width;
             var height = size.Height;
-            RenderFrameProvider = new DirectRenderFrameProvider(RenderFrame.FromTexture(Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
+            RenderFrame = Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
             if (requireMirror)
             {
                 bothEyesMirror = Texture.New2D(GraphicsDevice, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             }
 
-            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
-            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
-            {
-                OpenVR.Submit(0, RenderFrameProvider.RenderFrame.RenderTargets[0], ref leftView);
-                OpenVR.Submit(1, RenderFrameProvider.RenderFrame.RenderTargets[0], ref rightView);
-
-                //copy mirror
-                if (!requireMirror) return;
-
-                var wholeRegion = new ResourceRegion(0, 0, 0, width, height, 1);
-                x.CommandList.CopyRegion(leftEyeMirror, 0, wholeRegion, bothEyesMirror, 0);
-                x.CommandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width/2);
-            }));
+//            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+//            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
+//            {
+//                OpenVR.Submit(0, RenderFrameProvider.RenderFrame.RenderTargets[0], ref leftView);
+//                OpenVR.Submit(1, RenderFrameProvider.RenderFrame.RenderTargets[0], ref rightView);
+//
+//                //copy mirror
+//                if (!requireMirror) return;
+//
+//                var wholeRegion = new ResourceRegion(0, 0, 0, width, height, 1);
+//                x.CommandList.CopyRegion(leftEyeMirror, 0, wholeRegion, bothEyesMirror, 0);
+//                x.CommandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width/2);
+//            }));
 
             leftEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 0);
             rightEyeMirror = OpenVR.GetMirrorTexture(Game.GraphicsDevice, 1);
@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
 
-        public override DirectRenderFrameProvider RenderFrameProvider { get; protected set; }
+        public override Texture RenderFrame { get; protected set; }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
     }
