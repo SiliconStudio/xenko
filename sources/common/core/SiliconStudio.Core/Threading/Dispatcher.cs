@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Threading
 {
     public class Dispatcher
     {
-#if SILICONSTUDIO_PLATFORM_IOS
+#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
         public static int MaxDregreeOfParallelism = 1;
 #else
         public static int MaxDregreeOfParallelism = Environment.ProcessorCount;
