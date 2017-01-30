@@ -71,7 +71,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             {
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
-                var collectionNode = content.Reference.AsEnumerable[index].TargetNode;
+                var collectionNode = content.ItemReferences[index].TargetNode;
                 collectionNode.Add(itemToAdd);
             }
         }

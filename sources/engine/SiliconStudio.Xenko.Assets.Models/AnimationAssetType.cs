@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -29,6 +31,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         [DataMemberIgnore]
         public override AnimationAssetTypeEnum Type => AnimationAssetTypeEnum.DifferenceClip;
 
+        public DifferenceAnimationAssetType()
+        {
+            ClipDuration = new AnimationAssetDurationUnchecked()
+            {
+                Enabled = false,
+                StartAnimationTimeBox = TimeSpan.Zero,
+                EndAnimationTimeBox = AnimationAsset.LongestTimeSpan,
+            };
+        }
+
         /// <summary>
         /// Gets or sets the path to the base source animation model when using additive animation.
         /// </summary>
@@ -44,6 +56,16 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <userdoc>Specifies how to use the base animation.</userdoc>
         [DataMember(40)]
         public AdditiveAnimationBaseMode Mode { get; set; } = AdditiveAnimationBaseMode.Animation;
+
+        /// <summary>
+        /// Enable clipping of the animation duration
+        /// </summary>
+        /// <userdoc>
+        /// Enable clipping of the animation duration, constraining start and end frames.
+        /// </userdoc>
+        [DataMember(50)]
+        [Display("Clip duration")]
+        public AnimationAssetDurationUnchecked ClipDuration { get; set; }
     }
 
     /// <summary>

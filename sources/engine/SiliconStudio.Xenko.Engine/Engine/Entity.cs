@@ -195,6 +195,15 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Removes the specified component.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove(EntityComponent component)
+        {
+            Components.Remove(component);
+        }
+
+        /// <summary>
         /// Removes all components of the specified type or derived type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>

@@ -51,8 +51,9 @@ namespace SiliconStudio.Quantum
                 Type = type;
             }
 
-            public static NodePathElement CreateMember(string name)
+            public static NodePathElement CreateMember([NotNull] string name)
             {
+                if (name == null) throw new ArgumentNullException(nameof(name));
                 return new NodePathElement(name, ElementType.Member);
             }
 
@@ -160,13 +161,13 @@ namespace SiliconStudio.Quantum
                     switch (element.Type)
                     {
                         case ElementType.Member:
-                            Current = Current.Children.Single(x => string.Equals(x.Name, element.Value));
+                            Current = ((IObjectNode)Current).Members.Single(x => string.Equals(x.Name, element.Value));
                             break;
                         case ElementType.Target:
-                            Current = Current.Reference.AsObject.TargetNode;
+                            Current = Current.TargetReference.TargetNode;
                             break;
                         case ElementType.Index:
-                            Current = Current.Reference.AsEnumerable[(Index)element.Value].TargetNode;
+                            Current = Current.ItemReferences[(Index)element.Value].TargetNode;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -412,7 +413,7 @@ namespace SiliconStudio.Quantum
                 {
                     // If this is a reference, add a target element to the path
                     var node = result.GetNode();
-                    var objectReference = node.Reference as ObjectReference;
+                    var objectReference = node.TargetReference;
                     if (objectReference?.TargetNode != null)
                     {
                         result = result.PushTarget();
@@ -438,19 +439,19 @@ namespace SiliconStudio.Quantum
                 {
                     case ElementType.Member:
                         var name = (string)itemPath.Value;
-                        node = node.Children.Single(x => x.Name == name);
-                        memberPath.Push(((MemberContent)node).Member);
+                        node = ((IObjectNode)node).Members.Single(x => x.Name == name);
+                        memberPath.Push(((MemberContent)node).MemberDescriptor);
                         break;
                     case ElementType.Target:
                         if (i != path.Count - 1)
                         {
-                            var objectRefererence = (ObjectReference)node.Reference;
+                            var objectRefererence = node.TargetReference;
                             node = objectRefererence.TargetNode;
                         }
                         break;
                     case ElementType.Index:
                         var index = (Index)itemPath.Value;
-                        var enumerableReference = (ReferenceEnumerable)node.Reference;
+                        var enumerableReference = node.ItemReferences;
                         var descriptor = node.Descriptor;
                         var collectionDescriptor = descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)

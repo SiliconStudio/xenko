@@ -91,15 +91,19 @@ namespace SiliconStudio.Xenko.Animations
 
                         switch (playingAnimation.RepeatMode)
                         {
+                            case AnimationRepeatMode.PlayOnceHold:
                             case AnimationRepeatMode.PlayOnce:
                                 playingAnimation.CurrentTime = TimeSpan.FromTicks(playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor));
                                 if (playingAnimation.CurrentTime > playingAnimation.Clip.Duration)
                                     playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
+                                else if (playingAnimation.CurrentTime < TimeSpan.Zero)
+                                    playingAnimation.CurrentTime = TimeSpan.Zero;
                                 break;
                             case AnimationRepeatMode.LoopInfinite:
                                 playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero
                                     ? TimeSpan.Zero
-                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
+                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + playingAnimation.Clip.Duration.Ticks 
+                                        + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -149,7 +153,6 @@ namespace SiliconStudio.Xenko.Animations
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
-                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
                     animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
@@ -172,26 +175,21 @@ namespace SiliconStudio.Xenko.Animations
                                 playingAnimation.Weight = playingAnimation.WeightTarget;
 
                                 // If weight target was 0, removes the animation
-                                if (playingAnimation.Weight == 0.0f)
+                                if (playingAnimation.Weight <= 0.0f)
                                     removeAnimation = true;
                             }
                         }
 
-                        if (playingAnimation.RepeatMode == AnimationRepeatMode.PlayOnce && playingAnimation.CurrentTime == playingAnimation.Clip.Duration)
+                        if (playingAnimation.RepeatMode == AnimationRepeatMode.PlayOnce)
                         {
+                             if ((playingAnimation.TimeFactor > 0 && playingAnimation.CurrentTime == playingAnimation.Clip.Duration) ||
+                                 (playingAnimation.TimeFactor < 0 && playingAnimation.CurrentTime == TimeSpan.Zero))
                             removeAnimation = true;
                         }
 
                         if (removeAnimation)
                         {
-                            animationComponent.PlayingAnimations.RemoveAt(index--);
-
-                            var evaluator = playingAnimation.Evaluator;
-                            if (evaluator != null)
-                            {
-                                animationComponent.Blender.ReleaseEvaluator(evaluator);
-                                playingAnimation.Evaluator = null;
-                            }
+                            animationComponent.PlayingAnimations.RemoveAt(index--); // Will also release its evaluator
                         }
                     }
                 }

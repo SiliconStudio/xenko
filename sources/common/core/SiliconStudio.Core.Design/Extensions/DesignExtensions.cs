@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -16,7 +17,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="source">The IEnumerable to check.</param>
         /// <returns>Returns true if the data source is readonly, false otherwise.</returns>
-        public static bool IsReadOnly(this IEnumerable source)
+        public static bool IsReadOnly([NotNull] this IEnumerable source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
@@ -37,7 +38,8 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on.</param>
         /// <returns>Returns an enumerable that can be consume in a foreach statement.</returns>
-        public static IEnumerable<T> Enumerate<T>(this IEnumerator<T> enumerator)
+        [NotNull]
+        public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator<T> enumerator)
         {
             while (enumerator.MoveNext())
                 yield return enumerator.Current;
@@ -49,13 +51,15 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Type of items provided by the enumerator.</typeparam>
         /// <param name="enumerator">Enumerator instance to iterate on. (subtype is casted to T)</param>
         /// <returns>Returns a typed enumerable that can be consume in a foreach statement.</returns>
-        public static IEnumerable<T> Enumerate<T>(this IEnumerator enumerator)
+        [NotNull]
+        public static IEnumerable<T> Enumerate<T>([NotNull] this IEnumerator enumerator)
         {
             while (enumerator.MoveNext())
                 yield return (T)enumerator.Current;
         }
 
-        public static IEnumerable<Tuple<T1, T2>> Zip<T1, T2>(this IEnumerable<T1> enumerable1, IEnumerable<T2> enumerable2)
+        [ItemNotNull, NotNull]
+        public static IEnumerable<Tuple<T1, T2>> Zip<T1, T2>([NotNull] this IEnumerable<T1> enumerable1, [NotNull] IEnumerable<T2> enumerable2)
         {
             if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
             if (enumerable2 == null) throw new ArgumentNullException(nameof(enumerable2));
@@ -88,7 +92,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The source.</param>
         /// <param name="childrenSelector">The children selector.</param>
         /// <returns></returns>
-        public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        [NotNull]
+        public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
 
@@ -115,7 +120,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in breadth-first order.</returns>
-        public static IEnumerable<T> BreadthFirst<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        [NotNull]
+        public static IEnumerable<T> BreadthFirst<T>(this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
 
@@ -143,7 +149,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The root enumeration.</param>
         /// <param name="childrenSelector">A function that returns the children of an element.</param>
         /// <returns>An enumeration of all elements of source and their children in depth-first order.</returns>
-        public static IEnumerable<T> DepthFirst<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        [NotNull]
+        public static IEnumerable<T> DepthFirst<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, IEnumerable<T>> childrenSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
@@ -164,7 +171,8 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
+        [NotNull]
+        public static IEnumerable<T> Distinct<T, TKey>([NotNull] this IEnumerable<T> source, Func<T, TKey> selector)
         {
             return source.Distinct(new SelectorEqualityComparer<T, TKey>(selector));
         }
@@ -237,7 +245,7 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
-        public static bool AllEqual(this IEnumerable<object> values, out object value)
+        public static bool AllEqual([NotNull] this IEnumerable<object> values, [CanBeNull] out object value)
         {
             value = null;
             var firstNotNull = values.FirstOrDefault(x => x != null);
@@ -256,7 +264,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key of the value we are looking for.</param>
         /// <returns></returns>
-        public static TValue GetOrCreateValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) where TValue : new()
+        public static TValue GetOrCreateValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key)
+            where TValue : new()
         {
             TValue value;
             if (!dictionary.TryGetValue(key, out value))
@@ -267,7 +276,7 @@ namespace SiliconStudio.Core.Extensions
             return value;
         }
 
-        public static int RemoveWhere<T>(this IList<T> list, Predicate<T> predicate)
+        public static int RemoveWhere<T>([NotNull] this IList<T> list, [NotNull] Predicate<T> predicate)
         {
             var count = 0;
             var array = list.ToArray();
@@ -281,7 +290,7 @@ namespace SiliconStudio.Core.Extensions
             return count;
         }
 
-        public static int RemoveWhere<T>(this ICollection<T> collection, Predicate<T> predicate)
+        public static int RemoveWhere<T>([NotNull] this ICollection<T> collection, [NotNull] Predicate<T> predicate)
         {
             var count = 0;
             foreach (var item in collection.ToArray().Where(x => predicate(x)))
@@ -307,8 +316,8 @@ namespace SiliconStudio.Core.Extensions
                 var keyY = selector(y);
                 if (!typeof(T).GetTypeInfo().IsValueType)
                 {
-                    if (object.ReferenceEquals(keyX, null))
-                        return object.ReferenceEquals(keyY, null);
+                    if (ReferenceEquals(keyX, null))
+                        return ReferenceEquals(keyY, null);
                 }
 
                 return selector(x).Equals(selector(y));
@@ -317,7 +326,7 @@ namespace SiliconStudio.Core.Extensions
             public int GetHashCode(T obj)
             {
                 var key = selector(obj);
-                if (!typeof(T).GetTypeInfo().IsValueType && object.ReferenceEquals(key, null))
+                if (!typeof(T).GetTypeInfo().IsValueType && ReferenceEquals(key, null))
                     return 0;
                 return key.GetHashCode();
             }

@@ -5,9 +5,9 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
-using SiliconStudio.Presentation.Interop;
+using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Presentation.Interop
 {
     /// <summary>
     /// Enables to register listener to the native clipboard changed event (also called clipboard viewers)
@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="window"></param>
         /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
         /// <exception cref="InvalidOperationException">window is already registered.</exception>
-        public static void RegisterListener(Window window)
+        public static void RegisterListener([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="window"></param>
         /// <exception cref="ArgumentNullException">window is <c>null</c></exception>
         /// <exception cref="InvalidOperationException">window was not previously registered.</exception>
-        public static void UnregisterListener(Window window)
+        public static void UnregisterListener([NotNull] Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
 
@@ -75,7 +75,8 @@ namespace SiliconStudio.Presentation.Extensions
             });
         }
 
-        private static HwndSource GetHwndSource(Window window)
+        [CanBeNull]
+        private static HwndSource GetHwndSource([NotNull] Window window)
         {
             var handle = new WindowInteropHelper(window).Handle;
             return handle != IntPtr.Zero ? HwndSource.FromHwnd(handle) : null;
@@ -86,7 +87,7 @@ namespace SiliconStudio.Presentation.Extensions
             var hwndSource = HwndSource.FromHwnd(hwnd);
             hwndSource?.Dispatcher.InvokeAsync(() =>
             {
-                if (Clipboard.ContainsText())
+                if (SafeClipboard.ContainsText())
                 {
                     ClipboardTextChanged?.Invoke(hwndSource.RootVisual, EventArgs.Empty);
                 }

@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
             var part = sourceNode.Value as TAssetPart;
-            if (part != null && sourceNode is ObjectContent)
+            if (part != null && sourceNode is IObjectNode)
             {
                 TAssetPartDesign partDesign;
                 // The part might be being moved and could possibly be currently not into the Parts collection.
@@ -69,7 +69,7 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsReferencedPart(MemberContent member, IContentNode targetNode)
+        public override bool IsReferencedPart(IMemberNode member, IContentNode targetNode)
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)
             // or if we're visiting the member itself and not yet its target, then we're not a referenced part.
