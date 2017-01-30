@@ -44,8 +44,10 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -72,6 +74,63 @@ namespace SiliconStudio.Core.Yaml
             var sb = new StringBuilder();
             DoGetShortAssemblyQualifiedName(type, sb);
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Split the given short assembly-qualified type name into a generic definition type and a collection of generic argument types, and retrieve the dimension of the array if the type is an array type.
+        /// </summary>
+        /// <param name="shortAssemblyQualifiedName">The given short assembly-qualified type name to split.</param>
+        /// <param name="genericArguments">The generic argument types extracted, if the given type was generic. Otherwise null.</param>
+        /// <param name="arrayDimension">The dimension of the array if the type is an array type.</param>
+        /// <returns>The corresponding generic definition type.</returns>
+        /// <remarks>If the given type is not generic, this method sets <paramref name="genericArguments"/> to null and returns <paramref name="shortAssemblyQualifiedName"/>.</remarks>
+        [NotNull]
+        public static string GetGenericArgumentsAndArrayDimension([NotNull] string shortAssemblyQualifiedName, [CanBeNull] out List<string> genericArguments, out int arrayDimension)
+        {
+            if (shortAssemblyQualifiedName == null) throw new ArgumentNullException(nameof(shortAssemblyQualifiedName));
+            var firstBracket = int.MaxValue;
+            var lastBracket = int.MinValue;
+            var bracketLevel = 0;
+            genericArguments = null;
+            arrayDimension = 0;
+            var startIndex = 0;
+            for (var i = 0; i < shortAssemblyQualifiedName.Length; ++i)
+            {
+                if (shortAssemblyQualifiedName[i] == '[')
+                {
+                    firstBracket = Math.Min(firstBracket, i);
+                    ++bracketLevel;
+                    if (bracketLevel == 2)
+                    {
+                        startIndex = i + 1;
+                    }
+                }
+                if (shortAssemblyQualifiedName[i] == ']')
+                {
+                    lastBracket = Math.Max(lastBracket, i);
+                    --bracketLevel;
+                    if (bracketLevel == 1)
+                    {
+                        if (genericArguments == null)
+                            genericArguments = new List<string>();
+
+                        genericArguments.Add(shortAssemblyQualifiedName.Substring(startIndex, i - startIndex));
+                    }
+                    if (bracketLevel == 0 && i > 0)
+                    {
+                        if (shortAssemblyQualifiedName[i - 1] == '[')
+                        {
+                            ++arrayDimension;
+                        }
+                    }
+                }
+            }
+            if (genericArguments != null || arrayDimension > 0)
+            {
+                var genericType = shortAssemblyQualifiedName.Substring(0, firstBracket) + shortAssemblyQualifiedName.Substring(lastBracket + 1);
+                return genericType;
+            }
+            return shortAssemblyQualifiedName;
         }
 
         private static void DoGetShortAssemblyQualifiedName(Type type, StringBuilder sb, bool appendAssemblyName = true)

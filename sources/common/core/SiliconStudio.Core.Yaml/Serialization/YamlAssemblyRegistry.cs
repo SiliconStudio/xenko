@@ -270,6 +270,30 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public virtual Type ResolveType(string typeName)
         {
+            List<string> genericArguments;
+            int arrayDimension;
+            var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayDimension);
+            var resolvedType = ResolveSingleType(resolvedTypeName);
+            if (genericArguments != null)
+            {
+                var genericTypes = new List<Type>();
+                foreach (var genericArgument in genericArguments)
+                {
+                    var genericType = ResolveType(genericArgument);
+                    genericTypes.Add(genericType);
+                }
+                resolvedType = resolvedType.MakeGenericType(genericTypes.ToArray());
+            }
+            while (arrayDimension > 0)
+            {
+                resolvedType = resolvedType.MakeArrayType();
+                --arrayDimension;
+            }
+            return resolvedType;
+        }
+
+        private Type ResolveSingleType(string typeName)
+        {
             string assemblyName;
 
             // Find assembly name start (skip up to one space if needed)
