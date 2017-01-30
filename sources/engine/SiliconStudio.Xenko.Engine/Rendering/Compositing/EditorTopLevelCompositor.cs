@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// Used by editor as top level compositor.

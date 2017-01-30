@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;

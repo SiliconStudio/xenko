@@ -3,7 +3,7 @@ using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     public class ForceAspectRatioSceneRenderer : SceneRendererBase
     {

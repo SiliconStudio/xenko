@@ -11,7 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 using SiliconStudio.Xenko.Input;

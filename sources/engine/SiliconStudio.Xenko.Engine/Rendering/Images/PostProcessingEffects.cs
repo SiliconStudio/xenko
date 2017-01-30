@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 

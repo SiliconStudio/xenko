@@ -1,7 +1,7 @@
 !GraphicsCompositorAsset
 Id: cf254e6e-c651-44cf-9d1c-c03cedde472b
 Tags: []
-Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Composers/DefaultGraphicsCompositorLevel10
+Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Compositing/DefaultGraphicsCompositorLevel10
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -85,7 +85,7 @@ RenderFeatures:
                 EffectName: null
         PipelineProcessors: {}
 SharedRenderers:
-    60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine
+    60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
@@ -120,9 +120,9 @@ SharedRenderers:
                     Enabled: false
                     Color: {R: 0.0, G: 0.0, B: 0.0}
         Antialiasing: !FXAAEffect {}
-Game: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
+Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-SingleView: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-Editor: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

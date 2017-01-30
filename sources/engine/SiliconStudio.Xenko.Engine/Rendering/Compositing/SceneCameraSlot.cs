@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// A camera slot used by <see cref="SceneGraphicsCompositorLayers"/>

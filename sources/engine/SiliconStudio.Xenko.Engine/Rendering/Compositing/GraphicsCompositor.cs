@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     [DataSerializerGlobal(typeof(ReferenceSerializer<GraphicsCompositor>), Profile = "Content")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<GraphicsCompositor>))]

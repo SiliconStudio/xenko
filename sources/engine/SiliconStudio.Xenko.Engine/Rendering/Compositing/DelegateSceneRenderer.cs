@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// A renderer which can provide <see cref="RendererBase.Draw"/> implementation with a delegate.

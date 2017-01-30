@@ -1,7 +1,7 @@
 !GraphicsCompositorAsset
 Id: 5a58611c-b0e2-4c5c-87b6-4f1c7d1d9fb8
 Tags: []
-Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Composers/DefaultGraphicsCompositorLevel9
+Archetype: 9af53371-51ba-49fc-b420-ee7874892e75:Compositing/DefaultGraphicsCompositorLevel9
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Name: Main
@@ -82,7 +82,7 @@ RenderFeatures:
                 EffectName: null
         PipelineProcessors: {}
 SharedRenderers:
-    60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine
+    60459475d3a3adaf2d1ba5d99913ca75: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine
         Id: 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
@@ -91,9 +91,9 @@ SharedRenderers:
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null
-Game: !SiliconStudio.Xenko.Rendering.Composers.SceneCameraRenderer,SiliconStudio.Xenko.Engine
+Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-SingleView: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-Editor: !SiliconStudio.Xenko.Rendering.Composers.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5

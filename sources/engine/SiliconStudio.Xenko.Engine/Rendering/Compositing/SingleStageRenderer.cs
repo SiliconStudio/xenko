@@ -1,4 +1,4 @@
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// Renders a single stage with the current <see cref="RenderView"/>.

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     public interface ISceneRenderer : IRenderCollector, IGraphicsRenderer
     {
