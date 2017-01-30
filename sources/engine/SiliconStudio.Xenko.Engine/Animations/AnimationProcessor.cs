@@ -91,6 +91,7 @@ namespace SiliconStudio.Xenko.Animations
 
                         switch (playingAnimation.RepeatMode)
                         {
+                            case AnimationRepeatMode.PlayOnceHold:
                             case AnimationRepeatMode.PlayOnce:
                                 playingAnimation.CurrentTime = TimeSpan.FromTicks(playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor));
                                 if (playingAnimation.CurrentTime > playingAnimation.Clip.Duration)
@@ -171,7 +172,7 @@ namespace SiliconStudio.Xenko.Animations
                                 playingAnimation.Weight = playingAnimation.WeightTarget;
 
                                 // If weight target was 0, removes the animation
-                                if (playingAnimation.Weight == 0.0f)
+                                if (playingAnimation.Weight <= 0.0f)
                                     removeAnimation = true;
                             }
                         }
