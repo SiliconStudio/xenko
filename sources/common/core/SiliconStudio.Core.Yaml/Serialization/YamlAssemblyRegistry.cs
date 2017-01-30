@@ -331,19 +331,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 }
             }
 
-            // No type found, let's try again ignoring assembly name (in case a type moved)
-            if (type == null && assemblyName != null)
-            {
-                foreach (var assembly in lookupAssemblies)
-                {
-                    type = assembly.GetType(typeName);
-                    if (type != null)
-                    {
-                        break;
-                    }
-                }
-            }
-
             // If type wasn't found, we fallback on GetType which will work only for already-loaded assemblies
             return type ?? Type.GetType(typeName);
         }
