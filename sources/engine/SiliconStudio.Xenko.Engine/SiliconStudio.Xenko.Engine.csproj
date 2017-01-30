@@ -225,6 +225,8 @@
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
+    <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
+    <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.xksl">
