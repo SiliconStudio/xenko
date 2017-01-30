@@ -96,11 +96,14 @@ namespace SiliconStudio.Xenko.Animations
                                 playingAnimation.CurrentTime = TimeSpan.FromTicks(playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor));
                                 if (playingAnimation.CurrentTime > playingAnimation.Clip.Duration)
                                     playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
+                                else if (playingAnimation.CurrentTime < TimeSpan.Zero)
+                                    playingAnimation.CurrentTime = TimeSpan.Zero;
                                 break;
                             case AnimationRepeatMode.LoopInfinite:
                                 playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero
                                     ? TimeSpan.Zero
-                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
+                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + playingAnimation.Clip.Duration.Ticks 
+                                        + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -177,8 +180,10 @@ namespace SiliconStudio.Xenko.Animations
                             }
                         }
 
-                        if (playingAnimation.RepeatMode == AnimationRepeatMode.PlayOnce && playingAnimation.CurrentTime == playingAnimation.Clip.Duration)
+                        if (playingAnimation.RepeatMode == AnimationRepeatMode.PlayOnce)
                         {
+                             if ((playingAnimation.TimeFactor > 0 && playingAnimation.CurrentTime == playingAnimation.Clip.Duration) ||
+                                 (playingAnimation.TimeFactor < 0 && playingAnimation.CurrentTime == TimeSpan.Zero))
                             removeAnimation = true;
                         }
 
