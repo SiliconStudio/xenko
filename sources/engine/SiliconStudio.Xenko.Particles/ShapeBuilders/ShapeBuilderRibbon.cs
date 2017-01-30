@@ -106,13 +106,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             currentQuadsPerParticle = quadsPerParticle;
         }
 
-        [Obsolete]
-        public override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
-        {
-            return 0;
-        }
-
         /// <inheritdoc />
         public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)

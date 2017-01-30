@@ -40,28 +40,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <param name="spaceRotation">Rotation of the target draw space in regard to the particle data (world or local)</param>
         /// <param name="spaceScale">Uniform scale of the target draw space in regard to the particle data (world or local)</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
-        /// <returns></returns>
-        [Obsolete]
-        public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter);
-
-        /// <summary>
-        /// Builds the actual vertex buffer for the current frame using the particle data
-        /// </summary>
-        /// <param name="bufferState">Target particle buffer state, used to populate the assigned vertex buffer</param>
-        /// <param name="invViewX">Unit vector X (right) in camera space, extracted from the inverse view matrix</param>
-        /// <param name="invViewY">Unit vector Y (up) in camera space, extracted from the inverse view matrix</param>
-        /// <param name="spaceTranslation">Translation of the target draw space in regard to the particle data (world or local)</param>
-        /// <param name="spaceRotation">Rotation of the target draw space in regard to the particle data (world or local)</param>
-        /// <param name="spaceScale">Uniform scale of the target draw space in regard to the particle data (world or local)</param>
-        /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
         /// <param name="viewProj">The View-Projection matrix which is used for some shape builders</param>
         /// <returns></returns>
-        public virtual int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
-        {
-            return BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter);
-        }
+        public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj);
 
         /// <summary>
         /// Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do
