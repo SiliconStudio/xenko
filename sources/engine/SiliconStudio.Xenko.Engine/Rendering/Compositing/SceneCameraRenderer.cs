@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Child?.Draw(renderContext);
         }
 
-        internal static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
+        public static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
         {
             //// Copy scene camera renderer data
             //renderView.CullingMask = sceneCameraRenderer.CullingMask;

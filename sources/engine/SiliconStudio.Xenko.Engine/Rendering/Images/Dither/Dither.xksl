@@ -10,6 +10,7 @@
         //return float4(Truncate(color.rgb*0.1, 255), color.a) * 10;
 
         return float4(ScreenSpaceDither(color.rgb), color.a);
+		//return float4(color.rgb, color.a);
     }
 
     float3 Truncate( float3 x, float n )
