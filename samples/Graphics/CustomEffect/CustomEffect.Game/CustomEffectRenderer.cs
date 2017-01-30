@@ -42,18 +42,18 @@ namespace CustomEffect
             samplerState = SamplerState.New(GraphicsDevice, new SamplerStateDescription(TextureFilter.Linear, TextureAddressMode.Clamp));
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             // Clear
-            context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
-            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            drawContext.CommandList.Clear(drawContext.CommandList.RenderTarget, Color.Green);
+            drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
-            customEffectInstance.Parameters.Set(EffectKeys.Phase, -3 * (float)context.RenderContext.Time.Total.TotalSeconds);
+            customEffectInstance.Parameters.Set(EffectKeys.Phase, -3 * (float)context.Time.Total.TotalSeconds);
 
-            spriteBatch.Begin(context.GraphicsContext, blendState: BlendStates.NonPremultiplied, depthStencilState: DepthStencilStates.None, effect: customEffectInstance);
+            spriteBatch.Begin(drawContext.GraphicsContext, blendState: BlendStates.NonPremultiplied, depthStencilState: DepthStencilStates.None, effect: customEffectInstance);
 
             // Draw background
-            var target = context.CommandList.RenderTarget;
+            var target = drawContext.CommandList.RenderTarget;
             var imageBufferMinRatio = Math.Min(Background.ViewWidth / (float)target.ViewWidth, Background.ViewHeight / (float)target.ViewHeight);
             var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
             var source = new RectangleF((Background.ViewWidth - sourceSize.X) / 2, (Background.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);

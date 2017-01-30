@@ -92,17 +92,17 @@ namespace JumpyJet
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            var renderSystem = context.RenderContext.RenderSystem;
+            var renderSystem = context.RenderSystem;
 
             // Clear
-            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            drawContext.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
             // Draw parallax background
-            spriteBatch.Begin(context.GraphicsContext);
+            spriteBatch.Begin(drawContext.GraphicsContext);
 
-            float elapsedTime = (float) context.RenderContext.Time.Elapsed.TotalSeconds;
+            float elapsedTime = (float)context.Time.Elapsed.TotalSeconds;
             foreach (var pallaraxBackground in backgroundParallax)
                 pallaraxBackground.DrawSprite(elapsedTime, spriteBatch);
 
@@ -110,11 +110,11 @@ namespace JumpyJet
 
             // Draw [main view | main stage]
             if (MainRenderStage != null)
-                renderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
+                renderSystem.Draw(drawContext, context.RenderView, MainRenderStage);
 
             // Draw [main view | transparent stage]
             if (TransparentRenderStage != null)
-                renderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
+                renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
         }
     }
 }

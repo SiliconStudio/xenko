@@ -207,11 +207,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             public Texture Texture { get; set; }
 
-            protected override void DrawCore(RenderDrawContext renderContext)
+            protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
             {
-                base.DrawCore(renderContext);
+                base.DrawCore(context, drawContext);
 
-                renderContext.GraphicsContext.DrawTexture(Texture);
+                drawContext.GraphicsContext.DrawTexture(Texture);
             }
         }
     }

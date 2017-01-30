@@ -10,18 +10,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         public List<ISceneRenderer> Children { get; } = new List<ISceneRenderer>();
 
-        protected override void CollectCore(RenderContext renderContext)
+        protected override void CollectCore(RenderContext context)
         {
-            base.CollectCore(renderContext);
+            base.CollectCore(context);
 
             foreach (var child in Children)
-                child.Collect(renderContext);
+                child.Collect(context);
         }
 
-        protected override void DrawCore(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             foreach (var child in Children)
-                child.Draw(renderContext);
+                child.Draw(drawContext);
         }
 
         public void Add(ISceneRenderer child)

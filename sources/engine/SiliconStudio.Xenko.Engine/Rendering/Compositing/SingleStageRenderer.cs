@@ -14,10 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             context.RenderView.RenderStages.Add(RenderStage);
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             // Draw with current RenderView
-            context.RenderContext.RenderSystem.Draw(context, context.RenderContext.RenderView, RenderStage);
+            drawContext.RenderContext.RenderSystem.Draw(drawContext, drawContext.RenderContext.RenderView, RenderStage);
         }
     }
 }

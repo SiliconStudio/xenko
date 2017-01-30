@@ -88,68 +88,68 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            var renderSystem = context.RenderContext.RenderSystem;
-            var viewport = context.CommandList.Viewport;
+            var renderSystem = context.RenderSystem;
+            var viewport = drawContext.CommandList.Viewport;
 
-            var currentRenderTarget = context.CommandList.RenderTarget;
-            var currentDepthStencil = context.CommandList.DepthStencilBuffer;
+            var currentRenderTarget = drawContext.CommandList.RenderTarget;
+            var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
 
             // Allocate render targets
-            var renderTarget = PostEffects != null ? PushScopedResource(context.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : currentRenderTarget;
+            var renderTarget = PostEffects != null ? PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : currentRenderTarget;
 
-            using (context.PushRenderTargetsAndRestore())
+            using (drawContext.PushRenderTargetsAndRestore())
             {
                 if (PostEffects != null)
-                    context.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
+                    drawContext.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
 
                 // Clear render target and depth stencil
-                Clear?.Draw(context);
+                Clear?.Draw(drawContext);
 
                 // Render Shadow maps
                 if (ShadowMapRenderStage != null && shadowMapRenderer != null)
                 {
                     // Clear atlases
-                    shadowMapRenderer.PrepareAtlasAsRenderTargets(context.CommandList);
+                    shadowMapRenderer.PrepareAtlasAsRenderTargets(drawContext.CommandList);
 
-                    using (context.PushRenderTargetsAndRestore())
+                    using (drawContext.PushRenderTargetsAndRestore())
                     {
                         // Draw all shadow views generated for the current view
                         foreach (var renderView in renderSystem.Views)
                         {
                             var shadowmapRenderView = renderView as ShadowMapRenderView;
-                            if (shadowmapRenderView != null && shadowmapRenderView.RenderView == context.RenderContext.RenderView)
+                            if (shadowmapRenderView != null && shadowmapRenderView.RenderView == drawContext.RenderContext.RenderView)
                             {
                                 var shadowMapRectangle = shadowmapRenderView.Rectangle;
-                                context.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
+                                drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
                                 shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
-                                context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+                                drawContext.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                                renderSystem.Draw(context, shadowmapRenderView, ShadowMapRenderStage);
+                                renderSystem.Draw(drawContext, shadowmapRenderView, ShadowMapRenderStage);
                             }
                         }
                     }
 
-                    shadowMapRenderer.PrepareAtlasAsShaderResourceViews(context.CommandList);
+                    shadowMapRenderer.PrepareAtlasAsShaderResourceViews(drawContext.CommandList);
                 }
 
                 // Draw [main view | main stage]
                 if (MainRenderStage != null)
-                    renderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
+                    renderSystem.Draw(drawContext, context.RenderView, MainRenderStage);
 
                 // Draw [main view | transparent stage]
                 if (TransparentRenderStage != null)
                 {
                     // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
-                    var depthStencilSRV = ResolveDepthAsSRV(context);
+                    var depthStencilSRV = ResolveDepthAsSRV(drawContext);
 
-                    renderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
+                    renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
 
                     // Free the depth texture since we won't need it anymore
                     if (depthStencilSRV != null)
                     {
-                        context.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
+                        drawContext.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
                     }
                 }
 
@@ -157,7 +157,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (PostEffects != null)
                 {
                     // TODO: output in proper renderTarget location according to viewport
-                    PostEffects.Draw(context, renderTarget, currentDepthStencil, currentRenderTarget);
+                    PostEffects.Draw(drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
                 }
             }
         }

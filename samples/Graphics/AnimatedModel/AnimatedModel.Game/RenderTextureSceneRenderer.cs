@@ -10,34 +10,34 @@ namespace AnimatedModel
 
         public ISceneRenderer Child { get; set; }
 
-        protected override void CollectCore(RenderContext renderContext)
+        protected override void CollectCore(RenderContext context)
         {
-            base.CollectCore(renderContext);
+            base.CollectCore(context);
 
             if (RenderTexture == null)
                 return;
 
-            using (renderContext.SaveRenderOutputAndRestore())
-            using (renderContext.SaveViewportAndRestore())
+            using (context.SaveRenderOutputAndRestore())
+            using (context.SaveViewportAndRestore())
             {
-                renderContext.RenderOutput.RenderTargetFormat0 = RenderTexture.ViewFormat;
-                renderContext.ViewportState.Viewport0 = new Viewport(0, 0, RenderTexture.ViewWidth, RenderTexture.ViewHeight);
+                context.RenderOutput.RenderTargetFormat0 = RenderTexture.ViewFormat;
+                context.ViewportState.Viewport0 = new Viewport(0, 0, RenderTexture.ViewWidth, RenderTexture.ViewHeight);
 
-                Child?.Collect(renderContext);
+                Child?.Collect(context);
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             if (RenderTexture == null)
                 return;
 
-            using (context.PushRenderTargetsAndRestore())
+            using (drawContext.PushRenderTargetsAndRestore())
             {
-                var depthBuffer = PushScopedResource(context.RenderContext.Allocator.GetTemporaryTexture2D(RenderTexture.ViewWidth, RenderTexture.ViewHeight, context.CommandList.DepthStencilBuffer.ViewFormat, TextureFlags.DepthStencil));
-                context.CommandList.SetRenderTargetAndViewport(depthBuffer, RenderTexture);
+                var depthBuffer = PushScopedResource(context.Allocator.GetTemporaryTexture2D(RenderTexture.ViewWidth, RenderTexture.ViewHeight, drawContext.CommandList.DepthStencilBuffer.ViewFormat, TextureFlags.DepthStencil));
+                drawContext.CommandList.SetRenderTargetAndViewport(depthBuffer, RenderTexture);
 
-                Child?.Draw(context);
+                Child?.Draw(drawContext);
             }
         }
     }
