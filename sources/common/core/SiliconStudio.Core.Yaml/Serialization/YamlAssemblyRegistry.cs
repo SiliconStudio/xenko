@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Schemas;
 
@@ -62,11 +63,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         private readonly List<Assembly> lookupAssemblies;
         private readonly object lockCache = new object();
 
-        private static readonly List<Assembly> DefaultLookupAssemblies = new List<Assembly>()
-        {
-            typeof(int).Assembly,
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlAssemblyRegistry"/> class.
         /// </summary>
@@ -76,7 +72,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
             this.schema = schema;
             tagToType = new Dictionary<string, MappedType>();
             typeToTag = new Dictionary<Type, string>();
-            lookupAssemblies = new List<Assembly>();
+            lookupAssemblies = new List<Assembly> { typeof(int).Assembly };
+
             SerializableFactories = new List<IYamlSerializableFactory>();
         }
 
@@ -98,7 +95,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
 
             // Add automatically the assembly for lookup
-            if (!DefaultLookupAssemblies.Contains(assembly) && !lookupAssemblies.Contains(assembly))
+            if (!lookupAssemblies.Contains(assembly))
             {
                 lookupAssemblies.Add(assembly);
 
@@ -270,6 +267,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public virtual Type ResolveType(string typeName)
         {
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             List<string> genericArguments;
             int arrayDimension;
             var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayDimension);
@@ -308,8 +306,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 throw new NotSupportedException("UseShortTypeName supports only True.");
             }
 
-            Type type = null;
-
             // Look for type in loaded assemblies
             foreach (var assembly in lookupAssemblies)
             {
@@ -324,15 +320,14 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     }
                 }
 
-                type = assembly.GetType(typeName);
+                var type = assembly.GetType(typeName);
                 if (type != null)
                 {
-                    break;
+                    return type;
                 }
             }
 
-            // If type wasn't found, we fallback on GetType which will work only for already-loaded assemblies
-            return type ?? Type.GetType(typeName);
+            return null;
         }
 
         public void ParseType(string typeFullName, out string typeName, out string assemblyName)
