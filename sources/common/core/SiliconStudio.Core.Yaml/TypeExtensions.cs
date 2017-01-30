@@ -79,9 +79,12 @@ namespace SiliconStudio.Core.Yaml
             // namespace
             sb.Append(type.Namespace).Append(".");
             // check if it's an array, store the information, and work on the element type
-            var isArray = type.IsArray;
-            if (isArray)
+            var arrayDimension = 0;
+            while (type.IsArray)
+            {
                 type = type.GetElementType();
+                ++arrayDimension;
+            }
             // nested declaring types
             var declaringType = type.DeclaringType;
             if (declaringType != null)
@@ -109,8 +112,11 @@ namespace SiliconStudio.Core.Yaml
                 }
                 sb.Append("]]");
             }
-            if (isArray)
+            while (arrayDimension > 0)
+            {
+                --arrayDimension;
                 sb.Append("[]");
+            }
             // assembly
             if (appendAssemblyName)
                 sb.Append(",").Append(GetShortAssemblyName(type.Assembly));
