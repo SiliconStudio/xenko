@@ -257,7 +257,14 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 {
                     // Else try to use schema tag for scalars
                     // Else use full name of the type
-                    var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
+
+                    var typeName = type.GetShortAssemblyQualifiedName();
+                    if (!UseShortTypeName)
+                        throw new NotSupportedException("UseShortTypeName supports only True.");
+
+                    // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                    //var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
+
                     tagName = schema.GetDefaultTag(type) ?? $"!{typeName}";
                     typeToTag.Add(type, tagName);
                 }
@@ -278,6 +285,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 if (UseShortTypeName)
                 {
                     ParseType(typeName, out typeName, out assemblyName);
+                }
+                else
+                {
+                    // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                    throw new NotSupportedException("UseShortTypeName supports only True.");
                 }
 
                 // Look for type in loaded assemblies
