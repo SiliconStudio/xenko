@@ -78,6 +78,10 @@ namespace SiliconStudio.Core.Yaml
         {
             // namespace
             sb.Append(type.Namespace).Append(".");
+            // check if it's an array, store the information, and work on the element type
+            var isArray = type.IsArray;
+            if (isArray)
+                type = type.GetElementType();
             // nested declaring types
             var declaringType = type.DeclaringType;
             if (declaringType != null)
@@ -91,9 +95,6 @@ namespace SiliconStudio.Core.Yaml
                 sb.Append(declaringTypeName);
             }
             // type
-            var isArray = type.IsArray;
-            if (isArray)
-                type = type.GetElementType();
             sb.Append(type.Name);
             // generic arguments
             if (type.IsGenericType)
