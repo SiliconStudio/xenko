@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
+    [Display("Render Camera")]
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
@@ -24,38 +25,38 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         public ISceneRenderer Child { get; set; }
 
-        protected override void CollectCore(RenderContext renderContext)
+        protected override void CollectCore(RenderContext context)
         {
-            base.CollectCore(renderContext);
+            base.CollectCore(context);
 
             // Find camera
-            var camera = ResolveCamera(renderContext);
+            var camera = ResolveCamera(context);
             if (camera == null)
                 return;
 
             // Setup render view
-            renderContext.RenderSystem.Views.Add(RenderView);
-            RenderView.SceneInstance = renderContext.SceneInstance;
-            UpdateCameraToRenderView(renderContext, RenderView, camera);
+            context.RenderSystem.Views.Add(RenderView);
+            RenderView.SceneInstance = context.SceneInstance;
+            UpdateCameraToRenderView(context, RenderView, camera);
 
-            using (renderContext.PushRenderViewAndRestore(RenderView))
-            using (renderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
+            using (context.PushRenderViewAndRestore(RenderView))
+            using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
-                CollectInner(renderContext);
+                CollectInner(context);
             }
         }
 
-        protected override void DrawCore(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             // Find camera
-            var camera = ResolveCamera(renderContext.RenderContext);
+            var camera = ResolveCamera(context);
             if (camera == null)
                 return;
 
-            using (renderContext.RenderContext.PushRenderViewAndRestore(RenderView))
-            using (renderContext.RenderContext.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
+            using (context.PushRenderViewAndRestore(RenderView))
+            using (context.PushTagAndRestore(CameraComponentRendererExtensions.Current, camera))
             {
-                DrawInner(renderContext);
+                DrawInner(drawContext);
             }
         }
 

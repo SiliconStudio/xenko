@@ -201,14 +201,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [Obsolete]
         public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
         {
-            var mainRenderStage = new RenderStage("Main", "Main") { SortMode = new StateChangeSortMode() };
+            var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
 
             var singleView = new ForwardRenderer
             {
                 Clear = { Color = clearColor ?? Color.CornflowerBlue },
-                MainRenderStage = mainRenderStage,
+                OpaqueRenderStage = opaqueRenderStage,
                 TransparentRenderStage = transparentRenderStage,
                 ShadowMapRenderStage = shadowCasterRenderStage,
                 PostEffects = enablePostEffects
@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 },
                 RenderStages =
                 {
-                    mainRenderStage,
+                    opaqueRenderStage,
                     transparentRenderStage,
                     shadowCasterRenderStage,
                 },
@@ -284,7 +284,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             new MeshTransparentRenderStageSelector
                             {
                                 EffectName = modelEffectName,
-                                MainRenderStage = mainRenderStage,
+                                OpaqueRenderStage = opaqueRenderStage,
                                 TransparentRenderStage = transparentRenderStage,
                             },
                             new ShadowMapRenderStageSelector
@@ -306,7 +306,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             new SpriteTransparentRenderStageSelector
                             {
                                 EffectName = "Test",
-                                MainRenderStage = mainRenderStage,
+                                OpaqueRenderStage = opaqueRenderStage,
                                 TransparentRenderStage = transparentRenderStage,
                             }
                         },
@@ -317,7 +317,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         {
                             new SimpleGroupToRenderStageSelector
                             {
-                                RenderStage = mainRenderStage,
+                                RenderStage = opaqueRenderStage,
                                 EffectName = "SkyboxEffect",
                             }
                         },
@@ -328,7 +328,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         {
                             new SimpleGroupToRenderStageSelector
                             {
-                                RenderStage = mainRenderStage,
+                                RenderStage = opaqueRenderStage,
                                 EffectName = "Test",
                             }
                         },

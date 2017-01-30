@@ -222,9 +222,22 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\Dither\Dither.cs" />
+    <Compile Include="Rendering\Images\Dither\Dither2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Dither.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
+    <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
+    <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
+    <None Include="Rendering\Images\Dither\Dither.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>Dither2.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.xksl">
@@ -434,7 +447,6 @@
     <Compile Include="Rendering\ModelRenderProcessor.cs" />
     <Compile Include="Rendering\LogicalGroupExtensions.cs" />
     <Compile Include="Rendering\RenderSystem.cs" />
-    <Compile Include="Rendering\RenderSystemExtensions.cs" />
     <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\RenderNode.cs" />

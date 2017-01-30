@@ -14,9 +14,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             this.drawAction = drawAction;
         }
 
-        protected override void DrawCore(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            drawAction(renderContext);
+            drawAction(drawContext);
         }
     }
 }

@@ -26,30 +26,30 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public bool ForceAspectRatio { get; set; } = true;
 
         /// <inheritdoc/>
-        protected override void CollectCore(RenderContext renderContext)
+        protected override void CollectCore(RenderContext context)
         {
-            using (renderContext.SaveViewportAndRestore())
+            using (context.SaveViewportAndRestore())
             {
                 if (ForceAspectRatio)
-                    UpdateViewport(ref renderContext.ViewportState.Viewport0, FixedAspectRatio);
+                    UpdateViewport(ref context.ViewportState.Viewport0, FixedAspectRatio);
 
-                Child?.Collect(renderContext);
+                Child?.Collect(context);
             }
         }
 
         /// <inheritdoc/>
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            using (context.PushRenderTargetsAndRestore())
+            using (drawContext.PushRenderTargetsAndRestore())
             {
                 if (ForceAspectRatio)
                 {
-                    var viewport = context.CommandList.Viewport;
+                    var viewport = drawContext.CommandList.Viewport;
                     UpdateViewport(ref viewport, FixedAspectRatio);
-                    context.CommandList.SetViewport(viewport);
+                    drawContext.CommandList.SetViewport(viewport);
                 }
 
-                Child?.Draw(context);
+                Child?.Draw(drawContext);
             }
         }
 

@@ -175,19 +175,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public ISceneRenderer Child { get; set; }
 
-        protected override unsafe void CollectCore(RenderContext renderContext)
+        protected override unsafe void CollectCore(RenderContext context)
         {
-            base.CollectCore(renderContext);
+            base.CollectCore(context);
 
             var firstTexture = DepthStencil ?? (RenderTargets.Count > 0 ? RenderTargets[0] : null);
             if (firstTexture == null)
                 return;
 
-            using (renderContext.SaveRenderOutputAndRestore())
-            using (renderContext.SaveViewportAndRestore())
+            using (context.SaveRenderOutputAndRestore())
+            using (context.SaveViewportAndRestore())
             {
-                renderContext.RenderOutput.RenderTargetCount = RenderTargets.Count;
-                fixed (PixelFormat* renderTargetFormat0 = &renderContext.RenderOutput.RenderTargetFormat0)
+                context.RenderOutput.RenderTargetCount = RenderTargets.Count;
+                fixed (PixelFormat* renderTargetFormat0 = &context.RenderOutput.RenderTargetFormat0)
                 {
                     var renderTargetFormat = renderTargetFormat0;
                     for (int i = 0; i < RenderTargets.Count; ++i)
@@ -195,25 +195,25 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         *renderTargetFormat++ = RenderTargets[i].ViewFormat;
                     }
                 }
-                renderContext.RenderOutput.DepthStencilFormat = DepthStencil.ViewFormat;
+                context.RenderOutput.DepthStencilFormat = DepthStencil.ViewFormat;
 
-                renderContext.ViewportState.Viewport0 = new Viewport(0, 0, firstTexture.ViewWidth, firstTexture.ViewHeight);
+                context.ViewportState.Viewport0 = new Viewport(0, 0, firstTexture.ViewWidth, firstTexture.ViewHeight);
 
-                Child?.Collect(renderContext);
+                Child?.Collect(context);
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             var firstTexture = DepthStencil ?? (RenderTargets.Count > 0 ? RenderTargets[0] : null);
             if (firstTexture == null)
                 return;
 
-            using (context.PushRenderTargetsAndRestore())
+            using (drawContext.PushRenderTargetsAndRestore())
             {
-                context.CommandList.SetRenderTargetsAndViewport(DepthStencil, RenderTargets.Count, RenderTargets.Items);
+                drawContext.CommandList.SetRenderTargetsAndViewport(DepthStencil, RenderTargets.Count, RenderTargets.Items);
 
-                Child?.Draw(context);
+                Child?.Draw(drawContext);
             }
         }
 

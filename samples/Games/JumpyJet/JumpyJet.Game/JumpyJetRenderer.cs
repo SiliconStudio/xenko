@@ -28,7 +28,7 @@ namespace JumpyJet
         /// <summary>
         /// The main render stage for opaque geometry.
         /// </summary>
-        public RenderStage MainRenderStage { get; set; }
+        public RenderStage OpaqueRenderStage { get; set; }
 
         /// <summary>
         /// The transparent render stage for transparent geometry.
@@ -79,10 +79,10 @@ namespace JumpyJet
             using (context.SaveRenderOutputAndRestore())
             {
                 // Fill RenderStage formats and register render stages to main view
-                if (MainRenderStage != null)
+                if (OpaqueRenderStage != null)
                 {
-                    context.RenderView.RenderStages.Add(MainRenderStage);
-                    MainRenderStage.Output = context.RenderOutput;
+                    context.RenderView.RenderStages.Add(OpaqueRenderStage);
+                    OpaqueRenderStage.Output = context.RenderOutput;
                 }
                 if (TransparentRenderStage != null)
                 {
@@ -92,29 +92,29 @@ namespace JumpyJet
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            var renderSystem = context.RenderContext.RenderSystem;
+            var renderSystem = context.RenderSystem;
 
             // Clear
-            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            drawContext.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
             // Draw parallax background
-            spriteBatch.Begin(context.GraphicsContext);
+            spriteBatch.Begin(drawContext.GraphicsContext);
 
-            float elapsedTime = (float) context.RenderContext.Time.Elapsed.TotalSeconds;
+            float elapsedTime = (float)context.Time.Elapsed.TotalSeconds;
             foreach (var pallaraxBackground in backgroundParallax)
                 pallaraxBackground.DrawSprite(elapsedTime, spriteBatch);
 
             spriteBatch.End();
 
             // Draw [main view | main stage]
-            if (MainRenderStage != null)
-                renderSystem.Draw(context, context.RenderContext.RenderView, MainRenderStage);
+            if (OpaqueRenderStage != null)
+                renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
 
             // Draw [main view | transparent stage]
             if (TransparentRenderStage != null)
-                renderSystem.Draw(context, context.RenderContext.RenderView, TransparentRenderStage);
+                renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
         }
     }
 }

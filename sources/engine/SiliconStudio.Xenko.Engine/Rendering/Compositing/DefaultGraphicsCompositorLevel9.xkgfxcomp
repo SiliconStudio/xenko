@@ -7,7 +7,7 @@ Cameras:
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
         Id: 50671147-a5c1-49d4-b4ad-3625f71439b3
-        Name: Main
+        Name: Opaque
         EffectSlotName: Main
         SortMode: !SortModeStateChange {}
         Filter: null
@@ -28,7 +28,7 @@ RenderFeatures:
     d8fb80b0e7995140a46bca8dc36ee8a2: !SiliconStudio.Xenko.Rendering.MeshRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             44cf4a95ef82544e9ce3c6507d5569a9: !SiliconStudio.Xenko.Rendering.MeshTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
-                MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
                 TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: XenkoForwardShadingEffect
             6f7224048750e7260ea87c444f74b32c: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -54,7 +54,7 @@ RenderFeatures:
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
-                MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
                 TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: Test
     e9267aaffdfeb308d632ae267eb49b08: !SiliconStudio.Xenko.Rendering.Skyboxes.SkyboxRenderFeature,SiliconStudio.Xenko.Engine
@@ -76,7 +76,7 @@ RenderFeatures:
     9013eab3ea0ef6c98bf133b86c173d45: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterRenderFeature,SiliconStudio.Xenko.Particles
         RenderStageSelectors:
             af1bd241305893ef8ff7952184e1cb0b: !SiliconStudio.Xenko.Particles.Rendering.ParticleEmitterTransparentRenderStageSelector,SiliconStudio.Xenko.Particles
-                MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+                OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
                 TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: null
         PipelineProcessors: {}
@@ -86,7 +86,7 @@ SharedRenderers:
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-        MainRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
+        OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
         ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: null

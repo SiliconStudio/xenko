@@ -66,9 +66,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        protected override void DrawCore(RenderDrawContext renderContext)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
-            var commandList = renderContext.CommandList;
+            var commandList = drawContext.CommandList;
 
             var depthStencil = commandList.DepthStencilBuffer;
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 for (var index = 0; index < commandList.RenderTargetCount; index++)
                 {
                     var renderTarget = commandList.RenderTargets[index];
-                    var color = Color.ToColorSpace(renderContext.GraphicsDevice.ColorSpace);
+                    var color = Color.ToColorSpace(drawContext.GraphicsDevice.ColorSpace);
                     commandList.Clear(renderTarget, color);
                 }
             }

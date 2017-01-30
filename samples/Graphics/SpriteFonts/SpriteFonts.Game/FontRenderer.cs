@@ -104,23 +104,23 @@ at full size and full measure";
             screenRenderers.Add(DrawAnimationCategory);
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
         {
             // Clear
-            context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
-            context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            drawContext.CommandList.Clear(drawContext.CommandList.RenderTarget, Color.Green);
+            drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
             UpdateAnimatedFontParameters();
             UpdateInput();
             UpdateCurrentScreenIndex();
 
             if (isPlaying)
-                currentTime += (float)context.RenderContext.Time.Elapsed.TotalSeconds;
+                currentTime += (float)context.Time.Elapsed.TotalSeconds;
 
-            spriteBatch.Begin(context.GraphicsContext);
+            spriteBatch.Begin(drawContext.GraphicsContext);
             
             // Draw background
-            var target = context.CommandList.RenderTarget;
+            var target = drawContext.CommandList.RenderTarget;
             var imageBufferMinRatio = Math.Min(Background.ViewWidth / (float)target.ViewWidth, Background.ViewHeight / (float)target.ViewHeight);
             var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
             var source = new RectangleF((Background.ViewWidth - sourceSize.X) / 2, (Background.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
