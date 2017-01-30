@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The main render stage for opaque geometry.
         /// </summary>
-        public RenderStage MainRenderStage { get; set; }
+        public RenderStage OpaqueRenderStage { get; set; }
 
         /// <summary>
         /// The transparent render stage for transparent geometry.
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public PostProcessingEffects PostEffects { get; set; }
 
         /// <summary>
-        /// If true, depth buffer generated during <see cref="MainRenderStage"/> will be available as a shader resource named DepthBase.DepthStencil during <see cref="TransparentRenderStage"/>.
+        /// If true, depth buffer generated during <see cref="OpaqueRenderStage"/> will be available as a shader resource named DepthBase.DepthStencil during <see cref="TransparentRenderStage"/>.
         /// </summary>
         /// <remarks>
         /// This is needed by some effects such as particles soft edges.
@@ -72,10 +72,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
 
                 // Fill RenderStage formats and register render stages to main view
-                if (MainRenderStage != null)
+                if (OpaqueRenderStage != null)
                 {
-                    context.RenderView.RenderStages.Add(MainRenderStage);
-                    MainRenderStage.Output = context.RenderOutput;
+                    context.RenderView.RenderStages.Add(OpaqueRenderStage);
+                    OpaqueRenderStage.Output = context.RenderOutput;
                 }
                 if (TransparentRenderStage != null)
                 {
@@ -135,8 +135,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
 
                 // Draw [main view | main stage]
-                if (MainRenderStage != null)
-                    renderSystem.Draw(drawContext, context.RenderView, MainRenderStage);
+                if (OpaqueRenderStage != null)
+                    renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
 
                 // Draw [main view | transparent stage]
                 if (TransparentRenderStage != null)
