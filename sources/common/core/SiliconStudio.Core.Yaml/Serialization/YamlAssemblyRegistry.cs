@@ -72,8 +72,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         public YamlAssemblyRegistry(IYamlSchema schema)
         {
-            if (schema == null)
-                throw new ArgumentNullException("schema");
+            if (schema == null) throw new ArgumentNullException(nameof(schema));
             this.schema = schema;
             tagToType = new Dictionary<string, MappedType>();
             typeToTag = new Dictionary<Type, string>();
@@ -85,7 +84,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the serializable factories.
         /// </summary>
         /// <value>The serializable factories.</value>
-        public List<IYamlSerializableFactory> SerializableFactories { get; private set; }
+        public List<IYamlSerializableFactory> SerializableFactories { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [use short type name].
@@ -95,10 +94,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry)
         {
-            if (assembly == null)
-                throw new ArgumentNullException("assembly");
-            if (attributeRegistry == null)
-                throw new ArgumentNullException("attributeRegistry");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
 
             // Add automatically the assembly for lookup
             if (!DefaultLookupAssemblies.Contains(assembly) && !lookupAssemblies.Contains(assembly))
@@ -160,10 +157,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="alias"></param>
         public virtual void RegisterTagMapping(string tag, Type type, bool alias)
         {
-            if (tag == null)
-                throw new ArgumentNullException("tag");
-            if (type == null)
-                throw new ArgumentNullException("type");
+            if (tag == null) throw new ArgumentNullException(nameof(tag));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             // Prefix all tags by !
             tag = Uri.EscapeUriString(tag);
@@ -275,58 +270,58 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public virtual Type ResolveType(string typeName)
         {
-            var type = Type.GetType(typeName);
-            if (type == null)
+            string assemblyName;
+
+            // Find assembly name start (skip up to one space if needed)
+            // We ignore everything else (version, publickeytoken, etc...)
+            if (UseShortTypeName)
             {
-                string assemblyName = null;
+                ParseType(typeName, out typeName, out assemblyName);
+            }
+            else
+            {
+                // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                throw new NotSupportedException("UseShortTypeName supports only True.");
+            }
 
-                // Find assembly name start (skip up to one space if needed)
-                // We ignore everything else (version, publickeytoken, etc...)
-                if (UseShortTypeName)
+            Type type = null;
+
+            // Look for type in loaded assemblies
+            foreach (var assembly in lookupAssemblies)
+            {
+                if (assemblyName != null)
                 {
-                    ParseType(typeName, out typeName, out assemblyName);
-                }
-                else
-                {
-                    // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
-                    throw new NotSupportedException("UseShortTypeName supports only True.");
+                    // Check that assembly name match, by comparing up to the first comma
+                    var assemblyFullName = assembly.FullName;
+                    if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
+                        || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
+                    {
+                        continue;
+                    }
                 }
 
-                // Look for type in loaded assemblies
+                type = assembly.GetType(typeName);
+                if (type != null)
+                {
+                    break;
+                }
+            }
+
+            // No type found, let's try again ignoring assembly name (in case a type moved)
+            if (type == null && assemblyName != null)
+            {
                 foreach (var assembly in lookupAssemblies)
                 {
-                    if (assemblyName != null)
-                    {
-                        // Check that assembly name match, by comparing up to the first comma
-                        var assemblyFullName = assembly.FullName;
-                        if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
-                            || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
-                        {
-                            continue;
-                        }
-                    }
-
                     type = assembly.GetType(typeName);
                     if (type != null)
                     {
                         break;
                     }
                 }
-
-                // No type found, let's try again ignoring assembly name (in case a type moved)
-                if (type == null && assemblyName != null)
-                {
-                    foreach (var assembly in lookupAssemblies)
-                    {
-                        type = assembly.GetType(typeName);
-                        if (type != null)
-                        {
-                            break;
-                        }
-                    }
-                }
             }
-            return type;
+
+            // If type wasn't found, we fallback on GetType which will work only for already-loaded assemblies
+            return type ?? Type.GetType(typeName);
         }
 
         public void ParseType(string typeFullName, out string typeName, out string assemblyName)
