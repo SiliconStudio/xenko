@@ -411,7 +411,7 @@ namespace SiliconStudio.Assets.Quantum
             }
             else if(!node.IsNonIdentifiableCollectionContent)
             {
-                overrideValue = e.ChangeType == ContentChangeType.CollectionAdd ? node.GetItemOverride(e.Index) : OverrideType.New;
+                overrideValue = node.GetItemOverride(e.Index);
                 if (e.ChangeType == ContentChangeType.CollectionRemove)
                 {
                     // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
