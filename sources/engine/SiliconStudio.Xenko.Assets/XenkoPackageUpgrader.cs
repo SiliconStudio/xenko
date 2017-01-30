@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Assets
     [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public static readonly string DefaultGraphicsCompositorLevel9Url = "Composers/DefaultGraphicsCompositorLevel9";
-        public static readonly string DefaultGraphicsCompositorLevel10Url = "Composers/DefaultGraphicsCompositorLevel10";
+        public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
+        public static readonly string DefaultGraphicsCompositorLevel10Url = "Compositing/DefaultGraphicsCompositorLevel10";
 
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
@@ -339,7 +339,7 @@ namespace SiliconStudio.Xenko.Assets
                             // If something goes wrong, keep going with the default value
                         }
 
-                        // Add graphics compositor asset by creating a derived asset of Composers/DefaultGraphicsCompositor.xkgfxcomp
+                        // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
                         var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
                         var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
                         if (defaultGraphicsCompositor == null)

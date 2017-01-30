@@ -1,6 +1,6 @@
 ﻿using System;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace JumpyJet
 {
