@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {

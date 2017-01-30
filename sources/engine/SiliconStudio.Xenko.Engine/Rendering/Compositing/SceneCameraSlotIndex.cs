@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// Identifies a camera slotIndex in a scene composition.

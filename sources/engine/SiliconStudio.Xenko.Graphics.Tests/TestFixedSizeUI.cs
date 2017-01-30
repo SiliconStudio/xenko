@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Games;
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             scene.Entities.Add(cameraEntity);
 
             // Use this graphics compositor
-            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false);
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);

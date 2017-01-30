@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {

@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Games;

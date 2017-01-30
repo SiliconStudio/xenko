@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// A collection of <see cref="CameraComponent"/>.

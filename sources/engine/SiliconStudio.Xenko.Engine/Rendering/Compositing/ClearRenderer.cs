@@ -3,7 +3,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Xenko.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     /// <summary>
     /// A renderer to clear a render frame.

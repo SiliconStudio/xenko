@@ -10,7 +10,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Engine
 {

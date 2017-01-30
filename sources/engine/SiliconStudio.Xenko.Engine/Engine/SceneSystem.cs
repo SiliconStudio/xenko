@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Background;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;

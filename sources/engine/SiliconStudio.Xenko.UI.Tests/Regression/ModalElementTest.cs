@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Events;

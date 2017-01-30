@@ -178,16 +178,16 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
-    <Compile Include="Rendering\Composers\ClearRenderer.cs" />
-    <Compile Include="Rendering\Composers\EditorTopLevelCompositor.cs" />
-    <Compile Include="Rendering\Composers\DelegateSceneRenderer.cs" />
-    <Compile Include="Rendering\Composers\ForceAspectRatioSceneRenderer.cs" />
-    <Compile Include="Rendering\Composers\ForwardRenderer.cs" />
-    <Compile Include="Rendering\Composers\GraphicsCompositor.cs" />
-    <Compile Include="Rendering\Composers\RenderTextureSceneRenderer.cs" />
-    <Compile Include="Rendering\Composers\SceneCameraRenderer.cs" />
-    <Compile Include="Rendering\Composers\SceneRendererCollection.cs" />
-    <Compile Include="Rendering\Composers\SingleStageRenderer.cs" />
+    <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
+    <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
+    <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
+    <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
+    <Compile Include="Rendering\Compositing\ForwardRenderer.cs" />
+    <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
+    <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
+    <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
@@ -221,7 +221,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Composers\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
@@ -693,9 +693,9 @@
     </Compile>
     <Compile Include="Engine\Processors\CameraProcessor.cs" />
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
-    <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />
-    <Compile Include="Rendering\Composers\SceneCameraSlotCollection.cs" />
-    <Compile Include="Rendering\Composers\SceneCameraSlotIndex.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlot.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlotCollection.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlotIndex.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract1.cs">
       <AutoGen>True</AutoGen>
@@ -1548,7 +1548,7 @@
     <Compile Include="Rendering\ProceduralModels\TorusProceduralModel.cs" />
     <Compile Include="Rendering\RendererCoreBase.cs" />
     <Compile Include="Rendering\ClearRendererFlags.cs" />
-    <Compile Include="Rendering\Composers\ISceneGraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\ISceneGraphicsCompositor.cs" />
     <Compile Include="Rendering\IEffectMixinProvider.cs" />
     <Compile Include="Rendering\IGraphicsRenderer.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAEffect.cs" />
@@ -3583,7 +3583,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CameraCube.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Composers\SceneGraphicsCompositor.cd" />
+    <None Include="Rendering\Compositing\SceneGraphicsCompositor.cd" />
     <None Include="Rendering\ProceduralModels\ProceduralModels.cd" />
     <None Include="Rendering\Shadows\ShadowGroup.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
