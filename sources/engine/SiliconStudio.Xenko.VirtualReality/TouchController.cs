@@ -1,13 +1,12 @@
 ﻿using System;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public abstract class TouchController : GameSystem
+    public abstract class TouchController : IDisposable
     {
-        public static TouchController GetTouchController(Game game, TouchControllerHand hand, TouchControllerApi[] preferredTouchControllerApis)
+        public static TouchController GetTouchController(TouchControllerHand hand, TouchControllerApi[] preferredTouchControllerApis)
         {
             foreach (var preferredTouchControllerApi in preferredTouchControllerApis)
             {
@@ -17,7 +16,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                         break;
                     case TouchControllerApi.OpenVr:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        return new OpenVrTouchController(game, hand);
+                        return new OpenVrTouchController(hand);
 #endif
                     case TouchControllerApi.Google:
                         break;
@@ -36,16 +35,13 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract DeviceState State { get; }
 
-        protected TouchController(IServiceRegistry registry) : base(registry)
+        protected TouchController()
         {
-            Game.GameSystems.Add(this);
-            UpdateOrder = -10000;
         }
 
-        protected override void Destroy()
+        public virtual void Update(GameTime time)
         {
-            Game.GameSystems.Remove(this);
-            base.Destroy();
+            
         }
 
         public abstract bool IsPressedDown(TouchControllerButton button);
@@ -59,5 +55,10 @@ namespace SiliconStudio.Xenko.VirtualReality
         public abstract bool IsTouched(TouchControllerButton button);
 
         public abstract bool IsTouchReleased(TouchControllerButton button);
+
+        public virtual void Dispose()
+        {
+            
+        }
     }
 }

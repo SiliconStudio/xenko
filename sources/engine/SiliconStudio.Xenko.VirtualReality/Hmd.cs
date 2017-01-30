@@ -1,30 +1,22 @@
 ﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public abstract class Hmd : GameSystem
+    public abstract class Hmd : IDisposable
     {
-        protected Hmd(IServiceRegistry registry) : base(registry)
+        protected Hmd()
         {
-            DrawOrder = -10000;
             ViewScaling = 1.0f;
-            Game.GameSystems.Add(this);
         }
-
-        public virtual Entity CameraRootEntity { get; set; }
-
-        public virtual CameraComponent LeftCameraComponent { get; set; }
-
-        public virtual CameraComponent RightCameraComponent { get; set; }
 
         public abstract Size2 OptimalRenderFrameSize { get; }
 
         public abstract Texture RenderFrame { get; protected set; }
+
+        public abstract Texture RenderFrameDepthStencil { get; protected set; }
 
         public abstract Texture MirrorTexture { get; protected set; }
 
@@ -50,7 +42,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         /// <remarks>This will reduce the near clip plane of the cameras, it might induce depth issues.</remarks>
         public float ViewScaling { get; set; }
 
-        public static Hmd GetHmd(Game game, HmdApi[] preferredApis)
+        public static Hmd GetHmd(HmdApi[] preferredApis)
         {
             foreach (var hmdApi in preferredApis)
             {
@@ -59,38 +51,38 @@ namespace SiliconStudio.Xenko.VirtualReality
                     case HmdApi.Oculus:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new OculusOvrHmd(game.Services);
+                        var device = new OculusOvrHmd();
                         if (device.CanInitialize) return device;
-                        device.Destroy();
+                        device.Dispose();
 #endif
                     }
                         break;
                     case HmdApi.OpenVr:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new OpenVrHmd(game.Services);
+                        var device = new OpenVrHmd();
                         if (device.CanInitialize) return device;
-                        device.Destroy();
+                        device.Dispose();
 #endif
                     }
                         break;
                     case HmdApi.Fove:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new FoveHmd(game.Services);
+                        var device = new FoveHmd();
                         if (device.CanInitialize) return device;
-                        device.Destroy();
+                        device.Dispose();
 #endif
                     }
                         break;
                     case HmdApi.Google:
                     {
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
-                        var device = new GoogleVrHmd(game.Services);
+                        var device = new GoogleVrHmd();
                         if (device.CanInitialize) return device;
-                        device.Destroy();
+                        device.Dispose();
 #endif
-                    }
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -102,23 +94,22 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool CanInitialize { get; }
 
-        public virtual void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
+        public virtual void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
         {
-            CameraRootEntity = cameraRoot;
-            LeftCameraComponent = leftCamera;
-            RightCameraComponent = rightCamera;
-
-            Visible = true;
         }
 
         public virtual void Recenter()
         {
         }
 
-        protected override void Destroy()
+        public virtual void Dispose()
         {
-            Game.GameSystems.Remove(this);
-            base.Destroy();
         }
+
+        public abstract void UpdateEyeParameters(ref Matrix cameraMatrix);
+
+        public abstract void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection);
+
+        public abstract void Commit(CommandList commandList);
     }
 }

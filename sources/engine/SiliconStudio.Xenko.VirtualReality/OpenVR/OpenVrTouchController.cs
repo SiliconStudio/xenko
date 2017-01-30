@@ -2,7 +2,6 @@
 
 using System;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.VirtualReality
@@ -14,10 +13,9 @@ namespace SiliconStudio.Xenko.VirtualReality
         private OpenVR.Controller controller;
         private DeviceState internalState;
 
-        internal OpenVrTouchController(Game game, TouchControllerHand hand) : base(game.Services)
+        internal OpenVrTouchController(TouchControllerHand hand)
         {
             this.hand = (OpenVR.Controller.Hand)hand;
-            Enabled = true;
         }
 
         public override void Update(GameTime gameTime)

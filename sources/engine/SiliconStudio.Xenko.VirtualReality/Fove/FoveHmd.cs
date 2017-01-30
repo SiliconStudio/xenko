@@ -1,12 +1,8 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -14,21 +10,22 @@ namespace SiliconStudio.Xenko.VirtualReality
     {
         private Texture nonSrgbFrame;
         private readonly Matrix referenceMatrix = Matrix.RotationZ(MathUtil.Pi);
-        private readonly Matrix referenceMatrixInv = Matrix.RotationZ(MathUtil.Pi);
+        private Matrix referenceMatrixInv;
 
         private const float HalfIpd = 0.06f;
         private const float EyeHeight = 0.08f;
         private const float EyeForward = -0.04f;
 
-        public FoveHmd(IServiceRegistry registry) : base(registry)
+        public FoveHmd()
         {
+            referenceMatrixInv = Matrix.RotationZ(MathUtil.Pi);
             referenceMatrixInv.Invert();
         }
 
-        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
+        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
         {
-            RenderFrame = Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            nonSrgbFrame = Texture.New2D(GraphicsDevice, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             if (requireMirror)
             {
                 MirrorTexture = RenderFrame; //assign the surface we submit as mirror if needed
@@ -50,61 +47,70 @@ namespace SiliconStudio.Xenko.VirtualReality
 //                Fove.Commit();
 //            }));
 
-            leftCamera.UseCustomProjectionMatrix = true;
-            rightCamera.UseCustomProjectionMatrix = true;
-            leftCamera.UseCustomViewMatrix = true;
-            rightCamera.UseCustomViewMatrix = true;
-            leftCamera.NearClipPlane *= ViewScaling;
-            rightCamera.NearClipPlane *= ViewScaling;
-
-            base.Initialize(cameraRoot, leftCamera, rightCamera, requireMirror);
+            base.Initialize(device, requireMirror);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void UpdateEyeParameters(ref Matrix cameraMatrix)
         {
-            var properties = new Fove.FrameProperties
-            {
-                Near = LeftCameraComponent.NearClipPlane,
-                Far = LeftCameraComponent.FarClipPlane
-            };
-            Fove.PrepareRender(ref properties);
-
-            properties.ProjLeft.Transpose();
-            properties.ProjRight.Transpose();
-
-            Vector3 scale, camPos;
-            Quaternion camRot;
-
-            //have to make sure it's updated now
-            CameraRootEntity.Transform.UpdateWorldMatrix();
-            CameraRootEntity.Transform.WorldMatrix.Decompose(out scale, out camRot, out camPos);
-
-            LeftCameraComponent.ProjectionMatrix = properties.ProjLeft;
-
-            var pos = camPos + (new Vector3(-HalfIpd * 0.5f, EyeHeight, EyeForward) * ViewScaling);
-            var posV = pos + Vector3.Transform(properties.Pos * ViewScaling, camRot);
-            var rotV = referenceMatrix * Matrix.RotationQuaternion(properties.Rot) * referenceMatrixInv * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
-            var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotV);
-            var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotV);
-            var view = Matrix.LookAtRH(posV, posV + finalForward, finalUp);
-            LeftCameraComponent.ViewMatrix = view;
-
-            RightCameraComponent.ProjectionMatrix = properties.ProjRight;
-
-            pos = camPos + (new Vector3(HalfIpd * 0.5f, EyeHeight, EyeForward) * ViewScaling);
-            posV = pos + Vector3.Transform(properties.Pos * ViewScaling, camRot);
-            rotV = referenceMatrix * Matrix.RotationQuaternion(properties.Rot) * referenceMatrixInv * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
-            finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotV);
-            finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotV);
-            view = Matrix.LookAtRH(posV, posV + finalForward, finalUp);
-            RightCameraComponent.ViewMatrix = view;
-
-            base.Draw(gameTime);
+            throw new System.NotImplementedException();
         }
+
+        public override void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Commit(CommandList commandList)
+        {
+            throw new System.NotImplementedException();
+        }
+
+//        public override void Draw(GameTime gameTime)
+//        {
+//            var properties = new Fove.FrameProperties
+//            {
+//                Near = LeftCameraComponent.NearClipPlane,
+//                Far = LeftCameraComponent.FarClipPlane
+//            };
+//            Fove.PrepareRender(ref properties);
+//
+//            properties.ProjLeft.Transpose();
+//            properties.ProjRight.Transpose();
+//
+//            Vector3 scale, camPos;
+//            Quaternion camRot;
+//
+//            //have to make sure it's updated now
+//            CameraRootEntity.Transform.UpdateWorldMatrix();
+//            CameraRootEntity.Transform.WorldMatrix.Decompose(out scale, out camRot, out camPos);
+//
+//            LeftCameraComponent.ProjectionMatrix = properties.ProjLeft;
+//
+//            var pos = camPos + (new Vector3(-HalfIpd * 0.5f, EyeHeight, EyeForward) * ViewScaling);
+//            var posV = pos + Vector3.Transform(properties.Pos * ViewScaling, camRot);
+//            var rotV = referenceMatrix * Matrix.RotationQuaternion(properties.Rot) * referenceMatrixInv * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
+//            var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotV);
+//            var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotV);
+//            var view = Matrix.LookAtRH(posV, posV + finalForward, finalUp);
+//            LeftCameraComponent.ViewMatrix = view;
+//
+//            RightCameraComponent.ProjectionMatrix = properties.ProjRight;
+//
+//            pos = camPos + (new Vector3(HalfIpd * 0.5f, EyeHeight, EyeForward) * ViewScaling);
+//            posV = pos + Vector3.Transform(properties.Pos * ViewScaling, camRot);
+//            rotV = referenceMatrix * Matrix.RotationQuaternion(properties.Rot) * referenceMatrixInv * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
+//            finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotV);
+//            finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotV);
+//            view = Matrix.LookAtRH(posV, posV + finalForward, finalUp);
+//            RightCameraComponent.ViewMatrix = view;
+//
+//            base.Draw(gameTime);
+//        }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2560, 1440);
 
         public override Texture RenderFrame { get; protected set; }
+        public override Texture RenderFrameDepthStencil { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

@@ -4,11 +4,9 @@ using System;
 using SharpDX.Direct3D11;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using CommandList = SiliconStudio.Xenko.Graphics.CommandList;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -21,18 +19,18 @@ namespace SiliconStudio.Xenko.VirtualReality
         private IntPtr ovrSession;
         private Texture[] textures;
 
-        public OculusOvrHmd(IServiceRegistry registry) : base(registry)
+        public OculusOvrHmd()
         {         
         }
 
-        public override void Initialize(Entity cameraRoot, CameraComponent leftCamera, CameraComponent rightCamera, bool requireMirror = false)
+        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
             //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString();
 
             int texturesCount;
-            if (!OculusOvr.CreateTexturesDx(ovrSession, GraphicsDevice.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
+            if (!OculusOvr.CreateTexturesDx(ovrSession, device.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
             {
                 throw new Exception(OculusOvr.GetError());
             }
@@ -40,7 +38,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             if (requireMirror)
             {
                 var mirrorTex = OculusOvr.GetMirrorTexture(ovrSession, Dx11Texture2DGuid);
-                MirrorTexture = new Texture(GraphicsDevice);
+                MirrorTexture = new Texture(device);
                 MirrorTexture.InitializeFrom(new Texture2D(mirrorTex), false);
             }
 
@@ -54,11 +52,11 @@ namespace SiliconStudio.Xenko.VirtualReality
                     throw new Exception(OculusOvr.GetError());
                 }
 
-                textures[i] = new Texture(GraphicsDevice);
+                textures[i] = new Texture(device);
                 textures[i].InitializeFrom(new Texture2D(ptr), false);
             }
 
-            RenderFrame = Texture.New2D(GraphicsDevice, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            RenderFrame = Texture.New2D(device, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
 //            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
 //            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
@@ -69,56 +67,50 @@ namespace SiliconStudio.Xenko.VirtualReality
 //                OculusOvr.CommitFrame(ovrSession, null, 0);
 //            }));
 
-            leftCamera.UseCustomProjectionMatrix = true;
-            rightCamera.UseCustomProjectionMatrix = true;
-            leftCamera.UseCustomViewMatrix = true;
-            rightCamera.UseCustomViewMatrix = true;
-            leftCamera.NearClipPlane *= ViewScaling;
-            rightCamera.NearClipPlane *= ViewScaling;
-
-            base.Initialize(cameraRoot, leftCamera, rightCamera, requireMirror);
+            base.Initialize(device, requireMirror);
         }
 
-        public override void Draw(GameTime gameTime)
-        {
-            var frameProperties = new OculusOvr.FrameProperties
-            {
-                Near = LeftCameraComponent.NearClipPlane,
-                Far = LeftCameraComponent.FarClipPlane
-            };
-            OculusOvr.PrepareRender(ovrSession, ref frameProperties);
-
-            Vector3 scale, camPos;
-            Quaternion camRot;
-
-            //have to make sure it's updated now
-            CameraRootEntity.Transform.UpdateWorldMatrix();
-            CameraRootEntity.Transform.WorldMatrix.Decompose(out scale, out camRot, out camPos);
-
-            LeftCameraComponent.ProjectionMatrix = frameProperties.ProjLeft;
-
-            var posL = camPos + Vector3.Transform(frameProperties.PosLeft * ViewScaling, camRot);
-            var rotL = Matrix.RotationQuaternion(frameProperties.RotLeft) * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
-            var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotL);
-            var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotL);
-            var view = Matrix.LookAtRH(posL, posL + finalForward, finalUp);
-            LeftCameraComponent.ViewMatrix = view;
-
-            RightCameraComponent.ProjectionMatrix = frameProperties.ProjRight;
-
-            var posR = camPos + Vector3.Transform(frameProperties.PosRight * ViewScaling, camRot);
-            var rotR = Matrix.RotationQuaternion(frameProperties.RotRight) * Matrix.Scaling(ViewScaling) *  Matrix.RotationQuaternion(camRot);
-            finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotR);
-            finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotR);
-            view = Matrix.LookAtRH(posR, posR + finalForward, finalUp);
-            RightCameraComponent.ViewMatrix = view;
-
-            base.Draw(gameTime);
-        }
+//        public override void Draw(GameTime gameTime)
+//        {
+//            var frameProperties = new OculusOvr.FrameProperties
+//            {
+//                Near = LeftCameraComponent.NearClipPlane,
+//                Far = LeftCameraComponent.FarClipPlane
+//            };
+//            OculusOvr.PrepareRender(ovrSession, ref frameProperties);
+//
+//            Vector3 scale, camPos;
+//            Quaternion camRot;
+//
+//            //have to make sure it's updated now
+//            CameraRootEntity.Transform.UpdateWorldMatrix();
+//            CameraRootEntity.Transform.WorldMatrix.Decompose(out scale, out camRot, out camPos);
+//
+//            LeftCameraComponent.ProjectionMatrix = frameProperties.ProjLeft;
+//
+//            var posL = camPos + Vector3.Transform(frameProperties.PosLeft * ViewScaling, camRot);
+//            var rotL = Matrix.RotationQuaternion(frameProperties.RotLeft) * Matrix.Scaling(ViewScaling) * Matrix.RotationQuaternion(camRot);
+//            var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotL);
+//            var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotL);
+//            var view = Matrix.LookAtRH(posL, posL + finalForward, finalUp);
+//            LeftCameraComponent.ViewMatrix = view;
+//
+//            RightCameraComponent.ProjectionMatrix = frameProperties.ProjRight;
+//
+//            var posR = camPos + Vector3.Transform(frameProperties.PosRight * ViewScaling, camRot);
+//            var rotR = Matrix.RotationQuaternion(frameProperties.RotRight) * Matrix.Scaling(ViewScaling) *  Matrix.RotationQuaternion(camRot);
+//            finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rotR);
+//            finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rotR);
+//            view = Matrix.LookAtRH(posR, posR + finalForward, finalUp);
+//            RightCameraComponent.ViewMatrix = view;
+//
+//            base.Draw(gameTime);
+//        }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
 
         public override Texture RenderFrame { get; protected set; }
+        public override Texture RenderFrameDepthStencil { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 
@@ -162,6 +154,21 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override void Recenter()
         {
             OculusOvr.Recenter(ovrSession);
+        }
+
+        public override void UpdateEyeParameters(ref Matrix cameraMatrix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Commit(CommandList commandList)
+        {
+            throw new NotImplementedException();
         }
     }
 }
