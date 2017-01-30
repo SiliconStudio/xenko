@@ -155,7 +155,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var settings = new SerializerSettings();
             settings.RegisterAssembly(typeof(SerializationTests).Assembly);
 
-            var serializer = new Serializer();
+            var serializer = new Serializer(settings);
             object result = serializer.Deserialize(YamlFile("explicitType.yaml"), typeof(object));
 
             Assert.True(typeof(Z).IsAssignableFrom(result.GetType()));
@@ -178,7 +178,10 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
         [Test]
         public void DeserializeExplicitDictionary()
         {
-            var serializer = new Serializer();
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(SerializationTests).Assembly);
+
+            var serializer = new Serializer(settings);
             object result = serializer.Deserialize(YamlFile("dictionaryExplicit.yaml"));
 
             Assert.True(typeof(IDictionary<string, int>).IsAssignableFrom(result.GetType()), "The deserialized object has the wrong type.");
@@ -337,6 +340,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             var buffer = new StringWriter();
             var x = new SomeCustomType("Yo");
             var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(SerializationTests).Assembly);
             settings.SerializerFactorySelector.TryAddFactory(new CustomTypeConverter());
             var serializer = new Serializer(settings);
             serializer.Serialize(buffer, x);

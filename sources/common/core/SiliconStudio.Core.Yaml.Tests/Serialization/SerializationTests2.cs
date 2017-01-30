@@ -150,7 +150,9 @@ Value: World!
         [Test]
         public void TestSimpleStructWithDefaultValues()
         {
-            var serializer = new Serializer();
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(SerializationTests2).Assembly);
+            var serializer = new Serializer(settings);
 
             var value = new TestStructWithDefaultValues();
             var text = serializer.Serialize(value);
@@ -942,6 +944,7 @@ Value: 0
         public void TestEmitShortTypeName()
         {
             var settings = new SerializerSettings() {EmitShortTypeName = true};
+            settings.RegisterAssembly(typeof(SerializationTests2).Assembly);
             SerialRoundTrip(settings, new ClassWithObjectAndScalar());
         }
 
@@ -956,6 +959,7 @@ Value: 0
         public void TestClassWithChars()
         {
             var settings = new SerializerSettings() {EmitShortTypeName = true};
+            settings.RegisterAssembly(typeof(SerializationTests2).Assembly);
             SerialRoundTrip(settings, new ClassWithChars()
             {
                 Start = ' ',
@@ -969,6 +973,7 @@ Value: 0
             for (int i = 0; i < 32; i++)
             {
                 var settings = new SerializerSettings() { EmitShortTypeName = true };
+                settings.RegisterAssembly(typeof(SerializationTests2).Assembly);
                 SerialRoundTrip(settings, new ClassWithChars()
                 {
                     Start = (char) i,
