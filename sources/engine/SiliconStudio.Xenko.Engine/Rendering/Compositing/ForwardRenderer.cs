@@ -18,13 +18,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         public bool Enabled { get; set; }
 
-        public List<HmdApi> RequiredApis { get; } = new List<HmdApi>();
+        public List<VRApi> RequiredApis { get; } = new List<VRApi>();
 
         [DataMemberIgnore]
         internal RenderView[] RenderViews = { new RenderView(), new RenderView() };
 
         [DataMemberIgnore]
-        internal Hmd Hmd;
+        internal VRDevice Hmd;
     }
 
     /// <summary>
@@ -81,14 +81,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 try
                 {
-                    VrSettings.Hmd = Hmd.GetHmd(VrSettings.RequiredApis.ToArray());
+                    VrSettings.Hmd = VRDevice.GetVRDevice(Services, VrSettings.RequiredApis.ToArray());
                     VrSettings.Hmd.Initialize(GraphicsDevice, BindDepthAsResourceDuringTransparentRendering, false);
                 }
                 catch (NoHmdDeviceException)
                 {
                     VrSettings.Enabled = false;
                     throw;
-                }               
+                }      
             }
         }
 
@@ -106,7 +106,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 if (VrSettings.Enabled)
                 {
-                    VrSettings.Hmd.UpdateEyeParameters(ref camera.Entity.Transform.WorldMatrix);
+                    Vector3 cameraPos, cameraScale;
+                    Matrix cameraRot;
+                    camera.Entity.Transform.WorldMatrix.Decompose(out cameraScale, out cameraRot, out cameraPos);
 
                     for (var i = 0; i < 2; i++)
                     {
@@ -114,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         VrSettings.RenderViews[i].SceneInstance = context.RenderView.SceneInstance;
 
                         //change camera params for eye
-                        VrSettings.Hmd.ReadEyeParameters(i, camera.NearClipPlane, camera.FarClipPlane, out camera.ViewMatrix, out camera.ProjectionMatrix);
+                        VrSettings.Hmd.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
                         camera.UseCustomProjectionMatrix = true;
                         camera.UseCustomViewMatrix = true;
                         camera.Update();
@@ -166,7 +168,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         private void DrawView(RenderContext context, RenderDrawContext drawContext, RenderView currentRenderView, Texture renderTarget, Texture currentDepthStencil, Texture currentRenderTarget)
         {
-            var renderSystem = drawContext.RenderContext.RenderSystem;
+            var renderSystem = context.RenderSystem;
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
@@ -217,11 +219,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
 
                 // Run post effects
-                if (PostEffects != null)
-                {
-                    // TODO: output in proper renderTarget location according to viewport
-                    PostEffects.Draw(drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
-                }
+                // TODO: output in proper renderTarget location according to viewport
+                PostEffects?.Draw(drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
             }
         }
 
