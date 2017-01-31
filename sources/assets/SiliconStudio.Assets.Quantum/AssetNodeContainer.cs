@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <inheritdoc/>
         public IContentNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
         {
-            var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj) as ReferenceEnumerable;
+            var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj, false) as ReferenceEnumerable;
             return new AssetObjectNode(obj, guid, descriptor, isPrimitive, reference);
         }
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <inheritdoc/>
         public IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
         {
-            var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
+            var reference = nodeBuilder.CreateReferenceForNode(member.Type, value, true);
             return new AssetMemberNode(nodeBuilder, guid, parent, member, isPrimitive, reference);
         }
     }

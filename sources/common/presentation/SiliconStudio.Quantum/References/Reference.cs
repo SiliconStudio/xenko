@@ -11,7 +11,8 @@ namespace SiliconStudio.Quantum.References
     {
         private static readonly ThreadLocal<int> CreatingReference = new ThreadLocal<int>();
 
-        internal static IReference CreateReference(object objectValue, Type objectType, Index index)
+        [Obsolete("This method will be rewritten to handle separately the different types of references")]
+        internal static IReference CreateReference(object objectValue, Type objectType, Index index, bool isMember)
         {
             if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"objectValue type does not match objectType", nameof(objectValue));
 
@@ -22,13 +23,20 @@ namespace SiliconStudio.Quantum.References
 
             IReference reference;
             var isCollection = HasCollectionReference(objectValue?.GetType() ?? objectType);
-            if (objectValue != null && isCollection && index.IsEmpty)
+            if (isMember)
             {
-                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType);
+                reference = new ObjectReference(objectValue, objectType, index);
             }
             else
             {
-                reference = new ObjectReference(objectValue, objectType, index);
+                if (objectValue != null && isCollection && index.IsEmpty)
+                {
+                    reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType);
+                }
+                else
+                {
+                    reference = null;
+                }
             }
 
             --CreatingReference.Value;

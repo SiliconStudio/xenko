@@ -186,22 +186,9 @@ namespace SiliconStudio.Quantum
             content.Seal();
         }
 
-        public IReference CreateReferenceForNode(Type type, object value)
+        public IReference CreateReferenceForNode(Type type, object value, bool isMember)
         {
-            // We don't create references for primitive types
-            if (IsPrimitiveType(type))
-                return null;
-
-            // At this point it is either a struct, a reference type or a collection
-            var descriptor = TypeDescriptorFactory.Find(value?.GetType());
-            var valueType = GetElementValueType(descriptor);
-
-            // We don't create references for collection of primitive types
-            if (IsPrimitiveType(valueType))
-                return null;
-
-            // In any other case, we create a reference
-            return Reference.CreateReference(value, type, Index.Empty);
+            return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, isMember) : null;
         }
 
         private void PushContextNode(IInitializingGraphNode node)

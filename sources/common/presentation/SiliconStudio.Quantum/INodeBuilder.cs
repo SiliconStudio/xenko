@@ -84,6 +84,6 @@ namespace SiliconStudio.Quantum
         /// <param name="type">The type.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        IReference CreateReferenceForNode(Type type, object value);
+        IReference CreateReferenceForNode(Type type, object value, bool isMember);
     }
 }

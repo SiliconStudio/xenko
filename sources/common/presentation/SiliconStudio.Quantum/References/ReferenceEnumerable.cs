@@ -75,7 +75,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = GetKey(item);
-                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(GetValue(item), ElementType, key, true);
                     newReferences.Add(key, value);
                 }
             }
@@ -85,7 +85,7 @@ namespace SiliconStudio.Quantum.References
                 foreach (var item in (IEnumerable)ObjectValue)
                 {
                     var key = new Index(i);
-                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key);
+                    var value = (ObjectReference)Reference.CreateReference(item, ElementType, key, true);
                     newReferences.Add(key, value);
                     ++i;
                 }
