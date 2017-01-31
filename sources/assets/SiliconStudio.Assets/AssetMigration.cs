@@ -130,7 +130,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion < expectedVersion)
             {
                 // Perform asset upgrade
-                context.Log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                context.Log.Verbose($"{Path.GetFullPath(assetFullPath)} needs update, from version {serializedVersion} to version {expectedVersion}");
 
                 using (var yamlAsset = loadAsset.AsYamlAsset())
                 {
@@ -173,7 +173,7 @@ namespace SiliconStudio.Assets
                         throw new InvalidOperationException($"Asset of type {assetType} was migrated, but still its new version {newSerializedVersion} doesn't match expected version {expectedVersion}.");
                     }
 
-                    context.Log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
+                    context.Log.Verbose($"{Path.GetFullPath(assetFullPath)} updated from version {serializedVersion} to version {expectedVersion}");
                 }
 
                 return true;

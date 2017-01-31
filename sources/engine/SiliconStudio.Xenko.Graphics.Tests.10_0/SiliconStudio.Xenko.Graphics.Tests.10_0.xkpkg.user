@@ -27,8 +27,8 @@ Settings:
     Package/Scene/TranslationSnapValue: 1.0
     Package/SceneSettings:
         b47e4609-0125-41bd-a26e-0fdf9184327e:
-            CamPosition: {X: 3.96640515, Y: 3.77555871, Z: 4.21685}
-            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
+            CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
+            CamPitchYaw: {X: -0.7235346, Y: 0.8656802}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
@@ -41,8 +41,10 @@ Settings:
             RotationSnapValue: 22.5
             ScaleSnapActive: false
             ScaleSnapValue: 1.1
+            SceneUnit: 1.0
             SelectionMaskVisible: true
             GridVisible: true
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
             CameraPreviewVisible: true
             RenderMode: Lighting
             ActiveStream: 
@@ -68,8 +70,10 @@ Settings:
             RotationSnapValue: 22.5
             ScaleSnapActive: false
             ScaleSnapValue: 1.1
+            SceneUnit: 1.0
             SelectionMaskVisible: true
             GridVisible: true
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
             CameraPreviewVisible: true
             RenderMode: SingleStream
             ActiveStream: Color Base

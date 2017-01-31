@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var sourceBuildStep = ImportModelCommand.Create(extension);
             if (sourceBuildStep == null)
             {
-                result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                result.Error($"No importer found for model extension '{extension}. The model '{assetSource}' can't be imported.");
                 return;
             }
 
@@ -46,6 +46,16 @@ namespace SiliconStudio.Xenko.Assets.Models
             sourceBuildStep.Location = targetUrlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
+            if (asset.ClipDuration.Enabled)
+            {
+                sourceBuildStep.StartFrame = asset.ClipDuration.StartAnimationTime;
+                sourceBuildStep.EndFrame = asset.ClipDuration.EndAnimationTime;
+            }
+            else
+            {
+                sourceBuildStep.StartFrame = TimeSpan.Zero;
+                sourceBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+            }
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.PivotPosition = asset.PivotPosition;
             sourceBuildStep.SkeletonUrl = skeleton?.Location;
@@ -72,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var baseBuildStep = ImportModelCommand.Create(extension);
                 if (baseBuildStep == null)
                 {
-                    result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", baseExtension, baseAssetSource);
+                    result.Error($"No importer found for model extension '{baseExtension}. The model '{baseAssetSource}' can't be imported.");
                     return;
                 }
 
@@ -81,6 +91,18 @@ namespace SiliconStudio.Xenko.Assets.Models
                 baseBuildStep.Location = baseUrlInStorage;
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
+
+                if (diffAnimationAsset.ClipDuration.Enabled)
+                {
+                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
+                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
+                }
+                else
+                {
+                    baseBuildStep.StartFrame = TimeSpan.Zero;
+                    baseBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+                }
+
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.PivotPosition = asset.PivotPosition;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;

@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 6736d805-6194-40bf-8056-7c52758e2e4b
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            df9dba2d5fa79546b491465de66097a7:
-                Name: null
-                Camera: b5279763-d0ee-4fc2-bf4c-710ff412bd93/794a9a18-82e3-4894-aeaa-84772e97d29e
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                d98b310606d4a84db157a9fd3118db61: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                6df645d5674afb46b8b3c9c39aef7cb3: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - b5279763-d0ee-4fc2-bf4c-710ff412bd93
@@ -224,19 +198,20 @@ Hierarchy:
                     566f060bf906e54f9319be71331e8664: !AnimationComponent
                         Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations: {}
-                        PlayingAnimations:
-                            b19a00ab4812c34b942e31cf2d59e519:
-                                Name: Slash
-                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     bbb13d0841522b4c9d52900851b0ea99: !ParticlesSample.RotateEntity,ParticlesSample.Game
                         Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials: {}
+                    725fa3168f7c22738b4755b40da6230e: !ParticlesSample.AnimationStart,ParticlesSample.Game
+                        Id: 873057af-b46e-4a32-9778-a0645e6f4e25
+                        Animations:
+                            67b37ff0bd92d1276e3119efeff8e1e2:
+                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
+                        Target: null
         -   Entity:
                 Id: 129c81f3-ab34-4783-a889-557620d798d9
                 Name: curvedStand
@@ -546,19 +521,20 @@ Hierarchy:
                     566f060bf906e54f9319be71331e8664: !AnimationComponent
                         Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations: {}
-                        PlayingAnimations:
-                            b19a00ab4812c34b942e31cf2d59e519:
-                                Name: Slash
-                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     bbb13d0841522b4c9d52900851b0ea99: !ParticlesSample.RotateEntity,ParticlesSample.Game
                         Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials: {}
+                    b16435397d9cb4ffc46d4bc1748ccb1a: !ParticlesSample.AnimationStart,ParticlesSample.Game
+                        Id: b57770c0-2dc1-4c7e-8d14-ae4813c3f360
+                        Animations:
+                            de4cf0b85c6c6c684c47903102249e48:
+                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
+                        Target: null
         -   Entity:
                 Id: 6b65e133-4d5e-49ed-9af9-8949cfe883ce
                 Name: Directional light
@@ -1082,9 +1058,11 @@ Hierarchy:
                         Children: {}
                     189a4a79e3829448aeaa84772e97d29e: !CameraComponent
                         Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+                        Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
+                        Slot: {Index: 0}
         -   Entity:
                 Id: bb339fa8-eea4-497d-a251-030c192d0ac3
                 Name: SwordModel
@@ -1119,19 +1097,20 @@ Hierarchy:
                     566f060bf906e54f9319be71331e8664: !AnimationComponent
                         Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations: {}
-                        PlayingAnimations:
-                            b19a00ab4812c34b942e31cf2d59e519:
-                                Name: Slash
-                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     bbb13d0841522b4c9d52900851b0ea99: !ParticlesSample.RotateEntity,ParticlesSample.Game
                         Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials: {}
+                    b0bcfb70271f0963d284080b54b876ae: !ParticlesSample.AnimationStart,ParticlesSample.Game
+                        Id: aa9eb17f-9040-4101-bf17-7692d6f407cf
+                        Animations:
+                            41b98d0294e6b724dac39410a5973b52:
+                                Clip: b5583c0c-d476-4f03-b8df-fb0f7fc27405:Animations/Sword_R
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
+                        Target: null
         -   Entity:
                 Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
                 Name: LoopingRibbons
@@ -1148,19 +1127,20 @@ Hierarchy:
                     566f060bf906e54f9319be71331e8664: !AnimationComponent
                         Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations: {}
-                        PlayingAnimations:
-                            87952be10db30e48aa91f929b65c61c0:
-                                Name: null
-                                Clip: 95f54d40-98c6-43ed-9682-73ae114a238b:Animations/Run
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     bbb13d0841522b4c9d52900851b0ea99: !ParticlesSample.RotateEntity,ParticlesSample.Game
                         Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
                     9433f15293f3e74998b1356161a493f4: !ModelComponent
                         Id: 52f13394-f393-49e7-98b1-356161a493f4
                         Model: f576f6eb-4550-4684-ad23-2b93f72f17d7:Models/Character
                         Materials: {}
+                    fa48a3a39209ae53db0df3e4276eb79a: !ParticlesSample.AnimationStart,ParticlesSample.Game
+                        Id: 23c0d5ef-fc4d-4181-8422-5e2446fc08bb
+                        Animations:
+                            980c9eff2405540f4b6ecfd423bc406a:
+                                Clip: 95f54d40-98c6-43ed-9682-73ae114a238b:Animations/Run
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
+                        Target: null
         -   Entity:
                 Id: ca05946c-cce2-4970-8d8b-56b28c19e01e
                 Name: RightShoulder

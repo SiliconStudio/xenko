@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -38,7 +37,7 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="parameter">The parameter of the command.</param>
         /// <returns>A task that complete when the command execution is done.</returns>
         /// <remarks>A command can execute asynchronous code and is not guaranteed to complete immediately.</remarks>
-        Task Execute(IContent content, Index index, object parameter);
+        Task Execute(IContentNode content, Index index, object parameter);
 
         /// <summary>
         /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).

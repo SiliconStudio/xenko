@@ -3,6 +3,7 @@ Id: f9e201c3-811f-4bbb-994d-9fe349efeea3
 SerializedVersion: {Xenko: 1.6.1-alpha01}
 Tags: []
 DefaultScene: 2ae86742-ad72-46d3-a6b6-4358ea99b7a6:MainScene
+GraphicsCompositor: 04f2bdc0-d433-4e47-9480-28cd1f0af385:GraphicsCompositor
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 1280

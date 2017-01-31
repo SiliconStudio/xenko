@@ -2,13 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 
+using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -23,13 +26,10 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class SceneSystem : GameSystemBase
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SceneSystem");
+
         private RenderContext renderContext;
         private RenderDrawContext renderDrawContext;
-
-        /// <summary>
-        /// The main render frame of the scene system
-        /// </summary>
-        public RenderFrame MainRenderFrame { get; set; }
 
         private int previousWidth;
         private int previousHeight;
@@ -45,6 +45,7 @@ namespace SiliconStudio.Xenko.Engine
             registry.AddService(typeof(SceneSystem), this);
             Enabled = true;
             Visible = true;
+            GraphicsCompositor = new GraphicsCompositor();
         }
 
         /// <summary>
@@ -59,6 +60,10 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public string InitialSceneUrl { get; set; }
 
+        public string InitialGraphicsCompositorUrl { get; set; }
+
+        public GraphicsCompositor GraphicsCompositor { get; set; }
+
         protected override void LoadContent()
         {
             var assetManager = Services.GetSafeServiceAs<ContentManager>();
@@ -70,15 +75,9 @@ namespace SiliconStudio.Xenko.Engine
                 SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(InitialSceneUrl));
             }
 
-            if (MainRenderFrame == null)
+            if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
             {
-                // TODO GRAPHICS REFACTOR Check if this is a good idea to use Presenter targets
-                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter?.BackBuffer, GraphicsDevice.Presenter?.DepthStencilBuffer);
-                if (MainRenderFrame != null)
-                {
-                    previousWidth = MainRenderFrame.Width;
-                    previousHeight = MainRenderFrame.Height;
-                }
+                GraphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
             // Create the drawing context
@@ -99,39 +98,46 @@ namespace SiliconStudio.Xenko.Engine
 
         public override void Update(GameTime gameTime)
         {
-            if (SceneInstance != null)
-            {
-                SceneInstance.Update(gameTime);
-            }
+            // Execute Update step of SceneInstance
+            // This will run entity processors
+            SceneInstance?.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            if (SceneInstance == null || MainRenderFrame == null)
-            {
-                return;
-            }
-
             // Reset the context
             renderContext.Reset();
 
+            var renderTarget = renderDrawContext.CommandList.RenderTarget;
+
             // If the width or height changed, we have to recycle all temporary allocated resources.
             // NOTE: We assume that they are mostly resolution dependent.
-            if (previousWidth != MainRenderFrame.Width || previousHeight != MainRenderFrame.Height)
+            if (previousWidth != renderTarget.ViewWidth || previousHeight != renderTarget.ViewHeight)
             {
                 // Force a recycle of all allocated temporary textures
                 renderContext.Allocator.Recycle(link => true);
             }
 
-            previousWidth = MainRenderFrame.Width;
-            previousHeight = MainRenderFrame.Height;
+            previousWidth = renderTarget.ViewWidth;
+            previousHeight = renderTarget.ViewHeight;
 
             // Update the entities at draw time.
             renderContext.Time = gameTime;
-            SceneInstance.Draw(renderContext);
+
+            // Execute Draw step of SceneInstance
+            // This will run entity processors
+            SceneInstance?.Draw(renderContext);
 
             // Render phase
-            SceneInstance.Draw(renderDrawContext, MainRenderFrame);
+            // TODO GRAPHICS REFACTOR
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
+            //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+            // Push context (pop after using)
+            using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
+            {
+                GraphicsCompositor?.Draw(renderDrawContext);
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 
@@ -49,20 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             lightEntity.Transform.Position = new Vector3(0, 2.0f, 0);
             lightEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(-70)) * Quaternion.RotationY(MathUtil.DegreesToRadians(30));
 
-            var sceneAsset = new SceneAsset
-            {
-                SceneSettings =
-                {
-                    // Setup Graphics Compositor
-                    GraphicsCompositor = new SceneGraphicsCompositorLayers
-                    {
-                        Cameras =
-                        {
-                            cameraEntity.Get<CameraComponent>(),
-                        },
-                    }
-                }
-            };
+            var sceneAsset = new SceneAsset();
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(cameraEntity));
             sceneAsset.Hierarchy.RootPartIds.Add(cameraEntity.Id);
@@ -102,11 +89,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(ambientLight));
             sceneAsset.Hierarchy.RootPartIds.Add(ambientLight.Id);
 
-            // Clear and render scene
-            var graphicsCompositorLayers = (SceneGraphicsCompositorLayers)sceneAsset.SceneSettings.GraphicsCompositor;
-            graphicsCompositorLayers.Master.Add(new ClearRenderFrameRenderer());
-            graphicsCompositorLayers.Master.Add(new SceneCameraRenderer());
-
             return sceneAsset;
         }
 
@@ -132,50 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 Intensity = 0.25f,
                 Type = new LightSkybox(),
             });
-
-            // Switch editor settings to HDR mode
-            var hdrSettings = new SceneEditorGraphicsModeHDRSettings();
-            hdrSettings.PostProcessingEffects.DisableAll();
-
-            // enable only the tonemap
-            hdrSettings.PostProcessingEffects.ColorTransforms.Enabled = true;
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new ToneMap());
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new FilmGrain { Enabled = false });
-            hdrSettings.PostProcessingEffects.ColorTransforms.Transforms.Add(new Vignetting { Enabled = false });
-            sceneAsset.SceneSettings.EditorSettings.Mode = hdrSettings;
-
-            // Add separate layer for rendering to HDR
-            var graphicsCompositorLayers = (SceneGraphicsCompositorLayers)sceneAsset.SceneSettings.GraphicsCompositor;
-            graphicsCompositorLayers.Layers.Add(new SceneGraphicsLayer
-            {
-                Output = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR } },
-                Renderers =
-                    {
-                        new ClearRenderFrameRenderer(),
-                        new SceneCameraRenderer(),
-                    }
-            });
-
-            // Also add post effects
-            graphicsCompositorLayers.Master.Add(new SceneEffectRenderer
-            {
-                Effect = new PostProcessingEffects
-                {
-                    // Disable DoF and setup default tone mapping
-                    AmbientOcclusion = { Enabled = false },
-                    DepthOfField = { Enabled = false },
-                    ColorTransforms =
-                        {
-                            Transforms =
-                            {
-                                new ToneMap(),
-                                new FilmGrain { Enabled = false },
-                                new Vignetting { Enabled =  false },
-                            }
-                        }
-                }
-            });
-
+            
             return sceneAsset;
         }
 

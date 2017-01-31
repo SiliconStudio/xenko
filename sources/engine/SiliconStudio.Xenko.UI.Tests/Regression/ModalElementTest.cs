@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Events;
@@ -42,6 +43,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             sprites = Content.Load<SpriteSheet>("UIImages");
+
+            // Also draw a texture during the clear renderer
+            // TODO: Use a custom compositor as soon as we have visual scripting?
+            var forwardRenderer = (ForwardRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.Game).Child;
+            forwardRenderer.Clear = new ClearAndDrawTextureRenderer { Color = forwardRenderer.Clear.Color, Texture = sprites["GameScreen"].Texture };
 
             var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
@@ -125,13 +131,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Remove(modal2);
         }
 
-        protected override void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
-        {
-            base.SpecificDrawBeforeUI(context, renderFrame);
-
-            context.GraphicsContext.DrawTexture(sprites["GameScreen"].Texture);
-        }
-
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -202,6 +201,18 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             using (var game = new ModalElementTest())
                 game.Run();
+        }
+
+        class ClearAndDrawTextureRenderer : ClearRenderer
+        {
+            public Texture Texture { get; set; }
+
+            protected override void DrawCore(RenderContext context, RenderDrawContext drawContext)
+            {
+                base.DrawCore(context, drawContext);
+
+                drawContext.GraphicsContext.DrawTexture(Texture);
+            }
         }
     }
 }

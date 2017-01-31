@@ -30,7 +30,7 @@ namespace TopDownRPG.Core
                 }
                 else
                 {
-                    script.SceneSystem.SceneInstance.Scene.Entities.Add(prefabEntity);
+                    script.SceneSystem.SceneInstance.RootScene.Entities.Add(prefabEntity);
                 }
 
                 var physComp = prefabEntity.Get<RigidbodyComponent>();
@@ -64,7 +64,7 @@ namespace TopDownRPG.Core
                     }
                     else
                     {
-                        script.SceneSystem.SceneInstance.Scene.Entities.Add(prefabEntity);
+                        script.SceneSystem.SceneInstance.RootScene.Entities.Add(prefabEntity);
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace TopDownRPG.Core
                     }
                     else
                     {
-                        script.SceneSystem.SceneInstance.Scene.Entities.Remove(clonedEntity);
+                        script.SceneSystem.SceneInstance.RootScene.Entities.Remove(clonedEntity);
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace TopDownRPG.Core
                 return;
             }
 
-            ((Game)game).SceneSystem.SceneInstance.Scene.Entities.Remove(entity);
+            ((Game)game).SceneSystem.SceneInstance.RootScene.Entities.Remove(entity);
         }
 
         public static async Task WaitTime(this IGame game, TimeSpan time)

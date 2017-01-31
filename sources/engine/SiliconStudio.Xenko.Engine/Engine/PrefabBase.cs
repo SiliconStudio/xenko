@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     public abstract class PrefabBase : ComponentBase
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="Prefab"/>.
+        /// Initializes a new instance of <see cref="Prefab"/> class.
         /// </summary>
         protected PrefabBase()
         {
@@ -21,21 +21,8 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets the entities.
+        /// The entities.
         /// </summary>
         public TrackingCollection<Entity> Entities { get; }
-
-        // Note: Added for compatibility with previous code
-        [Obsolete]
-        public void AddChild(Entity entity)
-        {
-            Entities.Add(entity);
-        }
-
-        [Obsolete]
-        public void RemoveChild(Entity entity)
-        {
-            Entities.Remove(entity);
-        }
     }
 }

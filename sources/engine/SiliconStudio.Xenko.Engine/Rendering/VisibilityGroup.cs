@@ -78,9 +78,18 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        // TODO GRAPHICS REFACTOR not thread-safe
-        public void Collect(RenderView view)
+        /// <summary>
+        /// Collects render objects visibile in a view (if not previously collected before).
+        /// </summary>
+        /// <param name="view"></param>
+        public void TryCollect(RenderView view)
         {
+            // Already colleted this frame?
+            if (view.LastFrameCollected >= RenderSystem.FrameCounter)
+                return;
+
+            view.LastFrameCollected = RenderSystem.FrameCounter;
+
             ReevaluateActiveRenderStages();
 
             // Collect objects, and perform frustum culling
@@ -92,7 +101,6 @@ namespace SiliconStudio.Xenko.Rendering
             view.MaximumDistance = float.NegativeInfinity;
 
             Matrix viewInverse = view.View;
-            var viewDirection = new Vector3(view.View.M11, view.View.M21, view.View.M31);
             viewInverse.Invert();
             var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
 
@@ -127,7 +135,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var renderObject = RenderObjects[index];
 
                     // Skip not enabled objects
-                    if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
+                    if (!renderObject.Enabled || ((RenderGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
                         return;
 
                     // Custom per-view filtering

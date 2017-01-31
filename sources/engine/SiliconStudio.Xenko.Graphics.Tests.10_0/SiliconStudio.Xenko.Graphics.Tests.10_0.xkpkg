@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.10.0-alpha02
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -81,7 +81,6 @@ RootAssets:
     - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
     - 24d5dd69-db14-4756-9145-6dc95fbb5e94:MaterialTests/Base/MaterialDiffuseTextureFallback
     - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
-    - 31b41ef3-aa04-45ef-959f-aea441eae179:Font
     - 405852fc-5281-496f-aa02-49544230ac63:MaterialTests/Features/MaterialSpecular
     - 40ce4596-bdfe-45b0-a1a2-614857b5724c:MaterialTests/Base/MaterialDiffuseTextureCoord1
     - 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87:LightingTests/LightingScene

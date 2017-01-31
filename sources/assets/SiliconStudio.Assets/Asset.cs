@@ -117,7 +117,8 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        [NotNull]
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, [CanBeNull] IDictionary<Guid, Guid> idRemapping = null)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 

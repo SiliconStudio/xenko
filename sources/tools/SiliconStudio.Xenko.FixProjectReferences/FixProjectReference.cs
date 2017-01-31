@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.FixProjectReferences
                 {
                     bool projectUpdated = false;
                     //doc.Save(solutionProject.FullPath);
-                    log.Info("Check project [{0}]", solutionProject.FullPath);
+                    log.Info($"Check project [{solutionProject.FullPath}]");
 
                     foreach (var referenceNode in allElements.Where(element => element.Name.LocalName == "ProjectReference"))
                     {
@@ -134,11 +134,11 @@ namespace SiliconStudio.Xenko.FixProjectReferences
                         if (isSavingMode)
                         {
                             doc.Save(solutionProject.FullPath);
-                            log.Info("Project Updated [{0}]", solutionProject.Name);
+                            log.Info($"Project Updated [{solutionProject.Name}]");
                         }
                         else
                         {
-                            log.Info("Project [{0}] needs to be updated. Run this command with -s switch", solutionProject.Name);
+                            log.Info($"Project [{solutionProject.Name}] needs to be updated. Run this command with -s switch");
                             result = false;
                         }
                     }

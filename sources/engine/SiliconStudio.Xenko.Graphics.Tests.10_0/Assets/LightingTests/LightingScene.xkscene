@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            90f49a0175670645bcea3464c128cffb:
-                Name: null
-                Camera: 5361ab21-8647-4c2e-8d17-df0fba6c2c00/cd6898f8-c09f-4361-ac6c-2ab28aef9437
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                0d26e8d3a0a2ed4799caa3417b643971: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                073435faa6489d46824ca3e216ca73e8: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 121144a7-d914-42cf-851e-3aac370c336f
@@ -121,7 +95,6 @@ Hierarchy:
                             Shadow:
                                 Size: Small
                                 BiasParameters: {}
-                                Type: Cubemap
         -   Entity:
                 Id: 40b50304-4226-47bf-8ea6-2fa899574180
                 Name: Cube (2)
@@ -162,7 +135,9 @@ Hierarchy:
                         Children: {}
                     f89868cd9fc06143ac6c2ab28aef9437: !CameraComponent
                         Id: cd6898f8-c09f-4361-ac6c-2ab28aef9437
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 5b1812d9-0604-4511-a106-16324294502b
                 Name: DirectionalLightShadowOneCascade

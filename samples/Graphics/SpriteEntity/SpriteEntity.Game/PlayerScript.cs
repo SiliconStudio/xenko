@@ -169,7 +169,7 @@ namespace SpriteEntity
 
                     bullet.Transform.Position = (isAgentFacingRight) ? Entity.Transform.Position + bulletOffset : Entity.Transform.Position + (bulletOffset*new Vector3(-1, 1, 1));
 
-                    SceneSystem.SceneInstance.Scene.Entities.Add(bullet);
+                    SceneSystem.SceneInstance.RootScene.Entities.Add(bullet);
                     Logic.WatchBullet(bullet);
 
                     // Start animation for shooting

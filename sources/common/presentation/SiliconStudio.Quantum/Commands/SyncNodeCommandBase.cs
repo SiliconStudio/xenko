@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -9,7 +8,7 @@ namespace SiliconStudio.Quantum.Commands
     public abstract class SyncNodeCommandBase : NodeCommandBase
     {
         /// <inheritdoc/>
-        public sealed override Task Execute(IContent content, Index index, object parameter)
+        public sealed override Task Execute(IContentNode content, Index index, object parameter)
         {
             ExecuteSync(content, index, parameter);
             return Task.FromResult(0);
@@ -22,6 +21,6 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="index">The index in the content on which to execute the command.</param>
         /// <param name="parameter">The parameter of the command.</param>
         /// <remarks>Implementations of this method should not trigger fire-and-forget actions.</remarks>
-        protected abstract void ExecuteSync(IContent content, Index index, object parameter);
+        protected abstract void ExecuteSync(IContentNode content, Index index, object parameter);
     }
 }

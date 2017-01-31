@@ -1,34 +1,8 @@
 !SceneAsset
 Id: d18360d9-08c6-41e6-a8f0-dcc78e9a723d
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: e1d2d1a7-b350-4e3b-9f30-b4e3aef30a2b
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            507074265039d84b9c86d50dfeb1e2ef:
-                Name: null
-                Camera: bd039944-bb68-4ba0-9e43-cb2aa842e202/a4fb7eba-4b60-434a-ad26-405bedb9bcef
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                58db06c51b3f1148a529f126a80c08f8: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                5cc6260a8245e843b613fda98637a47e: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - bd039944-bb68-4ba0-9e43-cb2aa842e202
@@ -271,7 +245,9 @@ Hierarchy:
                         Children: {}
                     ba7efba4604b4a43ad26405bedb9bcef: !CameraComponent
                         Id: a4fb7eba-4b60-434a-ad26-405bedb9bcef
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: cec8cbd2-75a6-4610-83ca-6049954bf567
                 Name: Two Textures Particle System

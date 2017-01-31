@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            var target = context.RenderContext.Tags.GetSafe(RenderFrame.Current);
+            var target = context.CommandList.RenderTarget;
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);
 
@@ -39,8 +39,8 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 var renderBackground = (RenderBackground)renderNode.RenderObject;
                 var texture = renderBackground.Texture;
                 
-                var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.Width, texture.ViewHeight / (float)target.Height);
-                var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
+                var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.ViewWidth, texture.ViewHeight / (float)target.ViewHeight);
+                var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
                 var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
                 // TODO GRAPHICS REFACTOR: Disable depth once we sort properly

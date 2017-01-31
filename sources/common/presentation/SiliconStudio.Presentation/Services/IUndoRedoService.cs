@@ -74,13 +74,14 @@ namespace SiliconStudio.Presentation.Services
         /// <summary>
         /// Creates a new transaction.
         /// </summary>
+        /// <param name="flags">The flags to set on the new transaction.</param>
         /// <returns>A new transaction that uses the <see cref="IDisposable"/> interface to complete.</returns>
         /// <remarks>
         /// Each <see cref="Operation"/> pushed to the undo/service while a transaction is active will be contained in this transaction.
         /// Multiple transactions can be nested. To complete a transaction, either dispose it or call <see cref="ITransaction.Complete"/>.
         /// This method should be used in a <c>using</c> statement as much as possible.
         /// </remarks>
-        ITransaction CreateTransaction();
+        ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None);
 
         /// <summary>
         /// Retrieves the collection of transactions registered to this service.

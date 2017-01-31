@@ -17,6 +17,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
+        /// <inheritdoc/>
+        public override Type LightType => typeof(LightDirectional);
+
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -356,21 +359,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             if (shadow.DepthRange.IsAutomatic)
             {
-                //var depthReadBack = DepthReadback.GetDepthReadback(context);
-                //if (depthReadBack.IsResultAvailable)
-                //{
-                //    var depthMinMax = depthReadBack.DepthMinMax;
-                    
-                //    minDistance = ToLinearDepth(depthMinMax.X, ref camera.ProjectionMatrix);
-                //    // Reserve 1/3 of the guard distance for the min distance
-                //    minDistance = Math.Max(cameraNear, minDistance - shadow.DepthRange.GuardDistance / 3);
-
-                //    // Reserve 2/3 of the guard distance for the max distance
-                //    var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                //    maxDistance = ToLinearDepth(depthMinMax.Y, ref camera.ProjectionMatrix);
-                //    maxDistance = Math.Max(maxDistance, guardMaxDistance);
-                //}
-
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, ShadowMapRenderer.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
                 minDistance = LogFloor(minDistance);

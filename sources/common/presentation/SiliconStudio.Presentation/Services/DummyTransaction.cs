@@ -18,6 +18,8 @@ namespace SiliconStudio.Presentation.Services
 
         public bool IsEmpty => true;
 
+        public TransactionFlags Flags => TransactionFlags.None;
+
         public void Dispose()
         {
             if (isCompleted)
@@ -36,6 +38,10 @@ namespace SiliconStudio.Presentation.Services
                 throw new TransactionException("This transaction has already been completed.");
 
             isCompleted = true;
+        }
+
+        public void AddReference()
+        {
         }
     }
 }

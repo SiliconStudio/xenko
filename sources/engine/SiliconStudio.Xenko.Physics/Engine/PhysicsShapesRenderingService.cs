@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
         }
 
-        public Entity CreateDebugEntity(PhysicsComponent component, bool alwaysAddOffset = false)
+        public Entity CreateDebugEntity(PhysicsComponent component, RenderGroup renderGroup, bool alwaysAddOffset = false)
         {
             if (component?.ColliderShape == null) return null;
 
@@ -64,16 +64,16 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 debugEntity.Transform.Rotation = rot;
             }
 
-            var rigidBody = component as RigidbodyComponent;
+            var shouldNotAddOffset = component is RigidbodyComponent || component is CharacterComponent;
 
             //don't add offset for non bone dynamic and kinematic as it is added already in the updates
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, renderGroup, alwaysAddOffset || !shouldNotAddOffset);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
         }
 
-        private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, bool addOffset)
+        private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, RenderGroup renderGroup, bool addOffset)
         {
             if (shape == null)
                 return null;
@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         for (var i = 0; i < compound.Count; i++)
                         {
                             var subShape = compound[i];
-                            var subEntity = CreateChildEntity(component, subShape, true); //always add offsets to compounds
+                            var subEntity = CreateChildEntity(component, subShape, renderGroup, true); //always add offsets to compounds
                             if (subEntity != null)
                             {
                                 entity.AddChild(subEntity);
@@ -158,7 +158,8 @@ namespace SiliconStudio.Xenko.Physics.Engine
                                     {
                                         Draw = draw
                                     }
-                                }
+                                },
+                                RenderGroup = renderGroup,
                             }
                         };
 

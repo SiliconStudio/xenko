@@ -112,6 +112,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        public void Collect(RenderContext context)
+        {
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
             // Input texture

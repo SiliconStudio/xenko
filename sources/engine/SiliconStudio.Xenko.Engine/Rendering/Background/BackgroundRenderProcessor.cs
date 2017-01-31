@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
 
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
         {
-            return new RenderBackground();
+            return new RenderBackground { RenderGroup = component.RenderGroup };
         }
 
         public override void Draw(RenderContext context)
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     // Select the first active background
                     renderBackground.Texture = backgroundComponent.Texture;
                     renderBackground.Intensity = backgroundComponent.Intensity;
-                    renderBackground.RenderGroup = backgroundComponent.Entity.Group;
+                    renderBackground.RenderGroup = backgroundComponent.RenderGroup;
 
                     ActiveBackground = renderBackground;
                     break;

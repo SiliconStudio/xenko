@@ -6,7 +6,6 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum.Commands
 {
@@ -41,31 +40,29 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 return false;
 
             var elementType = collectionDescriptor.ElementType;
-            return collectionDescriptor.HasAdd && (CanConstruct(elementType) || CanAddNull(elementType) || IsReferenceType(elementType));
+            return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
-        protected override void ExecuteSync(IContent content, Index index, object parameter)
+        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
             var value = content.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
-            object itemToAdd = null;
-            var elementType = collectionDescriptor.ElementType;
-            if (CanAddNull(elementType) || IsReferenceType(elementType))
+            object itemToAdd;
+
+            // First, check if parameter is an AbstractNodeEntry
+            var abstractNodeEntry = parameter as AbstractNodeEntry;
+            if (abstractNodeEntry != null)
             {
-                // If the parameter is a type instead of an instance, try to construct an instance of this type
-                var type = parameter as Type;
-                if (type?.GetConstructor(Type.EmptyTypes) != null)
-                    itemToAdd = ObjectFactoryRegistry.NewInstance(type);
+                itemToAdd = abstractNodeEntry.GenerateValue(null);
             }
-            else if (collectionDescriptor.ElementType == typeof(string))
-            {
-                itemToAdd = parameter ?? "";
-            }
+            // Otherwise, assume it's an object
             else
             {
-                itemToAdd = parameter ?? ObjectFactoryRegistry.NewInstance(collectionDescriptor.ElementType);
+                var elementType = collectionDescriptor.ElementType;
+                itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
+
             if (index.IsEmpty)
             {
                 content.Add(itemToAdd);
@@ -74,15 +71,13 @@ namespace SiliconStudio.Assets.Quantum.Commands
             {
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
-                var collectionNode = content.Reference.AsEnumerable[index].TargetNode;
-                collectionNode.Content.Add(itemToAdd);
+                var collectionNode = content.ItemReferences[index].TargetNode;
+                collectionNode.Add(itemToAdd);
             }
         }
 
         private static bool CanConstruct(Type elementType) => !elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType == typeof(string);
 
-        private static bool CanAddNull(Type elementType) => elementType.IsAbstract || elementType.IsNullable();
-
-        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
+        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsAssetPartType(elementType) || AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
     }
 }

@@ -1,19 +1,17 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Xenko.Engine;
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
+    [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
-        public LightShadowMapRendererBase(ShadowMapRenderer parent)
-        {
-            ShadowMapRenderer = parent;
-        }
-
-        public ShadowMapRenderer ShadowMapRenderer { get; private set; }
+        public abstract Type LightType { get; }
 
         public abstract void Reset();
 
@@ -60,22 +58,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
-        public abstract bool CanRenderLight(IDirectLight light);
+        public abstract void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 
-        public abstract void Collect(RenderContext context, LightShadowMapTexture lightShadowMap);
-
-        public abstract void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup);
-
-        public virtual void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
-        {
-        }
-
-        public virtual LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
-        {
-            var shadowMapTexture = ShadowMapRenderer.ShadowMapTextures.Add();
-            shadowMapTexture.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
-            shadowMapTexture.CascadeCount = light.Shadow.GetCascadeCount();
-            return shadowMapTexture;
-        }
+        public abstract void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
     }
 }

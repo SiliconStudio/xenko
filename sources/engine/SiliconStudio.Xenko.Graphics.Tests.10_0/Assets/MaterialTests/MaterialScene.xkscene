@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 6e4549c1-7159-432a-ac4c-6b3cca4aad90
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            33a7f22382cebe4581daa77046b97406:
-                Name: null
-                Camera: 86ac4789-1822-43bd-bff2-9aba4e00ffdb/284c7dcf-0804-414f-bf66-d6cebb9f05da
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                b9eeb3bd0b4c8f48894e20575d572e8a: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                18062b03d208634ba76a04dd6b100671: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - 067bf333-bbd8-43ab-8949-143f3c69817b
@@ -94,7 +68,9 @@ Hierarchy:
                         Children: {}
                     cf7d4c2804084f41bf66d6cebb9f05da: !CameraComponent
                         Id: 284c7dcf-0804-414f-bf66-d6cebb9f05da
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: a5de332d-3e13-4cc9-b2d8-60217e9d2b9c
                 Name: Directional light

@@ -105,6 +105,10 @@ namespace SiliconStudio.Xenko.Graphics
                 if (isNotOwningResources)
                     throw new InvalidOperationException();
 
+                NativeAccessMask = AccessFlags.HostRead | AccessFlags.HostWrite;
+
+                NativePipelineStageMask = PipelineStageFlags.Host;
+
                 if (ParentTexture != null)
                 {
                     // Create only a view
@@ -115,7 +119,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     CreateBuffer();
 
-                    if (dataBoxes != null)
+                    if (dataBoxes != null && dataBoxes.Length > 0)
                         throw new InvalidOperationException();
                 }
             }

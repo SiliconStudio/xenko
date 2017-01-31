@@ -70,7 +70,6 @@
     <Compile Include="Elements\RigidbodyComponent.cs" />
     <Compile Include="Elements\StaticColliderComponent.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
-    <Compile Include="Engine\PhysicsDebugCameraRendererMode.cs" />
     <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
     <Compile Include="Engine\PhysicsShapesRenderingService.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />

@@ -23,8 +23,8 @@ namespace SiliconStudio.Xenko.Animations
             int timeStart = keyFrames[currentIndex + 0].Time.Ticks;
             int timeEnd = keyFrames[currentIndex + 1].Time.Ticks;
 
-            // Compute interpolation factor
-            float t = ((float)currentTime.Ticks - (float)timeStart) / ((float)timeEnd - (float)timeStart);
+            // Compute interpolation factor and avoid NaN operations when timeStart >= timeEnd
+            float t = (timeEnd <= timeStart) ? 0 : ((float)currentTime.Ticks - (float)timeStart) / ((float)timeEnd - (float)timeStart);
 
             if (channel.InterpolationType == AnimationCurveInterpolationType.Cubic)
             {
