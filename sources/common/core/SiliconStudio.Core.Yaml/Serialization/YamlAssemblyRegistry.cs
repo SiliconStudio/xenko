@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Schemas;
 
@@ -62,22 +63,17 @@ namespace SiliconStudio.Core.Yaml.Serialization
         private readonly List<Assembly> lookupAssemblies;
         private readonly object lockCache = new object();
 
-        private static readonly List<Assembly> DefaultLookupAssemblies = new List<Assembly>()
-        {
-            typeof(int).Assembly,
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlAssemblyRegistry"/> class.
         /// </summary>
         public YamlAssemblyRegistry(IYamlSchema schema)
         {
-            if (schema == null)
-                throw new ArgumentNullException("schema");
+            if (schema == null) throw new ArgumentNullException(nameof(schema));
             this.schema = schema;
             tagToType = new Dictionary<string, MappedType>();
             typeToTag = new Dictionary<Type, string>();
-            lookupAssemblies = new List<Assembly>();
+            lookupAssemblies = new List<Assembly> { typeof(int).Assembly };
+
             SerializableFactories = new List<IYamlSerializableFactory>();
         }
 
@@ -85,23 +81,21 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the serializable factories.
         /// </summary>
         /// <value>The serializable factories.</value>
-        public List<IYamlSerializableFactory> SerializableFactories { get; private set; }
+        public List<IYamlSerializableFactory> SerializableFactories { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [use short type name].
         /// </summary>
         /// <value><c>true</c> if [use short type name]; otherwise, <c>false</c>.</value>
-        public bool UseShortTypeName { get; set; }
+        public bool UseShortTypeName { get; set; } = true;
 
         public void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry)
         {
-            if (assembly == null)
-                throw new ArgumentNullException("assembly");
-            if (attributeRegistry == null)
-                throw new ArgumentNullException("attributeRegistry");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
 
             // Add automatically the assembly for lookup
-            if (!DefaultLookupAssemblies.Contains(assembly) && !lookupAssemblies.Contains(assembly))
+            if (!lookupAssemblies.Contains(assembly))
             {
                 lookupAssemblies.Add(assembly);
 
@@ -160,10 +154,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="alias"></param>
         public virtual void RegisterTagMapping(string tag, Type type, bool alias)
         {
-            if (tag == null)
-                throw new ArgumentNullException("tag");
-            if (type == null)
-                throw new ArgumentNullException("type");
+            if (tag == null) throw new ArgumentNullException(nameof(tag));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             // Prefix all tags by !
             tag = Uri.EscapeUriString(tag);
@@ -257,64 +249,85 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 {
                     // Else try to use schema tag for scalars
                     // Else use full name of the type
-                    var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
-                    tagName = schema.GetDefaultTag(type) ?? Uri.EscapeUriString(string.Format("!{0}", typeName));
+
+                    var typeName = type.GetShortAssemblyQualifiedName();
+                    if (!UseShortTypeName)
+                        throw new NotSupportedException("UseShortTypeName supports only True.");
+
+                    // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                    //var typeName = UseShortTypeName ? type.GetShortAssemblyQualifiedName() : type.AssemblyQualifiedName;
+
+                    tagName = schema.GetDefaultTag(type) ?? $"!{typeName}";
                     typeToTag.Add(type, tagName);
                 }
             }
 
-            return tagName;
+            return Uri.EscapeUriString(tagName);
         }
 
         public virtual Type ResolveType(string typeName)
         {
-            var type = Type.GetType(typeName);
-            if (type == null)
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            List<string> genericArguments;
+            int arrayNesting;
+            var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayNesting);
+            var resolvedType = ResolveSingleType(resolvedTypeName);
+            if (genericArguments != null)
             {
-                string assemblyName = null;
-
-                // Find assembly name start (skip up to one space if needed)
-                // We ignore everything else (version, publickeytoken, etc...)
-                if (UseShortTypeName)
+                var genericTypes = new List<Type>();
+                foreach (var genericArgument in genericArguments)
                 {
-                    ParseType(typeName, out typeName, out assemblyName);
+                    var genericType = ResolveType(genericArgument);
+                    genericTypes.Add(genericType);
+                }
+                resolvedType = resolvedType.MakeGenericType(genericTypes.ToArray());
+            }
+            while (arrayNesting > 0)
+            {
+                resolvedType = resolvedType.MakeArrayType();
+                --arrayNesting;
+            }
+            return resolvedType;
+        }
+
+        private Type ResolveSingleType(string typeName)
+        {
+            string assemblyName;
+
+            // Find assembly name start (skip up to one space if needed)
+            // We ignore everything else (version, publickeytoken, etc...)
+            if (UseShortTypeName)
+            {
+                ParseType(typeName, out typeName, out assemblyName);
+            }
+            else
+            {
+                // TODO: either remove completely support of UseShortTypeName == false, or make it work in all scenario (with unit tests, etc.)
+                throw new NotSupportedException("UseShortTypeName supports only True.");
+            }
+
+            // Look for type in loaded assemblies
+            foreach (var assembly in lookupAssemblies)
+            {
+                if (assemblyName != null)
+                {
+                    // Check that assembly name match, by comparing up to the first comma
+                    var assemblyFullName = assembly.FullName;
+                    if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
+                        || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
+                    {
+                        continue;
+                    }
                 }
 
-                // Look for type in loaded assemblies
-                foreach (var assembly in lookupAssemblies)
+                var type = assembly.GetType(typeName);
+                if (type != null)
                 {
-                    if (assemblyName != null)
-                    {
-                        // Check that assembly name match, by comparing up to the first comma
-                        var assemblyFullName = assembly.FullName;
-                        if (string.Compare(assemblyFullName, 0, assemblyName, 0, assemblyName.Length) != 0
-                            || !(assemblyFullName.Length == assemblyName.Length || assemblyFullName[assemblyName.Length] == ','))
-                        {
-                            continue;
-                        }
-                    }
-
-                    type = assembly.GetType(typeName);
-                    if (type != null)
-                    {
-                        break;
-                    }
-                }
-
-                // No type found, let's try again ignoring assembly name (in case a type moved)
-                if (type == null && assemblyName != null)
-                {
-                    foreach (var assembly in lookupAssemblies)
-                    {
-                        type = assembly.GetType(typeName);
-                        if (type != null)
-                        {
-                            break;
-                        }
-                    }
+                    return type;
                 }
             }
-            return type;
+
+            return null;
         }
 
         public void ParseType(string typeFullName, out string typeName, out string assemblyName)
