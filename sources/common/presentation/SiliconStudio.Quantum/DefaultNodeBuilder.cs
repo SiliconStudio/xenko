@@ -188,7 +188,19 @@ namespace SiliconStudio.Quantum
 
         public IReference CreateReferenceForNode(Type type, object value, bool isMember)
         {
-            return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, isMember) : null;
+            if (isMember)
+            {
+                return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, true) : null;
+            }
+            
+            var descriptor = TypeDescriptorFactory.Find(value?.GetType());
+            if (descriptor is CollectionDescriptor || descriptor is DictionaryDescriptor)
+            {
+                var valueType = GetElementValueType(descriptor);
+                return !IsPrimitiveType(valueType) ? Reference.CreateReference(value, type, Index.Empty, false) : null;
+            }
+
+            return null;
         }
 
         private void PushContextNode(IInitializingGraphNode node)

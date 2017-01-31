@@ -6,6 +6,8 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
+using System.Reflection;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Quantum.Contents
 {
@@ -19,8 +21,8 @@ namespace SiliconStudio.Quantum.Contents
         private readonly List<IMemberNode> children = new List<IMemberNode>();
         private object value;
 
-        public ObjectContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(guid, descriptor, isPrimitive)
+        public ObjectContent([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, descriptor, isPrimitive)
         {
             if (reference is ObjectReference)
                 throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
@@ -47,6 +49,18 @@ namespace SiliconStudio.Quantum.Contents
         protected sealed override object Value => value;
 
         /// <inheritdoc/>
+        public event EventHandler<INodeChangeEventArgs> PrepareChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<INodeChangeEventArgs> FinalizeChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        /// <inheritdoc/>
+        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
+        /// <inheritdoc/>
         [CanBeNull]
         public IMemberNode TryGetChild([NotNull] string name)
         {
@@ -64,38 +78,185 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public override void Update(object newValue, Index index)
+        public void Update(object newValue, Index index)
         {
-            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            Update(newValue, index, true);
         }
 
         /// <inheritdoc/>
-        public override void Add(object newItem)
+        public void Add(object newItem)
         {
-            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                // Some collection (such as sets) won't add item at the end but at an arbitrary location.
+                // Better send a null index in this case than sending a wrong value.
+                var value = Value;
+                var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
+                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
+                collectionDescriptor.Add(value, newItem);
+                // TODO: fixme
+                //if (value.GetType().GetTypeInfo().IsValueType)
+                //{
+                //    var containerValue = Parent.Retrieve();
+                //    MemberDescriptor.Set(containerValue, value);
+                //}
+                UpdateReferences();
+                NotifyItemChanged(args);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
         }
 
         /// <inheritdoc/>
-        public override void Add(object newItem, Index index)
+        public void Add(object newItem, Index itemIndex)
         {
-            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
+                var value = Value;
+                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
+                if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
+                {
+                    collectionDescriptor.Add(value, newItem);
+                }
+                else
+                {
+                    collectionDescriptor.Insert(value, itemIndex.Int, newItem);
+                }
+                // TODO: fixme
+                //if (value.GetType().GetTypeInfo().IsValueType)
+                //{
+                //    var containerValue = Parent.Retrieve();
+                //    MemberDescriptor.Set(containerValue, value);
+                //}
+                UpdateReferences();
+                NotifyItemChanged(args);
+            }
+            else if (dictionaryDescriptor != null)
+            {
+                var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
+                var value = Value;
+                dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
+                // TODO: fixme
+                //if (value.GetType().GetTypeInfo().IsValueType)
+                //{
+                //    var containerValue = Parent.Retrieve();
+                //    MemberDescriptor.Set(containerValue, value);
+                //}
+                UpdateReferences();
+                NotifyItemChanged(args);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
         }
 
         /// <inheritdoc/>
-        public override void Remove(object item, Index index)
+        public void Remove(object item, Index itemIndex)
         {
-            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            if (itemIndex.IsEmpty) throw new ArgumentException(@"The given index should not be empty.", nameof(itemIndex));
+            var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
+            NotifyItemChanging(args);
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            var value = Value;
+            if (collectionDescriptor != null)
+            {
+                if (collectionDescriptor.HasRemoveAt)
+                {
+                    collectionDescriptor.RemoveAt(value, itemIndex.Int);
+                }
+                else
+                {
+                    collectionDescriptor.Remove(value, item);
+                }
+            }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.Remove(value, itemIndex.Value);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            // TODO: fixme
+            //if (value.GetType().GetTypeInfo().IsValueType)
+            //{
+            //    var containerValue = Parent.Retrieve();
+            //    MemberDescriptor.Set(containerValue, value);
+            //}
+            UpdateReferences();
+            NotifyItemChanged(args);
         }
 
         /// <inheritdoc/>
         protected internal override void UpdateFromMember(object newValue, Index index)
         {
-            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            if (index == Index.Empty)
+            {
+                throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+            }
+            Update(newValue, index, true);
         }
 
         protected void SetValue(object newValue)
         {
             value = newValue;
+        }
+
+        protected void NotifyItemChanging(ItemChangeEventArgs args)
+        {
+            PrepareChange?.Invoke(this, args);
+            ItemChanging?.Invoke(this, args);
+        }
+
+        protected void NotifyItemChanged(ItemChangeEventArgs args)
+        {
+            ItemChanged?.Invoke(this, args);
+            FinalizeChange?.Invoke(this, args);
+        }
+
+        private void Update(object newValue, Index index, bool sendNotification)
+        {
+            if (index == Index.Empty)
+                throw new ArgumentException("index cannot be empty.");
+            var oldValue = Retrieve(index);
+            MemberNodeChangeEventArgs args = null;
+            ItemChangeEventArgs itemArgs = null;
+            if (sendNotification)
+            {
+                itemArgs = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionUpdate, oldValue, newValue);
+                NotifyItemChanging(itemArgs);
+            }
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
+            {
+                collectionDescriptor.SetValue(Value, index.Int, newValue);
+            }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.SetValue(Value, index.Value, newValue);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            UpdateReferences();
+            if (sendNotification)
+            {
+                NotifyItemChanged(itemArgs);
+            }
+        }
+
+
+        private void UpdateReferences()
+        {
+            NodeContainer?.UpdateReferences(this);
         }
 
         private IEnumerable<Index> GetIndices()

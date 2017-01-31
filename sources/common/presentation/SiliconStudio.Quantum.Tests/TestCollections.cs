@@ -56,14 +56,14 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 2, items[0], false);
             VerifyItem(memberNode, 3, items[1], false);
 
-            memberNode.Add(items[0]);
+            memberNode.Target.Add(items[0]);
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[0], false);
             VerifyItem(memberNode, 3, items[1], false);
             VerifyItem(memberNode, 4, items[0], false);
 
-            memberNode.Update(items[1], new Index(2));
+            memberNode.Target.Update(items[1], new Index(2));
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[1], false);
@@ -84,13 +84,13 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 1, items[1], false);
 
             // Add a new item
-            memberNode.Add(items[2]);
+            memberNode.Target.Add(items[2]);
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[2], false);
 
             // Update existing item (with a different type here)
-            memberNode.Update(items[3], new Index(2));
+            memberNode.Target.Update(items[3], new Index(2));
             VerifyItem(memberNode, 0, items[0], false);
             VerifyItem(memberNode, 1, items[1], false);
             VerifyItem(memberNode, 2, items[3], false);
@@ -110,13 +110,13 @@ namespace SiliconStudio.Quantum.Tests
             VerifyItem(memberNode, 1, 2.0f, true);
 
             // Add a new item
-            memberNode.Add(3.0f);
+            memberNode.Target.Add(3.0f);
             VerifyItem(memberNode, 0, 1.0f, true);
             VerifyItem(memberNode, 1, 2.0f, true);
             VerifyItem(memberNode, 2, 3.0f, true);
 
             // Update existing item (with a different type here)
-            memberNode.Update(4.0, new Index(2));
+            memberNode.Target.Update(4.0, new Index(2));
             VerifyItem(memberNode, 0, 1.0f, true);
             VerifyItem(memberNode, 1, 2.0f, true);
             VerifyItem(memberNode, 2, 4.0, true);

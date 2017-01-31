@@ -194,12 +194,14 @@ namespace SiliconStudio.Quantum.Tests
                 rootNode,
                 rootNode[nameof(PrimitiveListClass.Member1)],
                 rootNode[nameof(PrimitiveListClass.Member2)],
+                rootNode[nameof(PrimitiveListClass.Member2)].Target,
             };
             var expectedPaths = new[]
             {
                 new GraphNodePath(rootNode),
                 new GraphNodePath(rootNode).PushMember(nameof(PrimitiveListClass.Member1)),
                 new GraphNodePath(rootNode).PushMember(nameof(PrimitiveListClass.Member2)),
+                new GraphNodePath(rootNode).PushMember(nameof(PrimitiveListClass.Member2)).PushTarget(),
             };
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }

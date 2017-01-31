@@ -56,19 +56,23 @@ namespace SiliconStudio.Quantum
         protected virtual bool RegisterNode(IContentNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
-            var memberNode = node as IMemberNode;
             if (RegisteredNodes.Add(node))
             {
+                var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
                     ((IInitializingMemberNode)memberNode).PrepareChange += ContentPrepareChange;
                     ((IInitializingMemberNode)memberNode).FinalizeChange += ContentFinalizeChange;
                     memberNode.Changing += ContentChanging;
                     memberNode.Changed += ContentChanged;
-                    memberNode.ItemChanging += OnItemChanging;
-                    memberNode.ItemChanged += OnItemChanged;
-                    return true;
                 }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanging += OnItemChanging;
+                    objectNode.ItemChanged += OnItemChanged;
+                }
+                return true;
             }
 
             return false;
@@ -76,19 +80,23 @@ namespace SiliconStudio.Quantum
 
         protected virtual bool UnregisterNode(IContentNode node)
         {
-            var memberNode = node as IMemberNode;
             if (RegisteredNodes.Remove(node))
             {
+                var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
                     ((IInitializingMemberNode)memberNode).PrepareChange -= ContentPrepareChange;
                     ((IInitializingMemberNode)memberNode).FinalizeChange -= ContentFinalizeChange;
                     memberNode.Changing -= ContentChanging;
                     memberNode.Changed -= ContentChanged;
-                    memberNode.ItemChanging -= OnItemChanging;
-                    memberNode.ItemChanged -= OnItemChanged;
-                    return true;
                 }
+                var objectNode = node as IObjectNode;
+                if (objectNode != null)
+                {
+                    objectNode.ItemChanging += OnItemChanging;
+                    objectNode.ItemChanged += OnItemChanged;
+                }
+                return true;
             }
             return false;
         }

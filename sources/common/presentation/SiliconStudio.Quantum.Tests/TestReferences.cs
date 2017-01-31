@@ -174,8 +174,8 @@ namespace SiliconStudio.Quantum.Tests
 
             // Update item 0 to a new instance and item 1 to null
             var newInstance = new TestObject { Name = "Test3" };
-            memberNode.Update(newInstance, new Index(0));
-            memberNode.Update(null, new Index(1));
+            memberNode.Target.Update(newInstance, new Index(0));
+            memberNode.Target.Update(null, new Index(1));
             Assert.AreEqual(container.Instances, memberNode.Retrieve());
             Assert.AreEqual(newInstance, memberNode.Retrieve(new Index(0)));
             Assert.AreEqual(null, memberNode.Retrieve(new Index(1)));

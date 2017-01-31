@@ -55,13 +55,13 @@ namespace SiliconStudio.Assets.Quantum
         public IContentNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
         {
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj, false) as ReferenceEnumerable;
-            return new AssetObjectNode(obj, guid, descriptor, isPrimitive, reference);
+            return new AssetObjectNode(nodeBuilder, obj, guid, descriptor, isPrimitive, reference);
         }
 
         /// <inheritdoc/>
         public IContentNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
-            return new AssetBoxedNode(structure, guid, descriptor, isPrimitive);
+            return new AssetBoxedNode(nodeBuilder, structure, guid, descriptor, isPrimitive);
         }
 
         /// <inheritdoc/>

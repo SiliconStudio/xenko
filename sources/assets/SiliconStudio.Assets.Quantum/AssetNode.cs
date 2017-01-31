@@ -37,8 +37,8 @@ namespace SiliconStudio.Assets.Quantum
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
-        public AssetObjectNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(value, guid, descriptor, isPrimitive, reference)
+        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, value, guid, descriptor, isPrimitive, reference)
         {
         }
 
@@ -80,8 +80,8 @@ namespace SiliconStudio.Assets.Quantum
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
-        public AssetBoxedNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(value, guid, descriptor, isPrimitive)
+        public AssetBoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(nodeBuilder, value, guid, descriptor, isPrimitive)
         {
         }
 

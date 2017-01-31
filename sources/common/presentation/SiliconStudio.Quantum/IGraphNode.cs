@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum
         event EventHandler<ItemChangeEventArgs> ItemChanged;
     }
 
-    public interface IObjectNode : IContentNode
+    public interface IObjectNode : IContentNode, INotifyItemChange
     {
         /// <summary>
         /// Gets the member corresponding to the given name.
@@ -68,9 +68,36 @@ namespace SiliconStudio.Quantum
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
         IMemberNode TryGetChild(string name);
+
+        /// <summary>
+        /// Updates the value of this content at the given index with the given value.
+        /// </summary>
+        /// <param name="newValue">The new value to set.</param>
+        /// <param name="index">The index where to update the value.</param>
+        void Update(object newValue, Index index);
+
+        /// <summary>
+        /// Adds a new item to this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="newItem">The new item to add to the collection.</param>
+        void Add(object newItem);
+
+        /// <summary>
+        /// Adds a new item at the given index to this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="newItem">The new item to add to the collection.</param>
+        /// <param name="itemIndex">The index at which the new item must be added.</param>
+        void Add(object newItem, Index itemIndex);
+
+        /// <summary>
+        /// Removes an item from this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="item">The item to remove.</param>
+        /// <param name="itemIndex">The index from which the item must be removed.</param>
+        void Remove(object item, Index itemIndex);
     }
 
-    public interface IMemberNode : IContentNode, INotifyContentValueChange, INotifyItemChange
+    public interface IMemberNode : IContentNode, INotifyContentValueChange
     {
         /// <summary>
         /// Gets the member name.
@@ -97,6 +124,12 @@ namespace SiliconStudio.Quantum
         /// </summary>
         [NotNull]
         IMemberDescriptor MemberDescriptor { get; }
+
+        /// <summary>
+        /// Updates the value of this content with the given value.
+        /// </summary>
+        /// <param name="newValue">The new value to set.</param>
+        void Update(object newValue);
     }
 
     public interface IInitializingGraphNode : IContentNode

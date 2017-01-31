@@ -147,7 +147,7 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return (GetTargetNode() as IObjectNode)?.Members.Select(x => x.Name) ?? Enumerable.Empty<string>();
+            return GetTargetNode()?.Members.Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
         /// <inheritdoc/>
@@ -163,16 +163,16 @@ namespace SiliconStudio.Quantum
             return indices.Cast<object>().Select(x => thisNode[x]).GetEnumerator();
         }
 
-        protected IContentNode GetTargetMemberNode(string memberName)
+        protected IMemberNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
-            var memberNode = (targetNode as IObjectNode)?.Members.FirstOrDefault(x => x.Name == memberName);
+            var memberNode = targetNode?[memberName];
             return memberNode;
         }
 
         protected abstract object RetrieveValue();
 
-        protected abstract IContentNode GetTargetNode();
+        protected abstract IObjectNode GetTargetNode();
 
         protected static bool IsIndexExisting(IContentNode node, Index index)
         {
@@ -221,7 +221,7 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected static bool UpdateCollection(IContentNode node, object value, Index index)
+        protected static bool UpdateCollection(IObjectNode node, object value, Index index)
         {
             if (IsIndexExisting(node, index))
             {
@@ -264,7 +264,7 @@ namespace SiliconStudio.Quantum
             if (indexes.Length == 1)
             {
                 var index = new Index(indexes[0]);
-                return UpdateCollection(Node, value, index);
+                return UpdateCollection((IObjectNode)Node, value, index);
             }
             return false;
         }
@@ -274,7 +274,7 @@ namespace SiliconStudio.Quantum
             return Node.Retrieve();
         }
 
-        protected override IContentNode GetTargetNode()
+        protected override IObjectNode GetTargetNode()
         {
             return (Node as IMemberNode)?.Target;
         }
@@ -312,7 +312,7 @@ namespace SiliconStudio.Quantum
             if (indexes.Length == 1 && targetNode != null)
             {
                 var nextIndex = new Index(indexes[0]);
-                return UpdateCollection(Node, value, nextIndex);
+                return UpdateCollection((IObjectNode)Node, value, nextIndex);
             }
             return false;
         }
@@ -322,7 +322,7 @@ namespace SiliconStudio.Quantum
             return Node.Retrieve(index);
         }
 
-        protected override IContentNode GetTargetNode()
+        protected override IObjectNode GetTargetNode()
         {
             var reference = (Node as IObjectNode)?.ItemReferences;
             if (Node.IsReference && (reference?.HasIndex(index) ?? false))

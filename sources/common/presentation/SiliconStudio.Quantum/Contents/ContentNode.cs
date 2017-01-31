@@ -15,12 +15,14 @@ namespace SiliconStudio.Quantum.Contents
     public abstract class ContentNode : IInitializingGraphNode
     {
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
+        protected readonly NodeContainer NodeContainer;
         protected bool isSealed;
 
-        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+        protected ContentNode(NodeContainer nodeContainer, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
         {
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
+            NodeContainer = nodeContainer;
             Guid = guid;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
@@ -55,24 +57,6 @@ namespace SiliconStudio.Quantum.Contents
         {
             return Content.Retrieve(Value, index, Descriptor);
         }
-
-        /// <inheritdoc/>
-        public virtual void Update(object newValue)
-        {
-            Update(newValue, Index.Empty);
-        }
-
-        /// <inheritdoc/>
-        public abstract void Update(object newValue, Index index);
-
-        /// <inheritdoc/>
-        public abstract void Add(object newItem);
-
-        /// <inheritdoc/>
-        public abstract void Add(object newItem, Index itemIndex);
-
-        /// <inheritdoc/>
-        public abstract void Remove(object item, Index itemIndex);
 
         /// <summary>
         /// Updates this content from one of its member.

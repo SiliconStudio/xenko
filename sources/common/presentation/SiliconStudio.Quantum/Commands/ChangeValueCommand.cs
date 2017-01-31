@@ -15,19 +15,28 @@ namespace SiliconStudio.Quantum.Commands
     {
         public override Task Execute(IContentNode node, Index index, object parameter)
         {
+            // TODO: clean this!
             var shouldUpdate = node is IMemberNode || ((IObjectNode)node).Indices == null || ((IObjectNode)node).Indices.Contains(index);
             var currentValue = shouldUpdate ? node.Retrieve(index) : (node.Type.IsValueType ? Activator.CreateInstance(node.Type) : null);
             var newValue = ChangeValue(currentValue, parameter);
-            if (shouldUpdate)
+            var memberNode = node as IMemberNode;
+            if (memberNode != null)
             {
                 if (!Equals(newValue, currentValue))
                 {
-                    node.Update(newValue, index);
+                    memberNode.Update(newValue);
+                }
+            }
+            else if (shouldUpdate)
+            {
+                if (!Equals(newValue, currentValue))
+                {
+                    ((IObjectNode)node).Update(newValue, index);
                 }
             }
             else
             {
-                node.Add(newValue, index);
+                ((IObjectNode)node).Add(newValue, index);
             }
             return Task.FromResult(0);
         }

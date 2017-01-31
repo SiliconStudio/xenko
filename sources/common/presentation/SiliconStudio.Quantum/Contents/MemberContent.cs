@@ -4,6 +4,7 @@ using System;
 
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -14,10 +15,8 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public class MemberContent : ContentNode, IInitializingMemberNode
     {
-        private readonly NodeContainer nodeContainer;
-
         public MemberContent([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive)
+            : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
@@ -25,7 +24,6 @@ namespace SiliconStudio.Quantum.Contents
             Parent = parent;
             MemberDescriptor = memberDescriptor;
             Name = memberDescriptor.Name;
-            nodeContainer = nodeBuilder.NodeContainer;
             TargetReference = reference as ObjectReference;
         }
 
@@ -71,116 +69,15 @@ namespace SiliconStudio.Quantum.Contents
         protected sealed override object Value { get { if (Parent.Retrieve() == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Retrieve()); } }
 
         /// <inheritdoc/>
-        public override void Update(object newValue, Index index)
+        public void Update(object newValue)
+        {
+            Update3(newValue, Index.Empty);
+        }
+
+        /// <inheritdoc/>
+        private void Update3(object newValue, Index index)
         {
             Update(newValue, index, true);
-        }
-
-        /// <inheritdoc/>
-        public override void Add(object newItem)
-        {
-            var collectionDescriptor = Descriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
-            {
-                // Some collection (such as sets) won't add item at the end but at an arbitrary location.
-                // Better send a null index in this case than sending a wrong value.
-                var value = Value;
-                var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
-                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyItemChanging(args);
-                collectionDescriptor.Add(value, newItem);
-                if (value.GetType().GetTypeInfo().IsValueType)
-                {
-                    var containerValue = Parent.Retrieve();
-                    MemberDescriptor.Set(containerValue, value);
-                }
-                UpdateReferences();
-                NotifyItemChanged(args);
-            }
-            else
-                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-        }
-
-        /// <inheritdoc/>
-        public override void Add(object newItem, Index itemIndex)
-        {
-            var collectionDescriptor = Descriptor as CollectionDescriptor;
-            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
-                var value = Value;
-                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyItemChanging(args);
-                if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
-                {
-                    collectionDescriptor.Add(value, newItem);
-                }
-                else
-                {
-                    collectionDescriptor.Insert(value, itemIndex.Int, newItem);
-                }
-                if (value.GetType().GetTypeInfo().IsValueType)
-                {
-                    var containerValue = Parent.Retrieve();
-                    MemberDescriptor.Set(containerValue, value);
-                }
-                UpdateReferences();
-                NotifyItemChanged(args);
-            }
-            else if (dictionaryDescriptor != null)
-            {
-                var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyItemChanging(args);
-                var value = Value;
-                dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
-                if (value.GetType().GetTypeInfo().IsValueType)
-                {
-                    var containerValue = Parent.Retrieve();
-                    MemberDescriptor.Set(containerValue, value);
-                }
-                UpdateReferences();
-                NotifyItemChanged(args);
-            }
-            else
-                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-
-        }
-
-        /// <inheritdoc/>
-        public override void Remove(object item, Index itemIndex)
-        {
-            if (itemIndex.IsEmpty) throw new ArgumentException(@"The given index should not be empty.", nameof(itemIndex));
-            var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
-            NotifyItemChanging(args);
-            var collectionDescriptor = Descriptor as CollectionDescriptor;
-            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            var value = Value;
-            if (collectionDescriptor != null)
-            {
-                if (collectionDescriptor.HasRemoveAt)
-                {
-                    collectionDescriptor.RemoveAt(value, itemIndex.Int);                  
-                }
-                else
-                {
-                    collectionDescriptor.Remove(value, item);
-                }
-            }
-            else if (dictionaryDescriptor != null)
-            {
-                dictionaryDescriptor.Remove(value, itemIndex.Value);
-            }
-            else
-                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-
-            if (value.GetType().GetTypeInfo().IsValueType)
-            {
-                var containerValue = Parent.Retrieve();
-                MemberDescriptor.Set(containerValue, value);
-            }
-            UpdateReferences();
-            NotifyItemChanged(args);
         }
 
         /// <summary>
@@ -279,7 +176,7 @@ namespace SiliconStudio.Quantum.Contents
 
         private void UpdateReferences()
         {
-            nodeContainer?.UpdateReferences(this);
+            NodeContainer?.UpdateReferences(this);
         }
 
         public override string ToString()
