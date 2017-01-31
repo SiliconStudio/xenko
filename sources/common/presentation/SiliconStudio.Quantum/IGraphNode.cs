@@ -24,6 +24,13 @@ namespace SiliconStudio.Quantum
 
     }
 
+    public interface INotifyItemChange
+    {
+        event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        event EventHandler<ItemChangeEventArgs> ItemChanged;
+    }
+
     public interface IObjectNode : IContentNode
     {
         /// <summary>
@@ -47,7 +54,7 @@ namespace SiliconStudio.Quantum
         IMemberNode TryGetChild(string name);
     }
 
-    public interface IMemberNode : IContentNode, INotifyContentValueChange
+    public interface IMemberNode : IContentNode, INotifyContentValueChange, INotifyItemChange
     {
         /// <summary>
         /// Gets the member name.

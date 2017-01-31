@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
@@ -31,6 +32,16 @@ namespace SiliconStudio.Assets.Quantum
             public readonly OverrideTarget Target;
         }
 
+        private struct NodeChangeHandlers
+        {
+            public readonly EventHandler<MemberNodeChangeEventArgs> ValueChange;
+            public readonly EventHandler<ItemChangeEventArgs> ItemChange;
+            public NodeChangeHandlers(EventHandler<MemberNodeChangeEventArgs> valueChange, EventHandler<ItemChangeEventArgs> itemChange)
+            {
+                ValueChange = valueChange;
+                ItemChange = itemChange;
+            }
+        }
         private readonly Dictionary<IContentNode, OverrideType> previousOverrides = new Dictionary<IContentNode, OverrideType>();
         private readonly Dictionary<IContentNode, ItemId> removedItemIds = new Dictionary<IContentNode, ItemId>();
 
@@ -38,7 +49,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
-        private readonly Dictionary<IAssetNode, EventHandler<MemberNodeChangeEventArgs>> baseLinkedNodes = new Dictionary<IAssetNode, EventHandler<MemberNodeChangeEventArgs>>();
+        private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -53,12 +64,18 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
+            nodeListener.ItemChanging += AssetContentChanging;
+            nodeListener.ItemChanged += AssetContentChanged;
 
             baseLinker = new AssetToBaseNodeLinker(this) { LinkAction = LinkBaseNode };
         }
 
         public void Dispose()
         {
+            nodeListener.Changing -= AssetContentChanging;
+            nodeListener.Changed -= AssetContentChanged;
+            nodeListener.ItemChanging -= AssetContentChanging;
+            nodeListener.ItemChanged -= AssetContentChanged;
             nodeListener.Dispose();
         }
 
@@ -83,21 +100,19 @@ namespace SiliconStudio.Assets.Quantum
         /// <seealso cref="AssetMemberNodeChangeEventArgs"/>.
         public event EventHandler<AssetMemberNodeChangeEventArgs> Changed;
 
+        public event EventHandler<ItemChangeEventArgs> ItemChanging { add { nodeListener.ItemChanging += value; } remove { nodeListener.ItemChanging -= value; } }
+
+        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
         /// <summary>
         /// Raised when a base content has changed, after updating the related content of this graph.
         /// </summary>
-        public Action<MemberNodeChangeEventArgs, IContentNode> BaseContentChanged;
+        public Action<INodeChangeEventArgs, IContentNode> BaseContentChanged;
 
         public void RefreshBase(AssetPropertyGraph baseAssetGraph)
         {
             // Unlink previously linked nodes
-            foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
-            {
-                var member = linkedNode.Key.BaseContent as IMemberNode;
-                if (member != null)
-                    member.Changed -= linkedNode.Value;
-            }
-            baseLinkedNodes.Clear();
+            ClearAllBaseLinks();
 
             baseGraph = baseAssetGraph;
 
@@ -276,13 +291,7 @@ namespace SiliconStudio.Assets.Quantum
         public List<NodeOverride> ClearAllOverrides()
         {
             // Unregister handlers - must be done first!
-            foreach (var linkedNode in baseLinkedNodes.Where(x => x.Value != null))
-            {
-                var member = linkedNode.Key.BaseContent as IMemberNode;
-                if (member != null)
-                    member.Changed -= linkedNode.Value;
-            }
-            baseLinkedNodes.Clear();
+            ClearAllBaseLinks();
 
             var clearedOverrides = new List<NodeOverride>();
             // Clear override and base from node
@@ -387,22 +396,41 @@ namespace SiliconStudio.Assets.Quantum
             ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode);
             if (!baseLinkedNodes.ContainsKey(assetNode))
             {
-                EventHandler<MemberNodeChangeEventArgs> action = null;
+                EventHandler<MemberNodeChangeEventArgs> valueChange = null;
+                EventHandler<ItemChangeEventArgs> itemChange = null;
                 if (baseNode != null)
                 {
-                    action = (s, e) => OnBaseContentChanged(e, currentNode);
                     var member = assetNode.BaseContent as IMemberNode;
                     if (member != null)
-                        member.Changed += action;
+                    {
+                        valueChange = (s, e) => OnBaseContentChanged(e, currentNode);
+                        itemChange = (s, e) => OnBaseContentChanged(e, currentNode);
+                        member.Changed += valueChange;
+                        member.ItemChanged += itemChange;
+                    }
                 }
-                baseLinkedNodes.Add(assetNode, action);
+                baseLinkedNodes.Add(assetNode, new NodeChangeHandlers(valueChange, itemChange));
             }
         }
 
-        private void AssetContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ClearAllBaseLinks()
+        {
+            foreach (var linkedNode in baseLinkedNodes)
+            {
+                var member = linkedNode.Key.BaseContent as IMemberNode;
+                if (member != null)
+                {
+                    member.Changed -= linkedNode.Value.ValueChange;
+                    member.ItemChanged -= linkedNode.Value.ItemChange;
+                }
+            }
+            baseLinkedNodes.Clear();
+        }
+
+        private void AssetContentChanging(object sender, INodeChangeEventArgs e)
         {
             var overrideValue = OverrideType.Base;
-            var node = (AssetMemberNode)e.Member;
+            var node = (AssetMemberNode)e.Node;
             // For value change and remove, we store the current override state.
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
@@ -416,24 +444,24 @@ namespace SiliconStudio.Assets.Quantum
                     // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
                     var itemId = ItemId.Empty;
                     CollectionItemIdentifiers ids;
-                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Node.Retrieve(), out ids))
                     {
                         ids.TryGet(e.Index.Value, out itemId);
                     }
-                    removedItemIds[e.Member] = itemId;
+                    removedItemIds[e.Node] = itemId;
                 }
             }
-            previousOverrides[e.Member] = overrideValue;
+            previousOverrides[e.Node] = overrideValue;
         }
 
-        private void AssetContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void AssetContentChanged(object sender, INodeChangeEventArgs e)
         {
-            var previousOverride = previousOverrides[e.Member];
-            previousOverrides.Remove(e.Member);
+            var previousOverride = previousOverrides[e.Node];
+            previousOverrides.Remove(e.Node);
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (AssetMemberNode)e.Member;
+            var node = (AssetMemberNode)e.Node;
             if (e.ChangeType == ContentChangeType.ValueChange)
             {
                 // No index, we're changing an object that is not in a collection, let's just retrieve it's override status.
@@ -448,7 +476,7 @@ namespace SiliconStudio.Assets.Quantum
  
                     // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
                     CollectionItemIdentifiers ids;
-                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Member.Retrieve(), out ids))
+                    if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Node.Retrieve(), out ids))
                     {
                         ids.TryGet(e.Index.Value, out itemId);
                     }
@@ -458,14 +486,19 @@ namespace SiliconStudio.Assets.Quantum
             {
                 // When deleting we are always overriding (unless there is no base)
                 overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                itemId = removedItemIds[e.Member];
-                removedItemIds.Remove(e.Member);
+                itemId = removedItemIds[e.Node];
+                removedItemIds.Remove(e.Node);
             }
 
-            Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, itemId));
+            var valueChange = e as MemberNodeChangeEventArgs;
+            if (valueChange != null)
+                Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(valueChange, previousOverride, overrideValue, itemId));
+            var itemChange = e as ItemChangeEventArgs;
+            if (itemChange != null)
+                ItemChanged?.Invoke(sender, new AssetItemNodeChangeEventArgs(itemChange, previousOverride, overrideValue, itemId));
         }
 
-        private void OnBaseContentChanged(MemberNodeChangeEventArgs e, IContentNode assetContent)
+        private void OnBaseContentChanged(INodeChangeEventArgs e, IContentNode assetContent)
         {
             // Ignore base change if propagation is disabled.
             if (!Container.PropagateChangesFromBase)

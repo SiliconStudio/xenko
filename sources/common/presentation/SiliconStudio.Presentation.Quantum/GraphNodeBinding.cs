@@ -41,6 +41,8 @@ namespace SiliconStudio.Presentation.Quantum
             this.notifyChangesOnly = notifyChangesOnly;
             node.Changing += ContentChanging;
             node.Changed += ContentChanged;
+            node.ItemChanging += ContentChanging;
+            node.ItemChanged += ContentChanged;
         }
 
         /// <inheritdoc/>
@@ -48,6 +50,8 @@ namespace SiliconStudio.Presentation.Quantum
         {
             node.Changing -= ContentChanging;
             node.Changed -= ContentChanged;
+            node.ItemChanging -= ContentChanging;
+            node.ItemChanged -= ContentChanged;
         }
 
         /// <summary>
@@ -72,7 +76,7 @@ namespace SiliconStudio.Presentation.Quantum
             node.Update(value);
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
@@ -80,7 +84,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {

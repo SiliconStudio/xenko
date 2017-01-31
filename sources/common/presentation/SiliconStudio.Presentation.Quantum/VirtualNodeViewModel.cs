@@ -37,6 +37,8 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 associatedContent.Changing -= ContentChanging;
                 associatedContent.Changed -= ContentChanged;
+                associatedContent.ItemChanging -= ContentChanging;
+                associatedContent.ItemChanged -= ContentChanged;
                 associatedContent = null;
             }
             base.Destroy();
@@ -75,6 +77,8 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent = content;
             associatedContent.Changing += ContentChanging;
             associatedContent.Changed += ContentChanged;
+            associatedContent.ItemChanging += ContentChanging;
+            associatedContent.ItemChanged += ContentChanged;
         }
 
         protected virtual void SetTypedValue(object value)
@@ -84,13 +88,13 @@ namespace SiliconStudio.Presentation.Quantum
             updatingValue = false;
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanging(nameof(VirtualNodeViewModel<object>.TypedValue));
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (!updatingValue)
                 OnPropertyChanged(nameof(VirtualNodeViewModel<object>.TypedValue));

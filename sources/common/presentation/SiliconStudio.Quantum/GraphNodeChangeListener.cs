@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
-    public class GraphNodeChangeListener : INotifyContentValueChange, IDisposable
+    public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
     {
         private readonly IContentNode rootNode;
         private readonly Func<IMemberNode, IContentNode, bool> shouldRegisterNode;
@@ -41,6 +41,10 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
+        public event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -61,6 +65,8 @@ namespace SiliconStudio.Quantum
                     ((IInitializingMemberNode)memberNode).FinalizeChange += ContentFinalizeChange;
                     memberNode.Changing += ContentChanging;
                     memberNode.Changed += ContentChanged;
+                    memberNode.ItemChanging += OnItemChanging;
+                    memberNode.ItemChanged += OnItemChanged;
                     return true;
                 }
             }
@@ -79,6 +85,8 @@ namespace SiliconStudio.Quantum
                     ((IInitializingMemberNode)memberNode).FinalizeChange -= ContentFinalizeChange;
                     memberNode.Changing -= ContentChanging;
                     memberNode.Changed -= ContentChanged;
+                    memberNode.ItemChanging -= OnItemChanging;
+                    memberNode.ItemChanged -= OnItemChanged;
                     return true;
                 }
             }
@@ -170,6 +178,16 @@ namespace SiliconStudio.Quantum
         private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
         {
             Changed?.Invoke(sender, e);
+        }
+
+        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        {
+            ItemChanging?.Invoke(sender, e);
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
+        {
+            ItemChanged?.Invoke(sender, e);
         }
     }
 }

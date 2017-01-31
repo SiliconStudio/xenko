@@ -59,6 +59,13 @@ namespace SiliconStudio.Quantum.Contents
         public event EventHandler<MemberNodeChangeEventArgs> Changed;
 
         /// <inheritdoc/>
+        public event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        /// <inheritdoc/>
+        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
+
+        /// <inheritdoc/>
         public override void Update(object newValue, Index index)
         {
             Update(newValue, index, true);
@@ -74,8 +81,8 @@ namespace SiliconStudio.Quantum.Contents
                 // Better send a null index in this case than sending a wrong value.
                 var value = Value;
                 var index = collectionDescriptor.IsList ? new Index(collectionDescriptor.GetCollectionCount(value)) : Index.Empty;
-                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyContentChanging(args);
+                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
                 collectionDescriptor.Add(value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
                 {
@@ -83,7 +90,7 @@ namespace SiliconStudio.Quantum.Contents
                     MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
-                NotifyContentChanged(args);
+                NotifyItemChanged(args);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
@@ -98,8 +105,8 @@ namespace SiliconStudio.Quantum.Contents
             {
                 var index = collectionDescriptor.IsList ? itemIndex : Index.Empty;
                 var value = Value;
-                var args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyContentChanging(args);
+                var args = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
                 if (collectionDescriptor.GetCollectionCount(value) == itemIndex.Int || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(value, newItem);
@@ -114,12 +121,12 @@ namespace SiliconStudio.Quantum.Contents
                     MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
-                NotifyContentChanged(args);
+                NotifyItemChanged(args);
             }
             else if (dictionaryDescriptor != null)
             {
-                var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
-                NotifyContentChanging(args);
+                var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+                NotifyItemChanging(args);
                 var value = Value;
                 dictionaryDescriptor.AddToDictionary(value, itemIndex.Value, newItem);
                 if (value.GetType().GetTypeInfo().IsValueType)
@@ -128,7 +135,7 @@ namespace SiliconStudio.Quantum.Contents
                     MemberDescriptor.Set(containerValue, value);
                 }
                 UpdateReferences();
-                NotifyContentChanged(args);
+                NotifyItemChanged(args);
             }
             else
                 throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
@@ -139,8 +146,8 @@ namespace SiliconStudio.Quantum.Contents
         public override void Remove(object item, Index itemIndex)
         {
             if (itemIndex.IsEmpty) throw new ArgumentException(@"The given index should not be empty.", nameof(itemIndex));
-            var args = new MemberNodeChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
-            NotifyContentChanging(args);
+            var args = new ItemChangeEventArgs(this, itemIndex, ContentChangeType.CollectionRemove, item, null);
+            NotifyItemChanging(args);
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
             var value = Value;
@@ -168,7 +175,7 @@ namespace SiliconStudio.Quantum.Contents
                 MemberDescriptor.Set(containerValue, value);
             }
             UpdateReferences();
-            NotifyContentChanged(args);
+            NotifyItemChanged(args);
         }
 
         /// <summary>
@@ -191,6 +198,18 @@ namespace SiliconStudio.Quantum.Contents
             FinalizeChange?.Invoke(this, args);
         }
 
+        protected void NotifyItemChanging(ItemChangeEventArgs args)
+        {
+            PrepareChange?.Invoke(this, args);
+            ItemChanging?.Invoke(this, args);
+        }
+
+        protected void NotifyItemChanged(ItemChangeEventArgs args)
+        {
+            ItemChanged?.Invoke(this, args);
+            FinalizeChange?.Invoke(this, args);
+        }
+
         protected internal override void UpdateFromMember(object newValue, Index index)
         {
             Update(newValue, index, false);
@@ -200,14 +219,19 @@ namespace SiliconStudio.Quantum.Contents
         {
             var oldValue = Retrieve(index);
             MemberNodeChangeEventArgs args = null;
+            ItemChangeEventArgs itemArgs = null;
             if (sendNotification)
             {
                 if (index == Index.Empty)
+                {
                     args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
+                    NotifyContentChanging(args);
+                }
                 else
-                    args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.CollectionUpdate, oldValue, newValue);
-
-                NotifyContentChanging(args);
+                {
+                    itemArgs = new ItemChangeEventArgs(this, index, ContentChangeType.CollectionUpdate, oldValue, newValue);
+                    NotifyItemChanging(itemArgs);
+                }
             }
 
             if (!index.IsEmpty)
@@ -237,7 +261,14 @@ namespace SiliconStudio.Quantum.Contents
             UpdateReferences();
             if (sendNotification)
             {
-                NotifyContentChanged(args);
+                if (index == Index.Empty)
+                {
+                    NotifyContentChanged(args);
+                }
+                else
+                {
+                    NotifyItemChanging(itemArgs);
+                }
             }
         }
 

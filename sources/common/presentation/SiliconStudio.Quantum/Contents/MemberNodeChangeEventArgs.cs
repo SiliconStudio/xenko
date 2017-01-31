@@ -62,4 +62,51 @@ namespace SiliconStudio.Quantum.Contents
 
         IContentNode INodeChangeEventArgs.Node => Member;
     }
+
+    /// <summary>
+    /// Arguments of the <see cref="IContentNode.Changing"/> and <see cref="IContentNode.Changed"/> events.
+    /// </summary>
+    public class ItemChangeEventArgs : EventArgs, INodeChangeEventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemberNodeChangeEventArgs"/> class.
+        /// </summary>
+        /// <param name="index">The index in the member where the change occurred.</param>
+        /// <param name="changeType">The type of change that occurred.</param>
+        /// <param name="oldValue">The old value of the member or the item of the member that has changed.</param>
+        /// <param name="newValue">The new value of the member or the item of the member that has changed.</param>
+        public ItemChangeEventArgs([NotNull] IContentNode content, Index index, ContentChangeType changeType, object oldValue, object newValue)
+        {
+            Content = content;
+            Index = index;
+            ChangeType = changeType;
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+
+        [NotNull]
+        public IContentNode Content { get; }
+
+        /// <summary>
+        /// Gets the index where the change occurred.
+        /// </summary>
+        public Index Index { get; }
+
+        /// <summary>
+        /// The type of change.
+        /// </summary>
+        public ContentChangeType ChangeType { get; }
+
+        /// <summary>
+        /// Gets the old value of the member or the item of the member that has changed.
+        /// </summary>
+        public object OldValue { get; }
+
+        /// <summary>
+        /// Gets the new value of the member or the item of the member that has changed.
+        /// </summary>
+        public object NewValue { get; }
+
+        public IContentNode Node => Content;
+    }
 }

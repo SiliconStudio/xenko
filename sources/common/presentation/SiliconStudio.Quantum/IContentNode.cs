@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -63,6 +64,14 @@ namespace SiliconStudio.Quantum
         /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.
         /// </summary>
         IEnumerable<Index> Indices { get; }
+
+        //event EventHandler<ItemChangeEventArgs> PrepareItemChange;
+
+        //event EventHandler<ItemChangeEventArgs> FinalizeItemChange;
+
+        //event EventHandler<ItemChangeEventArgs> ItemChanging;
+
+        //event EventHandler<ItemChangeEventArgs> ItemChanged;
 
         /// <summary>
         /// Retrieves the value of this content.
