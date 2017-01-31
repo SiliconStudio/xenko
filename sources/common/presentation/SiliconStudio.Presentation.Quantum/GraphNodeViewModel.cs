@@ -9,7 +9,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -506,6 +505,8 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 memberNode.Changing += ContentChanging;
                 memberNode.Changed += ContentChanged;
+                memberNode.ItemChanging += ContentChanging;
+                memberNode.ItemChanged += ContentChanged;
             }
         }
 
@@ -528,11 +529,13 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 memberNode.Changing -= ContentChanging;
                 memberNode.Changed -= ContentChanged;
+                memberNode.ItemChanging -= ContentChanging;
+                memberNode.ItemChanged -= ContentChanged;
             }
             base.Destroy();
         }
 
-        private void ContentChanging(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanging(object sender, INodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -541,7 +544,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, INodeChangeEventArgs e)
         {
             if (IsValidChange(e))
             {
@@ -560,7 +563,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        private bool IsValidChange(MemberNodeChangeEventArgs e)
+        private bool IsValidChange(INodeChangeEventArgs e)
         {
             switch (e.ChangeType)
             {

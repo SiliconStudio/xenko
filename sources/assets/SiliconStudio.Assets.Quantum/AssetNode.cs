@@ -135,7 +135,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             Changed += ContentChanged;
             IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-            CanOverride =MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+            CanOverride = MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }
 
         public bool IsNonIdentifiableCollectionContent { get; }

@@ -65,14 +65,6 @@ namespace SiliconStudio.Quantum
         /// </summary>
         IEnumerable<Index> Indices { get; }
 
-        //event EventHandler<ItemChangeEventArgs> PrepareItemChange;
-
-        //event EventHandler<ItemChangeEventArgs> FinalizeItemChange;
-
-        //event EventHandler<ItemChangeEventArgs> ItemChanging;
-
-        //event EventHandler<ItemChangeEventArgs> ItemChanged;
-
         /// <summary>
         /// Retrieves the value of this content.
         /// </summary>

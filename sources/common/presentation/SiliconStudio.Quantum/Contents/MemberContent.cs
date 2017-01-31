@@ -224,7 +224,7 @@ namespace SiliconStudio.Quantum.Contents
             {
                 if (index == Index.Empty)
                 {
-                    args = new MemberNodeChangeEventArgs(this, index, ContentChangeType.ValueChange, oldValue, newValue);
+                    args = new MemberNodeChangeEventArgs(this, oldValue, newValue);
                     NotifyContentChanging(args);
                 }
                 else
