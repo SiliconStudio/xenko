@@ -14,6 +14,7 @@ using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
@@ -21,7 +22,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// A session for editing a package.
     /// </summary>
-    public sealed class PackageSession : IDisposable
+    public sealed class PackageSession : IDisposable, IAssetFinder
     {
         private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
@@ -286,6 +287,28 @@ namespace SiliconStudio.Assets
             var analysis = new PackageAnalysis(package, GetPackageAnalysisParametersForLoad());
             analysis.Run(logger);
 
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return Packages.Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return Packages.Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAssetFromAttachedReference(object container)
+        {
+            var reference = AttachedReferenceManager.GetAttachedReference(container);
+            return reference != null ? (FindAsset(reference.Id) ?? FindAsset(reference.Url)) : null;
         }
 
         /// <summary>
