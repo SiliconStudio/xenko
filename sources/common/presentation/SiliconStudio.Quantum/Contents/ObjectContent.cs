@@ -34,6 +34,9 @@ namespace SiliconStudio.Quantum.Contents
         public IReadOnlyCollection<IMemberNode> Members => children;
 
         /// <inheritdoc/>
+        public override bool IsReference => ItemReferences != null;
+
+        /// <inheritdoc/>
         protected sealed override object Value => value;
 
         /// <inheritdoc/>
@@ -92,8 +95,6 @@ namespace SiliconStudio.Quantum.Contents
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
 
             // ReSharper disable once HeuristicUnreachableCode - this code is reachable only at the specific moment we call this method!
-            if (TargetReference != null && !allowIfReference)
-                throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
             if (ItemReferences != null && !allowIfReference)
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 

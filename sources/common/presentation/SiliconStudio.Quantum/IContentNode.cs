@@ -51,8 +51,6 @@ namespace SiliconStudio.Quantum
         /// </summary>
         bool IsReference { get; }
 
-        ObjectReference TargetReference { get; }
-
         ReferenceEnumerable ItemReferences { get; }
 
         /// <summary>

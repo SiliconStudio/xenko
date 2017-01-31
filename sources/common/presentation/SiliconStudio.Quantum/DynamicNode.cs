@@ -276,12 +276,7 @@ namespace SiliconStudio.Quantum
 
         protected override IContentNode GetTargetNode()
         {
-            var objectReference = Node.TargetReference;
-            if (Node.IsReference && objectReference != null)
-            {
-                return objectReference.TargetNode;
-            }
-            return Node;
+            return (Node as IMemberNode)?.Target;
         }
     }
 

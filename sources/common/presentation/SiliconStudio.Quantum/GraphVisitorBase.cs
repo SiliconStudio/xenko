@@ -97,7 +97,7 @@ namespace SiliconStudio.Quantum
         /// <param name="currentPath">The path of the node being visited.</param>
         protected virtual void VisitSingleTarget(IContentNode node, GraphNodePath currentPath)
         {
-            var objectReference = node.TargetReference;
+            var objectReference = (node as IMemberNode)?.TargetReference;
             if (objectReference?.TargetNode != null)
             {
                 var targetPath = currentPath.PushTarget();

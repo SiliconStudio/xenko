@@ -7,6 +7,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -67,6 +68,8 @@ namespace SiliconStudio.Quantum
         /// </summary>
         [NotNull]
         IObjectNode Parent { get; }
+
+        ObjectReference TargetReference { get; }
 
         /// <summary>
         /// Gets the target of this node, if this node contains a reference to another node. 

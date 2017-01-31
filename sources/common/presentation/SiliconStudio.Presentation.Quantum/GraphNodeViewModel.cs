@@ -204,7 +204,7 @@ namespace SiliconStudio.Presentation.Quantum
             var targetNode = GetTargetNode(SourceNode, Index);
             if (SourceNode != targetNode)
             {
-                var objectReference = SourceNode.TargetReference;
+                var objectReference = (SourceNode as IMemberNode)?.TargetReference;
                 var referenceEnumerable = SourceNode.ItemReferences;
                 if (objectReference != null && targetNode != objectReference.TargetNode)
                 {
@@ -233,7 +233,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 if (targetNode.IsReference)
                 {
-                    var objectReference = targetNode.TargetReference;
+                    var objectReference = (targetNode as IMemberNode)?.TargetReference;
                     if (objectReference != null)
                     {
                         throw new GraphViewModelConsistencyException(this, "The target node does not match the target of the source node object reference.");
@@ -296,7 +296,7 @@ namespace SiliconStudio.Presentation.Quantum
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.IsReference)
             {
-                var objectReference = SourceNode.TargetReference;
+                var objectReference = (SourceNode as IMemberNode)?.TargetReference;
                 // Discard the children of the referenced object if requested by the property provider
                 if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference))
                     return;
@@ -440,7 +440,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
-            var objectReference = sourceNode.TargetReference;
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
             if (objectReference != null)
             {
                 return objectReference.TargetNode;
@@ -468,7 +468,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
-            var objectReference = sourceNode.TargetReference;
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
             if (objectReference != null)
             {
                 return sourceNodePath.PushTarget();

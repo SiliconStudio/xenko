@@ -161,10 +161,10 @@ namespace SiliconStudio.Quantum
                     switch (element.Type)
                     {
                         case ElementType.Member:
-                            Current = ((IObjectNode)Current).Members.Single(x => string.Equals(x.Name, element.Value));
+                            Current = ((IObjectNode)Current)[(string)element.Value];
                             break;
                         case ElementType.Target:
-                            Current = Current.TargetReference.TargetNode;
+                            Current = ((IMemberNode)Current).Target;
                             break;
                         case ElementType.Index:
                             Current = Current.ItemReferences[(Index)element.Value].TargetNode;
@@ -413,7 +413,7 @@ namespace SiliconStudio.Quantum
                 {
                     // If this is a reference, add a target element to the path
                     var node = result.GetNode();
-                    var objectReference = node.TargetReference;
+                    var objectReference = (node as IMemberNode)?.TargetReference;
                     if (objectReference?.TargetNode != null)
                     {
                         result = result.PushTarget();
@@ -439,14 +439,13 @@ namespace SiliconStudio.Quantum
                 {
                     case ElementType.Member:
                         var name = (string)itemPath.Value;
-                        node = ((IObjectNode)node).Members.Single(x => x.Name == name);
+                        node = ((IObjectNode)node)[name];
                         memberPath.Push(((MemberContent)node).MemberDescriptor);
                         break;
                     case ElementType.Target:
                         if (i != path.Count - 1)
                         {
-                            var objectRefererence = node.TargetReference;
-                            node = objectRefererence.TargetNode;
+                            node = ((IMemberNode)node).Target;
                         }
                         break;
                     case ElementType.Index:

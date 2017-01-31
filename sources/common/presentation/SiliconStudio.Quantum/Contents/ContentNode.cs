@@ -25,7 +25,6 @@ namespace SiliconStudio.Quantum.Contents
             Guid = guid;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
-            TargetReference = reference as ObjectReference;
             ItemReferences = reference as ReferenceEnumerable;
         }
 
@@ -39,10 +38,9 @@ namespace SiliconStudio.Quantum.Contents
         public ITypeDescriptor Descriptor { get; }
 
         /// <inheritdoc/>
-        public bool IsReference => TargetReference != null || ItemReferences != null;
+        public abstract bool IsReference { get; }
 
-        public ObjectReference TargetReference { get; }
-
+        /// <inheritdoc/>
         public ReferenceEnumerable ItemReferences { get; }
 
         /// <inheritdoc/>

@@ -37,14 +37,14 @@ namespace SiliconStudio.Assets.Quantum
         protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.TargetReference;
+                return (targetNode as IMemberNode)?.TargetReference;
 
             // Special case for objects that are identifiable: the object must be linked to the base only if it has the same id
             if (sourceReference.ObjectValue != null)
             {
                 if (sourceReference.Index.IsEmpty)
                 {
-                    return targetNode.TargetReference;
+                    return (targetNode as IMemberNode)?.TargetReference;
                 }
 
                 var sourceAssetNode = (IAssetNode)sourceNode;

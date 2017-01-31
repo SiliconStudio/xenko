@@ -163,7 +163,7 @@ namespace SiliconStudio.Quantum
         protected virtual ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
             if (sourceReference.Index.IsEmpty)
-                return targetNode.TargetReference;
+                return (targetNode as IMemberNode)?.TargetReference;
 
             var targetReference = targetNode.ItemReferences;
             return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;

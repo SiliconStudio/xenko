@@ -157,7 +157,7 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.IsReference)
                 {
-                    node.TargetReference?.Refresh(node, this);
+                    (node as IMemberNode)?.TargetReference?.Refresh(node, this);
                     node.ItemReferences?.Refresh(node, this);
                 }
                 else

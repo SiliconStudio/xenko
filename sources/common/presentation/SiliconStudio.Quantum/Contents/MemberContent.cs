@@ -26,6 +26,7 @@ namespace SiliconStudio.Quantum.Contents
             MemberDescriptor = memberDescriptor;
             Name = memberDescriptor.Name;
             nodeContainer = nodeBuilder.NodeContainer;
+            TargetReference = reference as ObjectReference;
         }
 
         /// <inheritdoc/>
@@ -39,8 +40,14 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor MemberDescriptor { get; protected set; }
 
+        public override bool IsReference => TargetReference != null || ItemReferences != null;
+
         /// <inheritdoc/>
-        public IObjectNode Target { get { if (TargetReference == null) throw new InvalidOperationException("This node does not contain an ObjectReference"); return TargetReference.TargetNode; } }
+        public ObjectReference TargetReference { get; }
+
+        /// <inheritdoc/>
+        [CanBeNull]
+        public IObjectNode Target => TargetReference?.TargetNode;
 
         /// <inheritdoc/>
         public event EventHandler<INodeChangeEventArgs> PrepareChange;
