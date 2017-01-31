@@ -438,7 +438,7 @@ namespace SiliconStudio.Assets.Quantum
             }
             else if(!node.IsNonIdentifiableCollectionContent)
             {
-                overrideValue = e.ChangeType == ContentChangeType.CollectionAdd ? node.GetItemOverride(e.Index) : OverrideType.New;
+                overrideValue = node.GetItemOverride(e.Index);
                 if (e.ChangeType == ContentChangeType.CollectionRemove)
                 {
                     // For remove, we also collect the id of the item that will be removed, so we can pass it to the Changed event.
@@ -473,7 +473,7 @@ namespace SiliconStudio.Assets.Quantum
                 if (!node.IsNonIdentifiableCollectionContent)
                 {
                     overrideValue = node.GetItemOverride(e.Index);
- 
+
                     // Also retrieve the id of the modified item (this should fail only if the collection doesn't have identifiable items)
                     CollectionItemIdentifiers ids;
                     if (CollectionItemIdHelper.TryGetCollectionItemIds(e.Node.Retrieve(), out ids))
@@ -484,10 +484,13 @@ namespace SiliconStudio.Assets.Quantum
             }
             else
             {
-                // When deleting we are always overriding (unless there is no base)
-                overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
-                itemId = removedItemIds[e.Node];
-                removedItemIds.Remove(e.Node);
+                // When deleting we are always overriding (unless there is no base or non-identifiable items)
+                if (!node.IsNonIdentifiableCollectionContent)
+                {
+                    overrideValue = node.BaseContent != null && !UpdatingPropertyFromBase ? OverrideType.New : OverrideType.Base;
+                    itemId = removedItemIds[e.Node];
+                    removedItemIds.Remove(e.Node);
+                }
             }
 
             var valueChange = e as MemberNodeChangeEventArgs;

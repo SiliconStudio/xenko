@@ -596,7 +596,7 @@ namespace SiliconStudio.Assets
                                     new List<KeyValuePair<string, string>>
                                     {
                                     new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
-                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileName())
                                     });
 
                                 project.AddItem("Compile", generatedInclude,
@@ -605,7 +605,7 @@ namespace SiliconStudio.Assets
                                     new KeyValuePair<string, string>("AutoGen", "True"),
                                     new KeyValuePair<string, string>("DesignTime", "True"),
                                     new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
-                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileName())
                                     });
                             }
                             else
@@ -959,7 +959,7 @@ namespace SiliconStudio.Assets
                 assetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
             }
 
-            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
+            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileName()}]";
 
             // Display this message at least once if the logger does not log progress (And it shouldn't in this case)
             var loggerResult = log as LoggerResult;
@@ -1034,7 +1034,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = assetFile.AssetPath;
+                var assetPath = assetFile.AssetLocation;
 
                 var assetFullPath = fileUPath.ToWindowsPath();
                 var assetContent = assetFile.AssetContent;
@@ -1205,7 +1205,7 @@ namespace SiliconStudio.Assets
                     if (asset.SourceFolder == null)
                     {
                         //var assetProjectFolder = asset.Location.FullPath;
-                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileNameWithoutExtension()));
                         if (lib != null)
                         {
                             asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);
