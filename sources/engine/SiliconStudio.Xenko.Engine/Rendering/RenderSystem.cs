@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
         private CompiledCommandList[] commandLists;
         private Texture[] renderTargets;
 
-        private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
+        private readonly Dictionary<Type, List<RootRenderFeature>> renderFeaturesByType = new Dictionary<Type, List<RootRenderFeature>>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
 
@@ -483,12 +483,16 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderObject"></param>
         public void AddRenderObject(RenderObject renderObject)
         {
-            RootRenderFeature renderFeature;
+            List<RootRenderFeature> renderFeatures;
 
-            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeature))
+            if (renderFeaturesByType.TryGetValue(renderObject.GetType(), out renderFeatures))
             {
-                // Found it
-                renderFeature.AddRenderObject(renderObject);
+                // Try each available compatible render feature
+                foreach (var renderFeature in renderFeatures)
+                {
+                    if (renderFeature.TryAddRenderObject(renderObject))
+                        break;
+                }
             }
         }
 
@@ -528,6 +532,7 @@ namespace SiliconStudio.Xenko.Rendering
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
+                {
                     renderFeature.Index = e.Index;
                     renderFeature.RenderSystem = this;
 
@@ -536,13 +541,27 @@ namespace SiliconStudio.Xenko.Rendering
 
                     renderFeature.RenderStageSelectors.CollectionChanged += RenderStageSelectors_CollectionChanged;
 
-                    renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeature);
+                    List<RootRenderFeature> renderFeatures;
+                    if (!renderFeaturesByType.TryGetValue(renderFeature.SupportedRenderObjectType, out renderFeatures))
+                        renderFeaturesByType.Add(renderFeature.SupportedRenderObjectType, renderFeatures = new List<RootRenderFeature>());
+
+                    renderFeatures.Add(renderFeature);
                     break;
+                }
                 case NotifyCollectionChangedAction.Remove:
+                {
                     renderFeature.RenderStageSelectors.CollectionChanged -= RenderStageSelectors_CollectionChanged;
-                    renderFeaturesByType.Remove(renderFeature.SupportedRenderObjectType);
+
+                    List<RootRenderFeature> renderFeatures;
+                    if (renderFeaturesByType.TryGetValue(renderFeature.SupportedRenderObjectType, out renderFeatures))
+                    {
+                        renderFeatures.Remove(renderFeature);
+                        if (renderFeatures.Count == 0)
+                            renderFeaturesByType.Remove(renderFeature.SupportedRenderObjectType);
+                    }
                     renderFeature.Unload();
                     break;
+                }
             }
         }
 

@@ -222,6 +222,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Lightprobes\BowyerWatsonTetrahedralization.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
     <Compile Include="Rendering\Images\Dither\Dither2.cs">
       <AutoGen>True</AutoGen>
@@ -474,6 +475,7 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
