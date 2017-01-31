@@ -98,6 +98,10 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Vector3 HeadAngularVelocity => currentPoses.AngularVelocityHead;
 
+        public override TouchController LeftHand => null;
+
+        public override TouchController RightHand => null;
+
         public override bool CanInitialize
         {
             get

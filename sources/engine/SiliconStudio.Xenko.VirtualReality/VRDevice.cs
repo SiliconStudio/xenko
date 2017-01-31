@@ -50,6 +50,10 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract Vector3 HeadAngularVelocity { get; }
 
+        public abstract TouchController LeftHand { get; }
+
+        public abstract TouchController RightHand { get; }
+
         /// <summary>
         /// Allows you to scale the view, effectively it will change the size of the player in respect to the world, turning it into a giant or a tiny ant.
         /// </summary>

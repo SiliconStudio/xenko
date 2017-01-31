@@ -121,7 +121,10 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Vector3 HeadLinearVelocity { get; }
 
         public override Vector3 HeadAngularVelocity { get; }
-//to improve and verify with Fove api.
+
+        public override TouchController LeftHand => null;
+
+        public override TouchController RightHand => null;
 
         public override bool CanInitialize => Fove.Startup() && Fove.IsHardwareReady();
     }
