@@ -78,6 +78,7 @@
     <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
     <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
     <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
+    <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
