@@ -113,8 +113,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override float RenderFrameScaling { get; set; } = 1.2f;
 
         public override DeviceState State => DeviceState.Valid;
-        public override Vector3 HeadPosition { get; }
 
+        public override Vector3 HeadPosition { get; }
 
         public override Quaternion HeadRotation { get; }
 

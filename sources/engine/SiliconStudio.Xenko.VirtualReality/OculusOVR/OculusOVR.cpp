@@ -290,6 +290,7 @@ extern "C" {
 		float AngularAccelerationLeftHand[3];
 		float LinearVelocityLeftHand[3];
 		float LinearAccelerationLeftHand[3];
+		int StateLeftHand;
 
 		//Right hand
 		float PosRightHand[3];
@@ -298,6 +299,7 @@ extern "C" {
 		float AngularAccelerationRightHand[3];
 		float LinearVelocityRightHand[3];
 		float LinearAccelerationRightHand[3];
+		int StateRightHand;
 	};
 #pragma pack(pop)
 
@@ -342,6 +344,7 @@ extern "C" {
 		memcpy(properties->AngularAccelerationLeftHand, &session->CurrentState.HandPoses[0].AngularAcceleration, sizeof(float) * 3);
 		memcpy(properties->LinearVelocityLeftHand, &session->CurrentState.HandPoses[0].LinearVelocity, sizeof(float) * 3);
 		memcpy(properties->LinearAccelerationLeftHand, &session->CurrentState.HandPoses[0].LinearAcceleration, sizeof(float) * 3);
+		properties->StateLeftHand = session->CurrentState.HandStatusFlags[0];
 
 		memcpy(properties->PosRightHand, &session->CurrentState.HandPoses[1].ThePose.Position, sizeof(float) * 3);
 		memcpy(properties->RotRightHand, &session->CurrentState.HandPoses[1].ThePose.Orientation, sizeof(float) * 4);
@@ -349,6 +352,7 @@ extern "C" {
 		memcpy(properties->AngularAccelerationRightHand, &session->CurrentState.HandPoses[1].AngularAcceleration, sizeof(float) * 3);
 		memcpy(properties->LinearVelocityRightHand, &session->CurrentState.HandPoses[1].LinearVelocity, sizeof(float) * 3);
 		memcpy(properties->LinearAccelerationRightHand, &session->CurrentState.HandPoses[1].LinearAcceleration, sizeof(float) * 3);
+		properties->StateRightHand = session->CurrentState.HandStatusFlags[1];
 	}
 
 	DLL_EXPORT_API npBool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)

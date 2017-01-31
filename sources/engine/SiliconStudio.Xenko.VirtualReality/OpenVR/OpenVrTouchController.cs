@@ -37,17 +37,20 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
             }
 
-            controller?.Update();
-
-            Matrix mat;
-            Vector3 vel, angVel;
-            internalState = OpenVR.GetControllerPose(controllerIndex, out mat, out vel, out angVel);
-            if (internalState != DeviceState.Invalid)
+            if (controller != null)
             {
-                Vector3 scale;
-                mat.Decompose(out scale, out currentRot, out currentPos);
-                currentLinearVelocity = vel;
-                currentAngularVelocity = new Vector3(MathUtil.DegreesToRadians(angVel.X), MathUtil.DegreesToRadians(angVel.Y) , MathUtil.DegreesToRadians(angVel.Z));
+                controller.Update();
+
+                Matrix mat;
+                Vector3 vel, angVel;
+                internalState = OpenVR.GetControllerPose(controllerIndex, out mat, out vel, out angVel);
+                if (internalState != DeviceState.Invalid)
+                {
+                    Vector3 scale;
+                    mat.Decompose(out scale, out currentRot, out currentPos);
+                    currentLinearVelocity = vel;
+                    currentAngularVelocity = new Vector3(MathUtil.DegreesToRadians(angVel.X), MathUtil.DegreesToRadians(angVel.Y), MathUtil.DegreesToRadians(angVel.Z));
+                }
             }
 
             base.Update(gameTime);

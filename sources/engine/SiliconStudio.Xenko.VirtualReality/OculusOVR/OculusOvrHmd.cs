@@ -19,6 +19,9 @@ namespace SiliconStudio.Xenko.VirtualReality
         private IntPtr ovrSession;
         private Texture[] textures;
 
+        private OculusTouchController leftHandController;
+        private OculusTouchController rightHandController;
+
         internal OculusOvrHmd(IServiceRegistry registry) : base(registry)
         {
         }
@@ -58,6 +61,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             RenderFrame = Texture.New2D(device, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
+            leftHandController = new OculusTouchController(TouchControllerHand.Left);
+            rightHandController = new OculusTouchController(TouchControllerHand.Right);
+
             base.Initialize(device, requireMirror);
         }
 
@@ -67,6 +73,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             OculusOvr.Update(ovrSession);
             OculusOvr.GetPosesProperties(ovrSession, ref currentPoses);
+            leftHandController.Update(ref currentPoses);
+            rightHandController.Update(ref currentPoses);
         }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
@@ -98,9 +106,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Vector3 HeadAngularVelocity => currentPoses.AngularVelocityHead;
 
-        public override TouchController LeftHand => null;
+        public override TouchController LeftHand => leftHandController;
 
-        public override TouchController RightHand => null;
+        public override TouchController RightHand => rightHandController;
 
         public override bool CanInitialize
         {
