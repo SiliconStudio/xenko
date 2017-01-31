@@ -112,7 +112,7 @@ namespace SiliconStudio.Quantum
         /// <param name="currentPath">The path of the node being visited.</param>
         public virtual void VisitEnumerableTargets(IContentNode node, GraphNodePath currentPath)
         {
-            var enumerableReference = node.ItemReferences;
+            var enumerableReference = (node as IObjectNode)?.ItemReferences;
             if (enumerableReference != null)
             {
                 foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))

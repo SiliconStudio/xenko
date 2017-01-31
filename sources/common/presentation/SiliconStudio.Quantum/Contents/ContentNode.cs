@@ -6,7 +6,6 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Contents
 {
@@ -18,14 +17,13 @@ namespace SiliconStudio.Quantum.Contents
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         protected bool isSealed;
 
-        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        protected ContentNode(Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
         {
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
             Guid = guid;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
-            ItemReferences = reference as ReferenceEnumerable;
         }
 
         /// <inheritdoc/>
@@ -39,12 +37,6 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public abstract bool IsReference { get; }
-
-        /// <inheritdoc/>
-        public ReferenceEnumerable ItemReferences { get; }
-
-        /// <inheritdoc/>
-        public IEnumerable<Index> Indices => GetIndices();
 
         /// <inheritdoc/>
         public Guid Guid { get; }
@@ -93,15 +85,6 @@ namespace SiliconStudio.Quantum.Contents
         /// </remarks>
         protected internal abstract void UpdateFromMember(object newValue, Index index);
 
-        private IEnumerable<Index> GetIndices()
-        {
-            var enumRef = ItemReferences;
-            if (enumRef != null)
-                return enumRef.Indices;
-
-            return GetIndices(this);
-        }
-
         public static IEnumerable<Index> GetIndices([NotNull] IContentNode node)
         {
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
@@ -111,14 +94,6 @@ namespace SiliconStudio.Quantum.Contents
             }
             var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
             return dictionaryDescriptor?.GetKeys(node.Retrieve()).Cast<object>().Select(x => new Index(x));
-        }
-
-        /// <inheritdoc/>
-        public IObjectNode IndexedTarget(Index index)
-        {
-            if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
-            if (ItemReferences == null) throw new InvalidOperationException(@"The node does not contain enumerable references.");
-            return ItemReferences[index].TargetNode;
         }
 
         /// <summary>

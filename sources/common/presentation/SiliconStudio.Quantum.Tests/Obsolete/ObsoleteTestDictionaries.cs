@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             Assert.That(model["StringClassDic"].Retrieve(), Is.SameAs(obj.StringClassDic));
             //Assert.That(model["StringClassDic"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             var enumerator = obj.StringClassDic.GetEnumerator();
-            foreach (var reference in model["StringClassDic"].ItemReferences)
+            foreach (var reference in model["StringClassDic"].Target.ItemReferences)
             {
                 enumerator.MoveNext();
                 var keyValuePair = enumerator.Current;

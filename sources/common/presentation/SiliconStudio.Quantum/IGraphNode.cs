@@ -47,6 +47,21 @@ namespace SiliconStudio.Quantum
         /// </summary>
         IReadOnlyCollection<IMemberNode> Members { get; }
 
+        ReferenceEnumerable ItemReferences { get; }
+
+        /// <summary>
+        /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.
+        /// </summary>
+        IEnumerable<Index> Indices { get; }
+
+        /// <summary>
+        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>
+        /// <exception cref="ArgumentException">The index is empty.</exception>
+        /// <exception cref="KeyNotFoundException">The index does not exist.</exception>
+        IObjectNode IndexedTarget(Index index);
+
         /// <summary>
         /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
         /// </summary>

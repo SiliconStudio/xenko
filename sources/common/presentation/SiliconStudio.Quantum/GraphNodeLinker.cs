@@ -165,7 +165,7 @@ namespace SiliconStudio.Quantum
             if (sourceReference.Index.IsEmpty)
                 return (targetNode as IMemberNode)?.TargetReference;
 
-            var targetReference = targetNode.ItemReferences;
+            var targetReference = (targetNode as IObjectNode)?.ItemReferences;
             return targetReference != null && targetReference.HasIndex(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }

@@ -119,9 +119,10 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionRemove:
                     if (node.IsReference && e.OldValue != null)
                     {
-                        var removedNode = node.ItemReferences[e.Index].TargetNode;
+                        var removedNode = (node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
                         if (removedNode != null)
                         {
+                            // TODO: review this
                             visitor.Visit(removedNode, node as MemberContent);
                         }
                     }
@@ -151,11 +152,12 @@ namespace SiliconStudio.Quantum
                         if (!e.Index.IsEmpty)
                         {
                             index = e.Index;
-                            addedNode = e.Node.ItemReferences[e.Index].TargetNode;
+                            addedNode = (e.Node as IObjectNode)?.ItemReferences[e.Index].TargetNode;
                         }
                         else
                         {
-                            var reference = e.Node.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
+                            // TODO: review this
+                            var reference = (e.Node as IObjectNode)?.ItemReferences.First(x => x.TargetNode.Retrieve() == e.NewValue);
                             index = reference.Index;
                             addedNode = reference.TargetNode;
                         }

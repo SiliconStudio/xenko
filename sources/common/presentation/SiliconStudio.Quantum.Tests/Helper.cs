@@ -51,8 +51,7 @@ namespace SiliconStudio.Quantum.Tests
             {
                 // A node with an ObjectContent representing a collection of reference types should contain an enumerable reference.
                 Assert.AreEqual(true, node.IsReference);
-                Assert.Null(node.TargetReference);
-                Assert.NotNull(node.ItemReferences);
+                Assert.NotNull(((IObjectNode)node).ItemReferences);
             }
             else
             {

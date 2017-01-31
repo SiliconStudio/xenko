@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -370,8 +369,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
             Index index = new Index(1);
-            IContentNode tempQualifier = rootNode[nameof(ComplexClass.Member6)];
-            tempQualifier.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member6)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
             Assert.AreEqual(obj[2], (int)dynNode.Member6[1].Member1);
             Assert.AreEqual(instance.Member6[1].Member1, (int)dynNode.Member6[1].Member1);
         }
@@ -492,8 +490,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj[1], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);
             Index index = new Index(1);
-            IContentNode tempQualifier = rootNode[nameof(ComplexClass.Member7)];
-            tempQualifier.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
+            rootNode[nameof(ComplexClass.Member7)].Target.IndexedTarget(index)[nameof(SimpleClass.Member1)].Update(obj[2]);
             Assert.AreEqual(obj[2], (string)dynNode.Member7[1].Member1);
             Assert.AreEqual(instance.Member7[1].Member1, (string)dynNode.Member7[1].Member1);
         }

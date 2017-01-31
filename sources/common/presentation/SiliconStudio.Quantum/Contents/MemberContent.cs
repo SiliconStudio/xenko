@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum.Contents
         private readonly NodeContainer nodeContainer;
 
         public MemberContent([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive, reference)
+            : base(guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
@@ -40,7 +40,7 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor MemberDescriptor { get; protected set; }
 
-        public override bool IsReference => TargetReference != null || ItemReferences != null;
+        public override bool IsReference => TargetReference != null;
 
         /// <inheritdoc/>
         public ObjectReference TargetReference { get; }

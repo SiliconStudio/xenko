@@ -22,14 +22,6 @@ namespace SiliconStudio.Quantum
         IReadOnlyCollection<INodeCommand> Commands { get; }
 
         /// <summary>
-        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
-        /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>
-        /// <exception cref="ArgumentException">The index is empty.</exception>
-        /// <exception cref="KeyNotFoundException">The index does not exist.</exception>
-        IObjectNode IndexedTarget(Index index);
-
-        /// <summary>
         /// Gets the expected type of for the content of this node.
         /// </summary>
         /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
@@ -50,13 +42,6 @@ namespace SiliconStudio.Quantum
         /// Gets wheither this content holds a reference or is a direct value.
         /// </summary>
         bool IsReference { get; }
-
-        ReferenceEnumerable ItemReferences { get; }
-
-        /// <summary>
-        /// Gets all the indices in the value of this content, if it is a collection. Otherwise, this property returns null.
-        /// </summary>
-        IEnumerable<Index> Indices { get; }
 
         /// <summary>
         /// Retrieves the value of this content.

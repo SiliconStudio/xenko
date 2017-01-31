@@ -8,7 +8,6 @@ using System.Dynamic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -155,7 +154,8 @@ namespace SiliconStudio.Quantum
         IEnumerator IEnumerable.GetEnumerator()
         {
             var node = GetTargetNode();
-            var indices = Node.Indices.Select(x => x.Value);
+            // TODO: review this, is there a typo here?
+            var indices = (Node as IObjectNode)?.Indices.Select(x => x.Value);
             if (indices == null)
                 throw new InvalidOperationException("This node is not enumerable.");
 
@@ -178,7 +178,7 @@ namespace SiliconStudio.Quantum
         {
             if (node.IsReference)
             {
-                var reference = node.ItemReferences;
+                var reference = (node as IObjectNode)?.ItemReferences;
                 if (reference?.HasIndex(index) ?? false)
                 {
                     return true;
@@ -205,7 +205,7 @@ namespace SiliconStudio.Quantum
         {
             if (node.IsReference)
             {
-                var reference = node.ItemReferences;
+                var reference = (node as IObjectNode)?.ItemReferences;
                 return reference != null;
             }
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
@@ -324,7 +324,7 @@ namespace SiliconStudio.Quantum
 
         protected override IContentNode GetTargetNode()
         {
-            var reference = Node.ItemReferences;
+            var reference = (Node as IObjectNode)?.ItemReferences;
             if (Node.IsReference && (reference?.HasIndex(index) ?? false))
             {
                 return reference[index].TargetNode;

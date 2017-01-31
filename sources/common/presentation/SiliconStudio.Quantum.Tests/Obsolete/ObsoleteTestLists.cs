@@ -107,13 +107,13 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             //Assert.That(model["NestedStructList"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
             Assert.That(model["ListOfSimpleStructLists"].Retrieve(), Is.SameAs(obj.ListOfSimpleStructLists));
             //Assert.That(model["ListOfSimpleStructLists"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model["ListOfSimpleStructLists"].ItemReferences)
+            foreach (var reference in model["ListOfSimpleStructLists"].Target.ItemReferences)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }
             Assert.That(model["ListOfNestedStructLists"].Retrieve(), Is.SameAs(obj.ListOfNestedStructLists));
             //Assert.That(model["ListOfNestedStructLists"].Reference, Is.AssignableFrom(typeof(ReferenceEnumerable)));
-            foreach (var reference in model["ListOfNestedStructLists"].ItemReferences)
+            foreach (var reference in model["ListOfNestedStructLists"].Target.ItemReferences)
             {
                 Assert.That(reference, Is.AssignableFrom(typeof(ObjectReference)));
             }

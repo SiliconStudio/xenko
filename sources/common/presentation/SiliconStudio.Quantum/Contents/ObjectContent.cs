@@ -20,11 +20,12 @@ namespace SiliconStudio.Quantum.Contents
         private object value;
 
         public ObjectContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(guid, descriptor, isPrimitive, reference)
+            : base(guid, descriptor, isPrimitive)
         {
             if (reference is ObjectReference)
                 throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
             this.value = value;
+            ItemReferences = reference as ReferenceEnumerable;
         }
 
         /// <inheritdoc/>
@@ -34,7 +35,13 @@ namespace SiliconStudio.Quantum.Contents
         public IReadOnlyCollection<IMemberNode> Members => children;
 
         /// <inheritdoc/>
+        public IEnumerable<Index> Indices => GetIndices();
+
+        /// <inheritdoc/>
         public override bool IsReference => ItemReferences != null;
+
+        /// <inheritdoc/>
+        public ReferenceEnumerable ItemReferences { get; }
 
         /// <inheritdoc/>
         protected sealed override object Value => value;
@@ -46,6 +53,14 @@ namespace SiliconStudio.Quantum.Contents
             IMemberNode child;
             childrenMap.TryGetValue(name, out child);
             return child;
+        }
+
+        /// <inheritdoc/>
+        public IObjectNode IndexedTarget(Index index)
+        {
+            if (index == Index.Empty) throw new ArgumentException(@"index cannot be Index.Empty when invoking this method.", nameof(index));
+            if (ItemReferences == null) throw new InvalidOperationException(@"The node does not contain enumerable references.");
+            return ItemReferences[index].TargetNode;
         }
 
         /// <inheritdoc/>
@@ -81,6 +96,15 @@ namespace SiliconStudio.Quantum.Contents
         protected void SetValue(object newValue)
         {
             value = newValue;
+        }
+
+        private IEnumerable<Index> GetIndices()
+        {
+            var enumRef = ItemReferences;
+            if (enumRef != null)
+                return enumRef.Indices;
+
+            return GetIndices(this);
         }
 
         public override string ToString()

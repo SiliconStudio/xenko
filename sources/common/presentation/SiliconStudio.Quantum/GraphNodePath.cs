@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
                             Current = ((IMemberNode)Current).Target;
                             break;
                         case ElementType.Index:
-                            Current = Current.ItemReferences[(Index)element.Value].TargetNode;
+                            Current = ((IObjectNode)Current).ItemReferences[(Index)element.Value].TargetNode;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -450,7 +450,7 @@ namespace SiliconStudio.Quantum
                         break;
                     case ElementType.Index:
                         var index = (Index)itemPath.Value;
-                        var enumerableReference = node.ItemReferences;
+                        var enumerableReference = ((IObjectNode)node).ItemReferences;
                         var descriptor = node.Descriptor;
                         var collectionDescriptor = descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)

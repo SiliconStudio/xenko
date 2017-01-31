@@ -158,7 +158,7 @@ namespace SiliconStudio.Quantum
                 if (node.IsReference)
                 {
                     (node as IMemberNode)?.TargetReference?.Refresh(node, this);
-                    node.ItemReferences?.Refresh(node, this);
+                    (node as IObjectNode)?.ItemReferences?.Refresh(node, this);
                 }
                 else
                 {
