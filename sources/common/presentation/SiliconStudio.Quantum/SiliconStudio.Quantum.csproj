@@ -55,7 +55,6 @@
     <Compile Include="References\ReferenceEnumerable.cs" />
     <Compile Include="DefaultNodeBuilder.cs" />
     <Compile Include="NodeContainer.cs" />
-    <Compile Include="DebugExtensions.cs" />
     <Compile Include="GuidContainer.cs" />
   </ItemGroup>
   <ItemGroup>

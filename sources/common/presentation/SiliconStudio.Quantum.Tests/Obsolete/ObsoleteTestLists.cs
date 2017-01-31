@@ -138,7 +138,6 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             var obj = new ClassWithLists();
             var container = new NodeContainer();
             var model = container.GetOrCreateNode(obj);
-            Console.WriteLine(model.PrintHierarchy());
             ((List<int>)model["IntList"].Value)[1] = 42;
             ((List<int>)model["IntList"].Value).Add(26);
             Assert.That(obj.IntList.Count, Is.EqualTo(4));
