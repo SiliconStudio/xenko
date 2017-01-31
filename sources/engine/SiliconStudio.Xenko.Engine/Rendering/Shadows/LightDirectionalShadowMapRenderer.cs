@@ -150,13 +150,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 for (int j = 0; j < 4; j++)
                 {
                     // Calculate frustum in WS and VS
+                    float blendMarginMin = shadow.DepthRange.IsBlendingCascades ? 0.8f : 1f;
+                    float blendMarginMax = shadow.DepthRange.IsBlendingCascades ? 1.2f : 1f;
+
                     var frustumRange = frustumCornersWS[j + 4] - frustumCornersWS[j];
-                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio;
+                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio * blendMarginMin;
+                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio * blendMarginMax;
 
                     frustumRange = frustumCornersVS[j + 4] - frustumCornersVS[j];
-                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio;
+                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio * blendMarginMin;
+                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio * blendMarginMax;
                 }
 
                 Vector3 cascadeMinBoundLS;
