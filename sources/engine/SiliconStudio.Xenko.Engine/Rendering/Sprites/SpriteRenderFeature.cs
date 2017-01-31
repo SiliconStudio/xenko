@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             uint previousBatchState = uint.MaxValue;
 
             //TODO string comparison ...?
-            var isPicking = renderViewStage.RenderStage.Name == "Picking";
+            var isPicking = RenderSystem.RenderStages[renderViewStage.Index].Name == "Picking";
 
             bool hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)

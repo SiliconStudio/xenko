@@ -23,11 +23,14 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly ThreadLocal<ExtractThreadLocals> extractThreadLocals = new ThreadLocal<ExtractThreadLocals>(() => new ExtractThreadLocals());
         private readonly ConcurrentPool<PrepareThreadLocals> prepareThreadLocals = new ConcurrentPool<PrepareThreadLocals>(() => new PrepareThreadLocals());
+
+        private readonly ConcurrentPool<ConcurrentCollector<RenderNodeFeatureReference>> renderNodePool = new ConcurrentPool<ConcurrentCollector<RenderNodeFeatureReference>>(() => new ConcurrentCollector<RenderNodeFeatureReference>());
+        private readonly ConcurrentPool<FastList<RenderNodeFeatureReference>> sortedRenderNodePool = new ConcurrentPool<FastList<RenderNodeFeatureReference>>(() => new FastList<RenderNodeFeatureReference>());
+
         private CompiledCommandList[] commandLists;
         private Texture[] renderTargets;
 
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
-        private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
 
 
@@ -115,6 +118,17 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
+            foreach (var view in Views)
+            {
+                for (int index = 0; index < view.RenderStages.Count; index++)
+                {
+                    var renderViewStage = view.RenderStages[index];
+                    renderViewStage.RenderNodes = renderNodePool.Acquire();
+                    renderViewStage.SortedRenderNodes = sortedRenderNodePool.Acquire();
+                    view.RenderStages[index] = renderViewStage;
+                }
+            }
+
             // Create nodes for objects to render
             Dispatcher.ForEach(Views, view =>
             {
@@ -141,11 +155,11 @@ namespace SiliconStudio.Xenko.Rendering
                     foreach (var renderViewStage in view.RenderStages)
                     {
                         // Check if this RenderObject wants to be rendered for this render stage
-                        var renderStageIndex = renderViewStage.RenderStage.Index;
+                        var renderStageIndex = renderViewStage.Index;
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
 
-                        var renderStage = renderViewStage.RenderStage;
+                        var renderStage = RenderStages[renderStageIndex];
                         if (renderStage.Filter != null && !renderStage.Filter.IsVisible(renderObject, view, renderViewStage))
                             continue;
 
@@ -243,12 +257,11 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderNodes.Count == 0)
                         return;
 
-                    var renderStage = renderViewStage.RenderStage;
-
-                    // Allocate sorted render nodes
-                    if (renderViewStage.SortedRenderNodes == null || renderViewStage.SortedRenderNodes.Length < renderNodes.Count)
-                        Array.Resize(ref renderViewStage.SortedRenderNodes, renderNodes.Count);
+                    var renderStage = RenderStages[renderViewStage.Index];
                     var sortedRenderNodes = renderViewStage.SortedRenderNodes;
+
+                    // Fast clear, since it's cleared properly in Reset()
+                    sortedRenderNodes.Resize(renderViewStage.RenderNodes.Count, true);
 
                     if (renderStage.SortMode != null)
                     {
@@ -289,17 +302,17 @@ namespace SiliconStudio.Xenko.Rendering
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 
             // Look for the RenderViewStage corresponding to this RenderView | RenderStage combination
-            RenderViewStage renderViewStage = null;
+            var renderViewStage = RenderViewStage.Invalid;
             foreach (var currentRenderViewStage in renderView.RenderStages)
             {
-                if (currentRenderViewStage.RenderStage == renderStage)
+                if (currentRenderViewStage.Index == renderStage.Index)
                 {
                     renderViewStage = currentRenderViewStage;
                     break;
                 }
             }
 
-            if (renderViewStage == null)
+            if (renderViewStage.Index == -1)
             {
                 throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
             }
@@ -447,7 +460,7 @@ namespace SiliconStudio.Xenko.Rendering
         public void Reset()
         {
             FrameCounter++;
-
+            
             // Clear render features node lists
             foreach (var renderFeature in RenderFeatures)
             {
@@ -469,10 +482,20 @@ namespace SiliconStudio.Xenko.Rendering
 
                 foreach (var renderViewStage in view.RenderStages)
                 {
-                    //Cannot use Clear(true), many structs have refs to objects
+                    // Slow clear, since type contains references
                     renderViewStage.RenderNodes.Clear(false);
+                    renderViewStage.SortedRenderNodes.Clear(false);
+
+                    renderNodePool.Release(renderViewStage.RenderNodes);
+                    sortedRenderNodePool.Release(renderViewStage.SortedRenderNodes);
                 }
+
+                // Clear view stages
+                view.RenderStages.Clear();
             }
+
+            // Clear views
+            Views.Clear();
         }
 
         /// <summary>

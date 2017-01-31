@@ -140,13 +140,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 using (context.RenderContext.PushTagAndRestore(SceneInstance.CurrentRenderSystem, RenderSystem))
                 using (context.RenderContext.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
                 {
-                    // Clear views
-                    foreach (var renderView in RenderSystem.Views)
-                    {
-                        renderView.RenderStages.Clear();
-                    }
-                    RenderSystem.Views.Clear();
-
                     // Set render system
                     context.RenderContext.RenderSystem = RenderSystem;
                     context.RenderContext.SceneInstance = sceneInstance;
