@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             // Scale distance to light depth buffer range 
             distanceToLight *= DepthParameters[lightIndex].y;
+            distanceToLight -= DepthParameters[lightIndex].x;
 
             // Compare distance to light to value inside of the shadow map
             streams.shadowColor = FilterShadow(projectedPosition.xy, distanceToLight);

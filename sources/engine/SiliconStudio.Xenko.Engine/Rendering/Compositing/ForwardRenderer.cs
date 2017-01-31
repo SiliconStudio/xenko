@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
@@ -108,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 Clear?.Draw(drawContext);
 
                 // Render Shadow maps
-                if (ShadowMapRenderStage != null && shadowMapRenderer != null)
+                if (shadowMapRenderer != null)
                 {
                     // Clear atlases
                     shadowMapRenderer.PrepareAtlasAsRenderTargets(drawContext.CommandList);
@@ -121,12 +122,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             var shadowmapRenderView = renderView as ShadowMapRenderView;
                             if (shadowmapRenderView != null && shadowmapRenderView.RenderView == drawContext.RenderContext.RenderView)
                             {
+                                if (Profiling)
+                                    drawContext.CommandList.BeginProfile(Color.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
+
                                 var shadowMapRectangle = shadowmapRenderView.Rectangle;
                                 drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
                                 shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
                                 drawContext.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                                renderSystem.Draw(drawContext, shadowmapRenderView, ShadowMapRenderStage);
+                                renderSystem.Draw(drawContext, shadowmapRenderView, shadowmapRenderView.RenderStages[0].RenderStage);
+
+                                if (Profiling)
+                                    drawContext.CommandList.EndProfile();
                             }
                         }
                     }

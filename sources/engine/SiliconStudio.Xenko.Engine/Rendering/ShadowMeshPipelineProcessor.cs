@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Objects in the shadow map render stage disable culling and depth clip
             if (renderNode.RenderStage == ShadowMapRenderStage)
             {
-                pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = true };
             }
         }
     }

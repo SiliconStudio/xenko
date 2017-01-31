@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float distanceToLight = length(lightSpace.xyz);
 
             // Send depth to pixel shader
-            streams.DepthVS = distanceToLight * DepthParameters.y;
+            streams.DepthVS = (distanceToLight-DepthParameters.x) * DepthParameters.y;
 
             streams.ShadingPosition = mul(lightSpace, Transformation.Projection);
         }

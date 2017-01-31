@@ -199,11 +199,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         // TODO GFXCOMP: Move that somewhere else; or even better: starts from user gfx compositor
         [Obsolete]
-        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
+        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null,
+            GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
         {
             var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
+            //var shadowCasterCubemapRenderStage = new RenderStage("ShadowMapCubemapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
 
             var singleView = new ForwardRenderer
             {
@@ -225,6 +227,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     : null,
             };
 
+            // TODO
+            var clusteredPointSpotGroupRenderer = new LightClusteredPointSpotGroupRenderer();
+
+
             var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
                 ? new ForwardLightingRenderFeature
                 {
@@ -233,17 +239,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         new LightAmbientRenderer(),
                         new LightDirectionalGroupRenderer(),
                         new LightSkyboxRenderer(),
-                        new LightClusteredPointSpotGroupRenderer(),
+                        new LightPointGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
+                        new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
                     },
                     ShadowMapRenderer = new ShadowMapRenderer
                     {
                         Renderers =
                         {
-                            new LightDirectionalShadowMapRenderer(),
-                            new LightSpotShadowMapRenderer(),
+                            new LightPointShadowMapRendererCubeMap
+                            {
+                                ShadowCasterRenderStage = shadowCasterRenderStage
+                            }
                         },
-                        ShadowMapRenderStage = shadowCasterRenderStage,
                     },
+                    StagesToIgnore = { shadowCasterRenderStage },
                 }
                 : new ForwardLightingRenderFeature
                 {
@@ -277,6 +286,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             new TransformRenderFeature(),
                             new SkinningRenderFeature(),
                             new MaterialRenderFeature(),
+                            new ShadowCasterRenderFeature(),
                             forwardLighting,
                         },
                         RenderStageSelectors =
@@ -289,7 +299,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             },
                             new ShadowMapRenderStageSelector
                             {
-                                EffectName = modelEffectName + ".ShadowMapCaster",
+                                EffectName = modelEffectName + ".ShadowMapCasterCubeMap",
                                 ShadowMapRenderStage = shadowCasterRenderStage,
                             },
                         },

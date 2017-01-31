@@ -12,13 +12,13 @@ using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Colors;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private const float PlaneSize = 20.0f;
         private const float HalfPlaneSize = PlaneSize*0.5f;
         private const int InitialLightCount = 8;
-
+        
         private Material material;
         private Entity lightEntity;
         private Entity lightEntity1;
@@ -49,11 +49,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private LightShadowMapSize shadowMapSize = LightShadowMapSize.Medium;
         private float shadowMapBias = 0.05f;
         private int shadowMapFilter = 0;
-
+        
         public TestShadows()
         {
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
         }
 
         Entity GenerateTeapot()
@@ -195,47 +196,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 }
             });
             scene.Entities.Add(cameraEntity);
-
-            // Create a graphics compositor
-            var compositor = new SceneGraphicsCompositorLayers();
-
-            bool isLDR = true;
-            if (isLDR)
-            {
-                compositor.Master.Renderers.Add(new ClearRenderFrameRenderer() { Color = Color4.Black });
-                compositor.Master.Renderers.Add(new SceneCameraRenderer());
-            }
-            else
-            {
-                var layer = new SceneGraphicsLayer();
-                var renderHDROutput = new LocalRenderFrameProvider { Descriptor = { Format = RenderFrameFormat.HDR, DepthFormat = RenderFrameDepthFormat.Shared } };
-                layer.Output = renderHDROutput;
-                layer.Renderers.Add(new ClearRenderFrameRenderer() { Color = Color4.Black });
-                layer.Renderers.Add(new SceneCameraRenderer());
-                compositor.Layers.Add(layer);
-                PostProcessingEffects postEffects;
-                compositor.Master.Renderers.Add(new SceneEffectRenderer()
-                {
-                    Effect = postEffects = new PostProcessingEffects()
-                });
-
-                postEffects.AmbientOcclusion.Enabled = false;
-                postEffects.DepthOfField.Enabled = false;
-            }
-
+            
             FpsTestCamera camera = new FpsTestCamera();
             cameraEntity.Add(camera);
 
-            compositor.Cameras.Add(cameraEntity.Get<CameraComponent>());
-
-            // Use this graphics compositor
-            scene.Settings.GraphicsCompositor = compositor;
+            // Load default graphics compositor
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(true);// Content.Load<GraphicsCompositor>("GraphicsCompositor");
+            SceneSystem.GraphicsCompositor.Cameras[0] = cameraEntity.Get<CameraComponent>();
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
-            font = Content.Load<SpriteFont>("Font");
-            BuildUI();
+            //font = Content.Load<SpriteFont>("Font");
+            //BuildUI();
 
             // Create initial set of lights
             RegenerateLights(InitialLightCount);
@@ -263,7 +236,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 #endif
             var bufferRatio = GraphicsDevice.Presenter.BackBuffer.Width/(float)GraphicsDevice.Presenter.BackBuffer.Height;
             var ui = new UIComponent { Resolution = new Vector3(width, width/bufferRatio, 500) };
-            SceneSystem.SceneInstance.Scene.Entities.Add(new Entity { ui });
+            SceneSystem.SceneInstance.RootScene.Entities.Add(new Entity { ui });
 
             ui.Page = new UIPage
             {
@@ -370,7 +343,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         void RegenerateLights(int amount)
         {
-            var scene = SceneSystem.SceneInstance.Scene;
+            var scene = SceneSystem.SceneInstance.RootScene;
             foreach (var l in pointLights)
             {
                 scene.Entities.Remove(l.Entity);

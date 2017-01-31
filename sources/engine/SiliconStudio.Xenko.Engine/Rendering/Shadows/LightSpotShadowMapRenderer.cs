@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Initializes a new instance of the <see cref="LightSpotShadowMapRenderer"/> class.
         /// </summary>
-        public LightSpotShadowMapRenderer(ShadowMapRenderer parent) : base(parent)
+        public LightSpotShadowMapRenderer()
         {
             shaderDataPool = new PoolListStruct<LightSpotShadowMapShaderData>(8, CreateLightSpotShadowMapShaderData);
         }

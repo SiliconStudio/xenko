@@ -26,29 +26,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);
         private const float ReferenceShadowSize = 1024;
 
-        public RenderSystem RenderSystem { get; set; }
-
-        [DataMember]
-        public RenderStage ShadowMapRenderStage { get; set; }
-
-        public HashSet<RenderView> RenderViewsWithShadows { get; } = new HashSet<RenderView>();
+        private readonly List<RenderStage> shadowMapRenderStages;
 
         private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
 
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
-        private PoolListStruct<LightShadowMapTexture> shadowMapTextures;
-
         public ShadowMapRenderer()
         {
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, CreateShadowRenderView);
-            shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
-        }
-
-        private ShadowMapRenderView CreateShadowRenderView()
-        {
-            return new ShadowMapRenderView();
         }
 
         /// <summary>
@@ -60,11 +47,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         [DataMember]
         public List<ILightShadowMapRenderer> Renderers { get; } = new List<ILightShadowMapRenderer>();
 
-        public ILightShadowMapRenderer FindRenderer(Type lightType)
+        public RenderSystem RenderSystem { get; set; }
+
+        public HashSet<RenderView> RenderViewsWithShadows { get; } = new HashSet<RenderView>();
+
+        // TODO
+        public IReadOnlyList<RenderStage> ShadowMapRenderStages => shadowMapRenderStages;
+
+        public ILightShadowMapRenderer FindRenderer(IDirectLight light)
         {
             foreach (var renderer in Renderers)
             {
-                if (renderer.LightType == lightType)
+                if (renderer.CanRenderLight(light))
                     return renderer;
             }
 
@@ -73,18 +67,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
-            // Cleanup previous shadow render views
-            foreach (var shadowRenderView in shadowRenderViews)
-                RenderSystem.Views.Remove(shadowRenderView);
-            shadowRenderViews.Clear();
-
-            // Clear currently associated shadows
-            shadowMapTextures.Clear();
-            
             // Reset the state of renderers
             foreach (var renderer in Renderers)
             {
-                renderer.Reset();
+                renderer.Reset(context);
             }
 
             foreach (var renderViewData in renderViewLightDatas)
@@ -116,12 +102,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 
-                // No shadow maps to render
-                if (shadowMapTextures.Count == 0)
-                {
-                    continue;
-                }
-
                 foreach (var lightShadowMapTexture in renderViewData.Value.LightComponentsWithShadows)
                 {
                     var shadowMapTexture = lightShadowMapTexture.Value;
@@ -130,23 +110,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     if (shadowMapTexture.Atlas == null)
                         continue;
 
-                    shadowMapTexture.Renderer.Collect(context, this, shadowMapTexture);
-                    for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.CascadeCount; cascadeIndex++)
-                    {
-                        // Allocate shadow render view
-                        var shadowRenderView = shadowRenderViews.Add();
-                        shadowRenderView.RenderStages.Add(ShadowMapRenderStage);
-                        shadowRenderView.RenderView = renderViewData.Key;
-                        shadowRenderView.ShadowMapTexture = shadowMapTexture;
-                        shadowRenderView.Rectangle = shadowMapTexture.GetRectangle(cascadeIndex);
-                        
-                        // Compute view parameters
-                        shadowMapTexture.Renderer.GetCascadeViewParameters(shadowMapTexture, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
-                        Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
-
-                        // Add the render view for the current frame
-                        RenderSystem.Views.Add(shadowRenderView);
-                    }
+                    // Collect views
+                    shadowMapTexture.Renderer.Collect(context, renderViewData.Key, shadowMapTexture);
                 }
             }
         }
@@ -175,7 +140,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private void AssignRectangle(LightShadowMapTexture lightShadowMapTexture)
         {
-            lightShadowMapTexture.CascadeCount = lightShadowMapTexture.Shadow.GetCascadeCount();
             var size = lightShadowMapTexture.Size;
 
             // Try to fit the shadow map into an existing atlas
@@ -199,8 +163,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 {
                     // TODO: handle FilterType texture creation here
                     // TODO: This does not work for Omni lights
+                    // TODO: Allow format selection externally
 
-                    var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, ShadowMapRenderStage.Output.DepthStencilFormat, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
+                    var texture = Texture.New2D(RenderSystem.GraphicsDevice, MaximumTextureSize, MaximumTextureSize, 1, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource);
                     currentAtlas = new ShadowMapAtlasTexture(texture, atlases.Count) { FilterType = lightShadowMapTexture.FilterType };
                     atlases.Add(currentAtlas);
 
@@ -221,7 +186,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private void CollectShadowMaps(RenderView renderView, ForwardLightingRenderFeature.RenderViewLightData renderViewLightData)
         {
             // TODO GRAPHICS REFACTOR Only lights of current scene!
-
             foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
                 var light = lightComponent.Type as IDirectLight;
@@ -237,7 +201,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Check if the light has a shadow map renderer
-                var renderer = FindRenderer(light.GetType());
+                var renderer = FindRenderer(light);
                 if (renderer == null)
                 {
                     continue;
@@ -261,9 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
-                // Get or allocate a ShadowMapTexture
-                var shadowMapTexture = shadowMapTextures.Add();
-                shadowMapTexture.Initialize(lightComponent, light, shadowMap, shadowMapSize, renderer);
+                var shadowMapTexture = renderer.CreateTexture(lightComponent, light, shadowMapSize);
 
                 // Assign rectangles for shadowmap
                 AssignRectangle(shadowMapTexture);
@@ -282,6 +244,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private static LightShadowMapTexture CreateLightShadowMapTexture()
         {
             return new LightShadowMapTexture();
+        }
+        
+        private static ShadowMapRenderView CreateShadowRenderView()
+        {
+            return new ShadowMapRenderView();
         }
 
         public struct LightComponentKey : IEquatable<LightComponentKey>

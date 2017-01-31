@@ -3,17 +3,26 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
+    /// <summary>
+    /// Base class for shadow map renderers
+    /// </summary>
     [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
-        public abstract Type LightType { get; }
+        /// <summary>
+        /// The shadow map render stage this light shadow map renderer uses
+        /// </summary>
+        [DataMember]
+        public RenderStage ShadowCasterRenderStage { get; set; }
 
-        public abstract void Reset();
+        public abstract void Reset(RenderContext context);
 
         public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)
         {
@@ -58,8 +67,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType);
 
-        public abstract void Collect(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+        public abstract bool CanRenderLight(IDirectLight light);
 
-        public abstract void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
+        public abstract void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap);
+
+        public abstract void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
+
+        public abstract LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize);
     }
 }
