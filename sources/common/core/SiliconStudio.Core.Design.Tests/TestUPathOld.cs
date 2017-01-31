@@ -344,10 +344,11 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestFileExtension()
         {
-            Assert.AreEqual("test", new UFile("test.txt").GetFileName());
+            Assert.AreEqual("test", new UFile("test.txt").GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", new UFile("test.txt").GetFileExtension());
+            Assert.AreEqual(null, new UFile(".txt").GetFileNameWithoutExtension());
 
-            Assert.AreEqual("test.another", new UFile("test.another.txt").GetFileName());
+            Assert.AreEqual("test.another", new UFile("test.another.txt").GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", new UFile("test.another.txt").GetFileExtension());
 
             Assert.AreEqual(".txt", new UFile(".txt").GetFileExtension());
@@ -362,7 +363,7 @@ namespace SiliconStudio.Core.Design.Tests
 
             var filePath = new UFile("/test.txt");
             Assert.AreEqual("/", filePath.GetDirectory());
-            Assert.AreEqual("test.txt", filePath.GetFileNameWithExtension());
+            Assert.AreEqual("test.txt", filePath.GetFileName());
         }
 
         [Test]
@@ -382,9 +383,9 @@ namespace SiliconStudio.Core.Design.Tests
         {
             var assetPath = new UFile("/a/b/c");
             Assert.AreEqual("/a/b", assetPath.GetDirectory());
-            Assert.AreEqual("c", assetPath.GetFileName());
+            Assert.AreEqual("c", assetPath.GetFileNameWithoutExtension());
             Assert.AreEqual(null, assetPath.GetFileExtension());
-            Assert.AreEqual("/a/b/c", assetPath.GetDirectoryAndFileName());
+            Assert.AreEqual("/a/b/c", assetPath.GetDirectoryAndFileNameWithoutExtension());
             Assert.AreEqual("/a/b/c", assetPath.FullPath);
         }
 
@@ -393,9 +394,9 @@ namespace SiliconStudio.Core.Design.Tests
         {
             var assetPath = new UFile("/a/b/c.txt");
             Assert.AreEqual("/a/b", assetPath.GetDirectory());
-            Assert.AreEqual("c", assetPath.GetFileName());
+            Assert.AreEqual("c", assetPath.GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", assetPath.GetFileExtension());
-            Assert.AreEqual("/a/b/c", assetPath.GetDirectoryAndFileName());
+            Assert.AreEqual("/a/b/c", assetPath.GetDirectoryAndFileNameWithoutExtension());
             Assert.AreEqual("/a/b/c.txt", assetPath.FullPath);
         }
 
@@ -404,16 +405,16 @@ namespace SiliconStudio.Core.Design.Tests
         {
             var assetPath = new UFile("/a/b/.././././//c.txt");
             Assert.AreEqual("/a", assetPath.GetDirectory());
-            Assert.AreEqual("c", assetPath.GetFileName());
+            Assert.AreEqual("c", assetPath.GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", assetPath.GetFileExtension());
-            Assert.AreEqual("/a/c", assetPath.GetDirectoryAndFileName());
+            Assert.AreEqual("/a/c", assetPath.GetDirectoryAndFileNameWithoutExtension());
             Assert.AreEqual("/a/c.txt", assetPath.FullPath);
 
             assetPath = new UFile("../.././././//c.txt");
             Assert.AreEqual("../..", assetPath.GetDirectory());
-            Assert.AreEqual("c", assetPath.GetFileName());
+            Assert.AreEqual("c", assetPath.GetFileNameWithoutExtension());
             Assert.AreEqual(".txt", assetPath.GetFileExtension());
-            Assert.AreEqual("../../c", assetPath.GetDirectoryAndFileName());
+            Assert.AreEqual("../../c", assetPath.GetDirectoryAndFileNameWithoutExtension());
             Assert.AreEqual("../../c.txt", assetPath.FullPath);
 
             assetPath = new UFile("a/../../../c.txt");
@@ -435,7 +436,7 @@ namespace SiliconStudio.Core.Design.Tests
             assetPath1 = new UFile("/a/b/c.txt");
             assetPath2 = new UFile("/a/b/d/../c.png");
             Assert.AreNotEqual(assetPath1, assetPath2);
-            Assert.AreEqual(assetPath1.GetDirectoryAndFileName(), assetPath2.GetDirectoryAndFileName());
+            Assert.AreEqual(assetPath1.GetDirectoryAndFileNameWithoutExtension(), assetPath2.GetDirectoryAndFileNameWithoutExtension());
         }
 
         [Test]

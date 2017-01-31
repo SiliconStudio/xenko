@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets
             var asset = new RawAsset { Source = rawAssetPath };
 
             // Creates the url to the raw asset
-            var rawAssetUrl = new UFile(rawAssetPath.GetFileName());
+            var rawAssetUrl = new UFile(rawAssetPath.GetFileNameWithoutExtension());
 
             yield return new AssetItem(rawAssetUrl, asset);
         }
