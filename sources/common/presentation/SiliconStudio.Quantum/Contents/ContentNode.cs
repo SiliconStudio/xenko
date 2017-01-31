@@ -33,10 +33,6 @@ namespace SiliconStudio.Quantum.Contents
         public Type Type => Descriptor.Type;
 
         /// <inheritdoc/>
-        [Obsolete("Use method Retrieve()")] 
-        public abstract object Value { get; }
-
-        /// <inheritdoc/>
         public bool IsPrimitive { get; }
 
         /// <inheritdoc/>
@@ -57,6 +53,9 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;
+
+        /// <inheritdoc/>
+        protected abstract object Value { get; }
 
         /// <inheritdoc/>
         public object Retrieve() => Retrieve(Index.Empty);
@@ -110,10 +109,10 @@ namespace SiliconStudio.Quantum.Contents
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Value)).Select(x => new Index(x));
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Retrieve())).Select(x => new Index(x));
             }
             var dictionaryDescriptor = node.Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(node.Value).Cast<object>().Select(x => new Index(x));
+            return dictionaryDescriptor?.GetKeys(node.Retrieve()).Cast<object>().Select(x => new Index(x));
         }
 
         /// <inheritdoc/>

@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
             var oldName = index;
             var renamedObject = content.Retrieve(oldName);
             content.Remove(renamedObject, oldName);
-            var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Value, content.Descriptor, (string)parameter);
+            var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Retrieve(), content.Descriptor, (string)parameter);
             content.Add(renamedObject, newName);
         }
     }

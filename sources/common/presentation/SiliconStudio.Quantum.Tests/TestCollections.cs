@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -169,7 +168,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.Null(enumRef.ToList()[index].TargetNode.TargetReference);
             Assert.Null(enumRef.ToList()[index].TargetNode.ItemReferences);
             Assert.AreEqual(expectedValue.GetType(), enumRef.ToList()[index].TargetNode.Type);
-            Assert.AreEqual(expectedValue, enumRef.ToList()[index].TargetNode.Value);
+            Assert.AreEqual(expectedValue, enumRef.ToList()[index].TargetNode.Retrieve());
         }
     }
 }

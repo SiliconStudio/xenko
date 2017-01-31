@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -31,14 +30,10 @@ namespace SiliconStudio.Quantum
         IObjectNode IndexedTarget(Index index);
 
         /// <summary>
-        /// Gets the expected type of <see cref="Value"/>.
+        /// Gets the expected type of for the content of this node.
         /// </summary>
+        /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
         Type Type { get; }
-
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        object Value { get; }
 
         /// <summary>
         /// Gets whether this content hold a primitive type value. If so, the node owning this content should have no children and modifying its value should not trigger any node refresh.

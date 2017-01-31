@@ -338,11 +338,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a dictionary of primitive values
-            else if (dictionary != null && targetNode.Value != null)
+            else if (dictionary != null && targetNode.Retrieve() != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                foreach (var key in dictionary.GetKeys(targetNode.Value))
+                foreach (var key in dictionary.GetKeys(targetNode.Retrieve()))
                 {
                     var index = new Index(key);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
@@ -352,11 +352,11 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             // Node containing a list of primitive values
-            else if (list != null && targetNode.Value != null)
+            else if (list != null && targetNode.Retrieve() != null)
             {
                 // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
                 // We create one node per item of the collection.
-                for (int i = 0; i < list.GetCollectionCount(targetNode.Value); ++i)
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Retrieve()); ++i)
                 {
                     var index = new Index(i);
                     var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);

@@ -177,7 +177,7 @@ namespace SiliconStudio.Quantum
             if (content.TargetReference == null)
             {
                 // For enumerable references, we visit the member to allow VisitCollection or VisitDictionary to enrich correctly the node.
-                Visit(content.Value);
+                Visit(content.Retrieve());
             }
             PopContextNode();
 

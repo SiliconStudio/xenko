@@ -110,10 +110,10 @@ namespace SiliconStudio.Quantum.Tests
 
                 var matchValue = 0;
                 if (sourceReference.TargetNode != null)
-                    matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Value;
+                    matchValue = (int)sourceReference.TargetNode[nameof(SimpleClass.Member1)].Retrieve();
 
                 var targetReference = targetNode.ItemReferences;
-                return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Value == matchValue);
+                return targetReference?.FirstOrDefault(x => (int)x.TargetNode[nameof(SimpleClass.Member1)].Retrieve() == matchValue);
 
             }
         }

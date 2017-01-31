@@ -38,7 +38,7 @@ namespace SiliconStudio.Quantum.References
         public IObjectNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
-        public object ObjectValue => TargetNode != null ? TargetNode.Value : orphanObject;
+        public object ObjectValue => TargetNode != null ? TargetNode.Retrieve() : orphanObject;
 
         /// <summary>
         /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Quantum.Index.Empty"/>.
@@ -76,7 +76,7 @@ namespace SiliconStudio.Quantum.References
                     nodeContainer?.UpdateReferences(member);
                 }
             }
-            else if (TargetNode?.Value != objectValue)
+            else if (TargetNode?.Retrieve() != objectValue)
             {
                 // This call will recursively update the references.
                 var target = SetTarget(objectValue, nodeContainer);
@@ -133,10 +133,12 @@ namespace SiliconStudio.Quantum.References
         {
             if (targetNode != null)
             {
-                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
+                var targetValue = targetNode.Retrieve();
+
+                if (targetValue != null && !type.IsInstanceOfType(targetValue))
                     throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
 
-                if (targetNode.Value != null && !type.IsInstanceOfType(targetNode.Value))
+                if (targetValue != null && !type.IsInstanceOfType(targetValue))
                     throw new InvalidOperationException("TargetNode type does not match the reference type.");
 
                 TargetNode = targetNode;

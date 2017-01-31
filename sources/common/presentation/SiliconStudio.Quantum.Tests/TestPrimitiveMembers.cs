@@ -207,7 +207,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.Null(memberNode.Target.TargetReference);
             Assert.Null(memberNode.Target.ItemReferences);
             Assert.AreEqual(typeof(float), memberNode.Target.Type);
-            Assert.AreEqual(1.0f, memberNode.Target.Value);
+            Assert.AreEqual(1.0f, memberNode.Target.Retrieve());
 
             // Update from object (note: value WILL mismatch here due to the boxing node, so we don't test the value of the target node)
             obj.Member = 2.0f;
@@ -236,7 +236,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.Null(memberNode.Target.TargetReference);
             Assert.Null(memberNode.Target.ItemReferences);
             Assert.AreEqual(typeof(float), memberNode.Target.Type);
-            Assert.AreEqual(3.0f, memberNode.Target.Value);
+            Assert.AreEqual(3.0f, memberNode.Target.Retrieve());
         }
     }
 }

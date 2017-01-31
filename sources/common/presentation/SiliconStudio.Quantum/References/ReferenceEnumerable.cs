@@ -64,7 +64,7 @@ namespace SiliconStudio.Quantum.References
 
         public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
         {
-            var newObjectValue = ownerNode.Value;
+            var newObjectValue = ownerNode.Retrieve();
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;

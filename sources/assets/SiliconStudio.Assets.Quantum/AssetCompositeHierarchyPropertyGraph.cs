@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
-            var part = sourceNode.Value as TAssetPart;
+            var part = sourceNode.Retrieve() as TAssetPart;
             if (part != null && sourceNode is IObjectNode)
             {
                 TAssetPartDesign partDesign;

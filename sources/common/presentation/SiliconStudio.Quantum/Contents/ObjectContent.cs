@@ -33,7 +33,8 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public IReadOnlyCollection<IMemberNode> Members => children;
 
-        public override object Value => value;
+        /// <inheritdoc/>
+        protected sealed override object Value => value;
 
         /// <inheritdoc/>
         [CanBeNull]
