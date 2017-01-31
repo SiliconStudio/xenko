@@ -269,8 +269,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             List<string> genericArguments;
-            int arrayDimension;
-            var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayDimension);
+            int arrayNesting;
+            var resolvedTypeName = TypeExtensions.GetGenericArgumentsAndArrayDimension(typeName, out genericArguments, out arrayNesting);
             var resolvedType = ResolveSingleType(resolvedTypeName);
             if (genericArguments != null)
             {
@@ -282,10 +282,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 }
                 resolvedType = resolvedType.MakeGenericType(genericTypes.ToArray());
             }
-            while (arrayDimension > 0)
+            while (arrayNesting > 0)
             {
                 resolvedType = resolvedType.MakeArrayType();
-                --arrayDimension;
+                --arrayNesting;
             }
             return resolvedType;
         }

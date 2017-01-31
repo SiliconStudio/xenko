@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 
 // ReSharper disable once CheckNamespace - we explicitely want a custom namespace for the sake of the tests
@@ -177,6 +174,12 @@ namespace SiliconStudio.Core.Yaml.Tests.TestNamespace
         }
 
         [Test]
+        public void TestSimpleTypeNestedArray()
+        {
+            TestType(typeof(SimpleType[][][][][]), $"!{Namespace}.SimpleType[][][][][],{AssemblyName}");
+        }
+
+        [Test]
         public void TestNestedTypeArray()
         {
             TestType(typeof(NestedTypeContainer.NestedType[]), $"!{Namespace}.NestedTypeContainer+NestedType[],{AssemblyName}");
@@ -200,7 +203,7 @@ namespace SiliconStudio.Core.Yaml.Tests.TestNamespace
         }
 
         [Test]
-        public void TestGenericTypeDoubleArray()
+        public void TestGenericTypeNestedArray()
         {
             TestType(typeof(GenericType<SimpleType>[][]), $"!{Namespace}.GenericType%601[[{Namespace}.SimpleType,{AssemblyName}]][][],{AssemblyName}");
             TestType(typeof(GenericType<double>[][]), $"!{Namespace}.GenericType%601[[System.Double,mscorlib]][][],{AssemblyName}");

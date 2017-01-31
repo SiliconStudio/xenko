@@ -81,18 +81,18 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="shortAssemblyQualifiedName">The given short assembly-qualified type name to split.</param>
         /// <param name="genericArguments">The generic argument types extracted, if the given type was generic. Otherwise null.</param>
-        /// <param name="arrayDimension">The dimension of the array if the type is an array type.</param>
+        /// <param name="arrayNesting">The number of arrays that are nested if the type is an array type.</param>
         /// <returns>The corresponding generic definition type.</returns>
         /// <remarks>If the given type is not generic, this method sets <paramref name="genericArguments"/> to null and returns <paramref name="shortAssemblyQualifiedName"/>.</remarks>
         [NotNull]
-        public static string GetGenericArgumentsAndArrayDimension([NotNull] string shortAssemblyQualifiedName, [CanBeNull] out List<string> genericArguments, out int arrayDimension)
+        public static string GetGenericArgumentsAndArrayDimension([NotNull] string shortAssemblyQualifiedName, [CanBeNull] out List<string> genericArguments, out int arrayNesting)
         {
             if (shortAssemblyQualifiedName == null) throw new ArgumentNullException(nameof(shortAssemblyQualifiedName));
             var firstBracket = int.MaxValue;
             var lastBracket = int.MinValue;
             var bracketLevel = 0;
             genericArguments = null;
-            arrayDimension = 0;
+            arrayNesting = 0;
             var startIndex = 0;
             for (var i = 0; i < shortAssemblyQualifiedName.Length; ++i)
             {
@@ -120,12 +120,12 @@ namespace SiliconStudio.Core.Yaml
                     {
                         if (shortAssemblyQualifiedName[i - 1] == '[')
                         {
-                            ++arrayDimension;
+                            ++arrayNesting;
                         }
                     }
                 }
             }
-            if (genericArguments != null || arrayDimension > 0)
+            if (genericArguments != null || arrayNesting > 0)
             {
                 var genericType = shortAssemblyQualifiedName.Substring(0, firstBracket) + shortAssemblyQualifiedName.Substring(lastBracket + 1);
                 return genericType;
@@ -138,11 +138,13 @@ namespace SiliconStudio.Core.Yaml
             // namespace
             sb.Append(type.Namespace).Append(".");
             // check if it's an array, store the information, and work on the element type
-            var arrayDimension = 0;
+            var arrayNesting = 0;
             while (type.IsArray)
             {
+                if (type.GetArrayRank() != 1)
+                    throw new NotSupportedException("Multi-dimensional arrays are not supported.");
                 type = type.GetElementType();
-                ++arrayDimension;
+                ++arrayNesting;
             }
             // nested declaring types
             var declaringType = type.DeclaringType;
@@ -171,9 +173,9 @@ namespace SiliconStudio.Core.Yaml
                 }
                 sb.Append("]]");
             }
-            while (arrayDimension > 0)
+            while (arrayNesting > 0)
             {
-                --arrayDimension;
+                --arrayNesting;
                 sb.Append("[]");
             }
             // assembly
