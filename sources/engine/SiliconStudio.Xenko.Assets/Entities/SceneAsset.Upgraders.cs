@@ -1074,8 +1074,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         
         class RemoveLightSkyboxDependencyUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
-                OverrideUpgraderHint overrideHint)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 var hierarchy = asset.Hierarchy;
                 var parts = hierarchy.Parts;
