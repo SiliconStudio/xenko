@@ -138,10 +138,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var skybox = skyboxComponent.Skybox;
 
                 var intensity = light.Intensity;
-                if (skyboxComponent.Enabled)
-                {
-                    intensity *= skyboxComponent.Intensity;
-                }
 
                 var rotationMatrix = lightSkybox.SkyMatrix;
 
