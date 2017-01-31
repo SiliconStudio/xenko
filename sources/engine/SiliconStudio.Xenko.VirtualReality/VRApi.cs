@@ -1,6 +1,6 @@
 ﻿namespace SiliconStudio.Xenko.VirtualReality
 {
-    public enum HmdApi
+    public enum VRApi
     {
         Oculus,
         OpenVr,

@@ -42,9 +42,9 @@ namespace SiliconStudio.Xenko.VirtualReality
             internalState = OpenVR.GetControllerPose(controllerIndex, out mat, out vel, out angVel);
             if (internalState != DeviceState.Invalid)
             {
-                Pose = mat;
-                LinearVelocity = vel;
-                AngularVelocity = new Vector3(MathUtil.DegreesToRadians(angVel.X), MathUtil.DegreesToRadians(angVel.Y) , MathUtil.DegreesToRadians(angVel.Z));
+//                Pose = mat;
+//                LinearVelocity = vel;
+//                AngularVelocity = new Vector3(MathUtil.DegreesToRadians(angVel.X), MathUtil.DegreesToRadians(angVel.Y) , MathUtil.DegreesToRadians(angVel.Z));
             }
 
             base.Update(gameTime);
@@ -94,6 +94,14 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             return controller?.GetTouchUp(ToOpenVrButton(button)) ?? false;
         }
+
+        public override Vector3 Position { get; }
+
+        public override Quaternion Rotation { get; }
+
+        public override Vector3 LinearVelocity { get; }
+
+        public override Vector3 AngularVelocity { get; }
 
         public override DeviceState State => internalState;
     }

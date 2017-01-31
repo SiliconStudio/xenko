@@ -1,11 +1,13 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    internal class OpenVrHmd : Hmd
+    internal class OpenVrHmd : VRDevice
     {
         private RectangleF leftView = new RectangleF(0.0f, 0.0f, 0.5f, 1.0f);
         private RectangleF rightView = new RectangleF(0.5f, 0.0f, 1.0f, 1.0f);
@@ -14,8 +16,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Texture rightEyeMirror;
         private DeviceState state;
 
-        internal OpenVrHmd()
-        { 
+        internal OpenVrHmd(IServiceRegistry registry) : base(registry)
+        {
         }
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
@@ -55,25 +57,26 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         private Matrix currentHead;
-        private Vector3 currentPosition, currentScale;
-        private Matrix currentRotation;
-
-        public override void UpdateEyeParameters(ref Matrix cameraMatrix)
+        private Vector3 currentHeadPos, currentHeadLinearVelocity, currentHeadAngularVelocity;
+        private Quaternion currentHeadRot;
+        
+        public override void Draw(GameTime gameTime)
         {
             OpenVR.UpdatePoses();
-            state = OpenVR.GetHeadPose(out currentHead);
-            cameraMatrix.Decompose(out currentScale, out currentRotation, out currentPosition);
+            state = OpenVR.GetHeadPose(out currentHead, out currentHeadLinearVelocity, out currentHeadAngularVelocity);
+            Vector3 scale;
+            currentHead.Decompose(out scale, out currentHeadRot, out currentHeadPos);
         }
 
-        public override void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection)
+        public override void ReadEyeParameters(Eyes eye, float near, float far, ref Vector3 cameraPosition, ref Matrix cameraRotation, out Matrix view, out Matrix projection)
         {
-            Matrix eye, rot;
+            Matrix eyeMat, rot;
             Vector3 pos, scale;
-            
-            OpenVR.GetEyeToHead(eyeIndex, out eye);
-            OpenVR.GetProjection(eyeIndex, near, far, out projection);
 
-            var eyeMat = eye * currentHead * Matrix.Scaling(ViewScaling) * Matrix.Translation(currentPosition) * currentRotation;
+            OpenVR.GetEyeToHead(eye == Eyes.Left ? 0 : 1, out eyeMat);
+            OpenVR.GetProjection(eye == Eyes.Left ? 0 : 1, near, far, out projection);
+
+            eyeMat = eyeMat * currentHead * Matrix.Scaling(ViewScaling) * Matrix.Translation(cameraPosition) * cameraRotation;
             eyeMat.Decompose(out scale, out rot, out pos);
             var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rot);
             var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rot);
@@ -140,6 +143,14 @@ namespace SiliconStudio.Xenko.VirtualReality
         //        }
 
         public override DeviceState State => state;
+
+        public override Vector3 HeadPosition => currentHeadPos;
+
+        public override Quaternion HeadRotation => currentHeadRot;
+
+        public override Vector3 HeadLinearVelocity => currentHeadLinearVelocity;
+
+        public override Vector3 HeadAngularVelocity => currentHeadAngularVelocity;
 
         public override Texture RenderFrameDepthStencil { get; protected set; }
 

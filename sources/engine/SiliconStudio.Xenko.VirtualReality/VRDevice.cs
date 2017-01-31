@@ -1,14 +1,20 @@
 ﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public abstract class Hmd : IDisposable
+    public abstract class VRDevice : GameSystemBase
     {
-        protected Hmd()
+        protected VRDevice(IServiceRegistry registry) : base(registry)
         {
+            Visible = true;
+            Enabled = true;            
+            DrawOrder = -100;
+            UpdateOrder = -100;
+
             ViewScaling = 1.0f;
         }
 
@@ -36,53 +42,85 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract DeviceState State { get; }
 
+        public abstract Vector3 HeadPosition { get; }
+
+        public abstract Quaternion HeadRotation { get; }
+
+        public abstract Vector3 HeadLinearVelocity { get; }
+
+        public abstract Vector3 HeadAngularVelocity { get; }
+
         /// <summary>
         /// Allows you to scale the view, effectively it will change the size of the player in respect to the world, turning it into a giant or a tiny ant.
         /// </summary>
         /// <remarks>This will reduce the near clip plane of the cameras, it might induce depth issues.</remarks>
         public float ViewScaling { get; set; }
 
-        public static Hmd GetHmd(HmdApi[] preferredApis)
+        public static VRDevice GetVRDevice(IServiceRegistry registry, VRApi[] preferredApis)
         {
+            var existingDevice = registry.GetService(typeof(VRDevice));
+            if (existingDevice != null)
+                return (VRDevice)existingDevice;
+
             foreach (var hmdApi in preferredApis)
             {
                 switch (hmdApi)
                 {
-                    case HmdApi.Oculus:
+                    case VRApi.Oculus:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new OculusOvrHmd();
-                        if (device.CanInitialize) return device;
+                        var device = new OculusOvrHmd(registry);
+                        if (device.CanInitialize)
+                        {                               
+                            registry.AddService(typeof(VRDevice), device);
+                            device.Game.GameSystems.Add(device);
+                            return device;
+                        }
                         device.Dispose();
 #endif
                     }
                         break;
-                    case HmdApi.OpenVr:
+                    case VRApi.OpenVr:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new OpenVrHmd();
-                        if (device.CanInitialize) return device;
+                        var device = new OpenVrHmd(registry);
+                        if (device.CanInitialize)
+                        {
+                            registry.AddService(typeof(VRDevice), device);
+                            device.Game.GameSystems.Add(device);
+                            return device;
+                        }
                         device.Dispose();
 #endif
                     }
                         break;
-                    case HmdApi.Fove:
+                    case VRApi.Fove:
                     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                        var device = new FoveHmd();
-                        if (device.CanInitialize) return device;
+                        var device = new FoveHmd(registry);
+                        if (device.CanInitialize)
+                        {
+                            registry.AddService(typeof(VRDevice), device);
+                            device.Game.GameSystems.Add(device);
+                            return device;
+                        }
                         device.Dispose();
 #endif
                     }
                         break;
-                    case HmdApi.Google:
+                    case VRApi.Google:
                     {
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
                         var device = new GoogleVrHmd();
-                        if (device.CanInitialize) return device;
+                        if (device.CanInitialize)
+                        {
+                            registry.AddService(typeof(VRDevice), device);
+                            device.Game.GameSystems.Add(device);
+                            return device;
+                        }
                         device.Dispose();
 #endif
-                        }
+                    }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -102,13 +140,11 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
         }
 
-        public virtual void Dispose()
+        protected override void Destroy()
         {
         }
 
-        public abstract void UpdateEyeParameters(ref Matrix cameraMatrix);
-
-        public abstract void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection);
+        public abstract void ReadEyeParameters(Eyes eye, float near, float far, ref Vector3 cameraPosition, ref Matrix cameraRotation, out Matrix view, out Matrix projection);
 
         public abstract void Commit(CommandList commandList);
     }

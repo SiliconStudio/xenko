@@ -1,12 +1,13 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    internal class FoveHmd : Hmd
+    internal class FoveHmd : VRDevice
     {
         private Texture nonSrgbFrame;
         private readonly Matrix referenceMatrix = Matrix.RotationZ(MathUtil.Pi);
@@ -16,7 +17,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private const float EyeHeight = 0.08f;
         private const float EyeForward = -0.04f;
 
-        public FoveHmd()
+        internal FoveHmd(IServiceRegistry registry) : base(registry)
         {
             referenceMatrixInv = Matrix.RotationZ(MathUtil.Pi);
             referenceMatrixInv.Invert();
@@ -50,12 +51,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             base.Initialize(device, requireMirror);
         }
 
-        public override void UpdateEyeParameters(ref Matrix cameraMatrix)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void ReadEyeParameters(int eyeIndex, float near, float far, out Matrix view, out Matrix projection)
+        public override void ReadEyeParameters(Eyes eye, float near, float far, ref Vector3 cameraPosition, ref Matrix cameraRotation, out Matrix view, out Matrix projection)
         {
             throw new System.NotImplementedException();
         }
@@ -116,7 +112,16 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override float RenderFrameScaling { get; set; } = 1.2f;
 
-        public override DeviceState State => DeviceState.Valid; //to improve and verify with Fove api.
+        public override DeviceState State => DeviceState.Valid;
+        public override Vector3 HeadPosition { get; }
+
+
+        public override Quaternion HeadRotation { get; }
+
+        public override Vector3 HeadLinearVelocity { get; }
+
+        public override Vector3 HeadAngularVelocity { get; }
+//to improve and verify with Fove api.
 
         public override bool CanInitialize => Fove.Startup() && Fove.IsHardwareReady();
     }

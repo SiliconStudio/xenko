@@ -84,9 +84,42 @@ namespace SiliconStudio.Xenko.VirtualReality
             public Quaternion RotRight;
         }
 
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct PosesProperties
+        {
+            public Vector3 PosHead;
+            public Quaternion RotHead;
+            public Vector3 AngularVelocityHead;
+            public Vector3 AngularAccelerationHead;
+            public Vector3 LinearVelocityHead;
+            public Vector3 LinearAccelerationHead;
+
+            public Vector3 PosLeftHand;
+            public Quaternion RotLeftHand;
+            public Vector3 AngularVelocityLeftHand;
+            public Vector3 AngularAccelerationLeftHand;
+            public Vector3 LinearVelocityLeftHand;
+            public Vector3 LinearAccelerationLeftHand;
+
+            public Vector3 PosRightHand;
+            public Quaternion RotRightHand;
+            public Vector3 AngularVelocityRightHand;
+            public Vector3 AngularAccelerationRightHand;
+            public Vector3 LinearVelocityRightHand;
+            public Vector3 LinearAccelerationRightHand;
+        }
+
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void PrepareRender(IntPtr session, ref FrameProperties properties);
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrUpdate", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Update(IntPtr session);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetFrameProperties", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetFrameProperties(IntPtr session, ref FrameProperties properties);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetPosesProperties", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetPosesProperties(IntPtr session, ref PosesProperties properties);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetError", CallingConvention = CallingConvention.Cdecl)]

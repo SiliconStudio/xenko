@@ -101,8 +101,8 @@
     <Compile Include="Fove\FoveHmd.cs" />
     <Compile Include="GoogleVR\GoogleVR.cs" />
     <Compile Include="GoogleVR\GoogleVrHmd.cs" />
-    <Compile Include="Hmd.cs" />
-    <Compile Include="HmdApi.cs" />
+    <Compile Include="VRDevice.cs" />
+    <Compile Include="VRApi.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="NoHmdDeviceException.cs" />
     <Compile Include="OculusOVR\OculusOVR.cs" />

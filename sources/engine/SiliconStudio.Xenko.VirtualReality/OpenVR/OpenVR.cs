@@ -251,19 +251,23 @@ namespace SiliconStudio.Xenko.VirtualReality
             return DeviceState.Invalid;
         }
 
-        public static DeviceState GetHeadPose(out Matrix pose)
+        public static DeviceState GetHeadPose(out Matrix pose, out Vector3 linearVelocity, out Vector3 angularVelocity)
         {
-            return GetHeadPoseUnsafe(out pose);
+            return GetHeadPoseUnsafe(out pose, out linearVelocity, out angularVelocity);
         }
 
-        private static unsafe DeviceState GetHeadPoseUnsafe(out Matrix pose)
+        private static unsafe DeviceState GetHeadPoseUnsafe(out Matrix pose, out Vector3 linearVelocity, out Vector3 angularVelocity)
         {
             pose = Matrix.Identity;
+            linearVelocity = Vector3.Zero;
+            angularVelocity = Vector3.Zero;
             for (uint index = 0; index < DevicePoses.Length; index++)
             {
                 if (Valve.VR.OpenVR.System.GetTrackedDeviceClass(index) == ETrackedDeviceClass.HMD)
                 {
                     Utilities.CopyMemory((IntPtr)Interop.Fixed(ref pose), (IntPtr)Interop.Fixed(ref DevicePoses[index].mDeviceToAbsoluteTracking), Utilities.SizeOf<HmdMatrix34_t>());
+                    Utilities.CopyMemory((IntPtr)Interop.Fixed(ref linearVelocity), (IntPtr)Interop.Fixed(ref DevicePoses[index].vVelocity), Utilities.SizeOf<HmdVector3_t>());
+                    Utilities.CopyMemory((IntPtr)Interop.Fixed(ref angularVelocity), (IntPtr)Interop.Fixed(ref DevicePoses[index].vAngularVelocity), Utilities.SizeOf<HmdVector3_t>());
 
                     var state = DeviceState.Invalid;
                     if (DevicePoses[index].bDeviceIsConnected && DevicePoses[index].bPoseIsValid)

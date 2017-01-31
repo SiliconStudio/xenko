@@ -27,21 +27,18 @@ namespace SiliconStudio.Xenko.VirtualReality
             return null;
         }
 
-        public Matrix Pose { get; protected set; }
+        public abstract Vector3 Position { get; }
 
-        public Vector3 LinearVelocity { get; protected set; }
+        public abstract Quaternion Rotation { get; }
 
-        public Vector3 AngularVelocity { get; protected set; }
+        public abstract Vector3 LinearVelocity { get; }
+
+        public abstract Vector3 AngularVelocity { get; }
 
         public abstract DeviceState State { get; }
 
-        protected TouchController()
-        {
-        }
-
         public virtual void Update(GameTime time)
-        {
-            
+        {           
         }
 
         public abstract bool IsPressedDown(TouchControllerButton button);
@@ -57,8 +54,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         public abstract bool IsTouchReleased(TouchControllerButton button);
 
         public virtual void Dispose()
-        {
-            
+        {          
         }
     }
 }
