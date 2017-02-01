@@ -222,7 +222,6 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
-    <Compile Include="Rendering\Lightprobes\BowyerWatsonTetrahedralization.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
     <Compile Include="Rendering\Images\Dither\Dither2.cs">
       <AutoGen>True</AutoGen>
@@ -3821,6 +3820,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
+    <Folder Include="Rendering\Lightprobes\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
