@@ -21,12 +21,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The name of this <see cref="RenderStage"/>.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "RenderStage";
 
         /// <summary>
         /// The effect permutation slot name. If similar to another <see cref="RenderStage"/>, effect permutations will be shared.
         /// </summary>
-        public string EffectSlotName { get; set; }
+        public string EffectSlotName { get; set; } = "Main";
 
         /// <summary>
         /// Defines how <see cref="RenderNode"/> sorting should be performed.
