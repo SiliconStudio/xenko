@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
@@ -13,20 +11,6 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    [DataContract]
-    public class VRRendererSettings
-    {
-        public bool Enabled { get; set; }
-
-        public List<VRApi> RequiredApis { get; } = new List<VRApi>();
-
-        [DataMemberIgnore]
-        public RenderView[] RenderViews = { new RenderView(), new RenderView() };
-
-        [DataMemberIgnore]
-        public VRDevice VRDevice;
-    }
-
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
@@ -86,7 +70,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     vrSystem.PreferredApis = VrSettings.RequiredApis.ToArray();
                     vrSystem.Enabled = true;
                     vrSystem.Visible = true;
-                    VrSettings.VRDevice = vrSystem.VRDevice;
+                    VrSettings.VRDevice = vrSystem.Device;
                 }
                 else
                 {
