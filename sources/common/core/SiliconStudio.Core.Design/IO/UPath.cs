@@ -213,7 +213,7 @@ namespace SiliconStudio.Core.IO
             }
 
             var file = this as UFile;
-            var fileName = file?.GetFileNameWithExtension();
+            var fileName = file?.GetFileName();
             if (fileName != null)
             {
                 list.Add(fileName);
@@ -421,7 +421,7 @@ namespace SiliconStudio.Core.IO
                     relativePath.Append(DirectorySeparatorChar);
 
                 // Add filename
-                relativePath.Append(((UFile)absoluteFile).GetFileNameWithExtension());
+                relativePath.Append(((UFile)absoluteFile).GetFileName());
             }
             var newPath = relativePath.ToString();
             return !IsFile ? (UPath)new UDirectory(newPath) : new UFile(newPath);

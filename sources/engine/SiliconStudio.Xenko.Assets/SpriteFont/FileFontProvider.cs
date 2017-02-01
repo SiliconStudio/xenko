@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <inheritdoc/>
         public override string GetFontName()
         {
-            return Source.GetFileName();
+            return Source.GetFileNameWithoutExtension();
         }
     }
 }
