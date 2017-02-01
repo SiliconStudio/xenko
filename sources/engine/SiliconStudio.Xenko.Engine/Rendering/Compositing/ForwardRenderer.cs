@@ -92,6 +92,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
+        private void CollectViews(RenderContext context, RenderView renderView)
+        {
+            // Mark this view as requiring shadows
+            shadowMapRenderer?.RenderViewsWithShadows.Add(renderView);
+
+            // Fill RenderStage formats and register render stages to main view
+            if (OpaqueRenderStage != null)
+            {
+                renderView.RenderStages.Add(OpaqueRenderStage);
+                OpaqueRenderStage.Output = context.RenderOutput;
+            }
+            if (TransparentRenderStage != null)
+            {
+                renderView.RenderStages.Add(TransparentRenderStage);
+                TransparentRenderStage.Output = context.RenderOutput;
+            }
+        }
+
         protected override void CollectCore(RenderContext context)
         {
             var camera = context.GetCurrentCamera();
@@ -127,38 +145,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         //fix view size
                         VrSettings.RenderViews[i].ViewSize = new Vector2(VrSettings.Hmd.RenderFrameSize.Width / 2.0f , VrSettings.Hmd.RenderFrameSize.Height);
 
-                        // Mark this view as requiring shadows
-                        shadowMapRenderer?.RenderViewsWithShadows.Add(VrSettings.RenderViews[i]);
-
-                        // Fill RenderStage formats and register render stages to main view
-                        if (OpaqueRenderStage != null)
-                        {
-                            VrSettings.RenderViews[i].RenderStages.Add(OpaqueRenderStage);
-                            OpaqueRenderStage.Output = context.RenderOutput;
-                        }
-                        if (TransparentRenderStage != null)
-                        {
-                            VrSettings.RenderViews[i].RenderStages.Add(TransparentRenderStage);
-                            TransparentRenderStage.Output = context.RenderOutput;
-                        } 
+                        CollectViews(context, VrSettings.RenderViews[i]);
                     }
                 }
                 else
                 {
-                    // Mark this view as requiring shadows
-                    shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
-
-                    // Fill RenderStage formats and register render stages to main view
-                    if (OpaqueRenderStage != null)
-                    {
-                        context.RenderView.RenderStages.Add(OpaqueRenderStage);
-                        OpaqueRenderStage.Output = context.RenderOutput;
-                    }
-                    if (TransparentRenderStage != null)
-                    {
-                        context.RenderView.RenderStages.Add(TransparentRenderStage);
-                        TransparentRenderStage.Output = context.RenderOutput;
-                    }
+                    CollectViews(context, context.RenderView);
                 }
 
                 if (ShadowMapRenderStage != null)
