@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Analysis
             // If the package doesn't have a meta name, fix it here
             if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
             {
-                package.Meta.Name = package.FullPath.GetFileName();
+                package.Meta.Name = package.FullPath.GetFileNameWithoutExtension();
                 package.IsDirty = true;
             }
 
@@ -208,7 +208,7 @@ namespace SiliconStudio.Assets.Analysis
                 // If asset was not found, remove the reference
                 if (newItemReference == null)
                 {
-                    log.Warning(package, rootAsset, AssetMessageCode.AssetForPackageNotFound, rootAsset, package.FullPath.GetFileName());
+                    log.Warning(package, rootAsset, AssetMessageCode.AssetForPackageNotFound, rootAsset, package.FullPath.GetFileNameWithoutExtension());
                     rootAssets.Remove(rootAsset.Id);
                     package.IsDirty = true;
                     continue;

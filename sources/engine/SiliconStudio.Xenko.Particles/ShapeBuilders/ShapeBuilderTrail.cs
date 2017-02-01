@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
         /// <inheritdoc />
         public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
         {
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
