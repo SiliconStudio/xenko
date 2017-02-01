@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         internal RenderView[] RenderViews = { new RenderView(), new RenderView() };
 
         [DataMemberIgnore]
-        internal VRDevice Hmd;
+        internal VRDevice VRDevice;
     }
 
     /// <summary>
@@ -77,22 +77,27 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             shadowMapRenderer =
                 Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
 
-            if (VrSettings.Enabled)
+            var vrSystem = (VRDeviceSystem)Services.GetService(typeof(VRDeviceSystem));
+            if (vrSystem != null)
             {
-                try
+                if (VrSettings.Enabled)
                 {
-                    VrSettings.Hmd = VRDevice.GetVRDevice(Services, VrSettings.RequiredApis.ToArray());
-                    VrSettings.Hmd.Initialize(GraphicsDevice, BindDepthAsResourceDuringTransparentRendering, false);
+                    vrSystem.DepthStencilAsResource = BindDepthAsResourceDuringTransparentRendering;
+                    vrSystem.PreferredApis = VrSettings.RequiredApis.ToArray();
+                    vrSystem.Enabled = true;
+                    vrSystem.Visible = true;
+                    VrSettings.VRDevice = vrSystem.VRDevice;
                 }
-                catch (NoHmdDeviceException)
+                else
                 {
-                    VrSettings.Enabled = false;
-                    throw;
-                }      
+                    vrSystem.Enabled = false;
+                    vrSystem.Visible = false;
+                    VrSettings.VRDevice = null;
+                }
             }
         }
 
-        private void CollectViews(RenderContext context, RenderView renderView)
+        private void CollectView(RenderContext context, RenderView renderView)
         {
             // Mark this view as requiring shadows
             shadowMapRenderer?.RenderViewsWithShadows.Add(renderView);
@@ -122,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
                 }
 
-                if (VrSettings.Enabled)
+                if (VrSettings.Enabled && VrSettings.VRDevice != null)
                 {
                     Vector3 cameraPos, cameraScale;
                     Matrix cameraRot;
@@ -134,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         VrSettings.RenderViews[i].SceneInstance = context.RenderView.SceneInstance;
 
                         //change camera params for eye
-                        VrSettings.Hmd.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
+                        VrSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
                         camera.UseCustomProjectionMatrix = true;
                         camera.UseCustomViewMatrix = true;
                         camera.Update();
@@ -143,14 +148,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         SceneCameraRenderer.UpdateCameraToRenderView(context, VrSettings.RenderViews[i], camera);
 
                         //fix view size
-                        VrSettings.RenderViews[i].ViewSize = new Vector2(VrSettings.Hmd.RenderFrameSize.Width / 2.0f , VrSettings.Hmd.RenderFrameSize.Height);
+                        VrSettings.RenderViews[i].ViewSize = new Vector2(VrSettings.VRDevice.RenderFrameSize.Width / 2.0f , VrSettings.VRDevice.RenderFrameSize.Height);
 
-                        CollectViews(context, VrSettings.RenderViews[i]);
+                        CollectView(context, VrSettings.RenderViews[i]);
                     }
                 }
                 else
                 {
-                    CollectViews(context, context.RenderView);
+                    CollectView(context, context.RenderView);
                 }
 
                 if (ShadowMapRenderStage != null)
@@ -223,28 +228,28 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var currentRenderTarget = drawContext.CommandList.RenderTarget;
             var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
 
-            if (VrSettings.Enabled)
+            if (VrSettings.Enabled && VrSettings.VRDevice != null)
             {
                 // Allocate render targets
                 var renderTarget = PostEffects != null ? 
-                    PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(VrSettings.Hmd.RenderFrameSize.Width, VrSettings.Hmd.RenderFrameSize.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : 
-                    VrSettings.Hmd.RenderFrame;
+                    PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(VrSettings.VRDevice.RenderFrameSize.Width, VrSettings.VRDevice.RenderFrameSize.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : 
+                    VrSettings.VRDevice.RenderFrame;
 
                 //draw per eye
                 using (drawContext.PushRenderTargetsAndRestore())
                 {
-                    drawContext.CommandList.SetRenderTarget(VrSettings.Hmd.RenderFrameDepthStencil, renderTarget);
+                    drawContext.CommandList.SetRenderTarget(VrSettings.VRDevice.RenderFrameDepthStencil, renderTarget);
 
                     // Clear render target and depth stencil
                     Clear?.Draw(drawContext);
 
                     for (var i = 0; i < 2; i++)
                     {
-                        drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VrSettings.Hmd.RenderFrameSize.Width / 2, 0, VrSettings.Hmd.RenderFrameSize.Width / 2, VrSettings.Hmd.RenderFrameSize.Height));                      
-                        DrawView(context, drawContext, VrSettings.RenderViews[i], renderTarget, VrSettings.Hmd.RenderFrameDepthStencil, VrSettings.Hmd.RenderFrame);
+                        drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VrSettings.VRDevice.RenderFrameSize.Width / 2, 0, VrSettings.VRDevice.RenderFrameSize.Width / 2, VrSettings.VRDevice.RenderFrameSize.Height));                      
+                        DrawView(context, drawContext, VrSettings.RenderViews[i], renderTarget, VrSettings.VRDevice.RenderFrameDepthStencil, VrSettings.VRDevice.RenderFrame);
                     }
 
-                    VrSettings.Hmd.Commit(drawContext.CommandList);
+                    VrSettings.VRDevice.Commit(drawContext.CommandList);
                 }
             }
             else
