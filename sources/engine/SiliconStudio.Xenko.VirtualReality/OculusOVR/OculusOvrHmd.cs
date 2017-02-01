@@ -55,7 +55,8 @@ namespace SiliconStudio.Xenko.VirtualReality
                 textures[i].InitializeFrom(new Texture2D(ptr), false);
             }
 
-            RenderFrame = Texture.New2D(device, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            RenderFrame = Texture.New2D(device, textures[0].Width, textures[0].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+            RenderFrameDepthStencil = Texture.New2D(device, textures[0].Width, textures[0].Height, PixelFormat.D24_UNorm_S8_UInt, depthStencilResource ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil);
 
             leftHandController = new OculusTouchController(TouchControllerHand.Left);
             rightHandController = new OculusTouchController(TouchControllerHand.Right);
@@ -72,14 +73,18 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override void Update(GameTime gameTime)
         {
+            OculusOvr.InputProperties properties;
+            OculusOvr.GetInputProperties(ovrSession, out properties);
+            leftHandController.UpdateInputs(ref properties);
+            rightHandController.UpdateInputs(ref properties);
         }
 
         public override void Draw(GameTime gameTime)
         {
             OculusOvr.Update(ovrSession);
-            OculusOvr.GetPosesProperties(ovrSession, ref currentPoses);
-            leftHandController.Update(ref currentPoses);
-            rightHandController.Update(ref currentPoses);
+            OculusOvr.GetPosesProperties(ovrSession, out currentPoses);
+            leftHandController.UpdatePoses(ref currentPoses);
+            rightHandController.UpdatePoses(ref currentPoses);
         }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);

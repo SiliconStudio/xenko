@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Vector3 currentPos, currentLinearVelocity, currentAngularVelocity;
         private Quaternion currentRot;
         private DeviceState currentState;
+        private float currentTrigger, currentGrip;
 
         public override Vector3 Position => currentPos;
 
@@ -20,20 +21,30 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override DeviceState State => currentState;
 
+        public override float Trigger => currentTrigger;
+
+        public override float Grip => currentGrip;
+
         public OculusTouchController(TouchControllerHand hand)
         {
             this.hand = hand;
             currentState = DeviceState.Invalid;
         }
 
-        internal void Update(ref OculusOvr.PosesProperties properties)
+        internal void UpdateInputs(ref OculusOvr.InputProperties properties)
+        {
+            currentTrigger = hand == TouchControllerHand.Left ? properties.IndexTriggerLeft : properties.IndexTriggerRight;
+            currentGrip = hand == TouchControllerHand.Left ? properties.HandTriggerLeft : properties.HandTriggerRight;
+        }
+
+        internal void UpdatePoses(ref OculusOvr.PosesProperties properties)
         {
             if (hand == TouchControllerHand.Left)
             {
                 currentPos = properties.PosLeftHand;
                 currentRot = properties.RotLeftHand;
                 currentLinearVelocity = properties.LinearVelocityLeftHand;
-                currentAngularVelocity = properties.AngularVelocityLeftHand;
+                currentAngularVelocity = new Vector3(MathUtil.DegreesToRadians(properties.AngularVelocityLeftHand.X), MathUtil.DegreesToRadians(properties.AngularVelocityLeftHand.Y), MathUtil.DegreesToRadians(properties.AngularVelocityLeftHand.Z));
                 if ((properties.StateLeftHand & 0x0001) == 0x0001)
                 {
                     currentState = DeviceState.OutOfRange;
@@ -53,7 +64,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 currentPos = properties.PosRightHand;
                 currentRot = properties.RotRightHand;
                 currentLinearVelocity = properties.LinearVelocityRightHand;
-                currentAngularVelocity = properties.AngularVelocityRightHand;
+                currentAngularVelocity = new Vector3(MathUtil.DegreesToRadians(properties.AngularVelocityRightHand.X), MathUtil.DegreesToRadians(properties.AngularVelocityRightHand.Y), MathUtil.DegreesToRadians(properties.AngularVelocityRightHand.Z));
                 if ((properties.StateRightHand & 0x0001) == 0x0001)
                 {
                     currentState = DeviceState.OutOfRange;
@@ -72,32 +83,32 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool IsPressedDown(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool IsPressed(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool IsPressReleased(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool IsTouchedDown(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool IsTouched(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override bool IsTouchReleased(TouchControllerButton button)
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }

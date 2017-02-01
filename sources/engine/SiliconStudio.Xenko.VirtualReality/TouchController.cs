@@ -20,6 +20,10 @@ namespace SiliconStudio.Xenko.VirtualReality
         {           
         }
 
+        public abstract float Trigger { get; }
+
+        public abstract float Grip { get; }
+
         public abstract bool IsPressedDown(TouchControllerButton button);
 
         public abstract bool IsPressed(TouchControllerButton button);

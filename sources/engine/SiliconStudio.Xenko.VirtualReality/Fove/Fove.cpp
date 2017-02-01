@@ -105,7 +105,7 @@ extern "C"
 	}
 
 #pragma pack(push, 4)
-	struct FrameProperties
+	struct xnOvrFrameProperties
 	{
 		//Camera properties
 		float Near;
@@ -117,7 +117,7 @@ extern "C"
 	};
 #pragma pack(pop)
 
-	DLL_EXPORT_API void xnFovePrepareRender(FrameProperties* properties)
+	DLL_EXPORT_API void xnFovePrepareRender(xnOvrFrameProperties* properties)
 	{
 		auto matrixL = sHeadSet->GetProjectionMatrixRH(Fove::EFVR_Eye::Left, properties->Near, properties->Far);
 		auto matrixR = sHeadSet->GetProjectionMatrixRH(Fove::EFVR_Eye::Right, properties->Near, properties->Far);

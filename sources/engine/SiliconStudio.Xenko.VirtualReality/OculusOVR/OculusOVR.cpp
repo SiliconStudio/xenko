@@ -260,7 +260,7 @@ extern "C" {
 	}
 
 #pragma pack(push, 4)
-	struct FrameProperties
+	struct xnOvrFrameProperties
 	{
 		//Camera properties
 		float Near;
@@ -273,7 +273,7 @@ extern "C" {
 		float RotRight[4];
 	};
 
-	struct PosesProperties
+	struct xnOvrPosesProperties
 	{
 		//Head
 		float PosHead[3];
@@ -301,6 +301,19 @@ extern "C" {
 		float LinearAccelerationRightHand[3];
 		int StateRightHand;
 	};
+
+	struct xnOvrInputProperties
+	{
+		unsigned int Buttons;
+		unsigned int Touches;
+		float IndexTriggerLeft;
+		float IndexTriggerRight;
+		float HandTriggerLeft;
+		float HandTriggerRight;
+		float ThumbstickLeft[2];
+		float ThumbstickRight[2];
+		npBool Valid;
+	};
 #pragma pack(pop)
 
 	DLL_EXPORT_API void xnOvrUpdate(xnOvrSession* session)
@@ -315,7 +328,7 @@ extern "C" {
 		ovr_CalcEyePoses(session->CurrentState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
 	}
 
-	DLL_EXPORT_API void xnOvrGetFrameProperties(xnOvrSession* session, FrameProperties* properties)
+	DLL_EXPORT_API void xnOvrGetFrameProperties(xnOvrSession* session, xnOvrFrameProperties* properties)
 	{
 		auto leftProj = ovrMatrix4f_Projection(session->Layer.Fov[0], properties->Near, properties->Far, 0);
 		auto rightProj = ovrMatrix4f_Projection(session->Layer.Fov[1], properties->Near, properties->Far, 0);
@@ -329,7 +342,7 @@ extern "C" {
 		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	DLL_EXPORT_API void xnOvrGetPosesProperties(xnOvrSession* session, PosesProperties* properties)
+	DLL_EXPORT_API void xnOvrGetPosesProperties(xnOvrSession* session, xnOvrPosesProperties* properties)
 	{
 		memcpy(properties->PosHead, &session->CurrentState.HeadPose.ThePose.Position, sizeof(float) * 3);
 		memcpy(properties->RotHead, &session->CurrentState.HeadPose.ThePose.Orientation, sizeof(float) * 4);
@@ -353,6 +366,30 @@ extern "C" {
 		memcpy(properties->LinearVelocityRightHand, &session->CurrentState.HandPoses[1].LinearVelocity, sizeof(float) * 3);
 		memcpy(properties->LinearAccelerationRightHand, &session->CurrentState.HandPoses[1].LinearAcceleration, sizeof(float) * 3);
 		properties->StateRightHand = session->CurrentState.HandStatusFlags[1];
+	}
+
+	DLL_EXPORT_API void xnOvrGetInputProperties(xnOvrSession* session, xnOvrInputProperties* properties)
+	{
+		ovrInputState state;
+		auto res = ovr_GetInputState(session->Session, ovrControllerType_Touch, &state);
+		if(OVR_SUCCESS(res))
+		{
+			properties->Valid = true;
+			properties->Buttons = state.Buttons;
+			properties->Touches = state.Touches;
+			properties->HandTriggerLeft = state.HandTrigger[0];
+			properties->HandTriggerRight = state.HandTrigger[1];
+			properties->IndexTriggerLeft = state.IndexTrigger[0];
+			properties->IndexTriggerRight = state.IndexTrigger[1];
+			properties->ThumbstickLeft[0] = state.Thumbstick[0].x;
+			properties->ThumbstickLeft[1] = state.Thumbstick[0].y;
+			properties->ThumbstickRight[0] = state.Thumbstick[1].x;
+			properties->ThumbstickRight[1] = state.Thumbstick[1].y;
+		}
+		else
+		{
+			properties->Valid = false;
+		}
 	}
 
 	DLL_EXPORT_API npBool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
@@ -496,6 +533,11 @@ extern "C" {
 	DLL_EXPORT_API void xnOvrGetPosesProperties(void* session, void* params)
 	{
 
+	}
+
+	DLL_EXPORT_API void xnOvrGetInputProperties(void* session, void* properties)
+	{
+		
 	}
 
 	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session)

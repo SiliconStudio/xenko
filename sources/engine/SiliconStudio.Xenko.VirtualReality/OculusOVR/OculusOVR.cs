@@ -111,6 +111,20 @@ namespace SiliconStudio.Xenko.VirtualReality
             public int StateRightHand;
         }
 
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct InputProperties
+        {
+            public uint Buttons;
+            public uint Touches;
+            public float IndexTriggerLeft;
+            public float IndexTriggerRight;
+            public float HandTriggerLeft;
+            public float HandTriggerRight;
+            public Vector2 ThumbstickLeft;
+            public Vector2 ThumbstickRight;
+		    public bool Valid;
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrUpdate", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Update(IntPtr session);
@@ -121,7 +135,11 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetPosesProperties", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetPosesProperties(IntPtr session, ref PosesProperties properties);
+        public static extern void GetPosesProperties(IntPtr session, out PosesProperties properties);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetInputProperties", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GetInputProperties(IntPtr session, out InputProperties properties);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetError", CallingConvention = CallingConvention.Cdecl)]

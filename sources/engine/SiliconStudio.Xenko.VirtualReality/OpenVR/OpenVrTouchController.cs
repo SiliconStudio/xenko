@@ -56,6 +56,10 @@ namespace SiliconStudio.Xenko.VirtualReality
             base.Update(gameTime);
         }
 
+        public override float Trigger => controller?.GetAxis(OpenVR.Controller.ButtonId.ButtonSteamVrTrigger).X ?? 0.0f;
+
+        public override float Grip => IsPressed(TouchControllerButton.Grip) ? 1.0f : 0.0f;
+
         private OpenVR.Controller.ButtonId ToOpenVrButton(TouchControllerButton button)
         {
             switch (button)
