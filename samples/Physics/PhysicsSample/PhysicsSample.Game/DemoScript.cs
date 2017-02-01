@@ -7,6 +7,7 @@ using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
+using System.Threading.Tasks;
 
 namespace PhysicsSample
 {
@@ -27,7 +28,7 @@ namespace PhysicsSample
         private RigidbodyComponent sphereRigidBody;
 
         private TextBlock constraintNameBlock;
-        
+
         public override void Start()
         {
             simulation = this.GetSimulation();
@@ -52,11 +53,11 @@ namespace PhysicsSample
             {
                 RootElement = new Canvas
                 {
-                    Children = 
-                    { 
-                        constraintNameBlock, 
-                        CreateButton("Next", Font, 1), 
-                        CreateButton("Previous", Font, -1) 
+                    Children =
+                    {
+                        constraintNameBlock,
+                        CreateButton("Next", Font, 1),
+                        CreateButton("Previous", Font, -1)
                     }
                 }
             };
@@ -93,7 +94,7 @@ namespace PhysicsSample
             sphereRigidBody.LinearFactor = new Vector3(1, 1, 1);
             sphereRigidBody.AngularFactor = new Vector3(1, 1, 1);
 
-            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Point2Point, cubeRigidBody, sphereRigidBody, 
+            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Point2Point, cubeRigidBody, sphereRigidBody,
                 Matrix.Identity, Matrix.Translation(new Vector3(4, 0, 0)));
             simulation.AddConstraint(currentConstraint);
             constraintNameBlock.Text = "Point to Point";
@@ -109,7 +110,7 @@ namespace PhysicsSample
             sphereRigidBody.LinearFactor = new Vector3(1, 1, 1);
             sphereRigidBody.AngularFactor = new Vector3(1, 1, 1);
 
-            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Hinge, cubeRigidBody, sphereRigidBody, 
+            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Hinge, cubeRigidBody, sphereRigidBody,
                 Matrix.Identity, Matrix.Translation(new Vector3(4, 0, 0)));
             simulation.AddConstraint(currentConstraint);
             constraintNameBlock.Text = "Hinge";
@@ -125,16 +126,16 @@ namespace PhysicsSample
             sphereRigidBody.LinearFactor = Vector3.Zero;
             sphereRigidBody.AngularFactor = new Vector3(1, 1, 1);
 
-            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Gear, sphereRigidBody, cubeRigidBody, 
+            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Gear, sphereRigidBody, cubeRigidBody,
                 Matrix.Translation(new Vector3(1, 0, 0)), Matrix.Translation(new Vector3(1, 0, 0)));
             simulation.AddConstraint(currentConstraint);
             constraintNameBlock.Text = "Gear";
 
-            var gear = (GearConstraint) currentConstraint;
+            var gear = (GearConstraint)currentConstraint;
             gear.Ratio = 0.5f;
 
             //this force will start a motion in the sphere which gets propagated into the cube
-            sphereRigidBody.AngularVelocity = new Vector3(25, 0 ,0);
+            sphereRigidBody.AngularVelocity = new Vector3(25, 0, 0);
         }
 
         void CreateSliderConstraint()
@@ -166,7 +167,7 @@ namespace PhysicsSample
             sphereRigidBody.LinearFactor = new Vector3(1, 1, 1);
             sphereRigidBody.AngularFactor = new Vector3(1, 1, 1);
 
-            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.ConeTwist, cubeRigidBody, sphereRigidBody, 
+            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.ConeTwist, cubeRigidBody, sphereRigidBody,
                 Matrix.Identity, Matrix.Translation(new Vector3(4, 0, 0)));
             simulation.AddConstraint(currentConstraint);
             constraintNameBlock.Text = "Cone Twist";
@@ -185,7 +186,7 @@ namespace PhysicsSample
             sphereRigidBody.LinearFactor = new Vector3(1, 1, 1);
             sphereRigidBody.AngularFactor = new Vector3(1, 1, 1);
 
-            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Generic6DoF, cubeRigidBody, sphereRigidBody, 
+            currentConstraint = Simulation.CreateConstraint(ConstraintTypes.Generic6DoF, cubeRigidBody, sphereRigidBody,
                 Matrix.Identity, Matrix.Translation(new Vector3(4, 0, 0)));
             simulation.AddConstraint(currentConstraint);
             constraintNameBlock.Text = "Generic 6D of Freedom";
@@ -233,11 +234,25 @@ namespace PhysicsSample
                 Content = new TextBlock { Text = text, Font = font, TextSize = 35, TextColor = new Color(200, 200, 200, 255) },
                 BackgroundColor = new Color(new Vector4(0.2f, 0.2f, 0.2f, 0.2f)),
             };
-            button.Click += (sender, args) => ChangeConstraint(offset);
+
+            button.Click += (sender, args) =>
+            {
+                Script.AddTask(() =>
+                {
+                    ChangeConstraint(offset);
+                    return Task.CompletedTask;
+                });
+            };
+
             button.SetCanvasPinOrigin(new Vector3(offset > 0 ? 1 : 0, 0.5f, 0));
             button.SetCanvasRelativePosition(new Vector3(offset > 0 ? 0.87f : 0.13f, 0.93f, 0));
 
             return button;
+        }
+
+        public override void Cancel()
+        {
+            RemoveConstraint();
         }
     }
 }
