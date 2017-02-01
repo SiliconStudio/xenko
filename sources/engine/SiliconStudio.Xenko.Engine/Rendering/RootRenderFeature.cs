@@ -53,6 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Defines which <see cref="RenderObject"/> gets accepted in that render feature.
         /// </summary>
         [DataMember]
+        [DefaultValue(null)]
         public RootRenderFeatureFilter Filter { get; set; }
 
         /// <summary>
