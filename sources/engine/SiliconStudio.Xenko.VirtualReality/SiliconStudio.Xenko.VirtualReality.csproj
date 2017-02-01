@@ -117,6 +117,7 @@
     <Compile Include="TouchControllerApi.cs" />
     <Compile Include="TouchControllerButton.cs" />
     <Compile Include="TouchControllerHand.cs" />
+    <Compile Include="VRDeviceSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

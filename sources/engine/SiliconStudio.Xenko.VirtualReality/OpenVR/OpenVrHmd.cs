@@ -1,5 +1,6 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -24,13 +25,9 @@ namespace SiliconStudio.Xenko.VirtualReality
         private int width;
         private int height;
 
-        internal OpenVrHmd(IServiceRegistry registry) : base(registry)
-        {
-        }
-
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
-        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
         {
             needsMirror = requireMirror;
             var size = RenderFrameSize;
@@ -51,7 +48,12 @@ namespace SiliconStudio.Xenko.VirtualReality
             leftHandController = new OpenVrTouchController(TouchControllerHand.Left);
             rightHandController = new OpenVrTouchController(TouchControllerHand.Right);
 
-            base.Initialize(device, requireMirror);
+            //fixed timesteps at 90
+            Game.IsFixedTimeStep = true;
+            Game.IsDrawDesynchronized = true;
+            Game.TargetElapsedTime = TimeSpan.FromSeconds(1 / 90.0f);
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            graphicsDeviceManager.ApplyChanges();
         }
 
         public override void Draw(GameTime gameTime)

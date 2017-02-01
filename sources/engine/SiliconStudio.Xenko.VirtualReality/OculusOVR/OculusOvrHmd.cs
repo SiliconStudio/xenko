@@ -22,11 +22,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private OculusTouchController leftHandController;
         private OculusTouchController rightHandController;
 
-        internal OculusOvrHmd(IServiceRegistry registry) : base(registry)
-        {
-        }
-
-        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
@@ -64,10 +60,19 @@ namespace SiliconStudio.Xenko.VirtualReality
             leftHandController = new OculusTouchController(TouchControllerHand.Left);
             rightHandController = new OculusTouchController(TouchControllerHand.Right);
 
-            base.Initialize(device, requireMirror);
+            //fixed timesteps at 90
+            Game.IsFixedTimeStep = true;
+            Game.IsDrawDesynchronized = true;
+            Game.TargetElapsedTime = TimeSpan.FromSeconds(1 / 90.0f);
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            graphicsDeviceManager.ApplyChanges();
         }
 
         private OculusOvr.PosesProperties currentPoses;
+
+        public override void Update(GameTime gameTime)
+        {
+        }
 
         public override void Draw(GameTime gameTime)
         {
@@ -133,7 +138,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 return initDone;
             }
         }
-
+        
         public override void Recenter()
         {
             OculusOvr.Recenter(ovrSession);
