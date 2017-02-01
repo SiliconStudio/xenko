@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Assets
             if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
             {
                 // Find game settings (if there is none, it's not a game and nothing to do)
-                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetPath == GameSettingsAsset.GameSettingsLocation);
+                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
                 if (gameSettings != null)
                 {
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
@@ -360,7 +360,7 @@ namespace SiliconStudio.Xenko.Assets
                         assetFiles.Add(graphicsCompositorAsset);
 
                         // Update game settings to point to our newly created compositor
-                        gameSettingsYaml.DynamicRootNode.GraphicsCompositor = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetPath).ToString();
+                        gameSettingsYaml.DynamicRootNode.GraphicsCompositor = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetLocation).ToString();
                     }
                 }
 
