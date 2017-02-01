@@ -142,21 +142,31 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
+            float splitMinRatio = 0;
+            float oldSplitMinRatio = 0;
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
+                oldSplitMinRatio = splitMinRatio;
                 // Calculate frustum corners for this cascade
-                var splitMinRatio = splitMaxRatio;
+                splitMinRatio = splitMaxRatio;
                 splitMaxRatio = cascadeSplitRatios[cascadeLevel];
+                var prevSplitMaxRatio = cascadeSplitRatios[cascadeLevel];
                 for (int j = 0; j < 4; j++)
                 {
                     // Calculate frustum in WS and VS
-                    var frustumRange = frustumCornersWS[j + 4] - frustumCornersWS[j];
-                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio;
+                    float overlap = 0;
+                    if (cascadeLevel > 0 && shadow.DepthRange.IsBlendingCascades)
+                        overlap = 0.2f * (splitMinRatio - oldSplitMinRatio);
 
-                    frustumRange = frustumCornersVS[j + 4] - frustumCornersVS[j];
-                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio;
+                    var frustumRangeWS = frustumCornersWS[j + 4] - frustumCornersWS[j];
+                    var frustumRangeVS = frustumCornersVS[j + 4] - frustumCornersVS[j];
+
+                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRangeWS * (splitMinRatio - overlap);
+                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRangeWS * splitMaxRatio;
+
+
+                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRangeVS * (splitMinRatio - overlap);
+                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRangeVS * splitMaxRatio;
                 }
 
                 Vector3 cascadeMinBoundLS;
