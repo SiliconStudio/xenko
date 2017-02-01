@@ -105,6 +105,9 @@ namespace SiliconStudio.Xenko.Engine
         {
             RootScene = null;
 
+            // Cleaning processors should not be necessary anymore, but physics are not properly cleaned up otherwise
+            Reset();
+
             // TODO: Dispose of Scene, graphics compositor...etc.
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
