@@ -15,9 +15,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightSpotShadowMapRenderer : LightShadowMapRendererBase
     {
-        /// <inheritdoc/>
-        public override Type LightType => typeof(LightSpot);
-
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -33,8 +30,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderDataPool = new PoolListStruct<LightSpotShadowMapShaderData>(8, CreateLightSpotShadowMapShaderData);
         }
         
-        public override void Reset()
+        public override void Reset(RenderContext context)
         {
+            base.Reset(context);
+
             shaderDataPool.Clear();
         }
 
@@ -48,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return light is LightSpot;
         }
 
-        public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
+        public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
         {
             // TODO: Min and Max distance can be auto-computed from readback from Z buffer
             var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;
@@ -119,28 +118,24 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             shaderData.ViewMatrix = viewMatrix;
             shaderData.ProjectionMatrix = projectionMatrix;
-        }
-
-        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
-        {  
+            
             // Allocate shadow render view
-            var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
-            shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
+            var shadowRenderView = CreateRenderView();
+            shadowRenderView.RenderView = sourceView;
             shadowRenderView.ShadowMapTexture = lightShadowMap;
             shadowRenderView.Rectangle = lightShadowMap.GetRectangle(0);
 
             // Compute view parameters
-            var shaderData = (LightSpotShadowMapShaderData)lightShadowMap.ShaderData;
             shadowRenderView.View = shaderData.ViewMatrix;
             shadowRenderView.Projection = shaderData.ProjectionMatrix;
 
             Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
 
             // Add the render view for the current frame
-            ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
+            context.RenderSystem.Views.Add(shadowRenderView);
 
             // Collect objects in shadow views
-            visibilityGroup.Collect(shadowRenderView);
+            context.VisibilityGroup.TryCollect(shadowRenderView);
         }
 
         private class LightSpotShadowMapShaderData : ILightShadowMapShaderData

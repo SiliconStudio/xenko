@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -16,17 +16,32 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
+        protected PoolListStruct<ShadowMapRenderView> ShadowRenderViews;
+        protected PoolListStruct<LightShadowMapTexture> ShadowMaps;
+
+        protected LightShadowMapRendererBase()
+        {
+            ShadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowCasterRenderStage } });
+            ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture { Renderer = this });
+        }
+
         /// <summary>
         /// The shadow map render stage this light shadow map renderer uses
         /// </summary>
         [DataMember]
         public RenderStage ShadowCasterRenderStage { get; set; }
 
-        public abstract void Reset(RenderContext context);
+        public virtual void Reset(RenderContext context)
+        {
+            foreach (var view in ShadowRenderViews)
+                context.RenderSystem.Views.Remove(view);
+
+            ShadowRenderViews.Clear();
+            ShadowMaps.Clear();
+        }
 
         public virtual LightShadowType GetShadowType(LightShadowMap shadowMap)
         {
-            // TODO: MOVE THIS TO BASE TYPE
             var shadowType = (LightShadowType)0;
             switch (shadowMap.GetCascadeCount())
             {
@@ -71,8 +86,26 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public abstract void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap);
 
-        public abstract void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture);
+        public virtual void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
+        {
+        }
 
-        public abstract LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize);
+        public virtual LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        {
+            var shadowMap = ShadowMaps.Add();
+            shadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
+            return shadowMap;
+        }
+
+        /// <summary>
+        /// Creates a default view with the shadow caster stage added to it
+        /// </summary>
+        public virtual ShadowMapRenderView CreateRenderView()
+        {
+            var shadowRenderView = ShadowRenderViews.Add();
+            shadowRenderView.RenderStages.Clear();
+            shadowRenderView.RenderStages.Add(ShadowCasterRenderStage);
+            return shadowRenderView;
+        }
     }
 }

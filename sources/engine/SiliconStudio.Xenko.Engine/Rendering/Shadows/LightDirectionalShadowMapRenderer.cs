@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -6,7 +6,6 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
@@ -17,9 +16,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightDirectionalShadowMapRenderer : LightShadowMapRendererBase
     {
-        /// <inheritdoc/>
-        public override Type LightType => typeof(LightDirectional);
-
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>
@@ -30,8 +26,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         private static readonly Vector3[] FrustumBasePoints =
         {
-            new Vector3(-1.0f,-1.0f, 0.0f), new Vector3(1.0f,-1.0f, 0.0f), new Vector3(-1.0f,1.0f, 0.0f), new Vector3(1.0f,1.0f, 0.0f),
-            new Vector3(-1.0f,-1.0f, 1.0f), new Vector3(1.0f,-1.0f, 1.0f), new Vector3(-1.0f,1.0f, 1.0f), new Vector3(1.0f,1.0f, 1.0f),
+            new Vector3(-1.0f, -1.0f, 0.0f), new Vector3(1.0f, -1.0f, 0.0f), new Vector3(-1.0f, 1.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f),
+            new Vector3(-1.0f, -1.0f, 1.0f), new Vector3(1.0f, -1.0f, 1.0f), new Vector3(-1.0f, 1.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f),
         };
 
         private readonly float[] cascadeSplitRatios;
@@ -47,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// <summary>
         /// Initializes a new instance of the <see cref="LightDirectionalShadowMapRenderer"/> class.
         /// </summary>
-        public LightDirectionalShadowMapRenderer(ShadowMapRenderer parent) : base(parent)
+        public LightDirectionalShadowMapRenderer()
         {
             cascadeSplitRatios = new float[4];
             cascadeFrustumCornersWS = new Vector3[8];
@@ -58,9 +54,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderDataPoolCascade2 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade2);
             shaderDataPoolCascade4 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade4);
         }
-        
-        public override void Reset()
+
+        public override void Reset(RenderContext context)
         {
+            foreach (var view in ShadowRenderViews)
+                context.RenderSystem.Views.Remove(view);
+
+            ShadowRenderViews.Reset();
             shaderDataPoolCascade1.Clear();
             shaderDataPoolCascade2.Clear();
             shaderDataPoolCascade4.Clear();
@@ -95,20 +95,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return light is LightDirectional;
         }
 
-        public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
+        public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
-            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var shadowRenderView = ShadowMapRenderer.CurrentView;
 
-            var viewToWorld = shadowRenderView.View;
+            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
+
+            var viewToWorld = sourceView.View;
             viewToWorld.Invert();
 
             // Update the frustum infos
-            UpdateFrustum(shadowRenderView);
+            UpdateFrustum(sourceView);
 
             // Computes the cascade splits
-            var minMaxDistance = ComputeCascadeSplits(context, ref lightShadowMap);
+            var minMaxDistance = ComputeCascadeSplits(context, sourceView, ref lightShadowMap);
             var direction = lightShadowMap.LightComponent.Direction;
 
             // Fake value
@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
-            float splitMaxRatio = (minMaxDistance.X - shadowRenderView.NearClipPlane) / (shadowRenderView.FarClipPlane - shadowRenderView.NearClipPlane);
+            float splitMaxRatio = (minMaxDistance.X - sourceView.NearClipPlane)/(sourceView.FarClipPlane - sourceView.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
                 // Calculate frustum corners for this cascade
@@ -159,12 +159,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 {
                     // Calculate frustum in WS and VS
                     var frustumRange = frustumCornersWS[j + 4] - frustumCornersWS[j];
-                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange * splitMaxRatio;
+                    cascadeFrustumCornersWS[j] = frustumCornersWS[j] + frustumRange*splitMinRatio;
+                    cascadeFrustumCornersWS[j + 4] = frustumCornersWS[j] + frustumRange*splitMaxRatio;
 
                     frustumRange = frustumCornersVS[j + 4] - frustumCornersVS[j];
-                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange * splitMinRatio;
-                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange * splitMaxRatio;
+                    cascadeFrustumCornersVS[j] = frustumCornersVS[j] + frustumRange*splitMinRatio;
+                    cascadeFrustumCornersVS[j + 4] = frustumCornersVS[j] + frustumRange*splitMaxRatio;
                 }
 
                 Vector3 cascadeMinBoundLS;
@@ -194,13 +194,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     {
                         // Snap camera to texel units (so that shadow doesn't jitter when light doesn't change direction but camera is moving)
                         // Technique from ShaderX7 - Practical Cascaded Shadows Maps -  p310-311 
-                        var shadowMapHalfSize = lightShadowMap.Size * 0.5f;
-                        float x = (float)Math.Ceiling(Vector3.Dot(target, upDirection) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
-                        float y = (float)Math.Ceiling(Vector3.Dot(target, side) * shadowMapHalfSize / radius) * radius / shadowMapHalfSize;
+                        var shadowMapHalfSize = lightShadowMap.Size*0.5f;
+                        float x = (float)Math.Ceiling(Vector3.Dot(target, upDirection)*shadowMapHalfSize/radius)*radius/shadowMapHalfSize;
+                        float y = (float)Math.Ceiling(Vector3.Dot(target, side)*shadowMapHalfSize/radius)*radius/shadowMapHalfSize;
                         float z = Vector3.Dot(target, direction);
 
                         //target = up * x + side * y + direction * R32G32B32_Float.Dot(target, direction);
-                        target = upDirection * x + side * y + direction * z;
+                        target = upDirection*x + side*y + direction*z;
                     }
                 }
                 else
@@ -225,20 +225,21 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var viewMatrix = Matrix.LookAtLH(target + direction*cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z);
+                    // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
                 // Stabilize the Shadow matrix on the projection
                 if (shadow.StabilizationMode == LightShadowMapStabilizationMode.ProjectionSnapping)
                 {
-                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector * lightShadowMap.Size * 0.5f;  // shouln't it be scale and not translation ?
+                    var shadowPixelPosition = viewProjectionMatrix.TranslationVector*lightShadowMap.Size*0.5f; // shouln't it be scale and not translation ?
                     shadowPixelPosition.Z = 0;
                     var shadowPixelPositionRounded = new Vector3((float)Math.Round(shadowPixelPosition.X), (float)Math.Round(shadowPixelPosition.Y), 0.0f);
 
                     var shadowPixelOffset = new Vector4(shadowPixelPositionRounded - shadowPixelPosition, 0.0f);
-                    shadowPixelOffset *= 2.0f / lightShadowMap.Size;
+                    shadowPixelOffset *= 2.0f/lightShadowMap.Size;
                     projectionMatrix.Row4 += shadowPixelOffset;
                     Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
                 }
@@ -247,14 +248,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shaderData.ProjectionMatrix[cascadeLevel] = projectionMatrix;
 
                 // Cascade splits in light space using depth: Store depth on first CascaderCasterMatrix in last column of each row
-                shaderData.CascadeSplits[cascadeLevel] = MathUtil.Lerp(shadowRenderView.NearClipPlane, shadowRenderView.FarClipPlane, cascadeSplitRatios[cascadeLevel]);
+                shaderData.CascadeSplits[cascadeLevel] = MathUtil.Lerp(sourceView.NearClipPlane, sourceView.FarClipPlane, cascadeSplitRatios[cascadeLevel]);
 
                 var shadowMapRectangle = lightShadowMap.GetRectangle(cascadeLevel);
 
-                var cascadeTextureCoords = new Vector4((float)shadowMapRectangle.Left / lightShadowMap.Atlas.Width,
-                    (float)shadowMapRectangle.Top / lightShadowMap.Atlas.Height,
-                    (float)shadowMapRectangle.Right / lightShadowMap.Atlas.Width,
-                    (float)shadowMapRectangle.Bottom / lightShadowMap.Atlas.Height);
+                var cascadeTextureCoords = new Vector4((float)shadowMapRectangle.Left/lightShadowMap.Atlas.Width,
+                    (float)shadowMapRectangle.Top/lightShadowMap.Atlas.Height,
+                    (float)shadowMapRectangle.Right/lightShadowMap.Atlas.Width,
+                    (float)shadowMapRectangle.Bottom/lightShadowMap.Atlas.Height);
 
                 //// Add border (avoid using edges due to bilinear filtering and blur)
                 //var borderSizeU = VsmBlurSize / lightShadowMap.Atlas.Width;
@@ -264,37 +265,31 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 //cascadeTextureCoords.Z -= borderSizeU;
                 //cascadeTextureCoords.W -= borderSizeV;
 
-                float leftX = (float)lightShadowMap.Size / lightShadowMap.Atlas.Width * 0.5f;
-                float leftY = (float)lightShadowMap.Size / lightShadowMap.Atlas.Height * 0.5f;
-                float centerX = 0.5f * (cascadeTextureCoords.X + cascadeTextureCoords.Z);
-                float centerY = 0.5f * (cascadeTextureCoords.Y + cascadeTextureCoords.W);
+                float leftX = (float)lightShadowMap.Size/lightShadowMap.Atlas.Width*0.5f;
+                float leftY = (float)lightShadowMap.Size/lightShadowMap.Atlas.Height*0.5f;
+                float centerX = 0.5f*(cascadeTextureCoords.X + cascadeTextureCoords.Z);
+                float centerY = 0.5f*(cascadeTextureCoords.Y + cascadeTextureCoords.W);
 
                 // Compute receiver view proj matrix
-                Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
+                Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f)*Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref viewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
-            }
-        }
 
-        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
-        {
-            for (int cascadeIndex = 0; cascadeIndex < lightShadowMap.CascadeCount; cascadeIndex++)
-            {
                 // Allocate shadow render view
-                var shadowRenderView = ShadowMapRenderer.ShadowRenderViews.Add();
-                shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
+                var shadowRenderView = CreateRenderView();
+                shadowRenderView.RenderView = shadowRenderView;
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
-                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(cascadeIndex);
+                shadowRenderView.Rectangle = shadowMapRectangle;
 
                 // Compute view parameters
-                GetCascadeViewParameters(lightShadowMap, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                GetCascadeViewParameters(lightShadowMap, cascadeLevel, out shadowRenderView.View, out shadowRenderView.Projection);
                 Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
 
                 // Add the render view for the current frame
-                ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
+                context.RenderSystem.Views.Add(shadowRenderView);
 
                 // Collect objects in shadow views
-                visibilityGroup.Collect(shadowRenderView);
+                context.VisibilityGroup.TryCollect(shadowRenderView);
             }
         }
 
@@ -326,7 +321,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             // as projection matrix is RH we calculate it like this
             var denominator = (depthZ + projectionMatrix.M33);
-            return projectionMatrix.M43 / denominator;
+            return projectionMatrix.M43/denominator;
         }
 
         private static float LogFloor(float value)
@@ -345,13 +340,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return log;
         }
 
-        private Vector2 ComputeCascadeSplits(RenderContext context, ref LightShadowMapTexture lightShadowMap)
+        private Vector2 ComputeCascadeSplits(RenderContext context, RenderView sourceView, ref LightShadowMapTexture lightShadowMap)
         {
             var shadow = (LightDirectionalShadowMap)lightShadowMap.Shadow;
-            var shadowRenderView = ShadowMapRenderer.CurrentView;
 
-            var cameraNear = shadowRenderView.NearClipPlane;
-            var cameraFar = shadowRenderView.FarClipPlane;
+            var cameraNear = sourceView.NearClipPlane;
+            var cameraFar = sourceView.FarClipPlane;
             var cameraRange = cameraFar - cameraNear;
 
             var minDistance = cameraNear + LightDirectionalShadowMap.DepthRangeParameters.DefaultMinDistance;
@@ -360,12 +354,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             if (shadow.DepthRange.IsAutomatic)
             {
                 // Reserve 1/3 of the guard distance for the min distance
-                minDistance = Math.Max(cameraNear, ShadowMapRenderer.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
+                minDistance = Math.Max(cameraNear, sourceView.MinimumDistance - shadow.DepthRange.GuardDistance/3);
                 minDistance = LogFloor(minDistance);
 
                 // Reserve 2/3 of the guard distance for the max distance
-                var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
-                maxDistance = Math.Max(ShadowMapRenderer.CurrentView.MaximumDistance, guardMaxDistance);
+                var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance*2/3;
+                maxDistance = Math.Max(sourceView.MaximumDistance, guardMaxDistance);
                 // snap to a 'closest floor' of sorts, to improve stability:
                 maxDistance = LogCeiling(maxDistance);
             }
@@ -383,15 +377,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var maxZ = maxDistance;
 
                 var range = maxZ - minZ;
-                var ratio = maxZ / minZ;
+                var ratio = maxZ/minZ;
                 var logRatio = MathUtil.Clamp(1.0f - logarithmicPartitionMode.PSSMFactor, 0.0f, 1.0f);
 
                 for (int cascadeLevel = 0; cascadeLevel < lightShadowMap.CascadeCount; ++cascadeLevel)
                 {
                     // Compute cascade split (between znear and zfar)
-                    float distrib = (float)(cascadeLevel + 1) / lightShadowMap.CascadeCount;
-                    float logZ = (float)(minZ * Math.Pow(ratio, distrib));
-                    float uniformZ = minZ + range * distrib;
+                    float distrib = (float)(cascadeLevel + 1)/lightShadowMap.CascadeCount;
+                    float logZ = (float)(minZ*Math.Pow(ratio, distrib));
+                    float uniformZ = minZ + range*distrib;
                     float distance = MathUtil.Lerp(uniformZ, logZ, logRatio);
                     cascadeSplitRatios[cascadeLevel] = distance;
                 }
@@ -400,26 +394,26 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 if (lightShadowMap.CascadeCount == 1)
                 {
-                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1*maxDistance;
                 }
                 else if (lightShadowMap.CascadeCount == 2)
                 {
-                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
-                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance3 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance1*maxDistance;
+                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance3*maxDistance;
                 }
                 else if (lightShadowMap.CascadeCount == 4)
                 {
-                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance0 * maxDistance;
-                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance1 * maxDistance;
-                    cascadeSplitRatios[2] = minDistance + manualPartitionMode.SplitDistance2 * maxDistance;
-                    cascadeSplitRatios[3] = minDistance + manualPartitionMode.SplitDistance3 * maxDistance;
+                    cascadeSplitRatios[0] = minDistance + manualPartitionMode.SplitDistance0*maxDistance;
+                    cascadeSplitRatios[1] = minDistance + manualPartitionMode.SplitDistance1*maxDistance;
+                    cascadeSplitRatios[2] = minDistance + manualPartitionMode.SplitDistance2*maxDistance;
+                    cascadeSplitRatios[3] = minDistance + manualPartitionMode.SplitDistance3*maxDistance;
                 }
             }
 
             // Convert distance splits to ratios cascade in the range [0, 1]
             for (int i = 0; i < cascadeSplitRatios.Length; i++)
             {
-                cascadeSplitRatios[i] = (cascadeSplitRatios[i] - cameraNear) / cameraRange;
+                cascadeSplitRatios[i] = (cascadeSplitRatios[i] - cameraNear)/cameraRange;
             }
 
             return new Vector2(minDistance, maxDistance);
@@ -427,6 +421,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private class LightDirectionalShadowMapShaderData : ILightShadowMapShaderData
         {
+            public Texture Texture;
+            public readonly float[] CascadeSplits;
+            public float DepthBias;
+            public float OffsetScale;
+            public readonly Matrix[] WorldToShadowCascadeUV;
+            public readonly Matrix[] ViewMatrix;
+            public readonly Matrix[] ProjectionMatrix;
+
             public LightDirectionalShadowMapShaderData(int cascadeCount)
             {
                 CascadeSplits = new float[cascadeCount];
@@ -434,54 +436,25 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 ViewMatrix = new Matrix[cascadeCount];
                 ProjectionMatrix = new Matrix[cascadeCount];
             }
-
-            public Texture Texture;
-
-            public readonly float[] CascadeSplits;
-
-            public float DepthBias;
-
-            public float OffsetScale;
-
-            public readonly Matrix[] WorldToShadowCascadeUV;
-            
-            public readonly Matrix[] ViewMatrix;
-
-            public readonly Matrix[] ProjectionMatrix;
         }
 
         private class LightDirectionalShadowMapGroupShaderData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverDirectional";
-            
             private readonly int cascadeCount;
-
             private float[] cascadeSplits;
-
             private Matrix[] worldToShadowCascadeUV;
-
             private float[] depthBiases;
-
             private float[] offsetScales;
-
             private Texture shadowMapTexture;
-
             private Vector2 shadowMapTextureSize;
-
             private Vector2 shadowMapTextureTexelSize;
-
             private ObjectParameterKey<Texture> shadowMapTextureKey;
-
             private ValueParameterKey<float> cascadeSplitsKey;
-
             private ValueParameterKey<Matrix> worldToShadowCascadeUVsKey;
-            
             private ValueParameterKey<float> depthBiasesKey;
-
             private ValueParameterKey<float> offsetScalesKey;
-
             private ValueParameterKey<Vector2> shadowMapTextureSizeKey;
-
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
@@ -517,8 +490,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 base.UpdateLightCount(lightLastCount, lightCurrentCount);
 
-                Array.Resize(ref cascadeSplits, cascadeCount * lightCurrentCount);
-                Array.Resize(ref worldToShadowCascadeUV, cascadeCount * lightCurrentCount);
+                Array.Resize(ref cascadeSplits, cascadeCount*lightCurrentCount);
+                Array.Resize(ref worldToShadowCascadeUV, cascadeCount*lightCurrentCount);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref offsetScales, lightCurrentCount);
             }
@@ -532,7 +505,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     var singleLightData = (LightDirectionalShadowMapShaderData)lightEntry.ShadowMapTexture.ShaderData;
                     var splits = singleLightData.CascadeSplits;
                     var matrices = singleLightData.WorldToShadowCascadeUV;
-                    int splitIndex = lightIndex * cascadeCount;
+                    int splitIndex = lightIndex*cascadeCount;
                     for (int i = 0; i < splits.Length; i++)
                     {
                         cascadeSplits[splitIndex + i] = splits[i];

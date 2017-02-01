@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
-                var shadowMapTexture = renderer.CreateTexture(lightComponent, light, shadowMapSize);
+                var shadowMapTexture = renderer.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
 
                 // Assign rectangles for shadowmap
                 AssignRectangle(shadowMapTexture);

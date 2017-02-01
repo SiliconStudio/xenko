@@ -22,24 +22,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public const int BorderPixels = 8;
 
         private PoolListStruct<ShaderData> shaderDataPool;
-        private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
-        private PoolListStruct<LightShadowMapTexture> shadowMaps;
 
         public LightPointShadowMapRendererCubeMap()
         {
-            shadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture());
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
-            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowCasterRenderStage } });
         }
         
         public override void Reset(RenderContext context)
-        {
-            foreach (var view in shadowRenderViews)
-                context.RenderSystem.Views.Remove(view);
-            
+        {   
+            base.Reset(context);
+
             shaderDataPool.Clear();
-            shadowRenderViews.Clear();
-            shadowMaps.Clear();
         }
 
         public override ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType)
@@ -55,10 +48,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return false;
         }
 
-        public override LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var shadowMapTexture = shadowMaps.Add();
-            shadowMapTexture.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
+            var shadowMapTexture = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
             shadowMapTexture.CascadeCount = 6; // 6 faces
             return shadowMapTexture;
         }
@@ -137,9 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.DirectionOffset = 1 / halfMapSize;
 
             Vector2 atlasSize = new Vector2(lightShadowMap.Atlas.Width, lightShadowMap.Atlas.Height);
-
-            int borderPixels2 = BorderPixels*2;
-
+            
             for (int i = 0; i < 6; i++)
             {
                 Rectangle faceRectangle = lightShadowMap.GetRectangle(i);
@@ -149,7 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 GetViewParameters(lightShadowMap, i, out shaderData.View[i]);
 
                 // Allocate shadow render view
-                var shadowRenderView = shadowRenderViews.Add();
+                var shadowRenderView = CreateRenderView();
                 shadowRenderView.RenderView = sourceView;
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
@@ -176,9 +166,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shaderData.WorldToShadow[i] = viewProjection * projectionToShadow;
 
                 shadowRenderView.VisiblityIgnoreDepthPlanes = false;
-
-                shadowRenderView.RenderStages.Clear();
-                shadowRenderView.RenderStages.Add(ShadowCasterRenderStage);
 
                 // Add the render view for the current frame
                 context.RenderSystem.Views.Add(shadowRenderView);

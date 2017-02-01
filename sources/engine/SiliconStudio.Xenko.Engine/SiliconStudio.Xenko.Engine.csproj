@@ -469,9 +469,11 @@
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightPointShadowMapRendererCubeMap.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapShaderGroupDataBase.cs" />
     <Compile Include="Rendering\Shadows\LightShadowType.cs" />
+    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowCasterRenderFeature.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCasterCubeMap.cs">
       <AutoGen>True</AutoGen>
