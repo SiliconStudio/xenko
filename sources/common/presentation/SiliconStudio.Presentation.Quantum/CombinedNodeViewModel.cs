@@ -183,7 +183,7 @@ namespace SiliconStudio.Presentation.Quantum
             base.Destroy();
         }
 
-        public void Refresh()
+        protected override void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
 

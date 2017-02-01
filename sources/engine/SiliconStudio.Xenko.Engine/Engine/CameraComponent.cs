@@ -191,6 +191,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="screenAspectRatio">The current screen aspect ratio. If null, use the <see cref="AspectRatio"/> even if <see cref="UseCustomAspectRatio"/> is false.</param>
         public void Update(float? screenAspectRatio)
         {
+            // Calculates the aspect ratio
+            var aspectRatio = (screenAspectRatio.HasValue && !UseCustomAspectRatio) ? screenAspectRatio.Value : AspectRatio;
+
             // Calculates the View
             if (!UseCustomViewMatrix)
             {
@@ -214,12 +217,6 @@ namespace SiliconStudio.Xenko.Engine
             if (!UseCustomProjectionMatrix)
             {
                 // Calculates the aspect ratio
-                var aspectRatio = AspectRatio;
-                if (screenAspectRatio.HasValue && !UseCustomAspectRatio)
-                {
-                    aspectRatio = screenAspectRatio.Value;
-                }
-
                 ProjectionMatrix = Projection == CameraProjectionMode.Perspective ?
                     Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(VerticalFieldOfView), aspectRatio, NearClipPlane, FarClipPlane) :
                     Matrix.OrthoRH(aspectRatio * OrthographicSize, OrthographicSize, NearClipPlane, FarClipPlane);

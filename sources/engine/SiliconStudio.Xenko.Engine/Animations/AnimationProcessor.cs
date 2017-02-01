@@ -127,8 +127,7 @@ namespace SiliconStudio.Xenko.Animations
                         totalWeight += animationWeight;
                         float currentBlend = animationWeight/totalWeight;
 
-                        if (playingAnimation.BlendOperation == AnimationBlendOperation.Add
-                            || playingAnimation.BlendOperation == AnimationBlendOperation.Subtract)
+                        if (playingAnimation.BlendOperation == AnimationBlendOperation.Add)
                         {
                             // Additive or substractive blending will use the weight as is (and reset total weight with it)
                             currentBlend = animationWeight;
@@ -146,7 +145,7 @@ namespace SiliconStudio.Xenko.Animations
                         animationOperations.Add(CreatePushOperation(playingAnimation));
 
                         if (animationOperations.Count >= 2)
-                            animationOperations.Add(AnimationOperation.NewBlend(playingAnimation.BlendOperation, currentBlend));
+                            animationOperations.Add(AnimationOperation.NewBlend((CoreAnimationOperation)playingAnimation.BlendOperation, currentBlend));
                     }
                 }
 
@@ -154,7 +153,6 @@ namespace SiliconStudio.Xenko.Animations
                 {
                     // Animation blending
                     animationComponent.Blender.Compute(animationOperations, ref associatedData.AnimationClipResult);
-                    animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
                     animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
@@ -167,12 +165,12 @@ namespace SiliconStudio.Xenko.Animations
                     {
                         var playingAnimation = animationComponent.PlayingAnimations[index];
                         bool removeAnimation = false;
-                        if (playingAnimation.RemainingTime > TimeSpan.Zero)
+                        if (playingAnimation.CrossfadeRemainingTime > TimeSpan.Zero)
                         {
                             playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
-                                                       ((float)time.Elapsed.Ticks/playingAnimation.RemainingTime.Ticks);
-                            playingAnimation.RemainingTime -= time.Elapsed;
-                            if (playingAnimation.RemainingTime <= TimeSpan.Zero)
+                                                       ((float)time.Elapsed.Ticks/playingAnimation.CrossfadeRemainingTime.Ticks);
+                            playingAnimation.CrossfadeRemainingTime -= time.Elapsed;
+                            if (playingAnimation.CrossfadeRemainingTime <= TimeSpan.Zero)
                             {
                                 playingAnimation.Weight = playingAnimation.WeightTarget;
 
@@ -191,14 +189,7 @@ namespace SiliconStudio.Xenko.Animations
 
                         if (removeAnimation)
                         {
-                            animationComponent.PlayingAnimations.RemoveAt(index--);
-
-                            var evaluator = playingAnimation.Evaluator;
-                            if (evaluator != null)
-                            {
-                                animationComponent.Blender.ReleaseEvaluator(evaluator);
-                                playingAnimation.Evaluator = null;
-                            }
+                            animationComponent.PlayingAnimations.RemoveAt(index--); // Will also release its evaluator
                         }
                     }
                 }

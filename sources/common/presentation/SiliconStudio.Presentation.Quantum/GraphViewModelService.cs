@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -9,6 +10,8 @@ namespace SiliconStudio.Presentation.Quantum
     /// </summary>
     public class GraphViewModelService
     {
+        private readonly List<IPropertyNodeUpdater> propertyNodeUpdaters = new List<IPropertyNodeUpdater>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphViewModelService"/> class.
         /// </summary>
@@ -39,11 +42,33 @@ namespace SiliconStudio.Presentation.Quantum
         public event EventHandler<NodeInitializedEventArgs> NodeInitialized;
 
         /// <summary>
+        /// Registers a <see cref="IPropertyNodeUpdater"/> to this service.
+        /// </summary>
+        /// <param name="propertyNodeUpdater">The node updater to register.</param>
+        public void RegisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
+        {
+            propertyNodeUpdaters.Add(propertyNodeUpdater);
+        }
+
+        /// <summary>
+        /// Unregisters a <see cref="IPropertyNodeUpdater"/> from this service.
+        /// </summary>
+        /// <param name="propertyNodeUpdater">The node updater to unregister.</param>
+        public void UnregisterPropertyNodeUpdater(IPropertyNodeUpdater propertyNodeUpdater)
+        {
+            propertyNodeUpdaters.Remove(propertyNodeUpdater);
+        }
+
+        /// <summary>
         /// Raise the <see cref="NodeInitialized"/> event.
         /// </summary>
         /// <param name="node">The node that has been modified.</param>
         internal void NotifyNodeInitialized(SingleNodeViewModel node)
         {
+            foreach (var updater in propertyNodeUpdaters)
+            {
+                updater.UpdateNode(node);
+            }
             NodeInitialized?.Invoke(this, new NodeInitializedEventArgs(node));
         }
     }

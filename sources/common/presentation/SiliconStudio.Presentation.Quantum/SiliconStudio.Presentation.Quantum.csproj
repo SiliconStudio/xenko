@@ -25,11 +25,12 @@
     <Compile Include="CombinedNodeCommandWrapper.cs" />
     <Compile Include="CombinedNodeViewModel.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
+    <Compile Include="ExpandReferencePolicy.cs" />
     <Compile Include="GraphNodeBinding.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="INodeViewModel.cs" />
     <Compile Include="IPropertiesProviderViewModel.cs" />
-    <Compile Include="LCS.cs" />
+    <Compile Include="IPropertyNodeUpdater.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
     <Compile Include="GraphViewModelNodeValueChanged.cs" />
     <Compile Include="NodeInitializedEventArgs.cs" />

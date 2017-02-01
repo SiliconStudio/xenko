@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly Action<object> Setter;
         private IMemberNode associatedContent;
         private bool updatingValue;
+        private bool initialized;
 
         static VirtualNodeViewModel()
         {
@@ -79,6 +80,19 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent.Changed += ContentChanged;
             associatedContent.ItemChanging += ContentChanging;
             associatedContent.ItemChanged += ContentChanged;
+        }
+
+        public void CompleteInitialization()
+        {
+            // Safety check
+            if (initialized) throw new InvalidOperationException("This node has already been initialized.");
+            Owner.GraphViewModelService.NotifyNodeInitialized(this);
+            initialized = true;
+        }
+
+        protected override void Refresh()
+        {
+            // TODO: what do we want to do for virtual nodes? They are constructed completely externally...
         }
 
         protected virtual void SetTypedValue(object value)

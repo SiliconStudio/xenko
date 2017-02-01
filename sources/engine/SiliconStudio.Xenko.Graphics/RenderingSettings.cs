@@ -122,10 +122,14 @@ namespace SiliconStudio.Xenko.Graphics
         public RequiredDisplayOrientation DisplayOrientation = RequiredDisplayOrientation.Default;
 
         /// <summary>
-        /// Gets or sets the display orientation.
+        /// Gets or sets the target graphics platform.
         /// </summary>
-        /// <userdoc>The display orientations this game support.</userdoc>
+        /// <userdoc>
+        /// The project will be built for the specified graphics platform.
+        /// Leave as Default to let the engine choose the most appropriate platform depending on the hardware.
+        /// </userdoc>
         [DataMember(50)]
+        [Display("Target graphics platform")]
         public PreferredGraphicsPlatform PreferredGraphicsPlatform = PreferredGraphicsPlatform.Default;
 
         private static GraphicsPlatform GetDefaultGraphicsPlatform(PlatformType platformType)

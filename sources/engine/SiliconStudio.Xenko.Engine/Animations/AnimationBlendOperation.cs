@@ -14,16 +14,25 @@ namespace SiliconStudio.Xenko.Animations
         /// <summary>
         /// Linear blend operation.
         /// </summary>
-        LinearBlend,
+        [Display("Linear blend")]
+        LinearBlend = 0,
 
         /// <summary>
         /// Add operation.
         /// </summary>
-        Add,
+        [Display("Additive")]
+        Add = 1,
+    }
 
-        /// <summary>
-        /// Subtract operation.
-        /// </summary>
-        Subtract,
+    /// <summary>
+    /// Core animation operations support all operations exposed for blending as well as several required for the animation building itself
+    /// </summary>
+    public enum CoreAnimationOperation
+    {
+        Blend = 0,
+
+        Add = 1,
+
+        Subtract = 2,
     }
 }

@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
         public bool AnimationRootMotion { get; set; }
+        public TimeSpan StartFrame { get; set; } = TimeSpan.Zero;
+        public TimeSpan EndFrame { get; set; } = AnimationAsset.LongestTimeSpan;
 
         private unsafe object ExportAnimation(ICommandContext commandContext, ContentManager contentManager)
         {
@@ -28,6 +30,24 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             TimeSpan duration;
             var animationClips = LoadAnimation(commandContext, contentManager, out duration);
+
+            // Fix the animation frames
+            double startFrameSeconds = StartFrame.TotalSeconds;
+            double endFrameSeconds = EndFrame.TotalSeconds;
+            var startTime = CompressedTimeSpan.FromSeconds(-startFrameSeconds);
+
+            foreach (var clip in animationClips)
+            {
+                foreach (var animationCurve in clip.Value.Curves)
+                {
+                    animationCurve.ShiftKeys(startTime);
+                }
+            }
+
+            var durationTimeSpan = TimeSpan.FromSeconds((endFrameSeconds - startFrameSeconds));
+            if (duration > durationTimeSpan)
+                duration = durationTimeSpan;
+
             AnimationClip animationClip = null;
 
             if (animationClips.Count > 0)
@@ -234,7 +254,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 if (animationClip.Duration.Ticks == 0)
                 {
-                    commandContext.Logger.Warning($"File {SourcePath} has a 0 tick long animation.");
+                    commandContext.Logger.Verbose($"File {SourcePath} has a 0 tick long animation.");
                 }
 
                 // Optimize and set common parameters

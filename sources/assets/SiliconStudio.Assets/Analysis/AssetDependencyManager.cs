@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Analysis
     /// <li>Find assets file changed events that have changed on the disk</li>
     /// </ul>
     /// </remarks>
-    public sealed class AssetDependencyManager : IDisposable
+    public sealed class AssetDependencyManager : IAssetDependencyManager, IDisposable
     {
         private readonly PackageSession session;
         internal readonly object ThisLock = new object();
@@ -85,12 +85,7 @@ namespace SiliconStudio.Assets.Analysis
             isDisposed = true;
         }
 
-        /// <summary>
-        /// Finds the assets the specified asset id inherits from (this is a direct inheritance, not indirect)..
-        /// </summary>
-        /// <param name="assetId">The asset identifier.</param>
-        /// <param name="searchOptions">The types of inheritance to search for</param>
-        /// <returns>A list of asset the specified asset id is inheriting from.</returns>
+        /// <inheritdoc />
         public List<AssetItem> FindAssetInheritances(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
         {
             var list = new List<AssetItem>();
@@ -110,13 +105,8 @@ namespace SiliconStudio.Assets.Analysis
             }
             return list;
         }
-
-        /// <summary>
-        /// Finds the assets inheriting from the specified asset id (this is a direct inheritance, not indirect).
-        /// </summary>
-        /// <param name="assetId">The asset identifier.</param>
-        /// <param name="searchOptions">The types of inheritance to search for</param>
-        /// <returns>A list of asset inheriting from the specified asset id.</returns>
+        
+        /// <inheritdoc />
         public List<AssetItem> FindAssetsInheritingFrom(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
         {
             var list = new List<AssetItem>();
@@ -137,14 +127,7 @@ namespace SiliconStudio.Assets.Analysis
             return list;
         }
 
-        /// <summary>
-        /// Computes the dependencies for the specified asset.
-        /// </summary>
-        /// <param name="assetId">The asset id.</param>
-        /// <param name="dependenciesOptions">The dependencies options.</param>
-        /// <param name="linkTypes">The type of links to visit while computing the dependencies</param>
-        /// <param name="visited">The list of element already visited.</param>
-        /// <returns>The dependencies, or null if the object is not tracked.</returns>
+        /// <inheritdoc />
         public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
         {
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
