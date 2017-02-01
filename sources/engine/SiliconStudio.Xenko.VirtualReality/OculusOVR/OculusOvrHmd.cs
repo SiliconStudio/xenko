@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
-            //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString();
+            //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString(); //should not be needed
 
             int texturesCount;
             if (!OculusOvr.CreateTexturesDx(ovrSession, device.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
