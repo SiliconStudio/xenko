@@ -936,6 +936,28 @@ Mother:
                 );
         }
 
+        [Test]
+        public void DeserializeNullList()
+        {
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(Z).Assembly);
+            var sut = new Serializer(settings);
+            const string yaml = @"!SiliconStudio.Core.Yaml.Tests.Serialization.SerializationTests+W
+    MyList:
+        - aaa
+        - bbb
+        - ccc
+";
+            var result = (W)sut.Deserialize(yaml, typeof(W));
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.MyList);
+            Assert.AreEqual(3, result.MyList.Count);
+            Assert.AreEqual("aaa", result.MyList[0]);
+            Assert.AreEqual("bbb", result.MyList[1]);
+            Assert.AreEqual("ccc", result.MyList[2]);
+        }
+
         private class X
         {
             [DefaultValue(false)]
@@ -973,6 +995,11 @@ Mother:
                 MyPoint = new Point(100, 200);
                 MyNullableWithValue = 8;
             }
+        }
+
+        public class W
+        {
+            public List<string> MyList { get; set; }
         }
     }
 }
