@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public VRApi[] PreferredApis;
 
-        public VRDevice VRDevice { get; private set; }
+        public VRDevice Device { get; private set; }
 
         public bool DepthStencilAsResource;
 
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
-            if (Enabled && VRDevice == null)
+            if (Enabled && Device == null)
             {
                 if (PreferredApis == null)
                 {
@@ -39,22 +39,22 @@ namespace SiliconStudio.Xenko.VirtualReality
                         case VRApi.Oculus:
                         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                            VRDevice = new OculusOvrHmd();
+                            Device = new OculusOvrHmd();
                                 
 #endif
                         }
                             break;
-                        case VRApi.OpenVr:
+                        case VRApi.OpenVR:
                         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                            VRDevice = new OpenVrHmd();
+                            Device = new OpenVRHmd();
 #endif
                         }
                             break;
                         case VRApi.Fove:
                         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                            VRDevice = new FoveHmd();
+                            Device = new FoveHmd();
 #endif
                         }
                             break;
@@ -69,14 +69,14 @@ namespace SiliconStudio.Xenko.VirtualReality
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    if (VRDevice != null)
+                    if (Device != null)
                     {
-                        VRDevice.Game = Game;
+                        Device.Game = Game;
 
-                        if (VRDevice != null && !VRDevice.CanInitialize)
+                        if (Device != null && !Device.CanInitialize)
                         {
-                            VRDevice.Dispose();
-                            VRDevice = null;
+                            Device.Dispose();
+                            Device = null;
                         }
                         else
                         {
@@ -86,18 +86,18 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                VRDevice?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror);
+                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror);
             }
         }
 
         public override void Update(GameTime gameTime)
         {
-            VRDevice?.Update(gameTime);
+            Device?.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            VRDevice?.Draw(gameTime);
+            Device?.Draw(gameTime);
         }
     }
 }

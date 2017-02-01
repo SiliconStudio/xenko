@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    internal class OpenVrHmd : VRDevice
+    internal class OpenVRHmd : VRDevice
     {
         private RectangleF leftView = new RectangleF(0.0f, 0.0f, 0.5f, 1.0f);
         private RectangleF rightView = new RectangleF(0.5f, 0.0f, 1.0f, 1.0f);
@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Texture leftEyeMirror;
         private Texture rightEyeMirror;
         private DeviceState state;
-        private OpenVrTouchController leftHandController;
-        private OpenVrTouchController rightHandController;
+        private OpenVRTouchController leftHandController;
+        private OpenVRTouchController rightHandController;
         private bool needsMirror;
         private Matrix currentHead;
         private Vector3 currentHeadPos, currentHeadLinearVelocity, currentHeadAngularVelocity;
@@ -45,8 +45,8 @@ namespace SiliconStudio.Xenko.VirtualReality
             rightEyeMirror = OpenVR.GetMirrorTexture(device, 1);
             MirrorTexture = bothEyesMirror;
 
-            leftHandController = new OpenVrTouchController(TouchControllerHand.Left);
-            rightHandController = new OpenVrTouchController(TouchControllerHand.Right);
+            leftHandController = new OpenVRTouchController(TouchControllerHand.Left);
+            rightHandController = new OpenVRTouchController(TouchControllerHand.Right);
 
             //fixed timesteps at 90
             Game.IsFixedTimeStep = true;

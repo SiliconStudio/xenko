@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    internal class OpenVrTouchController : TouchController
+    internal class OpenVRTouchController : TouchController
     {
         private readonly OpenVR.Controller.Hand hand;
         private int controllerIndex = -1;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Vector3 currentPos, currentLinearVelocity, currentAngularVelocity;
         private Quaternion currentRot;
 
-        internal OpenVrTouchController(TouchControllerHand hand)
+        internal OpenVRTouchController(TouchControllerHand hand)
         {
             this.hand = (OpenVR.Controller.Hand)hand;
         }
