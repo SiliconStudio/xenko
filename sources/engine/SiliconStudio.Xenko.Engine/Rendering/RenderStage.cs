@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 
@@ -21,18 +22,20 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The name of this <see cref="RenderStage"/>.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = "RenderStage";
 
         /// <summary>
         /// The effect permutation slot name. If similar to another <see cref="RenderStage"/>, effect permutations will be shared.
         /// </summary>
-        public string EffectSlotName { get; set; }
+        public string EffectSlotName { get; set; } = "Main";
 
         /// <summary>
         /// Defines how <see cref="RenderNode"/> sorting should be performed.
         /// </summary>
+        [DefaultValue(null)]
         public SortMode SortMode { get; set; }
 
+        [DefaultValue(null)]
         public RenderStageFilter Filter { get; set; }
 
         public RenderStage()

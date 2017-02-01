@@ -14,8 +14,10 @@ using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -58,7 +60,7 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : IIdentifiable, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
 
@@ -373,6 +375,28 @@ namespace SiliconStudio.Assets
             }
         }
 
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
+        {
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(proxyObject);
+            return attachedReference != null ? this.FindAsset(attachedReference) : null;
+        }
+
         internal UDirectory GetDefaultAssetFolder()
         {
             var sharedProfile = Profiles.FindSharedProfile();
@@ -596,7 +620,7 @@ namespace SiliconStudio.Assets
                                     new List<KeyValuePair<string, string>>
                                     {
                                     new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
-                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileName())
                                     });
 
                                 project.AddItem("Compile", generatedInclude,
@@ -605,7 +629,7 @@ namespace SiliconStudio.Assets
                                     new KeyValuePair<string, string>("AutoGen", "True"),
                                     new KeyValuePair<string, string>("DesignTime", "True"),
                                     new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
-                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileName())
                                     });
                             }
                             else
@@ -959,7 +983,7 @@ namespace SiliconStudio.Assets
                 assetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
             }
 
-            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
+            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileName()}]";
 
             // Display this message at least once if the logger does not log progress (And it shouldn't in this case)
             var loggerResult = log as LoggerResult;
@@ -1034,7 +1058,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = assetFile.AssetPath;
+                var assetPath = assetFile.AssetLocation;
 
                 var assetFullPath = fileUPath.ToWindowsPath();
                 var assetContent = assetFile.AssetContent;
@@ -1205,7 +1229,7 @@ namespace SiliconStudio.Assets
                     if (asset.SourceFolder == null)
                     {
                         //var assetProjectFolder = asset.Location.FullPath;
-                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileNameWithoutExtension()));
                         if (lib != null)
                         {
                             asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);

@@ -3,7 +3,7 @@
     public enum VRApi
     {
         Oculus,
-        OpenVr,
+        OpenVR,
         Fove,
         Google
     }

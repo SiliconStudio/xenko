@@ -17,13 +17,13 @@ namespace SiliconStudio.Xenko.VirtualReality
         private const float EyeHeight = 0.08f;
         private const float EyeForward = -0.04f;
 
-        internal FoveHmd(IServiceRegistry registry) : base(registry)
+        internal FoveHmd()
         {
             referenceMatrixInv = Matrix.RotationZ(MathUtil.Pi);
             referenceMatrixInv.Invert();
         }
 
-        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
         {
             RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
             nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
@@ -48,7 +48,6 @@ namespace SiliconStudio.Xenko.VirtualReality
 //                Fove.Commit();
 //            }));
 
-            base.Initialize(device, requireMirror);
         }
 
         public override void ReadEyeParameters(Eyes eye, float near, float far, ref Vector3 cameraPosition, ref Matrix cameraRotation, out Matrix view, out Matrix projection)
@@ -57,6 +56,16 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         public override void Commit(CommandList commandList)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Draw(GameTime gameTime)
         {
             throw new System.NotImplementedException();
         }
@@ -113,15 +122,18 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override float RenderFrameScaling { get; set; } = 1.2f;
 
         public override DeviceState State => DeviceState.Valid;
-        public override Vector3 HeadPosition { get; }
 
+        public override Vector3 HeadPosition { get; }
 
         public override Quaternion HeadRotation { get; }
 
         public override Vector3 HeadLinearVelocity { get; }
 
         public override Vector3 HeadAngularVelocity { get; }
-//to improve and verify with Fove api.
+
+        public override TouchController LeftHand => null;
+
+        public override TouchController RightHand => null;
 
         public override bool CanInitialize => Fove.Startup() && Fove.IsHardwareReady();
     }

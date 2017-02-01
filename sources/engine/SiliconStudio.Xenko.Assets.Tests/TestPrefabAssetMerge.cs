@@ -457,9 +457,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Create part1 asset
             Guid part1InstanceId;
             Guid part12InstanceId;
-            var part1 = basePart.CreatePrefabInstance(asset, "part", out part1InstanceId);
+            var part1 = basePart.CreatePrefabInstance("part", out part1InstanceId);
             var entityB1 = part1.Parts.First(it => it.Entity.Name == "B").Entity;
-            var part12 = basePart.CreatePrefabInstance(asset, "part", out part12InstanceId);
+            var part12 = basePart.CreatePrefabInstance("part", out part12InstanceId);
             var entityB2 = part12.Parts.First(it => it.Entity.Name == "B").Entity;
 
             // create part2 assset
@@ -563,8 +563,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             //asset.AddPart(eRoot2Asset);
             Guid eRoot1Id;
             Guid eRoot2Id;
-            var eRoot1Asset = part1.CreatePrefabInstance(asset, "part", out eRoot1Id);
-            var eRoot2Asset = part1.CreatePrefabInstance(asset, "part", out eRoot2Id);
+            var eRoot1Asset = part1.CreatePrefabInstance("part", out eRoot1Id);
+            var eRoot2Asset = part1.CreatePrefabInstance("part", out eRoot2Id);
             asset.Hierarchy.Parts.AddRange(eRoot1Asset.Parts);
             asset.Hierarchy.Parts.AddRange(eRoot2Asset.Parts);
             asset.Hierarchy.RootPartIds.AddRange(eRoot1Asset.RootPartIds);
@@ -651,8 +651,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             assetItems.Add(new AssetItem("a1", a1));
 
             var a2 = new PrefabAsset();
-            var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
-            var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
+            var aPartInstance1 = a1.CreatePrefabInstance("a1");
+            var aPartInstance2 = a1.CreatePrefabInstance("a1");
             a2.Hierarchy.Parts.AddRange(aPartInstance1.Parts);
             a2.Hierarchy.Parts.AddRange(aPartInstance2.Parts);
             a2.Hierarchy.RootPartIds.AddRange(aPartInstance1.RootPartIds);
@@ -737,13 +737,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var member = (IMemberDescriptor)TypeDescriptorFactory.Default.Find(typeof(Entity))[nameof(Entity.Name)];
             
             var a2 = new PrefabAsset();
-            var a2PartInstance1 = a1.CreatePrefabInstance(a2, "a1");
+            var a2PartInstance1 = a1.CreatePrefabInstance("a1");
             foreach (var entity in a2PartInstance1.Parts)
             {
                 entity.Entity.Name += "1";
             }
 
-            var a2PartInstance2 = a1.CreatePrefabInstance(a2, "a1");
+            var a2PartInstance2 = a1.CreatePrefabInstance("a1");
             foreach (var entity in a2PartInstance2.Parts)
             {
                 entity.Entity.Name += "2";
@@ -758,7 +758,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             assetItems.Add(new AssetItem("a2", a2));
 
             var a3 = new PrefabAsset();
-            var a3PartInstance1 = a1.CreatePrefabInstance(a3, "a1");
+            var a3PartInstance1 = a1.CreatePrefabInstance("a1");
             foreach (var entity in a3PartInstance1.Parts)
             {
                 entity.Entity.Name += "1'";
@@ -771,7 +771,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var a4 = new PrefabAsset();
             var eRoot = new Entity("eRoot");
-            var a2PartInstance3 = a2.CreatePrefabInstance(a4, "a2");
+            var a2PartInstance3 = a2.CreatePrefabInstance("a2");
 
             foreach (var entity in a2PartInstance3.Parts)
             {
@@ -781,7 +781,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             {
                 eRoot.AddChild(entity.Entity);
             }
-            var a3PartInstance2 = a3.CreatePrefabInstance(a4, "a3");
+            var a3PartInstance2 = a3.CreatePrefabInstance("a3");
             foreach (var entity in a3PartInstance2.Parts)
             {
                 entity.Entity.Name += "*";

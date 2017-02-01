@@ -27,6 +27,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         protected override void Destroy()
         {
+            if (threadContext == null)
+            {
+                return;
+            }
+
             base.Destroy();
 
             foreach (var context in threadContext.Values)

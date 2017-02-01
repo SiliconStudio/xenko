@@ -100,6 +100,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             public Vector3 AngularAccelerationLeftHand;
             public Vector3 LinearVelocityLeftHand;
             public Vector3 LinearAccelerationLeftHand;
+            public int StateLeftHand;
 
             public Vector3 PosRightHand;
             public Quaternion RotRightHand;
@@ -107,6 +108,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             public Vector3 AngularAccelerationRightHand;
             public Vector3 LinearVelocityRightHand;
             public Vector3 LinearAccelerationRightHand;
+            public int StateRightHand;
         }
 
         [SuppressUnmanagedCodeSecurity]

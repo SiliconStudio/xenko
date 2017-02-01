@@ -21,6 +21,7 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -101,6 +102,11 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the game profiler system
         /// </summary>
         public GameProfilingSystem ProfilerSystem { get; private set; }
+
+        /// <summary>
+        /// Gets the VR Device System
+        /// </summary>
+        public VRDeviceSystem VRDeviceSystem { get; private set; }
 
         /// <summary>
         /// Gets the font system.
@@ -189,6 +195,7 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = new SpriteAnimationSystem(Services);
             DebugConsoleSystem = new DebugConsoleSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
+            VRDeviceSystem = new VRDeviceSystem(Services);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
@@ -334,6 +341,9 @@ namespace SiliconStudio.Xenko.Engine
 
             // Add the Audio System
             GameSystems.Add(Audio);
+
+            // Add the VR System
+            GameSystems.Add(VRDeviceSystem);
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());

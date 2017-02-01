@@ -19,15 +19,14 @@ namespace SiliconStudio.Xenko.VirtualReality
         private IntPtr ovrSession;
         private Texture[] textures;
 
-        internal OculusOvrHmd(IServiceRegistry registry) : base(registry)
-        {
-        }
+        private OculusTouchController leftHandController;
+        private OculusTouchController rightHandController;
 
-        public override void Initialize(GraphicsDevice device, bool depthStencilResource = false, bool requireMirror = false)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
-            //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString();
+            //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString(); //should not be needed
 
             int texturesCount;
             if (!OculusOvr.CreateTexturesDx(ovrSession, device.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
@@ -58,15 +57,29 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             RenderFrame = Texture.New2D(device, textures[0].Width, textures[1].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
-            base.Initialize(device, requireMirror);
+            leftHandController = new OculusTouchController(TouchControllerHand.Left);
+            rightHandController = new OculusTouchController(TouchControllerHand.Right);
+
+            //fixed timesteps at 90
+            Game.IsFixedTimeStep = true;
+            Game.IsDrawDesynchronized = true;
+            Game.TargetElapsedTime = TimeSpan.FromSeconds(1 / 90.0f);
+            graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            graphicsDeviceManager.ApplyChanges();
         }
 
         private OculusOvr.PosesProperties currentPoses;
+
+        public override void Update(GameTime gameTime)
+        {
+        }
 
         public override void Draw(GameTime gameTime)
         {
             OculusOvr.Update(ovrSession);
             OculusOvr.GetPosesProperties(ovrSession, ref currentPoses);
+            leftHandController.Update(ref currentPoses);
+            rightHandController.Update(ref currentPoses);
         }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
@@ -98,6 +111,10 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Vector3 HeadAngularVelocity => currentPoses.AngularVelocityHead;
 
+        public override TouchController LeftHand => leftHandController;
+
+        public override TouchController RightHand => rightHandController;
+
         public override bool CanInitialize
         {
             get
@@ -121,7 +138,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 return initDone;
             }
         }
-
+        
         public override void Recenter()
         {
             OculusOvr.Recenter(ovrSession);

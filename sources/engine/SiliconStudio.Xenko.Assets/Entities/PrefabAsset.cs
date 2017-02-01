@@ -6,6 +6,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -38,28 +39,26 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// Creates a instance of this prefab that can be added to another <see cref="EntityHierarchyAssetBase"/>.
         /// </summary>
-        /// <param name="targetContainer">The container in which the instance will be added.</param>
-        /// <param name="targetLocation">The location of the <see paramref="targetContainer"/> asset.</param>
+        /// <param name="targetLocation">The location of the target container asset.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> containing the cloned entities of </returns>
-        /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation)
+        [NotNull]
+        public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance([NotNull] string targetLocation)
         {
             Guid unused;
-            return CreatePrefabInstance(targetContainer, targetLocation, out unused);
+            return CreatePrefabInstance(targetLocation, out unused);
         }
 
         /// <summary>
         /// Creates a instance of this prefab that can be added to another <see cref="EntityHierarchyAssetBase"/>.
         /// </summary>
-        /// <param name="targetContainer">The container in which the instance will be added.</param>
-        /// <param name="targetLocation">The location of this asset.</param>
+        /// <param name="targetLocation">The location of the target container asset.</param>
         /// <param name="instanceId">The identifier of the created instance.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> containing the cloned entities of </returns>
-        /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
+        [NotNull]
+        public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance([NotNull] string targetLocation, out Guid instanceId)
         {
             var instance = (PrefabAsset)CreateDerivedAsset(targetLocation);
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }
     }

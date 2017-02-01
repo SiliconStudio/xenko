@@ -371,7 +371,12 @@ namespace SiliconStudio.Xenko.Engine
             set
             {
                 ProtectedColliderShape = value;
-                if (NativeCollisionObject != null) NativeCollisionObject.CollisionShape = value.InternalShape;               
+
+                if (value == null)
+                    return;
+
+                if (NativeCollisionObject != null)
+                    NativeCollisionObject.CollisionShape = value.InternalShape;               
             }
         }
 
@@ -726,6 +731,7 @@ namespace SiliconStudio.Xenko.Engine
             if (ColliderShape != null && !ColliderShape.IsPartOfAsset)
             {
                 ColliderShape.Dispose();
+                ColliderShape = null;
             }
         }
 

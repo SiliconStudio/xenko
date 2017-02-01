@@ -189,6 +189,7 @@
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
       <AutoGen>True</AutoGen>
@@ -474,6 +475,7 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
@@ -3819,6 +3821,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
+    <Folder Include="Rendering\Lightprobes\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
