@@ -14,8 +14,10 @@ using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -58,7 +60,7 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : IIdentifiable, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
 
@@ -371,6 +373,28 @@ namespace SiliconStudio.Assets
             {
                 logger.Error($"Unexpected exception while loading project [{pathToMsproj}]", ex);
             }
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAssetFromAttachedReference(object container)
+        {
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(container);
+            return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 
         internal UDirectory GetDefaultAssetFolder()
