@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             combiner = ToLoadAndUnload(new ColorCombiner());
             blur = ToLoadAndUnload(new GaussianBlur());
-            lightStreakEffect = ToLoadAndUnload(new ImageEffectShader("LightStreakEffect"));
+            lightStreakEffect = ToLoadAndUnload(new ImageEffectShader("LightStreakEffect", true));
         }
 
         /// <summary>

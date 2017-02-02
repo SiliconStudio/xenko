@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             aoRawImageEffect.Initialize(Context);
 
             blurH = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
-            blurV = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
+            blurV = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect", true));
             blurH.Initialize(Context);
             blurV.Initialize(Context);
 
