@@ -5,11 +5,13 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public static class CollectionItemIdHelper
     {
-        // TODO: rework the API of this class once the feature is complete.
-        public static readonly object DeletedKey = new object();
-
         // TODO: do we really need to pass an object to this constructor?
-        public static ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object(), false);
+        private static readonly ShadowObjectPropertyKey CollectionItemIdKey = new ShadowObjectPropertyKey(new object(), false);
+
+        public static bool HasCollectionItemIds(object instance)
+        {
+            return ShadowObject.Get(instance)?.ContainsKey(CollectionItemIdKey) ?? false;
+        }
 
         public static bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
         {
