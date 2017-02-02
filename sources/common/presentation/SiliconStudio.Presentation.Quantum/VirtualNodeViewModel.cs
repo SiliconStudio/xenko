@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -11,7 +10,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
-        private IMemberNode associatedContent;
+        private IContentNode associatedContent;
         private bool updatingValue;
         private bool initialized;
 
@@ -36,10 +35,8 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (associatedContent != null)
             {
-                associatedContent.Changing -= ContentChanging;
-                associatedContent.Changed -= ContentChanged;
-                associatedContent.ItemChanging -= ContentChanging;
-                associatedContent.ItemChanged -= ContentChanged;
+                associatedContent.UnregisterChanging(ContentChanging);
+                associatedContent.UnregisterChanged(ContentChanged);
                 associatedContent = null;
             }
             base.Destroy();
@@ -70,16 +67,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="content">The content to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterContentForNotifications(IMemberNode content)
+        public void RegisterContentForNotifications(IContentNode content)
         {
             if (associatedContent != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");
 
             associatedContent = content;
-            associatedContent.Changing += ContentChanging;
-            associatedContent.Changed += ContentChanged;
-            associatedContent.ItemChanging += ContentChanging;
-            associatedContent.ItemChanged += ContentChanged;
+            associatedContent.RegisterChanging(ContentChanging);
+            associatedContent.RegisterChanged(ContentChanged);
         }
 
         public void CompleteInitialization()

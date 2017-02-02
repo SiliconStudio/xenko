@@ -76,11 +76,6 @@ namespace SiliconStudio.Presentation.Quantum
         Index Index { get; }
 
         /// <summary>
-        /// Gets a unique identifier associated to this node.
-        /// </summary>
-        Guid Guid { get; }
-
-        /// <summary>
         /// Gets the list of children nodes.
         /// </summary>
         IReadOnlyCollection<INodeViewModel> Children { get; }

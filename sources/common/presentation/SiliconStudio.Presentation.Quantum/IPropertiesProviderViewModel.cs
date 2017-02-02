@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Retrieves the root <see cref="IContentNode"/> to use to generate properties.
         /// </summary>
         /// <returns>The root <see cref="IContentNode"/> to use to generate properties.</returns>
-        IContentNode GetRootNode();
+        IObjectNode GetRootNode();
 
         /// <summary>
         /// Indicates whether the members of the given reference should be constructed for the view model.

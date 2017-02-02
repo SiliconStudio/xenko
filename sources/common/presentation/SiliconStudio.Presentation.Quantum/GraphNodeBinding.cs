@@ -45,17 +45,15 @@ namespace SiliconStudio.Presentation.Quantum
             this.notifyChangesOnly = notifyChangesOnly;
             node.Changing += ContentChanging;
             node.Changed += ContentChanged;
-            node.ItemChanging += ContentChanging;
-            node.ItemChanged += ContentChanged;
         }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
+            node.UnregisterChanging(ContentChanging);
+            node.UnregisterChanged(ContentChanged);
             node.Changing -= ContentChanging;
             node.Changed -= ContentChanged;
-            node.ItemChanging -= ContentChanging;
-            node.ItemChanged -= ContentChanged;
         }
 
         /// <summary>
