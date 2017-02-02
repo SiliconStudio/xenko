@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -98,6 +99,12 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the default scalar style attached to this member.
         /// </summary>
         ScalarStyle ScalarStyle { get; set; }
+
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <value>The member information.</value>
+        MemberInfo MemberInfo { get; }
 
         /// <summary>
         /// Gets the value of this member for the specified instance.
