@@ -31,26 +31,26 @@ namespace SiliconStudio.Assets.Quantum
 
             var path = ConvertPath(currentPath, inNonIdentifiableType);
             var memberNode = assetNode as AssetMemberNode;
-            if (memberNode != null)
+            if (memberNode?.IsContentOverridden() == true)
             {
-                if (memberNode.IsContentOverridden())
+                Result.Add(path, memberNode.GetContentOverride());
+            }
+            var objectNode = assetNode as AssetObjectNode;
+            if (objectNode != null)
+            {
+                foreach (var index in objectNode.GetOverriddenItemIndices())
                 {
-                    Result.Add(path, memberNode.GetContentOverride());
-                }
-
-                foreach (var index in memberNode.GetOverriddenItemIndices())
-                {
-                    var id = memberNode.IndexToId(index);
+                    var id = objectNode.IndexToId(index);
                     var itemPath = path.Clone();
                     itemPath.PushItemId(id);
-                    Result.Add(itemPath, memberNode.GetItemOverride(index));
+                    Result.Add(itemPath, objectNode.GetItemOverride(index));
                 }
-                foreach (var index in memberNode.GetOverriddenKeyIndices())
+                foreach (var index in objectNode.GetOverriddenKeyIndices())
                 {
-                    var id = memberNode.IndexToId(index);
+                    var id = objectNode.IndexToId(index);
                     var itemPath = path.Clone();
                     itemPath.PushIndex(id);
-                    Result.Add(itemPath, memberNode.GetKeyOverride(index));
+                    Result.Add(itemPath, objectNode.GetKeyOverride(index));
                 }
             }
             base.VisitNode(node, currentPath);
@@ -69,13 +69,16 @@ namespace SiliconStudio.Assets.Quantum
                 switch (item.Type)
                 {
                     case GraphNodePath.ElementType.Member:
+                    {
                         var member = (string)item.Value;
                         result.PushMember(member);
                         var objectNode = currentNode as IObjectNode;
                         if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
                         currentNode = (IAssetNode)objectNode.TryGetChild(member);
                         break;
+                    }
                     case GraphNodePath.ElementType.Target:
+                    {
                         if (i < path.Path.Count - 1)
                         {
                             var targetingMemberNode = currentNode as IMemberNode;
@@ -83,17 +86,19 @@ namespace SiliconStudio.Assets.Quantum
                             currentNode = (IAssetNode)targetingMemberNode.Target;
                         }
                         break;
+                    }
                     case GraphNodePath.ElementType.Index:
+                    {
                         var index = (Index)item.Value;
-                        var memberNode = currentNode as AssetMemberNode;
-                        if (memberNode == null) throw new InvalidOperationException($"An AssetMemberNode was expected when processing the path [{path}]");
-                        if (inNonIdentifiableType > 0 || memberNode.IsNonIdentifiableCollectionContent)
+                        var objectNode = currentNode as AssetObjectNode;
+                        if (objectNode == null) throw new InvalidOperationException($"An IObjectNode was expected when processing the path [{path}]");
+                        if (inNonIdentifiableType > 0 || !CollectionItemIdHelper.HasCollectionItemIds(objectNode.Retrieve()))
                         {
                             result.PushIndex(index.Value);
                         }
                         else
                         {
-                            var id = memberNode.IndexToId(index);
+                            var id = objectNode.IndexToId(index);
                             // Create a new id if we don't have any so far
                             if (id == ItemId.Empty)
                                 id = ItemId.New();
@@ -101,9 +106,10 @@ namespace SiliconStudio.Assets.Quantum
                         }
                         if (i < path.Path.Count - 1)
                         {
-                            currentNode = (IAssetNode)currentNode.IndexedTarget(index);
+                            currentNode = (IAssetNode)objectNode.IndexedTarget(index);
                         }
                         break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

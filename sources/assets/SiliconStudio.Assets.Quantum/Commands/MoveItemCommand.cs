@@ -33,12 +33,13 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
+            var node = (IObjectNode)content;
             var indices = (Tuple<int, int>)parameter;
             var sourceIndex = new Index(indices.Item1);
             var targetIndex = new Index(indices.Item2);
             var value = content.Retrieve(sourceIndex);
-            content.Remove(value, sourceIndex);
-            content.Add(value, targetIndex);
+            node.Remove(value, sourceIndex);
+            node.Add(value, targetIndex);
         }
     }
 }

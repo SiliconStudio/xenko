@@ -46,13 +46,14 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
+            var node = (IObjectNode)content;
             var value = content.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? new Index(Activator.CreateInstance(dictionaryDescriptor.KeyType)) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
             object newItem = null;
             if (!IsReferenceType(dictionaryDescriptor.ValueType))
                 newItem = CreateInstance(dictionaryDescriptor.ValueType);
-            content.Add(newItem, newKey);
+            node.Add(newItem, newKey);
         }
 
         /// <summary>

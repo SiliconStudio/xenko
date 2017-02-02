@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
@@ -36,32 +34,23 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
         {
-            if (sourceReference.Index.IsEmpty)
-                return (targetNode as IMemberNode)?.TargetReference;
+            // Not identifiable - default applies
+            if (sourceReference.Index.IsEmpty || sourceReference.ObjectValue == null)
+                return base.FindTargetReference(sourceNode, targetNode, sourceReference);
 
             // Special case for objects that are identifiable: the object must be linked to the base only if it has the same id
-            if (sourceReference.ObjectValue != null)
-            {
-                if (sourceReference.Index.IsEmpty)
-                {
-                    return (targetNode as IMemberNode)?.TargetReference;
-                }
+            var sourceAssetNode = (AssetObjectNode)sourceNode;
+            var targetAssetNode = (AssetObjectNode)targetNode;
+            if (!CollectionItemIdHelper.HasCollectionItemIds(sourceAssetNode.Retrieve()))
+                return null;
 
-                var sourceAssetNode = (IAssetNode)sourceNode;
-                if ((sourceAssetNode as AssetMemberNode)?.IsNonIdentifiableCollectionContent ?? false)
-                    return null;
-
-                // Enumerable reference: we look for an object with the same id
-                var targetReference = targetNode.ItemReferences;
-                var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Retrieve());
-                var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Retrieve());
-                var itemId = sourceIds[sourceReference.Index.Value];
-                var targetKey = targetIds.GetKey(itemId);
-                return targetReference.FirstOrDefault(x => Equals(x.Index.Value, targetKey));
-            }
-
-            // Not identifiable - default applies
-            return base.FindTargetReference(sourceNode, targetNode, sourceReference);
+            // Enumerable reference: we look for an object with the same id
+            var targetReference = targetAssetNode.ItemReferences;
+            var sourceIds = CollectionItemIdHelper.GetCollectionItemIds(sourceNode.Retrieve());
+            var targetIds = CollectionItemIdHelper.GetCollectionItemIds(targetNode.Retrieve());
+            var itemId = sourceIds[sourceReference.Index.Value];
+            var targetKey = targetIds.GetKey(itemId);
+            return targetReference.FirstOrDefault(x => Equals(x.Index.Value, targetKey));
         }
     }
 }

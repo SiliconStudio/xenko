@@ -43,8 +43,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
+            var node = (IObjectNode)content;
             var item = content.Retrieve(index);
-            content.Remove(item, index);
+            node.Remove(item, index);
         }
     }
 }

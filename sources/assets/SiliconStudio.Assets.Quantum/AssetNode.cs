@@ -19,6 +19,10 @@ namespace SiliconStudio.Assets.Quantum
 
         IContentNode GetContent(string key);
 
+        event EventHandler<EventArgs> OverrideChanging;
+
+        event EventHandler<EventArgs> OverrideChanged;
+
         /// <summary>
         /// Resets the overrides attached to this node and its descendants, recursively.
         /// </summary>
@@ -36,111 +40,20 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetObjectNode : ObjectContent, IAssetNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
-
-        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, value, guid, descriptor, isPrimitive, reference)
-        {
-        }
-
-        public AssetPropertyGraph PropertyGraph { get; private set; }
-
-        public IContentNode BaseContent { get; private set; }
-
-        public void SetContent(string key, IContentNode content)
-        {
-            contents[key] = content;
-        }
-
-        public IContentNode GetContent(string key)
-        {
-            IContentNode content;
-            contents.TryGetValue(key, out content);
-            return content;
-        }
-
-        /// <inheritdoc/>
-        public void ResetOverride(Index indexToReset)
-        {
-            PropertyGraph.ResetOverride(this, indexToReset);
-        }
-
-        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
-        {
-            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
-            PropertyGraph = assetPropertyGraph;
-        }
-
-        void IAssetNodeInternal.SetBaseContent(IContentNode content)
-        {
-            BaseContent = content;
-        }
-    }
-
-    public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
-    {
-        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
-
-        public AssetBoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(nodeBuilder, value, guid, descriptor, isPrimitive)
-        {
-        }
-
-        public AssetPropertyGraph PropertyGraph { get; private set; }
-
-        public IContentNode BaseContent { get; private set; }
-
-        public void SetContent(string key, IContentNode content)
-        {
-            contents[key] = content;
-        }
-
-        public IContentNode GetContent(string key)
-        {
-            IContentNode content;
-            contents.TryGetValue(key, out content);
-            return content;
-        }
-
-        /// <inheritdoc/>
-        public void ResetOverride(Index indexToReset)
-        {
-            PropertyGraph.ResetOverride(this, indexToReset);
-        }
-
-        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
-        {
-            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
-            PropertyGraph = assetPropertyGraph;
-        }
-
-        void IAssetNodeInternal.SetBaseContent(IContentNode content)
-        {
-            BaseContent = content;
-        }
-    }
-
-    public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
-    {
-        private AssetPropertyGraph propertyGraph;
-        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
-
-        private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
+        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, value, guid, descriptor, isPrimitive, reference)
         {
-            Changed += ContentChanged;
-            IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-            CanOverride = MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+            ItemChanged += OnItemChanged;
         }
 
-        public bool IsNonIdentifiableCollectionContent { get; }
+        public AssetPropertyGraph PropertyGraph { get; private set; }
 
-        public bool CanOverride { get; }
+        public IContentNode BaseContent { get; private set; }
 
         internal bool ResettingOverride { get; set; }
 
@@ -148,10 +61,6 @@ namespace SiliconStudio.Assets.Quantum
 
         public event EventHandler<EventArgs> OverrideChanged;
 
-        public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
-
-        public IContentNode BaseContent { get; private set; }
-
         public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
@@ -164,40 +73,22 @@ namespace SiliconStudio.Assets.Quantum
             return content;
         }
 
-        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
         {
-            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
-            PropertyGraph = assetPropertyGraph;
-        }
-
-        void IAssetNodeInternal.SetBaseContent(IContentNode content)
-        {
-            BaseContent = content;
-        }
-
-        public void OverrideContent(bool isOverridden)
-        {
-            if (CanOverride)
-            {
-                OverrideChanging?.Invoke(this, EventArgs.Empty);
-                contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
-                OverrideChanged?.Invoke(this, EventArgs.Empty);
-            }
+            OverrideItem(false, indexToReset);
+            PropertyGraph.ResetOverride(this, indexToReset);
         }
 
         public void OverrideItem(bool isOverridden, Index index)
         {
-            if (CanOverride)
-            {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
                 OverrideChanged?.Invoke(this, EventArgs.Empty);
-            }
         }
 
         public void OverrideKey(bool isOverridden, Index index)
         {
-            if (CanOverride)
             {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
@@ -208,7 +99,7 @@ namespace SiliconStudio.Assets.Quantum
         public void OverrideDeletedItem(bool isOverridden, ItemId deletedId)
         {
             CollectionItemIdentifiers ids;
-            if (CanOverride && TryGetCollectionItemIds(Retrieve(), out ids))
+            if (TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, deletedId, itemOverrides);
@@ -250,7 +141,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             CollectionItemIdentifiers oldIds = null;
             CollectionItemIdentifiers ids;
-            if (!IsNonIdentifiableCollectionContent && TryGetCollectionItemIds(Retrieve(), out ids))
+            if (TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
@@ -291,6 +182,102 @@ namespace SiliconStudio.Assets.Quantum
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
+            }
+        }
+
+        public OverrideType GetItemOverride(Index index)
+        {
+            var result = OverrideType.Base;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return result;
+            return itemOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
+        }
+
+        public OverrideType GetKeyOverride(Index index)
+        {
+            var result = OverrideType.Base;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return result;
+            return keyOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
+        }
+
+        public bool IsItemInherited(Index index)
+        {
+            return BaseContent != null && !IsItemOverridden(index);
+        }
+
+        public bool IsKeyInherited(Index index)
+        {
+            return BaseContent != null && !IsKeyOverridden(index);
+        }
+
+        public bool IsItemOverridden(Index index)
+        {
+            OverrideType result;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return false;
+            return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        public bool IsItemOverriddenDeleted(ItemId id)
+        {
+            OverrideType result;
+            return IsItemDeleted(id) && itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        public bool IsKeyOverridden(Index index)
+        {
+            OverrideType result;
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+                return false;
+            return keyOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
+        }
+
+        public IEnumerable<Index> GetOverriddenItemIndices()
+        {
+            if (BaseContent == null)
+                yield break;
+
+            CollectionItemIdentifiers ids;
+            var collection = Retrieve();
+            TryGetCollectionItemIds(collection, out ids);
+
+            foreach (var flags in itemOverrides)
+            {
+                if ((flags.Value & OverrideType.New) == OverrideType.New)
+                {
+                    // If the override is a deleted item, there's no matching index to return.
+                    if (ids.IsDeleted(flags.Key))
+                        continue;
+
+                    yield return IdToIndex(flags.Key);
+                }
+            }
+        }
+
+        public IEnumerable<Index> GetOverriddenKeyIndices()
+        {
+            if (BaseContent == null)
+                yield break;
+
+            CollectionItemIdentifiers ids;
+            var collection = Retrieve();
+            TryGetCollectionItemIds(collection, out ids);
+
+            foreach (var flags in keyOverrides)
+            {
+                if ((flags.Value & OverrideType.New) == OverrideType.New)
+                {
+                    // If the override is a deleted item, there's no matching index to return.
+                    if (ids.IsDeleted(flags.Key))
+                        continue;
+
+                    yield return IdToIndex(flags.Key);
+                }
             }
         }
 
@@ -352,42 +339,40 @@ namespace SiliconStudio.Assets.Quantum
             return false;
         }
 
-        /// <inheritdoc/>
-        public void ResetOverride(Index indexToReset)
+        internal void SetItemOverride(OverrideType overrideType, Index index)
         {
-            if (indexToReset.IsEmpty)
-            {
-                OverrideContent(false);
-            }
-            else
-            {
-                OverrideItem(false, indexToReset);
-            }
-            PropertyGraph.ResetOverride(this, indexToReset);
+            var id = IndexToId(index);
+            SetOverride(overrideType, id, itemOverrides);
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        internal void SetKeyOverride(OverrideType overrideType, Index index)
+        {
+            var id = IndexToId(index);
+            SetOverride(overrideType, id, keyOverrides);
+        }
+
+        private void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
             // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Node.Retrieve());
 
-            var node = (AssetMemberNode)e.Member;
-            if (node.IsNonIdentifiableCollectionContent)
+            var value = Retrieve();
+
+            if (!CollectionItemIdHelper.HasCollectionItemIds(value))
                 return;
 
             // Create new ids for collection items
-            var baseNode = (AssetMemberNode)BaseContent;
+            var baseNode = (AssetObjectNode)BaseContent;
             var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
             var removedId = ItemId.Empty;
             switch (e.ChangeType)
             {
-                case ContentChangeType.ValueChange:
                 case ContentChangeType.CollectionUpdate:
                     break;
                 case ContentChangeType.CollectionAdd:
                     {
-                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
-                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                        var collectionDescriptor = Descriptor as CollectionDescriptor;
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(Retrieve());
                         // Compute the id we will add for this item
                         ItemId itemId;
                         if (baseNode != null && PropertyGraph.UpdatingPropertyFromBase)
@@ -420,15 +405,15 @@ namespace SiliconStudio.Assets.Quantum
                     break;
                 case ContentChangeType.CollectionRemove:
                     {
-                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
+                        var collectionDescriptor = Descriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Node.Retrieve());
                             removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
                         }
                         else
                         {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Node.Retrieve());
                             removedId = itemIds.Delete(e.Index.Value, isOverriding);
                         }
                     }
@@ -447,45 +432,12 @@ namespace SiliconStudio.Assets.Quantum
             {
                 if (e.ChangeType != ContentChangeType.CollectionRemove)
                 {
-                    if (e.Index == Index.Empty)
-                    {
-                        OverrideContent(!ResettingOverride);
-                    }
-                    else
-                    {
-                        OverrideItem(!ResettingOverride, e.Index);
-                    }
+                    OverrideItem(!ResettingOverride, e.Index);
                 }
                 else
                 {
                     OverrideDeletedItem(true, removedId);
                 }
-            }
-        }
-
-        internal void SetContentOverride(OverrideType overrideType)
-        {
-            if (CanOverride)
-            {
-                contentOverride = overrideType;
-            }
-        }
-
-        internal void SetItemOverride(OverrideType overrideType, Index index)
-        {
-            if (CanOverride)
-            {
-                var id = IndexToId(index);
-                SetOverride(overrideType, id, itemOverrides);
-            }
-        }
-
-        internal void SetKeyOverride(OverrideType overrideType, Index index)
-        {
-            if (CanOverride)
-            {
-                var id = IndexToId(index);
-                SetOverride(overrideType, id, keyOverrides);
             }
         }
 
@@ -501,27 +453,164 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
+    }
+
+    public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
+    {
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+
+        public AssetBoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(nodeBuilder, value, guid, descriptor, isPrimitive)
+        {
+        }
+
+        public AssetPropertyGraph PropertyGraph { get; private set; }
+
+        public IContentNode BaseContent { get; private set; }
+
+        public event EventHandler<EventArgs> OverrideChanging;
+
+        public event EventHandler<EventArgs> OverrideChanged;
+
+        public void SetContent(string key, IContentNode content)
+        {
+            contents[key] = content;
+        }
+
+        public IContentNode GetContent(string key)
+        {
+            IContentNode content;
+            contents.TryGetValue(key, out content);
+            return content;
+        }
+
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
+        {
+            PropertyGraph.ResetOverride(this, indexToReset);
+        }
+
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
+    }
+
+    public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
+    {
+        private AssetPropertyGraph propertyGraph;
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+
+        private OverrideType contentOverride;
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
+        {
+            Changed += ContentChanged;
+            IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+            CanOverride = MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+        }
+
+        public bool IsNonIdentifiableCollectionContent { get; }
+
+        public bool CanOverride { get; }
+
+        internal bool ResettingOverride { get; set; }
+
+        public event EventHandler<EventArgs> OverrideChanging;
+
+        public event EventHandler<EventArgs> OverrideChanged;
+
+        public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
+
+        public IContentNode BaseContent { get; private set; }
+
+        public void SetContent(string key, IContentNode content)
+        {
+            contents[key] = content;
+        }
+
+        public IContentNode GetContent(string key)
+        {
+            IContentNode content;
+            contents.TryGetValue(key, out content);
+            return content;
+        }
+
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
+
+        public void OverrideContent(bool isOverridden)
+        {
+            if (CanOverride)
+            {
+                OverrideChanging?.Invoke(this, EventArgs.Empty);
+                contentOverride = isOverridden ? OverrideType.New : OverrideType.Base;
+                OverrideChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
+        {
+            OverrideContent(false);
+            PropertyGraph.ResetOverride(this, indexToReset);
+        }
+
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        {
+            // Make sure that we have item ids everywhere we're supposed to.
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());
+
+            var node = (AssetMemberNode)e.Member;
+            if (node.IsNonIdentifiableCollectionContent)
+                return;
+
+            // Don't update override if propagation from base is disabled.
+            if (PropertyGraph?.Container == null || !PropertyGraph.Container.PropagateChangesFromBase != true)
+                return;
+
+            // Mark it as New if it does not come from the base
+            if (BaseContent != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
+            {
+                OverrideContent(!ResettingOverride);
+            }
+        }
+
+        internal void SetContentOverride(OverrideType overrideType)
+        {
+            if (CanOverride)
+            {
+                contentOverride = overrideType;
+            }
+        }
+
         public OverrideType GetContentOverride()
         {
             return contentOverride;
-        }
-
-        public OverrideType GetItemOverride(Index index)
-        {
-            var result = OverrideType.Base;
-            ItemId id;
-            if (!TryIndexToId(index, out id))
-                return result;
-            return itemOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
-        }
-
-        public OverrideType GetKeyOverride(Index index)
-        {
-            var result = OverrideType.Base;
-            ItemId id;
-            if (!TryIndexToId(index, out id))
-                return result;
-            return keyOverrides.TryGetValue(id, out result) ? result : OverrideType.Base;
         }
 
         public bool IsContentOverridden()
@@ -529,92 +618,9 @@ namespace SiliconStudio.Assets.Quantum
             return (contentOverride & OverrideType.New) == OverrideType.New;
         }
 
-        public bool IsItemOverridden(Index index)
-        {
-            OverrideType result;
-            ItemId id;
-            if (!TryIndexToId(index, out id))
-                return false;
-            return itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
-        }
-
-        public bool IsItemOverriddenDeleted(ItemId id)
-        {
-            OverrideType result;
-            return IsItemDeleted(id) && itemOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
-        }
-
-        public bool IsKeyOverridden(Index index)
-        {
-            OverrideType result;
-            ItemId id;
-            if (!TryIndexToId(index, out id))
-                return false;
-            return keyOverrides.TryGetValue(id, out result) && (result & OverrideType.New) == OverrideType.New;
-        }
-
         public bool IsContentInherited()
         {
             return BaseContent != null && !IsContentOverridden();
-        }
-
-        public bool IsItemInherited(Index index)
-        {
-            return BaseContent != null && !IsItemOverridden(index);
-        }
-
-        public bool IsKeyInherited(Index index)
-        {
-            return BaseContent != null && !IsKeyOverridden(index);
-        }
-
-        public IEnumerable<Index> GetOverriddenItemIndices()
-        {
-            if (BaseContent == null)
-                yield break;
-
-            CollectionItemIdentifiers ids;
-            var collection = Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
-
-            foreach (var flags in itemOverrides)
-            {
-                if ((flags.Value & OverrideType.New) == OverrideType.New)
-                {
-                    // If the override is a deleted item, there's no matching index to return.
-                    if (ids.IsDeleted(flags.Key))
-                        continue;
-
-                    yield return IdToIndex(flags.Key);
-                }
-            }
-        }
-
-        public IEnumerable<Index> GetOverriddenKeyIndices()
-        {
-            if (BaseContent == null)
-                yield break;
-
-            CollectionItemIdentifiers ids;
-            var collection = Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
-
-            foreach (var flags in keyOverrides)
-            {
-                if ((flags.Value & OverrideType.New) == OverrideType.New)
-                {
-                    // If the override is a deleted item, there's no matching index to return.
-                    if (ids.IsDeleted(flags.Key))
-                        continue;
-
-                    yield return IdToIndex(flags.Key);
-                }
-            }
-        }
-
-        internal Dictionary<ItemId, OverrideType> GetAllOverrides()
-        {
-            return itemOverrides;
         }
     }
 }

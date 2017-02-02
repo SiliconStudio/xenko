@@ -63,15 +63,16 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
 
+            var node = (IObjectNode)content;
             if (index.IsEmpty)
             {
-                content.Add(itemToAdd);
+                node.Add(itemToAdd);
             }
             else
             {
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
-                var collectionNode = content.ItemReferences[index].TargetNode;
+                var collectionNode = node.ItemReferences[index].TargetNode;
                 collectionNode.Add(itemToAdd);
             }
         }

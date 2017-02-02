@@ -32,11 +32,12 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         protected override void ExecuteSync(IContentNode content, Index index, object parameter)
         {
+            var node = (IObjectNode)content;
             var oldName = index;
             var renamedObject = content.Retrieve(oldName);
-            content.Remove(renamedObject, oldName);
+            node.Remove(renamedObject, oldName);
             var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Retrieve(), content.Descriptor, (string)parameter);
-            content.Add(renamedObject, newName);
+            node.Add(renamedObject, newName);
         }
     }
 }
