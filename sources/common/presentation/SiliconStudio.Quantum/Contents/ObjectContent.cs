@@ -40,6 +40,9 @@ namespace SiliconStudio.Quantum.Contents
         public IEnumerable<Index> Indices => GetIndices();
 
         /// <inheritdoc/>
+        public bool IsEnumerable => Descriptor is CollectionDescriptor || Descriptor is DictionaryDescriptor;
+
+        /// <inheritdoc/>
         public override bool IsReference => ItemReferences != null;
 
         /// <inheritdoc/>
