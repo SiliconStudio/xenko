@@ -195,7 +195,7 @@ namespace SiliconStudio.BuildEngine
             writer.Write(DataSerializer.BinaryFormatVersion);
 
             // Gets the hash of the assembly of the command
-            writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
+            //writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
         }
 
         protected TagSymbol RegisterTag(string name, Func<string> getValue)
