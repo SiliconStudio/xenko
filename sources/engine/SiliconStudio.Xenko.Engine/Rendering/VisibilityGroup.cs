@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Prepare culling mask
             foreach (var renderViewStage in view.RenderStages)
             {
-                var renderStageIndex = renderViewStage.RenderStage.Index;
+                var renderStageIndex = renderViewStage.Index;
                 viewRenderStageMask[renderStageIndex / RenderStageMaskSizePerEntry] |= 1U << (renderStageIndex % RenderStageMaskSizePerEntry);
             }
 

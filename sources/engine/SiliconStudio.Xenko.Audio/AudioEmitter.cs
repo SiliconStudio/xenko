@@ -84,6 +84,8 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        internal Matrix WorldTransform;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioEmitter"/> class.
         /// </summary>
@@ -93,9 +95,9 @@ namespace SiliconStudio.Xenko.Audio
             Up = new Vector3(0, 1, 0);
         }
 
-        internal unsafe void Apply3D(AudioLayer.Source source)
+        internal void Apply3D(AudioLayer.Source source)
         {
-            AudioLayer.SourcePush3D(source, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
+            AudioLayer.SourcePush3D(source, ref Position, ref forward, ref up, ref Velocity, ref WorldTransform);
         }
     }
 }

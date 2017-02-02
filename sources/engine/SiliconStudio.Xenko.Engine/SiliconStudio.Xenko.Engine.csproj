@@ -1,4 +1,4 @@
-ï»¿<?xml version="1.0" encoding="utf-8"?>
+?¿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -189,6 +189,7 @@
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\Compositing\VRRendererSettings.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
       <AutoGen>True</AutoGen>
@@ -224,11 +225,22 @@
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
+    <Compile Include="Rendering\Images\Dither\Dither.cs" />
+    <Compile Include="Rendering\Images\Dither\Dither2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Dither.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
     <None Include="Rendering\Compositing\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
+    <None Include="Rendering\Images\Dither\Dither.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>Dither2.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.xksl">
@@ -465,6 +477,7 @@
     <Compile Include="Rendering\ResourceGroupEntry.cs" />
     <Compile Include="Rendering\RootEffectRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
@@ -3876,6 +3889,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
+    <Folder Include="Rendering\Lightprobes\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
@@ -3934,6 +3948,10 @@
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj">
+      <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
+      <Name>SiliconStudio.Xenko.VirtualReality</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>

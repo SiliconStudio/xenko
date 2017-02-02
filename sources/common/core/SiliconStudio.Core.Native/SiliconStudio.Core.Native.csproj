@@ -24,6 +24,13 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+      <ItemGroup>
+        <Reference Include="Xamarin.iOS" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

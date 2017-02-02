@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             EffectInstance previousEffect = null;
 
             //TODO string comparison ...?
-            var isPicking = renderViewStage.RenderStage.Name == "Picking";
+            var isPicking = RenderSystem.RenderStages[renderViewStage.Index].Name == "Picking";
 
             var device = RenderSystem.GraphicsDevice;
 

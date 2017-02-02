@@ -27,10 +27,10 @@
   <!-- Embed native libraries -->
   <ItemGroup>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore*.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
 
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenko.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenko*.dll"/>
     
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />

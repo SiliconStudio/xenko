@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -230,6 +231,34 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>The sound controller.</returns>
         [DataMemberIgnore]
         public AudioEmitterSoundController this[string soundName] => SoundToController[Sounds[soundName]];
+
+        /// <summary>
+        /// If possible use a more complex HRTF algorithm to perform 3D sound simulation
+        /// </summary>
+        /// <userdoc>
+        /// If possible use a more complex HRTF algorithm to perform 3D sound simulation
+        /// </userdoc>
+        [DataMember(20)]
+        public bool UseHRTF { get; set; }
+
+        /// <summary>
+        /// If 0 the sound will be omnidirectional, 1 fully directional
+        /// </summary>
+        /// <userdoc>
+        /// If 0 the sound will be omnidirectional, 1 fully directional
+        /// </userdoc>
+        [DataMember(30)]
+        [DataMemberRange(0.0, 1.0, 0.1, 0.2)]
+        public float DirectionalFactor { get; set; }
+
+        /// <summary>
+        /// The reverberation model that this emitter will use
+        /// </summary>
+        /// <userdoc>
+        /// The reverberation model that this emitter will use
+        /// </userdoc>
+        [DataMember(40)]
+        public HrtfEnvironment Environment { get; set; }
 
         private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {

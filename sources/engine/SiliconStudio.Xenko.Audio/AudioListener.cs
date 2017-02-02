@@ -118,6 +118,8 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         internal AudioLayer.Listener Listener;
 
+        internal Matrix WorldTransform;
+
         /// <summary>
         /// Disposes the Listener
         /// </summary>
@@ -131,10 +133,10 @@ namespace SiliconStudio.Xenko.Audio
 #endif
         }
 
-        internal unsafe void Update()
+        internal void Update()
         {
             if (Listener.Ptr == IntPtr.Zero) return;
-            AudioLayer.ListenerPush3D(Listener, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
+            AudioLayer.ListenerPush3D(Listener, ref Position, ref forward, ref up, ref Velocity, ref WorldTransform);
         }
     }
 }

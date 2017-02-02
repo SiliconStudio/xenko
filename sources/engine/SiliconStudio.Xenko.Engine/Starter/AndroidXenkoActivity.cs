@@ -26,7 +26,10 @@ namespace SiliconStudio.Xenko.Starter
     // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
     public class AndroidXenkoActivity : Activity
     {
-        private AndroidXenkoGameView gameView;
+        /// <summary>
+        /// The game view, internally a SurfaceView
+        /// </summary>
+        protected AndroidXenkoGameView GameView;
 
         /// <summary>
         /// The game context of the game instance.
@@ -62,7 +65,7 @@ namespace SiliconStudio.Xenko.Starter
             //await VirtualFileSystem.UnpackAPK();
             
             // Create the Android OpenGl view
-            gameView = new AndroidXenkoGameView(this);
+            GameView = new AndroidXenkoGameView(this);
 
             // setup the application view and xenko game context
             SetupGameViewAndGameContext();
@@ -122,10 +125,10 @@ namespace SiliconStudio.Xenko.Starter
             // Set the main view of the Game
             SetContentView(Resource.Layout.Game);
             mainLayout = FindViewById<RelativeLayout>(Resource.Id.GameViewLayout);
-            mainLayout.AddView(gameView);
+            mainLayout.AddView(GameView);
 
             // Create the Game context
-            GameContext = new GameContextAndroid(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
+            GameContext = new GameContextAndroid(GameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
         }
 
         protected override void OnPause()
@@ -134,8 +137,8 @@ namespace SiliconStudio.Xenko.Starter
 
             UnregisterReceiver(ringerModeIntentReceiver);
 
-            if (gameView != null)
-                gameView.Pause();
+            if (GameView != null)
+                GameView.Pause();
         }
 
         protected override void OnResume()
@@ -144,8 +147,8 @@ namespace SiliconStudio.Xenko.Starter
 
             RegisterReceiver(ringerModeIntentReceiver, new IntentFilter(AudioManager.RingerModeChangedAction));
 
-            if (gameView != null)
-                gameView.Resume();
+            if (GameView != null)
+                GameView.Resume();
         }
 
         private void InitializeFullscreenViewCallback()
