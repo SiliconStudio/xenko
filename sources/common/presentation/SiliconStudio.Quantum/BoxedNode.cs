@@ -6,12 +6,12 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Contents
 {
-    public class BoxedContent : ObjectContent
+    public class BoxedNode : ObjectNode
     {
-        private ContentNode boxedStructureOwner;
+        private GraphNodeBase boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
-        public BoxedContent([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+        public BoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
             : base(nodeBuilder, value, guid, descriptor, isPrimitive, null)
         {
         }
@@ -28,7 +28,7 @@ namespace SiliconStudio.Quantum.Contents
 
         internal void SetOwnerContent(IContentNode ownerContent, Index index)
         {
-            boxedStructureOwner = (ContentNode)ownerContent;
+            boxedStructureOwner = (GraphNodeBase)ownerContent;
             boxedStructureOwnerIndex = index;
         }
 

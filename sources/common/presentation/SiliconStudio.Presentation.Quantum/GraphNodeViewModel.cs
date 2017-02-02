@@ -611,7 +611,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (CustomOrder != null)
                     return CustomOrder;
 
-                var memberContent = SourceNode as MemberContent;
+                var memberContent = SourceNode as MemberNode;
                 if (memberContent == null || !Index.IsEmpty)
                     return null;
 
@@ -625,7 +625,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                var memberContent = SourceNode as MemberContent;
+                var memberContent = SourceNode as MemberNode;
                 var memberDescriptorBase = memberContent?.MemberDescriptor as MemberDescriptorBase;
                 return memberDescriptorBase?.MemberInfo;
             }
@@ -668,7 +668,7 @@ namespace SiliconStudio.Presentation.Quantum
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
-            var memberContent = SourceNode as MemberContent;
+            var memberContent = SourceNode as MemberNode;
             return memberContent?.MemberDescriptor;
         }
 
@@ -787,7 +787,7 @@ namespace SiliconStudio.Presentation.Quantum
             //    // Discard the children of the referenced object if requested by the property provider
             //    if (objectReference != null)
             //    {
-            //        ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference);
+            //        ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberNode, objectReference);
             //        if (ExpandReferencePolicy == ExpandReferencePolicy.None)
             //            return;
             //    }

@@ -12,13 +12,13 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// A base abstract implementation of the <see cref="IContentNode"/> interface.
     /// </summary>
-    public abstract class ContentNode : IInitializingGraphNode
+    public abstract class GraphNodeBase : IInitializingGraphNode
     {
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         protected readonly NodeContainer NodeContainer;
         protected bool isSealed;
 
-        protected ContentNode(NodeContainer nodeContainer, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+        protected GraphNodeBase(NodeContainer nodeContainer, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
         {
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(guid));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));

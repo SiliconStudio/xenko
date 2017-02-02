@@ -99,10 +99,10 @@ namespace SiliconStudio.Quantum.References
                 var oldReferenceMapping = new List<KeyValuePair<object, ObjectReference>>();
                 if (items != null)
                 {
-                    var existingIndices = ContentNode.GetIndices(ownerNode).ToList();
+                    var existingIndices = GraphNodeBase.GetIndices(ownerNode).ToList();
                     foreach (var item in items)
                     {
-                        var boxedTarget = item.Value.TargetNode as BoxedContent;
+                        var boxedTarget = item.Value.TargetNode as BoxedNode;
                         // For collection of struct, we need to update the target nodes first so equity comparer will work. Careful tho, we need to skip removed items!
                         if (boxedTarget != null && existingIndices.Contains(item.Key))
                         {

@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="member">The member content containing the reference.</param>
         /// <param name="reference">The reference to a <see cref="GraphNode"/> contained in a parent node.</param>
         /// <returns><see cref="ExpandReferencePolicy.Full"/> or <see cref="ExpandReferencePolicy.Partial"/> if respectively all or some of the members of the referenced node should be constructed, <see cref="ExpandReferencePolicy.None"/> otherwise.</returns>
-        // TODO: in some case of "boxing" the reference can actually be contained in an ObjectContent. Might need to update the signature of this method for proper support
+        // TODO: in some case of "boxing" the reference can actually be contained in an ObjectNode. Might need to update the signature of this method for proper support
         ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference);
 
         /// <summary>

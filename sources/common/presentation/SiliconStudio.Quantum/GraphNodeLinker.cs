@@ -59,7 +59,7 @@ namespace SiliconStudio.Quantum
 
             protected override void VisitReference(IContentNode referencer, ObjectReference reference, GraphNodePath targetPath)
             {
-                if (ShouldVisitNode(referencer as MemberContent, reference.TargetNode))
+                if (ShouldVisitNode(referencer as MemberNode, reference.TargetNode))
                 {
                     if (reference.TargetNode != null)
                     {

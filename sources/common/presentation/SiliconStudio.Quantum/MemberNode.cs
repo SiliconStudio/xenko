@@ -13,9 +13,9 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentNode, IInitializingMemberNode
+    public class MemberNode : GraphNodeBase, IMemberNodeInternal
     {
-        public MemberContent([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+        public MemberNode([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
             : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
@@ -158,7 +158,7 @@ namespace SiliconStudio.Quantum.Contents
                 MemberDescriptor.Set(containerValue, newValue);
 
                 if (Parent.Retrieve().GetType().GetTypeInfo().IsValueType)
-                    ((ContentNode)Parent).UpdateFromMember(containerValue, Index.Empty);
+                    ((GraphNodeBase)Parent).UpdateFromMember(containerValue, Index.Empty);
             }
             UpdateReferences();
             if (sendNotification)

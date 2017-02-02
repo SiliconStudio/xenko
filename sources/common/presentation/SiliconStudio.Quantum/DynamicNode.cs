@@ -27,7 +27,7 @@ namespace SiliconStudio.Quantum
         /// <returns>A <see cref="DynamicNode"/> representing the given node.</returns>
         public static dynamic FromNode(IContentNode node)
         {
-            if (node is MemberContent)
+            if (node is MemberNode)
                 throw new ArgumentException("Cannot create a dynamic node from a member node.");
 
             return new DynamicDirectNode(node);

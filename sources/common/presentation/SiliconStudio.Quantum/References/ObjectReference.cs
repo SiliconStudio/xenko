@@ -65,7 +65,7 @@ namespace SiliconStudio.Quantum.References
         {
             var objectValue = ownerNode.Retrieve(index);
 
-            var boxedTarget = TargetNode as BoxedContent;
+            var boxedTarget = TargetNode as BoxedNode;
             if (boxedTarget != null && objectValue?.GetType() == TargetNode.Type)
             {
                 // If we are boxing a struct, and the targeted type didn't change, we reuse the same nodes and just overwrite the struct value.
@@ -82,7 +82,7 @@ namespace SiliconStudio.Quantum.References
                 var target = SetTarget(objectValue, nodeContainer);
                 if (target != null)
                 {
-                    var boxedContent = target as BoxedContent;
+                    var boxedContent = target as BoxedNode;
                     boxedContent?.SetOwnerContent(ownerNode, index);
                 }
             }

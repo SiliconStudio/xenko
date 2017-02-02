@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets.Quantum
         void SetBaseContent(IContentNode content);
     }
 
-    public class AssetObjectNode : ObjectContent, IAssetNode, IAssetNodeInternal
+    public class AssetObjectNode : ObjectNode, IAssetNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
@@ -465,7 +465,7 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
+    public class AssetBoxedNode : BoxedNode, IAssetNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
@@ -512,7 +512,7 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
+    public class AssetMemberNode : MemberNode, IAssetNode, IAssetNodeInternal
     {
         private AssetPropertyGraph propertyGraph;
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();

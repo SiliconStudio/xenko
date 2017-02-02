@@ -15,17 +15,17 @@ namespace SiliconStudio.Quantum.Contents
     /// An implementation of <see cref="IContentNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
-    public class ObjectContent : ContentNode, IInitializingObjectNode
+    public class ObjectNode : GraphNodeBase, IInitializingObjectNode
     {
         private readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private readonly List<IMemberNode> children = new List<IMemberNode>();
         private object value;
 
-        public ObjectContent([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+        public ObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
             : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, descriptor, isPrimitive)
         {
             if (reference is ObjectReference)
-                throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
+                throw new ArgumentException($"An {nameof(ObjectNode)} cannot contain an {nameof(ObjectReference)}");
             this.value = value;
             ItemReferences = reference as ReferenceEnumerable;
         }
@@ -202,7 +202,7 @@ namespace SiliconStudio.Quantum.Contents
         {
             if (index == Index.Empty)
             {
-                throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+                throw new InvalidOperationException("An ObjectNode value cannot be modified after it has been constructed");
             }
             Update(newValue, index, true);
         }
@@ -277,7 +277,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        void IInitializingObjectNode.AddMember(IInitializingMemberNode member, bool allowIfReference)
+        void IInitializingObjectNode.AddMember(IMemberNodeInternal member, bool allowIfReference)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");
@@ -287,7 +287,7 @@ namespace SiliconStudio.Quantum.Contents
                 throw new InvalidOperationException("A GraphNode cannot have children when its content hold a reference.");
 
             children.Add(member);
-            childrenMap.Add(member.Name, (MemberContent)member);
+            childrenMap.Add(member.Name, (MemberNode)member);
         }
     }
 }

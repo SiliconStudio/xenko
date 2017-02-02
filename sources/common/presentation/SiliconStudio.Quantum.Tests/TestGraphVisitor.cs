@@ -55,10 +55,10 @@ namespace SiliconStudio.Quantum.Tests
         {
             public readonly List<Tuple<IContentNode, GraphNodePath>> Result = new List<Tuple<IContentNode, GraphNodePath>>();
 
-            public override void Visit(IContentNode node, MemberContent memberContent = null, GraphNodePath initialPath = null)
+            public override void Visit(IContentNode node, MemberNode memberNode = null, GraphNodePath initialPath = null)
             {
                 Result.Clear();
-                base.Visit(node, memberContent, initialPath);
+                base.Visit(node, memberNode, initialPath);
             }
 
             protected override void VisitNode(IContentNode node, GraphNodePath currentPath)

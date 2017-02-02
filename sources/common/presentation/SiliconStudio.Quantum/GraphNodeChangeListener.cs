@@ -61,8 +61,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    ((IInitializingMemberNode)memberNode).PrepareChange += ContentPrepareChange;
-                    ((IInitializingMemberNode)memberNode).FinalizeChange += ContentFinalizeChange;
+                    ((IMemberNodeInternal)memberNode).PrepareChange += ContentPrepareChange;
+                    ((IMemberNodeInternal)memberNode).FinalizeChange += ContentFinalizeChange;
                     memberNode.Changing += ContentChanging;
                     memberNode.Changed += ContentChanged;
                 }
@@ -85,8 +85,8 @@ namespace SiliconStudio.Quantum
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    ((IInitializingMemberNode)memberNode).PrepareChange -= ContentPrepareChange;
-                    ((IInitializingMemberNode)memberNode).FinalizeChange -= ContentFinalizeChange;
+                    ((IMemberNodeInternal)memberNode).PrepareChange -= ContentPrepareChange;
+                    ((IMemberNodeInternal)memberNode).FinalizeChange -= ContentFinalizeChange;
                     memberNode.Changing -= ContentChanging;
                     memberNode.Changed -= ContentChanged;
                 }
@@ -131,7 +131,7 @@ namespace SiliconStudio.Quantum
                         if (removedNode != null)
                         {
                             // TODO: review this
-                            visitor.Visit(removedNode, node as MemberContent);
+                            visitor.Visit(removedNode, node as MemberNode);
                         }
                     }
                     break;
@@ -173,7 +173,7 @@ namespace SiliconStudio.Quantum
                         if (addedNode != null)
                         {
                             var path = new GraphNodePath(e.Node).PushIndex(index);
-                            visitor.Visit(addedNode, e.Node as MemberContent, path);
+                            visitor.Visit(addedNode, e.Node as MemberNode, path);
                         }
                     }
                     break;

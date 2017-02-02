@@ -93,7 +93,7 @@ namespace SiliconStudio.Quantum.Tests
 
             protected override IContentNode FindTarget(IContentNode sourceNode)
             {
-                if (sourceNode is ObjectContent && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
+                if (sourceNode is ObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
                     return CustomTarget;
                 }
