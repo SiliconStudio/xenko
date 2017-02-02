@@ -25,6 +25,7 @@
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\SyncNodeCommandBase.cs" />
     <Compile Include="Contents\Content.cs" />
+    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="INodeChangeEventArgs.cs" />
     <Compile Include="Contents\MemberNodeChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
