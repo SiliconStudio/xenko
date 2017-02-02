@@ -58,20 +58,28 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override float Trigger => controller?.GetAxis(OpenVR.Controller.ButtonId.ButtonSteamVrTrigger).X ?? 0.0f;
 
-        public override float Grip => IsPressed(TouchControllerButton.Grip) ? 1.0f : 0.0f;
+        public override float Grip => controller?.GetPress(OpenVR.Controller.ButtonId.ButtonGrip) ?? false ? 1.0f : 0.0f;
+
+        public override bool IndexPointing => !controller?.GetTouch(OpenVR.Controller.ButtonId.ButtonSteamVrTrigger) ?? false; //not so accurate
+
+        public override bool IndexResting => controller?.GetTouch(OpenVR.Controller.ButtonId.ButtonSteamVrTrigger) ?? false;
+
+        public override bool ThumbUp => !controller?.GetTouch(OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad) ?? false;
+
+        public override bool ThumbResting => controller?.GetTouch(OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad) ?? false;
 
         private OpenVR.Controller.ButtonId ToOpenVrButton(TouchControllerButton button)
         {
             switch (button)
             {
+                case TouchControllerButton.Thumbstick:
+                    return OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad;              
                 case TouchControllerButton.Trigger:
                     return OpenVR.Controller.ButtonId.ButtonSteamVrTrigger;
                 case TouchControllerButton.Grip:
                     return OpenVR.Controller.ButtonId.ButtonGrip;
-                case TouchControllerButton.Pad:
-                    return OpenVR.Controller.ButtonId.ButtonSteamVrTouchpad;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(button), button, null);
+                    return OpenVR.Controller.ButtonId.ButtonMax;
             }
         }
 
@@ -88,21 +96,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override bool IsPressReleased(TouchControllerButton button)
         {
             return controller?.GetPressUp(ToOpenVrButton(button)) ?? false;
-        }
-
-        public override bool IsTouchedDown(TouchControllerButton button)
-        {
-            return controller?.GetTouchDown(ToOpenVrButton(button)) ?? false;
-        }
-
-        public override bool IsTouched(TouchControllerButton button)
-        {
-            return controller?.GetTouch(ToOpenVrButton(button)) ?? false;
-        }
-
-        public override bool IsTouchReleased(TouchControllerButton button)
-        {
-            return controller?.GetTouchUp(ToOpenVrButton(button)) ?? false;
         }
 
         public override Vector3 Position => currentPos;
