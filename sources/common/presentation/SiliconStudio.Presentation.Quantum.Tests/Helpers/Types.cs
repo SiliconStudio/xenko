@@ -15,7 +15,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
             }
             public bool CanProvidePropertiesViewModel => true;
 
-            public IContentNode GetRootNode()
+            public IObjectNode GetRootNode()
             {
                 return rootNode;
             }
