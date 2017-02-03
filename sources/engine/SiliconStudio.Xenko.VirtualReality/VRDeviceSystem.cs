@@ -1,6 +1,7 @@
 ﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -22,6 +23,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         public bool DepthStencilAsResource;
 
         public bool RequireMirror;
+
+        public MSAALevel MSAALevel = MSAALevel.None;
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
@@ -86,7 +89,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror);
+                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror, MSAALevel);
             }
         }
 
