@@ -54,6 +54,21 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>Creates an instance of this object.</summary>
+        /// <param name="x">The x coordinate of the upper-left corner of the viewport in pixels.</param>
+        /// <param name="y">The y coordinate of the upper-left corner of the viewport in pixels.</param>
+        /// <param name="width">The width of the viewport in pixels.</param>
+        /// <param name="height">The height of the viewport in pixels.</param>
+        public Viewport(float x, float y, float width, float height)
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+            MinDepth = 0;
+            MaxDepth = 1;
+        }
+
+        /// <summary>Creates an instance of this object.</summary>
         /// <param name="bounds">A bounding box that defines the location and size of the viewport in a render target.</param>
         public Viewport(Rectangle bounds)
         {

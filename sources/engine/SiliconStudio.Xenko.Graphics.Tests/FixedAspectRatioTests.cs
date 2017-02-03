@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.IO;
@@ -6,14 +7,13 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     public class FixedAspectRatioTests : GameTestBase
     {
-        private SceneGraphicsCompositorLayers graphicsCompositor;
         protected Scene Scene;
 
         public FixedAspectRatioTests()
@@ -25,17 +25,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            graphicsCompositor = new SceneGraphicsCompositorLayers
-            {
-                Master =
-                {
-                    Renderers =
-                    {
-                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" }, FixedAspectRatio = 3.0f, ForceAspectRatio = true }
-                    }
-                }
-            };
+            // Force aspect ratio
+            SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(false, clearColor: Color.Green, graphicsProfile: GraphicsProfile.Level_9_1);
+            SceneSystem.GraphicsCompositor.Game = new ForceAspectRatioSceneRenderer { Child = SceneSystem.GraphicsCompositor.Game, FixedAspectRatio = 3.0f, ForceAspectRatio = true };
 
             Scene = new Scene();
 
@@ -48,7 +40,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             Scene.Entities.Add(plane);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
-            SceneSystem.GraphicsCompositor = graphicsCompositor;
         }
 
         [Test]

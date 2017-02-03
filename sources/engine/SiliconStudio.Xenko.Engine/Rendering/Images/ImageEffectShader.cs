@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private bool pipelineStateDirty = true;
         private BlendStateDescription blendState = BlendStateDescription.Default;
         private EffectBytecode previousBytecode;
+        private bool delaySetRenderTargets;
 
         [DataMemberIgnore]
         public BlendStateDescription BlendState
@@ -31,9 +32,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
-        public ImageEffectShader(string effectName = null)
+        public ImageEffectShader(string effectName = null, bool delaySetRenderTargets = false)
         {
             EffectInstance = new DynamicEffectInstance(effectName, Parameters);
+            EnableSetRenderTargets = !delaySetRenderTargets;
+            this.delaySetRenderTargets = delaySetRenderTargets;
         }
 
         /// <inheritdoc/>
@@ -116,8 +119,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void DrawCore(RenderDrawContext context)
+        protected override unsafe void DrawCore(RenderDrawContext context)
         {
+            // Clear render targets if there is a dependency conflict (D3D11 warning)
+            if (delaySetRenderTargets)
+                context.CommandList.ResetTargets();
+
             if (EffectInstance.UpdateEffect(GraphicsDevice) || pipelineStateDirty || previousBytecode != EffectInstance.Effect.Bytecode)
             {
                 // The EffectInstance might have been updated from outside
@@ -126,7 +133,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
                 pipelineState.State.BlendState = blendState;
-                pipelineState.State.Output.CaptureState(context.CommandList);
+
+                var renderTargetCount = OutputCount;
+                
+                // Special case: texture cube
+                var isTextureCube = GetOutput(0).Dimension == TextureDimension.TextureCube;
+                if (isTextureCube)
+                {
+                    renderTargetCount = 6;
+                }
+
+                // Capture output state manually (since render targets might not be bound if delaySetRenderTargets is set to true)
+                pipelineState.State.Output.RenderTargetCount = renderTargetCount;
+                fixed (PixelFormat* pixelFormatStart = &pipelineState.State.Output.RenderTargetFormat0)
+                for (int i = 0; i < renderTargetCount; ++i)
+                {
+                    pixelFormatStart[i] = GetOutput(isTextureCube ? 0 : i).ViewFormat;
+                }
+
                 pipelineState.Update();
                 pipelineStateDirty = false;
             }
@@ -134,6 +158,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             EffectInstance.Apply(context.GraphicsContext);
+
+            // Now that resources are bound, set render targets
+            if (delaySetRenderTargets)
+                SetRenderTargets(context);
 
             // Draw a full screen quad
             context.GraphicsDevice.PrimitiveQuad.Draw(context.CommandList);

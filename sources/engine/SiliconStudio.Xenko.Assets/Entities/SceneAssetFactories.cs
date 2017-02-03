@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
-using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 

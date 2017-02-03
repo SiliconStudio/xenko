@@ -74,7 +74,6 @@ namespace SiliconStudio.Xenko.Engine
         private Entity(string name, bool notUsed) : base(name)
         {
             Components = new EntityComponentCollection(this);
-            Group = EntityGroup.Group0;
         }
 
         [DataMember(-10), Display(Browsable = false)]
@@ -100,14 +99,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         public TransformComponent Transform => transform;
-
-        /// <summary>
-        /// Gets or sets the group of this entity.
-        /// </summary>
-        /// <value>The group.</value>
-        [DataMember(10)]
-        [DefaultValue(EntityGroup.Group0)]
-        public EntityGroup Group { get; set; }
 
         /// <summary>
         /// The components stored in this entity.
@@ -291,7 +282,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             private DataSerializer<Guid> guidSerializer;
             private DataSerializer<string> stringSerializer;
-            private DataSerializer<EntityGroup> entityGroupSerializer;
             private DataSerializer<EntityComponentCollection> componentCollectionSerializer;
 
             /// <inheritdoc/>
@@ -299,7 +289,6 @@ namespace SiliconStudio.Xenko.Engine
             {
                 guidSerializer = MemberSerializer<Guid>.Create(serializerSelector);
                 stringSerializer = MemberSerializer<string>.Create(serializerSelector);
-                entityGroupSerializer = MemberSerializer<EntityGroup>.Create(serializerSelector);
                 componentCollectionSerializer = MemberSerializer<EntityComponentCollection>.Create(serializerSelector);
             }
 
@@ -329,11 +318,6 @@ namespace SiliconStudio.Xenko.Engine
                 var name = obj.Name;
                 stringSerializer.Serialize(ref name, mode, stream);
                 obj.Name = name;
-
-                // EntityGroup
-                var group = obj.Group;
-                entityGroupSerializer.Serialize(ref group, mode, stream);
-                obj.Group = group;
 
                 // Components
                 var collection = obj.Components;

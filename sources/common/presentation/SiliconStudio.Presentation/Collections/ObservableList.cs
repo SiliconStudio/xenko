@@ -69,7 +69,6 @@ namespace SiliconStudio.Presentation.Collections
         {
             return list.GetEnumerator();
         }
-
         [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {

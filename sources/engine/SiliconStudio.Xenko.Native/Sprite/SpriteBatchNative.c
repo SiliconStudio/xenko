@@ -22,8 +22,6 @@ DLL_EXPORT_API void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, 
 	if (fabs(drawInfo->Rotation) > 1e-6f)
 	{
 		npLolSincosf(drawInfo->Rotation, &rotation.Y, &rotation.X);
-		//rotation.X = cos(drawInfo->Rotation);
-		//rotation.Y = sin(drawInfo->Rotation);
 	}
 
 	Vector2 origin = drawInfo->Origin;

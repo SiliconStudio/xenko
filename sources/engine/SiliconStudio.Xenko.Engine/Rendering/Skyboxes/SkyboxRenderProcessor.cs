@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     renderSkybox.Intensity = skyboxComponent.Intensity;
                     renderSkybox.Rotation = skyboxComponent.Entity.Transform.Rotation;
 
-                    renderSkybox.RenderGroup = skyboxComponent.Entity.Group;
+                    renderSkybox.RenderGroup = skyboxComponent.RenderGroup;
 
                     ActiveSkybox = renderSkybox;
                     break;

@@ -16,9 +16,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
-        public ImageScaler()
+        public ImageScaler(bool delaySetRenderTargets = false) : base("ImageScalerEffect", delaySetRenderTargets)
         {
-            EffectName = "ImageScalerEffect";
         }
 
         /// <summary>

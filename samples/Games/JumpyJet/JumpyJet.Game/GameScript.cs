@@ -1,5 +1,6 @@
 ﻿using System;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace JumpyJet
 {
@@ -10,14 +11,14 @@ namespace JumpyJet
     public class GameScript : SyncScript
     {
         /// <summary>
+        /// A reference to the renderer.
+        /// </summary>
+        private JumpyJetRenderer renderer;
+
+        /// <summary>
         /// A reference to the UI script.
         /// </summary>
         public UIScript UI;
-
-        /// <summary>
-        /// A reference to the Background script.
-        /// </summary>
-        public BackgroundScript Background;
 
         /// <summary>
         /// A reference to the Character script.
@@ -43,6 +44,9 @@ namespace JumpyJet
             UI.StartButton.Click += StartPlayMode;
             UI.RetryButton.Click += StartPlayMode;
             UI.MenuButton.Click += StartMainMenuMode;
+
+            // Find our JumpyJetRenderer to start/stop parallax background
+            renderer = (JumpyJetRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.Game).Child;
 
             StartMainMenuMode(this, EventArgs.Empty);
         }
@@ -79,7 +83,7 @@ namespace JumpyJet
             Pipes.Reset();
             Pipes.StopScrolling();
             UI.StartMainMenuMode();
-            Background.StartScrolling();
+            renderer.StartScrolling();
             Character.Reset();
         }
 
@@ -88,7 +92,7 @@ namespace JumpyJet
             Pipes.Reset();
             Pipes.StartScrolling();
             UI.StartPlayMode();
-            Background.StartScrolling();
+            renderer.StartScrolling();
             Character.Restart();
         }
 
@@ -96,7 +100,7 @@ namespace JumpyJet
         {
             UI.StartGameOverMode();
             Pipes.StopScrolling();
-            Background.StopScrolling();
+            renderer.StopScrolling();
             Character.Stop();
         }
     }

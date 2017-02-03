@@ -8,7 +8,7 @@
 #define OVR_CAPI_Util_h
 
 
-#include "../OVR_CAPI.h"
+#include "OVR_CAPI.h"
 
 
 #ifdef __cplusplus
@@ -71,6 +71,39 @@ typedef struct OVR_ALIGNAS(8) ovrDetectResult_
 } ovrDetectResult;
 
 OVR_STATIC_ASSERT(sizeof(ovrDetectResult) == 8, "ovrDetectResult size mismatch");
+
+
+/// Modes used to generate Touch Haptics from audio PCM buffer.
+///
+typedef enum ovrHapticsGenMode_
+{
+    /// Point sample original signal at Haptics frequency
+    ovrHapticsGenMode_PointSample,
+    ovrHapticsGenMode_Count
+} ovrHapticsGenMode;
+
+/// Store audio PCM data (as 32b float samples) for an audio channel.
+/// Note: needs to be released with ovr_ReleaseAudioChannelData to avoid memory leak.
+///
+typedef struct ovrAudioChannelData_
+{
+    /// Samples stored as floats [-1.0f, 1.0f].
+    const float* Samples;
+    /// Number of samples
+    int SamplesCount;
+    /// Frequency (e.g. 44100)
+    int Frequency;
+} ovrAudioChannelData;
+
+/// Store a full Haptics clip, which can be used as data source for multiple ovrHapticsBuffers.
+///
+typedef struct ovrHapticsClip_
+{
+    /// Samples stored in opaque format
+    const void* Samples;
+    /// Number of samples
+    int SamplesCount;
+} ovrHapticsClip;
 
 
 /// Detects Oculus Runtime and Device Status
@@ -186,6 +219,37 @@ OVR_PUBLIC_FUNCTION(void) ovr_GetEyePoses(ovrSession session, long long frameInd
 /// \param[out] outPose that is requested to be left-handed (can be the same pointer to inPose)
 ///
 OVR_PUBLIC_FUNCTION(void) ovrPosef_FlipHandedness(const ovrPosef* inPose, ovrPosef* outPose);
+
+/// Reads an audio channel from Wav (Waveform Audio File) data.
+/// Input must be a byte buffer representing a valid Wav file. Audio samples from the specified channel are read,
+/// converted to float [-1.0f, 1.0f] and returned through ovrAudioChannelData.
+///
+/// Supported formats: PCM 8b, 16b, 32b and IEEE float (little-endian only).
+///
+/// \param[out] outAudioChannel output audio channel data.
+/// \param[in] inputData a binary buffer representing a valid Wav file data.
+/// \param[in] dataSizeInBytes size of the buffer in bytes.
+/// \param[in] stereoChannelToUse audio channel index to extract (0 for mono).
+///
+OVR_PUBLIC_FUNCTION(ovrResult) ovr_ReadWavFromBuffer(ovrAudioChannelData* outAudioChannel, const void* inputData, int dataSizeInBytes, int stereoChannelToUse);
+
+/// Generates playable Touch Haptics data from an audio channel.
+///
+/// \param[out] outHapticsClip generated Haptics clip.
+/// \param[in] audioChannel input audio channel data. 
+/// \param[in] genMode mode used to convert and audio channel data to Haptics data.
+///
+OVR_PUBLIC_FUNCTION(ovrResult) ovr_GenHapticsFromAudioData(ovrHapticsClip* outHapticsClip, const ovrAudioChannelData* audioChannel, ovrHapticsGenMode genMode);
+
+/// Releases memory allocated for ovrAudioChannelData. Must be called to avoid memory leak.
+/// \param[in] audioChannel pointer to an audio channel
+///
+OVR_PUBLIC_FUNCTION(void) ovr_ReleaseAudioChannelData(ovrAudioChannelData* audioChannel);
+
+/// Releases memory allocated for ovrHapticsClip. Must be called to avoid memory leak.
+/// \param[in] hapticsClip pointer to a haptics clip
+///
+OVR_PUBLIC_FUNCTION(void) ovr_ReleaseHapticsClip(ovrHapticsClip* hapticsClip);
 
 
 #ifdef __cplusplus

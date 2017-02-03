@@ -1,8 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
+#if SILICONSTUDIO_PLATFORM_IOS
+using ObjCRuntime;
+#endif
 
 namespace SiliconStudio.Core.Native
 {
@@ -32,5 +37,41 @@ namespace SiliconStudio.Core.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, EntryPoint = "cnSleep", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Sleep(int ms);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        delegate void ManagedLogDelegate(string log);
+
+        private static ManagedLogDelegate managedLogDelegateSingleton;
+
+#if SILICONSTUDIO_PLATFORM_IOS
+        [MonoPInvokeCallback(typeof(ManagedLogDelegate))]
+#endif
+        private static void ManagedLog(string log)
+        {
+            Debug.WriteLine(log);
+        }
+
+        public static void Setup()
+        {
+            managedLogDelegateSingleton = ManagedLog;
+
+#if !SILICONSTUDIO_PLATFORM_IOS
+            var ptr = Marshal.GetFunctionPointerForDelegate(managedLogDelegateSingleton);
+#else
+            var ptr = managedLogDelegateSingleton;
+#endif
+
+            CoreNativeSetup(ptr);
+        }
+
+#if !SILICONSTUDIO_PLATFORM_IOS
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, EntryPoint = "cnSetup", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void CoreNativeSetup(IntPtr logger);
+#else
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, EntryPoint = "cnSetup", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void CoreNativeSetup(ManagedLogDelegate logger);
+#endif
     }
 }

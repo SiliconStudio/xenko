@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Games
     /// </summary>
     internal class GameWindowAndroid : GameWindow<AndroidXenkoGameView>
     {
-        private AndroidXenkoGameView xenkoGameForm;
+        public AndroidXenkoGameView XenkoGameForm;
         private WindowHandle nativeWindow;
 
         public override WindowHandle NativeWindow => nativeWindow;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Games
 
         private Activity GetActivity()
         {
-            var context = xenkoGameForm.Context;
+            var context = XenkoGameForm.Context;
             while (context is ContextWrapper) {
                 var activity = context as Activity;
                 if (activity != null) {
@@ -60,40 +60,40 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
-            xenkoGameForm = gameContext.Control;
-            nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm, xenkoGameForm.Handle);
+            XenkoGameForm = gameContext.Control;
+            nativeWindow = new WindowHandle(AppContextType.Android, XenkoGameForm, XenkoGameForm.Handle);
 
-            xenkoGameForm.Load += gameForm_Resume;
-            xenkoGameForm.OnPause += gameForm_OnPause;
-            xenkoGameForm.Unload += gameForm_Unload;
-            xenkoGameForm.RenderFrame += gameForm_RenderFrame;
-            xenkoGameForm.Resize += gameForm_Resize;
+            XenkoGameForm.Load += gameForm_Resume;
+            XenkoGameForm.OnPause += gameForm_OnPause;
+            XenkoGameForm.Unload += gameForm_Unload;
+            XenkoGameForm.RenderFrame += gameForm_RenderFrame;
+            XenkoGameForm.Resize += gameForm_Resize;
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
             if (width == 0)
             {
-                width = xenkoGameForm.Width;
+                width = XenkoGameForm.Width;
             }
 
             var height = gameContext.RequestedHeight;
             if (height == 0)
             {
-                height = xenkoGameForm.Height;
+                height = XenkoGameForm.Height;
             }
 
             // Transmit requested back buffer and depth stencil formats to OpenTK
-            xenkoGameForm.RequestedBackBufferFormat = gameContext.RequestedBackBufferFormat;
-            xenkoGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
+            XenkoGameForm.RequestedBackBufferFormat = gameContext.RequestedBackBufferFormat;
+            XenkoGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
 
-            xenkoGameForm.Size = new Size(width, height);
+            XenkoGameForm.Size = new Size(width, height);
         }
 
         private SurfaceOrientation currentOrientation;
 
         private void gameForm_Resize(object sender, EventArgs e)
         {
-            var windowManager = xenkoGameForm.Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
+            var windowManager = XenkoGameForm.Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
             if (windowManager != null)
             {
                 var newOrientation = windowManager.DefaultDisplay.Rotation;
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Games
                 InitCallback();
                 InitCallback = null;
             }
-            xenkoGameForm.Run();
+            XenkoGameForm.Run();
 
             OnResume();
         }
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Games
             Debug.Assert(InitCallback != null);
             Debug.Assert(RunCallback != null);
 
-            if (xenkoGameForm.GraphicsContext != null)
+            if (XenkoGameForm.GraphicsContext != null)
             {
                 throw new NotImplementedException("Only supports not yet initialized AndroidXenkoGameView.");
             }
@@ -155,22 +155,22 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                return xenkoGameForm.Visible;
+                return XenkoGameForm.Visible;
             }
             set
             {
-                xenkoGameForm.Visible = value;
+                XenkoGameForm.Visible = value;
             }
         }
 
         protected override void SetTitle(string title)
         {
-            xenkoGameForm.Title = title;
+            XenkoGameForm.Title = title;
         }
 
         internal override void Resize(int width, int height)
         {
-            xenkoGameForm.Size = new Size(width, height);
+            XenkoGameForm.Size = new Size(width, height);
         }
 
         public override bool IsBorderLess
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        public override Rectangle ClientBounds => new Rectangle(0, 0, xenkoGameForm.Size.Width, xenkoGameForm.Size.Height);
+        public override Rectangle ClientBounds => new Rectangle(0, 0, XenkoGameForm.Size.Width, XenkoGameForm.Size.Height);
 
         public override DisplayOrientation CurrentOrientation
         {
@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        public override bool IsMinimized => xenkoGameForm.WindowState == OpenTK.WindowState.Minimized;
+        public override bool IsMinimized => XenkoGameForm.WindowState == OpenTK.WindowState.Minimized;
 
         public override bool IsMouseVisible
         {
@@ -227,23 +227,23 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Destroy()
         {
-            if (xenkoGameForm != null)
+            if (XenkoGameForm != null)
             {
-                xenkoGameForm.Load -= gameForm_Resume;
-                xenkoGameForm.OnPause -= gameForm_OnPause;
-                xenkoGameForm.Unload -= gameForm_Unload;
-                xenkoGameForm.RenderFrame -= gameForm_RenderFrame;
+                XenkoGameForm.Load -= gameForm_Resume;
+                XenkoGameForm.OnPause -= gameForm_OnPause;
+                XenkoGameForm.Unload -= gameForm_Unload;
+                XenkoGameForm.RenderFrame -= gameForm_RenderFrame;
 
-                if (xenkoGameForm.GraphicsContext != null)
+                if (XenkoGameForm.GraphicsContext != null)
                 {
-                    xenkoGameForm.GraphicsContext.MakeCurrent(null);
-                    xenkoGameForm.GraphicsContext.Dispose();
+                    XenkoGameForm.GraphicsContext.MakeCurrent(null);
+                    XenkoGameForm.GraphicsContext.Dispose();
                 }
-                ((AndroidWindow)xenkoGameForm.WindowInfo).TerminateDisplay();
+                ((AndroidWindow)XenkoGameForm.WindowInfo).TerminateDisplay();
                 //xenkoGameForm.Close(); // bug in xamarin
-                xenkoGameForm.Holder.RemoveCallback(xenkoGameForm);
-                xenkoGameForm.Dispose();
-                xenkoGameForm = null;
+                XenkoGameForm.Holder.RemoveCallback(XenkoGameForm);
+                XenkoGameForm.Dispose();
+                XenkoGameForm = null;
             }
 
             base.Destroy();

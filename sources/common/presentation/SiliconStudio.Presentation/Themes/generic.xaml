@@ -437,6 +437,7 @@
                 <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
                          FocusManager.IsFocusScope="True"
                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
+                         ItemContainerStyle="{Binding ItemContainerStyle, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
                          SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
                          SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
                          SelectedValue="{Binding SelectedValue, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"

@@ -1,82 +1,65 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
+Parent: null
 Hierarchy:
-    ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
-    RootEntities:
+    RootPartIds:
         - 6d2b02df-329f-4e05-b299-69f96d39c763
         - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
         - d5a8b0cd-e46b-49fc-afad-f82a3de522a7
         - 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
         - eb2d65ff-23f0-44d4-b70d-172afd53f1fa
         - 750a3632-124b-4b84-9ba5-d7724c051dcc
-    Entities:
+    Parts:
         -   Entity:
                 Id: 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
                 Name: Purple
                 Components:
-                    - !TransformComponent
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                    6129a890a761df4183d99ebccfe57455: !TransformComponent
+                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
                         Position: {X: 2.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !ParticleSystemComponent
-                        ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Children: {}
+                    8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
+                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
-                            ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
                             ResetSeconds: 5.0
                             Control: Play
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         Speed: 1.0
                         ParticleSystem:
-                            ~Id: 5ecd44e2-814d-4e34-b8c9-0409458fc16c
                             Settings:
-                                ~Id: 12c60c42-8584-4880-9c4e-c4be829646c8
                                 WarmupTime: 1.0
                             BoundingShape: !BoundingBoxStatic
-                                ~Id: 614d164c-bcde-4001-9795-e49a1781c957
                                 Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
-                                -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
-                                    EmitterName: null
-                                    MaxParticlesOverride: 0
+                                abe50de54a9804438c65caae9be1bee9:
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
-                                    SimulationSpace: World
                                     RandomSeedMethod: Fixed
-                                    SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
-                                        ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
                                         SamplerPosition: null
                                         SamplerSize: null
                                         SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
-                                        ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
-                                        AlphaAdditive: 0.0
-                                        ZOffset: 0.0
-                                        SoftEdgeDistance: 0.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
-                                            Stream: !ColorVertexStreamDefinition
-                                                ~Id: 6decc263-dda2-4ee1-9214-8da371718827
+                                            Stream: !ColorVertexStreamDefinition {}
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
-                                        - !SpawnerPerSecond
-                                            ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
+                                        332f7b9e13884c419ce7b73b8c7be0b9: !SpawnerPerSecond
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
                                             SpawnCount: 10.0
                                     Initializers:
-                                        - !InitialSizeSeed
-                                            ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
+                                        fdb53357fc904247b835617dbff8eeb6: !InitialSizeSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -86,28 +69,26 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.1}
-                                        - !InitialVelocitySeed
-                                            ~Id: 589eef0c-43c4-4bc0-b99b-d8a217838aae
+                                        0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -1.0, Y: 3.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
-                                        - !InitialColorSeed
-                                            ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
+                                        a48c406c80d5eb44bb3afb98d6ade070: !InitialColorSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -118,86 +99,70 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 0.237500191, G: 0.0, B: 1.0, A: 1.0}
-                                    Updaters: []
-            Design: {}
+                                    Updaters: {}
         -   Entity:
                 Id: 6d2b02df-329f-4e05-b299-69f96d39c763
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: 1ddedd9b-be04-4d67-a3ea-3cc74bde2ea3
+                    9bddde1d04be674da3ea3cc74bde2ea3: !TransformComponent
+                        Id: 1ddedd9b-be04-4d67-a3ea-3cc74bde2ea3
                         Position: {X: 0.0, Y: 3.0, Z: 4.36206532}
-                        Rotation: {W: 0.985297143, X: -0.1708495, Y: 0.0, Z: 0.0}
+                        Rotation: {X: -0.1708495, Y: 0.0, Z: 0.0, W: 0.985297143}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !CameraComponent
-                        ~Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
+                        Children: {}
+                    7b63954f9c66eb4884a02069cf38ca06: !CameraComponent
+                        Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
+                        Name: null
                         Projection: Perspective
-            Design: {}
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 750a3632-124b-4b84-9ba5-d7724c051dcc
                 Name: uvGradient
                 Components:
-                    - !TransformComponent
-                        ~Id: 7417ceaf-4835-460f-bc6b-93007e0d720d
+                    afce177435480f46bc6b93007e0d720d: !TransformComponent
+                        Id: 7417ceaf-4835-460f-bc6b-93007e0d720d
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 0.707106769, X: 0.707106769, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !SpriteComponent
-                        ~Id: 8bf7f7a4-0984-4cfe-8b74-5225cad085b7
+                        Children: {}
+                    a4f7f78b8409fe4c8b745225cad085b7: !SpriteComponent
+                        Id: 8bf7f7a4-0984-4cfe-8b74-5225cad085b7
                         SpriteProvider: !SpriteFromTexture
-                            ~Id: 44c4e79f-6aa1-4b46-8dba-778123182084
-                            Texture: bcb1e3e0-bbf2-470e-8498-841e31893c27/0147158f-d3bb-45bc-bad3-90c3b5ed2080:uvGradient
+                            Texture: 0147158f-d3bb-45bc-bad3-90c3b5ed2080:uvGradient
                             Center: {X: 0.0, Y: 0.0}
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
-            Design: {}
         -   Entity:
                 Id: d5a8b0cd-e46b-49fc-afad-f82a3de522a7
                 Name: White
                 Components:
-                    - !TransformComponent
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                    6129a890a761df4183d99ebccfe57455: !TransformComponent
+                        Id: 90a82961-61a7-41df-83d9-9ebccfe57455
                         Position: {X: -2.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
-                        Children: []
-                    - !ParticleSystemComponent
-                        ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Children: {}
+                    8775358e263a8d4bb8f3aeca64a57dc3: !ParticleSystemComponent
+                        Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
-                            ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
                             ResetSeconds: 5.0
                             Control: Play
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         Speed: 1.0
                         ParticleSystem:
-                            ~Id: 5ecd44e2-814d-4e34-b8c9-0409458fc16c
                             Settings:
-                                ~Id: 12c60c42-8584-4880-9c4e-c4be829646c8
                                 WarmupTime: 1.0
                             BoundingShape: !BoundingBoxStatic
-                                ~Id: 614d164c-bcde-4001-9795-e49a1781c957
                                 Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
                                 Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
                             Emitters:
-                                -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
-                                    EmitterName: null
-                                    MaxParticlesOverride: 0
+                                abe50de54a9804438c65caae9be1bee9:
                                     ParticleLifetime: {X: 1.0, Y: 1.0}
-                                    SimulationSpace: World
                                     RandomSeedMethod: Fixed
-                                    SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
-                                        ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
                                         SamplerPosition: null
                                         SamplerSize: null
                                         SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
-                                        ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
-                                        AlphaAdditive: 0.0
-                                        ZOffset: 0.0
-                                        SoftEdgeDistance: 0.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
@@ -207,19 +172,17 @@ Hierarchy:
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
-                                        - !SpawnerPerSecond
-                                            ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
+                                        332f7b9e13884c419ce7b73b8c7be0b9: !SpawnerPerSecond
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
                                             SpawnCount: 10.0
                                     Initializers:
-                                        - !InitialSizeSeed
-                                            ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
+                                        fdb53357fc904247b835617dbff8eeb6: !InitialSizeSeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -229,91 +192,48 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
                                             RandomSize: {X: 0.05, Y: 0.1}
-                                        - !InitialVelocitySeed
-                                            ~Id: 589eef0c-43c4-4bc0-b99b-d8a217838aae
+                                        0cef9e58c443c04bb99bd8a217838aae: !InitialVelocitySeed
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -1.0, Y: 3.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Updaters: []
-            Design: {}
+                                    Updaters: {}
         -   Entity:
                 Id: eb2d65ff-23f0-44d4-b70d-172afd53f1fa
                 Name: Teapot
                 Components:
-                    - !TransformComponent
-                        ~Id: a5518a40-5371-4c3d-a7b5-b76a04d77888
+                    408a51a571533d4ca7b5b76a04d77888: !TransformComponent
+                        Id: a5518a40-5371-4c3d-a7b5-b76a04d77888
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !ModelComponent
-                        ~Id: 48eaeab8-ad5a-4050-97fe-7b058d8d9ae0
-                        Model: 6f9dfef7-5926-474b-a890-536c9e97ff17/9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
-                        Materials:
-                            - null
-            Design: {}
+                        Children: {}
+                    b8eaea485aad504097fe7b058d8d9ae0: !ModelComponent
+                        Id: 48eaeab8-ad5a-4050-97fe-7b058d8d9ae0
+                        Model: 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
+                        Materials: {}
         -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
                 Name: Ambient light
                 Components:
-                    - !TransformComponent
-                        ~Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
+                    3022100c08286344aef3c0fdcd8a214e: !TransformComponent
+                        Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
                         Position: {X: 0.0, Y: 3.10216951, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !LightComponent
-                        ~Id: f38002e2-0e52-47dd-a781-cf788f34c7db
+                        Children: {}
+                    e20280f3520edd47a781cf788f34c7db: !LightComponent
+                        Id: f38002e2-0e52-47dd-a781-cf788f34c7db
                         Type: !LightAmbient
-                            ~Id: 8512f3b7-5949-40f1-86ba-98f07120e8ac
                             Color: !ColorRgbProvider
-                                ~Id: 9694e4bb-491c-422f-9579-b5fedbc2daff
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-            Design: {}
-SceneSettings:
-    ~Id: 67c7e12a-6cf3-4d39-9e42-e663686a9a97
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: d5644f9f-1ea9-42d7-94ee-30a0404e4c62
-        Cameras:
-            -   ~Id: f36880de-93d1-4ac0-b392-65f59929638c
-                Name: null
-                Camera:
-                    Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
-                    Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
-        Layers: []
-        Master:
-            ~Id: 64bf7052-c17e-438a-9984-77ac4ca25966
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 317b52bf-f9ae-4a93-a006-cf3664cf605d
-                    Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 635b97b5-a2c1-4584-b15a-15f8f2daca90
-                    Mode: !CameraRendererModeForward
-                        ~Id: 6710f190-af88-41e2-b97f-5656f5cd6039
-                    Camera:
-                        ~Id: f4fea4e5-e765-407d-9f58-9af2cc458394
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-    EditorSettings:
-        ~Id: 904590b1-c5a6-489e-91f1-58e56ce90d12
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: b6b7fd6a-b9a6-422f-855f-45c82cf893a2
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

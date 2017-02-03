@@ -77,5 +77,35 @@ namespace SiliconStudio.Presentation.Extensions
             var startIndex = str.LastIndexOf(oldValue, StringComparison.CurrentCulture);
             return startIndex != -1 ? str.Remove(startIndex, oldValue.Length).Insert(startIndex, newValue) : str;
         }
+
+        public static bool MatchCamelCase(this string inputText, string text)
+        {
+            var camelCaseSplit = text.CamelCaseSplit();
+            var filter = inputText.ToLowerInvariant();
+            var currentFilterChar = 0;
+
+            foreach (var word in camelCaseSplit)
+            {
+                var currentWordChar = 0;
+                while (currentFilterChar > 0)
+                {
+                    if (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
+                        break;
+                    --currentFilterChar;
+                }
+
+                while (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
+                {
+                    ++currentWordChar;
+                    ++currentFilterChar;
+                    if (currentFilterChar == filter.Length)
+                        return true;
+
+                    if (currentWordChar == word.Length)
+                        break;
+                }
+            }
+            return currentFilterChar == filter.Length;
+        }
     }
 }

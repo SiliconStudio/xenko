@@ -15,6 +15,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightSpotShadowMapRenderer : LightShadowMapRendererBase
     {
+        /// <inheritdoc/>
+        public override Type LightType => typeof(LightSpot);
+
         /// <summary>
         /// The various UP vectors to try.
         /// </summary>

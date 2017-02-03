@@ -254,7 +254,7 @@ namespace SiliconStudio.Xenko.Games
         /// Gets or sets a value indicating whether this instance should force exactly one update step per one draw step
         /// </summary>
         /// <value><c>true</c> if this instance forces one update step per one draw step; otherwise, <c>false</c>.</value>
-        internal protected bool ForceOneUpdatePerDraw { get; set; }
+        protected internal bool ForceOneUpdatePerDraw { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether draw can happen as fast as possible, even when <see cref="IsFixedTimeStep"/> is set.
@@ -324,7 +324,7 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal abstract void ConfirmRenderingSettings(bool gameCreation);
+        public abstract void ConfirmRenderingSettings(bool gameCreation);
 
         /// <summary>
         /// Gets the full name of the device this game is running if available
@@ -762,7 +762,6 @@ namespace SiliconStudio.Xenko.Games
                 if (GraphicsContext != null)
                 {
                     GraphicsContext.CommandList.Dispose();
-                    GraphicsContext.ResourceGroupAllocator.Dispose();
                     GraphicsContext = null;
                 }
 

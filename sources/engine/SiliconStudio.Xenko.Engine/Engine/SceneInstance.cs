@@ -105,6 +105,9 @@ namespace SiliconStudio.Xenko.Engine
         {
             RootScene = null;
 
+            // Cleaning processors should not be necessary anymore, but physics are not properly cleaned up otherwise
+            Reset();
+
             // TODO: Dispose of Scene, graphics compositor...etc.
             // Currently in Destroy(), not sure if we should clear that list on Reset() as well?
             VisibilityGroups.Clear();
@@ -119,27 +122,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>SiliconStudio.Xenko.Engine.SceneInstance.</returns>
         public static SceneInstance GetCurrent(RenderContext context)
         {
-            return context.Tags.GetSafe(Current);
-        }
-
-        public VisibilityGroup GetOrCreateVisibilityGroup(RenderSystem renderSystem)
-        {
-            // Find if it exists
-            VisibilityGroup visibilityGroup = null;
-            foreach (var currentVisibilityGroup in VisibilityGroups)
-            {
-                if (currentVisibilityGroup.RenderSystem == renderSystem)
-                {
-                    visibilityGroup = currentVisibilityGroup;
-                    break;
-                }
-            }
-
-            // If first time, let's create and register it
-            if (visibilityGroup == null)
-                VisibilityGroups.Add(visibilityGroup = new VisibilityGroup(renderSystem));
-
-            return visibilityGroup;
+            return context.Tags.Get(Current);
         }
 
         private void Add(Scene scene)

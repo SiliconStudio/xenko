@@ -92,6 +92,7 @@
     <Compile Include="Transactions\Transaction.cs" />
     <Compile Include="Transactions\TransactionEventArgs.cs" />
     <Compile Include="Transactions\TransactionException.cs" />
+    <Compile Include="Transactions\TransactionFlags.cs" />
     <Compile Include="Transactions\TransactionsDiscardedEventArgs.cs" />
     <Compile Include="Transactions\TransactionStack.cs" />
     <Compile Include="Transactions\TransactionStackFactory.cs" />
