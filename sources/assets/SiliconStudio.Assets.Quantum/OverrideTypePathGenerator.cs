@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Quantum
             {
                 Result.Add(path, memberNode.GetContentOverride());
             }
-            var objectNode = assetNode as AssetObjectNode;
+            var objectNode = assetNode as IAssetObjectNode;
             if (objectNode != null)
             {
                 foreach (var index in objectNode.GetOverriddenItemIndices())

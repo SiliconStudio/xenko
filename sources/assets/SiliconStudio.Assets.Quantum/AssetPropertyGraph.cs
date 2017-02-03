@@ -294,16 +294,16 @@ namespace SiliconStudio.Assets.Quantum
                 var memberNode = node as AssetMemberNode;
                 memberNode?.SetContentOverride(overrideInfo.Value);
 
-                var objectNode = node as AssetObjectNode;
+                var objectNode = node as IAssetObjectNode;
                 if (objectNode != null)
                 {
                     if (!overrideOnKey)
                     {
-                        objectNode.SetItemOverride(overrideInfo.Value, index);
+                        objectNode.OverrideItem(true, index);
                     }
                     else
                     {
-                        objectNode.SetKeyOverride(overrideInfo.Value, index);
+                        objectNode.OverrideKey(true, index);
                     }
                 }
             }
@@ -553,7 +553,7 @@ namespace SiliconStudio.Assets.Quantum
         private void ReconcileWithBaseNode(IAssetNode assetNode)
         {
             var memberNode = assetNode as AssetMemberNode;
-            var objectNode = assetNode as AssetObjectNode;
+            var objectNode = assetNode as IAssetObjectNodeInternal;
             if (assetNode?.BaseContent == null || !memberNode?.CanOverride == true)
             if (assetNode?.BaseContent == null || !memberNode?.CanOverride == true)
                 return;
@@ -595,7 +595,7 @@ namespace SiliconStudio.Assets.Quantum
             }
             if (objectNode != null)
             {
-                var baseNode = (AssetObjectNode)assetNode.BaseContent;
+                var baseNode = (IAssetObjectNodeInternal)assetNode.BaseContent;
                 objectNode.ResettingOverride = true;
                 // Handle collection and dictionary cases
                 if (assetNode.Descriptor is CollectionDescriptor || assetNode.Descriptor is DictionaryDescriptor)
