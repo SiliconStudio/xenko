@@ -47,13 +47,6 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             leftHandController = new OpenVRTouchController(TouchControllerHand.Left);
             rightHandController = new OpenVRTouchController(TouchControllerHand.Right);
-
-            //fixed timesteps at 90
-            Game.IsFixedTimeStep = true;
-            Game.IsDrawDesynchronized = true;
-            Game.TargetElapsedTime = TimeSpan.FromSeconds(1 / 90.0f);
-            graphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
-            graphicsDeviceManager.ApplyChanges();
         }
 
         public override void Draw(GameTime gameTime)

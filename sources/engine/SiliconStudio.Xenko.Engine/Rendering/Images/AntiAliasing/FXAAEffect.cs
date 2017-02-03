@@ -56,9 +56,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (antialiasShaderName == null) throw new ArgumentNullException("antialiasShaderName");
         }
 
-        protected override void PreDrawCore(RenderDrawContext context)
+        protected override void UpdateParameters()
         {
-            base.PreDrawCore(context);
+            base.UpdateParameters();
             Parameters.Set(GreenAsLumaKey, InputLuminanceInAlpha ? 0 : 1);
             Parameters.Set(QualityKey, Quality);
         }

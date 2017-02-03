@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private float currentTrigger, currentGrip, previousTrigger, previousGrip;
         private uint currentTouchesState, previousTouchesState;
         private Vector2 currentThumbstick;
+        private const float triggerAndGripDeadzone = 0.00001f;
 
         public override Vector3 Position => currentPos;
 
@@ -141,8 +142,10 @@ namespace SiliconStudio.Xenko.VirtualReality
                 currentGrip = 0.0f;
                 currentTouchesState = 0;
                 currentThumbstick = Vector2.Zero;
+                currentTrigger = 0.0f;
+                currentGrip = 0.0f;
                 return;
-            }                
+            }
 
             currentTrigger = hand == TouchControllerHand.Left ? properties.IndexTriggerLeft : properties.IndexTriggerRight;
             currentGrip = hand == TouchControllerHand.Left ? properties.HandTriggerLeft : properties.HandTriggerRight;
@@ -215,9 +218,9 @@ namespace SiliconStudio.Xenko.VirtualReality
                     //ovrButton_Y
                     return (previousTouchesState & 0x00000200) != 0x00000200 && (currentTouchesState & 0x00000200) == 0x00000200;
                 case TouchControllerButton.Trigger:
-                    return previousTrigger <= 0.0f && currentTrigger > 0.0f;
+                    return previousTrigger <= triggerAndGripDeadzone && currentTrigger > triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
-                    return previousGrip <= 0.0f && currentGrip > 0.0f;
+                    return previousGrip <= triggerAndGripDeadzone && currentGrip > triggerAndGripDeadzone;
                 default:
                     return false;
             }
@@ -244,9 +247,9 @@ namespace SiliconStudio.Xenko.VirtualReality
                     //ovrButton_Y
                     return (currentTouchesState & 0x00000200) == 0x00000200;
                 case TouchControllerButton.Trigger:
-                    return currentTrigger > 0.0f;
+                    return currentTrigger > triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
-                    return currentGrip > 0.0f;
+                    return currentGrip > triggerAndGripDeadzone;
                 default:
                     return false;
             }
@@ -273,9 +276,9 @@ namespace SiliconStudio.Xenko.VirtualReality
                     //ovrButton_Y
                     return (previousTouchesState & 0x00000200) == 0x00000200 && (currentTouchesState & 0x00000200) != 0x00000200;
                 case TouchControllerButton.Trigger:
-                    return previousTrigger > 0.0f && currentTrigger <= 0.0f;
+                    return previousTrigger > triggerAndGripDeadzone && currentTrigger <= triggerAndGripDeadzone;
                 case TouchControllerButton.Grip:
-                    return previousGrip > 0.0f && currentGrip <= 0.0f;
+                    return previousGrip > triggerAndGripDeadzone && currentGrip <= triggerAndGripDeadzone;
                 default:
                     return false;
             }
