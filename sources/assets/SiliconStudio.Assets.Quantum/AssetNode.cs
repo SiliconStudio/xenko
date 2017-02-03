@@ -37,7 +37,12 @@ namespace SiliconStudio.Assets.Quantum
         void SetBaseContent(IContentNode content);
     }
 
-    public class AssetObjectNode : ObjectNode, IAssetNode, IAssetNodeInternal
+    public interface IAssetObjectNode : IAssetNode, IObjectNode
+    {
+
+    } 
+
+    public class AssetObjectNode : ObjectNode, IAssetObjectNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
@@ -61,6 +66,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public event EventHandler<EventArgs> OverrideChanged;
 
+        [NotNull]
+        public new AssetMemberNode this[string name] => (AssetMemberNode)base[name];
+
         public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
@@ -82,18 +90,16 @@ namespace SiliconStudio.Assets.Quantum
 
         public void OverrideItem(bool isOverridden, Index index)
         {
-                OverrideChanging?.Invoke(this, EventArgs.Empty);
-                SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
-                OverrideChanged?.Invoke(this, EventArgs.Empty);
+            OverrideChanging?.Invoke(this, EventArgs.Empty);
+            SetItemOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            OverrideChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void OverrideKey(bool isOverridden, Index index)
         {
-            {
-                OverrideChanging?.Invoke(this, EventArgs.Empty);
-                SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
-                OverrideChanged?.Invoke(this, EventArgs.Empty);
-            }
+            OverrideChanging?.Invoke(this, EventArgs.Empty);
+            SetKeyOverride(isOverridden ? OverrideType.New : OverrideType.Base, index);
+            OverrideChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void OverrideDeletedItem(bool isOverridden, ItemId deletedId)
@@ -465,7 +471,7 @@ namespace SiliconStudio.Assets.Quantum
         }
     }
 
-    public class AssetBoxedNode : BoxedNode, IAssetNode, IAssetNodeInternal
+    public class AssetBoxedNode : BoxedNode, IAssetObjectNode, IAssetNodeInternal
     {
         private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
 
@@ -540,6 +546,11 @@ namespace SiliconStudio.Assets.Quantum
 
         public IContentNode BaseContent { get; private set; }
 
+        [NotNull]
+        public new AssetObjectNode Parent => (AssetObjectNode)base.Parent;
+
+        public new IAssetObjectNode Target => (IAssetObjectNode)base.Target;
+
         public void SetContent(string key, IContentNode content)
         {
             contents[key] = content;
@@ -590,7 +601,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             // Don't update override if propagation from base is disabled.
-            if (PropertyGraph?.Container == null || !PropertyGraph.Container.PropagateChangesFromBase != true)
+            if (PropertyGraph?.Container == null || PropertyGraph?.Container?.PropagateChangesFromBase == false)
                 return;
 
             // Mark it as New if it does not come from the base

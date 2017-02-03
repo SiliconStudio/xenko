@@ -31,6 +31,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public IMemberNode this[string name] => childrenMap[name];
 
         /// <inheritdoc/>
@@ -229,7 +230,6 @@ namespace SiliconStudio.Quantum.Contents
             if (index == Index.Empty)
                 throw new ArgumentException("index cannot be empty.");
             var oldValue = Retrieve(index);
-            MemberNodeChangeEventArgs args = null;
             ItemChangeEventArgs itemArgs = null;
             if (sendNotification)
             {

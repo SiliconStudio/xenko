@@ -44,7 +44,6 @@ namespace SiliconStudio.Quantum.Contents
         public ObjectReference TargetReference { get; }
 
         /// <inheritdoc/>
-        [CanBeNull]
         public IObjectNode Target => TargetReference?.TargetNode;
 
         /// <inheritdoc/>

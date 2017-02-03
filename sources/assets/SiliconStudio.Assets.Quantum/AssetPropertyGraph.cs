@@ -207,6 +207,7 @@ namespace SiliconStudio.Assets.Quantum
                 switch (item.Type)
                 {
                     case YamlAssetPath.ItemType.Member:
+                    {
                         index = Index.Empty;
                         overrideOnKey = false;
                         if (currentNode.IsReference)
@@ -220,9 +221,14 @@ namespace SiliconStudio.Assets.Quantum
                         var name = item.AsMember();
                         currentNode = (IAssetNode)objectNode.TryGetChild(name);
                         break;
+                    }
                     case YamlAssetPath.ItemType.Index:
+                    {
                         index = new Index(item.Value);
                         overrideOnKey = true;
+                        var memberNode = currentNode as IMemberNode;
+                        if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
+                        currentNode = (IAssetNode)memberNode.Target;
                         if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
                             var objNode = currentNode as IObjectNode;
@@ -230,11 +236,16 @@ namespace SiliconStudio.Assets.Quantum
                             currentNode = (IAssetNode)objNode.IndexedTarget(new Index(item.Value));
                         }
                         break;
+                    }
                     case YamlAssetPath.ItemType.ItemId:
+                    {
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
                         index = new Index(key);
                         overrideOnKey = false;
+                        var memberNode = currentNode as IMemberNode;
+                        if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
+                        currentNode = (IAssetNode)memberNode.Target;
                         if (currentNode.IsReference && i < path.Items.Count - 1)
                         {
                             var objNode = currentNode as IObjectNode;
@@ -242,6 +253,7 @@ namespace SiliconStudio.Assets.Quantum
                             currentNode = (IAssetNode)objNode.IndexedTarget(new Index(key));
                         }
                         break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -531,7 +543,7 @@ namespace SiliconStudio.Assets.Quantum
             RefreshBase(baseGraph);
             var rootNode = (IAssetNode)assetContent;
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node);
             visitor.Visit(rootNode);
             UpdatingPropertyFromBase = false;
 

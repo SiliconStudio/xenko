@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetItemNodeChangeEventArgs : ItemChangeEventArgs, IAssetNodeChangeEventArgs
     {
         public AssetItemNodeChangeEventArgs([NotNull] ItemChangeEventArgs e, OverrideType previousOverride, OverrideType newOverride, ItemId itemId)
-            : base(e.Content, e.Index, e.ChangeType, e.OldValue, e.NewValue)
+            : base(e.Node, e.Index, e.ChangeType, e.OldValue, e.NewValue)
         {
             PreviousOverride = previousOverride;
             NewOverride = newOverride;
