@@ -29,25 +29,26 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="textureFlags">true if the texture needs to support unordered read write.</param>
         /// <param name="arraySize">Size of the texture 2D array, default to 1.</param>
         /// <param name="usage">The usage.</param>
+        /// <param name="msaaLevel">The MSAA Level</param>
         /// <returns>A new instance of <see cref="TextureDescription" /> class.</returns>
-        public static TextureDescription New2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default)
+        public static TextureDescription New2D(int width, int height, MipMapCount mipCount, PixelFormat format, TextureFlags textureFlags = TextureFlags.ShaderResource, int arraySize = 1, GraphicsResourceUsage usage = GraphicsResourceUsage.Default, MSAALevel msaaLevel = MSAALevel.None)
         {
-            return New2D(width, height, format, textureFlags, mipCount, arraySize, usage);
+            return New2D(width, height, format, textureFlags, mipCount, arraySize, usage, msaaLevel);
         }
 
-        private static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage)
+        private static TextureDescription New2D(int width, int height, PixelFormat format, TextureFlags textureFlags, int mipCount, int arraySize, GraphicsResourceUsage usage, MSAALevel msaaLevel)
         {
             if ((textureFlags & TextureFlags.UnorderedAccess) != 0)
                 usage = GraphicsResourceUsage.Default;
 
-            var desc = new TextureDescription()
+            var desc = new TextureDescription
             {
                 Dimension = TextureDimension.Texture2D,
                 Width = width,
                 Height = height,
                 Depth = 1,
                 ArraySize = arraySize,
-                MultiSampleLevel = MSAALevel.None,
+                MultiSampleLevel = msaaLevel,
                 Flags = textureFlags,
                 Format = format,
                 MipLevels = Texture.CalculateMipMapCount(mipCount, width, height),
