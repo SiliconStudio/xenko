@@ -7,9 +7,9 @@ namespace SiliconStudio.Presentation.Quantum.Tests.Helpers
     {
         public class TestPropertiesProvider : IPropertiesProviderViewModel
         {
-            private readonly IContentNode rootNode;
+            private readonly IGraphNode rootNode;
 
-            public TestPropertiesProvider(IContentNode rootNode)
+            public TestPropertiesProvider(IGraphNode rootNode)
             {
                 this.rootNode = rootNode;
             }

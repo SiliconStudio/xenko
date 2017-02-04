@@ -11,7 +11,7 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// An implementation of <see cref="IContentNode"/> that gives access to a member of an object.
+    /// An implementation of <see cref="IGraphNode"/> that gives access to a member of an object.
     /// </summary>
     public class MemberNode : GraphNodeBase, IMemberNodeInternal
     {

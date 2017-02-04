@@ -7,9 +7,9 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// The <see cref="IContentNode"/> interface represents a node in a Quantum object graph. This node can represent an object or a member of an object.
+    /// The <see cref="IGraphNode"/> interface represents a node in a Quantum object graph. This node can represent an object or a member of an object.
     /// </summary>
-    public interface IContentNode
+    public interface IGraphNode
     {
         /// <summary>
         /// Gets or sets the <see cref="System.Guid"/>.

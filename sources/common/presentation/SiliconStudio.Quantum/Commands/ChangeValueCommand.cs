@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        public override Task Execute(IContentNode node, Index index, object parameter)
+        public override Task Execute(IGraphNode node, Index index, object parameter)
         {
             // TODO: clean this!
             var shouldUpdate = node is IMemberNode || ((IObjectNode)node).Indices == null || ((IObjectNode)node).Indices.Contains(index);

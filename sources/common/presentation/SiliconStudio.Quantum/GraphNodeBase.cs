@@ -10,7 +10,7 @@ using SiliconStudio.Quantum.Commands;
 namespace SiliconStudio.Quantum.Contents
 {
     /// <summary>
-    /// A base abstract implementation of the <see cref="IContentNode"/> interface.
+    /// A base abstract implementation of the <see cref="IGraphNode"/> interface.
     /// </summary>
     public abstract class GraphNodeBase : IInitializingGraphNode
     {
@@ -69,7 +69,7 @@ namespace SiliconStudio.Quantum.Contents
         /// </remarks>
         protected internal abstract void UpdateFromMember(object newValue, Index index);
 
-        public static IEnumerable<Index> GetIndices([NotNull] IContentNode node)
+        public static IEnumerable<Index> GetIndices([NotNull] IGraphNode node)
         {
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)

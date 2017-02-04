@@ -8,6 +8,6 @@
         /// </summary>
         /// <param name="ownerNode">The node owning this reference.</param>
         /// <param name="nodeContainer">The node container containing the <paramref name="ownerNode"/> and the target nodes.</param>
-        void Refresh(IContentNode ownerNode, NodeContainer nodeContainer);
+        void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer);
     }
 }

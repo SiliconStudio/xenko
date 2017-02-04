@@ -44,16 +44,16 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType);
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var node = (IObjectNode)content;
-            var value = content.Retrieve(index);
+            var objectNode = (IObjectNode)node;
+            var value = node.Retrieve(index);
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? new Index(Activator.CreateInstance(dictionaryDescriptor.KeyType)) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
             object newItem = null;
             if (!IsReferenceType(dictionaryDescriptor.ValueType))
                 newItem = CreateInstance(dictionaryDescriptor.ValueType);
-            node.Add(newItem, newKey);
+            objectNode.Add(newItem, newKey);
         }
 
         /// <summary>

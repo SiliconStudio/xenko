@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum
         /// The node that has changed.
         /// </summary>
         [NotNull]
-        IContentNode Node { get; }
+        IGraphNode Node { get; }
 
         /// <summary>
         /// The index where the change occurred. Must be <see cref="Quantum.Index.Empty"/> if <see cref="ChangeType"/> is

@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
             Result.Clear();
         }
 
-        protected override void VisitNode(IContentNode node, GraphNodePath currentPath)
+        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = (IAssetNode)node;
 

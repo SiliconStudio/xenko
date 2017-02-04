@@ -56,12 +56,12 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
             Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IContentNode ownerNode, NodeContainer nodeContainer, Index index)
+        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Retrieve(index);
 
@@ -117,7 +117,7 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IContentNode SetTarget(object objectValue, NodeContainer nodeContainer)
+        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             var targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);

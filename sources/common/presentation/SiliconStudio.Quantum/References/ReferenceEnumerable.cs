@@ -62,7 +62,7 @@ namespace SiliconStudio.Quantum.References
             return items?.ContainsKey(index) ?? false;
         }
 
-        public void Refresh(IContentNode ownerNode, NodeContainer nodeContainer)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer)
         {
             var newObjectValue = ownerNode.Retrieve();
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));

@@ -9,15 +9,15 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public interface IAssetNode : IContentNode
+    public interface IAssetNode : IGraphNode
     {
         AssetPropertyGraph PropertyGraph { get; }
 
-        IContentNode BaseContent { get; }
+        IGraphNode BaseNode { get; }
 
-        void SetContent(string key, IContentNode content);
+        void SetContent(string key, IGraphNode node);
 
-        IContentNode GetContent(string key);
+        IGraphNode GetContent(string key);
 
         event EventHandler<EventArgs> OverrideChanging;
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets.Quantum
 
         void SetPropertyGraph([NotNull] AssetPropertyGraph assetPropertyGraph);
 
-        void SetBaseContent(IContentNode content);
+        void SetBaseContent(IGraphNode node);
     }
 
     internal interface IAssetObjectNodeInternal : IAssetObjectNode, IAssetNodeInternal
@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets.Quantum
     internal struct AssetObjectNodeExtended
     {
         [NotNull] private readonly IAssetObjectNodeInternal node;
-        private readonly Dictionary<string, IContentNode> contents;
+        private readonly Dictionary<string, IGraphNode> contents;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides;
         private readonly Dictionary<ItemId, OverrideType> keyOverrides;
         private CollectionItemIdentifiers collectionItemIdentifiers;
@@ -111,32 +111,32 @@ namespace SiliconStudio.Assets.Quantum
         public AssetObjectNodeExtended([NotNull] IAssetObjectNodeInternal node)
         {
             this.node = node;
-            contents = new Dictionary<string, IContentNode>();
+            contents = new Dictionary<string, IGraphNode>();
             itemOverrides = new Dictionary<ItemId, OverrideType>();
             keyOverrides = new Dictionary<ItemId, OverrideType>();
             collectionItemIdentifiers = null;
             restoringId = ItemId.Empty;
             PropertyGraph = null;
-            BaseContent = null;
+            BaseNode = null;
             ResettingOverride = false;
         }
 
         public AssetPropertyGraph PropertyGraph { get; private set; }
 
-        public IContentNode BaseContent { get; private set; }
+        public IGraphNode BaseNode { get; private set; }
 
         internal bool ResettingOverride { get; set; }
 
-        public void SetContent(string key, IContentNode content)
+        public void SetContent(string key, IGraphNode node)
         {
-            contents[key] = content;
+            contents[key] = node;
         }
 
-        public IContentNode GetContent(string key)
+        public IGraphNode GetContent(string key)
         {
-            IContentNode content;
-            contents.TryGetValue(key, out content);
-            return content;
+            IGraphNode node;
+            contents.TryGetValue(key, out node);
+            return node;
         }
 
         /// <inheritdoc/>
@@ -271,12 +271,12 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool IsItemInherited(Index index)
         {
-            return BaseContent != null && !IsItemOverridden(index);
+            return BaseNode != null && !IsItemOverridden(index);
         }
 
         public bool IsKeyInherited(Index index)
         {
-            return BaseContent != null && !IsKeyOverridden(index);
+            return BaseNode != null && !IsKeyOverridden(index);
         }
 
         public bool IsItemOverridden(Index index)
@@ -305,7 +305,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public IEnumerable<Index> GetOverriddenItemIndices()
         {
-            if (BaseContent == null)
+            if (BaseNode == null)
                 yield break;
 
             CollectionItemIdentifiers ids;
@@ -327,7 +327,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public IEnumerable<Index> GetOverriddenKeyIndices()
         {
-            if (BaseContent == null)
+            if (BaseNode == null)
                 yield break;
 
             CollectionItemIdentifiers ids;
@@ -416,7 +416,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             // Create new ids for collection items
-            var baseNode = (AssetObjectNode)BaseContent;
+            var baseNode = (AssetObjectNode)BaseNode;
             var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
             var removedId = ItemId.Empty;
             switch (e.ChangeType)
@@ -513,9 +513,9 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph = assetPropertyGraph;
         }
 
-        public void SetBaseContent(IContentNode content)
+        public void SetBaseContent(IGraphNode node)
         {
-            BaseContent = content;
+            BaseNode = node;
         }
     }
 
@@ -532,7 +532,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph => ex.PropertyGraph;
 
-        public IContentNode BaseContent => ex.BaseContent;
+        public IGraphNode BaseNode => ex.BaseNode;
 
         public new AssetMemberNode this[string name] => (AssetMemberNode)base[name];
 
@@ -540,9 +540,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public event EventHandler<EventArgs> OverrideChanged;
 
-        public void SetContent(string key, IContentNode content) => ex.SetContent(key, content);
+        public void SetContent(string key, IGraphNode node) => ex.SetContent(key, node);
 
-        public IContentNode GetContent(string key) => ex.GetContent(key);
+        public IGraphNode GetContent(string key) => ex.GetContent(key);
 
         public void ResetOverride(Index indexToReset) => ex.ResetOverride(indexToReset);
 
@@ -598,7 +598,7 @@ namespace SiliconStudio.Assets.Quantum
 
         void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph) => ex.SetPropertyGraph(assetPropertyGraph);
 
-        void IAssetNodeInternal.SetBaseContent(IContentNode content) => ex.SetBaseContent(content);
+        void IAssetNodeInternal.SetBaseContent(IGraphNode node) => ex.SetBaseContent(node);
     }
 
     public class AssetBoxedNode : BoxedNode, IAssetObjectNodeInternal
@@ -614,7 +614,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph => ex.PropertyGraph;
 
-        public IContentNode BaseContent => ex.BaseContent;
+        public IGraphNode BaseNode => ex.BaseNode;
 
         public new AssetMemberNode this[string name] => (AssetMemberNode)base[name];
 
@@ -622,9 +622,9 @@ namespace SiliconStudio.Assets.Quantum
 
         public event EventHandler<EventArgs> OverrideChanged;
 
-        public void SetContent(string key, IContentNode content) => ex.SetContent(key, content);
+        public void SetContent(string key, IGraphNode node) => ex.SetContent(key, node);
 
-        public IContentNode GetContent(string key) => ex.GetContent(key);
+        public IGraphNode GetContent(string key) => ex.GetContent(key);
 
         public void ResetOverride(Index indexToReset) => ex.ResetOverride(indexToReset);
 
@@ -680,13 +680,13 @@ namespace SiliconStudio.Assets.Quantum
 
         void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph) => ex.SetPropertyGraph(assetPropertyGraph);
 
-        void IAssetNodeInternal.SetBaseContent(IContentNode content) => ex.SetBaseContent(content);
+        void IAssetNodeInternal.SetBaseContent(IGraphNode node) => ex.SetBaseContent(node);
     }
 
     public class AssetMemberNode : MemberNode, IAssetNodeInternal
     {
         private AssetPropertyGraph propertyGraph;
-        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+        private readonly Dictionary<string, IGraphNode> contents = new Dictionary<string, IGraphNode>();
 
         private OverrideType contentOverride;
         public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
@@ -709,23 +709,23 @@ namespace SiliconStudio.Assets.Quantum
 
         public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
 
-        public IContentNode BaseContent { get; private set; }
+        public IGraphNode BaseNode { get; private set; }
 
         [NotNull]
         public new AssetObjectNode Parent => (AssetObjectNode)base.Parent;
 
         public new IAssetObjectNode Target => (IAssetObjectNode)base.Target;
 
-        public void SetContent(string key, IContentNode content)
+        public void SetContent(string key, IGraphNode node)
         {
-            contents[key] = content;
+            contents[key] = node;
         }
 
-        public IContentNode GetContent(string key)
+        public IGraphNode GetContent(string key)
         {
-            IContentNode content;
-            contents.TryGetValue(key, out content);
-            return content;
+            IGraphNode node;
+            contents.TryGetValue(key, out node);
+            return node;
         }
 
         public void OverrideContent(bool isOverridden)
@@ -759,7 +759,7 @@ namespace SiliconStudio.Assets.Quantum
                 return;
 
             // Mark it as New if it does not come from the base
-            if (BaseContent != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
+            if (BaseNode != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
             {
                 OverrideContent(!ResettingOverride);
             }
@@ -785,7 +785,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool IsContentInherited()
         {
-            return BaseContent != null && !IsContentOverridden();
+            return BaseNode != null && !IsContentOverridden();
         }
 
         bool IAssetNodeInternal.ResettingOverride { get; set; }
@@ -796,9 +796,9 @@ namespace SiliconStudio.Assets.Quantum
             PropertyGraph = assetPropertyGraph;
         }
 
-        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        void IAssetNodeInternal.SetBaseContent(IGraphNode node)
         {
-            BaseContent = content;
+            BaseNode = node;
         }
     }
 }

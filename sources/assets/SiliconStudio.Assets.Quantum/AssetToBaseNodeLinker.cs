@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Quantum
     /// <summary>
     /// A <see cref="GraphNodeLinker"/> that can link nodes of an asset to the corresponding nodes in their base.
     /// </summary>
-    /// <remarks>This method will invoke <see cref="AssetPropertyGraph.FindTarget(IContentNode, IContentNode)"/> when linking, to allow custom links for cases such as <see cref="AssetComposite"/>.</remarks>
+    /// <remarks>This method will invoke <see cref="AssetPropertyGraph.FindTarget(IGraphNode, IGraphNode)"/> when linking, to allow custom links for cases such as <see cref="AssetComposite"/>.</remarks>
     public class AssetToBaseNodeLinker : GraphNodeLinker
     {
         private readonly AssetPropertyGraph propertyGraph;
@@ -19,20 +19,20 @@ namespace SiliconStudio.Assets.Quantum
             this.propertyGraph = propertyGraph;
         }
 
-        public Func<IMemberNode, IContentNode, bool> ShouldVisit { get; set; }
+        public Func<IMemberNode, IGraphNode, bool> ShouldVisit { get; set; }
 
-        protected override bool ShouldVisitSourceNode(IMemberNode memberContent, IContentNode targetNode)
+        protected override bool ShouldVisitSourceNode(IMemberNode memberContent, IGraphNode targetNode)
         {
             return (ShouldVisit?.Invoke(memberContent, targetNode) ?? true) && base.ShouldVisitSourceNode(memberContent, targetNode);
         }
 
-        protected override IContentNode FindTarget(IContentNode sourceNode)
+        protected override IGraphNode FindTarget(IGraphNode sourceNode)
         {
             var defaultTarget = base.FindTarget(sourceNode);
             return propertyGraph.FindTarget(sourceNode, defaultTarget);
         }
 
-        protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
+        protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
         {
             // Not identifiable - default applies
             if (sourceReference.Index.IsEmpty || sourceReference.ObjectValue == null)

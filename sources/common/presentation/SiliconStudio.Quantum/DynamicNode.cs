@@ -13,19 +13,19 @@ namespace SiliconStudio.Quantum
 {
     public abstract class DynamicNode : DynamicObject, IEnumerable
     {
-        protected readonly IContentNode Node;
+        protected readonly IGraphNode Node;
 
-        internal DynamicNode(IContentNode node)
+        internal DynamicNode(IGraphNode node)
         {
             Node = node;
         }
 
         /// <summary>
-        /// Creates a dynamic node from the given <see cref="IContentNode"/>.
+        /// Creates a dynamic node from the given <see cref="IGraphNode"/>.
         /// </summary>
         /// <param name="node">The node to use to create the dynamic node.</param>
         /// <returns>A <see cref="DynamicNode"/> representing the given node.</returns>
-        public static dynamic FromNode(IContentNode node)
+        public static dynamic FromNode(IGraphNode node)
         {
             if (node is MemberNode)
                 throw new ArgumentException("Cannot create a dynamic node from a member node.");
@@ -34,21 +34,21 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Returns the <see cref="IContentNode"/> associated to the given dynamic node.
+        /// Returns the <see cref="IGraphNode"/> associated to the given dynamic node.
         /// </summary>
         /// <param name="node">The node from which to retrieve the graph node.</param>
-        /// <returns>A <see cref="IContentNode"/> associated to the given node.</returns>
-        public static IContentNode GetNode(DynamicNode node)
+        /// <returns>A <see cref="IGraphNode"/> associated to the given node.</returns>
+        public static IGraphNode GetNode(DynamicNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             return node.Node;
         }
 
         /// <summary>
-        /// Returns the <see cref="IContentNode"/> associated to the given dynamic node.
+        /// Returns the <see cref="IGraphNode"/> associated to the given dynamic node.
         /// </summary>
-        /// <returns>A <see cref="IContentNode"/> associated to the given node.</returns>
-        public IContentNode GetNode() => Node;
+        /// <returns>A <see cref="IGraphNode"/> associated to the given node.</returns>
+        public IGraphNode GetNode() => Node;
 
         /// <summary>
         /// Adds an item to the content of this node, assuming it's a collection.
@@ -174,7 +174,7 @@ namespace SiliconStudio.Quantum
 
         protected abstract IObjectNode GetTargetNode();
 
-        protected static bool IsIndexExisting(IContentNode node, Index index)
+        protected static bool IsIndexExisting(IGraphNode node, Index index)
         {
             if (node.IsReference)
             {
@@ -201,7 +201,7 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected static bool IsIndexValid(IContentNode node, Index index)
+        protected static bool IsIndexValid(IGraphNode node, Index index)
         {
             if (node.IsReference)
             {
@@ -239,7 +239,7 @@ namespace SiliconStudio.Quantum
 
     internal class DynamicDirectNode : DynamicNode
     {
-        internal DynamicDirectNode(IContentNode node)
+        internal DynamicDirectNode(IGraphNode node)
             : base(node)
         {
         }
@@ -284,7 +284,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Index index;
 
-        internal DynamicIndexedNode(IContentNode node, Index index)
+        internal DynamicIndexedNode(IGraphNode node, Index index)
             : base(node)
         {
             this.index = index;

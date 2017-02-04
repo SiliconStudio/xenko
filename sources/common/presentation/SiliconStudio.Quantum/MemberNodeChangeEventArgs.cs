@@ -13,7 +13,7 @@ namespace SiliconStudio.Quantum.Contents
     }
 
     /// <summary>
-    /// Arguments of the <see cref="IContentNode.Changing"/> and <see cref="IContentNode.Changed"/> events.
+    /// Arguments of the <see cref="IGraphNode.Changing"/> and <see cref="IGraphNode.Changed"/> events.
     /// </summary>
     public class MemberNodeChangeEventArgs : EventArgs, INodeChangeEventArgs
     {
@@ -56,11 +56,11 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public object NewValue { get; }
 
-        IContentNode INodeChangeEventArgs.Node => Member;
+        IGraphNode INodeChangeEventArgs.Node => Member;
     }
 
     /// <summary>
-    /// Arguments of the <see cref="IContentNode.Changing"/> and <see cref="IContentNode.Changed"/> events.
+    /// Arguments of the <see cref="IGraphNode.Changing"/> and <see cref="IGraphNode.Changed"/> events.
     /// </summary>
     public class ItemChangeEventArgs : EventArgs, INodeChangeEventArgs
     {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of the member or the item of the member that has changed.</param>
         /// <param name="newValue">The new value of the member or the item of the member that has changed.</param>
-        public ItemChangeEventArgs([NotNull] IContentNode node, Index index, ContentChangeType changeType, object oldValue, object newValue)
+        public ItemChangeEventArgs([NotNull] IGraphNode node, Index index, ContentChangeType changeType, object oldValue, object newValue)
         {
             Node = node;
             Index = index;
@@ -81,7 +81,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         [NotNull]
-        public IContentNode Node { get; }
+        public IGraphNode Node { get; }
 
         /// <summary>
         /// Gets the index where the change occurred.

@@ -70,9 +70,9 @@ namespace SiliconStudio.Quantum.Tests
 
         public class TestLinker : GraphNodeLinker
         {
-            public Dictionary<IContentNode, IContentNode> LinkedNodes = new Dictionary<IContentNode, IContentNode>();
+            public Dictionary<IGraphNode, IGraphNode> LinkedNodes = new Dictionary<IGraphNode, IGraphNode>();
 
-            protected override void LinkNodes(IContentNode sourceNode, IContentNode targetNode)
+            protected override void LinkNodes(IGraphNode sourceNode, IGraphNode targetNode)
             {
                 LinkedNodes.Add(sourceNode, targetNode);
                 base.LinkNodes(sourceNode, targetNode);
@@ -91,7 +91,7 @@ namespace SiliconStudio.Quantum.Tests
 
             public IObjectNode CustomTarget { get; }
 
-            protected override IContentNode FindTarget(IContentNode sourceNode)
+            protected override IGraphNode FindTarget(IGraphNode sourceNode)
             {
                 if (sourceNode is ObjectNode && sourceNode.Type == typeof(SimpleClass) && sourceNode != root)
                 {
@@ -103,7 +103,7 @@ namespace SiliconStudio.Quantum.Tests
 
         public class CustomFindTargetReferenceLinker : TestLinker
         {
-            protected override ObjectReference FindTargetReference(IContentNode sourceNode, IContentNode targetNode, ObjectReference sourceReference)
+            protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
             {
                 if (sourceReference.Index.IsEmpty)
                     return base.FindTargetReference(sourceNode, targetNode, sourceReference);
@@ -127,7 +127,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -149,7 +149,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -175,7 +175,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -197,7 +197,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(StructClass.Member1)], target[nameof(StructClass.Member1)] },
@@ -222,7 +222,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(InterfaceMember.Member1)], target[nameof(InterfaceMember.Member1)] },
@@ -247,7 +247,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new CustomFindTargetLinker(nodeContainer, source);
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -270,7 +270,7 @@ namespace SiliconStudio.Quantum.Tests
             var linker = new CustomFindTargetReferenceLinker();
             linker.LinkGraph(source, target);
             // Expected links by index: 0 -> 2, 1 -> 0, 2 -> null
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -301,7 +301,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks = new Dictionary<IContentNode, IContentNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source[nameof(SimpleClass.Member1)], target[nameof(SimpleClass.Member1)] },
@@ -310,12 +310,12 @@ namespace SiliconStudio.Quantum.Tests
             VerifyLinks(expectedLinks, linker);
         }
 
-        private static void VerifyLinks(Dictionary<IContentNode, IContentNode> expectedLinks, TestLinker linker)
+        private static void VerifyLinks(Dictionary<IGraphNode, IGraphNode> expectedLinks, TestLinker linker)
         {
             Assert.AreEqual(expectedLinks.Count, linker.LinkedNodes.Count);
             foreach (var link in expectedLinks)
             {
-                IContentNode actualTarget;
+                IGraphNode actualTarget;
                 Assert.True(linker.LinkedNodes.TryGetValue(link.Key, out actualTarget));
                 Assert.AreEqual(link.Value, actualTarget);
             }

@@ -139,7 +139,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(obj);
             var path = new GraphNodePath(rootNode).PushMember(nameof(Class.IntMember));
             var intNode = rootNode[nameof(Class.IntMember)];
-            var nodes = new IContentNode[] { rootNode, intNode };
+            var nodes = new IGraphNode[] { rootNode, intNode };
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
@@ -163,7 +163,7 @@ namespace SiliconStudio.Quantum.Tests
             var structNode = rootNode[nameof(Class.StructMember)];
             var targetNode = rootNode[nameof(Class.StructMember)].Target;
             var memberNode = rootNode[nameof(Class.StructMember)].Target[nameof(Struct.StringMember)];
-            var nodes = new IContentNode[] { rootNode, structNode, targetNode, memberNode };
+            var nodes = new IGraphNode[] { rootNode, structNode, targetNode, memberNode };
             Assert.NotNull(targetNode);
             Assert.NotNull(memberNode);
             Assert.True(path.IsValid);
@@ -186,7 +186,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(obj);
             var path = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember)).PushTarget();
             var targetNode = nodeContainer.GetNode(obj.ClassMember);
-            var nodes = new IContentNode[] { rootNode, rootNode[nameof(Class.ClassMember)], targetNode };
+            var nodes = new IGraphNode[] { rootNode, rootNode[nameof(Class.ClassMember)], targetNode };
             Assert.NotNull(targetNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
@@ -209,7 +209,7 @@ namespace SiliconStudio.Quantum.Tests
             var path = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
             var targetNode = nodeContainer.GetNode(obj.ClassMember);
             var intNode = targetNode[nameof(Class.IntMember)];
-            var nodes = new IContentNode[] { rootNode, rootNode[nameof(Class.ClassMember)], targetNode, intNode };
+            var nodes = new IGraphNode[] { rootNode, rootNode[nameof(Class.ClassMember)], targetNode, intNode };
             Assert.NotNull(targetNode);
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);
@@ -232,7 +232,7 @@ namespace SiliconStudio.Quantum.Tests
             var rootNode = nodeContainer.GetOrCreateNode(obj);
             var path = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember)).PushTarget().PushIndex(new Index(1));
             var targetNode = nodeContainer.GetNode(obj.ListMember[1]);
-            var nodes = new IContentNode[] { rootNode, rootNode[nameof(Class.ListMember)], rootNode[nameof(Class.ListMember)].Target, targetNode };
+            var nodes = new IGraphNode[] { rootNode, rootNode[nameof(Class.ListMember)], rootNode[nameof(Class.ListMember)].Target, targetNode };
             Assert.NotNull(targetNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
@@ -255,7 +255,7 @@ namespace SiliconStudio.Quantum.Tests
             var path = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember)).PushTarget().PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
             var targetNode = nodeContainer.GetNode(obj.ListMember[1]);
             var intNode = targetNode[nameof(Class.IntMember)];
-            var nodes = new IContentNode[] { rootNode, rootNode[nameof(Class.ListMember)], rootNode[nameof(Class.ListMember)].Target, targetNode, intNode };
+            var nodes = new IGraphNode[] { rootNode, rootNode[nameof(Class.ListMember)], rootNode[nameof(Class.ListMember)].Target, targetNode, intNode };
             Assert.NotNull(targetNode);
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);

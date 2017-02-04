@@ -41,11 +41,11 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var node = (IObjectNode)content;
-            var item = content.Retrieve(index);
-            node.Remove(item, index);
+            var objectNode = (IObjectNode)node;
+            var item = node.Retrieve(index);
+            objectNode.Remove(item, index);
         }
     }
 }

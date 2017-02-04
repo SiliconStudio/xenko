@@ -10,7 +10,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
-        private IContentNode associatedContent;
+        private IGraphNode associatedNode;
         private bool updatingValue;
         private bool initialized;
 
@@ -33,11 +33,11 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            if (associatedContent != null)
+            if (associatedNode != null)
             {
-                associatedContent.UnregisterChanging(ContentChanging);
-                associatedContent.UnregisterChanged(ContentChanged);
-                associatedContent = null;
+                associatedNode.UnregisterChanging(ContentChanging);
+                associatedNode.UnregisterChanged(ContentChanged);
+                associatedNode = null;
             }
             base.Destroy();
         }
@@ -62,19 +62,19 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Registers an <see cref="IContentNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
+        /// Registers an <see cref="IGraphNode"/> object to this virtual node so when the content is modified, this node will trigger notifications
         /// of property changes for the <see cref="VirtualNodeViewModel{T}.TypedValue"/> property.
         /// </summary>
-        /// <param name="content">The content to register.</param>
+        /// <param name="nodeent">The content to register.</param>
         /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
-        public void RegisterContentForNotifications(IContentNode content)
+        public void RegisterContentForNotifications(IGraphNode node)
         {
-            if (associatedContent != null)
+            if (associatedNode != null)
                 throw new InvalidOperationException("A content has already been registered to this virtual node");
 
-            associatedContent = content;
-            associatedContent.RegisterChanging(ContentChanging);
-            associatedContent.RegisterChanged(ContentChanged);
+            associatedNode = node;
+            associatedNode.RegisterChanging(ContentChanging);
+            associatedNode.RegisterChanged(ContentChanged);
         }
 
         public void CompleteInitialization()

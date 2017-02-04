@@ -43,9 +43,9 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return collectionDescriptor.HasAdd && (CanConstruct(elementType) || elementType.IsAbstract || elementType.IsNullable() || IsReferenceType(elementType));
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var value = content.Retrieve(index);
+            var value = node.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd;
@@ -63,16 +63,16 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
 
-            var node = (IObjectNode)content;
+            var objectNode = (IObjectNode)node;
             if (index.IsEmpty)
             {
-                node.Add(itemToAdd);
+                objectNode.Add(itemToAdd);
             }
             else
             {
                 // Handle collections in collections
                 // TODO: this is not working on the observable node side
-                var collectionNode = node.ItemReferences[index].TargetNode;
+                var collectionNode = objectNode.ItemReferences[index].TargetNode;
                 collectionNode.Add(itemToAdd);
             }
         }

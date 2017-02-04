@@ -15,9 +15,9 @@ namespace SiliconStudio.Presentation.Quantum
         bool CanProvidePropertiesViewModel { get; }
 
         /// <summary>
-        /// Retrieves the root <see cref="IContentNode"/> to use to generate properties.
+        /// Retrieves the root <see cref="IGraphNode"/> to use to generate properties.
         /// </summary>
-        /// <returns>The root <see cref="IContentNode"/> to use to generate properties.</returns>
+        /// <returns>The root <see cref="IGraphNode"/> to use to generate properties.</returns>
         IObjectNode GetRootNode();
 
         /// <summary>

@@ -5,7 +5,7 @@ namespace SiliconStudio.Quantum
 {
     public static class GraphNodeExtensions
     {
-        public static void RegisterChanging(this IContentNode node, Action<object, INodeChangeEventArgs> handler)
+        public static void RegisterChanging(this IGraphNode node, Action<object, INodeChangeEventArgs> handler)
         {
             var memberNode = node as IMemberNode;
             if (memberNode != null)
@@ -21,7 +21,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        public static void RegisterChanged(this IContentNode node, Action<object, INodeChangeEventArgs> handler)
+        public static void RegisterChanged(this IGraphNode node, Action<object, INodeChangeEventArgs> handler)
         {
             var memberNode = node as IMemberNode;
             if (memberNode != null)
@@ -37,7 +37,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        public static void UnregisterChanging(this IContentNode node, Action<object, INodeChangeEventArgs> handler)
+        public static void UnregisterChanging(this IGraphNode node, Action<object, INodeChangeEventArgs> handler)
         {
             var memberNode = node as IMemberNode;
             if (memberNode != null)
@@ -53,7 +53,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        public static void UnregisterChanged(this IContentNode node, Action<object, INodeChangeEventArgs> handler)
+        public static void UnregisterChanged(this IGraphNode node, Action<object, INodeChangeEventArgs> handler)
         {
             var memberNode = node as IMemberNode;
             if (memberNode != null)

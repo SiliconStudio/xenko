@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Quantum
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
         where TAssetPart : class, IIdentifiable
     {
-        private readonly IContentNode partDesignNode;
+        private readonly IGraphNode partDesignNode;
 
         public NodesToOwnerPartVisitor(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph, INodeContainer nodeContainer, TAssetPartDesign partDesign)
             : base(propertyGraph)
@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Quantum
             partDesignNode = nodeContainer.GetOrCreateNode(partDesign);
         }
 
-        protected override void VisitNode(IContentNode node, GraphNodePath currentPath)
+        protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             var assetNode = node as IAssetNode;
             assetNode?.SetContent(NodesToOwnerPartVisitor.OwnerPartContentName, partDesignNode);

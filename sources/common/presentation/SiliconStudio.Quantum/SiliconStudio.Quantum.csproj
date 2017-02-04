@@ -37,7 +37,7 @@
     <Compile Include="GraphNodeLinker.cs" />
     <Compile Include="GraphVisitorBase.cs" />
     <Compile Include="IContentFactory.cs" />
-    <Compile Include="IContentNode.cs" />
+    <Compile Include="IGraphNode.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="INodeBuilder.cs" />

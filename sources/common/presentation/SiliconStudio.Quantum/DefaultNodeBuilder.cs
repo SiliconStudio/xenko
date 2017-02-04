@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
     internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
         private readonly Stack<IInitializingGraphNode> contextStack = new Stack<IInitializingGraphNode>();
-        private readonly HashSet<IContentNode> referenceContents = new HashSet<IContentNode>();
+        private readonly HashSet<IGraphNode> referenceContents = new HashSet<IGraphNode>();
         private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private IInitializingObjectNode rootNode;
         private Guid rootGuid;

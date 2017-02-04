@@ -9,22 +9,22 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// An object that tracks the changes in the content of <see cref="IContentNode"/> referenced by a given root node.
+    /// An object that tracks the changes in the content of <see cref="IGraphNode"/> referenced by a given root node.
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
     /// target of a reference from the root node, recursively.
     /// </summary>
     public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
     {
-        private readonly IContentNode rootNode;
-        private readonly Func<IMemberNode, IContentNode, bool> shouldRegisterNode;
-        protected readonly HashSet<IContentNode> RegisteredNodes = new HashSet<IContentNode>();
+        private readonly IGraphNode rootNode;
+        private readonly Func<IMemberNode, IGraphNode, bool> shouldRegisterNode;
+        protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
         /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
-        public GraphNodeChangeListener(IContentNode rootNode, Func<IMemberNode, IContentNode, bool> shouldRegisterNode = null)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, IGraphNode, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
             this.shouldRegisterNode = shouldRegisterNode;
@@ -53,7 +53,7 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        protected virtual bool RegisterNode(IContentNode node)
+        protected virtual bool RegisterNode(IGraphNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
             if (RegisteredNodes.Add(node))
@@ -78,7 +78,7 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected virtual bool UnregisterNode(IContentNode node)
+        protected virtual bool UnregisterNode(IGraphNode node)
         {
             if (RegisteredNodes.Remove(node))
             {
@@ -155,7 +155,7 @@ namespace SiliconStudio.Quantum
                 case ContentChangeType.CollectionAdd:
                     if (e.Node.IsReference && e.NewValue != null)
                     {
-                        IContentNode addedNode;
+                        IGraphNode addedNode;
                         Index index;
                         if (!e.Index.IsEmpty)
                         {

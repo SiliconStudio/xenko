@@ -30,14 +30,14 @@ namespace SiliconStudio.Assets.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        protected override void ExecuteSync(IContentNode content, Index index, object parameter)
+        protected override void ExecuteSync(IGraphNode node, Index index, object parameter)
         {
-            var node = (IObjectNode)content;
+            var objectNode = (IObjectNode)node;
             var oldName = index;
-            var renamedObject = content.Retrieve(oldName);
-            node.Remove(renamedObject, oldName);
-            var newName = AddPrimitiveKeyCommand.GenerateStringKey(content.Retrieve(), content.Descriptor, (string)parameter);
-            node.Add(renamedObject, newName);
+            var renamedObject = node.Retrieve(oldName);
+            objectNode.Remove(renamedObject, oldName);
+            var newName = AddPrimitiveKeyCommand.GenerateStringKey(node.Retrieve(), node.Descriptor, (string)parameter);
+            objectNode.Add(renamedObject, newName);
         }
     }
 }

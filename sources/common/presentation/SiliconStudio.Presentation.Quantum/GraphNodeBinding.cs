@@ -6,7 +6,7 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// This class allows to bind a property of a view model to a <see cref="IContentNode"/> and properly trigger property change notifications
+    /// This class allows to bind a property of a view model to a <see cref="IGraphNode"/> and properly trigger property change notifications
     /// when the node value is modified.
     /// </summary>
     /// <typeparam name="TTargetType">The type of property bound to the graph node.</typeparam>
@@ -102,7 +102,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <summary>
     /// This is a specialization of the <see cref="GraphNodeBinding{TTargetType, TContentType}"/> class, when the target type is the same that the
     /// content type.
-    /// This class allows to bind a property of a view model to a <see cref="IContentNode"/> and properly trigger property change notifications
+    /// This class allows to bind a property of a view model to a <see cref="IGraphNode"/> and properly trigger property change notifications
     /// when the node value is modified.
     /// </summary>
     /// <typeparam name="TContentType">The type of the node content and the property bound to the graph node.</typeparam>

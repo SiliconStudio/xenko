@@ -279,12 +279,12 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Assert.AreEqual(baseIds[8], derivedIds[10]);
         }
 
-        private static void AssertCollection(IContentNode content, params string[] items)
+        private static void AssertCollection(IGraphNode node, params string[] items)
         {
             for (var i = 0; i < items.Length; i++)
             {
                 var item = items[i];
-                Assert.AreEqual(item, content.Retrieve(new Index(i)));
+                Assert.AreEqual(item, node.Retrieve(new Index(i)));
             }
         }
     }

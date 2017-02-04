@@ -2,7 +2,7 @@ using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IInitializingGraphNode : IContentNode
+    public interface IInitializingGraphNode : IGraphNode
     {
         /// <summary>
         /// Seal the node, indicating its construction is finished and that no more children or commands will be added.

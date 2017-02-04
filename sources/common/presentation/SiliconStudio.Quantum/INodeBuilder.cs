@@ -25,7 +25,7 @@ namespace SiliconStudio.Quantum
         ITypeDescriptorFactory TypeDescriptorFactory { get; }
 
         /// <summary>
-        /// Gets or sets the factory that will create instances of <see cref="IContentNode"/> for nodes.
+        /// Gets or sets the factory that will create instances of <see cref="IGraphNode"/> for nodes.
         /// </summary>
         IContentFactory ContentFactory { get; set; }
 

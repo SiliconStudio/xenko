@@ -26,9 +26,9 @@ namespace SiliconStudio.Quantum.Contents
             Update(newValue, Index.Empty, false);
         }
 
-        internal void SetOwnerContent(IContentNode ownerContent, Index index)
+        internal void SetOwnerContent(IGraphNode ownerNode, Index index)
         {
-            boxedStructureOwner = (GraphNodeBase)ownerContent;
+            boxedStructureOwner = (GraphNodeBase)ownerNode;
             boxedStructureOwnerIndex = index;
         }
 

@@ -4,7 +4,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IObjectNode : IContentNode, INotifyItemChange
+    public interface IObjectNode : IGraphNode, INotifyItemChange
     {
         /// <summary>
         /// Gets the member corresponding to the given name.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Quantum
         IObjectNode IndexedTarget(Index index);
 
         /// <summary>
-        /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
+        /// Attempts to retrieve the child node of this <see cref="IGraphNode"/> that matches the given name.
         /// </summary>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>

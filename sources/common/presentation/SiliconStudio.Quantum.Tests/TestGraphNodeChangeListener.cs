@@ -453,18 +453,18 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(3, changedCount);
         }
 
-        private static void VerifyListenerEvent(INodeChangeEventArgs e, IContentNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
+        private static void VerifyListenerEvent(INodeChangeEventArgs e, IGraphNode nodeOwner, ContentChangeType type, Index index, object oldValue, object newValue, bool changeApplied)
         {
             Assert.NotNull(e);
-            Assert.NotNull(contentOwner);
+            Assert.NotNull(nodeOwner);
             Assert.AreEqual(type, e.ChangeType);
-            Assert.AreEqual(contentOwner, e.Node);
+            Assert.AreEqual(nodeOwner, e.Node);
             Assert.AreEqual(index, e.Index);
             Assert.AreEqual(newValue, e.NewValue);
             Assert.AreEqual(oldValue, e.OldValue);
             if (type == ContentChangeType.ValueChange)
             {
-                Assert.AreEqual(changeApplied ? newValue : oldValue, contentOwner.Retrieve(index));
+                Assert.AreEqual(changeApplied ? newValue : oldValue, nodeOwner.Retrieve(index));
             }
         }
 

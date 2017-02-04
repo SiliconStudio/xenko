@@ -15,20 +15,20 @@ namespace SiliconStudio.Quantum
     public class DefaultContentFactory : IContentFactory
     {
         /// <inheritdoc/>
-        public virtual IContentNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        public virtual IGraphNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
         {
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj, false) as ReferenceEnumerable;
             return new ObjectNode(nodeBuilder, obj, guid, descriptor, isPrimitive, reference);
         }
 
         /// <inheritdoc/>
-        public virtual IContentNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
+        public virtual IGraphNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
         {
             return new BoxedNode(nodeBuilder, structure, guid, descriptor, isPrimitive);
         }
 
         /// <inheritdoc/>
-        public virtual IContentNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
+        public virtual IGraphNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value, true);
             return new MemberNode(nodeBuilder, guid, parent, member, isPrimitive, reference);
