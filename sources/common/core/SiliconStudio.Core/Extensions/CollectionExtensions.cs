@@ -50,7 +50,6 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="list">The list.</param>
         /// <param name="index">The index.</param>
         /// <returns>The item from a list at a specified index. If index is out of the list, returns null..</returns>
-        [CanBeNull]
         public static T GetItemOrNull<T>([NotNull] this IList<T> list, int index) where T : class
         {
             if (index >= 0 && index < list.Count)

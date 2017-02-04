@@ -58,7 +58,7 @@
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);

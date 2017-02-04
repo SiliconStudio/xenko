@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
         /// <returns>True if it can be created, false otherwise.</returns>
-        public static bool CanCreateInstance(Type objectType)
+        public static bool CanCreateInstance([NotNull] Type objectType)
         {
             var factory = FindFactory(objectType);
             if (factory != null)
@@ -78,7 +78,8 @@ namespace SiliconStudio.Core.Reflection
             return factory != null ? factory.New(objectType) : Activator.CreateInstance(objectType);
         }
 
-        private static IObjectFactory FindFactory(Type objectType)
+        [CanBeNull]
+        private static IObjectFactory FindFactory([NotNull] Type objectType)
         {
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
             IObjectFactory factory;
@@ -113,8 +114,9 @@ namespace SiliconStudio.Core.Reflection
             return factory;
         }
 
-        class StringObjectFactory : IObjectFactory
+        private class StringObjectFactory : IObjectFactory
         {
+            [NotNull]
             public object New(Type type) => string.Empty;
         }
     }

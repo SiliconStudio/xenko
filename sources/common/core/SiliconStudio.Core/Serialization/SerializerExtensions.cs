@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="mode">The serialization mode.</param>
         /// <param name="dataSerializer">The data serializer (can be null).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, T obj, ArchiveMode mode, [CanBeNull] DataSerializer<T> dataSerializer = null)
+        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
         {
             MemberReuseSerializer<T>.SerializeExtended(ref obj, mode, stream, dataSerializer);
         }
@@ -49,7 +49,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="mode">The serialization mode.</param>
         /// <param name="dataSerializer">The data serializer (can be null).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, ref T obj, ArchiveMode mode, [CanBeNull] DataSerializer<T> dataSerializer = null)
+        public static void SerializeExtended<T>([NotNull] this SerializationStream stream, ref T obj, ArchiveMode mode, DataSerializer<T> dataSerializer = null)
         {
             MemberReuseSerializer<T>.SerializeExtended(ref obj, mode, stream, dataSerializer);
         }

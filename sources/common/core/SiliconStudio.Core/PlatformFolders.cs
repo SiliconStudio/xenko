@@ -150,8 +150,7 @@ namespace SiliconStudio.Core
             return directory;
 #endif
         }
-
-        [CanBeNull]
+        
         private static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX

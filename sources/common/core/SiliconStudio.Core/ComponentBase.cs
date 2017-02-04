@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core.Annotations;
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -26,7 +24,7 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="ComponentBase"/> class.
         /// </summary>
         /// <param name="name">The name attached to this component</param>
-        protected ComponentBase([CanBeNull] string name)
+        protected ComponentBase(string name)
         {
             collector = new ObjectCollector();
             Tags = new PropertyContainer(this);

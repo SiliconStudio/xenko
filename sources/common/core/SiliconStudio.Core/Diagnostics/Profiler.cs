@@ -271,8 +271,7 @@ namespace SiliconStudio.Core.Diagnostics
             public long MaxTime;
             public int Count;
         }
-
-        [CanBeNull]
+        
         public static ProfilingEvent[] GetEvents()
         {
             lock (Locker)

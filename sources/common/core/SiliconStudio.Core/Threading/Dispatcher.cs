@@ -63,8 +63,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action,
-            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
             using (Profile(action))
             {
@@ -109,8 +108,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
         
-        public static void ForEach<TItem, TLocal>([NotNull] IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<TItem, TLocal> action,
-            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void ForEach<TItem, TLocal>([NotNull] IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<TItem, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
             For(0, collection.Count, initializeLocal, (i, local) => action(collection[i], local), finalizeLocal);
         }
@@ -156,8 +154,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void ForEach<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action,
-            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void ForEach<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
             if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
             {
@@ -306,8 +303,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [CanBeNull] [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action,
-            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
         {
             var local = default(TLocal);
             try
@@ -428,8 +424,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> dictionary, int offset, int count, [CanBeNull] [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action,
-            [CanBeNull] [Pooled] Action<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TKey, TValue, TLocal>([NotNull] Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
         {
             var local = default(TLocal);
             try

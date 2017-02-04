@@ -30,10 +30,7 @@ namespace SiliconStudio.Core.Serialization
         {
             private static IEqualityComparer<object> defaultEqualityComparer;
 
-            public new static IEqualityComparer<object> Default
-            {
-                get { return defaultEqualityComparer ?? (defaultEqualityComparer = new ObjectReferenceEqualityComparer()); }
-            }
+            public new static IEqualityComparer<object> Default => defaultEqualityComparer ?? (defaultEqualityComparer = new ObjectReferenceEqualityComparer());
 
             public override bool Equals(object x, object y)
             {
@@ -64,8 +61,7 @@ namespace SiliconStudio.Core.Serialization
         {
             this.dataSerializer = dataSerializer;
         }
-
-        [CanBeNull]
+        
         public static DataSerializer<T> Create([NotNull] SerializerSelector serializerSelector, bool nullable = true)
         {
             var dataSerializer = serializerSelector.GetSerializer<T>();

@@ -411,7 +411,7 @@ namespace SiliconStudio.Core.Collections
         /// <exception cref="System.ArgumentNullException">
         /// key is null.
         /// </exception>
-        public bool TryGetValue([NotNull] TKey key, [CanBeNull] out IEnumerable<TValue> values)
+        public bool TryGetValue([NotNull] TKey key, out IEnumerable<TValue> values)
         {
             if (key == null) throw new ArgumentNullException();
 

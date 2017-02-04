@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -84,7 +83,6 @@ namespace SiliconStudio.Core.Diagnostics
         public CallerInfo CallerInfo { get; set; }
 
         /// <inheritdoc/>
-        [CanBeNull]
         public ExceptionInfo ExceptionInfo => Exception != null ? new ExceptionInfo(Exception) : null;
 
         /// <summary>

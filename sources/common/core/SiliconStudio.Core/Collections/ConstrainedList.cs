@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -20,7 +19,7 @@ namespace SiliconStudio.Core.Collections
 
         private readonly string errorMessage;
 
-        public ConstrainedList([CanBeNull] Func<ConstrainedList<T>, T, bool> constraint = null, bool throwException = true, [CanBeNull] string errorMessage = null)
+        public ConstrainedList(Func<ConstrainedList<T>, T, bool> constraint = null, bool throwException = true, string errorMessage = null)
         {
             Constraint = constraint;
             ThrowException = throwException;

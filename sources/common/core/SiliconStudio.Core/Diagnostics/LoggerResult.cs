@@ -24,7 +24,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerResult" /> class.
         /// </summary>
-        public LoggerResult([CanBeNull] string moduleName = null)
+        public LoggerResult(string moduleName = null)
         {
             Module = moduleName;
             Messages = new TrackingCollection<ILogMessage>();
@@ -146,7 +146,7 @@ namespace SiliconStudio.Core.Diagnostics
     /// <typeparam name="T"></typeparam>
     public class LoggerValueResult<T> : LoggerResult
     {
-        public LoggerValueResult([CanBeNull] string moduleName = null)
+        public LoggerValueResult(string moduleName = null)
             : base(moduleName)
         {
         }

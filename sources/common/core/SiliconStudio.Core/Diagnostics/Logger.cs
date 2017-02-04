@@ -127,7 +127,6 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>A caller info or null if there is no caller information available.</returns>
-        [CanBeNull]
         internal static CallerInfo ExtractCallerInfo([NotNull] object[] parameters)
         {
             return (parameters.Length > 0) ? parameters[parameters.Length - 1] as CallerInfo : null;

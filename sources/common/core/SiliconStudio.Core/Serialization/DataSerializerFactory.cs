@@ -59,13 +59,13 @@ namespace SiliconStudio.Core.Serialization
             DataContractAliases = new List<KeyValuePair<string, Type>>();
         }
 
-        public Assembly Assembly { get; private set; }
+        public Assembly Assembly { get; }
 
-        public List<Module> Modules { get; private set; }
+        public List<Module> Modules { get; }
 
         public List<KeyValuePair<string, Type>> DataContractAliases { get; }
 
-        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; private set; }
+        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; }
 
         public override string ToString()
         {
@@ -89,7 +89,7 @@ namespace SiliconStudio.Core.Serialization
         // List of serializers per profile
         internal static readonly Dictionary<string, Dictionary<Type, AssemblySerializerEntry>> DataSerializersPerProfile = new Dictionary<string, Dictionary<Type, AssemblySerializerEntry>>();
 
-        private static Dictionary<string, Type> dataContractAliasMapping = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, Type> DataContractAliasMapping = new Dictionary<string, Type>();
 
         public static void RegisterSerializerSelector(SerializerSelector serializerSelector)
         {
@@ -115,7 +115,7 @@ namespace SiliconStudio.Core.Serialization
             lock (Lock)
             {
                 Type type;
-                dataContractAliasMapping.TryGetValue(alias, out type);
+                DataContractAliasMapping.TryGetValue(alias, out type);
                 return type;
             }
         }
@@ -172,11 +172,9 @@ namespace SiliconStudio.Core.Serialization
 
         public static void UnregisterSerializationAssembly(Assembly assembly)
         {
-            AssemblySerializers removedAssemblySerializer;
-
             lock (Lock)
             {
-                removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
+                var removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
                 if (removedAssemblySerializer == null)
                     return;
 
@@ -186,13 +184,13 @@ namespace SiliconStudio.Core.Serialization
                 foreach (var dataContractAliasEntry in removedAssemblySerializer.DataContractAliases)
                 {
                     // TODO: Warning, exception or override if collision? (currently exception, easiest since we can remove them without worry when unloading assembly)
-                    dataContractAliasMapping.Remove(dataContractAliasEntry.Key);
+                    DataContractAliasMapping.Remove(dataContractAliasEntry.Key);
                 }
 
                 // Rebuild serializer list
                 // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
                 DataSerializersPerProfile.Clear();
-                dataContractAliasMapping.Clear();
+                DataContractAliasMapping.Clear();
 
                 foreach (var assemblySerializer in AssemblySerializers)
                 {
@@ -220,11 +218,11 @@ namespace SiliconStudio.Core.Serialization
                 try
                 {
                     // TODO: Warning, exception or override if collision? (currently exception)
-                    dataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
+                    DataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
                 }
                 catch (Exception)
                 {
-                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Key}]: {dataContractAliasEntry.Value} and {dataContractAliasMapping[dataContractAliasEntry.Key]}");
+                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Key}]: {dataContractAliasEntry.Value} and {DataContractAliasMapping[dataContractAliasEntry.Key]}");
                 }
             }
 

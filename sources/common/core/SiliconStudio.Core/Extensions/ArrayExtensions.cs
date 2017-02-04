@@ -133,7 +133,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="data">The list to generates the hash</param>
         /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
         /// <returns>The hashcode of the collection.</returns>
-        public static int ComputeHash<T>([CanBeNull] this ICollection<T> data, IEqualityComparer<T> comparer = null)
+        public static int ComputeHash<T>(this ICollection<T> data, IEqualityComparer<T> comparer = null)
         {
             unchecked
             {
@@ -158,7 +158,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="data">The array to generates the hash</param>
         /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
         /// <returns>The hashcode of the array.</returns>
-        public static int ComputeHash<T>([CanBeNull] this T[] data, IEqualityComparer<T> comparer = null)
+        public static int ComputeHash<T>(this T[] data, IEqualityComparer<T> comparer = null)
         {
             unchecked
             {

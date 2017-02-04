@@ -98,7 +98,7 @@ namespace SiliconStudio.Core.Collections
             ClearItems();
         }
 
-        public bool Contains([CanBeNull] T item)
+        public bool Contains(T item)
         {
             if (item == null)
             {

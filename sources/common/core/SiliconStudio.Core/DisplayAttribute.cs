@@ -42,7 +42,7 @@ namespace SiliconStudio.Core
         /// <param name="order">The order weight of the column.</param>
         /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute(int order, [CanBeNull] string name = null, [CanBeNull] string category = null)
+        public DisplayAttribute(int order, string name = null, string category = null)
             : this(name, category)
         {
             Order = order;
@@ -53,7 +53,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="name">A value that is used for display in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute([CanBeNull] string name = null, [CanBeNull] string category = null)
+        public DisplayAttribute(string name = null, string category = null)
         {
             Name = name;
             Category = category;

@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Serialization
 {
     public static unsafe class MemberNullableSerializer
     {
-        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -108,7 +108,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -150,7 +150,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -175,7 +175,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -258,7 +258,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -303,7 +303,7 @@ namespace SiliconStudio.Core.Serialization
 
     public static unsafe class MemberNonSealedSerializer
     {
-        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -333,7 +333,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -473,7 +473,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -578,7 +578,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -609,7 +609,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -762,7 +762,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -870,7 +870,7 @@ namespace SiliconStudio.Core.Serialization
 
     public static unsafe class MemberReuseSerializer
     {
-        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, [CanBeNull] DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -902,7 +902,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -1096,7 +1096,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -1253,7 +1253,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, [CanBeNull] DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, DataSerializer<T> dataSerializer = null)
         {
             var context = stream.Context;
 
@@ -1286,7 +1286,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);
@@ -1493,7 +1493,7 @@ namespace SiliconStudio.Core.Serialization
 
             if (mode == ArchiveMode.Serialize)
             {
-                if (object.ReferenceEquals(obj, null))
+                if (ReferenceEquals(obj, null))
                 {
                     // Null contentRef
                     stream.Write((byte)SerializeClassFlags.IsNull);

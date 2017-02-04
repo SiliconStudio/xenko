@@ -17,7 +17,7 @@ namespace SiliconStudio.Core
         /// <param name="thisArg">The component to keep alive.</param>
         /// <param name="container">The container that will keep a reference to the component.</param>
         /// <returns>The same component instance</returns>
-        public static void RemoveDisposeBy<T>([CanBeNull] this T thisArg, ICollectorHolder container) where T : IReferencable
+        public static void RemoveDisposeBy<T>(this T thisArg, ICollectorHolder container) where T : IReferencable
         {
             if (ReferenceEquals(thisArg, null))
                 return;
@@ -31,11 +31,10 @@ namespace SiliconStudio.Core
         /// <param name="thisArg">The component to add a reference to.</param>
         /// <returns>This component.</returns>
         /// <remarks>This method is equivalent to call <see cref="IReferencable.AddReference"/> and return this instance.</remarks>
-        [CanBeNull]
-        public static T KeepReference<T>([CanBeNull] this T thisArg) where T : IReferencable
+        public static T KeepReference<T>(this T thisArg) where T : IReferencable
         {
             if (ReferenceEquals(thisArg, null))
-                return thisArg;
+                return default(T);
             thisArg.AddReference();
             return thisArg;
         }
@@ -47,11 +46,10 @@ namespace SiliconStudio.Core
         /// <param name="thisArg">The component to keep alive.</param>
         /// <param name="container">The container that will keep a reference to the component.</param>
         /// <returns>The same component instance</returns>
-        [CanBeNull]
-        public static T DisposeBy<T>([CanBeNull] this T thisArg, ICollectorHolder container) where T : IDisposable
+        public static T DisposeBy<T>(this T thisArg, ICollectorHolder container) where T : IDisposable
         {
             if (ReferenceEquals(thisArg, null))
-                return thisArg;
+                return default(T);
             return container.Collector.Add(thisArg);
         }
 

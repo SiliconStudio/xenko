@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="type">The type.</param>
         /// <param name="text">The text.</param>
         /// <param name="exceptionInfo">The exception information. This parameter can be null.</param>
-        public SerializableLogMessage([NotNull] string module, LogMessageType type, [NotNull] string text, [CanBeNull] ExceptionInfo exceptionInfo = null)
+        public SerializableLogMessage([NotNull] string module, LogMessageType type, [NotNull] string text, ExceptionInfo exceptionInfo = null)
         {
             if (module == null) throw new ArgumentNullException(nameof(module));
             if (text == null) throw new ArgumentNullException(nameof(text));

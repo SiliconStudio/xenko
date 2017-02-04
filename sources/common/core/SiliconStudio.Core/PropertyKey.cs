@@ -87,7 +87,7 @@ namespace SiliconStudio.Core
         /// Gets the metadatas.
         /// </summary>
         [DataMemberIgnore]
-        public PropertyKeyMetadata[] Metadatas { get; private set; }
+        public PropertyKeyMetadata[] Metadatas { get; }
 
         /// <summary>
         /// Gets the type of the owner.
@@ -171,30 +171,27 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc/>
-        public override bool IsValueType
-        {
-            get { return isValueType; }
-        }
+        public override bool IsValueType => isValueType;
 
         /// <summary>
         /// Gets the default value metadata.
         /// </summary>
-        public DefaultValueMetadata<T> DefaultValueMetadataT { get { return (DefaultValueMetadata<T>)DefaultValueMetadata; } }
+        public DefaultValueMetadata<T> DefaultValueMetadataT => (DefaultValueMetadata<T>)DefaultValueMetadata;
 
         /// <summary>
         /// Gets the validate value metadata (may be null).
         /// </summary>
         /// <value>The validate value metadata.</value>
-        public ValidateValueMetadata<T> ValidateValueMetadataT { get { return (ValidateValueMetadata<T>)ValidateValueMetadata; } }
+        public ValidateValueMetadata<T> ValidateValueMetadataT => (ValidateValueMetadata<T>)ValidateValueMetadata;
 
         /// <summary>
         /// Gets the object invalidation metadata (may be null).
         /// </summary>
         /// <value>The object invalidation metadata.</value>
-        public ObjectInvalidationMetadata<T> ObjectInvalidationMetadataT { get { return (ObjectInvalidationMetadata<T>)ObjectInvalidationMetadata; } }
+        public ObjectInvalidationMetadata<T> ObjectInvalidationMetadataT => (ObjectInvalidationMetadata<T>)ObjectInvalidationMetadata;
 
         [NotNull]
-        private static PropertyKeyMetadata[] GenerateDefaultData([CanBeNull] PropertyKeyMetadata[] metadatas)
+        private static PropertyKeyMetadata[] GenerateDefaultData(PropertyKeyMetadata[] metadatas)
         {
             if (metadatas == null)
             {

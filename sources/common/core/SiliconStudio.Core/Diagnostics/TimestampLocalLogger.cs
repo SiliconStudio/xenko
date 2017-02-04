@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerResult" /> class.
         /// </summary>
-        public TimestampLocalLogger(DateTime startTime, [CanBeNull] string moduleName = null)
+        public TimestampLocalLogger(DateTime startTime, string moduleName = null)
         {
             this.startTime = startTime;
 

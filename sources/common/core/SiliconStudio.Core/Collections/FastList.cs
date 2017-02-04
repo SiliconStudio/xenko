@@ -110,7 +110,7 @@ namespace SiliconStudio.Core.Collections
             Clear(false);
         }
 
-        public bool Contains([CanBeNull] T item)
+        public bool Contains(T item)
         {
             if (item == null)
             {
@@ -430,7 +430,7 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        private static bool IsCompatibleObject([CanBeNull] object value)
+        private static bool IsCompatibleObject(object value)
         {
             return value is T || value == null && default(T) == null;
         }

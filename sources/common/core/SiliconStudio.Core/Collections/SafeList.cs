@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -24,7 +23,7 @@ namespace SiliconStudio.Core.Collections
         {
         }
 
-        private static bool NonNullConstraint(ConstrainedList<T> constrainedList, [CanBeNull] T arg2)
+        private static bool NonNullConstraint(ConstrainedList<T> constrainedList, T arg2)
         {
             return arg2 != null;
         }

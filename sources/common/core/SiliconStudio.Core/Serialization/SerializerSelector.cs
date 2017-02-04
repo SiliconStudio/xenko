@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.Serialization
         private readonly string[] profiles;
         private Dictionary<Type, DataSerializer> dataSerializersByType = new Dictionary<Type, DataSerializer>();
         private Dictionary<ObjectId, DataSerializer> dataSerializersByTypeId = new Dictionary<ObjectId, DataSerializer>();
-        private List<SerializerFactory> serializerFactories = new List<SerializerFactory>();
+        private readonly List<SerializerFactory> serializerFactories = new List<SerializerFactory>();
 
         /// <summary>
         /// Gets the default instance of Serializer.
@@ -61,7 +61,7 @@ namespace SiliconStudio.Core.Serialization
         public static SerializerSelector Asset { get; internal set; }
         public static SerializerSelector AssetWithReuse { get; internal set; }
 
-        public IEnumerable<string> Profiles { get { return profiles; } }
+        public IEnumerable<string> Profiles => profiles;
 
         public SerializerSelector SelectorOverride;
 
@@ -136,7 +136,7 @@ namespace SiliconStudio.Core.Serialization
         /// <value>
         ///   <c>true</c> if serialization reuses references; otherwise, <c>false</c>.
         /// </value>
-        public bool ReuseReferences { get { return reuseReferences; } }
+        public bool ReuseReferences => reuseReferences;
 
         public List<SerializerFactory> SerializerFactories => serializerFactories;
 

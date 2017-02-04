@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Serialization.Serializers
@@ -11,10 +10,10 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// Data serializer for string.
     /// </summary>
     [DataSerializerGlobal(typeof(UriSerializer))]
-    public class UriSerializer : DataSerializer<System.Uri>
+    public class UriSerializer : DataSerializer<Uri>
     {
         /// <inheritdoc/>
-        public override void Serialize(ref System.Uri obj, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref Uri obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
             {
@@ -235,7 +234,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class EnumSerializer : DataSerializer<Enum>
     {
         /// <inheritdoc/>
-        public override void Serialize([CanBeNull] ref Enum obj, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref Enum obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
             {
@@ -257,12 +256,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// </summary>
     public unsafe class EnumSerializer<T> : DataSerializer<T> where T : struct
     {
-        private int EnumSize;
+        private int enumSize;
 
         public override void Initialize(SerializerSelector serializerSelector)
         {
             // Use Marshal SizeOf to avoid AOT issues on iOS
-            EnumSize = Marshal.SizeOf(Enum.GetUnderlyingType(typeof(T)));
+            enumSize = Marshal.SizeOf(Enum.GetUnderlyingType(typeof(T)));
         }
 
         /// <inheritdoc/>
@@ -272,7 +271,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             // Future, 2 choices if we decide to drop it and have more compact formats for small enum:
             // - Dump as-is from/to memory (not so resistant to structure size changes)
             // - Use 7bit encoded integer
-            switch (EnumSize)
+            switch (enumSize)
             {
                 case 1:
                 {

@@ -145,7 +145,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">a struct</typeparam>
         /// <param name="array">The array of struct to evaluate.</param>
         /// <returns>sizeof in bytes of this array of struct</returns>
-        public static int SizeOf<T>([CanBeNull] T[] array) where T : struct
+        public static int SizeOf<T>(T[] array) where T : struct
         {
             return array == null ? 0 : array.Length * Interop.SizeOf<T>();
         }
@@ -170,7 +170,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">The type of the structure to pin</typeparam>
         /// <param name="source">The source array.</param>
         /// <param name="pinAction">The pin action to perform on the pinned pointer.</param>
-        public static void Pin<T>([CanBeNull] T[] source, [NotNull] Action<IntPtr> pinAction) where T : struct
+        public static void Pin<T>(T[] source, [NotNull] Action<IntPtr> pinAction) where T : struct
         {
             unsafe
             {
@@ -184,8 +184,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <returns></returns>
-        [CanBeNull]
-        public static byte[] ToByteArray<T>([CanBeNull] T[] source) where T : struct
+        public static byte[] ToByteArray<T>(T[] source) where T : struct
         {
             if (source == null) return null;
 
@@ -197,7 +196,7 @@ namespace SiliconStudio.Core
             unsafe
             {
                 fixed (void* pBuffer = buffer)
-                    Interop.Write<T>(pBuffer, source, 0, source.Length);
+                    Interop.Write(pBuffer, source, 0, source.Length);
             }
             return buffer;
         }
@@ -228,7 +227,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInline<T>(ref data, (void*)source);
+                Interop.CopyInline(ref data, (void*)source);
             }
         }
 
@@ -243,7 +242,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInlineOut<T>(out data, (void*)source);
+                Interop.CopyInlineOut(out data, (void*)source);
             }
         }
 
@@ -258,7 +257,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Read<T>((void*)source, ref data);
+                return (IntPtr)Interop.Read((void*)source, ref data);
             }
         }
 
@@ -275,7 +274,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Read<T>((void*)source, data, offset, count);
+                return (IntPtr)Interop.Read((void*)source, data, offset, count);
             }
         }
 
@@ -306,7 +305,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Write<T>((void*)destination, ref data);
+                return (IntPtr)Interop.Write((void*)destination, ref data);
             }
         }
 
@@ -343,7 +342,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Write<T>((void*)destination, data, offset, count);
+                return (IntPtr)Interop.Write((void*)destination, data, offset, count);
             }
         }
 
@@ -413,7 +412,7 @@ namespace SiliconStudio.Core
         /// If non-null, disposes the specified object and set it to null, otherwise do nothing.
         /// </summary>
         /// <param name="disposable">The disposable.</param>
-        public static void Dispose<T>([CanBeNull] ref T disposable) where T : class, IDisposable
+        public static void Dispose<T>(ref T disposable) where T : class, IDisposable
         {
             if (disposable != null)
             {
@@ -429,7 +428,7 @@ namespace SiliconStudio.Core
         /// <param name="array">The array.</param>
         /// <returns>a string with array elements serparated by the seperator</returns>
         [NotNull]
-        public static string Join<T>(string separator, [CanBeNull] T[] array)
+        public static string Join<T>(string separator, T[] array)
         {
             var text = new StringBuilder();
             if (array != null)
@@ -538,7 +537,7 @@ namespace SiliconStudio.Core
         /// Computes a hashcode for a dictionary.
         /// </summary>
         /// <returns>Hashcode for the list.</returns>
-        public static int GetHashCode([CanBeNull] IDictionary dict)
+        public static int GetHashCode(IDictionary dict)
         {
             if (dict == null)
                 return 0;
@@ -557,7 +556,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="it">An enumerator.</param>
         /// <returns>Hashcode for the list.</returns>
-        public static int GetHashCode([CanBeNull] IEnumerable it)
+        public static int GetHashCode(IEnumerable it)
         {
             if (it == null)
                 return 0;
@@ -575,7 +574,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="it">An enumerator.</param>
         /// <returns>Hashcode for the list.</returns>
-        public static int GetHashCode([CanBeNull] IEnumerator it)
+        public static int GetHashCode(IEnumerator it)
         {
             if (it == null)
                 return 0;
@@ -780,7 +779,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInlineOut<T>(out data, (void*)source);
+                Interop.CopyInlineOut(out data, (void*)source);
             }
         }
 

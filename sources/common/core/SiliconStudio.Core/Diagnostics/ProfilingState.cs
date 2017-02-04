@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -75,7 +74,6 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="key">The key.</param>
         /// <returns>Value of a key.</returns>
         /// <remarks>If profiling was not enabled for this profile key, the attribute is not stored</remarks>
-        [CanBeNull]
         public object GetAttribute(string key)
         {
             if (attributes == null)

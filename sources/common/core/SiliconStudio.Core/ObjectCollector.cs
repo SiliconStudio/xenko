@@ -17,10 +17,7 @@ namespace SiliconStudio.Core
         /// Gets the number of elements to dispose.
         /// </summary>
         /// <value>The number of elements to dispose.</value>
-        public int Count
-        {
-            get { return disposables.Count; }
-        }
+        public int Count => disposables.Count;
 
         /// <summary>
         /// Disposes all object collected by this class and clear the list. The collector can still be used for collecting.
@@ -81,7 +78,7 @@ namespace SiliconStudio.Core
         /// Dispose a disposable object and set the reference to null. Removes this object from this instance..
         /// </summary>
         /// <param name="objectToDispose">Object to dispose.</param>
-        public void RemoveAndDispose<T>([CanBeNull] ref T objectToDispose)
+        public void RemoveAndDispose<T>(ref T objectToDispose)
         {
             if (disposables != null)
             {
@@ -102,7 +99,7 @@ namespace SiliconStudio.Core
                 disposables.Remove(objectToDispose);
         }
 
-        private void DisposeObject([CanBeNull] object objectToDispose)
+        private static void DisposeObject(object objectToDispose)
         {
             if (objectToDispose == null)
                 return;
