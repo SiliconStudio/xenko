@@ -130,7 +130,7 @@ namespace SiliconStudio.Assets.Quantum
         public void ReconcileWithBase(IAssetNode rootNode)
         {
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode(node as AssetMemberNode);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node);
             visitor.Visit(rootNode);
         }
 
