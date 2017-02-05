@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -139,7 +137,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (CustomOrder != null)
                     return CustomOrder;
 
-                var memberContent = SourceNode as MemberNode;
+                var memberContent = SourceNode as IMemberNode;
                 if (memberContent == null || !Index.IsEmpty)
                     return null;
 
@@ -153,7 +151,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             get
             {
-                var memberContent = SourceNode as MemberNode;
+                var memberContent = SourceNode as IMemberNode;
                 var memberDescriptorBase = memberContent?.MemberDescriptor as MemberDescriptorBase;
                 return memberDescriptorBase?.MemberInfo;
             }
@@ -184,7 +182,7 @@ namespace SiliconStudio.Presentation.Quantum
         internal Guid ModelGuid => SourceNode.Guid;
 
         /// <summary>
-        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IGraphNode"/>.
+        /// Indicates whether this <see cref="GraphNodeViewModel"/> instance corresponds to the given <see cref="IContentNode"/>.
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
@@ -196,7 +194,7 @@ namespace SiliconStudio.Presentation.Quantum
         // TODO: If possible, make this private, it's not a good thing to expose
         public IMemberDescriptor GetMemberDescriptor()
         {
-            var memberContent = SourceNode as MemberNode;
+            var memberContent = SourceNode as IMemberNode;
             return memberContent?.MemberDescriptor;
         }
 
@@ -284,123 +282,127 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
         protected virtual bool SetModelContentValue(IGraphNode node, object newValue)
         {
-            //if (Index == Index.Empty)
-            //{
-            //    var oldValue = node.Retrieve();
-            //    if (!Equals(oldValue, newValue))
-            //    {
-            //        ((IMemberNode)node).Update(newValue);
-            //        return true;
-            //    }
-            //}
-            //else
-            //{
-            //    var targetNode = GetTargetNode(node, Index.Empty);
-            //    var oldValue = node.Retrieve(Index);
-            //    if (!Equals(oldValue, newValue))
-            //    {
-            //        targetNode.Update(newValue, Index);
-            //        return true;
-            //    }
-            //}
+            if (Index == Index.Empty)
+            {
+                var oldValue = node.Retrieve();
+                if (!Equals(oldValue, newValue))
+                {
+                    ((IMemberNode)node).Update(newValue);
+                    return true;
+                }
+            }
+            else
+            {
+                var oldValue = node.Retrieve(Index);
+                if (!Equals(oldValue, newValue))
+                {
+                    ((IObjectNode)node).Update(newValue, Index);
+                    return true;
+                }
+            }
             return false;
         }
 
         private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath, Index index)
         {
-            //// Set the default policy for expanding reference children.
-            //ExpandReferencePolicy = ExpandReferencePolicy.Full;
+            // Set the default policy for expanding reference children.
+            ExpandReferencePolicy = ExpandReferencePolicy.Full;
 
-            //    var objectReference = SourceNode.TargetReference ?? SourceNode.ItemReferences?[index];
-            //    // Discard the children of the referenced object if requested by the property provider
-            //    if (objectReference != null)
-            //    {
-            //        ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberNode, objectReference);
-            //        if (ExpandReferencePolicy == ExpandReferencePolicy.None)
-            //            return;
-            //    }
-            //}
+            var memberSourceNode = SourceNode as IMemberNode;
 
-            //var dictionary = targetNode.Descriptor as DictionaryDescriptor;
-            //var list = targetNode.Descriptor as CollectionDescriptor;
-            //var initializedChildren = new List<NodeViewModel>();
+            // Node representing a member with a reference to another object
+            if (SourceNode != targetNode && SourceNode.IsReference)
+            {
+                var objectReference = memberSourceNode?.TargetReference ?? (targetNode as IObjectNode)?.ItemReferences?[index];
+                // Discard the children of the referenced object if requested by the property provider
+                if (objectReference != null)
+                {
+                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as IMemberNode, objectReference);
+                    if (ExpandReferencePolicy == ExpandReferencePolicy.None)
+                        return;
+                }
+            }
+
+            var dictionary = targetNode.Descriptor as DictionaryDescriptor;
+            var list = targetNode.Descriptor as CollectionDescriptor;
+            var initializedChildren = new List<NodeViewModel>();
 
             // Node containing a collection of references to other objects
-            //if (SourceNode == targetNode && targetNode.IsReference)
-            //{
-            //    var referenceEnumerable = targetNode.ItemReferences;
-            //    if (referenceEnumerable != null)
-            //    {
-            //        // We create one node per item of the collection, we will check later if the reference should be expanded.
-            //        foreach (var reference in referenceEnumerable)
-            //        {
-            //            // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
-            //            // In this case, we must set the actual type to have type converter working, since they usually can't convert
-            //            // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-            //            var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : referenceEnumerable.ElementType;
-            //            var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
-            //            AddChild(child);
-            //            child.Initialize();
-            //            initializedChildren.Add(child);
-            //        }
-            //    }
-            //}
-            //// Node containing a dictionary of primitive values
-            //else if (dictionary != null && targetNode.Retrieve() != null)
-            //{
-            //    // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
-            //    // We create one node per item of the collection.
-            //    foreach (var key in dictionary.GetKeys(targetNode.Retrieve()))
-            //    {
-            //        var newIndex = new Index(key);
-            //        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
-            //        AddChild(child);
-            //        child.Initialize();
-            //        initializedChildren.Add(child);
-            //    }
-            //}
-            //// Node containing a list of primitive values
-            //else if (list != null && targetNode.Retrieve() != null)
-            //{
-            //    // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
-            //    // We create one node per item of the collection.
-            //    for (int i = 0; i < list.GetCollectionCount(targetNode.Retrieve()); ++i)
-            //    {
-            //        var newIndex = new Index(i);
-            //        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
-            //        AddChild(child);
-            //        child.Initialize();
-            //        initializedChildren.Add(child);
-            //    }
-            //}
-            //// Node containing a single non-reference primitive object
-            //else
-            //{
-            //    var objectContent = (IObjectNode)targetNode;
-            //    foreach (var memberContent in objectContent.Members)
-            //    {
-            //        var descriptor = (MemberDescriptorBase)memberContent.MemberDescriptor;
-            //        var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
-            //        if (displayAttribute == null || displayAttribute.Browsable)
-            //        {
-            //            // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-            //            if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
-            //            {
-            //                var childPath = targetNodePath.PushMember(memberContent.Name);
-            //                var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
-            //                AddChild(child);
-            //                child.Initialize();
-            //                initializedChildren.Add(child);
-            //            }
-            //        }
-            //    }
-            //}
+            if (SourceNode != targetNode && targetNode.IsReference)
+            {
+                var referenceEnumerable = ((IObjectNode)targetNode).ItemReferences;
+                if (referenceEnumerable != null)
+                {
+                    // We create one node per item of the collection, we will check later if the reference should be expanded.
+                    foreach (var reference in referenceEnumerable)
+                    {
+                        // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
+                        // In this case, we must set the actual type to have type converter working, since they usually can't convert
+                        // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
+                        var type = reference.TargetNode != null && reference.TargetNode.IsPrimitive ? reference.TargetNode.Type : referenceEnumerable.ElementType;
+                        var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                        AddChild(child);
+                        child.Initialize();
+                        initializedChildren.Add(child);
+                    }
+                }
+            }
+            // Node containing a dictionary of primitive values
+            else if (dictionary != null && targetNode.Retrieve() != null)
+            {
+                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
+                // We create one node per item of the collection.
+                foreach (var key in dictionary.GetKeys(targetNode.Retrieve()))
+                {
+                    var newIndex = new Index(key);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
+                    AddChild(child);
+                    child.Initialize();
+                    initializedChildren.Add(child);
+                }
+            }
+            // Node containing a list of primitive values
+            else if (list != null && targetNode.Retrieve() != null)
+            {
+                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
+                // We create one node per item of the collection.
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Retrieve()); ++i)
+                {
+                    var newIndex = new Index(i);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
+                    AddChild(child);
+                    child.Initialize();
+                    initializedChildren.Add(child);
+                }
+            }
+            // Node containing a single non-reference primitive object
+            else
+            {
+                var objectContent = (IObjectNode)targetNode;
+                foreach (var memberContent in objectContent.Members)
+                {
+                    var descriptor = (MemberDescriptorBase)memberContent.MemberDescriptor;
+                    var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
+                    if (displayAttribute == null || displayAttribute.Browsable)
+                    {
+                        // The path is the source path here - the target path might contain the target resolution that we don't want at that point
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
+                        {
+                            var childPath = targetNodePath.PushMember(memberContent.Name);
+                            var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
+                            AddChild(child);
+                            child.Initialize();
+                            initializedChildren.Add(child);
+                        }
+                    }
+                }
+            }
 
-            //// Call FinalizeInitialization on all created nodes after they were all initialized.
-            //foreach (var child in initializedChildren)
-            //{
-            //    child.FinalizeInitialization();
-            //}
+            // Call FinalizeInitialization on all created nodes after they were all initialized.
+            foreach (var child in initializedChildren)
+            {
+                child.FinalizeInitialization();
+            }
         }
 
         /// <summary>
@@ -446,19 +448,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method can return null if the target node is null.</remarks>
         protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
         {
-            //if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
+            if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
-            //var objectReference = (sourceNode as IMemberNode)?.TargetReference;
-            //if (objectReference != null)
-            //{
-            //    return objectReference.TargetNode;
-            //}
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
+            if (objectReference != null)
+            {
+                return objectReference.TargetNode;
+            }
 
-            //var referenceEnumerable = sourceNode.ItemReferences;
-            //if (referenceEnumerable != null && !index.IsEmpty)
-            //{
-            //    return referenceEnumerable[index].TargetNode;
-            //}
+            var referenceEnumerable = (sourceNode as IObjectNode)?.ItemReferences;
+            if (referenceEnumerable != null && !index.IsEmpty)
+            {
+                return referenceEnumerable[index].TargetNode;
+            }
 
             return sourceNode;
         }
@@ -473,20 +475,20 @@ namespace SiliconStudio.Presentation.Quantum
         /// <remarks>This method can return null if the target node is null.</remarks>
         protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
-            //if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
-            //if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
+            if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
+            if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
-            //var objectReference = (sourceNode as IMemberNode)?.TargetReference;
-            //if (objectReference != null)
-            //{
-            //    return sourceNodePath.PushTarget();
-            //}
+            var objectReference = (sourceNode as IMemberNode)?.TargetReference;
+            if (objectReference != null)
+            {
+                return sourceNodePath.PushTarget();
+            }
 
-            //var referenceEnumerable = sourceNode.ItemReferences;
-            //if (referenceEnumerable != null && !index.IsEmpty)
-            //{
-            //    return sourceNodePath.PushIndex(index);
-            //}
+            var referenceEnumerable = (sourceNode as IObjectNode)?.ItemReferences;
+            if (referenceEnumerable != null && !index.IsEmpty)
+            {
+                return sourceNodePath.PushIndex(index);
+            }
 
             return sourceNodePath.Clone();
         }
@@ -508,8 +510,18 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
-            SourceNode.RegisterChanging(ContentChanging);
-            SourceNode.RegisterChanged(ContentChanged);
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing += ContentChanging;
+                memberNode.Changed += ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging += ContentChanging;
+                    targetNode.ItemChanged += ContentChanged;
+                }
+            }
         }
 
         /// <summary>
@@ -526,8 +538,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override void Destroy()
         {
-            SourceNode.UnregisterChanging(ContentChanging);
-            SourceNode.UnregisterChanged(ContentChanged);
+            var memberNode = SourceNode as IMemberNode;
+            if (memberNode != null)
+            {
+                memberNode.Changing -= ContentChanging;
+                memberNode.Changed -= ContentChanged;
+                var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
+                if (targetNode != null)
+                {
+                    targetNode.ItemChanging += ContentChanging;
+                    targetNode.ItemChanged += ContentChanged;
+                }
+            }
             base.Destroy();
         }
 
