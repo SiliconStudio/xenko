@@ -1,3 +1,5 @@
+using System;
+
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
@@ -29,6 +31,8 @@ namespace SiliconStudio.Core.Reflection
 
         public static CollectionItemIdentifiers GetCollectionItemIds(object instance)
         {
+            if (instance.GetType().IsValueType) throw new ArgumentException(@"The given instance is a value type and cannot have a item ids attached to it.", nameof(instance));
+
             var shadow = ShadowObject.GetOrCreate(instance);
             object result;
             if (shadow.TryGetValue(CollectionItemIdKey, out result))
