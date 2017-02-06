@@ -407,13 +407,13 @@ namespace SiliconStudio.Assets.Quantum
 
         internal void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
-            // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Node.Retrieve());
-
             var value = node.Retrieve();
 
             if (!CollectionItemIdHelper.HasCollectionItemIds(value))
                 return;
+
+            // Make sure that we have item ids everywhere we're supposed to.
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Node.Retrieve());
 
             // Create new ids for collection items
             var baseNode = (AssetObjectNode)BaseNode;
