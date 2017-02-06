@@ -1,6 +1,7 @@
 ﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
@@ -22,6 +23,8 @@ namespace SiliconStudio.Xenko.VirtualReality
         public bool DepthStencilAsResource;
 
         public bool RequireMirror;
+
+        public MSAALevel MSAALevel = MSAALevel.None;
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
@@ -51,20 +54,20 @@ namespace SiliconStudio.Xenko.VirtualReality
 #endif
                         }
                             break;
-                        case VRApi.Fove:
-                        {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                            Device = new FoveHmd();
-#endif
-                        }
-                            break;
-                        case VRApi.Google:
-                        {
-#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
-                                VRDevice = new GoogleVrHmd();
-#endif
-                        }
-                            break;
+//                        case VRApi.Fove:
+//                        {
+//#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+//                            Device = new FoveHmd();
+//#endif
+//                        }
+//                            break;
+//                        case VRApi.Google:
+//                        {
+//#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+//                                VRDevice = new GoogleVrHmd();
+//#endif
+//                        }
+//                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -86,7 +89,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror);
+                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror, MSAALevel);
             }
         }
 

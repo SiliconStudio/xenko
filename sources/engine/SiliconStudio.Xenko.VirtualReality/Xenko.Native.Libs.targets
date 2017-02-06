@@ -5,8 +5,10 @@
   <PropertyGroup>
     <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows'">LibOVR.lib</XenkoNativePathLibs>
   </PropertyGroup>
-  
+
+  <!--
   <ItemGroup>
     <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\GoogleVR\lib\iOS\libgvr.a;" />
   </ItemGroup>
+  -->
 </Project>

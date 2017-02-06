@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+#if DONT_BUILD_FOR_NOW && (SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID)
 
 using System;
 #if SILICONSTUDIO_PLATFORM_ANDROID

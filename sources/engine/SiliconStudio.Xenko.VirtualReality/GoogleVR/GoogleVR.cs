@@ -1,14 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+#if DONT_BUILD_FOR_NOW && (SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID)
 
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using OpenTK.Graphics.ES20;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID

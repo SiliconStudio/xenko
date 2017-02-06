@@ -11,11 +11,15 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
+            var isMsaa = renderNode.RenderStage.Output.MultiSampleLevel != MSAALevel.None;
+
             // Make object in transparent stage use AlphaBlend and DepthRead
             if (renderNode.RenderStage == TransparentRenderStage)
             {
                 pipelineState.BlendState = BlendStates.AlphaBlend;
                 pipelineState.DepthStencilState = DepthStencilStates.DepthRead;
+                if (isMsaa)
+                    pipelineState.BlendState.AlphaToCoverageEnable = true;
             }
 
             var renderMesh = (RenderMesh)renderObject;
@@ -41,8 +45,6 @@ namespace SiliconStudio.Xenko.Rendering
                     // Single flipping
                     cullMode = CullMode.Front;
                 }
-
-                pipelineState.RasterizerState.CullMode = cullMode;
             }
 
             // Flip faces when geometry is inverted
@@ -56,6 +58,12 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     pipelineState.RasterizerState.CullMode = CullMode.Front;
                 }
+            }
+
+            if (isMsaa)
+            {
+                pipelineState.RasterizerState.MultiSampleLevel = renderNode.RenderStage.Output.MultiSampleLevel;
+                pipelineState.RasterizerState.MultiSampleAntiAliasLine = true;
             }
         }
     }

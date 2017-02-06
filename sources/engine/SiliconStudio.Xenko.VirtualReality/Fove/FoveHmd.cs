@@ -5,6 +5,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
+//TODO
+
 namespace SiliconStudio.Xenko.VirtualReality
 {
     internal class FoveHmd : VRDevice
@@ -23,14 +25,14 @@ namespace SiliconStudio.Xenko.VirtualReality
             referenceMatrixInv.Invert();
         }
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel)
         {
-            RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            if (requireMirror)
-            {
-                MirrorTexture = RenderFrame; //assign the surface we submit as mirror if needed
-            }
+//            RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+//            nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
+//            if (requireMirror)
+//            {
+//                MirrorTexture = RenderFrame; //assign the surface we submit as mirror if needed
+//            }
 
 //            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
 //            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>

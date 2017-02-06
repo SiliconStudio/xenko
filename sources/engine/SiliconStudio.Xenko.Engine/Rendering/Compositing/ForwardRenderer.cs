@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
+        private MSAALevel actualMSAALevel = MSAALevel.None;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
 
@@ -43,7 +44,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         public PostProcessingEffects PostEffects { get; set; }
 
+        /// <summary>
+        /// Virtual Reality related settings
+        /// </summary>
         public VRRendererSettings VRSettings { get; set; } = new VRRendererSettings();
+
+        /// <summary>
+        /// The level of multi-sampling
+        /// </summary>
+        public MSAALevel MSAALevel { get; set; } = MSAALevel.None;
 
         /// <summary>
         /// If true, depth buffer generated during <see cref="OpaqueRenderStage"/> will be available as a shader resource named DepthBase.DepthStencil during <see cref="TransparentRenderStage"/>.
@@ -63,6 +72,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             shadowMapRenderer =
                 Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
 
+            if (MSAALevel != MSAALevel.None)
+            {
+                actualMSAALevel = (MSAALevel)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MSAALevelMax);
+                actualMSAALevel = (MSAALevel)Math.Min((int)actualMSAALevel, (int)GraphicsDevice.Features[PixelFormat.D24_UNorm_S8_UInt].MSAALevelMax);
+            }
+
             var vrSystem = (VRDeviceSystem)Services.GetService(typeof(VRDeviceSystem));
             if (vrSystem != null)
             {
@@ -70,7 +85,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     vrSystem.DepthStencilAsResource = BindDepthAsResourceDuringTransparentRendering;
                     vrSystem.PreferredApis = VRSettings.RequiredApis.ToArray();
-                    vrSystem.Enabled = true;
+                    vrSystem.MSAALevel = actualMSAALevel;
+                    vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
                     VRSettings.VRDevice = vrSystem.Device;
                 }
@@ -108,10 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {
-                if (PostEffects != null)
-                {
-                    context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
-                }
+                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
@@ -128,11 +141,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         {
                             context.RenderSystem.Views.Add(context.RenderView);
                             context.RenderView.SceneInstance = sceneInstance;
-                            context.ViewportState.Viewport0 = new Viewport(0, 0, VRSettings.VRDevice.RenderFrameSize.Width / 2.0f, VRSettings.VRDevice.RenderFrameSize.Height);
+                            context.ViewportState.Viewport0 = new Viewport(0, 0, VRSettings.VRDevice.RenderFrame.Size.Width / 2.0f, VRSettings.VRDevice.RenderFrame.Size.Height);
 
                             //change camera params for eye
-                            VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix,
-                                out camera.ProjectionMatrix);
+                            VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
                             camera.UseCustomProjectionMatrix = true;
                             camera.UseCustomViewMatrix = true;
                             camera.Update();
@@ -184,9 +196,30 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
 
-                // Run post effects
-                // TODO: output in proper renderTarget location according to viewport
-                PostEffects?.Draw(drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
+                if (PostEffects != null)
+                {
+                    if (actualMSAALevel != MSAALevel.None)
+                    {
+                        var nonMsaaTarget =
+                            PushScopedResource(
+                                drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(renderTarget.Size.Width, renderTarget.Size.Height,
+                                    1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+
+                        drawContext.CommandList.CopyMultiSample(renderTarget, 0, nonMsaaTarget, 0);
+                        renderTarget = nonMsaaTarget;
+                    }
+
+                    // Run post effects
+                    // TODO: output in proper renderTarget location according to viewport
+                    PostEffects.Draw(drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
+                }
+                else
+                {
+                    if (actualMSAALevel != MSAALevel.None)
+                    {
+                        drawContext.CommandList.CopyMultiSample(renderTarget, 0, currentRenderTarget, 0);
+                    }
+                }
             }
         }
 
@@ -194,53 +227,75 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             var viewport = drawContext.CommandList.Viewport;
 
-            var currentRenderTarget = drawContext.CommandList.RenderTarget;
-            var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
-
-            if (VRSettings.Enabled && VRSettings.VRDevice != null)
+            using (drawContext.PushRenderTargetsAndRestore())
             {
-                // Allocate render targets
-                var renderTarget = PostEffects != null ? 
-                    PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(VRSettings.VRDevice.RenderFrameSize.Width, VRSettings.VRDevice.RenderFrameSize.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : 
-                    VRSettings.VRDevice.RenderFrame;
+                var currentRenderTarget = drawContext.CommandList.RenderTarget;
+                var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
 
-                //draw per eye
-                using (drawContext.PushRenderTargetsAndRestore())
+                if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
-                    drawContext.CommandList.SetRenderTarget(VRSettings.VRDevice.RenderFrameDepthStencil, renderTarget);
+                    // Allocate render targets
+                    var renderTarget = PostEffects != null
+                        ? PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                            TextureDescription.New2D(VRSettings.VRDevice.RenderFrame.Size.Width, VRSettings.VRDevice.RenderFrame.Size.Height, 1, PixelFormat.R16G16B16A16_Float,
+                                TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
+                        : actualMSAALevel == MSAALevel.None 
+                            ? VRSettings.VRDevice.RenderFrame //no msaa, just use VR provided buffer
+                            : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
+                                TextureDescription.New2D(VRSettings.VRDevice.RenderFrame.Size.Width, VRSettings.VRDevice.RenderFrame.Size.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                                    TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
 
-                    // Clear render target and depth stencil
-                    Clear?.Draw(drawContext);
-
-                    for (var i = 0; i < 2; i++)
+                    //draw per eye
+                    using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
+                        drawContext.CommandList.SetRenderTarget(VRSettings.VRDevice.RenderFrameDepthStencil, renderTarget);
+
+                        // Clear render target and depth stencil
+                        Clear?.Draw(drawContext);
+
+                        for (var i = 0; i < 2; i++)
                         {
-                            drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VRSettings.VRDevice.RenderFrameSize.Width/2, 0, VRSettings.VRDevice.RenderFrameSize.Width/2,
-                                VRSettings.VRDevice.RenderFrameSize.Height));
-                            DrawView(context, drawContext, renderTarget, VRSettings.VRDevice.RenderFrameDepthStencil, VRSettings.VRDevice.RenderFrame);
+                            using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
+                            {
+                                drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VRSettings.VRDevice.RenderFrame.Size.Width/2, 0, VRSettings.VRDevice.RenderFrame.Size.Width/2,
+                                    VRSettings.VRDevice.RenderFrame.Size.Height));
+                                DrawView(context, drawContext, renderTarget, VRSettings.VRDevice.RenderFrameDepthStencil, VRSettings.VRDevice.RenderFrame);
+                            }
                         }
+
+                        VRSettings.VRDevice.Commit(drawContext.CommandList);
                     }
-
-                    VRSettings.VRDevice.Commit(drawContext.CommandList);
                 }
-            }
-            else
-            {
-                // Allocate render targets
-                var renderTarget = PostEffects != null ? PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget))) : currentRenderTarget;
-
-                using (drawContext.PushRenderTargetsAndRestore())
+                else
                 {
-                    if (PostEffects != null)
+                    // Allocate render targets
+                    var renderTarget = PostEffects != null
+                        ? PushScopedResource(
+                            drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R16G16B16A16_Float,
+                                TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
+                        : actualMSAALevel == MSAALevel.None
+                            ? currentRenderTarget
+                            : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
+                                TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                                    TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
+
+                    currentDepthStencil = actualMSAALevel == MSAALevel.None
+                        ? currentDepthStencil
+                        : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                            TextureDescription.New2D((int)viewport.Width, (int)viewport.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                                TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
+
+                    using (drawContext.PushRenderTargetsAndRestore())
+                    {
                         drawContext.CommandList.SetRenderTargetAndViewport(currentDepthStencil, renderTarget);
 
-                    // Clear render target and depth stencil
-                    Clear?.Draw(drawContext);
+                        // Clear render target and depth stencil
+                        Clear?.Draw(drawContext);
 
-                    DrawView(context, drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
+                        DrawView(context, drawContext, renderTarget, currentDepthStencil, currentRenderTarget);
+                    }
                 }
-            }          
+            }
         }
 
         private Texture ResolveDepthAsSRV(RenderDrawContext context)

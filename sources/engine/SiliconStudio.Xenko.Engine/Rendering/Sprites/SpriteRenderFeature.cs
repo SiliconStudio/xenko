@@ -44,6 +44,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
+            var isMsaa = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel != MSAALevel.None;
+
             var batchContext = threadContext.Value;
 
             Matrix viewInverse;
@@ -89,6 +91,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                     var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
+                    if (isMsaa)
+                        blendState.AlphaToCoverageEnable = true;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
                     if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
@@ -109,7 +113,14 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                         batchContext.SpriteBatch.End();
                     }
 
-                    batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, RasterizerStates.CullNone, currentEffect);
+                    var rasterizerState = RasterizerStates.CullNone;
+                    if (isMsaa)
+                    {
+                        rasterizerState.MultiSampleLevel = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel;
+                        rasterizerState.MultiSampleAntiAliasLine = true;
+                    }
+
+                    batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, rasterizerState, currentEffect);
                     hasBegin = true;
                 }
                 previousBatchState = currentBatchState;
