@@ -59,11 +59,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             distanceToLight -= DepthBiases[lightIndex];
 
             // Scale distance to light depth buffer range 
-            distanceToLight *= DepthParameters[lightIndex].y;
-            distanceToLight -= DepthParameters[lightIndex].x;
+            float depth = (distanceToLight - DepthParameters[lightIndex].x) * DepthParameters[lightIndex].y;
 
             // Compare distance to light to value inside of the shadow map
-            streams.shadowColor = FilterShadow(projectedPosition.xy, distanceToLight);
+            streams.shadowColor = FilterShadow(projectedPosition.xy, depth);
         }
     };
 }

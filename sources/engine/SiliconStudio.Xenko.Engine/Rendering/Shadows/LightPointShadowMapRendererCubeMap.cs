@@ -169,10 +169,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Add the render view for the current frame
                 context.RenderSystem.Views.Add(shadowRenderView);
-
-                // Collect objects in shadow views
-                context.VisibilityGroup.TryCollect(shadowRenderView);
-
             }
         }
 

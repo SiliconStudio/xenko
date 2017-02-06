@@ -199,13 +199,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
             var shadowCasterCubemapRenderStage = new RenderStage("ShadowMapCasterCubemap", "ShadowMapCasterCubemap") { SortMode = new FrontToBackSortMode() };
+            var shadowCasterParabolaRenderStage = new RenderStage("ShadowMapCasterParabola", "ShadowMapCasterParabola") { SortMode = new FrontToBackSortMode() };
 
             var singleView = new ForwardRenderer
             {
                 Clear = { Color = clearColor ?? Color.CornflowerBlue },
                 OpaqueRenderStage = opaqueRenderStage,
                 TransparentRenderStage = transparentRenderStage,
-                ShadowMapRenderStage = shadowCasterRenderStage,
+                ShadowMapRenderStages = { shadowCasterRenderStage, shadowCasterCubemapRenderStage, shadowCasterParabolaRenderStage }              ,
                 PostEffects = enablePostEffects
                     ? new PostProcessingEffects
                     {
@@ -230,8 +231,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     LightRenderers =
                     {
                         new LightAmbientRenderer(),
-                        new LightDirectionalGroupRenderer(),
                         new LightSkyboxRenderer(),
+                        new LightDirectionalGroupRenderer(),
                         new LightPointGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
                         new LightSpotGroupRenderer { NonShadowRenderer = clusteredPointSpotGroupRenderer },
                     },
@@ -244,6 +245,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                 ShadowCasterRenderStage = shadowCasterCubemapRenderStage
                             },
                             new LightDirectionalShadowMapRenderer
+                            {
+                                ShadowCasterRenderStage = shadowCasterRenderStage
+                            },
+                            new LightSpotShadowMapRenderer
                             {
                                 ShadowCasterRenderStage = shadowCasterRenderStage
                             }
@@ -274,6 +279,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     transparentRenderStage,
                     shadowCasterRenderStage,
                     shadowCasterCubemapRenderStage,
+                    shadowCasterParabolaRenderStage
                 },
                 RenderFeatures =
                 {
@@ -305,11 +311,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                 EffectName = modelEffectName + ".ShadowMapCasterCubeMap",
                                 ShadowMapRenderStage = shadowCasterCubemapRenderStage,
                             },
+                            new ShadowMapRenderStageSelector
+                            {
+                                EffectName = modelEffectName + ".ShadowMapCasterParabola",
+                                ShadowMapRenderStage = shadowCasterParabolaRenderStage,
+                            },
                         },
                         PipelineProcessors =
                         {
                             new MeshPipelineProcessor { TransparentRenderStage = transparentRenderStage },
                             new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterRenderStage },
+                            new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterCubemapRenderStage },
+                            new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterParabolaRenderStage },
                         }
                     },
                     new SpriteRenderFeature

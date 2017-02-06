@@ -17,29 +17,18 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     public class LightPointShadowMapRendererParaboloid : LightShadowMapRendererBase
     {
-        public readonly RenderStage ShadowMapRenderStageParaboloid;
-
-        private PoolListStruct<ShadowMapRenderView> shadowRenderViews;
         private PoolListStruct<ShaderData> shaderDataPool;
-        private PoolListStruct<ShadowMapTexture> shadowMapTextures;
 
-        public LightPointShadowMapRendererParaboloid(ShadowMapRenderer parent) : base(parent)
+        public LightPointShadowMapRendererParaboloid()
         {
-            ShadowMapRenderStageParaboloid = ShadowMapRenderer.RenderSystem.GetRenderStage("ShadowMapCasterParaboloid");
-
             shaderDataPool = new PoolListStruct<ShaderData>(4, () => new ShaderData());
-            shadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowMapRenderStageParaboloid } });
-            shadowMapTextures = new PoolListStruct<ShadowMapTexture>(16, () => new ShadowMapTexture());
         }
 
-        public override void Reset()
+        public override void Reset(RenderContext context)
         {
-            foreach(var view in shadowRenderViews)
-                ShadowMapRenderer.RenderSystem.Views.Remove(view);
+            base.Reset(context);
 
             shaderDataPool.Clear();
-            shadowRenderViews.Clear();
-            shadowMapTextures.Clear();
         }
 
         public override ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType)
@@ -58,57 +47,21 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return false;
         }
 
-        public override LightShadowMapTexture CreateTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
-            var lightShadowMap = shadowMapTextures.Add();
-            lightShadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
-            
-            lightShadowMap.CascadeCount = 2; // 2 faces
-            return lightShadowMap;
+            var shadowMapTexture = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+            shadowMapTexture.CascadeCount = 2; // 2 faces
+            return shadowMapTexture;
         }
-
-        public override void CreateRenderViews(LightShadowMapTexture lightShadowMap, VisibilityGroup visibilityGroup)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                // Allocate shadow render view
-                var shadowRenderView = shadowRenderViews.Add();
-                shadowRenderView.RenderView = ShadowMapRenderer.CurrentView;
-                shadowRenderView.ShadowMapTexture = lightShadowMap;
-                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
-                shadowRenderView.NearClipPlane = 0.0f;
-                shadowRenderView.FarClipPlane = GetShadowMapFarPlane(lightShadowMap);
-
-                // Compute view parameters
-                // Note: we only need view here since we are doing paraboloid projection in the vertex shader
-                GetViewParameters(lightShadowMap, i, out shadowRenderView.View, true);
-
-                Matrix virtualProjectionMatrix = shadowRenderView.View;
-                virtualProjectionMatrix *= Matrix.Scaling(1.0f/shadowRenderView.FarClipPlane);
-
-                shadowRenderView.ViewProjection = virtualProjectionMatrix;
-
-                shadowRenderView.VisiblityIgnoreDepthPlanes = false;
-
-                // Add the render view for the current frame
-                ShadowMapRenderer.RenderSystem.Views.Add(shadowRenderView);
-
-                // Collect objects in shadow views
-                visibilityGroup.Collect(shadowRenderView);
-            }
-        }
-
         public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
         {
             parameters.Set(ShadowMapCasterParaboloidProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
         }
 
-        public override void Collect(RenderContext context, LightShadowMapTexture lightShadowMap)
+        public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
         {
-            var visibilityGroup = context.Tags.Get(SceneInstance.CurrentVisibilityGroup);
             CalculateViewDirection(lightShadowMap);
-
-
+            
             var shaderData = shaderDataPool.Add();
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
@@ -127,7 +80,34 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             
             shaderData.DepthParameters = GetShadowMapDepthParameters(lightShadowMap);
             
-            GetViewParameters(lightShadowMap, 0, out shaderData.View, false);
+            for (int i = 0; i < 2; i++)
+            {
+                // Allocate shadow render view
+                var shadowRenderView = CreateRenderView();
+                shadowRenderView.RenderView = sourceView;
+                shadowRenderView.ShadowMapTexture = lightShadowMap;
+                shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
+                shadowRenderView.NearClipPlane = 0.0f;
+                shadowRenderView.FarClipPlane = GetShadowMapFarPlane(lightShadowMap);
+
+                // Compute view parameters
+                // Note: we only need view here since we are doing paraboloid projection in the vertex shader
+                GetViewParameters(lightShadowMap, i, out shadowRenderView.View, true);
+
+                // Also set the first view matrix on the shader data
+                if (i == 0)
+                    shaderData.View = shadowRenderView.View;
+
+                Matrix virtualProjectionMatrix = shadowRenderView.View;
+                virtualProjectionMatrix *= Matrix.Scaling(1.0f / shadowRenderView.FarClipPlane);
+
+                shadowRenderView.ViewProjection = virtualProjectionMatrix;
+
+                shadowRenderView.VisiblityIgnoreDepthPlanes = false;
+
+                // Add the render view for the current frame
+                context.RenderSystem.Views.Add(shadowRenderView);
+            }
         }
 
         /// <summary>

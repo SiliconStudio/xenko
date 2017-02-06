@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas);
 
+        void Draw(RenderDrawContext drawContext);
+
         void PrepareAtlasAsRenderTargets(CommandList commandList);
 
         void PrepareAtlasAsShaderResourceViews(CommandList commandList);

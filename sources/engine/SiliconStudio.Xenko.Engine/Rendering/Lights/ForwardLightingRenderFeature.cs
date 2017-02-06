@@ -90,6 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<LightGroupRendererBase> LightRenderers => lightRenderers;
         
+        [DataMember]
         public List<RenderStage> StagesToIgnore { get; } = new List<RenderStage>();
 
         [DataMember]
@@ -466,13 +467,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Invalidate per-view data
             currentRenderView = null;
-        }
-
-        protected void RegisterLightGroupRenderer(LightGroupRendererBase renderer)
-        {
-            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
-            lightRenderers.Add(renderer);
-            renderer.Initialize(Context);
         }
 
         protected override void OnRenderSystemChanged()

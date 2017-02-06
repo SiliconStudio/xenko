@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         protected LightShadowMapRendererBase()
         {
-            ShadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView { RenderStages = { ShadowCasterRenderStage } });
+            ShadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView());
             ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture { Renderer = this });
         }
 
@@ -103,7 +103,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public virtual ShadowMapRenderView CreateRenderView()
         {
             var shadowRenderView = ShadowRenderViews.Add();
-            shadowRenderView.RenderStages.Clear();
             shadowRenderView.RenderStages.Add(ShadowCasterRenderStage);
             return shadowRenderView;
         }

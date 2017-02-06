@@ -50,6 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
             Renderer = renderer;
             Atlas = null; // Reset the atlas, It will be setup after
+            CascadeCount = 1;
 
             ShadowType = renderer.GetShadowType(Shadow);
         }

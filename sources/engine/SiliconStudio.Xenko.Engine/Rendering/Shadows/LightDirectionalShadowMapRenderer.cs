@@ -57,10 +57,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override void Reset(RenderContext context)
         {
-            foreach (var view in ShadowRenderViews)
-                context.RenderSystem.Views.Remove(view);
-
-            ShadowRenderViews.Reset();
+            base.Reset(context);
+            
             shaderDataPoolCascade1.Clear();
             shaderDataPoolCascade2.Clear();
             shaderDataPoolCascade4.Clear();
@@ -93,6 +91,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public override bool CanRenderLight(IDirectLight light)
         {
             return light is LightDirectional;
+        }
+
+        public override LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        {
+            var shadowMap = base.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+            shadowMap.CascadeCount = ((LightDirectionalShadowMap)light.Shadow).GetCascadeCount();
+            return shadowMap;
         }
 
         public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
@@ -287,27 +292,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Allocate shadow render view
                 var shadowRenderView = CreateRenderView();
-                shadowRenderView.RenderView = shadowRenderView;
+                shadowRenderView.RenderView = sourceView;
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = shadowMapRectangle;
-
-                // Compute view parameters
-                GetCascadeViewParameters(lightShadowMap, cascadeLevel, out shadowRenderView.View, out shadowRenderView.Projection);
-                Matrix.Multiply(ref shadowRenderView.View, ref shadowRenderView.Projection, out shadowRenderView.ViewProjection);
+                shadowRenderView.View = viewMatrix;
+                shadowRenderView.Projection = projectionMatrix;
+                shadowRenderView.ViewProjection = viewProjectionMatrix;
 
                 // Add the render view for the current frame
                 context.RenderSystem.Views.Add(shadowRenderView);
-
-                // Collect objects in shadow views
-                context.VisibilityGroup.TryCollect(shadowRenderView);
             }
-        }
-
-        private void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
-        {
-            var shaderData = (LightDirectionalShadowMapShaderData)shadowMapTexture.ShaderData;
-            view = shaderData.ViewMatrix[cascadeIndex];
-            projection = shaderData.ProjectionMatrix[cascadeIndex];
         }
 
         private void UpdateFrustum(RenderView renderView)

@@ -1,4 +1,4 @@
-?¿<?xml version="1.0" encoding="utf-8"?>
+ï»¿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
@@ -484,6 +484,7 @@
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightPointShadowMapRendererCubeMap.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRendererParaboloid.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapShaderGroupDataBase.cs" />
     <Compile Include="Rendering\Shadows\LightShadowType.cs" />
     <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
