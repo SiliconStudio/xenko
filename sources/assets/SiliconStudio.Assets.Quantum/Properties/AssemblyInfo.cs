@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("SiliconStudio.Assets.Quantum")]
 [assembly: AssemblyDescription("SiliconStudio.Assets.Quantum")]
 
-// [assembly: InternalsVisibleTo("SiliconStudio.Assets.Serializers")]
-// [assembly: InternalsVisibleTo("SiliconStudio.Assets.Tests")]
+[assembly: InternalsVisibleTo("SiliconStudio.Assets.Quantum.Tests")]
 
 
