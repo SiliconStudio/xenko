@@ -5,6 +5,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
+//TODO
+
 namespace SiliconStudio.Xenko.VirtualReality
 {
     internal class FoveHmd : VRDevice

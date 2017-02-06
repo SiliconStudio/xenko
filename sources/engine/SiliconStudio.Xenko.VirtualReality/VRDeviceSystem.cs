@@ -54,20 +54,20 @@ namespace SiliconStudio.Xenko.VirtualReality
 #endif
                         }
                             break;
-                        case VRApi.Fove:
-                        {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
-                            Device = new FoveHmd();
-#endif
-                        }
-                            break;
-                        case VRApi.Google:
-                        {
-#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
-                                VRDevice = new GoogleVrHmd();
-#endif
-                        }
-                            break;
+//                        case VRApi.Fove:
+//                        {
+//#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+//                            Device = new FoveHmd();
+//#endif
+//                        }
+//                            break;
+//                        case VRApi.Google:
+//                        {
+//#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+//                                VRDevice = new GoogleVrHmd();
+//#endif
+//                        }
+//                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
