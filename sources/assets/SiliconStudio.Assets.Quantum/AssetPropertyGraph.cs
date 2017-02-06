@@ -79,7 +79,7 @@ namespace SiliconStudio.Assets.Quantum
             nodeListener.Dispose();
         }
 
-        public AssetObjectNode RootNode { get; }
+        public IAssetObjectNode RootNode { get; }
 
         public AssetPropertyGraphContainer Container { get; }
 
