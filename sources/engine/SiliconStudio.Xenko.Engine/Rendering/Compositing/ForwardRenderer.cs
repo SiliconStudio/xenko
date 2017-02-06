@@ -81,12 +81,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (VRSettings.Enabled)
                 {
-                    vrSystem.DepthStencilAsResource = BindDepthAsResourceDuringTransparentRendering;
                     vrSystem.PreferredApis = VRSettings.RequiredApis.ToArray();
-                    vrSystem.MSAALevel = actualMSAALevel;
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
                     VRSettings.VRDevice = vrSystem.Device;
+                    VRSettings.VRDepthStencil = Texture.New2D(GraphicsDevice, VRSettings.VRDevice.RenderFrame.Size.Width, VRSettings.VRDevice.RenderFrame.Size.Height, 1, PixelFormat.D24_UNorm_S8_UInt, null, BindDepthAsResourceDuringTransparentRendering ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel);
                 }
                 else
                 {
@@ -271,7 +270,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     //draw per eye
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTarget(VRSettings.VRDevice.RenderFrameDepthStencil, renderTarget);
+                        drawContext.CommandList.SetRenderTarget(VRSettings.VRDepthStencil, renderTarget);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
@@ -280,9 +279,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         {
                             using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
                             {
-                                drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VRSettings.VRDevice.RenderFrame.Size.Width/2, 0, VRSettings.VRDevice.RenderFrame.Size.Width/2,
-                                    VRSettings.VRDevice.RenderFrame.Size.Height));
-                                DrawView(context, drawContext, renderTarget, VRSettings.VRDevice.RenderFrameDepthStencil, VRSettings.VRDevice.RenderFrame);
+                                drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : VRSettings.VRDevice.RenderFrame.Size.Width/2, 0, VRSettings.VRDevice.RenderFrame.Size.Width/2, VRSettings.VRDevice.RenderFrame.Size.Height));
+                                DrawView(context, drawContext, renderTarget, VRSettings.VRDepthStencil, VRSettings.VRDevice.RenderFrame);
                             }
                         }
 

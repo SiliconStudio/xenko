@@ -20,11 +20,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public VRDevice Device { get; private set; }
 
-        public bool DepthStencilAsResource;
-
         public bool RequireMirror;
-
-        public MSAALevel MSAALevel = MSAALevel.None;
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
@@ -89,7 +85,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror, MSAALevel);
+                Device?.Enable(GraphicsDevice, deviceManager, RequireMirror);
             }
         }
 

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror)
         {
             width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
             width += width % 2;
@@ -36,16 +36,6 @@ namespace SiliconStudio.Xenko.VirtualReality
 
             needsMirror = requireMirror;
             RenderFrame = Texture.New2D(device, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            RenderFrameDepthStencil = Texture.New2D(
-                device,
-                width,
-                height, 1,
-                PixelFormat.D24_UNorm_S8_UInt,
-                null,
-                depthStencilResource ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil,
-                1,
-                GraphicsResourceUsage.Default,
-                msaaLevel);
 
             if (needsMirror)
             {
@@ -115,8 +105,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override TouchController LeftHand => leftHandController;
 
         public override TouchController RightHand => rightHandController;
-
-        public override Texture RenderFrameDepthStencil { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

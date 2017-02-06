@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             referenceMatrixInv.Invert();
         }
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror)
         {
 //            RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 //            nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
@@ -117,7 +117,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Size2 OptimalRenderFrameSize => new Size2(2560, 1440);
 
         public override Texture RenderFrame { get; protected set; }
-        public override Texture RenderFrameDepthStencil { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

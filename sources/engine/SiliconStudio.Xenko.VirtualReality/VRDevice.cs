@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract Texture RenderFrame { get; protected set; }
 
-        public abstract Texture RenderFrameDepthStencil { get; protected set; }
-
         public abstract Texture MirrorTexture { get; protected set; }
 
         public abstract float RenderFrameScaling { get; set; }
@@ -46,7 +44,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool CanInitialize { get; }
 
-        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel);
+        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror);
 
         public virtual void Recenter()
         {

@@ -42,6 +42,13 @@
 	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
 	  </SiliconStudioEmbeddedNativeLibrary>
     
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\openvr_api.dll">
+	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	  </SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\openvr_api.dll">
+	    <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	  </SiliconStudioEmbeddedNativeLibrary>
+    
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko*.dll">
 	    <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
 	  </SiliconStudioEmbeddedNativeLibrary>
