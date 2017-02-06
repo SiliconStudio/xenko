@@ -205,14 +205,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (TransparentRenderStage != null)
                 {
                     // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
-                    var depthStencilSRV = ResolveDepthAsSRV(drawContext);
-
-                    renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
-
-                    // Free the depth texture since we won't need it anymore
-                    if (depthStencilSRV != null)
+                    using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
+                        var depthStencilSRV = ResolveDepthAsSRV(drawContext);
+
+                        renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
+
+                        // Free the depth texture since we won't need it anymore
+                        if (depthStencilSRV != null)
+                        {
+                            drawContext.Resolver.ReleaseDepthStenctilAsShaderResource(depthStencilSRV);
+                        }
                     }
                 }
 
@@ -323,37 +326,36 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             if (!BindDepthAsResourceDuringTransparentRendering)
                 return null;
 
+            var depthStencil = context.CommandList.DepthStencilBuffer;
             var depthStencilSRV = context.Resolver.ResolveDepthStencil(context.CommandList.DepthStencilBuffer);
 
-            using (context.PushRenderTargetsAndRestore())
+            var renderView = context.RenderContext.RenderView;
+
+            foreach (var renderFeature in context.RenderContext.RenderSystem.RenderFeatures)
             {
+                if (!(renderFeature is RootEffectRenderFeature))
+                    continue;
 
-                var renderView = context.RenderContext.RenderView;
+                var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
+                var viewFeature = renderView.Features[renderFeature.Index];
 
-                foreach (var renderFeature in context.RenderContext.RenderSystem.RenderFeatures)
+                // Copy ViewProjection to PerFrame cbuffer
+                foreach (var viewLayout in viewFeature.Layouts)
                 {
-                    if (!(renderFeature is RootEffectRenderFeature))
+                    var resourceGroup = viewLayout.Entries[renderView.Index].Resources;
+
+                    var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
+                    if (depthLogicalGroup.Hash == ObjectId.Empty)
                         continue;
 
-                    var depthLogicalKey = ((RootEffectRenderFeature)renderFeature).CreateViewLogicalGroup("Depth");
-                    var viewFeature = renderView.Features[renderFeature.Index];
-
-                    // Copy ViewProjection to PerFrame cbuffer
-                    foreach (var viewLayout in viewFeature.Layouts)
-                    {
-                        var resourceGroup = viewLayout.Entries[renderView.Index].Resources;
-
-                        var depthLogicalGroup = viewLayout.GetLogicalGroup(depthLogicalKey);
-                        if (depthLogicalGroup.Hash == ObjectId.Empty)
-                            continue;
-
-                        // Might want to use ProcessLogicalGroup if more than 1 Recource
-                        resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
-                    }
+                    // Might want to use ProcessLogicalGroup if more than 1 Recource
+                    resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
                 }
             }
+            
+            context.CommandList.SetRenderTargets(null, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
-            depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(context.CommandList.DepthStencilBuffer, depthStencilROCached);
+            depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(depthStencil, depthStencilROCached);
             context.CommandList.SetRenderTargets(depthStencilROCached, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
             return depthStencilSRV;
