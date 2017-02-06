@@ -178,10 +178,10 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
+            context.PopRenderTargets();
+
             depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(currentRenderFrame.DepthStencil, depthStencilROCached);
             currentRenderFrame.Activate(context, depthStencilROCached);
-
-            context.PopRenderTargets();
 
             return depthStencilSRV;
         }
