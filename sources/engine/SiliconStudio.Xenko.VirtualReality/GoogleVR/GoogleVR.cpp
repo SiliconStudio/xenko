@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if defined(ANDROID) || defined(IOS) || !defined(__clang__)
+#if defined(DONT_BUILD_FOR_NOW) && (defined(ANDROID) || defined(IOS)) || !defined(__clang__)
 
 #if !defined(__clang__)
 #define size_t unsigned long //shutup a error on resharper

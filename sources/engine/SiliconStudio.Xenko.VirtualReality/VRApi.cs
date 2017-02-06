@@ -4,7 +4,7 @@
     {
         Oculus,
         OpenVR,
-        Fove,
-        Google
+        //Fove,
+        //Google
     }
 }
