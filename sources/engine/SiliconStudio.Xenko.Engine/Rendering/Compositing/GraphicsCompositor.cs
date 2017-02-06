@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     // Set start states for viewports and output (it will be used during the Collect phase)
                     var renderOutputs = new RenderOutputDescription();
                     renderOutputs.CaptureState(context.CommandList);
-                    context.RenderContext.RenderOutput = new RenderOutputDescription();
+                    context.RenderContext.RenderOutput = renderOutputs;
 
                     var viewports = new ViewportState();
                     viewports.CaptureState(context.CommandList);

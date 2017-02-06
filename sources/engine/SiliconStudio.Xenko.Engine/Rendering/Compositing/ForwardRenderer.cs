@@ -122,10 +122,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {
-                if (PostEffects != null)
-                {
-                    context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
-                }
+                context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {

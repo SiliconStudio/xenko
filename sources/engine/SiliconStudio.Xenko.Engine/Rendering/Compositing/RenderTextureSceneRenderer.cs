@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             using (context.SaveViewportAndRestore())
             {
                 context.RenderOutput.RenderTargetFormat0 = RenderTexture.ViewFormat;
+                context.RenderOutput.RenderTargetCount = 1;
                 context.ViewportState.Viewport0 = new Viewport(0, 0, RenderTexture.ViewWidth, RenderTexture.ViewHeight);
 
                 Child?.Collect(context);
