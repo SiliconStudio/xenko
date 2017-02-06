@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public event EventHandler<ItemChangeEventArgs> ItemChanging { add { nodeListener.ItemChanging += value; } remove { nodeListener.ItemChanging -= value; } }
 
-        public event EventHandler<ItemChangeEventArgs> ItemChanged;
+        public event EventHandler<AssetItemNodeChangeEventArgs> ItemChanged;
 
         /// <summary>
         /// Raised when a base content has changed, after updating the related content of this graph.
