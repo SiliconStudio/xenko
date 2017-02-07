@@ -17,7 +17,7 @@ namespace SiliconStudio.Packages
         {
             if (store == null) throw new ArgumentNullException(nameof(store));
             this.store = store;
-            version = package.Version.ToString();
+            version = package.Version.ToSemanticVersion().ToNormalizedString();
 
             foreach (var progressProvider in store.SourceRepository.Repositories.OfType<IProgressProvider>())
             {
