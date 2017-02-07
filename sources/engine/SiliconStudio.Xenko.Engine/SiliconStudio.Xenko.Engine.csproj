@@ -223,6 +223,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\DefaultPostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
     <Compile Include="Rendering\Images\Dither\Dither2.cs">
       <AutoGen>True</AutoGen>

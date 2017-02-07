@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -8,7 +11,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     [DataContract]
     public class VRRendererSettings
     {
+        [DataMember(10)]
         public bool Enabled { get; set; }
+
+        [DataMember(20)]
+        [DefaultValue(true)]
+        public bool IgnoreCameraRotation { get; set; } = true;
 
         public List<VRApi> RequiredApis { get; } = new List<VRApi>();
 
@@ -19,6 +27,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public VRDevice VRDevice;
 
         [DataMemberIgnore]
-        public Texture VRDepthStencil;
+        public ImageScaler MirrorScaler = new ImageScaler();
     }
 }
