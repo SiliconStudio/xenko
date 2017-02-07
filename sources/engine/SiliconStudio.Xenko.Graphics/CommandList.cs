@@ -202,32 +202,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetViews">A set of render target views to bind.</param>
-        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        public void SetRenderTargetsAndViewport(Texture depthStencilView, List<Texture> renderTargetViews)
-        {
-            depthStencilBuffer = depthStencilView;
-
-            if (renderTargetViews != null)
-            {
-                renderTargetCount = renderTargetViews.Count;
-                for (int i = 0; i < renderTargetViews.Count; i++)
-                {
-                    renderTargets[i] = renderTargetViews[i];
-                }
-            }
-            else
-            {
-                renderTargetCount = 0;
-            }
-
-            CommonSetRenderTargetsAndViewport(depthStencilBuffer, renderTargetCount, renderTargets);
-        }
-
-        /// <summary>
         /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
@@ -284,26 +258,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 renderTargetCount = renderTargetViews.Length;
                 for (var i = 0; i < renderTargetViews.Length; i++)
-                {
-                    renderTargets[i] = renderTargetViews[i];
-                }
-            }
-            else
-            {
-                renderTargetCount = 0;
-            }
-
-            SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
-        }
-
-        public void SetRenderTargets(Texture depthStencilView, List<Texture> renderTargetViews)
-        {
-            depthStencilBuffer = depthStencilView;
-
-            if (renderTargetViews != null)
-            {
-                renderTargetCount = renderTargetViews.Count;
-                for (var i = 0; i < renderTargetViews.Count; i++)
                 {
                     renderTargets[i] = renderTargetViews[i];
                 }
