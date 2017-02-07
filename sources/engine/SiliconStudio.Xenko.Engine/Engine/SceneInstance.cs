@@ -2,12 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering;
 
@@ -42,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
         /// </summary>
-        public event EventHandler<EventArgs> SceneChanged;
+        public event EventHandler<EventArgs> RootSceneChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityManager" /> class.
@@ -97,7 +101,7 @@ namespace SiliconStudio.Xenko.Engine
                 }
 
                 rootScene = value;
-                OnSceneChanged();
+                OnRootSceneChanged();
             }
         }
 
@@ -275,9 +279,9 @@ namespace SiliconStudio.Xenko.Engine
             return processor;
         }
 
-        private void OnSceneChanged()
+        private void OnRootSceneChanged()
         {
-            SceneChanged?.Invoke(this, EventArgs.Empty);
+            RootSceneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private class RegisteredRenderProcessors
