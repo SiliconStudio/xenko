@@ -223,7 +223,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
-    <Compile Include="Rendering\Images\DefaultPostProcessingEffects.cs" />
+    <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
     <Compile Include="Rendering\Images\Dither\Dither2.cs">
       <AutoGen>True</AutoGen>
@@ -1801,7 +1801,7 @@
     <Compile Include="Rendering\Images\GaussianBlur\GaussianUtil.cs" />
     <Compile Include="Rendering\Images\ImageEffect.cs" />
     <Compile Include="Rendering\Images\ImageEffect.Extensions.cs" />
-    <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
+    <Compile Include="Rendering\Images\IPostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\ImageEffectShader.cs" />
     <Compile Include="Rendering\Images\ImageEffectShader1.cs">
       <DependentUpon>ImageEffectShader.xksl</DependentUpon>

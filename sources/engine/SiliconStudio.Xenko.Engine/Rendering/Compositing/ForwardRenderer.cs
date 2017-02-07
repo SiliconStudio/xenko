@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private Texture depthStencilROCached;
         private MSAALevel actualMSAALevel = MSAALevel.None;
 
-        protected readonly List<Texture> ViewRenderTargets = new List<Texture>();
+        protected readonly FastList<Texture> ViewRenderTargets = new FastList<Texture>();
         protected Texture ViewOutputTarget;
         protected Texture ViewDepthStencil;
 
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// The post effects renderer.
         /// </summary>
-        public BasePostProcessingEffects PostEffects { get; set; }
+        public IPostProcessingEffects PostEffects { get; set; }
 
         /// <summary>
         /// Virtual Reality related settings
@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         //draw per eye
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewRenderTargets);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewRenderTargets.Count, ViewRenderTargets.Items);
 
                             // Clear render target and depth stencil
                             Clear?.Draw(drawContext);
@@ -436,7 +436,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewRenderTargets);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewRenderTargets.Count, ViewRenderTargets.Items);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
