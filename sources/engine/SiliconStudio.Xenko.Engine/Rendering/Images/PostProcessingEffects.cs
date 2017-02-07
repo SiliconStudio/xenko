@@ -236,9 +236,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
         }
 
-        public void Draw(RenderDrawContext drawContext, IPostProcessingEffectsInput inputTargets, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
         {
-            var colorInput = inputTargets as IColorInput;
+            var colorInput = inputTargetsComposition as IColorTarget;
             if (colorInput == null) return;
 
             SetInput(0, colorInput.Color);

@@ -12,6 +12,43 @@ using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
+    public class DefaultRenderTargets : IColorTarget, INormalsTarget, IVelocityTarget
+    {
+        private readonly Texture[] allTargets = new Texture[3];
+
+        public Texture Color { get; set; }
+
+        public Texture Normals { get; set; }
+
+        public Texture Velocity { get; set; }
+
+        public Texture[] AllTargets
+        {
+            get
+            {
+                allTargets[0] = Color;
+                allTargets[1] = Normals;
+                allTargets[2] = Velocity;
+                return allTargets;
+            }
+        }
+
+        public int NumberOfTargets
+        {
+            get
+            {
+                var n = 0;
+                if (Color != null)
+                    n++;
+                if (Normals != null)
+                    n++;
+                if (Velocity != null)
+                    n++;
+                return n;
+            }
+        }
+    }
+
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
@@ -21,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private Texture depthStencilROCached;
         private MSAALevel actualMSAALevel = MSAALevel.None;
 
-        protected readonly FastList<Texture> ViewRenderTargets = new FastList<Texture>();
+        protected IRenderTarget ViewTargetsComposition;
         protected Texture ViewOutputTarget;
         protected Texture ViewDepthStencil;
 
@@ -71,6 +108,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            ViewTargetsComposition = new DefaultRenderTargets();
 
             shadowMapRenderer =
                 Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
@@ -186,6 +225,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
 
                             CollectView(context);
+
+                            PostEffects?.Collect(context);
                         }
                     }
                 }
@@ -195,6 +236,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
 
                     CollectView(context);
+
+                    PostEffects?.Collect(context);
                 }
 
                 if (ShadowMapRenderStage != null)
@@ -273,7 +316,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     // Run post effects
                     // TODO: output in proper renderTarget location according to viewport
-                    PostEffects.Draw(drawContext, ViewRenderTargets, ViewDepthStencil, peOutputTarget);
+                    PostEffects.Draw(drawContext, ViewTargetsComposition, ViewDepthStencil, peOutputTarget);
 
                     if (actualMSAALevel != MSAALevel.None)
                     {
@@ -284,7 +327,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     if (actualMSAALevel != MSAALevel.None)
                     {
-                        drawContext.CommandList.CopyMultiSample(ViewRenderTargets[0], 0, ViewOutputTarget, 0);
+                        var color = ViewTargetsComposition as IColorTarget;
+                        if (color != null)
+                        {
+                            drawContext.CommandList.CopyMultiSample(color.Color, 0, ViewOutputTarget, 0);
+                        }
                     }
                 }
             }
@@ -298,16 +345,27 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <param name="height">The desired height</param>
         protected virtual void PrepareRenderTargets(RenderDrawContext drawContext, int width, int height)
         {
-            ViewRenderTargets.Clear();
-
             var currentRenderTarget = drawContext.CommandList.RenderTarget;
+            if (drawContext.CommandList.RenderTargetCount == 0)
+                currentRenderTarget = null;
             var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
+
+            //Make sure we got a valid NOT MSAA OUTPUT Target
+            if (currentRenderTarget == null)
+            {
+                currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                    TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                        TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+            }
 
             //MSAA, we definitely need new buffers
             if (actualMSAALevel != MSAALevel.None)
             {
-                //Handle render targets
-                var renderTarget = PostEffects != null
+                //Handle color render targets
+                var color = ViewTargetsComposition as IColorTarget;
+                if (color != null)
+                {
+                    color.Color = PostEffects != null
                     ? PushScopedResource(
                         drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
@@ -315,15 +373,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
                         TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
-
-                ViewRenderTargets.Add(renderTarget);
-
-                //Make sure we got a valid NOT MSAA Target
-                if (currentRenderTarget == null)
-                {
-                    currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
-                            TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
                 }
 
                 //Handle Depth
@@ -336,33 +385,23 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (PostEffects == null) //NO Post-Effects
                 {
-                    //Handle render targets
-                    if (currentRenderTarget != null)
+                    //Handle color
+                    var color = ViewTargetsComposition as IColorTarget;
+                    if (color != null)
                     {
-                        ViewRenderTargets.Add(currentRenderTarget);
-                    }
-                    else
-                    {
-                        currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                            TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
-                                TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
-
-                        ViewRenderTargets.Add(currentRenderTarget);
+                        color.Color = currentRenderTarget;
                     }
                 }
                 else // WITH Post-Effects
                 {
-                    //Create a new output target if we don't have one
-                    if (currentRenderTarget == null)
+                    //Handle color
+                    var color = ViewTargetsComposition as IColorTarget;
+                    if (color != null)
                     {
-                        currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                            TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                        color.Color = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                            TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
                                 TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
                     }
-
-                    ViewRenderTargets.Add(PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                            TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
-                                TextureFlags.ShaderResource | TextureFlags.RenderTarget))));
                 }
 
                 //Handle Depth
@@ -374,6 +413,28 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
 
                 ViewDepthStencil = currentDepthStencil;
+            }
+
+            //Handle normals
+            var normals = ViewTargetsComposition as INormalsTarget;
+            if (normals != null)
+            {
+                normals.Normals = PostEffects != null && PostEffects.RequiresNormalBuffer
+                ? PushScopedResource(
+                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
+                        TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
+                : null;
+            }
+
+            //Handle velocity
+            var velocity = ViewTargetsComposition as IVelocityTarget;
+            if (velocity != null)
+            {
+                velocity.Velocity = PostEffects != null && PostEffects.RequiresVelocityBuffer
+                ? PushScopedResource(
+                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16_Float,
+                        TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
+                : null;
             }
 
             ViewOutputTarget = currentRenderTarget;
@@ -393,14 +454,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         var height = VRSettings.VRDevice.ActualRenderFrameSize.Height;
 
                         //make sure we don't use any default targets!
-                        drawContext.CommandList.SetRenderTarget(null, null);
+                        drawContext.CommandList.SetRenderTargets(null, null);
 
                         PrepareRenderTargets(drawContext, width, height);
 
                         //draw per eye
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewRenderTargets.Count, ViewRenderTargets.Items);
+                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
 
                             // Clear render target and depth stencil
                             Clear?.Draw(drawContext);
@@ -436,7 +497,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewRenderTargets.Count, ViewRenderTargets.Items);
+                        drawContext.CommandList.SetRenderTargetsAndViewport(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
