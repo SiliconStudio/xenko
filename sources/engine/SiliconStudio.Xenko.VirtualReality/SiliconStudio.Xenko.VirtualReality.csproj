@@ -70,6 +70,12 @@
           <Private>False</Private>
         </Reference>
       </ItemGroup>
+	  <ItemGroup>
+		<None Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
+		  <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	  </ItemGroup>
     </When>
   </Choose>
   <Choose>

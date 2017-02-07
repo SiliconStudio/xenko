@@ -18,23 +18,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract Texture RenderFrame { get; protected set; }
 
-        public abstract Texture RenderFrameDepthStencil { get; protected set; }
-
         public abstract Texture MirrorTexture { get; protected set; }
 
         public abstract float RenderFrameScaling { get; set; }
-
-        public virtual Size2 RenderFrameSize
-        {
-            get
-            {
-                var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
-                width += width % 2;
-                var height = (int)(OptimalRenderFrameSize.Height * RenderFrameScaling);
-                height += height % 2;
-                return new Size2(width, height);
-            }
-        }
 
         public abstract DeviceState State { get; }
 
@@ -58,7 +44,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool CanInitialize { get; }
 
-        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror);
+        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror);
 
         public virtual void Recenter()
         {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
@@ -16,5 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         [DataMemberIgnore]
         public VRDevice VRDevice;
+
+        [DataMemberIgnore]
+        public Texture VRDepthStencil;
     }
 }

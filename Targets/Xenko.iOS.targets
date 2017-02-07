@@ -14,8 +14,9 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libCelt.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libRecast.a" />
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libDetour.a" />
+    <!-- Let users add this if they want for now.
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libgvr.a" />
-    
+    -->
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
   </ItemGroup>
@@ -37,7 +38,10 @@
     <XamarinVersion>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS', 'InstalledVersion', '8.2.0', RegistryView.Registry32))</XamarinVersion>
     <XamarinIOSMajorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(1).ToString())</XamarinIOSMajorVersion>
     <XamarinIOSMinorVersion>$([System.Text.RegularExpressions.Regex]::Match($(XamarinVersion), `^(\d+)\.(\d+)\.`).get_Groups().get_Item(2).ToString())</XamarinIOSMinorVersion>
+    <!-- Let users add this if they want for now.
     <XenkoMTouchExtras>-framework OpenGLES -framework SpriteKit -framework CoreAudio -framework CoreMedia -framework CoreText -framework CoreVideo -framework AudioToolbox -framework MediaPlayer -framework GLKit</XenkoMTouchExtras>
+    -->
+    <XenkoMTouchExtras></XenkoMTouchExtras>
   </PropertyGroup>
 
   <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">

@@ -22,14 +22,14 @@ namespace SiliconStudio.Xenko.VirtualReality
         private OculusTouchController leftHandController;
         private OculusTouchController rightHandController;
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
             //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString(); //should not be needed
 
             int texturesCount;
-            if (!OculusOvr.CreateTexturesDx(ovrSession, device.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? RenderFrameSize.Width : 0, requireMirror ? RenderFrameSize.Height : 0))
+            if (!OculusOvr.CreateTexturesDx(ovrSession, device.NativeDevice.NativePointer, out texturesCount, RenderFrameScaling, requireMirror ? 1280 : 0, requireMirror ? 720 : 0))
             {
                 throw new Exception(OculusOvr.GetError());
             }
@@ -55,8 +55,13 @@ namespace SiliconStudio.Xenko.VirtualReality
                 textures[i].InitializeFrom(new Texture2D(ptr), false);
             }
 
-            RenderFrame = Texture.New2D(device, textures[0].Width, textures[0].Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            RenderFrameDepthStencil = Texture.New2D(device, textures[0].Width, textures[0].Height, PixelFormat.D24_UNorm_S8_UInt, depthStencilResource ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil);
+            RenderFrame = Texture.New2D(
+                device, 
+                textures[0].Width, 
+                textures[0].Height, 1,
+                PixelFormat.R8G8B8A8_UNorm_SRgb, 
+                null,
+                TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 
             leftHandController = new OculusTouchController(TouchControllerHand.Left);
             rightHandController = new OculusTouchController(TouchControllerHand.Right);
@@ -84,11 +89,9 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Texture RenderFrame { get; protected set; }
 
-        public override Texture RenderFrameDepthStencil { get; protected set; }
-
         public override Texture MirrorTexture { get; protected set; }
 
-        public override float RenderFrameScaling { get; set; } = 1.4f;
+        public override float RenderFrameScaling { get; set; } = 1.2f;
 
         public override DeviceState State
         {
