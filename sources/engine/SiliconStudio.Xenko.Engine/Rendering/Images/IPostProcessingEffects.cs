@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -27,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         int NumberOfTargets { get; }
     }
 
-    public interface IPostProcessingEffects
+    public interface IPostProcessingEffects : ISharedRenderer
     {
         void Collect(RenderContext context);
 
