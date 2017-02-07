@@ -166,6 +166,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 foreach(var shadowMapRenderStage in ShadowMapRenderStages)
                     shadowMapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
             }
+
+            PostEffects?.Collect(context);
         }
 
         private void DrawView(RenderContext context, RenderDrawContext drawContext, Texture renderTarget, Texture currentDepthStencil, Texture currentRenderTarget)

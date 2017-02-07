@@ -136,6 +136,7 @@
     <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
+    <Compile Include="Engine\LightShaftComponent.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\NavigationComponent.cs" />
@@ -223,6 +224,19 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AdditiveLightShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\LightShafts.cs" />
+    <Compile Include="Rendering\Images\LightShafts\LightShaftsShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightShaftsShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
@@ -240,6 +254,14 @@
     <None Include="Rendering\Images\Dither\Dither.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Dither2.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\AdditiveLightShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AdditiveLightShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\LightShaftsShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightShaftsShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />
@@ -3891,6 +3913,7 @@
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
     <Folder Include="Rendering\Lightprobes\" />
+    <Folder Include="Rendering\Lightshafts\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>

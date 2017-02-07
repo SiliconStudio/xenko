@@ -2,12 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using SharpDX.Direct3D11;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -25,6 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private Bloom bloom;
         private LightStreak lightStreak;
         private LensFlare lensFlare;
+        private LightShafts lightShafts;
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
@@ -50,6 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightStreak = new LightStreak();
             lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
+            lightShafts = new LightShafts();
             colorTransformsGroup = new ColorTransformGroup();
         }
 
@@ -159,12 +168,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        [DataMember(60)]
+        [Category]
+        public LightShafts LightShafts
+        {
+            get
+            {
+                return lightShafts;
+            }
+        }
+
         /// <summary>
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
         /// <userdoc>Performs a transformation onto the image colors.</userdoc>
-        [DataMember(60)]
+        [DataMember(70)]
         [Category]
         public ColorTransformGroup ColorTransforms
         {
@@ -179,7 +198,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The antialiasing.</value>
         /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
-        [DataMember(70)]
+        [DataMember(80)]
         [Display("Type", "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {
@@ -242,6 +261,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(context);
         }
 
+        public void Collect(RenderContext context)
+        {
+            if (lightShafts.Enabled)
+            {
+                lightShafts.Collect(context);
+            }
+        }
+
         protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
@@ -294,6 +321,25 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 depthOfField.Draw(context);
                 currentInput = dofOutput;
             }
+
+            //var nativeDevice = GraphicsDevice.NativeDevice;
+            //var query = new Query(nativeDevice, new QueryDescription { Type = QueryType.Timestamp, Flags = QueryFlags.None });
+            //GraphicsDevice.NativeDeviceContext.Begin(query);
+            //
+            //Stopwatch timer = new Stopwatch();
+            //timer.Start();
+            if (lightShafts.Enabled)
+            {
+                // Set common inputs for light shafts once
+                //lightShafts.SetInput(0, currentInput);
+                lightShafts.SetInput(0, GetInput(1)); // Depth
+                lightShafts.SetOutput(currentInput);
+                lightShafts.Draw(context);
+            }
+
+            //GraphicsDevice.NativeDeviceContext.End(query);
+            //var time = GraphicsDevice.NativeDeviceContext.GetData<UInt64>(query);
+            //Debug.WriteLine($"Shader Time: {time}");
 
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
