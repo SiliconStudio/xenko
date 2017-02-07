@@ -1,11 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -63,7 +64,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// The parent scene.
         /// </summary>
+        /// <userdoc>The parent scene.</userdoc>
         [DataMember(10)]
+        [DefaultValue(null)]
         public Scene Parent { get; set; }
+
+        /// <summary>
+        /// The translation offset relative to the <see cref="Parent"/> scene.
+        /// </summary>
+        /// <userdoc>The translation offset of the scene with regard to its parent scene, if any.</userdoc>
+        [DataMember(20)]
+        public Vector3 Offset { get; set; }
     }
 }
