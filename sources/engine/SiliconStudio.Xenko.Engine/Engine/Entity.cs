@@ -30,11 +30,6 @@ namespace SiliconStudio.Xenko.Engine
     public sealed class Entity : ComponentBase, IEnumerable<EntityComponent>, IIdentifiable
     {
         internal TransformComponent transform;
-
-        /// <summary>
-        /// Internal owner of this entity
-        /// </summary>
-        internal IEntityComponentNotify Owner;
         internal Scene scene;
 
         /// <summary>
@@ -111,6 +106,12 @@ namespace SiliconStudio.Xenko.Engine
                 value?.Entities.Add(this);
             }
         }
+
+        /// <summary>
+        /// The entity manager which processes this entity.
+        /// </summary>
+        [DataMemberIgnore]
+        public SceneInstance EntityManager { get; internal set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Transform"/> associated to this entity.
