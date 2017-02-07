@@ -232,13 +232,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        public void Draw(RenderDrawContext drawContext, IList<Texture> inputTargets, Texture inputDepthStencil, Texture outputTarget)
+        public void Collect(RenderContext context)
         {
-            SetInput(0, inputTargets[0]);
+        }
+
+        public void Draw(RenderDrawContext drawContext, IPostProcessingEffectsInput inputTargets, Texture inputDepthStencil, Texture outputTarget)
+        {
+            var colorInput = inputTargets as IColorInput;
+            if (colorInput == null) return;
+
+            SetInput(0, colorInput.Color);
             SetInput(1, inputDepthStencil);
             SetOutput(outputTarget);
             Draw(drawContext);
         }
+
+        public bool RequiresVelocityBuffer => false;
+
+        public bool RequiresNormalBuffer => false;
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -298,13 +309,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
             if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
-                const int LocalLuminanceDownScale = 3;
+                const int localLuminanceDownScale = 3;
 
                 // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
                 var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
                 lumWidth = Math.Max(1, lumWidth / 2);
 
-                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(LocalLuminanceDownScale);
+                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(localLuminanceDownScale);
                 var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
                 luminanceEffect.SetInput(currentInput);
