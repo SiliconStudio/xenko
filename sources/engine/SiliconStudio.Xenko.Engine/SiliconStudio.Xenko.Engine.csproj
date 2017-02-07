@@ -133,7 +133,6 @@
     <Compile Include="Engine\Events\EventReceiverOptions.cs" />
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
-    <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />

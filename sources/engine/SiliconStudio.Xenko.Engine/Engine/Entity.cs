@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The entity manager which processes this entity.
         /// </summary>
         [DataMemberIgnore]
-        public SceneInstance EntityManager { get; internal set; }
+        public EntityManager EntityManager { get; internal set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Transform"/> associated to this entity.
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Engine
         internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
             // Don't use events but directly call the Owner
-            Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
+            EntityManager?.NotifyComponentChanged(this, index, oldComponent, newComponent);
         }
 
         public override string ToString()
