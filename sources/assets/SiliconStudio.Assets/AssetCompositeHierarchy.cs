@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Assets
@@ -172,6 +173,30 @@ namespace SiliconStudio.Assets
             }
 
             return clonedHierarchy;
+        }
+
+        /// <summary>
+        /// Generates a hierarchy object from the given part that is compatible with the given asset.
+        /// </summary>
+        /// <typeparam name="TAssetPartDesign">The type of part design for this asset.</typeparam>
+        /// <typeparam name="TAssetPart">The type of part for this asset.</typeparam>
+        /// <param name="partDesign">The root part design for the hierarchy to generate.</param>
+        /// <returns>A hierarchy containing the given part as root and all its children.</returns>
+        /// <remarks>
+        /// The given part design does not need to be a member of the given asset for this method to work.
+        /// </remarks>
+        [NotNull]
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> GenerateHierarchyFromPart([NotNull] TAssetPartDesign partDesign)
+        {
+            if (partDesign == null) throw new ArgumentNullException(nameof(partDesign));
+            var result = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
+            foreach (var child in EnumerateChildParts(partDesign, Hierarchy, true))
+            {
+                result.Parts.Add(child);
+            }
+            result.Parts.Add(partDesign);
+            result.RootPartIds.Add(partDesign.Part.Id);
+            return result;
         }
 
         /// <summary>
