@@ -1,5 +1,6 @@
 ﻿using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
@@ -21,6 +22,16 @@ namespace SiliconStudio.Xenko.VirtualReality
         public VRDevice Device { get; private set; }
 
         public bool RequireMirror;
+
+        public int MirrorWidth;
+
+        public int MirrorHeight;
+
+        public bool PreviousUseCustomProjectionMatrix;
+
+        public bool PreviousUseCustomViewMatrix;
+
+        public Matrix PreviousCameraProjection;
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
@@ -85,7 +96,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, RequireMirror);
+                Device?.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
             }
         }
 

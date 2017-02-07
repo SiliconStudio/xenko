@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -16,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     [DataContract("PostProcessingEffects")]
     [Display("Post-Processing Effects")]
-    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, ISharedRenderer
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, ISharedRenderer, IPostProcessingEffects
     {
         private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
@@ -234,12 +232,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        public void Draw(RenderDrawContext context, Texture input, Texture depthStencil, Texture output)
+        public void Draw(RenderDrawContext drawContext, IList<Texture> inputTargets, Texture inputDepthStencil, Texture outputTarget)
         {
-            SetInput(0, input);
-            SetInput(1, depthStencil);
-            SetOutput(output);
-            Draw(context);
+            SetInput(0, inputTargets[0]);
+            SetInput(1, inputDepthStencil);
+            SetOutput(outputTarget);
+            Draw(drawContext);
         }
 
         protected override void DrawCore(RenderDrawContext context)
