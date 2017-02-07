@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -19,7 +18,7 @@ namespace SiliconStudio.Quantum.Commands
         public abstract bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
         /// <inheritdoc/>
-        public abstract Task Execute(IContent content, Index index, object parameter);
+        public abstract Task Execute(IContentNode content, Index index, object parameter);
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()
@@ -32,27 +31,5 @@ namespace SiliconStudio.Quantum.Commands
         {
             // Intentionally do nothing
         }
-    }
-
-    /// <summary>
-    /// Base class for node commands that are not asynchronous.
-    /// </summary>
-    public abstract class SyncNodeCommandBase : NodeCommandBase
-    {
-        /// <inheritdoc/>
-        public sealed override Task Execute(IContent content, Index index, object parameter)
-        {
-            ExecuteSync(content, index, parameter);
-            return Task.FromResult(0);
-        }
-
-        /// <summary>
-        /// Triggers the command synchromously.
-        /// </summary>
-        /// <param name="content">The content on which to execute the command.</param>
-        /// <param name="index">The index in the content on which to execute the command.</param>
-        /// <param name="parameter">The parameter of the command.</param>
-        /// <remarks>Implementations of this method should not trigger fire-and-forget actions.</remarks>
-        protected abstract void ExecuteSync(IContent content, Index index, object parameter);
     }
 }

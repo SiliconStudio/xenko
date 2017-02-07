@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum
             this.propertyGraph = propertyGraph;
         }
 
-        protected override bool ShouldVisitNode(MemberContent memberContent, IGraphNode targetNode)
+        protected override bool ShouldVisitNode(IMemberNode memberContent, IContentNode targetNode)
         {
             // Make sure it's actually a target (not a member) node.
             return !propertyGraph.IsReferencedPart(memberContent, targetNode) && base.ShouldVisitNode(memberContent, targetNode);

@@ -57,6 +57,7 @@
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
+    <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
     <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
     <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
+    <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
+    <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />

@@ -285,7 +285,7 @@ namespace SiliconStudio.Core.Settings
             }
             if (MonitorFileModification && FilePath != null && File.Exists(FilePath))
             {
-                fileWatcher = new FileSystemWatcher(Path.Combine(Environment.CurrentDirectory, FilePath.GetFullDirectory()), FilePath.GetFileNameWithExtension());
+                fileWatcher = new FileSystemWatcher(Path.Combine(Environment.CurrentDirectory, FilePath.GetFullDirectory()), FilePath.GetFileName());
                 fileWatcher.Changed += SettingsFileChanged;
                 fileWatcher.EnableRaisingEvents = true;
             }
