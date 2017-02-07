@@ -36,9 +36,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         private readonly Vector3[] frustumCornersWS;
         private readonly Vector3[] frustumCornersVS;
 
-        private PoolListStruct<LightDirectionalShadowMapShaderData> shaderDataPoolCascade1;
-        private PoolListStruct<LightDirectionalShadowMapShaderData> shaderDataPoolCascade2;
-        private PoolListStruct<LightDirectionalShadowMapShaderData> shaderDataPoolCascade4;
+        private PoolListStruct<ShaderData> shaderDataPoolCascade1;
+        private PoolListStruct<ShaderData> shaderDataPoolCascade2;
+        private PoolListStruct<ShaderData> shaderDataPoolCascade4;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LightDirectionalShadowMapRenderer"/> class.
@@ -50,9 +50,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             cascadeFrustumCornersVS = new Vector3[8];
             frustumCornersWS = new Vector3[8];
             frustumCornersVS = new Vector3[8];
-            shaderDataPoolCascade1 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade1);
-            shaderDataPoolCascade2 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade2);
-            shaderDataPoolCascade4 = new PoolListStruct<LightDirectionalShadowMapShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade4);
+            shaderDataPoolCascade1 = new PoolListStruct<ShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade1);
+            shaderDataPoolCascade2 = new PoolListStruct<ShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade2);
+            shaderDataPoolCascade4 = new PoolListStruct<ShaderData>(4, CreateLightDirectionalShadowMapShaderDataCascade4);
         }
 
         public override void Reset(RenderContext context)
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override ILightShadowMapShaderGroupData CreateShaderGroupData(LightShadowType shadowType)
         {
-            return new LightDirectionalShadowMapGroupShaderData(shadowType);
+            return new ShaderGroupData(shadowType);
         }
 
         public override bool CanRenderLight(IDirectLight light)
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             int cascadeCount = lightShadowMap.CascadeCount;
 
             // Get new shader data from pool
-            LightDirectionalShadowMapShaderData shaderData;
+            ShaderData shaderData;
             if (cascadeCount == 1)
             {
                 shaderData = shaderDataPoolCascade1.Add();
@@ -422,7 +422,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return new Vector2(minDistance, maxDistance);
         }
 
-        private class LightDirectionalShadowMapShaderData : ILightShadowMapShaderData
+        public class ShaderData : ILightShadowMapShaderData
         {
             public Texture Texture;
             public readonly float[] CascadeSplits;
@@ -432,7 +432,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public readonly Matrix[] ViewMatrix;
             public readonly Matrix[] ProjectionMatrix;
 
-            public LightDirectionalShadowMapShaderData(int cascadeCount)
+            public ShaderData(int cascadeCount)
             {
                 CascadeSplits = new float[cascadeCount];
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
@@ -441,7 +441,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        private class LightDirectionalShadowMapGroupShaderData : LightShadowMapShaderGroupDataBase
+        private class ShaderGroupData : LightShadowMapShaderGroupDataBase
         {
             private const string ShaderName = "ShadowMapReceiverDirectional";
             private readonly int cascadeCount;
@@ -461,11 +461,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             private ValueParameterKey<Vector2> shadowMapTextureTexelSizeKey;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="LightDirectionalShadowMapGroupShaderData" /> class.
+            /// Initializes a new instance of the <see cref="ShaderGroupData" /> class.
             /// </summary>
             /// <param name="shadowType">Type of the shadow.</param>
             /// <param name="lightCountMax">The light count maximum.</param>
-            public LightDirectionalShadowMapGroupShaderData(LightShadowType shadowType) : base(shadowType)
+            public ShaderGroupData(LightShadowType shadowType) : base(shadowType)
             {
                 cascadeCount = 1 << ((int)(shadowType & LightShadowType.CascadeMask) - 1);
             }
@@ -505,7 +505,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 {
                     var lightEntry = currentLights[lightIndex];
 
-                    var singleLightData = (LightDirectionalShadowMapShaderData)lightEntry.ShadowMapTexture.ShaderData;
+                    var singleLightData = (ShaderData)lightEntry.ShadowMapTexture.ShaderData;
                     var splits = singleLightData.CascadeSplits;
                     var matrices = singleLightData.WorldToShadowCascadeUV;
                     int splitIndex = lightIndex*cascadeCount;
@@ -540,19 +540,19 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
-        private static LightDirectionalShadowMapShaderData CreateLightDirectionalShadowMapShaderDataCascade1()
+        private static ShaderData CreateLightDirectionalShadowMapShaderDataCascade1()
         {
-            return new LightDirectionalShadowMapShaderData(1);
+            return new ShaderData(1);
         }
 
-        private static LightDirectionalShadowMapShaderData CreateLightDirectionalShadowMapShaderDataCascade2()
+        private static ShaderData CreateLightDirectionalShadowMapShaderDataCascade2()
         {
-            return new LightDirectionalShadowMapShaderData(2);
+            return new ShaderData(2);
         }
 
-        private static LightDirectionalShadowMapShaderData CreateLightDirectionalShadowMapShaderDataCascade4()
+        private static ShaderData CreateLightDirectionalShadowMapShaderDataCascade4()
         {
-            return new LightDirectionalShadowMapShaderData(4);
+            return new ShaderData(4);
         }
     }
 }

@@ -162,10 +162,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectVisibleLights();
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
-            CollectActiveLightRenderers(RenderSystem.RenderContextOld);
+            CollectActiveLightRenderers(Context);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Collect(RenderSystem.RenderContextOld, renderViewDatas);
+            ShadowMapRenderer?.Collect(Context, renderViewDatas);
         }
 
         /// <inheritdoc/>
