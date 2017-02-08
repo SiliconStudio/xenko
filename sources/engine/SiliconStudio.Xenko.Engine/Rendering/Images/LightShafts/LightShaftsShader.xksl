@@ -7,30 +7,39 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         cbuffer PerFrame
         {
+            // World to shadow matrix
             stage matrix ShadowViewProjection;
+
+            // Shadow map boundary for the current shadow map in the shadow atlas
             stage float4 ShadowBounds;
 
+            // Used to convert to linear depth
             stage float2 ZProjection;
-
-            [Color]
-            stage float3 LightColor;
         
+            // Elapsed time
             stage float Time;
 
-            // Eye position
+            // Eye/Camera position in world space
             stage float3 Eye;
             stage float3 CameraForward;
+            // (0,0,0) in view space projected into world space
             stage float3 ViewBase;
+            // Offset of '(1,0,0) in view space projected into world space' from ViewBase
             stage float3 ViewRight;
+            // Offset of '(0,1,0) in view space projected into world space' from ViewBase
             stage float3 ViewUp;
 
-            // TODO
+            // Light position (if applicable)
             stage float3 ShadowLightOffset;
+            // Light direction (if applicable)
             stage float3 ShadowLightDirection;
-            stage float ShadowMapDistance;
+
             stage float ExtinctionFactor;
-            stage float ExtinctionRatio;
             stage float DensityFactor;
+
+            // Unused
+            stage float ShadowMapDistance;
+            stage float ExtinctionRatio;
         };
 
         stage stream float4 positionWS;
@@ -66,20 +75,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float sceneDepthSample = Texture0.Sample(PointSampler, streams.TexCoord).r;
             streams.sceneDepth = reconstructCSZ(sceneDepthSample);
 
-            //float far = reconstructCSZ(1.0f);
-            //float maxDepth = dot(tradcweDirection, normalize(ViewBase)) * far;
+            float2 sceneDepthMinMaxSample = Texture1.Sample(LinearSampler, streams.TexCoord).xy;
+            if(sceneDepthMinMaxSample.x == 1.0f)
+                return 0; // Maximum distance is in the near plane
 
+            // Retrieve light shaft interval from scene bounding volumes
+            float minimum = reconstructCSZ(sceneDepthMinMaxSample.x);
+            float maximum = reconstructCSZ(1.0f-sceneDepthMinMaxSample.y);
+
+            //return (maximum-minimum) * 0.01f;
+
+            float stepDistance = max(maximum - minimum, 1.0f);
             int stepCount = 8;
-            float optimalDepthBasedStepSize = streams.sceneDepth / stepCount;
-            float maxmimumStepDistance = 100.0f / stepCount;
-            // Mimumum distance so there is still benefit from early out
-            float minimumStepDistance = 32.0f / stepCount;
-            streams.stepSize = max(minimumStepDistance, min(maxmimumStepDistance, optimalDepthBasedStepSize));
-
-            streams.stepSize = maxmimumStepDistance;
+            streams.stepSize = stepDistance / 8.0f;
 
             // Jitter ray start
-            streams.positionWS.xyz += streams.directionWS * RayStepJitter(streams.TexCoord.xy / Texture0TexelSize, streams.stepSize);
+            streams.positionWS.xyz += streams.directionWS * (RayStepJitter(streams.TexCoord.xy / Texture0TexelSize, streams.stepSize) + minimum);
 
             // In-Scattering
             float additive = 0.0f;
@@ -125,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             noiseValue = (noiseValue * 0.5 + 0.5);
             noiseValue *= noiseValue;
 
-            //return DensityFactor * noiseValue;
+            return DensityFactor * noiseValue;
             return DensityFactor;
         }
 

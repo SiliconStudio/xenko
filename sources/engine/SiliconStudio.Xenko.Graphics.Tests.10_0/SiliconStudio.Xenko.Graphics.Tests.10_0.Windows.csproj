@@ -52,7 +52,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestShadows</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestLightShafts</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -175,6 +175,7 @@
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
+    <Compile Include="TestLightShafts.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestShadows.cs" />
     <None Include="Assets\MultipleRenderTargetsEffect.xkfx">

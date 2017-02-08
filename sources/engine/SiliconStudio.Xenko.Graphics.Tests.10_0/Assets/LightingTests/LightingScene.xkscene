@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
 Parent: null
 Hierarchy:
@@ -95,6 +95,7 @@ Hierarchy:
                             Shadow:
                                 Size: Small
                                 BiasParameters: {}
+                                Type: CubeMap
         -   Entity:
                 Id: 40b50304-4226-47bf-8ea6-2fa899574180
                 Name: Cube (2)

@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         public NextGenTest1()
         {
-            //GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             //Profiler.EnableAll();
         }

@@ -136,6 +136,7 @@
     <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
+    <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
     <Compile Include="Engine\LightShaftComponent.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -237,6 +238,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LightShaftsShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\LightShafts\VolumeMinMaxShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
@@ -262,6 +269,10 @@
     <None Include="Rendering\Images\LightShafts\LightShaftsShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightShaftsShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\VolumeMinMaxShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>VolumeMinMaxShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />

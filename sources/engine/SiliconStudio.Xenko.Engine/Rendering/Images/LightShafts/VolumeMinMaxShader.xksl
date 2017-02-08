@@ -1,0 +1,28 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+shader VolumeMinMaxShader : ShaderBase
+{
+    cbuffer PerDraw
+    {
+        matrix WorldViewProjection;
+    }
+
+    stage stream float4 Position : POSITION;
+
+    override void VSMain()
+    {
+        streams.ShadingPosition = mul(streams.Position, WorldViewProjection);
+    }
+
+    override void PSMain()
+    {
+        float depth = streams.ShadingPosition.z;
+
+        // Write depth and inverse depth,
+        //  which will get blended using a min() operator so we have both the minimum and maximum at the same time
+        // x = minimum distance (max(1-depth))
+        // y = maximum distance (max(depth))
+        streams.ColorTarget = float4(depth, 1.0f-depth, 0, 0);
+    }
+};
