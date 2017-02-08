@@ -17,6 +17,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Storage
 {
@@ -134,7 +135,7 @@ namespace SiliconStudio.Core.Storage
             var h2 = H2 ^ RotateLeft((k2 * C2), 16) * C3;
             var h1 = H1 ^ RotateLeft((k1 * C1), 15) * C2;
 
-            uint len = (uint)currentLength;
+            var len = (uint)currentLength;
             // pipelining friendly algorithm
             h1 ^= len; h2 ^= len; h3 ^= len; h4 ^= len;
 
@@ -188,9 +189,9 @@ namespace SiliconStudio.Core.Storage
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">buffer</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(byte[] buffer)
+        public void Write([NotNull] byte[] buffer)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             Write(buffer, 0, buffer.Length);
         }
 
@@ -212,7 +213,7 @@ namespace SiliconStudio.Core.Storage
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(string str)
+        public void Write([NotNull] string str)
         {
             fixed (char* strPtr = str)
                 Write((byte*)strPtr, str.Length * sizeof(char));
@@ -301,7 +302,7 @@ namespace SiliconStudio.Core.Storage
 
                 if (length > 0)
                 {
-                    int blocks = length / 16;
+                    var blocks = length / 16;
                     length -= blocks * 16;
 
                     // Main loop
@@ -325,7 +326,7 @@ namespace SiliconStudio.Core.Storage
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BodyCore(byte* data)
         {
-            uint* b = (uint*)data;
+            var b = (uint*)data;
 
             // K1 - consume first integer
             H1 ^= RotateLeft((*b++ * C1), 15) * C2;

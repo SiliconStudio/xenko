@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.IO;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Initializes a new instance of the <see cref="TextWriterLogListener"/> class.
         /// </summary>
         /// <param name="logStream">The log stream.</param>
-        public TextWriterLogListener(Stream logStream)
+        public TextWriterLogListener([NotNull] Stream logStream)
         {
             LogWriter = new StreamWriter(logStream);
         }
@@ -31,9 +32,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the log writer.
         /// </summary>
         /// <value>The log writer.</value>
-        public TextWriter LogWriter { get; private set; }
+        public TextWriter LogWriter { get; }
 
-        protected override void OnLog(ILogMessage logMessage)
+        protected override void OnLog([NotNull] ILogMessage logMessage)
         {
             lock (LogWriter)
             {

@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -31,10 +32,7 @@ namespace SiliconStudio.Core.Serialization
         {
             private static IEqualityComparer<object> defaultEqualityComparer;
 
-            public new static IEqualityComparer<object> Default
-            {
-                get { return defaultEqualityComparer ?? (defaultEqualityComparer = new ObjectReferenceEqualityComparer()); }
-            }
+            public new static IEqualityComparer<object> Default => defaultEqualityComparer ?? (defaultEqualityComparer = new ObjectReferenceEqualityComparer());
 
             public override bool Equals(object x, object y)
             {
@@ -65,8 +63,8 @@ namespace SiliconStudio.Core.Serialization
         {
             this.dataSerializer = dataSerializer;
         }
-
-        public static DataSerializer<T> Create(SerializerSelector serializerSelector, bool nullable = true)
+        
+        public static DataSerializer<T> Create([NotNull] SerializerSelector serializerSelector, bool nullable = true)
         {
             var dataSerializer = serializerSelector.GetSerializer<T>();
             if (!isValueType)
