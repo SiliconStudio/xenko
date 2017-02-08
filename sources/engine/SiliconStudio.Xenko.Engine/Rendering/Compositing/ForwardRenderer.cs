@@ -546,5 +546,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             return depthStencilSRV;
         }
+
+        protected override void Destroy()
+        {
+            PostEffects?.Dispose();
+        }
     }
 }

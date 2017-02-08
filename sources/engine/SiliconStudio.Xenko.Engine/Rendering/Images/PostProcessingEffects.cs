@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     [DataContract("PostProcessingEffects")]
     [Display("Post-Processing Effects")]
-    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, ISharedRenderer, IPostProcessingEffects
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
         private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
