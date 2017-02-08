@@ -19,6 +19,8 @@ namespace SiliconStudio.Packages
             this.store = store;
             version = package.Version.ToSemanticVersion().ToNormalizedString();
 
+            store.DownloadProgressChanged += UpdateProgress;
+
             foreach (var progressProvider in store.SourceRepository.Repositories.OfType<IProgressProvider>())
             {
                 progressProvider.ProgressAvailable += OnProgressAvailable;
@@ -50,5 +52,16 @@ namespace SiliconStudio.Packages
                 }
             }         
         }
+
+        private void UpdateProgress(int percentage)
+        {
+            // Only update when changed.
+            if (progress != percentage)
+            {
+                progress = percentage;
+                ProgressChanged?.Invoke(percentage);
+            }
+        }
+
     }
 }

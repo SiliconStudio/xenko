@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ using SiliconStudio.Core.Windows;
 // Nuget v2.0 types
 using ISettings = NuGet.ISettings;
 using Settings = NuGet.Settings;
-using PackagePathResolver = NuGet.IPackagePathResolver;
 using PhysicalFileSystem = NuGet.PhysicalFileSystem;
 using AggregateRepository = NuGet.AggregateRepository;
 using PackageSourceProvider = NuGet.PackageSourceProvider;
@@ -108,10 +108,10 @@ namespace SiliconStudio.Packages
             }
 
             // Setup NugetCachePath in the cache folder
-            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
+            Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache"));
 
             var packagesFileSystem = new PhysicalFileSystem(InstallPath);
-            PathResolver = new DefaultPackagePathResolver(packagesFileSystem);
+            PathResolver = new PackagePathResolver(packagesFileSystem);
 
             var packageSourceProvider = new PackageSourceProvider(settings);
             SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
@@ -184,6 +184,7 @@ namespace SiliconStudio.Packages
         /// </summary>
         private PackagePathResolver PathResolver { get; }
 
+        public event Action<int> DownloadProgressChanged;
         public event EventHandler<PackageOperationEventArgs> NugetPackageInstalled;
         public event EventHandler<PackageOperationEventArgs> NugetPackageInstalling;
         public event EventHandler<PackageOperationEventArgs> NugetPackageUninstalled;
@@ -396,15 +397,39 @@ namespace SiliconStudio.Packages
         /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
         /// <param name="packageId">Name of package to install.</param>
         /// <param name="version">Version of package to install.</param>
-        public void InstallPackage(string packageId, PackageVersion version)
+        /// <param name="progress">Callbacks to report progress of downloads.</param>
+        public async Task InstallPackage(string packageId, PackageVersion version, ProgressReport progress)
         {
             using (GetLocalRepositoryLock())
             {
-                manager.InstallPackage(packageId, version.ToSemanticVersion(), false, true);
-                // Because at install time the .nupkg is not available in the installation path, NuGet will
-                // expand the .nupkg in its cache. To avoid having the cash growing indefinitely, we clean
-                // it after each installation.
-                OptimizedZipPackage.PurgeCache();
+                var package = manager.LocalRepository.FindPackage(packageId, version.ToSemanticVersion(), null, allowPrereleaseVersions: true, allowUnlisted: true);
+                if (package == null)
+                {
+                    // Let's search in our cache
+                    package = MachineCache.Default.FindPackage(packageId, version.ToSemanticVersion(), allowPrereleaseVersions: true, allowUnlisted: true);
+                    // It represents the name of the .nupkg in our cache
+                    var sourceName = Path.Combine(RootDirectory, "Cache", PathResolver.GetPackageFileName(packageId, version.ToSemanticVersion()));
+                    if (package == null)
+                    {
+                        var downloadPackage =
+                            manager.SourceRepository.FindPackage(packageId, version.ToSemanticVersion(), NullConstraintProvider.Instance, allowPrereleaseVersions: true, allowUnlisted: true) as
+                                DataServicePackage;
+                        if (downloadPackage == null) throw new ApplicationException("Cannot find package");
+                        var url = downloadPackage.DownloadUrl;
+                        var client = new WebClient();
+                        var tcs = new TaskCompletionSource<bool>();
+                        client.DownloadProgressChanged += (o, e) => DownloadProgressChanged?.Invoke(e.ProgressPercentage);
+                        client.DownloadFileCompleted += (o, e) => tcs.SetResult(true);
+                        client.DownloadFileAsync(url, sourceName);
+                        await tcs.Task;
+
+                        package = downloadPackage;
+                    }
+
+                    Directory.CreateDirectory(PathResolver.GetInstallPath(package));
+                    File.Copy(sourceName, Path.Combine(PathResolver.GetInstallPath(package), PathResolver.GetPackageFileName(package)));
+                    manager.InstallPackage(packageId, version.ToSemanticVersion(), ignoreDependencies: false, allowPrereleaseVersions: true);
+                }
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();
@@ -420,11 +445,7 @@ namespace SiliconStudio.Packages
         {
             using (GetLocalRepositoryLock())
             {
-                manager.UninstallPackage(package.IPackage);
-                // No need to clean the OptimizedZipPackage cache as we are using a SharedPackageRepository for our
-                // installed .nupkg. We keep the comment as it is to explain why we do it during installation but not
-                // on removal.
-                // OptimizedZipPackage.PurgeCache();
+                Directory.Delete(PathResolver.GetInstallPath(package.IPackage), true);
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();
