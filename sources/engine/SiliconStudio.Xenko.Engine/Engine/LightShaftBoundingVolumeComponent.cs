@@ -33,6 +33,9 @@ namespace SiliconStudio.Xenko.Engine
 
                 foreach (var affectedComponent in pair.Key.AffectedComponents)
                 {
+                    if (affectedComponent == null)
+                        continue;
+
                     List<LightShaftBoundingVolumeData> data;
                     if (!volumesPerLightShaft.TryGetValue(affectedComponent, out data))
                         volumesPerLightShaft.Add(affectedComponent, 
