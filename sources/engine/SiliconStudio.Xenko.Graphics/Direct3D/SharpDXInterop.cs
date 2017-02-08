@@ -26,6 +26,16 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// Gets the native device context (DX11)
+        /// </summary>
+        /// <param name="device">The Xenko GraphicsDevice</param>
+        /// <returns></returns>
+        public static object GetNativeDeviceContext(GraphicsDevice device)
+        {
+            return GetNativeDeviceContextImpl(device);
+        }
+
+        /// <summary>
         /// Gets the native command queue (DX12 only)
         /// </summary>
         /// <param name="device">The Xenko GraphicsDevice</param>
@@ -71,6 +81,11 @@ namespace SiliconStudio.Xenko.Graphics
         private static Device GetNativeDeviceImpl(GraphicsDevice device)
         {
             return device.NativeDevice;
+        }
+
+        private static DeviceContext GetNativeDeviceContextImpl(GraphicsDevice device)
+        {
+            return device.NativeDeviceContext;
         }
 
         private static object GetNativeCommandQueueImpl(GraphicsDevice device)
