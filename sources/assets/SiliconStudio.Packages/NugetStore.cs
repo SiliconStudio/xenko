@@ -116,7 +116,8 @@ namespace SiliconStudio.Packages
             var packageSourceProvider = new PackageSourceProvider(settings);
             SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
 
-            manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem);
+            var localRepo = new SharedPackageRepository(PathResolver, packagesFileSystem, rootFileSystem);
+            manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem, localRepo);
             manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new PackageOperationEventArgs(args));
             manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new PackageOperationEventArgs(args));
             manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new PackageOperationEventArgs(args));
@@ -400,6 +401,9 @@ namespace SiliconStudio.Packages
             using (GetLocalRepositoryLock())
             {
                 manager.InstallPackage(packageId, version.ToSemanticVersion(), false, true);
+                // Because at install time the .nupkg is not available in the installation path, NuGet will
+                // expand the .nupkg in its cache. To avoid having the cash growing indefinitely, we clean
+                // it after each installation.
                 OptimizedZipPackage.PurgeCache();
 
                 // Every time a new package is installed, we are updating the common targets
@@ -417,7 +421,10 @@ namespace SiliconStudio.Packages
             using (GetLocalRepositoryLock())
             {
                 manager.UninstallPackage(package.IPackage);
-                OptimizedZipPackage.PurgeCache();
+                // No need to clean the OptimizedZipPackage cache as we are using a SharedPackageRepository for our
+                // installed .nupkg. We keep the comment as it is to explain why we do it during installation but not
+                // on removal.
+                // OptimizedZipPackage.PurgeCache();
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();
