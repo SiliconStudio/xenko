@@ -400,6 +400,7 @@ namespace SiliconStudio.Packages
             using (GetLocalRepositoryLock())
             {
                 manager.InstallPackage(packageId, version.ToSemanticVersion(), false, true);
+                OptimizedZipPackage.PurgeCache();
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();
@@ -416,6 +417,7 @@ namespace SiliconStudio.Packages
             using (GetLocalRepositoryLock())
             {
                 manager.UninstallPackage(package.IPackage);
+                OptimizedZipPackage.PurgeCache();
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsHelper();
