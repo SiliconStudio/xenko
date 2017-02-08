@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -13,7 +14,8 @@ namespace SiliconStudio.Core
 
     public abstract class ValidateValueMetadata : PropertyKeyMetadata
     {
-        public static ValidateValueMetadata<T> New<T>(ValidateValueCallback<T> invalidationCallback)
+        [NotNull]
+        public static ValidateValueMetadata<T> New<T>([NotNull] ValidateValueCallback<T> invalidationCallback)
         {
             return new ValidateValueMetadata<T>(invalidationCallback);
         }
@@ -33,9 +35,9 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="validateValueCallback">The validate value callback.</param>
         /// <exception cref="System.ArgumentNullException">validateValueCallback</exception>
-        public ValidateValueMetadata(ValidateValueCallback<T> validateValueCallback)
+        public ValidateValueMetadata([NotNull] ValidateValueCallback<T> validateValueCallback)
         {
-            if (validateValueCallback == null) throw new ArgumentNullException("validateValueCallback");
+            if (validateValueCallback == null) throw new ArgumentNullException(nameof(validateValueCallback));
             this.validateValueCallback = validateValueCallback;
         }
 
@@ -53,7 +55,7 @@ namespace SiliconStudio.Core
 
         public override void Validate(ref object obj)
         {
-            T objCopy = (T)obj;
+            var objCopy = (T)obj;
             validateValueCallback(ref objCopy);
             obj = objCopy;
         }

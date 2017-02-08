@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         public VisualTestChildren() : base("VisualTestChildren")
         {
             IndividualTestVersion = 1;  //  Changes in particle spawning
+            IndividualTestVersion += 4;  //  Changed to avoid collisions with 1.10
         }
 
         [Test]

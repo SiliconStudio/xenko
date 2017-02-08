@@ -2,12 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
     public class PropertyChangedExtendedEventArgs : PropertyChangedEventArgs
     {
-        public PropertyChangedExtendedEventArgs(PropertyInfo propertyInfo, object oldValue, object newValue) : base(propertyInfo.Name)
+        public PropertyChangedExtendedEventArgs([NotNull] PropertyInfo propertyInfo, object oldValue, object newValue) : base(propertyInfo.Name)
         {
             PropertyInfo = propertyInfo;
             OldValue = oldValue;

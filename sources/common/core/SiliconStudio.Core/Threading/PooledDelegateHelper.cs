@@ -1,4 +1,5 @@
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Threading
 {
@@ -11,7 +12,7 @@ namespace SiliconStudio.Core.Threading
         /// Adds a reference to a delegate, keeping it from being recycled. Does nothing if the delegate is not drawn from a pool.
         /// </summary>
         /// <param name="pooledDelegate">The pooled delegate</param>
-        public static void AddReference(Delegate pooledDelegate)
+        public static void AddReference([NotNull] Delegate pooledDelegate)
         {
             var closure = pooledDelegate.Target as IPooledClosure;
             closure?.AddReference();
@@ -21,7 +22,7 @@ namespace SiliconStudio.Core.Threading
         /// Removes a reference from a delegate, allowing it to be recycled. Does nothing if the delegate is not drawn from a pool.
         /// </summary>
         /// <param name="pooledDelegate">The pooled delegate</param>
-        public static void Release(Delegate pooledDelegate)
+        public static void Release([NotNull] Delegate pooledDelegate)
         {
             var closure = pooledDelegate.Target as IPooledClosure;
             closure?.Release();

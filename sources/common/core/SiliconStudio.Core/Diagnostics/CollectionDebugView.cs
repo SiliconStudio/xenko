@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ICollection = System.Collections.ICollection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -16,21 +16,16 @@ namespace SiliconStudio.Core.Diagnostics
     {
         private readonly IEnumerable collection;
 
-        public CollectionDebugView(IEnumerable collection)
+        public CollectionDebugView([NotNull] IEnumerable collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             this.collection = collection;
         }
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public object[] Items
-        {
-            get
-            {
-                return collection.Cast<object>().ToArray();
-            }
-        }
+        public object[] Items => collection.Cast<object>().ToArray();
     }
 
     /// <summary>
@@ -40,20 +35,21 @@ namespace SiliconStudio.Core.Diagnostics
     {
         private readonly ICollection<T> collection;
 
-        public CollectionDebugView(ICollection<T> collection)
+        public CollectionDebugView([NotNull] ICollection<T> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
             this.collection = collection;
         }
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public T[] Items
         {
             get
             {
-                T[] array = new T[this.collection.Count];
-                this.collection.CopyTo(array, 0);
+                var array = new T[collection.Count];
+                collection.CopyTo(array, 0);
                 return array;
             }
         }

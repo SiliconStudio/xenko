@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -22,9 +23,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// Initializes a new instance of the <see cref="ExceptionInfo"/> class from an <see cref="Exception"/>.
         /// </summary>
         /// <param name="exception">The exception used to initialize the properties of this instance.</param>
-        public ExceptionInfo(Exception exception)
+        public ExceptionInfo([NotNull] Exception exception)
         {
-            if (exception == null) throw new ArgumentNullException("exception");
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
             Message = exception.Message;
             StackTrace = exception.StackTrace;
             TypeFullName = exception.GetType().FullName;

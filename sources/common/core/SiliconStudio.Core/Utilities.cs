@@ -29,6 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Native;
 
 namespace SiliconStudio.Core
@@ -84,13 +85,13 @@ namespace SiliconStudio.Core
         /// <param name="against">The pointer to compare against.</param>
         /// <param name="sizeToCompare">The size in bytes to compare.</param>
         /// <returns>True if the buffers are equivalent, false otherwise.</returns>
-        public unsafe static bool CompareMemory(IntPtr from, IntPtr against, int sizeToCompare)
+        public static unsafe bool CompareMemory(IntPtr from, IntPtr against, int sizeToCompare)
         {
             var pSrc = (byte*)from;
             var pDst = (byte*)against;
 
             // Compare 8 bytes.
-            int numberOf = sizeToCompare >> 3;
+            var numberOf = sizeToCompare >> 3;
             while (numberOf > 0)
             {
                 if (*(long*)pSrc != *(long*)pDst)
@@ -169,7 +170,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">The type of the structure to pin</typeparam>
         /// <param name="source">The source array.</param>
         /// <param name="pinAction">The pin action to perform on the pinned pointer.</param>
-        public static void Pin<T>(T[] source, Action<IntPtr> pinAction) where T : struct
+        public static void Pin<T>(T[] source, [NotNull] Action<IntPtr> pinAction) where T : struct
         {
             unsafe
             {
@@ -195,7 +196,7 @@ namespace SiliconStudio.Core
             unsafe
             {
                 fixed (void* pBuffer = buffer)
-                    Interop.Write<T>(pBuffer, source, 0, source.Length);
+                    Interop.Write(pBuffer, source, 0, source.Length);
             }
             return buffer;
         }
@@ -226,7 +227,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInline<T>(ref data, (void*)source);
+                Interop.CopyInline(ref data, (void*)source);
             }
         }
 
@@ -241,7 +242,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInlineOut<T>(out data, (void*)source);
+                Interop.CopyInlineOut(out data, (void*)source);
             }
         }
 
@@ -256,7 +257,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Read<T>((void*)source, ref data);
+                return (IntPtr)Interop.Read((void*)source, ref data);
             }
         }
 
@@ -273,7 +274,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Read<T>((void*)source, data, offset, count);
+                return (IntPtr)Interop.Read((void*)source, data, offset, count);
             }
         }
 
@@ -304,7 +305,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Write<T>((void*)destination, ref data);
+                return (IntPtr)Interop.Write((void*)destination, ref data);
             }
         }
 
@@ -341,7 +342,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                return (IntPtr)Interop.Write<T>((void*)destination, data, offset, count);
+                return (IntPtr)Interop.Write((void*)destination, data, offset, count);
             }
         }
 
@@ -354,15 +355,15 @@ namespace SiliconStudio.Core
         /// <remarks>
         /// To free this buffer, call <see cref="FreeMemory"/>
         /// </remarks>
-        public unsafe static IntPtr AllocateMemory(int sizeInBytes, int align = 16)
+        public static unsafe IntPtr AllocateMemory(int sizeInBytes, int align = 16)
         {
-            int mask = align - 1;
+            var mask = align - 1;
             if ((align & mask) != 0)
             {
                 throw new ArgumentException("Alignment is not power of 2", nameof(align));
             }
             var memPtr = Marshal.AllocHGlobal(sizeInBytes + mask + sizeof(void *));
-            byte *ptr = (byte *)((ulong)(memPtr + sizeof(void*) + mask) & ~(ulong)mask);
+            var ptr = (byte *)((ulong)(memPtr + sizeof(void*) + mask) & ~(ulong)mask);
             ((IntPtr*)ptr)[-1] = memPtr;
             return new IntPtr(ptr);
         }
@@ -402,7 +403,7 @@ namespace SiliconStudio.Core
         /// <remarks>
         /// The buffer must have been allocated with <see cref="AllocateMemory"/>
         /// </remarks>
-        public unsafe static void FreeMemory(IntPtr alignedBuffer)
+        public static unsafe void FreeMemory(IntPtr alignedBuffer)
         {
             Marshal.FreeHGlobal(((IntPtr*)alignedBuffer)[-1]);
         }
@@ -426,12 +427,13 @@ namespace SiliconStudio.Core
         /// <param name="separator">The separator.</param>
         /// <param name="array">The array.</param>
         /// <returns>a string with array elements serparated by the seperator</returns>
+        [NotNull]
         public static string Join<T>(string separator, T[] array)
         {
             var text = new StringBuilder();
             if (array != null)
             {
-                for (int i = 0; i < array.Length; i++)
+                for (var i = 0; i < array.Length; i++)
                 {
                     if (i > 0) text.Append(separator);
                     text.Append(array[i]);
@@ -446,14 +448,15 @@ namespace SiliconStudio.Core
         /// <param name="separator">The separator.</param>
         /// <param name="elements">The enumerable.</param>
         /// <returns>a string with array elements serparated by the seperator</returns>
-        public static string Join(string separator, IEnumerable elements)
+        [NotNull]
+        public static string Join(string separator, [NotNull] IEnumerable elements)
         {
             var elementList = new List<string>();
             foreach (var element in elements)
                 elementList.Add(element.ToString());
 
             var text = new StringBuilder();
-            for (int i = 0; i < elementList.Count; i++)
+            for (var i = 0; i < elementList.Count; i++)
             {
                 var element = elementList[i];
                 if (i > 0) text.Append(separator);
@@ -468,14 +471,15 @@ namespace SiliconStudio.Core
         /// <param name="separator">The separator.</param>
         /// <param name="elements">The enumerable.</param>
         /// <returns>a string with array elements serparated by the seperator</returns>
-        public static string Join(string separator, IEnumerator elements)
+        [NotNull]
+        public static string Join(string separator, [NotNull] IEnumerator elements)
         {
             var elementList = new List<string>();
             while (elements.MoveNext())
                 elementList.Add(elements.Current.ToString());
 
             var text = new StringBuilder();
-            for (int i = 0; i < elementList.Count; i++)
+            for (var i = 0; i < elementList.Count; i++)
             {
                 var element = elementList[i];
                 if (i > 0) text.Append(separator);
@@ -489,9 +493,10 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name = "stream">input stream</param>
         /// <returns>a byte[] buffer</returns>
-        public static byte[] ReadStream(Stream stream)
+        [NotNull]
+        public static byte[] ReadStream([NotNull] Stream stream)
         {
-            int readLength = 0;
+            var readLength = 0;
             return ReadStream(stream, ref readLength);
         }
 
@@ -501,11 +506,12 @@ namespace SiliconStudio.Core
         /// <param name = "stream">input stream</param>
         /// <param name = "readLength">length to read</param>
         /// <returns>a byte[] buffer</returns>
-        public static byte[] ReadStream(Stream stream, ref int readLength)
+        [NotNull]
+        public static byte[] ReadStream([NotNull] Stream stream, ref int readLength)
         {
             System.Diagnostics.Debug.Assert(stream != null);
             System.Diagnostics.Debug.Assert(stream.CanRead);
-            int num = readLength;
+            var num = readLength;
             System.Diagnostics.Debug.Assert(num <= (stream.Length - stream.Position));
             if (num == 0)
                 readLength = (int)(stream.Length - stream.Position);
@@ -515,8 +521,8 @@ namespace SiliconStudio.Core
             if (num == 0)
                 return new byte[0];
 
-            byte[] buffer = new byte[num];
-            int bytesRead = 0;
+            var buffer = new byte[num];
+            var bytesRead = 0;
             if (num > 0)
             {
                 do
@@ -536,11 +542,11 @@ namespace SiliconStudio.Core
             if (dict == null)
                 return 0;
 
-            int hashCode = 0;
+            var hashCode = 0;
             foreach (DictionaryEntry keyValue in dict)
             {
                 hashCode = (hashCode * 397) ^ keyValue.Key.GetHashCode();
-                hashCode = (hashCode * 397) ^ (keyValue.Value != null ? keyValue.Value.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (keyValue.Value?.GetHashCode() ?? 0);
             }
             return hashCode;
         }
@@ -555,10 +561,10 @@ namespace SiliconStudio.Core
             if (it == null)
                 return 0;
 
-            int hashCode = 0;
+            var hashCode = 0;
             foreach (var current in it)
             {
-                hashCode = (hashCode * 397) ^ ((current == null) ? 0 : current.GetHashCode());
+                hashCode = (hashCode * 397) ^ (current?.GetHashCode() ?? 0);
             }
             return hashCode;
         }
@@ -573,11 +579,11 @@ namespace SiliconStudio.Core
             if (it == null)
                 return 0;
 
-            int hashCode = 0;
+            var hashCode = 0;
             while (it.MoveNext())
             {
                 var current = it.Current;
-                hashCode = (hashCode * 397) ^ ((current == null) ? 0 : current.GetHashCode());
+                hashCode = (hashCode * 397) ^ (current?.GetHashCode() ?? 0);
             }
             return hashCode;
         }
@@ -667,7 +673,7 @@ namespace SiliconStudio.Core
                 return false;
 
             var comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < left.Length; ++i)
+            for (var i = 0; i < left.Length; ++i)
             {
                 if (!comparer.Equals(left[i], right[i]))
                     return false;
@@ -692,7 +698,7 @@ namespace SiliconStudio.Core
             if (left.Count != right.Count)
                 return false;
 
-            int count = 0;
+            var count = 0;
             var leftIt = left.GetEnumerator();
             var rightIt = right.GetEnumerator();
             var comparer = EqualityComparer<T>.Default;
@@ -730,7 +736,7 @@ namespace SiliconStudio.Core
         /// <param name="sleepTime">The duration of sleep.</param>
         public static void Sleep(TimeSpan sleepTime)
         {
-            long ms = (long) sleepTime.TotalMilliseconds;
+            var ms = (long) sleepTime.TotalMilliseconds;
             if (ms < 0 || ms > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(sleepTime), "Sleep time must be a duration less than '2^31 - 1' milliseconds.");
@@ -773,7 +779,7 @@ namespace SiliconStudio.Core
         {
             unsafe
             {
-                Interop.CopyInlineOut<T>(out data, (void*)source);
+                Interop.CopyInlineOut(out data, (void*)source);
             }
         }
 

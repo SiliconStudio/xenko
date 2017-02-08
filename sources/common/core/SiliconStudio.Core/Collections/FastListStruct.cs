@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -27,34 +28,34 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        public FastListStruct(FastList<T> fastList)
+        public FastListStruct([NotNull] FastList<T> fastList)
         {
-            this.Count = fastList.Count;
-            this.Items = fastList.Items;
+            Count = fastList.Count;
+            Items = fastList.Items;
         }
 
-        public FastListStruct(T[] array)
+        public FastListStruct([NotNull] T[] array)
         {
-            this.Count = array.Length;
-            this.Items = array;
+            Count = array.Length;
+            Items = array;
         }
 
         public FastListStruct(int capacity)
         {
-            this.Count = 0;
-            this.Items = capacity == 0 ? emptyArray : new T[capacity];
+            Count = 0;
+            Items = capacity == 0 ? emptyArray : new T[capacity];
         }
 
         public void Add(T item)
         {
-            if (this.Count == this.Items.Length)
-                this.EnsureCapacity(this.Count + 1);
-            this.Items[this.Count++] = item;
+            if (Count == Items.Length)
+                EnsureCapacity(Count + 1);
+            Items[Count++] = item;
         }
 
         public void AddRange(FastListStruct<T> items)
         {
-            for (int i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
                 Add(items[i]);
             }
@@ -68,7 +69,7 @@ namespace SiliconStudio.Core.Collections
             }
             if (index < Count)
             {
-                for (int i = Count; i > index; --i)
+                for (var i = Count; i > index; --i)
                 {
                     Items[i] = Items[i - 1];
                 }
@@ -89,7 +90,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(T item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -101,9 +102,10 @@ namespace SiliconStudio.Core.Collections
 
         public void Clear()
         {
-            this.Count = 0;
+            Count = 0;
         }
 
+        [NotNull]
         public T[] ToArray()
         {
             var destinationArray = new T[Count];
@@ -113,15 +115,15 @@ namespace SiliconStudio.Core.Collections
 
         public void EnsureCapacity(int newCapacity)
         {
-            if (this.Items.Length < newCapacity)
+            if (Items.Length < newCapacity)
             {
-                int newSize = this.Items.Length * 2;
+                var newSize = Items.Length * 2;
                 if (newSize < newCapacity)
                     newSize = newCapacity;
 
                 var destinationArray = new T[newSize];
-                Array.Copy(this.Items, 0, destinationArray, 0, this.Count);
-                this.Items = destinationArray;
+                Array.Copy(Items, 0, destinationArray, 0, Count);
+                Items = destinationArray;
             }
         }
 
@@ -140,12 +142,12 @@ namespace SiliconStudio.Core.Collections
             return new Enumerator(Items, Count);
         }
 
-        public static implicit operator FastListStruct<T>(FastList<T> fastList)
+        public static implicit operator FastListStruct<T>([NotNull] FastList<T> fastList)
         {
             return new FastListStruct<T>(fastList);
         }
 
-        public static implicit operator FastListStruct<T>(T[] array)
+        public static implicit operator FastListStruct<T>([NotNull] T[] array)
         {
             return new FastListStruct<T>(array);
         }
@@ -167,7 +169,7 @@ namespace SiliconStudio.Core.Collections
         /// <param name="index">Index of the item to remove.</param>
         public void SwapRemoveAt(int index)
         {
-            if (index < 0 || index >= Count) throw new ArgumentOutOfRangeException("index");
+            if (index < 0 || index >= Count) throw new ArgumentOutOfRangeException(nameof(index));
 
             if (index < Count - 1)
             {
@@ -182,8 +184,8 @@ namespace SiliconStudio.Core.Collections
         [StructLayout(LayoutKind.Sequential)]
         public struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
         {
-            private T[] items;
-            private int count;
+            private readonly T[] items;
+            private readonly int count;
             private int index;
             private T current;
 
@@ -217,15 +219,9 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
 
-            public T Current
-            {
-                get { return current; }
-            }
+            public T Current => current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             void IEnumerator.Reset()
             {

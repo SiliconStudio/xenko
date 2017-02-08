@@ -3,7 +3,6 @@
 
 using System;
 using SiliconStudio.Core.Reflection;
-using System.Reflection;
 
 namespace SiliconStudio.Core.Annotations
 {
@@ -16,13 +15,14 @@ namespace SiliconStudio.Core.Annotations
         /// <summary>
         /// The type of the factory to use to create instance of the related type.
         /// </summary>
+        [NotNull]
         public Type FactoryType { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectFactoryAttribute"/> class.
         /// </summary>
         /// <param name="factoryType">The factory type that implements <see cref="IObjectFactory"/>.</param>
-        public ObjectFactoryAttribute(Type factoryType)
+        public ObjectFactoryAttribute([NotNull] Type factoryType)
         {
             if (factoryType == null) throw new ArgumentNullException(nameof(factoryType));
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP

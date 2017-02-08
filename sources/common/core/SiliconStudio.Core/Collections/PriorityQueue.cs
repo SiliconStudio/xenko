@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 
@@ -14,12 +15,12 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Underlying list.
         /// </summary>
-        private List<T> items = new List<T>();
+        private readonly List<T> items = new List<T>();
 
         /// <summary>
         /// Used to sort and compare elements.
         /// </summary>
-        private IComparer<T> comparer;
+        private readonly IComparer<T> comparer;
 
         public PriorityQueue(IComparer<T> comparer)
         {
@@ -69,7 +70,7 @@ namespace SiliconStudio.Core.Collections
                     break;
 
                 // Need swap
-                T tmp = items[childIndex];
+                var tmp = items[childIndex];
                 items[childIndex] = items[parentIndex];
                 items[parentIndex] = tmp;
 
@@ -98,7 +99,7 @@ namespace SiliconStudio.Core.Collections
                     break;
 
                 // Need swap
-                T tmp = items[childIndex];
+                var tmp = items[childIndex];
                 items[childIndex] = items[parentIndex];
                 items[parentIndex] = tmp;
 
@@ -108,16 +109,10 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public int Count
-        {
-            get { return items.Count; }
-        }
+        public int Count => items.Count;
 
         /// <inheritdoc/>
-        public bool Empty
-        {
-            get { return items.Count == 0; }
-        }
+        public bool Empty => items.Count == 0;
 
         /// <summary>
         /// Returns the object at the beginning of the <see cref="PriorityQueue{T}"/>, without removing it.
@@ -135,7 +130,7 @@ namespace SiliconStudio.Core.Collections
         public T Dequeue()
         {
             // Remove first element and place last one instead
-            T val = items[0];
+            var val = items[0];
             var maxCount = items.Count - 1;
             items[0] = items[maxCount];
             items.RemoveAt(maxCount);
@@ -158,7 +153,7 @@ namespace SiliconStudio.Core.Collections
                     break;
 
                 // Need swap
-                T tmp = items[childIndex];
+                var tmp = items[childIndex];
                 items[childIndex] = items[parentIndex];
                 items[parentIndex] = tmp;
 

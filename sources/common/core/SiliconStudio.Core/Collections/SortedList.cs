@@ -36,6 +36,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -44,10 +45,10 @@ namespace SiliconStudio.Core.Collections
     ///  that are sorted by the keys and are accessible by key
     ///  and by index.
     /// </summary>
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class SortedList<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
-        private readonly static int INITIAL_SIZE = 16;
+        private static readonly int INITIAL_SIZE = 16;
 
         private enum EnumeratorMode : int { KEY_MODE = 0, VALUE_MODE, ENTRY_MODE }
 
@@ -73,12 +74,9 @@ namespace SiliconStudio.Core.Collections
         public SortedList(int capacity, IComparer<TKey> comparer)
         {
             if (capacity < 0)
-                throw new ArgumentOutOfRangeException("initialCapacity");
+                throw new ArgumentOutOfRangeException(nameof(capacity));
 
-            if (capacity == 0)
-                defaultCapacity = 0;
-            else
-                defaultCapacity = INITIAL_SIZE;
+            defaultCapacity = capacity == 0 ? 0 : INITIAL_SIZE;
             Init(comparer, capacity, true);
         }
 
@@ -87,19 +85,19 @@ namespace SiliconStudio.Core.Collections
         {
         }
 
-        public SortedList(IDictionary<TKey, TValue> dictionary)
+        public SortedList([NotNull] IDictionary<TKey, TValue> dictionary)
             : this(dictionary, null)
         {
         }
 
-        public SortedList(IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer)
+        public SortedList([NotNull] IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer)
         {
             if (dictionary == null)
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
 
             Init(comparer, dictionary.Count, true);
 
-            foreach (KeyValuePair<TKey, TValue> kvp in dictionary)
+            foreach (var kvp in dictionary)
                 Add(kvp.Key, kvp.Value);
         }
 
@@ -109,66 +107,35 @@ namespace SiliconStudio.Core.Collections
 
         // ICollection
 
-        public int Count
-        {
-            get
-            {
-                return inUse;
-            }
-        }
+        public int Count => inUse;
 
-        bool ICollection.IsSynchronized
-        {
-            get
-            {
-                return false;
-            }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        Object ICollection.SyncRoot
-        {
-            get
-            {
-                return this;
-            }
-        }
+        object ICollection.SyncRoot => this;
 
         // IDictionary
 
-        bool IDictionary.IsFixedSize
-        {
-            get
-            {
-                return false;
-            }
-        }
+        bool IDictionary.IsFixedSize => false;
 
-        bool IDictionary.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        bool IDictionary.IsReadOnly => false;
 
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
                 if (key == null)
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
 
-                int i = Find(key);
+                var i = Find(key);
 
                 if (i >= 0)
                     return table[i].Value;
-                else
-                    throw new KeyNotFoundException();
+                throw new KeyNotFoundException();
             }
             set
             {
                 if (key == null)
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
 
                 PutImpl(key, value, true);
             }
@@ -180,8 +147,7 @@ namespace SiliconStudio.Core.Collections
             {
                 if (!(key is TKey))
                     return null;
-                else
-                    return this[(TKey)key];
+                return this[(TKey)key];
             }
 
             set
@@ -199,16 +165,16 @@ namespace SiliconStudio.Core.Collections
 
             set
             {
-                int current = this.table.Length;
+                var current = this.table.Length;
 
                 if (inUse > value)
                 {
                     throw new ArgumentOutOfRangeException("capacity too small");
                 }
-                else if (value == 0)
+                if (value == 0)
                 {
                     // return to default size
-                    KeyValuePair<TKey, TValue>[] newTable = new KeyValuePair<TKey, TValue>[defaultCapacity];
+                    var newTable = new KeyValuePair<TKey, TValue>[defaultCapacity];
                     Array.Copy(table, newTable, inUse);
                     this.table = newTable;
                 }
@@ -221,116 +187,69 @@ namespace SiliconStudio.Core.Collections
 #endif
                 else if (value > inUse)
                 {
-                    KeyValuePair<TKey, TValue>[] newTable = new KeyValuePair<TKey, TValue>[value];
+                    var newTable = new KeyValuePair<TKey, TValue>[value];
                     Array.Copy(table, newTable, inUse);
                     this.table = newTable;
                 }
                 else if (value > current)
                 {
-                    KeyValuePair<TKey, TValue>[] newTable = new KeyValuePair<TKey, TValue>[value];
+                    var newTable = new KeyValuePair<TKey, TValue>[value];
                     Array.Copy(table, newTable, current);
                     this.table = newTable;
                 }
             }
         }
 
-        public IList<TKey> Keys
-        {
-            get
-            {
-                return new ListKeys(this);
-            }
-        }
+        [NotNull]
+        public IList<TKey> Keys => new ListKeys(this);
 
-        public IList<TValue> Values
-        {
-            get
-            {
-                return new ListValues(this);
-            }
-        }
+        [NotNull]
+        public IList<TValue> Values => new ListValues(this);
 
-        ICollection IDictionary.Keys
-        {
-            get
-            {
-                return new ListKeys(this);
-            }
-        }
+        ICollection IDictionary.Keys => new ListKeys(this);
 
-        ICollection IDictionary.Values
-        {
-            get
-            {
-                return new ListValues(this);
-            }
-        }
+        ICollection IDictionary.Values => new ListValues(this);
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys
-        {
-            get
-            {
-                return Keys;
-            }
-        }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values
-        {
-            get
-            {
-                return Values;
-            }
-        }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
-        public IComparer<TKey> Comparer
-        {
-            get
-            {
-                return comparer;
-            }
-        }
+        public IComparer<TKey> Comparer => comparer;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         //
         // Public instance methods.
         //
 
-        public void Add(TKey key, TValue value)
+        public void Add([NotNull] TKey key, TValue value)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             PutImpl(key, value, false);
         }
 
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey([NotNull] TKey key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             return (Find(key) >= 0);
         }
 
-        public bool Remove(TKey key)
+        public bool Remove([NotNull] TKey key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
-            int i = IndexOfKey(key);
+            var i = IndexOfKey(key);
             if (i >= 0)
             {
                 RemoveAt(i);
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
         // ICollection<KeyValuePair<TKey, TValue>>
@@ -367,8 +286,8 @@ namespace SiliconStudio.Core.Collections
             if (Count > (array.Length - arrayIndex))
                 throw new ArgumentNullException("Not enough space in array from arrayIndex to end of array");
 
-            int i = arrayIndex;
-            foreach (KeyValuePair<TKey, TValue> pair in this)
+            var i = arrayIndex;
+            foreach (var pair in this)
                 array[i++] = pair;
         }
 
@@ -379,29 +298,28 @@ namespace SiliconStudio.Core.Collections
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            int i = Find(keyValuePair.Key);
+            var i = Find(keyValuePair.Key);
 
             if (i >= 0)
                 return Comparer<KeyValuePair<TKey, TValue>>.Default.Compare(table[i], keyValuePair) == 0;
-            else
-                return false;
+            return false;
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            int i = Find(keyValuePair.Key);
+            var i = Find(keyValuePair.Key);
 
             if (i >= 0 && (Comparer<KeyValuePair<TKey, TValue>>.Default.Compare(table[i], keyValuePair) == 0))
             {
                 RemoveAt(i);
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
         // IEnumerable<KeyValuePair<TKey, TValue>>
 
+        [NotNull]
         public Enumerator GetEnumerator()
         {
             return new Enumerator(this);
@@ -444,10 +362,10 @@ namespace SiliconStudio.Core.Collections
         void IDictionary.Remove(object key)
         {
             if (null == key)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if (!(key is TKey))
                 return;
-            int i = IndexOfKey((TKey)key);
+            var i = IndexOfKey((TKey)key);
             if (i >= 0) RemoveAt(i);
         }
 
@@ -472,7 +390,7 @@ namespace SiliconStudio.Core.Collections
                 throw new ArgumentNullException("Not enough space in array from arrayIndex to end of array");
 
             IEnumerator<KeyValuePair<TKey, TValue>> it = GetEnumerator();
-            int i = arrayIndex;
+            var i = arrayIndex;
 
             while (it.MoveNext())
             {
@@ -486,8 +404,8 @@ namespace SiliconStudio.Core.Collections
 
         public void RemoveAt(int index)
         {
-            KeyValuePair<TKey, TValue>[] table = this.table;
-            int cnt = Count;
+            var table = this.table;
+            var cnt = Count;
             if (index >= 0 && index < cnt)
             {
                 if (index != cnt - 1)
@@ -507,12 +425,12 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        public int IndexOfKey(TKey key)
+        public int IndexOfKey([NotNull] TKey key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
-            int indx = 0;
+            var indx = 0;
             try
             {
                 indx = Find(key);
@@ -530,9 +448,9 @@ namespace SiliconStudio.Core.Collections
             if (inUse == 0)
                 return -1;
 
-            for (int i = 0; i < inUse; i++)
+            for (var i = 0; i < inUse; i++)
             {
-                KeyValuePair<TKey, TValue> current = this.table[i];
+                var current = this.table[i];
 
                 if (Equals(value, current.Value))
                     return i;
@@ -555,20 +473,17 @@ namespace SiliconStudio.Core.Collections
         public bool TryGetValue(TKey key, out TValue value)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
-            int i = Find(key);
+            var i = Find(key);
 
             if (i >= 0)
             {
                 value = table[i].Value;
                 return true;
             }
-            else
-            {
-                value = default(TValue);
-                return false;
-            }
+            value = default(TValue);
+            return false;
         }
 
         //
@@ -577,10 +492,10 @@ namespace SiliconStudio.Core.Collections
 
         private void EnsureCapacity(int n, int free)
         {
-            KeyValuePair<TKey, TValue>[] table = this.table;
+            var table = this.table;
             KeyValuePair<TKey, TValue>[] newTable = null;
-            int cap = Capacity;
-            bool gap = (free >= 0 && free < Count);
+            var cap = Capacity;
+            var gap = (free >= 0 && free < Count);
 
             if (n > cap)
             {
@@ -591,7 +506,7 @@ namespace SiliconStudio.Core.Collections
             {
                 if (gap)
                 {
-                    int copyLen = free;
+                    var copyLen = free;
                     if (copyLen > 0)
                     {
                         Array.Copy(table, 0, newTable, 0, copyLen);
@@ -615,14 +530,14 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        private void PutImpl(TKey key, TValue value, bool overwrite)
+        private void PutImpl([NotNull] TKey key, TValue value, bool overwrite)
         {
             if (key == null)
-                throw new ArgumentNullException("null key");
+                throw new ArgumentNullException(nameof(key));
 
-            KeyValuePair<TKey, TValue>[] table = this.table;
+            var table = this.table;
 
-            int freeIndx = -1;
+            var freeIndx = -1;
 
             try
             {
@@ -671,14 +586,14 @@ namespace SiliconStudio.Core.Collections
             this.modificationCount = 0;
         }
 
-        private void CopyToArray(Array arr, int i,
+        private void CopyToArray([NotNull] Array arr, int i,
                        EnumeratorMode mode)
         {
             if (arr == null)
-                throw new ArgumentNullException("arr");
+                throw new ArgumentNullException(nameof(arr));
 
             if (i < 0 || i + this.Count > arr.Length)
-                throw new ArgumentOutOfRangeException("i");
+                throw new ArgumentOutOfRangeException(nameof(i));
 
             IEnumerator it = new DictionaryEnumerator(this, mode);
 
@@ -690,19 +605,19 @@ namespace SiliconStudio.Core.Collections
 
         private int Find(TKey key)
         {
-            KeyValuePair<TKey, TValue>[] table = this.table;
-            int len = Count;
+            var table = this.table;
+            var len = Count;
 
             if (len == 0) return ~0;
 
-            int left = 0;
-            int right = len - 1;
+            var left = 0;
+            var right = len - 1;
 
             while (left <= right)
             {
-                int guess = (left + right) >> 1;
+                var guess = (left + right) >> 1;
 
-                int cmp = comparer.Compare(table[guess].Key, key);
+                var cmp = comparer.Compare(table[guess].Key, key);
                 if (cmp == 0) return guess;
 
                 if (cmp < 0) left = guess + 1;
@@ -712,19 +627,20 @@ namespace SiliconStudio.Core.Collections
             return ~left;
         }
 
-        private TKey ToKey(object key)
+        [NotNull]
+        private TKey ToKey([NotNull] object key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             if (!(key is TKey))
-                throw new ArgumentException("The value \"" + key + "\" isn't of type \"" + typeof(TKey) + "\" and can't be used in this generic collection.", "key");
+                throw new ArgumentException("The value \"" + key + "\" isn't of type \"" + typeof(TKey) + "\" and can't be used in this generic collection.", nameof(key));
             return (TKey)key;
         }
-
+        
         private TValue ToValue(object value)
         {
             if (!(value is TValue))
-                throw new ArgumentException("The value \"" + value + "\" isn't of type \"" + typeof(TValue) + "\" and can't be used in this generic collection.", "value");
+                throw new ArgumentException("The value \"" + value + "\" isn't of type \"" + typeof(TValue) + "\" and can't be used in this generic collection.", nameof(value));
             return (TValue)value;
         }
 
@@ -732,16 +648,14 @@ namespace SiliconStudio.Core.Collections
         {
             if (index >= 0 && index < Count)
                 return table[index].Key;
-            else
-                throw new ArgumentOutOfRangeException("Index out of range");
+            throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         internal TValue ValueAt(int index)
         {
             if (index >= 0 && index < Count)
                 return table[index].Value;
-            else
-                throw new ArgumentOutOfRangeException("Index out of range");
+            throw new ArgumentOutOfRangeException(nameof(index));
         }
 
         //
@@ -773,35 +687,30 @@ namespace SiliconStudio.Core.Collections
                 throw new NotSupportedException();
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            [NotNull]
+            object IEnumerator.Current => Current;
 
-            public KeyValuePair<TKey, TValue> Current
-            {
-                get { return host.table[pos]; }
-            }
+            public KeyValuePair<TKey, TValue> Current => host.table[pos];
         }
 
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator, IEnumerator
         {
 
-            private SortedList<TKey, TValue> host;
+            private readonly SortedList<TKey, TValue> host;
             private int stamp;
             private int pos;
             private int size;
-            private EnumeratorMode mode;
+            private readonly EnumeratorMode mode;
 
             private object currentKey;
             private object currentValue;
 
             bool invalid = false;
 
-            private readonly static string xstr = "SortedList.Enumerator: snapshot out of sync.";
+            private static readonly string xstr = "SortedList.Enumerator: snapshot out of sync.";
 
-            public DictionaryEnumerator(SortedList<TKey, TValue> host, EnumeratorMode mode)
+            public DictionaryEnumerator([NotNull] SortedList<TKey, TValue> host, EnumeratorMode mode)
             {
                 this.host = host;
                 stamp = host.modificationCount;
@@ -810,7 +719,7 @@ namespace SiliconStudio.Core.Collections
                 Reset();
             }
 
-            public DictionaryEnumerator(SortedList<TKey, TValue> host)
+            public DictionaryEnumerator([NotNull] SortedList<TKey, TValue> host)
                 : this(host, EnumeratorMode.ENTRY_MODE)
             {
             }
@@ -830,11 +739,11 @@ namespace SiliconStudio.Core.Collections
                 if (host.modificationCount != stamp || invalid)
                     throw new InvalidOperationException(xstr);
 
-                KeyValuePair<TKey, TValue>[] table = host.table;
+                var table = host.table;
 
                 if (++pos < size)
                 {
-                    KeyValuePair<TKey, TValue> entry = table[pos];
+                    var entry = table[pos];
 
                     currentKey = entry.Key;
                     currentValue = entry.Value;
@@ -858,7 +767,7 @@ namespace SiliconStudio.Core.Collections
                 }
             }
 
-            public Object Key
+            public object Key
             {
                 get
                 {
@@ -868,7 +777,7 @@ namespace SiliconStudio.Core.Collections
                 }
             }
 
-            public Object Value
+            public object Value
             {
                 get
                 {
@@ -878,7 +787,7 @@ namespace SiliconStudio.Core.Collections
                 }
             }
 
-            public Object Current
+            public object Current
             {
                 get
                 {
@@ -902,9 +811,10 @@ namespace SiliconStudio.Core.Collections
 
             // ICloneable
 
+            [NotNull]
             public object Clone()
             {
-                DictionaryEnumerator e = new DictionaryEnumerator(host, mode);
+                var e = new DictionaryEnumerator(host, mode);
                 e.stamp = stamp;
                 e.pos = pos;
                 e.size = size;
@@ -923,11 +833,11 @@ namespace SiliconStudio.Core.Collections
             // we just decr the size, so, 0 - 1 == FINISHED
             const int FINISHED = -1;
 
-            SortedList<TKey, TValue> l;
+            readonly SortedList<TKey, TValue> l;
             int idx;
-            int ver;
+            readonly int ver;
 
-            internal KeyEnumerator(SortedList<TKey, TValue> l)
+            internal KeyEnumerator([NotNull] SortedList<TKey, TValue> l)
             {
                 this.l = l;
                 idx = NOT_STARTED;
@@ -969,10 +879,7 @@ namespace SiliconStudio.Core.Collections
                 idx = NOT_STARTED;
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
         }
 
         struct ValueEnumerator : IEnumerator<TValue>, IDisposable
@@ -983,11 +890,11 @@ namespace SiliconStudio.Core.Collections
             // we just decr the size, so, 0 - 1 == FINISHED
             const int FINISHED = -1;
 
-            SortedList<TKey, TValue> l;
+            readonly SortedList<TKey, TValue> l;
             int idx;
-            int ver;
+            readonly int ver;
 
-            internal ValueEnumerator(SortedList<TKey, TValue> l)
+            internal ValueEnumerator([NotNull] SortedList<TKey, TValue> l)
             {
                 this.l = l;
                 idx = NOT_STARTED;
@@ -1029,18 +936,15 @@ namespace SiliconStudio.Core.Collections
                 idx = NOT_STARTED;
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
         }
 
         private class ListKeys : IList<TKey>, ICollection, IEnumerable
         {
 
-            private SortedList<TKey, TValue> host;
+            private readonly SortedList<TKey, TValue> host;
 
-            public ListKeys(SortedList<TKey, TValue> host)
+            public ListKeys([NotNull] SortedList<TKey, TValue> host)
             {
                 if (host == null)
                     throw new ArgumentNullException();
@@ -1070,7 +974,7 @@ namespace SiliconStudio.Core.Collections
                 if (host.Count == 0)
                     return;
                 if (array == null)
-                    throw new ArgumentNullException("array");
+                    throw new ArgumentNullException(nameof(array));
                 if (arrayIndex < 0)
                     throw new ArgumentOutOfRangeException();
                 if (arrayIndex >= array.Length)
@@ -1078,12 +982,12 @@ namespace SiliconStudio.Core.Collections
                 if (Count > (array.Length - arrayIndex))
                     throw new ArgumentOutOfRangeException("Not enough space in array from arrayIndex to end of array");
 
-                int j = arrayIndex;
-                for (int i = 0; i < Count; ++i)
+                var j = arrayIndex;
+                for (var i = 0; i < Count; ++i)
                     array[j++] = host.KeyAt(i);
             }
 
-            public virtual bool Contains(TKey item)
+            public virtual bool Contains([NotNull] TKey item)
             {
                 return host.IndexOfKey(item) > -1;
             }
@@ -1091,7 +995,7 @@ namespace SiliconStudio.Core.Collections
             //
             // IList<TKey>
             //
-            public virtual int IndexOf(TKey item)
+            public virtual int IndexOf([NotNull] TKey item)
             {
                 return host.IndexOfKey(item);
             }
@@ -1132,37 +1036,13 @@ namespace SiliconStudio.Core.Collections
             // ICollection
             //
 
-            public virtual int Count
-            {
-                get
-                {
-                    return host.Count;
-                }
-            }
+            public virtual int Count => host.Count;
 
-            public virtual bool IsSynchronized
-            {
-                get
-                {
-                    return ((ICollection)host).IsSynchronized;
-                }
-            }
+            public virtual bool IsSynchronized => ((ICollection)host).IsSynchronized;
 
-            public virtual bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
+            public virtual bool IsReadOnly => true;
 
-            public virtual Object SyncRoot
-            {
-                get
-                {
-                    return ((ICollection)host).SyncRoot;
-                }
-            }
+            public virtual object SyncRoot => ((ICollection)host).SyncRoot;
 
             public virtual void CopyTo(Array array, int arrayIndex)
             {
@@ -1175,7 +1055,7 @@ namespace SiliconStudio.Core.Collections
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                for (int i = 0; i < host.Count; ++i)
+                for (var i = 0; i < host.Count; ++i)
                     yield return host.KeyAt(i);
             }
         }
@@ -1183,9 +1063,9 @@ namespace SiliconStudio.Core.Collections
         private class ListValues : IList<TValue>, ICollection, IEnumerable
         {
 
-            private SortedList<TKey, TValue> host;
+            private readonly SortedList<TKey, TValue> host;
 
-            public ListValues(SortedList<TKey, TValue> host)
+            public ListValues([NotNull] SortedList<TKey, TValue> host)
             {
                 if (host == null)
                     throw new ArgumentNullException();
@@ -1215,7 +1095,7 @@ namespace SiliconStudio.Core.Collections
                 if (host.Count == 0)
                     return;
                 if (array == null)
-                    throw new ArgumentNullException("array");
+                    throw new ArgumentNullException(nameof(array));
                 if (arrayIndex < 0)
                     throw new ArgumentOutOfRangeException();
                 if (arrayIndex >= array.Length)
@@ -1223,8 +1103,8 @@ namespace SiliconStudio.Core.Collections
                 if (Count > (array.Length - arrayIndex))
                     throw new ArgumentOutOfRangeException("Not enough space in array from arrayIndex to end of array");
 
-                int j = arrayIndex;
-                for (int i = 0; i < Count; ++i)
+                var j = arrayIndex;
+                for (var i = 0; i < Count; ++i)
                     array[j++] = host.ValueAt(i);
             }
 
@@ -1277,37 +1157,13 @@ namespace SiliconStudio.Core.Collections
             // ICollection
             //
 
-            public virtual int Count
-            {
-                get
-                {
-                    return host.Count;
-                }
-            }
+            public virtual int Count => host.Count;
 
-            public virtual bool IsSynchronized
-            {
-                get
-                {
-                    return ((ICollection)host).IsSynchronized;
-                }
-            }
+            public virtual bool IsSynchronized => ((ICollection)host).IsSynchronized;
 
-            public virtual bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
+            public virtual bool IsReadOnly => true;
 
-            public virtual Object SyncRoot
-            {
-                get
-                {
-                    return ((ICollection)host).SyncRoot;
-                }
-            }
+            public virtual object SyncRoot => ((ICollection)host).SyncRoot;
 
             public virtual void CopyTo(Array array, int arrayIndex)
             {
@@ -1320,7 +1176,7 @@ namespace SiliconStudio.Core.Collections
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                for (int i = 0; i < host.Count; ++i)
+                for (var i = 0; i < host.Count; ++i)
                     yield return host.ValueAt(i);
             }
         }

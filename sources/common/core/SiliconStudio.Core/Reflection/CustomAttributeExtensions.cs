@@ -4,17 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
     public static class CustomAttributeExtensions
     {
-        public static T GetCustomAttributeEx<T>(this Assembly assembly) where T : Attribute
+        public static T GetCustomAttributeEx<T>([NotNull] this Assembly assembly) where T : Attribute
         {
             return (T)GetCustomAttributeEx(assembly, typeof(T));
         }
 
-        public static Attribute GetCustomAttributeEx(this Assembly assembly, Type attributeType)
+        public static Attribute GetCustomAttributeEx([NotNull] this Assembly assembly, [NotNull] Type attributeType)
         {
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
             return Attribute.GetCustomAttribute(assembly, attributeType);
@@ -23,7 +24,7 @@ namespace SiliconStudio.Core.Reflection
 #endif
         }
 
-        public static IEnumerable<Attribute> GetCustomAttributesEx(this Assembly assembly, Type attributeType)
+        public static IEnumerable<Attribute> GetCustomAttributesEx([NotNull] this Assembly assembly, [NotNull] Type attributeType)
         {
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
             return Attribute.GetCustomAttributes(assembly, attributeType);
@@ -32,7 +33,8 @@ namespace SiliconStudio.Core.Reflection
 #endif
         }
 
-        public static IEnumerable<T> GetCustomAttributesEx<T>(this Assembly assembly) where T : Attribute
+        [NotNull]
+        public static IEnumerable<T> GetCustomAttributesEx<T>([NotNull] this Assembly assembly) where T : Attribute
         {
             return GetCustomAttributesEx(assembly, typeof(T)).Cast<T>();
         }
