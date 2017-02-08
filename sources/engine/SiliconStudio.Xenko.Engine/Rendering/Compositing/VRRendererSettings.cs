@@ -28,5 +28,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         [DataMemberIgnore]
         public ImageScaler MirrorScaler = new ImageScaler();
+
+        [DataMemberIgnore]
+        public Texture LeftEye;
+
+        [DataMemberIgnore]
+        public Texture RightEye;
     }
 }

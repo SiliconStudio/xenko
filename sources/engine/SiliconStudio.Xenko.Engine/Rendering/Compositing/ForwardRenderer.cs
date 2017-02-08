@@ -395,9 +395,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// Prepares targets per frame, caching and handling MSAA etc.
         /// </summary>
         /// <param name="drawContext">The current draw context</param>
-        /// <param name="width">The desired width</param>
-        /// <param name="height">The desired height</param>
-        protected virtual void PrepareRenderTargets(RenderDrawContext drawContext, int width, int height)
+        /// <param name="renderTargetsSize"></param>
+        protected virtual void PrepareRenderTargets(RenderDrawContext drawContext, Size2 renderTargetsSize)
         {
             var currentRenderTarget = drawContext.CommandList.RenderTarget;
             if (drawContext.CommandList.RenderTargetCount == 0)
@@ -408,7 +407,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             if (currentRenderTarget == null)
             {
                 currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                    TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                    TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
                         TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
             }
 
@@ -421,17 +420,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     color.Color = PostEffects != null
                     ? PushScopedResource(
-                        drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
+                        drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R16G16B16A16_Float,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
 
                     : PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D( //msaa but no HDR, use RGB8 temp buffer
-                        TextureDescription.New2D(width, height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
                             TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
                 }
 
                 //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(width, height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMSAALevel)));
 
             }
@@ -453,7 +452,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     if (color != null)
                     {
                         color.Color = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                            TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
+                            TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R16G16B16A16_Float,
                                 TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
                     }
                 }
@@ -462,7 +461,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (currentDepthStencil == null)
                 {
                     currentDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(width, height, 1, PixelFormat.D24_UNorm_S8_UInt,
+                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
                             TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
                 }
 
@@ -475,7 +474,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 normals.Normals = PostEffects != null && PostEffects.RequiresNormalBuffer
                 ? PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16B16A16_Float,
+                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R16G16B16A16_Float,
                         TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
                 : null;
             }
@@ -486,7 +485,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 velocity.Velocity = PostEffects != null && PostEffects.RequiresVelocityBuffer
                 ? PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(width, height, 1, PixelFormat.R16G16_Float,
+                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R16G16_Float,
                         TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
                 : null;
             }
@@ -504,32 +503,35 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        var width = VRSettings.VRDevice.ActualRenderFrameSize.Width;
-                        var height = VRSettings.VRDevice.ActualRenderFrameSize.Height;
-
                         //make sure we don't use any default targets!
                         drawContext.CommandList.SetRenderTargets(null, null);
 
-                        PrepareRenderTargets(drawContext, width, height);
+                        PrepareRenderTargets(drawContext, new Size2(VRSettings.VRDevice.ActualRenderFrameSize.Width / 2, VRSettings.VRDevice.ActualRenderFrameSize.Height));
 
+                        //also prepare the final VR target
+                        var vrFullSurface = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                                                TextureDescription.New2D(VRSettings.VRDevice.ActualRenderFrameSize.Width, VRSettings.VRDevice.ActualRenderFrameSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
+                                                    TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
+                     
                         //draw per eye
+                        using (context.SaveViewportAndRestore())
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
+                            drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
                             drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
-
-                            // Clear render target and depth stencil
-                            Clear?.Draw(drawContext);
 
                             for (var i = 0; i < 2; i++)
                             {
                                 using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
                                 {
-                                    drawContext.CommandList.SetViewport(new Viewport(i == 0 ? 0 : width / 2, 0, width / 2, height));
+                                    // Clear render target and depth stencil
+                                    Clear?.Draw(drawContext);
                                     DrawView(context, drawContext);
+                                    drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
                                 }
                             }
 
-                            VRSettings.VRDevice.Commit(drawContext.CommandList, ViewOutputTarget);
+                            VRSettings.VRDevice.Commit(drawContext.CommandList, vrFullSurface);
                         }
                     }
 
@@ -547,7 +549,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
                 else
                 {
-                    PrepareRenderTargets(drawContext, (int)viewport.Width, (int)viewport.Height);
+                    PrepareRenderTargets(drawContext, new Size2((int)viewport.Width, (int)viewport.Height));
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
