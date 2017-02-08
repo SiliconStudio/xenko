@@ -2,12 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Collections;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization.Serializers
 {
@@ -43,11 +39,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                int count = stream.ReadInt32();
+                var count = stream.ReadInt32();
                 obj.Capacity = count;
-                for (int i = 0; i < count; ++i)
+                for (var i = 0; i < count; ++i)
                 {
-                    T value = default(T);
+                    var value = default(T);
                     itemDataSerializer.Serialize(ref value, mode, stream);
                     obj.Add(value);
                 }
@@ -55,7 +51,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             else if (mode == ArchiveMode.Serialize)
             {
                 stream.Write(obj.Count);
-                foreach (T item in obj)
+                foreach (var item in obj)
                 {
                     itemDataSerializer.Serialize(item, stream);
                 }
@@ -63,7 +59,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
         }
@@ -75,7 +71,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
     /// <typeparam name="T">Generics type of IList{T}.</typeparam>
     public class ListAllSerializer<TList, T> : DataSerializer<TList>, IDataSerializerGenericInstantiation where TList : class, IList<T>
     {
-        private bool isInterface = typeof(TList).GetTypeInfo().IsInterface;
+        private readonly bool isInterface = typeof(TList).GetTypeInfo().IsInterface;
         private DataSerializer<T> itemDataSerializer;
 
         /// <inheritdoc/>
@@ -101,10 +97,10 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    T value = default(T);
+                    var value = default(T);
                     itemDataSerializer.Serialize(ref value, mode, stream);
                     obj.Add(value);
                 }
@@ -112,7 +108,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             else if (mode == ArchiveMode.Serialize)
             {
                 stream.Write(obj.Count);
-                foreach (T item in obj)
+                foreach (var item in obj)
                 {
                     itemDataSerializer.Serialize(item, stream);
                 }
@@ -120,7 +116,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
         }
@@ -165,11 +161,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
             if (mode == ArchiveMode.Deserialize)
             {
                 // Should be null if it was
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    TKey key = default(TKey);
-                    TValue value = default(TValue);
+                    var key = default(TKey);
+                    var value = default(TValue);
                     keySerializer.Serialize(ref key, mode, stream);
                     valueSerializer.Serialize(ref value, mode, stream);
                     obj.Add(key, value);
@@ -187,7 +183,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
             genericInstantiations.Add(typeof(TValue));
@@ -227,10 +223,10 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    T value = default(T);
+                    var value = default(T);
                     itemDataSerializer.Serialize(ref value, mode, stream);
                     obj.Add(value);
                 }
@@ -238,7 +234,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             else if (mode == ArchiveMode.Serialize)
             {
                 stream.Write(obj.Count);
-                foreach (T item in obj)
+                foreach (var item in obj)
                 {
                     itemDataSerializer.Serialize(item, stream);
                 }
@@ -246,7 +242,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
 
@@ -278,7 +274,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                int length = stream.ReadInt32();
+                var length = stream.ReadInt32();
                 obj = new T[length];
             }
         }
@@ -288,16 +284,16 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                int count = obj.Length;
-                for (int i = 0; i < count; ++i)
+                var count = obj.Length;
+                for (var i = 0; i < count; ++i)
                 {
                     itemDataSerializer.Serialize(ref obj[i], mode, stream);
                 }
             }
             else if (mode == ArchiveMode.Serialize)
             {
-                int count = obj.Length;
-                for (int i = 0; i < count; ++i)
+                var count = obj.Length;
+                for (var i = 0; i < count; ++i)
                 {
                     itemDataSerializer.Serialize(ref obj[i], mode, stream);
                 }
@@ -305,7 +301,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
         }
@@ -326,9 +322,9 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public unsafe override void Serialize(ref T[] obj, ArchiveMode mode, SerializationStream stream)
+        public override unsafe void Serialize(ref T[] obj, ArchiveMode mode, SerializationStream stream)
         {
-            int size = obj.Length * elementSize;
+            var size = obj.Length * elementSize;
             var objPinned = Interop.Fixed(obj);
             if (mode == ArchiveMode.Deserialize)
             {
@@ -365,8 +361,8 @@ namespace SiliconStudio.Core.Serialization.Serializers
         {
             if (mode == ArchiveMode.Deserialize)
             {
-                TKey key = default(TKey);
-                TValue value = default(TValue);
+                var key = default(TKey);
+                var value = default(TValue);
                 keySerializer.Serialize(ref key, mode, stream);
                 valueSerializer.Serialize(ref value, mode, stream);
                 obj = new KeyValuePair<TKey, TValue>(key, value);
@@ -379,7 +375,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
             genericInstantiations.Add(typeof(TValue));
@@ -424,11 +420,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
             if (mode == ArchiveMode.Deserialize)
             {
                 // Should be null if it was
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    TKey key = default(TKey);
-                    TValue value = default(TValue);
+                    var key = default(TKey);
+                    var value = default(TValue);
                     keySerializer.Serialize(ref key, mode, stream);
                     valueSerializer.Serialize(ref value, mode, stream);
                     obj.Add(key, value);
@@ -446,7 +442,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
             genericInstantiations.Add(typeof(TValue));
@@ -455,7 +451,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
 
     public class DictionaryAllSerializer<TDictionary, TKey, TValue> : DataSerializer<TDictionary>, IDataSerializerGenericInstantiation where TDictionary : IDictionary<TKey, TValue>
     {
-        private bool isInterface = typeof(TDictionary).GetTypeInfo().IsInterface;
+        private readonly bool isInterface = typeof(TDictionary).GetTypeInfo().IsInterface;
         private DataSerializer<TKey> keySerializer;
         private DataSerializer<TValue> valueSerializer;
 
@@ -486,11 +482,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
             if (mode == ArchiveMode.Deserialize)
             {
                 // Should be null if it was
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    TKey key = default(TKey);
-                    TValue value = default(TValue);
+                    var key = default(TKey);
+                    var value = default(TValue);
                     keySerializer.Serialize(ref key, mode, stream);
                     valueSerializer.Serialize(ref value, mode, stream);
                     obj.Add(key, value);
@@ -508,7 +504,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
             genericInstantiations.Add(typeof(TValue));
@@ -553,11 +549,11 @@ namespace SiliconStudio.Core.Serialization.Serializers
             if (mode == ArchiveMode.Deserialize)
             {
                 // Should be null if it was
-                int count = stream.ReadInt32();
-                for (int i = 0; i < count; ++i)
+                var count = stream.ReadInt32();
+                for (var i = 0; i < count; ++i)
                 {
-                    TKey key = default(TKey);
-                    TValue value = default(TValue);
+                    var key = default(TKey);
+                    var value = default(TValue);
                     keySerializer.Serialize(ref key, mode, stream);
                     valueSerializer.Serialize(ref value, mode, stream);
                     obj.Add(key, value);
@@ -575,7 +571,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
+        public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, [NotNull] IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
             genericInstantiations.Add(typeof(TValue));

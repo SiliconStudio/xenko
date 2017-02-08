@@ -117,8 +117,8 @@ namespace SiliconStudio.Core.Storage
         public void Write<T>(T data) where T : struct
         {
             var pData = (int*)Interop.Fixed(ref data);
-            int count = Utilities.SizeOf<T>() >> 2;
-            for (int i = 0; i < count; i++)
+            var count = Utilities.SizeOf<T>() >> 2;
+            for (var i = 0; i < count; i++)
             {
                 Write(*pData++);
             }

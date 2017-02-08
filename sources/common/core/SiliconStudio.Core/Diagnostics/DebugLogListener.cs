@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Diagnostics;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -9,7 +10,7 @@ namespace SiliconStudio.Core.Diagnostics
     /// </summary>
     public class DebugLogListener : LogListener
     {
-        protected override void OnLog(ILogMessage logMessage)
+        protected override void OnLog([NotNull] ILogMessage logMessage)
         {
             Debug.WriteLine(GetDefaultText(logMessage));
             var exceptionMsg = GetExceptionText(logMessage);

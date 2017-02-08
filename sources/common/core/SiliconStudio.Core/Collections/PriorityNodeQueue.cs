@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -24,10 +25,10 @@ namespace SiliconStudio.Core.Collections
     public class PriorityNodeQueue<T>
     {
         /// <summary>The List we use for implementation.</summary>
-        private List<PriorityQueueNode<T>> items = new List<PriorityQueueNode<T>>();
+        private readonly List<PriorityQueueNode<T>> items = new List<PriorityQueueNode<T>>();
 
         // Used for comparing and sorting elements.
-        private IComparer<T> comparer;
+        private readonly IComparer<T> comparer;
 
         public PriorityNodeQueue(IComparer<T> comparer)
         {
@@ -49,9 +50,9 @@ namespace SiliconStudio.Core.Collections
         /// Removes the specified item.
         /// </summary>
         /// <param name="item">The item to remove.</param>
-        public void Remove(PriorityQueueNode<T> item)
+        public void Remove([NotNull] PriorityQueueNode<T> item)
         {
-            int index = item.Index;
+            var index = item.Index;
             if (index == -1)
                 return;
 
@@ -62,7 +63,7 @@ namespace SiliconStudio.Core.Collections
             // it with it's lower child until it reaches it's correct level. The lower
             // child (one of the orignal elements with index 1 or 2) will now be at the
             // head of the queue (root of the tree).
-            int nMax = items.Count - 1;
+            var nMax = items.Count - 1;
             var itemMax = items[nMax];
             itemMax.Index = index;
             var itemToRemove = items[index];
@@ -70,12 +71,12 @@ namespace SiliconStudio.Core.Collections
             items[index] = itemMax;
             items.RemoveAt(nMax);  // Move the last element to the top
 
-            int p = index;
+            var p = index;
             while (true)
             {
                 // c is the child we want to swap with. If there
                 // is no child at all, then the heap is balanced
-                int c = p * 2; if (c >= nMax) break;
+                var c = p * 2; if (c >= nMax) break;
 
                 // If the second child is smaller than the first, that's the one
                 // we want to swap with this parent.
@@ -101,6 +102,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>Add an element to the priority queue - O(log(n)) time operation.</summary>
         /// <param name="item">The item to be added to the queue</param>
         /// <returns>A node representing the item.</returns>
+        [NotNull]
         public PriorityQueueNode<T> Enqueue(T item)
         {
             var result = new PriorityQueueNode<T>(item);
@@ -110,7 +112,7 @@ namespace SiliconStudio.Core.Collections
 
         /// <summary>Add an element to the priority queue - O(log(n)) time operation.</summary>
         /// <param name="item">The item to be added to the queue</param>
-        public void Enqueue(PriorityQueueNode<T> item)
+        public void Enqueue([NotNull] PriorityQueueNode<T> item)
         {
             if (item.Index != -1)
                 throw new InvalidOperationException("Item belongs to another PriorityNodeQueue.");
@@ -125,12 +127,12 @@ namespace SiliconStudio.Core.Collections
             // to the root of the tree (or the head of the list). It is easy to see 
             // this will take log(N) time, since we are working with a balanced binary
             // tree.
-            int n = items.Count;
+            var n = items.Count;
             items.Add(item);
             item.Index = n;
             while (n != 0)
             {
-                int p = n / 2;    // This is the 'parent' of this item
+                var p = n / 2;    // This is the 'parent' of this item
                 if (comparer.Compare(items[n].Value, items[p].Value) >= 0)
                     break;  // Item >= parent
 
@@ -147,18 +149,12 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <summary>Returns the number of elements in the queue.</summary>
-        public int Count
-        {
-            get { return items.Count; }
-        }
+        public int Count => items.Count;
 
         /// <summary>Returns true if the queue is empty.</summary>
         /// Trying to call Peek() or Next() on an empty queue will throw an exception.
         /// Check using Empty first before calling these methods.
-        public bool Empty
-        {
-            get { return items.Count == 0; }
-        }
+        public bool Empty => items.Count == 0;
 
         /// <summary>Allows you to look at the first element waiting in the queue, without removing it.</summary>
         /// This element will be the one that will be returned if you subsequently call Next().
@@ -178,7 +174,7 @@ namespace SiliconStudio.Core.Collections
             // it with it's lower child until it reaches it's correct level. The lower
             // child (one of the orignal elements with index 1 or 2) will now be at the
             // head of the queue (root of the tree).
-            int nMax = items.Count - 1;
+            var nMax = items.Count - 1;
             var itemToRemove = items[0];
             var itemMax = items[nMax];
             itemMax.Index = 0;
@@ -187,12 +183,12 @@ namespace SiliconStudio.Core.Collections
             items[0] = itemMax;
             items.RemoveAt(nMax);  // Move the last element to the top
 
-            int p = 0;
+            var p = 0;
             while (true)
             {
                 // c is the child we want to swap with. If there
                 // is no child at all, then the heap is balanced
-                int c = p * 2; if (c >= nMax) break;
+                var c = p * 2; if (c >= nMax) break;
 
                 // If the second child is smaller than the first, that's the one
                 // we want to swap with this parent.

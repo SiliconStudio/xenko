@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="T">Type of elements of this collection </typeparam>
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class FastCollection<T> : IList<T>, IReadOnlyList<T>
     {
         private T[] items;
@@ -30,12 +31,12 @@ namespace SiliconStudio.Core.Collections
             items = ArrayHelper<T>.Empty;
         }
 
-        public FastCollection(IEnumerable<T> collection)
+        public FastCollection([NotNull] IEnumerable<T> collection)
         {
             var is2 = collection as ICollection<T>;
             if (is2 != null)
             {
-                int count = is2.Count;
+                var count = is2.Count;
                 items = new T[count];
                 is2.CopyTo(items, 0);
                 size = count;
@@ -44,7 +45,7 @@ namespace SiliconStudio.Core.Collections
             {
                 size = 0;
                 items = new T[_defaultCapacity];
-                using (IEnumerator<T> enumerator = collection.GetEnumerator())
+                using (var enumerator = collection.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
                     {
@@ -122,7 +123,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (item == null)
             {
-                for (int j = 0; j < size; j++)
+                for (var j = 0; j < size; j++)
                 {
                     if (items[j] == null)
                     {
@@ -131,8 +132,8 @@ namespace SiliconStudio.Core.Collections
                 }
                 return false;
             }
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < size; i++)
+            var comparer = EqualityComparer<T>.Default;
+            for (var i = 0; i < size; i++)
             {
                 if (comparer.Equals(items[i], item))
                 {
@@ -160,7 +161,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(T item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -189,7 +190,7 @@ namespace SiliconStudio.Core.Collections
         /// Adds the elements of the specified source to the end of <see cref="FastCollection{T}"/>.
         /// </summary>
         /// <param name="itemsArgs">The items to add to this collection.</param>
-        public void AddRange<TE>(TE itemsArgs) where TE : IEnumerable<T>
+        public void AddRange<TE>([NotNull] TE itemsArgs) where TE : IEnumerable<T>
         {
             foreach (var item in itemsArgs)
             {
@@ -259,16 +260,13 @@ namespace SiliconStudio.Core.Collections
             items[index] = item;
         }
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         public void EnsureCapacity(int min)
         {
             if (items.Length < min)
             {
-                int num = (items.Length == 0) ? _defaultCapacity : (items.Length * 2);
+                var num = (items.Length == 0) ? _defaultCapacity : (items.Length * 2);
                 if (num < min)
                 {
                     num = min;
@@ -297,7 +295,7 @@ namespace SiliconStudio.Core.Collections
 
             public bool MoveNext()
             {
-                FastCollection<T> list = this.list;
+                var list = this.list;
                 if (index < list.size)
                 {
                     current = list.items[index];
@@ -314,15 +312,9 @@ namespace SiliconStudio.Core.Collections
                 return false;
             }
 
-            public T Current
-            {
-                get { return current; }
-            }
+            public T Current => current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             void IEnumerator.Reset()
             {

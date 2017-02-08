@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -10,6 +11,7 @@ namespace SiliconStudio.Core.Diagnostics
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("SafeAction");
 
+        [NotNull]
         public static ThreadStart Wrap(ThreadStart action, [CallerFilePath] string sourceFilePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             return () =>
@@ -32,6 +34,7 @@ namespace SiliconStudio.Core.Diagnostics
             };
         }
 
+        [NotNull]
         public static ParameterizedThreadStart Wrap(ParameterizedThreadStart action, [CallerFilePath] string sourceFilePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             return obj =>

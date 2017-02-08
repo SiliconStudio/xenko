@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -51,14 +52,14 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public void Add(TKey key, TValue value)
+        public void Add([NotNull] TKey key, TValue value)
         {
             innerDictionary.Add(key, value);
             itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, value, null, true));
         }
 
         /// <inheritdoc/>
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey([NotNull] TKey key)
         {
             return innerDictionary.ContainsKey(key);
         }
@@ -70,7 +71,7 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public bool Remove(TKey key)
+        public bool Remove([NotNull] TKey key)
         {
             var collectionChanged = itemRemoved;
             if (collectionChanged != null && innerDictionary.ContainsKey(key))
@@ -92,7 +93,7 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
@@ -105,7 +106,7 @@ namespace SiliconStudio.Core.Collections
                 {
                     TValue oldValue;
                     
-                    bool alreadyExisting = innerDictionary.TryGetValue(key, out oldValue);
+                    var alreadyExisting = innerDictionary.TryGetValue(key, out oldValue);
                     if (alreadyExisting)
                         collectionChangedRemoved(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, key, oldValue, null, false));
 
