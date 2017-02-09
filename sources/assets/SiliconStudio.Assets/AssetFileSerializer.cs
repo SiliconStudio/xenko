@@ -126,7 +126,7 @@ namespace SiliconStudio.Assets
         /// <param name="log">The logger.</param>
         /// <param name="overrides"></param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
+        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
@@ -156,7 +156,7 @@ namespace SiliconStudio.Assets
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
+        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;
@@ -172,7 +172,7 @@ namespace SiliconStudio.Assets
             {
                 throw new InvalidOperationException($"Unable to find a serializer for [{assetFileExtension}]");
             }
-            serializer.Save(stream, asset, log, overrides);
+            serializer.Save(stream, asset, log, overrides, objectReferences);
         }
     }
 }

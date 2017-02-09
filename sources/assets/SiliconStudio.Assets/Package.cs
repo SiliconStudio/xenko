@@ -682,7 +682,7 @@ namespace SiliconStudio.Assets
                 }
 
                 // Inject a copy of the base into the current asset when saving
-                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides);
+                AssetFileSerializer.Save(assetPath, asset.Asset, log, (Dictionary<YamlAssetPath, OverrideType>)asset.Overrides, asset.ObjectReferences);
 
                 // Save generated asset (if necessary)
                 var codeGeneratorAsset = asset.Asset as IProjectFileGeneratorAsset;

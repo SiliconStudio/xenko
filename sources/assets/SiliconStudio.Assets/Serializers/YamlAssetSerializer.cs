@@ -25,12 +25,16 @@ namespace SiliconStudio.Assets.Serializers
             return result;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
         {
             var settings = new SerializerContextSettings(log);
             if (overrides != null)
             {
                 settings.Properties.Add(AssetObjectSerializerBackend.OverrideDictionaryKey, overrides);
+            }
+            if (objectReferences != null)
+            {
+                settings.Properties.Add(AssetObjectSerializerBackend.ObjectReferencesKey, objectReferences);
             }
             AssetYamlSerializer.Default.Serialize(stream, asset, null, settings);
         }

@@ -19,6 +19,6 @@ namespace SiliconStudio.Assets.Serializers
     {
         object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides);
 
-        void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null);
+        void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null);
     }
 }

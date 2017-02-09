@@ -166,6 +166,11 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(rootNode);
         }
 
+        public virtual bool IsObjectReference(IGraphNode targetNode, object value)
+        {
+            return false;
+        }
+
         // TODO: turn protected
         public virtual bool ShouldListenToTargetNode(IMemberNode member, IGraphNode targetNode)
         {
@@ -192,6 +197,7 @@ namespace SiliconStudio.Assets.Quantum
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             assetItem.Overrides = GenerateOverridesForSerialization(RootNode);
+            assetItem.ObjectReferences = GenerateObjectReferencesForSerialization(RootNode);
         }
 
         // TODO: check if this can/should be turned private
@@ -271,6 +277,15 @@ namespace SiliconStudio.Assets.Quantum
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
             var visitor = new OverrideTypePathGenerator();
+            visitor.Visit(rootNode);
+            return visitor.Result;
+        }
+
+        public static HashSet<YamlAssetPath> GenerateObjectReferencesForSerialization(IGraphNode rootNode)
+        {
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+
+            var visitor = new ObjectReferencePathGenerator();
             visitor.Visit(rootNode);
             return visitor.Result;
         }
@@ -473,6 +488,7 @@ namespace SiliconStudio.Assets.Quantum
             previousOverrides.Remove(e.Member);
             var node = (AssetMemberNode)e.Member;
             var overrideValue = node.GetContentOverride();
+            node.IsObjectReference = IsObjectReference(e.Member, e.NewValue);
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, ItemId.Empty));
         }
 
@@ -517,6 +533,8 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ids.TryGet(e.Index.Value, out itemId);
                 }
+                node.SetObjectReference(e.Index, IsObjectReference(e.Node, e.NewValue));
+
             }
             else if (e.ChangeType == ContentChangeType.CollectionRemove)
             {

@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Serializers
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }

@@ -126,6 +126,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<string, IGraphNode> contents;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides;
         private readonly Dictionary<ItemId, OverrideType> keyOverrides;
+        private readonly HashSet<ItemId> objectReferences;
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
@@ -135,6 +136,7 @@ namespace SiliconStudio.Assets.Quantum
             contents = new Dictionary<string, IGraphNode>();
             itemOverrides = new Dictionary<ItemId, OverrideType>();
             keyOverrides = new Dictionary<ItemId, OverrideType>();
+            objectReferences = new HashSet<ItemId>();
             collectionItemIdentifiers = null;
             restoringId = ItemId.Empty;
             PropertyGraph = null;
@@ -426,6 +428,48 @@ namespace SiliconStudio.Assets.Quantum
             return false;
         }
 
+        internal void SetObjectReference(Index index, bool isReference)
+        {
+            ItemId id;
+            if (!TryIndexToId(index, out id))
+            {
+                // TODO: this could be supported but we have to play with indices when an insert operation occurs if we want to map by Index.
+                throw new NotSupportedException("Setting object reference on collection with non-identifiable items is not supported");
+            }
+            if (isReference)
+            {
+                objectReferences.Add(id);
+            }
+            else
+            {
+                objectReferences.Remove(id);
+            }
+        }
+
+        internal IEnumerable<Index> GetObjectReferenceIndices()
+        {
+            CollectionItemIdentifiers ids;
+            var collection = node.Retrieve();
+            TryGetCollectionItemIds(collection, out ids);
+
+            foreach (var reference in objectReferences)
+            {
+                {
+                    // If the override is a deleted item, there's no matching index to return.
+                    if (ids.IsDeleted(reference))
+                        continue;
+
+                    yield return IdToIndex(reference);
+                }
+            }
+        }
+
+        internal bool IsObjectReference(Index index)
+        {
+            ItemId id;
+            return TryIndexToId(index, out id) && objectReferences.Contains(id);
+        }
+
         internal void OnItemChanged(object sender, ItemChangeEventArgs e)
         {
             var value = node.Retrieve();
@@ -611,6 +655,12 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
+        internal void SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
+
+        internal bool IsObjectReference(Index index) => ex.IsObjectReference(index);
+
+        internal IEnumerable<Index> GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
+
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 
         void IAssetObjectNodeInternal.NotifyOverrideChanged() => OverrideChanged?.Invoke(this, EventArgs.Empty);
@@ -693,6 +743,12 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
+        internal void SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
+
+        internal bool IsObjectReference(Index index) => ex.IsObjectReference(index);
+
+        internal IEnumerable<Index> GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
+
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 
         void IAssetObjectNodeInternal.NotifyOverrideChanged() => OverrideChanged?.Invoke(this, EventArgs.Empty);
@@ -710,6 +766,8 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<string, IGraphNode> contents = new Dictionary<string, IGraphNode>();
 
         private OverrideType contentOverride;
+        private bool isObjectReference;
+
         public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
             : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
@@ -723,6 +781,8 @@ namespace SiliconStudio.Assets.Quantum
         public bool CanOverride { get; }
 
         internal bool ResettingOverride { get; set; }
+
+        internal bool IsObjectReference { get; set; }
 
         public event EventHandler<EventArgs> OverrideChanging;
 

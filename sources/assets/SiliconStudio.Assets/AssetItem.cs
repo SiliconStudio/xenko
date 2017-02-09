@@ -139,6 +139,9 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
 
+        [DataMemberIgnore]
+        public ISet<YamlAssetPath> ObjectReferences { get; set; }
+
         /// <summary>
         /// Converts this item to a reference.
         /// </summary>
