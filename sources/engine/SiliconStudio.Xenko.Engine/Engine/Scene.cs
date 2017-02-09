@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -17,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("Scene")]
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Scene>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<Scene>), Profile = "Content")]
-    public sealed class Scene : ComponentBase
+    public sealed class Scene : ComponentBase, IIdentifiable
     {
         private Scene parent;
 
@@ -26,12 +27,18 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public Scene()
         {
+            Id = Guid.NewGuid();
             Entities = new TrackingCollection<Entity>();
             Entities.CollectionChanged += Entities_CollectionChanged;
 
             Children = new TrackingCollection<Scene>();
             Children.CollectionChanged += Children_CollectionChanged;
         }
+
+        [DataMember(-10)]
+        [Display(Browsable = false)]
+        [NonOverridable]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// The parent scene.
