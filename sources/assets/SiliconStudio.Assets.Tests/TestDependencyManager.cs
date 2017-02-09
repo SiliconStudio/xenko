@@ -838,14 +838,14 @@ namespace SiliconStudio.Assets.Tests
             assetItems.Add(a1Item);
 
             var a2 = new TestAssetWithParts();
-            var aPartInstance1 = (TestAssetWithParts)a1.CreateDerivedAsset("a1", out null);
-            var aPartInstance2 = (TestAssetWithParts)a1.CreateDerivedAsset("a1", out null);
+            var aPartInstance1 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
+            var aPartInstance2 = (TestAssetWithParts)a1.CreateDerivedAsset("a1");
             a2.AddParts(aPartInstance1);
             a2.AddParts(aPartInstance2);
             var a2Item = new AssetItem("a2", a2);
             assetItems.Add(a2Item);
 
-            var a3 = a2.CreateDerivedAsset("a2", out null);
+            var a3 = a2.CreateDerivedAsset("a2");
             var a3Item = new AssetItem("a3", a3);
             assetItems.Add(a3Item);
 

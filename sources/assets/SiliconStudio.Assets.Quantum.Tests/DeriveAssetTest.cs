@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
 
         public static DeriveAssetTest<T> DeriveAsset(T baseAsset)
         {
-            var derivedAsset = (T)baseAsset.CreateDerivedAsset("MyAsset", out null);
+            var derivedAsset = (T)baseAsset.CreateDerivedAsset("MyAsset");
             var result = new DeriveAssetTest<T>(baseAsset, derivedAsset);
             result.BuildGraph();
             return result;

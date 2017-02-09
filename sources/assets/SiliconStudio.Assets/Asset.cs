@@ -114,6 +114,18 @@ namespace SiliconStudio.Assets
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        public Asset CreateDerivedAsset(string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
+
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
