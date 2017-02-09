@@ -56,6 +56,7 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (scene != null)
                 {
+                    scene.Parent = null;
                     scene.Entities.CollectionChanged -= Entities_CollectionChanged;
 
                     foreach (var entity in scene.Entities)
@@ -70,9 +71,8 @@ namespace SiliconStudio.Xenko.Engine
                         RegisterEntity(entity);
 
                     scene.Entities.CollectionChanged += Entities_CollectionChanged;
+                    scene.Parent = Entity?.Scene;
                 }
-                
-                UpdateScene();
             }
         }
 
