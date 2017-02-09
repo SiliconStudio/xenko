@@ -55,6 +55,16 @@ namespace SiliconStudio.Xenko.Graphics
             return GetNativeResourceImpl(resource);
         }
 
+        public static object GetNativeShaderResourceView(GraphicsResource resource)
+        {
+            return GetNativeShaderResourceViewImpl(resource);
+        }
+
+        public static object GetNativeRenderTargetView(Texture texture)
+        {
+            return GetNativeRenderTargetViewImpl(texture);
+        }
+
         /// <summary>
         /// Creates a Texture from a DirectX11 native texture
         /// This method internally will call AddReference on the dxTexture2D texture.
@@ -101,6 +111,16 @@ namespace SiliconStudio.Xenko.Graphics
         private static Resource GetNativeResourceImpl(GraphicsResource resource)
         {
             return resource.NativeResource;
+        }
+
+        private static ShaderResourceView GetNativeShaderResourceViewImpl(GraphicsResource resource)
+        {
+            return resource.NativeShaderResourceView;
+        }
+
+        private static RenderTargetView GetNativeRenderTargetViewImpl(Texture texture)
+        {
+            return texture.NativeRenderTargetView;
         }
 
         /// <summary>
@@ -155,6 +175,16 @@ namespace SiliconStudio.Xenko.Graphics
         private static Resource GetNativeResourceImpl(GraphicsResource resource)
         {
             return resource.NativeResource;
+        }
+
+        private static CpuDescriptorHandle GetNativeShaderResourceViewImpl(GraphicsResource resource)
+        {
+            return resource.NativeShaderResourceView;
+        }
+
+        private static CpuDescriptorHandle GetNativeRenderTargetViewImpl(Texture texture)
+        {
+            return texture.NativeRenderTargetView;
         }
 
         /// <summary>
