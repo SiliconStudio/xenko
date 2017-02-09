@@ -31,10 +31,10 @@ namespace SiliconStudio.Xenko.Assets.Models
         public bool TessellationAEN { get; set; }
 
         /// <summary>
-        /// Sanitizes the model input, removing unusable semantics
+        /// Checks if the vertex buffer input slots for the model are supported by the target graphics profile level
         /// </summary>
-        /// <param name="commandContext"></param>
-        /// <param name="model"></param>
+        /// <param name="commandContext">The context for this command, used to access the logger and parameters</param>
+        /// <param name="model">The model to be verified</param>
         private bool CheckInputSlots(ICommandContext commandContext, Model model)
         {
             foreach (var mesh in model.Meshes)
