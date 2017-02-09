@@ -1,23 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Background;
 using SiliconStudio.Xenko.Rendering.Compositing;
-using SiliconStudio.Xenko.Rendering.Lights;
-using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Rendering.Shadows;
-using SiliconStudio.Xenko.Rendering.Skyboxes;
-using SiliconStudio.Xenko.Rendering.Sprites;
-using ShaderMixins = SiliconStudio.Xenko.Rendering.ShaderMixins;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -66,18 +56,18 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void LoadContent()
         {
-            var assetManager = Services.GetSafeServiceAs<ContentManager>();
+            var content = Services.GetSafeServiceAs<ContentManager>();
             var graphicsContext = Services.GetSafeServiceAs<GraphicsContext>();
 
             // Preload the scene if it exists
-            if (InitialSceneUrl != null && assetManager.Exists(InitialSceneUrl))
+            if (InitialSceneUrl != null && content.Exists(InitialSceneUrl))
             {
-                SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(InitialSceneUrl));
+                SceneInstance = new SceneInstance(Services, content.Load<Scene>(InitialSceneUrl));
             }
 
-            if (InitialGraphicsCompositorUrl != null && assetManager.Exists(InitialGraphicsCompositorUrl))
+            if (InitialGraphicsCompositorUrl != null && content.Exists(InitialGraphicsCompositorUrl))
             {
-                GraphicsCompositor = assetManager.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
+                GraphicsCompositor = content.Load<GraphicsCompositor>(InitialGraphicsCompositorUrl);
             }
 
             // Create the drawing context

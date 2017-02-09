@@ -49,34 +49,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
         }
 
-        protected abstract EntityHierarchyCommandBase Create(string url, T assetParameters);
-
-        protected abstract class EntityHierarchyCommandBase : AssetCommand<T>
-        {
-            protected EntityHierarchyCommandBase(string url, T parameters) : base(url, parameters)
-            {
-            }
-
-            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
-            {
-                var assetManager = new ContentManager();
-
-                var prefab = Create(Parameters);
-                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
-                {
-                    prefab.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
-                }
-                assetManager.Save(Url, prefab);
-
-                return Task.FromResult(ResultStatus.Successful);
-            }
-
-            protected abstract PrefabBase Create(T prefabAsset);
-
-            public override string ToString()
-            {
-                return "Prefab command for entity asset '{0}'.".ToFormat(Url);
-            }
-        }
+        protected abstract AssetCommand<T> Create(string url, T assetParameters);
     }
 }

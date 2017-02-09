@@ -30,11 +30,7 @@ namespace SiliconStudio.Xenko.Engine
     public sealed class Entity : ComponentBase, IEnumerable<EntityComponent>, IIdentifiable
     {
         internal TransformComponent transform;
-
-        /// <summary>
-        /// Internal owner of this entity
-        /// </summary>
-        internal IEntityComponentNotify Owner;
+        internal Scene scene;
 
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
@@ -92,6 +88,30 @@ namespace SiliconStudio.Xenko.Engine
                 base.Name = value;
             }
         }
+
+        /// <summary>
+        /// The parent scene.
+        /// </summary>
+        [DataMemberIgnore]
+        public Scene Scene
+        {
+            get { return scene; }
+            set
+            {
+                var oldScene = scene;
+                if (oldScene == value)
+                    return;
+
+                oldScene?.Entities.Remove(this);
+                value?.Entities.Add(this);
+            }
+        }
+
+        /// <summary>
+        /// The entity manager which processes this entity.
+        /// </summary>
+        [DataMemberIgnore]
+        public EntityManager EntityManager { get; internal set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Transform"/> associated to this entity.
@@ -207,7 +227,7 @@ namespace SiliconStudio.Xenko.Engine
         internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
             // Don't use events but directly call the Owner
-            Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
+            EntityManager?.NotifyComponentChanged(this, index, oldComponent, newComponent);
         }
 
         public override string ToString()
