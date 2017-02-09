@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected Texture ViewOutputTarget;
         protected Texture ViewDepthStencil;
         protected Texture ViewDepthStencilNoMSAA;
+        private VRDeviceSystem vrSystem;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
 
@@ -144,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             var camera = Context.GetCurrentCamera();
 
-            var vrSystem = (VRDeviceSystem)Services.GetService(typeof(VRDeviceSystem));
+            vrSystem = (VRDeviceSystem)Services.GetService(typeof(VRDeviceSystem));
             if (vrSystem != null)
             {
                 if (VRSettings.Enabled)
@@ -212,7 +213,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     Vector3 cameraPos, cameraScale;
                     Matrix cameraRot;
 
-                    if (!camera.UseCustomViewMatrix)
+                    if (!vrSystem.PreviousUseCustomViewMatrix)
                     {
                         camera.Entity.Transform.WorldMatrix.Decompose(out cameraScale, out cameraRot, out cameraPos);
                     }
