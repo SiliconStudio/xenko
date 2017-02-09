@@ -12,14 +12,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
         Texture Color { get; set; }
     }
 
-    public interface INormalsTarget : IRenderTarget
+    public interface INormalTarget : IRenderTarget
     {
-        Texture Normals { get; set; }
+        Texture Normal { get; set; }
     }
 
     public interface IVelocityTarget : IRenderTarget
     {
         Texture Velocity { get; set;  }
+    }
+
+    public interface IMultipleRenderViews : IRenderTarget
+    {
+        int Count { get; set; }
+
+        int Index { get; set; }
     }
 
     public interface IRenderTarget

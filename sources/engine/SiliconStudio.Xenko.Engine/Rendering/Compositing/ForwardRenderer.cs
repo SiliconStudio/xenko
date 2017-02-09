@@ -11,13 +11,13 @@ using SiliconStudio.Xenko.Rendering.Images;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    public class DefaultRenderTargets : IColorTarget, INormalsTarget, IVelocityTarget
+    public class DefaultRenderTargets : IColorTarget, INormalTarget, IVelocityTarget, IMultipleRenderViews
     {
         private readonly Texture[] allTargets = new Texture[3];
 
         public Texture Color { get; set; }
 
-        public Texture Normals { get; set; }
+        public Texture Normal { get; set; }
 
         public Texture Velocity { get; set; }
 
@@ -29,13 +29,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 allTargets[0] = Color;
 
                 //normals
-                if (Normals != null)
+                if (Normal != null)
                 {
-                    allTargets[1] = Normals;
+                    allTargets[1] = Normal;
                 }
 
                 //velocity
-                if (Normals == null)
+                if (Normal == null)
                 {
                     allTargets[1] = Velocity;
                 }
@@ -55,13 +55,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 var n = 0;
                 if (Color != null)
                     n++;
-                if (Normals != null)
+                if (Normal != null)
                     n++;
                 if (Velocity != null)
                     n++;
                 return n;
             }
         }
+
+        public int Count { get; set; }
+
+        public int Index { get; set; }
     }
 
     /// <summary>
@@ -276,15 +280,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 drawContext.CommandList.CopyMultiSample(colorIn.Color, 0, colorOut.Color, 0);
             }
 
-            var normalsIn = ViewTargetsComposition as INormalsTarget;
-            var normalsOut = ViewTargetsCompositionNoMSAA as INormalsTarget;
+            var normalsIn = ViewTargetsComposition as INormalTarget;
+            var normalsOut = ViewTargetsCompositionNoMSAA as INormalTarget;
             if (normalsIn != null && normalsOut != null && PostEffects.RequiresNormalBuffer)
             {
-                normalsOut.Normals = PushScopedResource(
+                normalsOut.Normal = PushScopedResource(
                     drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
                         1, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
 
-                drawContext.CommandList.CopyMultiSample(normalsIn.Normals, 0, normalsOut.Normals, 0);
+                drawContext.CommandList.CopyMultiSample(normalsIn.Normal, 0, normalsOut.Normal, 0);
             }
 
             var velocityIn = ViewTargetsComposition as IVelocityTarget;
@@ -303,6 +307,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
 
             drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
+
+            var viewsIn = ViewTargetsComposition as IMultipleRenderViews;
+            var viewsOut = ViewTargetsCompositionNoMSAA as IMultipleRenderViews;
+            if (viewsIn != null && viewsOut != null)
+            {
+                viewsOut.Count = viewsIn.Count;
+                viewsOut.Index = viewsIn.Index;
+            }
         }
 
         protected virtual void DrawView(RenderContext context, RenderDrawContext drawContext)
@@ -469,10 +481,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
 
             //Handle normals
-            var normals = ViewTargetsComposition as INormalsTarget;
+            var normals = ViewTargetsComposition as INormalTarget;
             if (normals != null)
             {
-                normals.Normals = PostEffects != null && PostEffects.RequiresNormalBuffer
+                normals.Normal = PostEffects != null && PostEffects.RequiresNormalBuffer
                 ? PushScopedResource(
                     drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R16G16B16A16_Float,
                         TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1, GraphicsResourceUsage.Default, actualMSAALevel)))
@@ -520,12 +532,20 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
                             drawContext.CommandList.SetRenderTargets(ViewDepthStencil, ViewTargetsComposition.NumberOfTargets, ViewTargetsComposition.AllTargets);
 
+                            var views = ViewTargetsComposition as IMultipleRenderViews;
+                            if (views != null)
+                                views.Count = 2;
+
                             for (var i = 0; i < 2; i++)
                             {
                                 using (context.PushRenderViewAndRestore(VRSettings.RenderViews[i]))
                                 {
                                     // Clear render target and depth stencil
                                     Clear?.Draw(drawContext);
+
+                                    if (views != null)
+                                        views.Index = i;
+
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
                                 }
@@ -550,6 +570,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 else
                 {
                     PrepareRenderTargets(drawContext, new Size2((int)viewport.Width, (int)viewport.Height));
+
+                    var views = ViewTargetsComposition as IMultipleRenderViews;
+                    if (views != null)
+                    {
+                        views.Count = 1;
+                        views.Index = 0;
+                    }
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
