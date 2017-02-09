@@ -11,25 +11,21 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
-using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
     /// Allows to clone an asset or values stored in an asset.
     /// </summary>
-    public struct AssetCloner
+    public class AssetCloner
     {
         private readonly AssetClonerFlags flags;
         private readonly object streamOrValueType;
 
         private readonly List<object> invariantObjects;
         private readonly object[] objectReferences;
-        private Dictionary<object, object> clonedObjectMapping;
+        private readonly Dictionary<object, object> clonedObjectMapping;
+        private Dictionary<Guid, Guid> cloningIdRemapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
 
@@ -50,7 +46,7 @@ namespace SiliconStudio.Assets
             invariantObjects = null;
             objectReferences = null;
             clonedObjectMapping = new Dictionary<object, object>();
-
+            cloningIdRemapping = null;
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
             {
@@ -94,8 +90,9 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones the current value of this cloner with the specified new shadow registry (optional)
         /// </summary>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A clone of the value associated with this cloner.</returns>
-        private object Clone()
+        private object Clone(out Dictionary<Guid, Guid> idRemapping)
         {
             var stream = streamOrValueType as Stream;
             if (stream != null)
@@ -117,9 +114,11 @@ namespace SiliconStudio.Assets
                     UnloadableObjectRemover.Run(newObject);
                 }
 
+                idRemapping = cloningIdRemapping;
                 return newObject;
             }
             // Else this is a value type, so it is cloned automatically
+            idRemapping = null;
             return streamOrValueType;
         }
 
@@ -181,7 +180,38 @@ namespace SiliconStudio.Assets
                         sourceIds.CloneInto(newIds, clonedObjectMapping);
                     }
                 }
+
+                if ((flags & AssetClonerFlags.GenerateNewIdsForIdentifiableObjects) == AssetClonerFlags.GenerateNewIdsForIdentifiableObjects)
+                {
+                    var identifiable = newObject as IIdentifiable;
+                    if (identifiable != null)
+                    {
+                        cloningIdRemapping = cloningIdRemapping ?? new Dictionary<Guid, Guid>();
+                        var newId = Guid.NewGuid();
+                        cloningIdRemapping[identifiable.Id] = newId;
+                        identifiable.Id = newId;
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// Clones the specified asset using asset serialization.
+        /// </summary>
+        /// <param name="asset">The asset.</param>
+        /// <param name="flags">Flags used to control the cloning process</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
+        /// <returns>A clone of the asset.</returns>
+        public static object Clone(object asset, AssetClonerFlags flags, out Dictionary<Guid, Guid> idRemapping)
+        {
+            if (asset == null)
+            {
+                idRemapping = null;
+                return null;
+            }
+            var cloner = new AssetCloner(asset, flags);
+            var newObject = cloner.Clone(out idRemapping);
+            return newObject;
         }
 
         /// <summary>
@@ -197,7 +227,8 @@ namespace SiliconStudio.Assets
                 return null;
             }
             var cloner = new AssetCloner(asset, flags);
-            var newObject = cloner.Clone();
+            Dictionary<Guid, Guid> idMapping;
+            var newObject = cloner.Clone(out idMapping);
             return newObject;
         }
 
@@ -211,7 +242,22 @@ namespace SiliconStudio.Assets
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Clone<T>(T asset, AssetClonerFlags flags = AssetClonerFlags.None)
         {
-            return (T)Clone((object)asset, flags);
+            Dictionary<Guid, Guid> idRemapping;
+            return Clone(asset, flags, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones the specified asset using asset serialization.
+        /// </summary>
+        /// <typeparam name="T">The type of the asset.</typeparam>
+        /// <param name="asset">The asset.</param>
+        /// <param name="flags">Flags used to control the cloning process</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
+        /// <returns>A clone of the asset.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Clone<T>(T asset, AssetClonerFlags flags, out Dictionary<Guid, Guid> idRemapping)
+        {
+            return (T)Clone((object)asset, flags, out idRemapping);
         }
 
         /// <summary>

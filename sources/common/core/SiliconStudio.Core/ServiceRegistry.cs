@@ -23,7 +23,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
+
 // THIS NAMESPACE MUST BE USED FOR 4.5 CORE PROFILE
 
 namespace SiliconStudio.Core
@@ -45,10 +46,10 @@ namespace SiliconStudio.Core
         /// <param name="type">The type of service.</param>
         /// <returns>The registered instance of this service.</returns>
         /// <exception cref="System.ArgumentNullException">type</exception>
-        public object GetService(Type type)
+        public object GetService([NotNull] Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             lock (registeredService)
             {
@@ -70,21 +71,21 @@ namespace SiliconStudio.Core
         /// <param name="provider">The service provider to add.</param>
         /// <exception cref="System.ArgumentNullException">type;Service type cannot be null</exception>
         /// <exception cref="System.ArgumentException">Service is already registered;type</exception>
-        public void AddService(Type type, object provider)
+        public void AddService([NotNull] Type type, [NotNull] object provider)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             if (provider == null)
-                throw new ArgumentNullException("provider");
+                throw new ArgumentNullException(nameof(provider));
 
             if (!type.GetTypeInfo().IsAssignableFrom(provider.GetType().GetTypeInfo()))
-                throw new ArgumentException(String.Format("Service [{0}] must be assignable to [{1}]", provider.GetType().FullName, type.GetType().FullName));
+                throw new ArgumentException($"Service [{provider.GetType().FullName}] must be assignable to [{type.FullName}]");
 
             lock (registeredService)
             {
                 if (registeredService.ContainsKey(type))
-                    throw new ArgumentException("Service is already registered", "type");
+                    throw new ArgumentException("Service is already registered", nameof(type));
                 registeredService.Add(type, provider);
             }
             OnServiceAdded(new ServiceEventArgs(type, provider));
@@ -92,10 +93,10 @@ namespace SiliconStudio.Core
 
         /// <summary>Removes the object providing a specified service.</summary>
         /// <param name="type">The type of service.</param>
-        public void RemoveService(Type type)
+        public void RemoveService([NotNull] Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             object oldService = null;
             lock (registeredService)

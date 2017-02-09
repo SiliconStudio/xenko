@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Storage
 {
@@ -18,7 +17,7 @@ namespace SiliconStudio.Core.Storage
             {
                 if (mode == ArchiveMode.Serialize)
                 {
-                    bool hasId = obj != Empty;
+                    var hasId = obj != Empty;
                     stream.Write(hasId);
                     if (hasId)
                     {
@@ -28,7 +27,7 @@ namespace SiliconStudio.Core.Storage
                 }
                 else if (mode == ArchiveMode.Deserialize)
                 {
-                    bool hasId = stream.ReadBoolean();
+                    var hasId = stream.ReadBoolean();
                     if (hasId)
                     {
                         var id = new byte[HashSize];

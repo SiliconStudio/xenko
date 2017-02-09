@@ -9,6 +9,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+ using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -22,7 +23,7 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public class MultiValueSortedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IDictionary, ICollection, IEnumerable
     {
-        private SortedDictionary<TKey, List<TValue>> _SortedDictionary;
+        private readonly SortedDictionary<TKey, List<TValue>> _SortedDictionary;
         private int _Count;
         private bool _IsModified;
 
@@ -62,13 +63,13 @@ namespace SiliconStudio.Core.Collections
         /// copied to the new KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </param>
         /// <exception cref="System.ArgumentNullException">dictionary is null</exception>
-        public MultiValueSortedDictionary(IDictionary<TKey, TValue> dictionary)
+        public MultiValueSortedDictionary([NotNull] IDictionary<TKey, TValue> dictionary)
             : this()
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
 
-            foreach (KeyValuePair<TKey, TValue> pair in dictionary)
-                this.Add(pair.Key, pair.Value);
+            foreach (var pair in dictionary)
+                Add(pair.Key, pair.Value);
             _IsModified = false;
         }
 
@@ -88,13 +89,13 @@ namespace SiliconStudio.Core.Collections
         /// the type of the key.
         /// </param>
         /// <exception cref="System.ArgumentNullException">dictionary is null</exception>
-        public MultiValueSortedDictionary(IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer)
+        public MultiValueSortedDictionary([NotNull] IDictionary<TKey, TValue> dictionary, IComparer<TKey> comparer)
             : this(comparer)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
 
-            foreach (KeyValuePair<TKey, TValue> pair in dictionary)
-                this.Add(pair.Key, pair.Value);
+            foreach (var pair in dictionary)
+                Add(pair.Key, pair.Value);
             _IsModified = false;
         }
 
@@ -106,7 +107,7 @@ namespace SiliconStudio.Core.Collections
         /// The System.Collections.Generic.IComparer&lt;TKey&gt; used to order the elements of
         /// the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;
         /// </returns>
-        public IComparer<TKey> Comparer { get { return _SortedDictionary.Comparer; } }
+        public IComparer<TKey> Comparer => _SortedDictionary.Comparer;
 
         /// <summary>
         /// Gets the number of key/value pairs contained in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
@@ -114,7 +115,7 @@ namespace SiliconStudio.Core.Collections
         /// <returns>
         /// The number of key/value pairs contained in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </returns>
-        public int Count { get { return _Count; } }
+        public int Count => _Count;
 
         /// <summary>
         /// Gets a collection containing the keys in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
@@ -123,7 +124,8 @@ namespace SiliconStudio.Core.Collections
         /// A KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.KeyCollection
         /// containing the keys in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </returns>
-        public SortedDictionary<TKey, List<TValue>>.KeyCollection Keys { get { return _SortedDictionary.Keys; } }
+        [NotNull]
+        public SortedDictionary<TKey, List<TValue>>.KeyCollection Keys => _SortedDictionary.Keys;
 
         /// <summary>
         /// Gets a collection containing the values in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
@@ -132,11 +134,12 @@ namespace SiliconStudio.Core.Collections
         /// A KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
         /// containing the keys in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </returns>
-        public ValueCollection Values { get { return new ValueCollection(this); } }
+        [NotNull]
+        public ValueCollection Values => new ValueCollection(this);
 
         /// <summary>
         /// Gets or sets the value associated with the specified key.
-        /// <summary>
+        /// </summary>
         /// <param name="key">
         /// The key of the value to get or set.
         /// </param>
@@ -149,23 +152,23 @@ namespace SiliconStudio.Core.Collections
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">
         /// The property is retrieved and key does not exist in the collection.
         /// </exception>
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
 
                 List<TValue> values;
                 if (!_SortedDictionary.TryGetValue(key, out values))
                     return (TValue)TryToGetOnNotFound(key);
-                TValue value = default(TValue);
+                var value = default(TValue);
                 if (values != null)
                     value = values[0];
                 return value;
             }
             set
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
 
                 Add(key, value);
             }
@@ -181,9 +184,9 @@ namespace SiliconStudio.Core.Collections
         /// The value of the element to add. The value can be null for reference types.
         /// </param>
         /// <exception cref="System.ArgumentNullException">key is null.</exception>
-        public void Add(TKey key, TValue value)
+        public void Add([NotNull] TKey key, TValue value)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             List<TValue> values;
 
@@ -200,7 +203,7 @@ namespace SiliconStudio.Core.Collections
 
         /// <summary>
         /// Removes all elements from the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
-        /// <summary>
+        /// </summary>
         public void Clear()
         {
             _SortedDictionary.Clear();
@@ -220,7 +223,7 @@ namespace SiliconStudio.Core.Collections
         /// an element with the specified key; otherwise, false.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">key is null.</exception>
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey([NotNull] TKey key)
         {
             return _SortedDictionary.ContainsKey(key);
         }
@@ -236,11 +239,11 @@ namespace SiliconStudio.Core.Collections
         /// <returns>
         /// true if the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt; contains
         /// an element with the specified value; otherwise, false.
-        /// <returns>
+        /// </returns>
         public bool ContainsValue(TValue value)
         {
-            bool contains = false;
-            foreach (TValue val in Values)
+            var contains = false;
+            foreach (var val in Values)
             {
                 if (val.Equals(value))
                 {
@@ -255,8 +258,8 @@ namespace SiliconStudio.Core.Collections
         /// Copies the elements of the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;
         /// to the specified array of System.Collections.Generic.KeyValuePair<TKey,TValue>
         /// structures, starting at the specified index.
-        /// <summary>
-        /// <param name="dictionary">
+        /// </summary>
+        /// <param name="array">
         /// The one-dimensional array of System.Collections.Generic.KeyValuePair<TKey,TValue>
         /// structures that is the destination of the elements copied from the current
         /// KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt; The array must have
@@ -278,14 +281,14 @@ namespace SiliconStudio.Core.Collections
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int index)
         {
             if (array == null)
-                throw new ArgumentNullException("array");
-            else if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
-            else if (index >= array.Length || _Count > array.Length - index)
+                throw new ArgumentNullException(nameof(array));
+            if (index < 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            if (index >= array.Length || _Count > array.Length - index)
                 throw new ArgumentException("index");
 
-            int copyIndex = index;
-            foreach (KeyValuePair<TKey, TValue> pair in this)
+            var copyIndex = index;
+            foreach (var pair in this)
                 array[copyIndex++] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
         }
 
@@ -305,7 +308,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Removes the element with the specified key from the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </summary>
-        /// <param name="dictionary">
+        /// <param name="item">
         /// The key of the element to remove.
         /// </param>
         /// <returns>
@@ -318,7 +321,7 @@ namespace SiliconStudio.Core.Collections
             if (item.Key == null)
                 throw new ArgumentException();
 
-            bool removed = false;
+            var removed = false;
             List<TValue> values;
             if (_SortedDictionary.TryGetValue(item.Key, out values) &&
                 values.Remove(item.Value))
@@ -335,7 +338,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Removes the elements with the specified key from the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </summary>
-        /// <param name="dictionary">
+        /// <param name="key">
         /// The key of the element to remove.
         /// </param>
         /// <returns>
@@ -343,11 +346,11 @@ namespace SiliconStudio.Core.Collections
         /// also returns false if key is not found in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">key is null.</exception>
-        public bool Remove(TKey key)
+        public bool Remove([NotNull] TKey key)
         {
             if (key == null) throw new ArgumentNullException();
 
-            bool removed = false;
+            var removed = false;
             List<TValue> values;
             if (_SortedDictionary.TryGetValue(key, out values) &&
                 _SortedDictionary.Remove(key))
@@ -381,7 +384,7 @@ namespace SiliconStudio.Core.Collections
             if (key == null) throw new ArgumentNullException();
 
             value = default(TValue);
-            bool found = false;
+            var found = false;
             List<TValue> values;
             if (_SortedDictionary.TryGetValue(key, out values))
             {
@@ -397,7 +400,7 @@ namespace SiliconStudio.Core.Collections
         /// <param name="key">
         /// The key of the value to get.
         /// </param>
-        /// <param name="dictionary">
+        /// <param name="values">
         /// When this method returns, the values associated with the specified key, if
         /// the key is found; otherwise null.
         /// </param>
@@ -408,12 +411,12 @@ namespace SiliconStudio.Core.Collections
         /// <exception cref="System.ArgumentNullException">
         /// key is null.
         /// </exception>
-        public bool TryGetValue(TKey key, out IEnumerable<TValue> values)
+        public bool TryGetValue([NotNull] TKey key, out IEnumerable<TValue> values)
         {
             if (key == null) throw new ArgumentNullException();
 
             values = null;
-            bool found = false;
+            var found = false;
             List<TValue> valuesList;
             if (_SortedDictionary.TryGetValue(key, out valuesList))
             {
@@ -425,25 +428,20 @@ namespace SiliconStudio.Core.Collections
 
         #region IDictionary members
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys
-        {
-            get { return Keys; }
-        }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values
-        {
-            get { return Values; }
-        }
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
-        bool IDictionary.IsFixedSize { get { return false; } }
-        bool IDictionary.IsReadOnly { get { return false; } }
-        ICollection IDictionary.Keys { get { return _SortedDictionary.Keys; } }
-        ICollection IDictionary.Values { get { return new ValueCollection(this); } }
+        bool IDictionary.IsFixedSize => false;
+        bool IDictionary.IsReadOnly => false;
+        ICollection IDictionary.Keys => _SortedDictionary.Keys;
+        ICollection IDictionary.Values => new ValueCollection(this);
+
         object IDictionary.this[object key]
         {
             get
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
 
                 List<TValue> values;
                 var keyT = (TKey) Convert.ChangeType(key, typeof(TKey));
@@ -453,21 +451,21 @@ namespace SiliconStudio.Core.Collections
             }
             set
             {
-                if (key == null) throw new ArgumentNullException("key");
+                if (key == null) throw new ArgumentNullException(nameof(key));
 
                 Add((TKey)Convert.ChangeType(key, typeof(TKey)), (TValue)Convert.ChangeType(value, typeof(TValue)));
             }
         }
         void IDictionary.Add(object key, object value)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             Add((TKey)Convert.ChangeType(key, typeof(TKey)), (TValue)Convert.ChangeType(value, typeof(TValue)));
         }
 
         bool IDictionary.Contains(object key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             return ContainsKey((TKey)Convert.ChangeType(key, typeof(TKey)));
         }
@@ -480,35 +478,36 @@ namespace SiliconStudio.Core.Collections
 
         void IDictionary.Remove(object key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
-            this.Remove((TKey)Convert.ChangeType(key, typeof(TKey)));
+            Remove((TKey)Convert.ChangeType(key, typeof(TKey)));
         }
 
         #endregion
 
         #region ICollection members
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly { get { return false; } }
-        bool ICollection.IsSynchronized { get { return false; } }
-        object ICollection.SyncRoot { get { return this; } }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
+        bool ICollection.IsSynchronized => false;
+        object ICollection.SyncRoot => this;
+
         void ICollection.CopyTo(Array array, int index)
         {
             if (array == null)
-                throw new ArgumentNullException("array");
-            else if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
-            else if (index >= array.Length || _Count > array.Length - index)
+                throw new ArgumentNullException(nameof(array));
+            if (index < 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            if (index >= array.Length || _Count > array.Length - index)
                 throw new ArgumentException("index");
 
-            int copyIndex = index;
-            foreach (KeyValuePair<TKey, TValue> pair in this)
+            var copyIndex = index;
+            foreach (var pair in this)
                 array.SetValue(pair, copyIndex++);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            bool done = false;
+            var done = false;
             List<TValue> values;
             if (_SortedDictionary.TryGetValue(item.Key, out values) &&
                 values.Contains(item.Value))
@@ -556,11 +555,11 @@ namespace SiliconStudio.Core.Collections
         /// Represents the collection of values in a KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.
         /// This class cannot be inherited
         /// </summary>
-        [DebuggerDisplay("Count = {Count}")]
+        [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
         //[DebuggerTypeProxy(typeof(System_DictionaryValueCollectionDebugView<,>))]
         public sealed class ValueCollection : ICollection<TValue>, IEnumerable<TValue>, ICollection, IEnumerable
         {
-            private MultiValueSortedDictionary<TKey, TValue> _Dictionary;
+            private readonly MultiValueSortedDictionary<TKey, TValue> _Dictionary;
 
             /// <summary>
             /// Initializes a new instance of the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
@@ -573,7 +572,7 @@ namespace SiliconStudio.Core.Collections
             /// <exception cref="System.ArgumentNullException">
             /// dictionary is null.
             /// </exception>
-            public ValueCollection(MultiValueSortedDictionary<TKey, TValue> dictionary)
+            public ValueCollection([NotNull] MultiValueSortedDictionary<TKey, TValue> dictionary)
             {
                 if (dictionary == null) throw new ArgumentNullException();
 
@@ -588,7 +587,7 @@ namespace SiliconStudio.Core.Collections
             /// <returns>
             /// The number of elements contained in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection.
             /// </returns>
-            public int Count { get { return _Dictionary.Count; } }
+            public int Count => _Dictionary.Count;
 
             /// <summary>
             /// Copies the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
@@ -618,14 +617,14 @@ namespace SiliconStudio.Core.Collections
             public void CopyTo(TValue[] array, int index)
             {
                 if (array == null)
-                    throw new ArgumentNullException("array");
-                else if (index < 0)
-                    throw new ArgumentOutOfRangeException("index");
-                else if (index >= array.Length || Count > array.Length - index)
-                    throw new ArgumentException("index");
+                    throw new ArgumentNullException(nameof(array));
+                if (index < 0)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                if (index >= array.Length || Count > array.Length - index)
+                    throw new ArgumentException(nameof(index));
 
-                int copyIndex = index;
-                foreach (TValue value in this)
+                var copyIndex = index;
+                foreach (var value in this)
                     array[copyIndex++] = value;
             }
 
@@ -650,7 +649,7 @@ namespace SiliconStudio.Core.Collections
             /// <returns>
             /// true if the KoderHack.MultiValueSortedDictionary.ValueCollection is read-only; otherwise false.
             /// </returns>
-            bool ICollection<TValue>.IsReadOnly { get { return true; } }
+            bool ICollection<TValue>.IsReadOnly => true;
 
             void ICollection<TValue>.Add(TValue item)
             {
@@ -670,14 +669,14 @@ namespace SiliconStudio.Core.Collections
             void ICollection.CopyTo(Array array, int index)
             {
                 if (array == null)
-                    throw new ArgumentNullException("array");
-                else if (index < 0)
-                    throw new ArgumentOutOfRangeException("index");
-                else if (index >= array.Length || Count > array.Length - index)
-                    throw new ArgumentException("index");
+                    throw new ArgumentNullException(nameof(array));
+                if (index < 0)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                if (index >= array.Length || Count > array.Length - index)
+                    throw new ArgumentException(nameof(index));
 
-                int copyIndex = index;
-                foreach (TValue value in this)
+                var copyIndex = index;
+                foreach (var value in this)
                     array.SetValue(value, copyIndex++);
             }
 
@@ -694,7 +693,7 @@ namespace SiliconStudio.Core.Collections
             /// true if access to the System.Collections.ICollection is synchronized (thread
             /// safe); otherwise, false.
             /// </returns>
-            bool ICollection.IsSynchronized { get { return false; } }
+            bool ICollection.IsSynchronized => false;
 
             /// <summary>
             /// Gets an object that can be used to synchronize access to the System.Collections.ICollection.
@@ -702,7 +701,7 @@ namespace SiliconStudio.Core.Collections
             /// <returns>
             /// An object that can be used to synchronize access to the System.Collections.ICollection.
             /// </returns>
-            object ICollection.SyncRoot { get { return this; } }
+            object ICollection.SyncRoot => this;
 
             #endregion
 
@@ -725,7 +724,7 @@ namespace SiliconStudio.Core.Collections
             /// </summary>
             public struct Enumerator : IEnumerator<TValue>, IDisposable, IEnumerator
             {
-                private MultiValueSortedDictionary<TKey, TValue> _Dictionary;
+                private readonly MultiValueSortedDictionary<TKey, TValue> _Dictionary;
                 private MultiValueSortedDictionary<TKey, TValue>.Enumerator _Enumerator;
 
                 internal Enumerator(MultiValueSortedDictionary<TKey, TValue> dictionary)
@@ -741,7 +740,7 @@ namespace SiliconStudio.Core.Collections
                 /// The element in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
                 /// at the current position of the enumerator.
                 /// </returns>
-                public TValue Current { get { return _Enumerator.Current.Value; } }
+                public TValue Current => _Enumerator.Current.Value;
 
                 /// <summary>
                 /// Releases all resources used by the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection.Enumerator.
@@ -772,10 +771,7 @@ namespace SiliconStudio.Core.Collections
                 /// The element in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
                 /// at the current position of the enumerator.
                 /// </returns>
-                object IEnumerator.Current
-                {
-                    get { return Current; }
-                }
+                object IEnumerator.Current => Current;
 
                 /// <summary>
                 /// Sets the enumerator to its initial position, which is before the first element
@@ -802,18 +798,17 @@ namespace SiliconStudio.Core.Collections
         public struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>, IDisposable, IDictionaryEnumerator, IEnumerator
         {
             private readonly KeyValuePair<TKey, TValue> DefaultCurrent;
-            private MultiValueSortedDictionary<TKey, TValue> _Dictionary;
-            private IEnumerator<KeyValuePair<TKey, List<TValue>>> _Enumerator1;
+            private readonly MultiValueSortedDictionary<TKey, TValue> _Dictionary;
+            private readonly IEnumerator<KeyValuePair<TKey, List<TValue>>> _Enumerator1;
             private IEnumerator<TValue> _Enumerator2;
             private KeyValuePair<TKey, TValue> _Current;
 
             //private bool _Disposed;
             private bool _Valid;
 
-            public Enumerator(MultiValueSortedDictionary<TKey, TValue> dictionary)
+            public Enumerator([NotNull] MultiValueSortedDictionary<TKey, TValue> dictionary)
             {
-                if (dictionary == null)
-                    throw new ArgumentNullException("dictionary");
+                if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
 
                 _Dictionary = dictionary;
                 _Enumerator1 = dictionary._SortedDictionary.GetEnumerator();
@@ -831,13 +826,7 @@ namespace SiliconStudio.Core.Collections
             /// The element in the System.Collections.Generic.SortedDictionary<TKey,TValue>
             /// at the current position of the enumerator.
             /// </returns>  
-            public KeyValuePair<TKey, TValue> Current
-            {
-                get
-                {
-                    return _Current;
-                }
-            }
+            public KeyValuePair<TKey, TValue> Current => _Current;
 
             /// <summary>
             /// Gets both the key and the value of the current dictionary entry.
@@ -850,13 +839,7 @@ namespace SiliconStudio.Core.Collections
             /// The System.Collections.IDictionaryEnumerator is positioned before the first
             /// entry of the dictionary or after the last entry.
             /// </exception>
-            DictionaryEntry IDictionaryEnumerator.Entry
-            {
-                get
-                {
-                    return new DictionaryEntry(Current.Key, Current.Value);
-                }
-            }
+            DictionaryEntry IDictionaryEnumerator.Entry => new DictionaryEntry(Current.Key, Current.Value);
 
             /// <summary>
             /// Gets the key of the current dictionary entry.
@@ -868,13 +851,7 @@ namespace SiliconStudio.Core.Collections
             /// The System.Collections.IDictionaryEnumerator is positioned before the first
             /// entry of the dictionary or after the last entry.
             /// </exception>
-            object IDictionaryEnumerator.Key
-            {
-                get
-                {
-                    return Current.Key;
-                }
-            }
+            object IDictionaryEnumerator.Key => Current.Key;
 
             /// <summary>
             /// Gets the value of the current dictionary entry.
@@ -886,13 +863,7 @@ namespace SiliconStudio.Core.Collections
             /// The System.Collections.IDictionaryEnumerator is positioned before the first
             /// entry of the dictionary or after the last entry.
             /// </exception>
-            object IDictionaryEnumerator.Value
-            {
-                get
-                {
-                    return Current.Value;
-                }
-            }
+            object IDictionaryEnumerator.Value => Current.Value;
 
             /// <summary>
             /// Releases all resources used by the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.Enumerator.
@@ -925,8 +896,8 @@ namespace SiliconStudio.Core.Collections
                     throw new InvalidOperationException("The collection was modified after the enumerator was created.");
 
                 if (!_Valid) return false;
-                TKey key = default(TKey);
-                TValue value = default(TValue);
+                var key = default(TKey);
+                var value = default(TValue);
                 if (_Enumerator2 == null)
                 {
                     if (_Enumerator1.MoveNext())
@@ -962,10 +933,8 @@ namespace SiliconStudio.Core.Collections
             /// The element in the KoderHack.MultiValueSortedDictionary&lt;TKey,TValue&gt;.ValueCollection
             /// at the current position of the enumerator.
             /// </returns>
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            [NotNull]
+            object IEnumerator.Current => Current;
 
             /// <summary>
             /// Sets the enumerator to its initial position, which is before the first element

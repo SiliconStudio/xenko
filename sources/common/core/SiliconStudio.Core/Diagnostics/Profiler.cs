@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Diagnostics
@@ -105,7 +106,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Enables the specified profiler.
         /// </summary>
         /// <param name="profilingKey">The profile key.</param>
-        public static void Enable(ProfilingKey profilingKey)
+        public static void Enable([NotNull] ProfilingKey profilingKey)
         {
             lock (Locker)
             {
@@ -121,7 +122,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Disables the specified profiler.
         /// </summary>
         /// <param name="profilingKey">The profile key.</param>
-        public static void Disable(ProfilingKey profilingKey)
+        public static void Disable([NotNull] ProfilingKey profilingKey)
         {
             lock (Locker)
             {
@@ -141,9 +142,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState New(ProfilingKey profilingKey)
+        public static ProfilingState New([NotNull] ProfilingKey profilingKey)
         {
-            if (profilingKey == null) throw new ArgumentNullException("profilingKey");
+            if (profilingKey == null) throw new ArgumentNullException(nameof(profilingKey));
 
             var localProfileId = Interlocked.Increment(ref profileId) - 1;
             var isProfileActive = IsEnabled(profilingKey);
@@ -159,7 +160,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin(ProfilingKey profilingKey)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey)
         {
             var profiler = New(profilingKey);
             profiler.Begin();
@@ -175,7 +176,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin(ProfilingKey profilingKey, string text)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string text)
         {
             var profiler = New(profilingKey);
             profiler.Begin(text);
@@ -192,7 +193,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin(ProfilingKey profilingKey, string textFormat, params object[] textFormatArguments)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string textFormat, params object[] textFormatArguments)
         {
             var profiler = New(profilingKey);
             profiler.Begin(textFormat, textFormatArguments);
@@ -212,7 +213,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin(ProfilingKey profilingKey, string textFormat, ProfilingCustomValue value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string textFormat, ProfilingCustomValue value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
             var profiler = New(profilingKey);
             if (value1.HasValue)
@@ -262,7 +263,7 @@ namespace SiliconStudio.Core.Diagnostics
                 Logger.Log(new ProfilingMessage(profilingEvent.Id, profilingEvent.Key, profilingEvent.Type) { Attributes = profilingEvent.Attributes, ElapsedTime = new TimeSpan((profilingEvent.ElapsedTime * 10000000) / Stopwatch.Frequency), Text = profilingEvent.Text });
         }
 
-        struct ProfilingResult
+        private struct ProfilingResult
         {
             public ProfilingKey Key;
             public long AccumulatedTime;
@@ -270,7 +271,7 @@ namespace SiliconStudio.Core.Diagnostics
             public long MaxTime;
             public int Count;
         }
-
+        
         public static ProfilingEvent[] GetEvents()
         {
             lock (Locker)
@@ -286,6 +287,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
+        [NotNull]
         public static string ReportEvents()
         {
             lock (Locker)
@@ -368,7 +370,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        public static void AppendTime(StringBuilder builder, long accumulatedTime)
+        public static void AppendTime([NotNull] StringBuilder builder, long accumulatedTime)
         {
             var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Threading
 {
@@ -21,9 +21,9 @@ namespace SiliconStudio.Core.Threading
         private SpinLock spinLock = new SpinLock();
         private int activeThreadCount;
 
-        public void QueueWorkItem([Pooled] Action workItem)
+        public void QueueWorkItem([NotNull] [Pooled] Action workItem)
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 spinLock.Enter(ref lockTaken);
@@ -57,7 +57,7 @@ namespace SiliconStudio.Core.Threading
 
                 //while (!spinWait.NextSpinWillYield)
                 {
-                    bool lockTaken = false;
+                    var lockTaken = false;
                     try
                     {
                         spinLock.Enter(ref lockTaken);

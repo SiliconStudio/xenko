@@ -17,6 +17,9 @@ namespace SiliconStudio.Assets.Quantum
                 if (typeof(AssetPropertyGraph).IsAssignableFrom(type))
                 {
                     var attribute = type.GetCustomAttribute<AssetPropertyGraphAttribute>();
+                    if (attribute == null)
+                        continue;
+
                     if (type.GetConstructor(AssetPropertyNodeGraphConstructorSignature) == null)
                         throw new InvalidOperationException($"The type {type.Name} does not have a public constructor matching the expected signature: ({string.Join(", ", (IEnumerable<Type>)AssetPropertyNodeGraphConstructorSignature)})");
 

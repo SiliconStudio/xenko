@@ -3,6 +3,7 @@
 //
 // File AUTO-GENERATED, do not edit!
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The verbose message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Verbose(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Verbose([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Verbose, message, exception, callerInfo));
         }
@@ -29,7 +30,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The verbose message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Verbose(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Verbose([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Verbose(logger, message, null, callerInfo);
         }
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The verbose message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Verbose(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Verbose([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Verbose(logger, messageFormat, null, parameters);
         }
@@ -55,7 +56,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Verbose(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Verbose([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Verbose(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
@@ -67,7 +68,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The debug message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Debug(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Debug([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Debug, message, exception, callerInfo));
         }
@@ -78,7 +79,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The debug message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Debug(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Debug([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Debug(logger, message, null, callerInfo);
         }
@@ -90,7 +91,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The debug message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Debug(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Debug([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Debug(logger, messageFormat, null, parameters);
         }
@@ -104,7 +105,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Debug(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Debug([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Debug(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
@@ -116,7 +117,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The info message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Info(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Info([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Info, message, exception, callerInfo));
         }
@@ -127,7 +128,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The info message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Info(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Info([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Info(logger, message, null, callerInfo);
         }
@@ -139,7 +140,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The info message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Info(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Info([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Info(logger, messageFormat, null, parameters);
         }
@@ -153,7 +154,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Info(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Info([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Info(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
@@ -165,7 +166,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The warning message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Warning(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Warning([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Warning, message, exception, callerInfo));
         }
@@ -176,7 +177,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The warning message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Warning(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Warning([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Warning(logger, message, null, callerInfo);
         }
@@ -188,7 +189,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The warning message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Warning(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Warning([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Warning(logger, messageFormat, null, parameters);
         }
@@ -202,7 +203,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Warning(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Warning([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Warning(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
@@ -214,7 +215,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The error message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Error(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Error([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Error, message, exception, callerInfo));
         }
@@ -225,7 +226,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The error message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Error(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Error([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Error(logger, message, null, callerInfo);
         }
@@ -237,7 +238,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The error message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Error(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Error([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Error(logger, messageFormat, null, parameters);
         }
@@ -251,7 +252,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Error(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Error([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Error(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
@@ -263,7 +264,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The fatal message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Fatal(this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Fatal([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
             logger.Log(new LogMessage(logger.Module, LogMessageType.Fatal, message, exception, callerInfo));
         }
@@ -274,7 +275,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="logger">The logger.</param>
         /// <param name="message">The fatal message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Fatal(this ILogger logger, string message, CallerInfo callerInfo = null)
+        public static void Fatal([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
             Fatal(logger, message, null, callerInfo);
         }
@@ -286,7 +287,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="messageFormat">The fatal message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Fatal(this ILogger logger, string messageFormat, params object[] parameters)
+        public static void Fatal([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Fatal(logger, messageFormat, null, parameters);
         }
@@ -300,7 +301,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
         [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
-        public static void Fatal(this ILogger logger, string messageFormat, Exception exception, params object[] parameters)
+        public static void Fatal([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Fatal(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));

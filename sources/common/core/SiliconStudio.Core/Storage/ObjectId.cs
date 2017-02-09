@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Storage
 {
@@ -35,9 +36,9 @@ namespace SiliconStudio.Core.Storage
         /// <param name="hash">The hash.</param>
         /// <exception cref="System.ArgumentNullException">hash</exception>
         /// <exception cref="System.InvalidOperationException">ObjectId value doesn't match expected size.</exception>
-        public ObjectId(byte[] hash)
+        public ObjectId([NotNull] byte[] hash)
         {
-            if (hash == null) throw new ArgumentNullException("hash");
+            if (hash == null) throw new ArgumentNullException(nameof(hash));
 
             if (hash.Length != HashSize)
                 throw new InvalidOperationException("ObjectId value doesn't match expected size.");
@@ -89,6 +90,7 @@ namespace SiliconStudio.Core.Storage
         /// </summary>
         /// <param name="objectId">The object id.</param>
         /// <returns>The result of the conversion.</returns>
+        [NotNull]
         public static explicit operator byte[](ObjectId objectId)
         {
             var result = new byte[HashSize];
@@ -97,7 +99,7 @@ namespace SiliconStudio.Core.Storage
             {
                 var hashSourceCurrent = (uint*)hashSource;
                 var hashDestCurrent = (uint*)hashDest;
-                for (int i = 0; i < HashSizeInUInt; ++i)
+                for (var i = 0; i < HashSizeInUInt; ++i)
                     *hashDestCurrent++ = *hashSourceCurrent++;
             }
             return result;
@@ -131,7 +133,7 @@ namespace SiliconStudio.Core.Storage
         /// <param name="input">The input hexa string.</param>
         /// <param name="result">The result ObjectId.</param>
         /// <returns><c>true</c> if parsing was successfull, <c>false</c> otherwise</returns>
-        public static bool TryParse(string input, out ObjectId result)
+        public static bool TryParse([NotNull] string input, out ObjectId result)
         {
             if (input.Length != HashStringLength)
             {
@@ -140,10 +142,10 @@ namespace SiliconStudio.Core.Storage
             }
 
             var hash = new byte[HashSize];
-            for (int i = 0; i < HashStringLength; i += 2)
+            for (var i = 0; i < HashStringLength; i += 2)
             {
-                char c1 = input[i];
-                char c2 = input[i + 1];
+                var c1 = input[i];
+                var c2 = input[i + 1];
 
                 int digit1, digit2;
                 if (((digit1 = HexDigits.IndexOf(c1)) == -1)
@@ -169,7 +171,7 @@ namespace SiliconStudio.Core.Storage
                 var x1 = xPtr;
                 var y1 = &other.hash1;
 
-                for (int i = 0; i < HashSizeInUInt; ++i)
+                for (var i = 0; i < HashSizeInUInt; ++i)
                 {
                     if (*x1++ != *y1++)
                         return false;
@@ -205,7 +207,7 @@ namespace SiliconStudio.Core.Storage
                 var x1 = xPtr;
                 var y1 = &other.hash1;
 
-                for (int i = 0; i < HashSizeInUInt; ++i)
+                for (var i = 0; i < HashSizeInUInt; ++i)
                 {
                     var compareResult = (*x1++).CompareTo(*y1++);
                     if (compareResult != 0)
@@ -223,9 +225,9 @@ namespace SiliconStudio.Core.Storage
             fixed (uint* hashStart = &hash1)
             {
                 var hashBytes = (byte*)hashStart;
-                for (int i = 0; i < HashStringLength; ++i)
+                for (var i = 0; i < HashStringLength; ++i)
                 {
-                    int index0 = i >> 1;
+                    var index0 = i >> 1;
                     var b = ((byte)(hashBytes[index0] >> 4));
                     c[i++] = HexDigits[b];
 
@@ -264,9 +266,9 @@ namespace SiliconStudio.Core.Storage
         /// <param name="buffer">The byte buffer.</param>
         /// <returns>The hash of the object.</returns>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
-        public static ObjectId FromBytes(byte[] buffer)
+        public static ObjectId FromBytes([NotNull] byte[] buffer)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
             return FromBytes(buffer, 0, buffer.Length);
         }
@@ -279,9 +281,9 @@ namespace SiliconStudio.Core.Storage
         /// <param name="count">The number of bytes to read from the buffer starting at offset position.</param>
         /// <returns>The hash of the object.</returns>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
-        public static ObjectId FromBytes(byte[] buffer, int offset, int count)
+        public static ObjectId FromBytes([NotNull] byte[] buffer, int offset, int count)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
             var builder = new ObjectIdBuilder();
             builder.Write(buffer, offset, count);

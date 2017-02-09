@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Diagnostics
@@ -66,7 +67,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Notifies progress on this instance.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void Progress(string message)
+        public void Progress([NotNull] string message)
         {
             OnProgressChanged(new ProgressStatusEventArgs(message));
         }
@@ -77,7 +78,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="message">The message.</param>
         /// <param name="currentStep">The current step.</param>
         /// <param name="stepCount">The step count.</param>
-        public void Progress(string message, int currentStep, int stepCount)
+        public void Progress([NotNull] string message, int currentStep, int stepCount)
         {
             OnProgressChanged(new ProgressStatusEventArgs(message, currentStep, stepCount));
         }
@@ -86,7 +87,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the messages logged to this instance.
         /// </summary>
         /// <value>The messages.</value>
-        public TrackingCollection<ILogMessage> Messages { get; private set; }
+        public TrackingCollection<ILogMessage> Messages { get; }
 
         protected override void LogRaw(ILogMessage logMessage)
         {
@@ -112,6 +113,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Returns a string representation of this 
         /// </summary>
         /// <returns>System.String.</returns>
+        [NotNull]
         public string ToText()
         {
             var text = new StringBuilder();
