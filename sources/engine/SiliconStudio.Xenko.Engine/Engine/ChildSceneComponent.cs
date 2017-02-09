@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ChildSceneComponent")]
     [Display("Child scene", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
