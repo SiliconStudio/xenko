@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
         public EntityDesign()
-            : this(null, "")
+            : this(null, string.Empty)
         {
         }
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="entity">The entity contained in this instance.</param>
         public EntityDesign(Entity entity)
-            : this(entity, null)
+            : this(entity, string.Empty)
         {
             Entity = entity;
         }
@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The folder where the entity is attached (folder is relative to parent folder). If null or empty, the entity doesn't belong to a folder.
         /// </summary>
         [DataMember(10)]
-        [DefaultValue(null)]
         public string Folder { get; set; }
 
         /// <summary>
