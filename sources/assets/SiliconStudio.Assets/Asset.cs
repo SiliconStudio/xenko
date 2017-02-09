@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset : IIdentifiable
+    public abstract class Asset
     {
         private AssetId id;
 
@@ -106,9 +106,6 @@ namespace SiliconStudio.Assets
         /// </summary>
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
-
-        /// <inheritdoc/>
-        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
 
         /// <summary>
         /// Creates an asset that inherits from this asset.
