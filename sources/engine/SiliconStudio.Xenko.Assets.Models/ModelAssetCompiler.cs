@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
             var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
+            var maxInputSlots = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_1 ? 32 : 16;
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform(assetItem.Package) != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
@@ -46,6 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Allow32BitIndex = allow32BitIndex;
+            importModelCommand.MaxInputSlots = maxInputSlots;
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;
             importModelCommand.ScaleImport = asset.ScaleImport;
