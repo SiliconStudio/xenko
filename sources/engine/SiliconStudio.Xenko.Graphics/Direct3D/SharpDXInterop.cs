@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Graphics
             return device.NativeDevice;
         }
 
-        private static DeviceContext GetNativeDeviceContextImpl(GraphicsDevice device)
+        private static object GetNativeDeviceContextImpl(GraphicsDevice device)
         {
             return null;
         }
