@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -57,7 +58,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
         public AssetCompositeHierarchyData<EntityDesign, Entity> CreatePrefabInstance(EntityHierarchyAssetBase targetContainer, string targetLocation, out Guid instanceId)
         {
-            var instance = (PrefabAsset)CreateDerivedAsset(targetLocation);
+            Dictionary<Guid, Guid> idRemapping;
+            var instance = (PrefabAsset)CreateDerivedAsset(targetLocation, out idRemapping);
             instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base.InstanceId ?? Guid.NewGuid();
             return instance.Hierarchy;
         }
