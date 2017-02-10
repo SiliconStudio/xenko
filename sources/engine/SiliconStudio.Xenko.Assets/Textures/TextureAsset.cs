@@ -132,12 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                if (asset.SRgb != null)
-                {
-                    // By default transform to auto
-                    asset.ColorSpace = TextureColorSpace.Auto;
-                    asset.RemoveChild("SRgb");
-                }
+                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
             }
         }
 
@@ -251,7 +246,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </summary>
         /// <userdoc>
-        /// Should be checked for color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
+        /// Should be checked for all color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]

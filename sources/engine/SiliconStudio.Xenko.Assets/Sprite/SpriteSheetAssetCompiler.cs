@@ -290,7 +290,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
                     var sprites = Parameters.SheetAsset.Sprites;
                     var packingParameters = Parameters.SheetAsset.Packing;
-                    bool isSRgb = Parameters.SheetAsset.ColorSpace.ToColorSpace(Parameters.ColorSpace) == ColorSpace.Linear;
+                    bool isSRgb = Parameters.SheetAsset.IsSRGBTexture(Parameters.ColorSpace);
 
                     for (var i = 0; i < sprites.Count; ++i)
                     {
