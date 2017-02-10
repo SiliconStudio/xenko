@@ -19,14 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public static partial class LightShaftsShaderKeys
     {
         public static readonly ValueParameterKey<Matrix> ShadowViewProjection = ParameterKeys.NewValue<Matrix>();
-        public static readonly ValueParameterKey<Vector4> ShadowBounds = ParameterKeys.NewValue<Vector4>();
-        public static readonly ValueParameterKey<Vector2> ZProjection = ParameterKeys.NewValue<Vector2>();
-        public static readonly ValueParameterKey<float> Time = ParameterKeys.NewValue<float>();
-        public static readonly ValueParameterKey<Vector3> Eye = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> CameraForward = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> ViewBase = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> ViewRight = ParameterKeys.NewValue<Vector3>();
-        public static readonly ValueParameterKey<Vector3> ViewUp = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<Vector4> ShadowTextureFactor = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Color3> LightColor = ParameterKeys.NewValue<Color3>();
         public static readonly ValueParameterKey<Vector3> ShadowLightOffset = ParameterKeys.NewValue<Vector3>();
         public static readonly ValueParameterKey<Vector3> ShadowLightDirection = ParameterKeys.NewValue<Vector3>();
         public static readonly ValueParameterKey<float> ExtinctionFactor = ParameterKeys.NewValue<float>();

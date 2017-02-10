@@ -2,7 +2,7 @@
 Id: 6a8212fb-d3f3-4e1d-84be-67aca35be26e
 SerializedVersion: {Xenko: 1.10.0-beta02}
 Tags: []
-Parent: null
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 163fe69c-57fb-43e8-82cb-c5e6ec95c450
@@ -33,6 +33,7 @@ Hierarchy:
         - 13571fdf-4fe3-44bd-a899-7093b3b659bc
         - ddde1038-3405-4c04-838e-1cba39219169
         - e899ccad-7314-43fd-8291-777099fd4dfa
+        - 2f36ae6b-4b4e-4f11-88dd-03acc6f1c18f
     Parts:
         -   Folder: Level
             Entity:
@@ -79,14 +80,15 @@ Hierarchy:
                         Id: e5f17fce-3449-419e-94d4-9ea9d6159d05
                         Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
                         Materials: {}
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 163fe69c-57fb-43e8-82cb-c5e6ec95c450
                 Name: Camera
                 Components:
                     06218d8251456b4f7a75e16824fc6e1e: !TransformComponent
                         Id: 548f9034-9f82-45b7-8f03-8d04680b826b
-                        Position: {X: -20.4086285, Y: -0.7029835, Z: -28.5898056}
-                        Rotation: {X: 0.00729747443, Y: -0.9459983, Z: 0.0213472638, W: 0.323385656}
+                        Position: {X: -40.0, Y: -12.0, Z: 7.0}
+                        Rotation: {X: -3.29607786E-10, Y: -0.707106769, Z: 3.29607786E-10, W: 0.707106769}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     08f5e2ef228205093b15efcac60386e4: !CameraComponent
@@ -128,7 +130,8 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 714f23c7-a8f6-4d5b-823d-c65c1425f716
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 1d81d52b-8d39-413d-ad8d-2d33e36c178b
                 Name: Cube (11)
                 Components:
@@ -176,7 +179,19 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Entity:
+        -   Folder: 
+            Entity:
+                Id: 2f36ae6b-4b4e-4f11-88dd-03acc6f1c18f
+                Name: Entity (2)
+                Components:
+                    2725e634ff0d70f653aa9681123350cc: !TransformComponent
+                        Id: 6ffffac0-d674-4d13-94a7-917d42bf2e00
+                        Position: {X: -17.0, Y: 10.0, Z: 62.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: {}
+        -   Folder: 
+            Entity:
                 Id: 31567627-e196-4c7f-a2fc-9eebd6c9defb
                 Name: Cube (14)
                 Components:
@@ -277,7 +292,8 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: b52d69c0-517c-44d3-ab0d-f6e735d44bbb
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 6581fcc3-7d6c-4fb6-8d64-08ccb25be862
                 Name: Directional light
                 Components:
@@ -343,7 +359,8 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: 3ca94d85-c01e-4fe6-80fb-54b079c16096
                 InstanceId: a77f0985-9d4f-4e54-b497-7e7bb0013c14
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 6dea5e4c-ee6a-4a3e-aca5-d2748796eb3a
                 Name: Skybox
                 Components:
@@ -382,7 +399,8 @@ Hierarchy:
                         Id: 635ecc55-f8ae-4407-8b0e-59c82e4ca81b
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21
                 Name: Cube (13)
                 Components:
@@ -400,7 +418,8 @@ Hierarchy:
                 BasePartAsset: 9833e808-ae9f-4c5d-b896-1bee7669fbfa:Cube (14)
                 BasePartId: b52d69c0-517c-44d3-ab0d-f6e735d44bbb
                 InstanceId: 1c0068ff-c7d9-4aeb-bc83-3944aa9e409c
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 71ba3d07-c95b-43b4-8dcb-820ad44f3cfd
                 Name: Directional light (2)
                 Components:
@@ -412,6 +431,7 @@ Hierarchy:
                         Children: {}
                     a3d25363acb5662b633fa2f202a1fbdd: !LightComponent
                         Id: 31098483-28ce-49c4-9818-e8aa876e7936
+                        Enabled: false
                         Type: !LightDirectional
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
@@ -428,11 +448,12 @@ Hierarchy:
                         Intensity: 0.5
                     57618921eb96f05fc9eb77b464c5b906: !LightShaftComponent
                         Id: 780b7663-a294-4e8e-8c09-52c6bb41d543
-                        Enabled: true
+                        Enabled: false
                         ExtinctionFactor: 0.1
                         ExtinctionRatio: 10.0
                         DensityFactor: 0.02
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: 89e9e7a7-4c0e-406c-b848-857ce9b12817
                 Name: Cube (12)
                 Components:
@@ -510,7 +531,8 @@ Hierarchy:
                         Id: 701023ba-cb77-46a8-b445-ae2f8f6fde80
                         Model: cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
                         Materials: {}
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: d14bba72-c4f0-4245-b8dd-99758a1bda46
                 Name: Point light
                 Components:
@@ -561,22 +583,22 @@ Hierarchy:
                             1c4127337f9677d418105f1d8c6f6bed: 1d81d52b-8d39-413d-ad8d-2d33e36c178b/3bb538d1-c12c-4352-bd55-408ce75cbd69
                             4035dd511fc921fa0fe5db21bc5bb2dd: 89e9e7a7-4c0e-406c-b848-857ce9b12817/3bb538d1-c12c-4352-bd55-408ce75cbd69
                             8fc7209de078aaa11555ff131fdb0c56: 6e1b78ba-ea4b-44cf-9cd3-da0c31c20c21/3bb538d1-c12c-4352-bd55-408ce75cbd69
-        -   Entity:
+        -   Folder: 
+            Entity:
                 Id: e899ccad-7314-43fd-8291-777099fd4dfa
                 Name: Entity
                 Components:
                     0c811157104b4c734664a11133d84549: !TransformComponent
                         Id: f9ca85e8-854a-4de6-af80-ab0e88758d62
-                        Position: {X: 1.02318335, Y: -8.567064, Z: -0.459928036}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.111289725, W: 0.993788}
-                        Scale: {X: 11.6925812, Y: 19133.6074, Z: 10.3297768}
+                        Position: {X: 2.0, Y: -14.0, Z: 2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 24.0, Y: 35.0, Z: 24.0}
                         Children: {}
                     e34162d900188a5bc7175f462041491e: !LightShaftBoundingVolumeComponent
                         Id: fd24d5e2-16d4-4191-9e0a-e314757b5a6c
                         Enabled: true
                         Model: 879181e4-ed39-495f-8f1d-e586e650cc82:Model
-                        AffectedComponents:
-                            82adcea33da98174631aa32e630bd6f8: 6581fcc3-7d6c-4fb6-8d64-08ccb25be862/780b7663-a294-4e8e-8c09-52c6bb41d543
+                        LightShaft: 6581fcc3-7d6c-4fb6-8d64-08ccb25be862/780b7663-a294-4e8e-8c09-52c6bb41d543
                     a5256db6c65a31ed7e28f4336dbf4b2c: !ModelComponent
                         Id: c3851f27-9625-49f5-85d4-4af98165dcd1
                         Enabled: false
@@ -589,7 +611,7 @@ Hierarchy:
                 Components:
                     04141b8a48df8bd3cd68c72be75e4d3d: !TransformComponent
                         Id: 3bb538d1-c12c-4352-bd55-408ce75cbd69
-                        Position: {X: 47.786, Y: -15.0, Z: 0.0}
+                        Position: {X: 50.0, Y: -15.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.2, Y: 30.0, Z: 100.0}
                         Children: {}

@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, Texturing
+    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<0, 0, 8, 1>
     {
         cbuffer PerFrame
         {
@@ -11,24 +11,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             stage matrix ShadowViewProjection;
 
             // Shadow map boundary for the current shadow map in the shadow atlas
-            stage float4 ShadowBounds;
+            stage float4 ShadowTextureFactor;
 
-            // Used to convert to linear depth
-            stage float2 ZProjection;
+            [Color]
+            stage float3 LightColor;
         
-            // Elapsed time
-            stage float Time;
-
-            // Eye/Camera position in world space
-            stage float3 Eye;
-            stage float3 CameraForward;
-            // (0,0,0) in view space projected into world space
-            stage float3 ViewBase;
-            // Offset of '(1,0,0) in view space projected into world space' from ViewBase
-            stage float3 ViewRight;
-            // Offset of '(0,1,0) in view space projected into world space' from ViewBase
-            stage float3 ViewUp;
-
             // Light position (if applicable)
             stage float3 ShadowLightOffset;
             // Light direction (if applicable)
@@ -42,223 +29,64 @@ namespace SiliconStudio.Xenko.Rendering.Images
             stage float ExtinctionRatio;
         };
 
-        stage stream float4 positionWS;
-        stage stream float3 directionWS;
-        stage stream float sceneDepth;
-        stage stream float currentDepth;
-        stage stream float stepSize;
-        
-        float reconstructCSZ(float depth)
+        override float3 ComputeColorIn(float4 positionWS, float3 eyeVS, float stepSize, int stepIndex)
         {
-            return ZProjection.y / (depth - ZProjection.x);
-        }
+            const float4 ScreenLimits = float4(-1, -1, 1, 1);
+            float3 lightResult = 0;
+            float3 sigmaT = ComputeExtinction(positionWS);
+            float3 sigmaS = ComputeInScattering(positionWS);
+            float3 stepExtinction = exp(-sigmaT * stepSize);
 
-        float RayStepJitter(float2 seed, float stepSize) 
-        {
-		    return stepSize * Math.FastRandom(int(seed.x + seed.y * 6007));
-	    }
+            float4 positionLS = mul(positionWS, ShadowViewProjection);
+            float positionDepth = dot(ShadowLightDirection, positionWS - ShadowLightOffset) / ShadowMapDistance;
+            float2 screenPosition = positionLS.xy / positionLS.w;
 
-        stage override float4 Shading()
-        {
-            // Compute world space ray
-            float2 ndc = streams.TexCoord * 2.0f - 1.0f;
-            ndc.y = -ndc.y;
-            float3 traceTarget = ViewBase;
-            traceTarget += ViewRight * ndc.x;
-            traceTarget += ViewUp * ndc.y;
-            streams.directionWS = normalize(traceTarget - Eye);
+            positionDepth = positionLS.z / positionLS.w;
 
-            // Starting position
-            streams.positionWS = float4(Eye.xyz, 1);
+            //return Texture2.SampleLevel(LinearSampler, positionLS.xy, 0.0f) > positionLS.z;
 
-            // Sample scene depth
-            float sceneDepthSample = Texture0.Sample(PointSampler, streams.TexCoord).r;
-            streams.sceneDepth = reconstructCSZ(sceneDepthSample);
-
-            float2 sceneDepthMinMaxSample = Texture1.Sample(LinearSampler, streams.TexCoord).xy;
-            if(sceneDepthMinMaxSample.x == 1.0f)
-                return 0; // Maximum distance is in the near plane
-
-            // Retrieve light shaft interval from scene bounding volumes
-            float minimum = reconstructCSZ(sceneDepthMinMaxSample.x);
-            float maximum = reconstructCSZ(1.0f-sceneDepthMinMaxSample.y);
-
-            //return (maximum-minimum) * 0.01f;
-
-            float stepDistance = max(maximum - minimum, 1.0f);
-            int stepCount = 8;
-            streams.stepSize = stepDistance / 8.0f;
-
-            // Jitter ray start
-            streams.positionWS.xyz += streams.directionWS * (RayStepJitter(streams.TexCoord.xy / Texture0TexelSize, streams.stepSize) + minimum);
-
-            // In-Scattering
-            float additive = 0.0f;
-
-            for(int i = 0; i < stepCount; i++)
+            if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw) )
             {
-                streams.positionWS.xyz += streams.directionWS * streams.stepSize;
-                streams.currentDepth = dot(streams.positionWS-Eye, CameraForward);
-                
-                additive += Step();
+                // TODO: Make minmax work
+                //float2 shadowDepthMinMax = Texture2.SampleLevel(PointSampler, screenPosition.xy * 2.0f, 0.0).xy;
+                float weight = 0;
+                //if (positionDepth >= shadowDepthMinMax.x && positionDepth <= shadowDepthMinMax.y)
+                {
+                    //screenPosition = lerp(ShadowTextureFactor.xy, ShadowTextureFactor.zw, screenPosition);
 
-                // Check occlusion
-                if(streams.currentDepth > streams.sceneDepth)
-                    break;
+                    // Simple 2x2 PCF
+                    for(int j = 0; j < 4; j++)
+                    {
+                        float shadowMapDepth = Texture1.SampleLevel(PointSampler, screenPosition.xy, 0.0, int2(j&2, j/2)).x;
+                        if (positionDepth < shadowMapDepth) 
+                        {
+                            weight += 1.0/4.0f;
+                        }
+                    }
+                }
+                //else if (positionDepth < shadowMapDepth)
+                //{
+                //    weight = 1.0f;
+                //}
+                lightResult =  stepExtinction * sigmaS * stepSize * weight;
+                lightResult *= 2.0f; // temp value to increase light shafts
             }
-
-            return additive;
+            return lightResult;
         }
 
-        float Step() 
+        float3 ComputeInScattering(float3 positionVS)
         {
-            float lightResult = 0;
-            float extinction = ComputeExtinction();
-            //float sigmaS = ComputeAngularScattering(positionWS, lightAngle);
-            float stepExtinction = exp(-extinction * streams.stepSize);
-
-            float weight = ComputeShadow();
-
-            // Depth falloff
-            // division, etc. remove
-            //weight *= max(0, 1.0f - (streams.currentDepth/400.0f));
-
-            // Additive term (scattering)
-            return (1.0f - stepExtinction) * weight;
+            return ComputeDensity(positionVS) * ExtinctionFactor * ExtinctionRatio;
         }
 
-        float ComputeDensity() 
+        float ComputeDensity(float positionVS)
         {
-            float noiseValue = Perlin3D((streams.positionWS + float3(0, 0, -Time) * 100) * 0.02);
-            //float noiseValue = Perlin4D(float4((positionWS + float3(1500, 1600, 0) + float3(0, 0, -Time) * 80) * 0.01, Time * 0.0001));
-            //float noiseValue = Noise4d(float4((positionWS + float3(1500, 1600, 0) + float3(0, 0, -Time) * 80) * 0.01, Time * 0.07));
-
-            noiseValue = (noiseValue * 0.5 + 0.5);
-            noiseValue *= noiseValue;
-
-            return DensityFactor * noiseValue;
             return DensityFactor;
         }
 
-        float3 ComputeExtinction() 
+        float3 ComputeExtinction(float positionVS)
         {
-            return ComputeDensity() * ExtinctionFactor;
-        }
-
-        // Function that should be chosen depending on the light type
-        float ComputeShadow()
-        {
-            float4 biasedPositionWS = streams.positionWS;
-            biasedPositionWS.xyz -= streams.directionWS.xyz * streams.stepSize;
-            float4 positionLS = mul(biasedPositionWS, ShadowViewProjection);
-            //positionLS /= positionLS.w;
-
-            // Expensive checks + branching
-            //if (all(positionLS.xy > ShadowBounds.xy) && all(positionLS.xy < ShadowBounds.zw))
-            {
-                return ShadowMapTexture.SampleCmp(LinearClampCompareLessEqualSampler, positionLS.xy, positionLS.z);
-                //return ShadowMapTexture.Sample(LinearSampler, positionLS.xy).r > positionLS.z;
-            }
-            return 1.0f;
-        }
-
-        // Computes angle of the ray to the light
-        float ComputeLightAngle(float3 traceDirection)
-        {
-            return dot(traceDirection, ShadowLightDirection);
-        }
-
-        //  6x^5-15x^4+10x^3	( Quintic Curve.  As used by Perlin in Improved Noise.  http://mrl.nyu.edu/~perlin/paper445.pdf )
-        float Interpolation_C2_1( float x ) 
-        { 
-            return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
-        } 
-
-        float2 Interpolation_C2_2( float2 x ) 
-        { 
-            return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
-        }
-
-        float3 Interpolation_C2_3( float3 x ) 
-        { 
-            return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
-        }
-
-        float4 Interpolation_C2_4( float4 x ) 
-        { 
-            return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
-        }
-
-        void FAST32_hash_3D( 	float3 gridcell,
-                        out float4 lowz_hash_0,
-                        out float4 lowz_hash_1,
-                        out float4 lowz_hash_2,
-                        out float4 highz_hash_0,
-                        out float4 highz_hash_1,
-                        out float4 highz_hash_2	)		//	generates 3 random numbers for each of the 8 cell corners
-        {
-            //    gridcell is assumed to be an integer coordinate
-
-            //	TODO: 	these constants need tweaked to find the best possible noise.
-            //			probably requires some kind of brute force computational searching or something....
-            const float2 OFFSET = float2( 50.0, 161.0 );
-            const float DOMAIN = 69.0 ;
-            const float3 SOMELARGEFLOATS = float3( 635.298681, 682.357502, 668.926525 );
-            const float3 ZINC = float3( 48.500388, 65.294118, 63.934599 );
-
-            //	truncate the domain
-            gridcell.xyz = gridcell.xyz - floor(gridcell.xyz * ( 1.0 / DOMAIN )) * DOMAIN;
-            float3 gridcell_inc1 = step( gridcell, DOMAIN - 1.5) * ( gridcell + 1.0 );
-
-            //	calculate the noise
-            float4 P = float4( gridcell.xy, gridcell_inc1.xy ) + OFFSET.xyxy;
-            P *= P;
-            P = P.xzxz * P.yyww;
-            float3 lowz_mod = float3( 1.0 / ( SOMELARGEFLOATS.xyz + gridcell.zzz * ZINC.xyz ) );
-            float3 highz_mod = float3( 1.0 / ( SOMELARGEFLOATS.xyz + gridcell_inc1.zzz * ZINC.xyz ) );
-            lowz_hash_0 = frac( P * lowz_mod.xxxx );
-            highz_hash_0 = frac( P * highz_mod.xxxx );
-            lowz_hash_1 = frac( P * lowz_mod.yyyy );
-            highz_hash_1 = frac( P * highz_mod.yyyy );
-            lowz_hash_2 = frac( P * lowz_mod.zzzz );
-            highz_hash_2 = frac( P * highz_mod.zzzz );
-        }
-
-        float Perlin3D( float3 P )
-        {
-            //	establish our grid cell and unit position
-            float3 Pi = floor(P);
-            float3 Pf = P - Pi;
-            float3 Pf_min1 = Pf - 1.0;
-
-            //
-            //	classic noise.
-            //	requires 3 random values per point.  with an efficent hash function will run faster than improved noise
-            //
-
-            //	calculate the hash.
-            //	( various hashing methods listed in order of speed )
-            float4 hashx0, hashy0, hashz0, hashx1, hashy1, hashz1;
-            FAST32_hash_3D( Pi, hashx0, hashy0, hashz0, hashx1, hashy1, hashz1 );
-            //SGPP_hash_3D( Pi, hashx0, hashy0, hashz0, hashx1, hashy1, hashz1 );
-
-            //	calculate the gradients
-            float4 grad_x0 = hashx0 - 0.49999;
-            float4 grad_y0 = hashy0 - 0.49999;
-            float4 grad_z0 = hashz0 - 0.49999;
-            float4 grad_x1 = hashx1 - 0.49999;
-            float4 grad_y1 = hashy1 - 0.49999;
-            float4 grad_z1 = hashz1 - 0.49999;
-            float4 grad_results_0 = rsqrt( grad_x0 * grad_x0 + grad_y0 * grad_y0 + grad_z0 * grad_z0 ) * ( float2( Pf.x, Pf_min1.x ).xyxy * grad_x0 + float2( Pf.y, Pf_min1.y ).xxyy * grad_y0 + Pf.zzzz * grad_z0 );
-            float4 grad_results_1 = rsqrt( grad_x1 * grad_x1 + grad_y1 * grad_y1 + grad_z1 * grad_z1 ) * ( float2( Pf.x, Pf_min1.x ).xyxy * grad_x1 + float2( Pf.y, Pf_min1.y ).xxyy * grad_y1 + Pf_min1.zzzz * grad_z1 );
-
-            //	Classic Perlin Interpolation
-            float3 blend = Interpolation_C2_3( Pf );
-            float4 res0 = lerp( grad_results_0, grad_results_1, blend.z );
-            float2 res1 = lerp( res0.xy, res0.zw, blend.y );
-            float final = lerp( res1.x, res1.y, blend.x );
-            final *= 1.1547005383792515290182975610039;		//	(optionally) scale things to a strict -1.0->1.0 range    *= 1.0/sqrt(0.75)
-            return final;
+            return ComputeDensity(positionVS) * ExtinctionFactor;
         }
     };
 }

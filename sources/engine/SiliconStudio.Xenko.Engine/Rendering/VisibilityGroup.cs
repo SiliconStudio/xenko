@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Rendering
             view.RenderObjects.Close();
         }
 
-        private static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
+        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
         {
             unsafe
             {

@@ -31,26 +31,23 @@ namespace SiliconStudio.Xenko.Engine
 
                 var world = pair.Key.Entity.Transform.WorldMatrix;
 
-                foreach (var affectedComponent in pair.Key.AffectedComponents)
+                var lightShaft = pair.Key.LightShaft;
+                if (lightShaft == null)
+                    continue;
+
+                List<LightShaftBoundingVolumeData> data;
+                if (!volumesPerLightShaft.TryGetValue(lightShaft, out data))
+                    volumesPerLightShaft.Add(lightShaft, data = new List<LightShaftBoundingVolumeData>());
+
+                data.Add(new LightShaftBoundingVolumeData
                 {
-                    if (affectedComponent == null)
-                        continue;
-
-                    List<LightShaftBoundingVolumeData> data;
-                    if (!volumesPerLightShaft.TryGetValue(affectedComponent, out data))
-                        volumesPerLightShaft.Add(affectedComponent, 
-                            data = new List<LightShaftBoundingVolumeData>());
-
-                    data.Add(new LightShaftBoundingVolumeData
-                    {
-                        World = world,
-                        Model = pair.Key.Model
-                    });
-                }
+                    World = world,
+                    Model = pair.Key.Model
+                });
             }
         }
 
-        public IEnumerable<LightShaftBoundingVolumeData> GetBoundingVolumesForComponent(LightShaftComponent component)
+        public IReadOnlyList<LightShaftBoundingVolumeData> GetBoundingVolumesForComponent(LightShaftComponent component)
         {
             List<LightShaftBoundingVolumeData> data;
             if (!volumesPerLightShaft.TryGetValue(component, out data))
@@ -67,14 +64,10 @@ namespace SiliconStudio.Xenko.Engine
     [Display("Light Shaft Bounding Volume")]
     [DataContract("LightShaftBoundingVolumeComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftBoundingVolumeProcessor))]
-    public class LightShaftBoundingVolumeComponent : EntityComponent
+    public class LightShaftBoundingVolumeComponent : ActivableEntityComponent
     {
-        [DataMember(0)] public bool Enabled = true;
-
-        [DataMember(5)]
         public Model Model { get; set; }
 
-        [DataMember(10)]
-        public List<LightShaftComponent> AffectedComponents { get; } = new List<LightShaftComponent>();
+        public LightShaftComponent LightShaft { get; set; }
     }
 }

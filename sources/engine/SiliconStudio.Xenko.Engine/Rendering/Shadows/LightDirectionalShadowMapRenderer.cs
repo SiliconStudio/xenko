@@ -271,6 +271,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     (float)shadowMapRectangle.Right/lightShadowMap.Atlas.Width,
                     (float)shadowMapRectangle.Bottom/lightShadowMap.Atlas.Height);
 
+                shaderData.TextureCoords[cascadeLevel] = cascadeTextureCoords;
+
                 //// Add border (avoid using edges due to bilinear filtering and blur)
                 //var borderSizeU = VsmBlurSize / lightShadowMap.Atlas.Width;
                 //var borderSizeV = VsmBlurSize / lightShadowMap.Atlas.Height;
@@ -431,6 +433,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public readonly Matrix[] WorldToShadowCascadeUV;
             public readonly Matrix[] ViewMatrix;
             public readonly Matrix[] ProjectionMatrix;
+            public readonly Vector4[] TextureCoords;
 
             public ShaderData(int cascadeCount)
             {
@@ -438,6 +441,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 WorldToShadowCascadeUV = new Matrix[cascadeCount];
                 ViewMatrix = new Matrix[cascadeCount];
                 ProjectionMatrix = new Matrix[cascadeCount];
+                TextureCoords = new Vector4[cascadeCount];
             }
         }
 

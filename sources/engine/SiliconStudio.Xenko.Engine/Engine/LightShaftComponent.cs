@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Engine
         public float ExtinctionFactor;
         public float ExtinctionRatio;
         public float DensityFactor;
+        public bool SeparateBoundingVolumes;
         public readonly List<LightShaftBoundingVolumeComponent> BoundingVolumes = new List<LightShaftBoundingVolumeComponent>();
     }
 
@@ -64,6 +65,7 @@ namespace SiliconStudio.Xenko.Engine
                 data.ExtinctionFactor = pair.Key.ExtinctionFactor;
                 data.ExtinctionRatio = pair.Key.ExtinctionRatio;
                 data.DensityFactor = pair.Key.DensityFactor;
+                data.SeparateBoundingVolumes = pair.Key.SeparateBoundingVolumes;
             }
         }
     }
@@ -71,14 +73,17 @@ namespace SiliconStudio.Xenko.Engine
     [Display("Light Shaft")]
     [DataContract("LightShaftComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftProcessor), ExecutionMode = ExecutionMode.All)]
-    public class LightShaftComponent : EntityComponent
+    public class LightShaftComponent : ActivableEntityComponent
     {
-        [DataMember(-10)] public bool Enabled = true;
+        public float ExtinctionFactor { get; set; } = 0.001f;
 
-        [DataMember(0)] public float ExtinctionFactor = 0.001f;
+        public float ExtinctionRatio { get; set; } = 0.9f;
 
-        [DataMember(10)] public float ExtinctionRatio = 0.9f;
+        public float DensityFactor { get; set; } = 0.01f;
 
-        [DataMember(20)] public float DensityFactor = 0.01f;
+        /// <summary>
+        /// If true, all bounding volumes will be drawn one by one. If not, they will be combined (but lower quality if they overlap)
+        /// </summary>
+        public bool SeparateBoundingVolumes { get; set; } = true;
     }
 }

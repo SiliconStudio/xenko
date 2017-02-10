@@ -224,6 +224,18 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\LightShafts\PostEffectBoundingRay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectBoundingRay.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\PostEffectMinMax.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectMinMax.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
       <AutoGen>True</AutoGen>
@@ -269,6 +281,14 @@
     <None Include="Rendering\Images\LightShafts\LightShaftsShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightShaftsShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\PostEffectBoundingRay.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectBoundingRay.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\PostEffectMinMax.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectMinMax.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LightShafts\VolumeMinMaxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
