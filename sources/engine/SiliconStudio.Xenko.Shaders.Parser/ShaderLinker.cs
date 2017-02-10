@@ -65,25 +65,25 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private void PrepareConstantBuffers(Shader shader)
         {
-            // Let's do a pass to expand variable groups
+            // Recalculate constant buffers
+            // Order first all non-method declarations and then after method declarations
+            var otherNodes = shader.Declarations.Where(declaration => !(declaration is MethodDeclaration) && !(declaration is Variable)).ToList();
             var declarations = new List<Node>();
+            var variables = shader.Declarations.OfType<Variable>();
+            var methods = shader.Declarations.OfType<MethodDeclaration>();
+            var newVariables = new List<Node>();
 
-            foreach (var declaration in shader.Declarations)
+            foreach (var variableGroup in variables)
             {
-                var variableGroup = declaration as Variable;
-                if (variableGroup != null)
+                foreach (var variable in variableGroup.Instances())
                 {
-                    // Expand variables
-                    foreach (var variable in variableGroup.Instances())
-                    {
-                        declarations.Add(variable);
-                    }
-                }
-                else
-                {
-                    declarations.Add(declaration);
+                    declarations.Add(variable);
                 }
             }
+
+            declarations.AddRange(otherNodes);
+            declarations.AddRange(newVariables);
+            declarations.AddRange(methods);
 
             shader.Declarations = declarations;
         }
