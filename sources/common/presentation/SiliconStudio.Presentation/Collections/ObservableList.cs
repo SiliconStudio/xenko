@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -6,7 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -14,16 +16,19 @@ namespace SiliconStudio.Presentation.Collections
     {
         private readonly List<T> list;
 
+        [CollectionAccess(CollectionAccessType.None)]
         public ObservableList()
         {
             list = new List<T>();
         }
 
-        public ObservableList(IEnumerable<T> collection)
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
+        public ObservableList([NotNull] IEnumerable<T> collection)
         {
             list = new List<T>(collection);
         }
 
+        [CollectionAccess(CollectionAccessType.None)]
         public ObservableList(int capacity)
         {
             list = new List<T>(capacity);
@@ -31,10 +36,9 @@ namespace SiliconStudio.Presentation.Collections
 
         public T this[int index]
         {
-            get
-            {
-                return list[index];
-            }
+            [CollectionAccess(CollectionAccessType.Read)]
+            get { return list[index]; }
+            [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
             set
             {
                 var oldItem = list[index];
@@ -44,35 +48,41 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.None)]
         public int Count => list.Count;
 
+        [CollectionAccess(CollectionAccessType.None)]
         public bool IsReadOnly => false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        [NotNull, Pure]
         public IList ToIList()
         {
             return new NonGenericObservableListWrapper<T>(this);
         }
 
+        [Pure]
         public IEnumerator<T> GetEnumerator()
         {
             return list.GetEnumerator();
         }
 
+        [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
         public void Add(T item)
         {
             Insert(Count, item);
         }
 
-        public void AddRange(IEnumerable<T> items)
+        public void AddRange([NotNull] IEnumerable<T> items)
         {
             var itemList = items.ToList();
             if (itemList.Count > 0)
@@ -84,6 +94,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public void Clear()
         {
             var raiseEvent = list.Count > 0;
@@ -95,21 +106,26 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
+        [Pure]
         public bool Contains(T item)
         {
             return list.Contains(item);
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
         public void CopyTo(T[] array, int arrayIndex)
         {
             list.CopyTo(array, arrayIndex);
         }
 
-        public int FindIndex(Predicate<T> match)
+        [CollectionAccess(CollectionAccessType.Read)]
+        public int FindIndex([NotNull] Predicate<T> match)
         {
             return list.FindIndex(match);
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public bool Remove(T item)
         {
             int index = list.IndexOf(item);
@@ -120,6 +136,7 @@ namespace SiliconStudio.Presentation.Collections
             return index != -1;
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public void RemoveRange(int index, int count)
         {
             var oldItems = list.Skip(index).Take(count).ToList();
@@ -128,11 +145,14 @@ namespace SiliconStudio.Presentation.Collections
             OnCollectionChanged(arg);
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
+        [Pure]
         public int IndexOf(T item)
         {
             return list.IndexOf(item);
         }
 
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
         public void Insert(int index, T item)
         {
             list.Insert(index, item);
@@ -140,6 +160,7 @@ namespace SiliconStudio.Presentation.Collections
             OnCollectionChanged(arg);
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public void RemoveAt(int index)
         {
             var item = list[index];
@@ -148,19 +169,14 @@ namespace SiliconStudio.Presentation.Collections
             OnCollectionChanged(arg);
         }
 
-        public void Reset()
-        {
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
-            OnCollectionChanged(arg);
-        }
-
         /// <inheritdoc/>
+        [CollectionAccess(CollectionAccessType.None)]
         public override string ToString()
         {
             return $"{{ObservableList}} Count = {Count}";
         }
 
-        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs arg)
+        protected void OnCollectionChanged([NotNull] NotifyCollectionChangedEventArgs arg)
         {
             CollectionChanged?.Invoke(this, arg);
 

@@ -195,7 +195,7 @@ namespace SiliconStudio.BuildEngine
             writer.Write(DataSerializer.BinaryFormatVersion);
 
             // Gets the hash of the assembly of the command
-            writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
+            //writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
         }
 
         protected TagSymbol RegisterTag(string name, Func<string> getValue)
@@ -220,7 +220,7 @@ namespace SiliconStudio.BuildEngine
             }
             catch (Exception ex)
             {
-                prepareContext.Logger.Error("Unexpected error while computing the command hash for [{0}]. Reason: {1}", ex, this.GetType().Name, ex.Message);
+                prepareContext.Logger.Error($"Unexpected error while computing the command hash for [{GetType().Name}].", ex);
             }
             return ObjectId.Empty;
         }

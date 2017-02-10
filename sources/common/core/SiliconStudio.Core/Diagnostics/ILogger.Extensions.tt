@@ -4,62 +4,69 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-// Copyright (c) 2012-2014 Silicon Studio Corporation (http://siliconstudio.co.jp)
+// Copyright (c) 2012-2016 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // File AUTO-GENERATED, do not edit!
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
     /// <summary>
     /// Extensions for <see cref="ILogger"/>.
     /// </summary>
-    public static partial class LoggerExtensions
+    public static class LoggerExtensions
     {
 <# foreach(var name in new string[] { "Verbose", "Debug", "Info", "Warning", "Error", "Fatal" }) {#>
         /// <summary>
         /// Logs the specified <#= name.ToLowerInvariant() #> message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The <#= name.ToLowerInvariant() #> message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void <#= name #>(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void <#= name #>([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.<#= name #>, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.<#= name #>, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified <#= name.ToLowerInvariant() #> message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The <#= name.ToLowerInvariant() #> message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void <#= name #>(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void <#= name #>([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            <#= name #>(log, message, null, callerInfo);
+            <#= name #>(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified <#= name.ToLowerInvariant() #> message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The <#= name.ToLowerInvariant() #> message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void <#= name #>(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void <#= name #>([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            <#= name #>(log, messageFormat, null, parameters);
+            <#= name #>(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified <#= name.ToLowerInvariant() #> message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The <#= name.ToLowerInvariant() #> message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void <#= name #>(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void <#= name #>([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            <#= name #>(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            <#= name #>(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
 <#}#>
     }

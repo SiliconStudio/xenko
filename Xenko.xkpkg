@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: Xenko
-    Version: 1.10.0-alpha01
+    Version: 1.10.0-beta
     Owners:
       - Silicon Studio
     Authors: 
@@ -70,6 +70,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneHDR.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneLDR.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationBlend.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationStart.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/BasicCameraController.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/SideScrollingCamera.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/FpsCamera.xktpl
@@ -77,7 +78,8 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/DefaultAsyncScript.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/DefaultSyncScript.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/DefaultStartupScript.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Events/EventDispatcher.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Events/EventBroadcaster.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Events/EventListener.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/DebugShapesRender.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl

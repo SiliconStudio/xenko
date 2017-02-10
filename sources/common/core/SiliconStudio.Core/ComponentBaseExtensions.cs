@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -33,7 +34,7 @@ namespace SiliconStudio.Core
         public static T KeepReference<T>(this T thisArg) where T : IReferencable
         {
             if (ReferenceEquals(thisArg, null))
-                return thisArg;
+                return default(T);
             thisArg.AddReference();
             return thisArg;
         }
@@ -48,7 +49,7 @@ namespace SiliconStudio.Core
         public static T DisposeBy<T>(this T thisArg, ICollectorHolder container) where T : IDisposable
         {
             if (ReferenceEquals(thisArg, null))
-                return thisArg;
+                return default(T);
             return container.Collector.Add(thisArg);
         }
 
@@ -64,7 +65,7 @@ namespace SiliconStudio.Core
         /// This method is used to set save a property value from <see cref="ComponentBase.Tags"/>, set a new value
         /// and restore it after. The returned object must be disposed once the original value must be restored.
         /// </remarks>
-        public static PropertyTagRestore<T> PushTagAndRestore<T>(this ComponentBase component, PropertyKey<T> key, T value)
+        public static PropertyTagRestore<T> PushTagAndRestore<T>([NotNull] this ComponentBase component, [NotNull] PropertyKey<T> key, T value)
         {
             // TODO: Not fully satisfied with the name and the extension point (on ComponentBase). We need to review this a bit more
             var restorer = new PropertyTagRestore<T>(component, key);
@@ -84,11 +85,11 @@ namespace SiliconStudio.Core
 
             private readonly T previousValue;
 
-            public PropertyTagRestore(ComponentBase container, PropertyKey<T> key)
+            public PropertyTagRestore([NotNull] ComponentBase container, [NotNull] PropertyKey<T> key)
                 : this()
             {
-                if (container == null) throw new ArgumentNullException("container");
-                if (key == null) throw new ArgumentNullException("key");
+                if (container == null) throw new ArgumentNullException(nameof(container));
+                if (key == null) throw new ArgumentNullException(nameof(key));
                 this.container = container;
                 this.key = key;
                 previousValue = container.Tags.Get(key);

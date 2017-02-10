@@ -1,9 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -17,9 +17,9 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="item">The item to remove.</param>
-        public static void SwapRemove<T>(this IList<T> list, T item)
+        public static void SwapRemove<T>([NotNull] this IList<T> list, T item)
         {
-            int index = list.IndexOf(item);
+            var index = list.IndexOf(item);
             if (index < 0)
                 return;
 
@@ -31,9 +31,9 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="index">Index of the item to remove.</param>
-        public static void SwapRemoveAt<T>(this IList<T> list, int index)
+        public static void SwapRemoveAt<T>([NotNull] this IList<T> list, int index)
         {
-            if (index < 0 || index >= list.Count) throw new ArgumentOutOfRangeException("index");
+            if (index < 0 || index >= list.Count) throw new ArgumentOutOfRangeException(nameof(index));
 
             if (index < list.Count - 1)
             {
@@ -50,13 +50,29 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="list">The list.</param>
         /// <param name="index">The index.</param>
         /// <returns>The item from a list at a specified index. If index is out of the list, returns null..</returns>
-        public static T GetItemOrNull<T>(this IList<T> list, int index) where T : class
+        public static T GetItemOrNull<T>([NotNull] this IList<T> list, int index) where T : class
         {
-            if (list != null && index >= 0 && index < list.Count)
+            if (index >= 0 && index < list.Count)
             {
                 return list[index];
             }
             return null;
+        }
+
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="IReadOnlyList{T}"/>.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="item">The object to locate in the <see cref="IReadOnlyList{T}"/>.</param>
+        /// <returns>The index of item if found in the list; otherwise, -1.</returns>
+        public static int IndexOf<T>([NotNull] this IReadOnlyList<T> list, T item)
+        {
+            var comparer = EqualityComparer<T>.Default;
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (comparer.Equals(list[i], item)) return i;
+            }
+            return -1;
         }
     }
 }

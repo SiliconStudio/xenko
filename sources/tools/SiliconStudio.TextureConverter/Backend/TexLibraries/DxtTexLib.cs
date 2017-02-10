@@ -402,7 +402,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // TODO: temp if request format is SRGB we force it to non-srgb to perform the conversion. Will not work if texture input is SRGB
             var outputFormat = request.Format.IsSRgb() ? request.Format.ToNonSRgb() : request.Format;
 
-            Log.Debug("Converting texture from {0} to {1}", ((PixelFormat)libraryData.Metadata.format), outputFormat);
+            Log.Debug($"Converting texture from {(PixelFormat)libraryData.Metadata.format} to {outputFormat}");
 
             var scratchImage = new ScratchImage();
             var hr = Utilities.Convert(libraryData.DxtImages, libraryData.DxtImages.Length, ref libraryData.Metadata, (DXGI_FORMAT)outputFormat, TEX_FILTER_FLAGS.TEX_FILTER_BOX, 0.0f, scratchImage);

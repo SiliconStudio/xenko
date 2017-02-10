@@ -29,7 +29,7 @@ namespace ParticlesSample.Particles.ShapeBuilders
 
         /// <inheritdoc />
         public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
         {
             // Step 1 - get all required fields to build the particle shapes. Some fields may not exist if no initializer or updater operates on them
             //  In that case we just decide on a default value for that field and skip the update

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Transactions;
 
 namespace SiliconStudio.Presentation.Dirtiables
 {
     public abstract class DirtyingOperation : Operation, IDirtyingOperation
     {
-        protected DirtyingOperation(IEnumerable<IDirtiable> dirtiables)
+        protected DirtyingOperation([NotNull] IEnumerable<IDirtiable> dirtiables)
         {
             if (dirtiables == null) throw new ArgumentNullException(nameof(dirtiables));
             IsDone = true;
@@ -28,7 +29,7 @@ namespace SiliconStudio.Presentation.Dirtiables
         /// </summary>
         /// <param name="otherOperation">The operation for which to compare dirtiables.</param>
         /// <returns><c>True</c> if this operation affects the same dirtiable objects that the given operation, <c>False</c> otherwise.</returns>
-        public bool HasSameDirtiables(DirtyingOperation otherOperation)
+        public bool HasSameDirtiables([NotNull] DirtyingOperation otherOperation)
         {
             if (otherOperation.Dirtiables.Count != Dirtiables.Count)
                 return false;

@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
-using SiliconStudio.Presentation.Quantum;
-using SiliconStudio.Presentation.Tests.Helpers;
-using TestContext = SiliconStudio.Presentation.Tests.Helpers.TestContext;
+using SiliconStudio.Presentation.Quantum.Tests.Helpers;
+using TestContext = SiliconStudio.Presentation.Quantum.Tests.Helpers.TestContext;
 
-namespace SiliconStudio.Presentation.Tests
+namespace SiliconStudio.Presentation.Quantum.Tests
 {
     [TestFixture]
     public class TestDependentProperties
@@ -19,7 +18,7 @@ namespace SiliconStudio.Presentation.Tests
         private abstract class DependentPropertiesUpdater : IPropertyNodeUpdater
         {
             private int count;
-            public void UpdateNode(SingleObservableNode node)
+            public void UpdateNode(SingleNodeViewModel node)
             {
                 if (node.Name == nameof(Types.DependentPropertyContainer.Title))
                 {
@@ -35,14 +34,14 @@ namespace SiliconStudio.Presentation.Tests
 
             protected abstract bool IsRecursive { get; }
 
-            protected abstract string GetDependencyPath(ObservableViewModel viewModel);
+            protected abstract string GetDependencyPath(GraphViewModel viewModel);
         }
 
         private class SimpleDependentPropertiesUpdater : DependentPropertiesUpdater
         {
             protected override bool IsRecursive => false;
 
-            protected override string GetDependencyPath(ObservableViewModel viewModel)
+            protected override string GetDependencyPath(GraphViewModel viewModel)
             {
                 return viewModel.RootNode.GetChild(Instance).GetChild(Name).Path;
             }
@@ -52,7 +51,7 @@ namespace SiliconStudio.Presentation.Tests
         {
             protected override bool IsRecursive => true;
 
-            protected override string GetDependencyPath(ObservableViewModel viewModel)
+            protected override string GetDependencyPath(GraphViewModel viewModel)
             {
                 return viewModel.RootNode.GetChild(Instance).Path;
             }
@@ -64,7 +63,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
@@ -90,7 +89,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -116,7 +115,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -142,7 +141,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);
@@ -168,7 +167,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new RecursiveDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var instanceNode = viewModel.RootNode.GetChild(Instance);
@@ -206,7 +205,7 @@ namespace SiliconStudio.Presentation.Tests
             var container = new Types.DependentPropertyContainer { Title = "Title", Instance = new Types.SimpleObject { Name = "Test" } };
             var testContext = new TestContext();
             var instanceContext = testContext.CreateInstanceContext(container);
-            testContext.ObservableViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
+            testContext.GraphViewModelService.RegisterPropertyNodeUpdater(new SimpleDependentPropertiesUpdater());
             var viewModel = instanceContext.CreateViewModel();
             var titleNode = viewModel.RootNode.GetChild(Title);
             var nameNode = viewModel.RootNode.GetChild(Instance).GetChild(Name);

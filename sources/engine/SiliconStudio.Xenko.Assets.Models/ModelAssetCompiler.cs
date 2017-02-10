@@ -27,18 +27,19 @@ namespace SiliconStudio.Xenko.Assets.Models
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
             var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
+            var maxInputSlots = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_1 ? 32 : 16;
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform(assetItem.Package) != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromProxyObject(asset.Skeleton);
 
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
             {
-                result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                result.Error($"No importer found for model extension '{extension}. The model '{assetSource}' can't be imported.");
                 return;
             }
 
@@ -46,6 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Allow32BitIndex = allow32BitIndex;
+            importModelCommand.MaxInputSlots = maxInputSlots;
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;
             importModelCommand.ScaleImport = asset.ScaleImport;

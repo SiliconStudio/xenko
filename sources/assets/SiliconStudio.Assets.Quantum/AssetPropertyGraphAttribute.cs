@@ -1,8 +1,10 @@
 ﻿using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Quantum
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    [BaseTypeRequired(typeof(AssetPropertyGraph))]
     public class AssetPropertyGraphAttribute : Attribute
     {
         public AssetPropertyGraphAttribute(Type assetType)

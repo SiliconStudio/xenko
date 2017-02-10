@@ -32,14 +32,14 @@ namespace SiliconStudio.Presentation.Quantum
         public abstract string Name { get; }
 
         /// <summary>
-        /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedObservableNode"/>
+        /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedNodeViewModel"/>
         /// </summary>
         public abstract CombineMode CombineMode { get; }
 
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        protected IUndoRedoService ActionService => ServiceProvider.TryGet<IUndoRedoService>();
+        protected IUndoRedoService UndoRedoService => ServiceProvider.TryGet<IUndoRedoService>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -46,6 +47,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets all registered loggers.
         /// </summary>
         /// <value>The registered loggers.</value>
+        [NotNull]
         public static Logger[] RegisteredLoggers
         {
             get
@@ -64,10 +66,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="activator">The activator.</param>
         /// <exception cref="ArgumentNullException">If activator is null</exception>
-        public static void ActivateLog(Action<Logger> activator)
+        public static void ActivateLog([NotNull] Action<Logger> activator)
         {
             if (activator == null)
-                throw new ArgumentNullException("activator");
+                throw new ArgumentNullException(nameof(activator));
 
             foreach (var logger in MapModuleNameToLogger.Values)
                 activator(logger);
@@ -81,10 +83,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="maximumLevel">The maximum level.</param>
         /// <param name="enabledFlag">if set to <c>true</c> enaable the log, else disable.</param>
         /// <exception cref="ArgumentNullException">If regexPatternModule is null</exception>
-        public static void ActivateLog(string regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
+        public static void ActivateLog([NotNull] string regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
         {
             if (regexPatternModule == null)
-                throw new ArgumentNullException("regexPatternModule");
+                throw new ArgumentNullException(nameof(regexPatternModule));
 
             var regex = new Regex(regexPatternModule);
             ActivateLog(regex, minimumLevel, maximumLevel);
@@ -98,10 +100,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="maximumLevel">The maximum level.</param>
         /// <param name="enabledFlag">if set to <c>true</c> enaable the log, else disable.</param>
         /// <exception cref="ArgumentNullException">If regexPatternModule is null</exception>
-        public static void ActivateLog(Regex regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
+        public static void ActivateLog([NotNull] Regex regexPatternModule, LogMessageType minimumLevel, LogMessageType maximumLevel = LogMessageType.Fatal, bool enabledFlag = true)
         {
             if (regexPatternModule == null)
-                throw new ArgumentNullException("regexPatternModule");
+                throw new ArgumentNullException(nameof(regexPatternModule));
 
             ActivateLog(
                 logger =>
@@ -119,10 +121,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="module">The module name.</param>
         /// <exception cref="ArgumentNullException">If module name is null</exception>
         /// <returns>An instance of a <see cref="Logger"/></returns>
-        public static Logger GetLogger(string module)
+        public static Logger GetLogger([NotNull] string module)
         {
             if (module == null)
-                throw new ArgumentNullException("module");
+                throw new ArgumentNullException(nameof(module));
 
             Logger logger;
             lock (MapModuleNameToLogger)

@@ -99,7 +99,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
                 if (buildProfile == null)
                 {
-                    builderOptions.Logger.Error("Unable to find profile [{0}] in package [{1}]", builderOptions.BuildProfile, package.FullPath);
+                    builderOptions.Logger.Error($"Unable to find profile [{builderOptions.BuildProfile}] in package [{package.FullPath}]");
                     return BuildResultCode.BuildError;
                 }
 
@@ -111,7 +111,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var gameSettingsAsset = package.GetGameSettingsAsset();
                 if (gameSettingsAsset == null)
                 {
-                    builderOptions.Logger.Warning("Could not find game settings asset at location [{0}]. Use a Default One", GameSettingsAsset.GameSettingsLocation);
+                    builderOptions.Logger.Warning($"Could not find game settings asset at location [{GameSettingsAsset.GameSettingsLocation}]. Use a Default One");
                     gameSettingsAsset = GameSettingsFactory.Create();
                 }
 
@@ -179,7 +179,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 AutoLoadTemporaryAssets = true,
                 LoadAssemblyReferences = false,
                 AutoCompileProjects = false,
-                TemporaryAssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation,
+                TemporaryAssetFilter = (asset) => asset.AssetLocation == GameSettingsAsset.GameSettingsLocation,
                 TemporaryAssetsInMsbuild = false,
             });
 
@@ -196,7 +196,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
             if (buildProfile == null)
             {
-                builderOptions.Logger.Error("Package {0} did not contain platform {1}", builderOptions.PackageFile, builderOptions.BuildProfile);
+                builderOptions.Logger.Error($"Package {builderOptions.PackageFile} did not contain platform {builderOptions.BuildProfile}");
                 return BuildResultCode.BuildError;
             }
 

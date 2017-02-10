@@ -10,15 +10,13 @@ namespace SiliconStudio.Core.Annotations
     /// </summary>
     public abstract class DynamicTypeAttributeBase : Attribute
     {
-        private readonly string typeName;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicTypeAttributeBase"/> class.
         /// </summary>
         /// <param name="type">The type.</param>
-        protected DynamicTypeAttributeBase(Type type)
+        protected DynamicTypeAttributeBase([NotNull] Type type)
         {
-            typeName = type.AssemblyQualifiedName;
+            TypeName = type.AssemblyQualifiedName;
         }
 
         /// <summary>
@@ -27,16 +25,13 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="typeName">The type.</param>
         protected DynamicTypeAttributeBase(string typeName)
         {
-            this.typeName = typeName;
+            TypeName = typeName;
         }
 
         /// <summary>
         /// Gets the name of the <see cref="DynamicTypeAttributeBase"/> type
         /// </summary>
         /// <value>The name of the serializable type.</value>
-        public string TypeName
-        {
-            get { return typeName; }
-        }
+        public string TypeName { get; }
     }
 }

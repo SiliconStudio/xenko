@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -99,7 +100,7 @@ namespace SiliconStudio.Core
         /// <returns>DisplayAttribute.</returns>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
+        public static DisplayAttribute GetDisplay([NotNull] MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
             lock (RegisteredDisplayAttributes)
@@ -115,7 +116,7 @@ namespace SiliconStudio.Core
         }
 
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
-        public static int? GetOrder(MemberInfo memberInfo)
+        public static int? GetOrder([NotNull] MemberInfo memberInfo)
         {
             var display = GetDisplay(memberInfo);
             return display.Order;

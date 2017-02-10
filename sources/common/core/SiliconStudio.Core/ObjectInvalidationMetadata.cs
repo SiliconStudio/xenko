@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -16,12 +17,14 @@ namespace SiliconStudio.Core
 
     public abstract class ObjectInvalidationMetadata : PropertyKeyMetadata
     {
-        public static ObjectInvalidationMetadata New<T>(ObjectInvalidationCallback<T> invalidationCallback)
+        [NotNull]
+        public static ObjectInvalidationMetadata New<T>([NotNull] ObjectInvalidationCallback<T> invalidationCallback)
         {
             return new ObjectInvalidationMetadata<T>(invalidationCallback);
         }
 
-        public static ObjectInvalidationMetadata NewRef<T>(ObjectInvalidationRefCallback<T> invalidationRefCallback)
+        [NotNull]
+        public static ObjectInvalidationMetadata NewRef<T>([NotNull] ObjectInvalidationRefCallback<T> invalidationRefCallback)
         {
             return new ObjectInvalidationMetadata<T>(invalidationRefCallback);
         }
@@ -42,9 +45,9 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="invalidationCallback">The object invalidation callback.</param>
         /// <exception cref="System.ArgumentNullException">Parameter <paramref name="invalidationCallback"/> is null.</exception>
-        public ObjectInvalidationMetadata(ObjectInvalidationCallback<T> invalidationCallback)
+        public ObjectInvalidationMetadata([NotNull] ObjectInvalidationCallback<T> invalidationCallback)
         {
-            if (invalidationCallback == null) throw new ArgumentNullException("invalidationCallback");
+            if (invalidationCallback == null) throw new ArgumentNullException(nameof(invalidationCallback));
             objectInvalidationCallback = invalidationCallback;
         }
 
@@ -53,9 +56,9 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="invalidationRefCallback">The object invalidation callback.</param>
         /// <exception cref="System.ArgumentNullException">Parameter <paramref name="invalidationRefCallback"/> is null.</exception>
-        public ObjectInvalidationMetadata(ObjectInvalidationRefCallback<T> invalidationRefCallback)
+        public ObjectInvalidationMetadata([NotNull] ObjectInvalidationRefCallback<T> invalidationRefCallback)
         {
-            if (invalidationRefCallback == null) throw new ArgumentNullException("invalidationRefCallback");
+            if (invalidationRefCallback == null) throw new ArgumentNullException(nameof(invalidationRefCallback));
             objectInvalidationRefCallback = invalidationRefCallback;
         }
 

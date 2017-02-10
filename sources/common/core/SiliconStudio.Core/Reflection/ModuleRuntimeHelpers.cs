@@ -1,13 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
     public static class ModuleRuntimeHelpers
     {
-        public static void RunModuleConstructor(Module module)
+        public static void RunModuleConstructor([NotNull] Module module)
         {
 #if SILICONSTUDIO_PLATFORM_UWP || SILICONSTUDIO_RUNTIME_CORECLR
             // Initialize first type

@@ -74,20 +74,24 @@ namespace SiliconStudio.Xenko.Assets.Models
                         exportedObject = ExportModel(commandContext, assetManager);
                         break;
                     default:
-                        commandContext.Logger.Error("Unknown export type [{0}] {1}", Mode, ContextAsString);
+                        commandContext.Logger.Error($"Unknown export type [{Mode}] {ContextAsString}");
                         return ResultStatus.Failed;
                 }
 
-                if (exportedObject != null)
-                    assetManager.Save(Location, exportedObject);
+                if (exportedObject == null)
+                {
+                    return ResultStatus.Failed;
+                }
 
-                commandContext.Logger.Verbose("The {0} has been successfully imported.", ContextAsString);
+                assetManager.Save(Location, exportedObject);
+
+                commandContext.Logger.Verbose($"The {ContextAsString} has been successfully imported.");
 
                 return ResultStatus.Successful;
             }
             catch (Exception ex)
             {
-                commandContext.Logger.Error("Unexpected error while importing {0}", ex, ContextAsString);
+                commandContext.Logger.Error($"Unexpected error while importing {ContextAsString}", ex);
                 return ResultStatus.Failed;
             }
             finally

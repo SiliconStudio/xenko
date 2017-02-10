@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2012-2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // File AUTO-GENERATED, do not edit!
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -34,7 +35,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The verbose message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Verbose(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Verbose([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Verbose(messageFormat, null, parameters);
         }
@@ -46,9 +48,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Verbose(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Verbose([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Verbose(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
         /// <summary>
@@ -77,7 +80,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The debug message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Debug(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Debug([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Debug(messageFormat, null, parameters);
         }
@@ -89,9 +93,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Debug(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Debug([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Debug(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
         /// <summary>
@@ -120,7 +125,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The info message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Info(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Info([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Info(messageFormat, null, parameters);
         }
@@ -132,9 +138,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Info(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Info([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Info(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
         /// <summary>
@@ -163,7 +170,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The warning message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Warning(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Warning([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Warning(messageFormat, null, parameters);
         }
@@ -175,9 +183,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Warning(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Warning([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Warning(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
         /// <summary>
@@ -206,7 +215,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The error message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Error(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Error([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Error(messageFormat, null, parameters);
         }
@@ -218,9 +228,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Error(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Error([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Error(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
         /// <summary>
@@ -249,7 +260,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The fatal message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void Fatal(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Fatal([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             Fatal(messageFormat, null, parameters);
         }
@@ -261,9 +273,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void Fatal(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void Fatal([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             Fatal(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
     }
