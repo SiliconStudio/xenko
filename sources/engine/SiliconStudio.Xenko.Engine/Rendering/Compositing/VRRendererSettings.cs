@@ -18,7 +18,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [DefaultValue(true)]
         public bool IgnoreCameraRotation { get; set; } = true;
 
+        [DataMember(30)]
         public List<VRApi> RequiredApis { get; } = new List<VRApi>();
+
+        [DataMember(40)]
+        public float ResolutionScale { get; set; } = 1.0f;
 
         [DataMemberIgnore]
         public RenderView[] RenderViews = { new RenderView(), new RenderView() };

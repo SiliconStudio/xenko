@@ -154,6 +154,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     vrSystem.RequireMirror = true;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
+                    vrSystem.ResolutionScale = VRSettings.ResolutionScale;
 
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
