@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Material normal map
     /// </summary>
-    shader MaterialSurfaceNormalMap<bool TIsNormalXY1, bool TScaleAndBias, bool TInvertY> : IMaterialSurfacePixel
+    shader MaterialSurfaceNormalMap<bool TIsNormalXY1, bool TScaleAndBias> : IMaterialSurfacePixel
     {
         compose ComputeColor normalMap;
 
@@ -18,13 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (TScaleAndBias)
             {
                 normal = (2.0f * normal) - 1.0f;
-            }
-
-            // Flip along bitangent, if the normal map was generated as left-handed,
-            // since the bitangent points in v-direction ("down"), but the g-component of the normal map points in -v direction ("up")
-            if (TInvertY)
-            {
-                normal.y = -normal.y;
             }
 
             // If Z is calculated from XY do it here
