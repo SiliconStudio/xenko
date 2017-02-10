@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             referenceMatrixInv.Invert();
         }
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
 //            RenderFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
 //            nonSrgbFrame = Texture.New2D(device, RenderFrameSize.Width, RenderFrameSize.Height, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             throw new System.NotImplementedException();
         }
 
-        public override void Commit(CommandList commandList)
+        public override void Commit(CommandList commandList, Texture renderFrame)
         {
             throw new System.NotImplementedException();
         }
@@ -115,8 +115,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 //        }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2560, 1440);
-
-        public override Texture RenderFrame { get; protected set; }
+        public override Size2 ActualRenderFrameSize { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 

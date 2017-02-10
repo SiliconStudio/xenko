@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -16,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     [DataContract("PostProcessingEffects")]
     [Display("Post-Processing Effects")]
-    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, ISharedRenderer
+    public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
         private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
@@ -234,13 +232,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        public void Draw(RenderDrawContext context, Texture input, Texture depthStencil, Texture output)
+        public void Collect(RenderContext context)
         {
-            SetInput(0, input);
-            SetInput(1, depthStencil);
-            SetOutput(output);
-            Draw(context);
         }
+
+        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        {
+            var colorInput = inputTargetsComposition as IColorTarget;
+            if (colorInput == null) return;
+
+            SetInput(0, colorInput.Color);
+            SetInput(1, inputDepthStencil);
+            SetOutput(outputTarget);
+            Draw(drawContext);
+        }
+
+        public bool RequiresVelocityBuffer => false;
+
+        public bool RequiresNormalBuffer => false;
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -300,13 +309,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
             if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
-                const int LocalLuminanceDownScale = 3;
+                const int localLuminanceDownScale = 3;
 
                 // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
                 var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
                 lumWidth = Math.Max(1, lumWidth / 2);
 
-                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(LocalLuminanceDownScale);
+                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(localLuminanceDownScale);
                 var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
                 luminanceEffect.SetInput(currentInput);

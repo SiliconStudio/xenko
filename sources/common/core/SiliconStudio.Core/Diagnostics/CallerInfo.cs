@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -44,6 +45,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="memberName">Name of the member.</param>
         /// <param name="sourceLineNumber">The source line number.</param>
         /// <returns>A caller information.</returns>
+        [NotNull]
         public static CallerInfo Get([CallerFilePath] string sourceFilePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             return new CallerInfo(sourceFilePath, memberName, sourceLineNumber);
@@ -51,7 +53,7 @@ namespace SiliconStudio.Core.Diagnostics
 
         public override string ToString()
         {
-            return string.Format("{0}:{1}:{2}", FilePath, MemberName, LineNumber);
+            return $"{FilePath}:{MemberName}:{LineNumber}";
         }
     }
 }

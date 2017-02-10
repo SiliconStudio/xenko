@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.IO;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core.Serialization
         /// <typeparam name="T">Type of the object to read</typeparam>
         /// <param name="stream">The stream to read the object instance.</param>
         /// <returns>An object instance of type T.</returns>
-        public static T Read<T>(Stream stream)
+        public static T Read<T>([NotNull] Stream stream)
         {
             var reader = new BinarySerializationReader(stream);
             return reader.Read<T>();
@@ -30,7 +31,7 @@ namespace SiliconStudio.Core.Serialization
         /// <typeparam name="T">Type of the object to read</typeparam>
         /// <param name="buffer">The byte buffer to read the object instance.</param>
         /// <returns>An object instance of type T.</returns>
-        public static T Read<T>(byte[] buffer)
+        public static T Read<T>([NotNull] byte[] buffer)
         {
             var reader = new BinarySerializationReader(new MemoryStream(buffer));
             return reader.Read<T>();
@@ -42,7 +43,7 @@ namespace SiliconStudio.Core.Serialization
         /// <typeparam name="T">Type of the object to write</typeparam>
         /// <param name="stream">The stream to write the object instance to.</param>
         /// <param name="value">The value to write.</param>
-        public static void Write<T>(Stream stream, T value)
+        public static void Write<T>([NotNull] Stream stream, T value)
         {
             var writer = new BinarySerializationWriter(stream);
             writer.Write(value);

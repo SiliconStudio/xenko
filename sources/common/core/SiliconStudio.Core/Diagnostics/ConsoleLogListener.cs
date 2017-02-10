@@ -3,8 +3,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Annotations;
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using Android.Util;
 #endif
@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <value>The log mode.</value>
         public ConsoleLogMode LogMode { get; set; }
 
-        protected override void OnLog(ILogMessage logMessage)
+        protected override void OnLog([NotNull] ILogMessage logMessage)
         {
             // filter logs with lower level
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.Diagnostics
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
             // save initial console color
-            ConsoleColor initialColor = Console.ForegroundColor;
+            var initialColor = Console.ForegroundColor;
 
             // set the color depending on the message log level
             switch (logMessage.Type)
@@ -197,8 +197,8 @@ namespace SiliconStudio.Core.Diagnostics
 
         private class DualStream : Stream
         {
-            private Stream stream1;
-            private Stream stream2;
+            private readonly Stream stream1;
+            private readonly Stream stream2;
 
             public DualStream(Stream stream1, Stream stream2)
             {
@@ -233,29 +233,11 @@ namespace SiliconStudio.Core.Diagnostics
                 stream2.Write(buffer, offset, count);
             }
 
-            public override bool CanRead
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public override bool CanRead => false;
 
-            public override bool CanSeek
-            {
-                get
-                {
-                    return false;
-                }
-            }
+            public override bool CanSeek => false;
 
-            public override bool CanWrite
-            {
-                get
-                {
-                    return true;
-                }
-            }
+            public override bool CanWrite => true;
 
             public override long Length
             {

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 namespace SiliconStudio.Core.Serialization.Serializers
 {
     /// <summary>
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
             else if (mode == ArchiveMode.Deserialize)
             {
-                int length = stream.ReadInt32();
+                var length = stream.ReadInt32();
                 obj = new byte[length];
             }
         }

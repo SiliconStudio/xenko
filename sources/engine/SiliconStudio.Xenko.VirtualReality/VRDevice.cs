@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract Size2 OptimalRenderFrameSize { get; }
 
-        public abstract Texture RenderFrame { get; protected set; }
+        public abstract Size2 ActualRenderFrameSize { get; protected set; }
 
         public abstract Texture MirrorTexture { get; protected set; }
 
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract bool CanInitialize { get; }
 
-        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror);
+        public abstract void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight);
 
         public virtual void Recenter()
         {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public abstract void ReadEyeParameters(Eyes eye, float near, float far, ref Vector3 cameraPosition, ref Matrix cameraRotation, out Matrix view, out Matrix projection);
 
-        public abstract void Commit(CommandList commandList);
+        public abstract void Commit(CommandList commandList, Texture renderFrame);
 
         public virtual void Dispose()
         {           

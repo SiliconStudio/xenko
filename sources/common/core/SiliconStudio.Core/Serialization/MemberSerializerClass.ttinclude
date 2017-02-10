@@ -4,9 +4,9 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-    public unsafe static class <#= className #>
+    public static unsafe class <#= className #>
     {
-        public static void SerializeExtended(SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
+        public static void SerializeExtended([NotNull] SerializationStream stream, Type objType, ref object obj, ArchiveMode mode, DataSerializer dataSerializer = null)
         {
 <# supportsNullDataSerializer = true;
 supportsValueType = true;
@@ -29,7 +29,7 @@ supportsGenerics = true; #>
 <#@ include file="MemberSerializerCore.ttinclude" #>
         }
 
-        internal static void SerializeExtended(ref T obj, ArchiveMode mode, SerializationStream stream, DataSerializer<T> dataSerializer = null)
+        internal static void SerializeExtended(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream, DataSerializer<T> dataSerializer = null)
         {
 <# supportsNullDataSerializer = true;
 supportsValueType = true;

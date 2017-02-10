@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -93,10 +92,10 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public int Count { get { return innerList.Count; } }
+        public int Count => innerList.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly { get { return false; } }
+        public bool IsReadOnly => false;
 
         /// <inheritdoc/>
         public int IndexOf(T item)
@@ -122,7 +121,7 @@ namespace SiliconStudio.Core.Collections
 
         private bool CheckConstraint(T item)
         {
-            bool result = true;
+            var result = true;
             if (Constraint != null)
             {
                 result = Constraint(this, item);
