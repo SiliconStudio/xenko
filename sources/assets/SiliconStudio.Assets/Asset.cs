@@ -6,7 +6,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -111,11 +110,24 @@ namespace SiliconStudio.Assets
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        [NotNull]
+        public Asset CreateDerivedAsset([NotNull] string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
+
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
         [NotNull]
-        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, [CanBeNull] IDictionary<Guid, Guid> idRemapping = null)
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
@@ -123,7 +135,7 @@ namespace SiliconStudio.Assets
             AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
-            var newAsset = AssetCloner.Clone(this);
+            var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();
