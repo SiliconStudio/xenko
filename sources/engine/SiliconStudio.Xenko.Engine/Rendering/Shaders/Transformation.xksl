@@ -22,6 +22,8 @@ shader Transformation
     cbuffer PerDraw {
         // World matrix. Default to Matrix.Identity.
         stage float4x4 World;
+    }
+    cbuffer PerDraw {
         // Inverse World matrix. Default to Matrix.Inverse(World).
         stage float4x4 WorldInverse;
         // Inverse Transpose World matrix. Default to Matrix.Transpose(Matrix.Inverse(World)).
