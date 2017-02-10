@@ -1,5 +1,6 @@
 ﻿using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 
@@ -20,11 +21,19 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public VRDevice Device { get; private set; }
 
-        public bool DepthStencilAsResource;
-
         public bool RequireMirror;
 
-        public MSAALevel MSAALevel = MSAALevel.None;
+        public int MirrorWidth;
+
+        public int MirrorHeight;
+
+        public bool PreviousUseCustomProjectionMatrix;
+
+        public bool PreviousUseCustomViewMatrix;
+
+        public Matrix PreviousCameraProjection;
+
+        public float ResolutionScale;
 
         private void OnEnabledChanged(object sender, EventArgs eventArgs)
         {
@@ -89,7 +98,11 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 var deviceManager = (GraphicsDeviceManager)Services.GetService(typeof(IGraphicsDeviceManager));
-                Device?.Enable(GraphicsDevice, deviceManager, DepthStencilAsResource, RequireMirror, MSAALevel);
+                if (Device != null)
+                {
+                    Device.RenderFrameScaling = ResolutionScale;
+                    Device.Enable(GraphicsDevice, deviceManager, RequireMirror, MirrorWidth, MirrorHeight);
+                }
             }
         }
 

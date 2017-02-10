@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         private OculusTouchController leftHandController;
         private OculusTouchController rightHandController;
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
@@ -55,23 +55,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 textures[i].InitializeFrom(new Texture2D(ptr), false);
             }
 
-            RenderFrame = Texture.New2D(
-                device, 
-                textures[0].Width, 
-                textures[0].Height, 1,
-                PixelFormat.R8G8B8A8_UNorm_SRgb, 
-                null,
-                TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            RenderFrameDepthStencil = Texture.New2D(
-                device,
-                textures[0].Width,
-                textures[0].Height, 1,
-                PixelFormat.D24_UNorm_S8_UInt,
-                null,
-                depthStencilResource ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil,
-                1,
-                GraphicsResourceUsage.Default,
-                msaaLevel);
+            ActualRenderFrameSize = new Size2(textures[0].Width, textures[0].Height);
 
             leftHandController = new OculusTouchController(TouchControllerHand.Left);
             rightHandController = new OculusTouchController(TouchControllerHand.Right);
@@ -97,9 +81,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
 
-        public override Texture RenderFrame { get; protected set; }
-
-        public override Texture RenderFrameDepthStencil { get; protected set; }
+        public override Size2 ActualRenderFrameSize { get; protected set; }
 
         public override Texture MirrorTexture { get; protected set; }
 
@@ -190,10 +172,10 @@ namespace SiliconStudio.Xenko.VirtualReality
             }
         }
 
-        public override void Commit(CommandList commandList)
+        public override void Commit(CommandList commandList, Texture renderFrame)
         {
             var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
-            commandList.Copy(RenderFrame, textures[index]);
+            commandList.Copy(renderFrame, textures[index]);
             OculusOvr.CommitFrame(ovrSession, null, 0);
         }
     }

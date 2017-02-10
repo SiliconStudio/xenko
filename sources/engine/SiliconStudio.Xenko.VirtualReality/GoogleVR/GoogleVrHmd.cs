@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 Texture.New2D(GraphicsDevice, size.Width, size.Height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource)
             ));
 
-            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.RootScene.Settings.GraphicsCompositor;
             compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
             {
                 var frame = GoogleVr.GetNextFrame();

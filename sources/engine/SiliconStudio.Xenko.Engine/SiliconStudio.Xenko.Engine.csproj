@@ -118,6 +118,7 @@
     <Compile Include="Animations\CompressedTimeSpan.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
+    <Compile Include="Engine\ChildSceneComponent.cs" />
     <Compile Include="Engine\ComponentOrderAttribute.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
@@ -133,7 +134,6 @@
     <Compile Include="Engine\Events\EventReceiverOptions.cs" />
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
-    <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
@@ -167,10 +167,9 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
-    <Compile Include="Engine\PrefabExtensions.cs" />
+    <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
-    <Compile Include="Engine\PrefabBase.cs" />
     <Compile Include="Engine\Processors\NavigationProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
@@ -225,6 +224,7 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1902,7 +1902,7 @@
     <Compile Include="Rendering\Images\GaussianBlur\GaussianUtil.cs" />
     <Compile Include="Rendering\Images\ImageEffect.cs" />
     <Compile Include="Rendering\Images\ImageEffect.Extensions.cs" />
-    <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
+    <Compile Include="Rendering\Images\IPostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\ImageEffectShader.cs" />
     <Compile Include="Rendering\Images\ImageEffectShader1.cs">
       <DependentUpon>ImageEffectShader.xksl</DependentUpon>
@@ -3987,6 +3987,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj">
       <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
       <Name>SiliconStudio.Xenko.VirtualReality</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>

@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="profileId">The profile unique identifier.</param>
         /// <param name="profilingKey">The profile key.</param>
         /// <param name="profilingType">Type of the profile.</param>
-        public ProfilingMessage(int profileId, ProfilingKey profilingKey, ProfilingMessageType profilingType) : this(profileId, profilingKey, profilingType, null)
+        public ProfilingMessage(int profileId, [NotNull] ProfilingKey profilingKey, ProfilingMessageType profilingType) : this(profileId, profilingKey, profilingType, null)
         {
         }
 
@@ -29,10 +29,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="profilingKey">The profile key.</param>
         /// <param name="profilingType">Type of the profile.</param>
         /// <param name="text">The text.</param>
-        public ProfilingMessage(int profileId, ProfilingKey profilingKey, ProfilingMessageType profilingType, string text)
+        public ProfilingMessage(int profileId, [NotNull] ProfilingKey profilingKey, ProfilingMessageType profilingType, string text)
             : base("Profiler", LogMessageType.Info, text)
         {
-            if (profilingKey == null) throw new ArgumentNullException("profilingKey");
+            if (profilingKey == null) throw new ArgumentNullException(nameof(profilingKey));
 
             Id = profileId;
             Key = profilingKey;
@@ -43,19 +43,19 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets or sets the unique identifier associated with this profile message.
         /// </summary>
         /// <value>The unique identifier.</value>
-        public int Id { get; private set; }
+        public int Id { get; }
 
         /// <summary>
         /// Gets or sets the profile key.
         /// </summary>
         /// <value>The profile key.</value>
-        public ProfilingKey Key { get; private set; }
+        public ProfilingKey Key { get; }
 
         /// <summary>
         /// Gets the type of the profile.
         /// </summary>
         /// <value>The type of the profile.</value>
-        public ProfilingMessageType ProfilingType { get; private set; }
+        public ProfilingMessageType ProfilingType { get; }
  
         /// <summary>
         /// Gets or sets the time elapsed for this particular profile.
@@ -71,8 +71,8 @@ namespace SiliconStudio.Core.Diagnostics
 
         public override string ToString()
         {
-            var builder = new StringBuilder(Text != null ? string.Format(": {0}",Text) : string.Empty);
-            bool hasElapsed = false;
+            var builder = new StringBuilder(Text != null ? $": {Text}" : string.Empty);
+            var hasElapsed = false;
             if (ProfilingType != ProfilingMessageType.Begin)
             {
                 builder.Append(": ");
@@ -105,12 +105,7 @@ namespace SiliconStudio.Core.Diagnostics
                 }
             }
 
-            return string.Format("[{0}] #{1}: {2}: {3}{4}", 
-                Module, 
-                Id, 
-                ProfilingType, 
-                Key, 
-                builder);
+            return $"[{Module}] #{Id}: {ProfilingType}: {Key}{builder}";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">The source sequence.</param>
         /// <returns>Returns true if the sequence is null or empty, false if it is not null and contains at least one element.</returns>
         [Pure]
-        public static bool IsNullOrEmpty([CanBeNull] this IEnumerable source)
+        public static bool IsNullOrEmpty(this IEnumerable source)
         {
             if (source == null)
                 return true;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Extensions
         /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
         [Obsolete("Use string.IsNullOrEmpty() instead")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty([CanBeNull] this string value)
+        public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
         }
@@ -65,7 +65,9 @@ namespace SiliconStudio.Core.Extensions
         public static void ForEach<T>([NotNull] this IEnumerable<T> source, [NotNull] Action<T> action)
         {
             foreach (var item in source)
+            {
                 action(item);
+            }
         }
 
         /// <summary>

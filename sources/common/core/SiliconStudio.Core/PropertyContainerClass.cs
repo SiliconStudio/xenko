@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -44,7 +45,7 @@ namespace SiliconStudio.Core
         public ICollection<object> Values => inner.Values;
 
         /// <inheritdoc />
-        public object this[PropertyKey key] { get { return inner[key]; } set { inner[key] = value; } }
+        public object this[[NotNull] PropertyKey key] { get { return inner[key]; } set { inner[key] = value; } }
 
         /// <inheritdoc />
         public event PropertyContainer.PropertyUpdatedDelegate PropertyUpdated
@@ -60,19 +61,19 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc />
-        public void Add<T>(PropertyKey<T> key, T value)
+        public void Add<T>([NotNull] PropertyKey<T> key, T value)
         {
             inner.Add(key, value);
         }
 
         /// <inheritdoc />
-        public bool ContainsKey(PropertyKey key)
+        public bool ContainsKey([NotNull] PropertyKey key)
         {
             return inner.ContainsKey(key);
         }
 
         /// <inheritdoc />
-        public bool Remove(PropertyKey propertyKey)
+        public bool Remove([NotNull] PropertyKey propertyKey)
         {
             return inner.Remove(propertyKey);
         }
@@ -84,19 +85,19 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc />
-        public object Get(PropertyKey propertyKey)
+        public object Get([NotNull] PropertyKey propertyKey)
         {
             return inner.Get(propertyKey);
         }
 
         /// <inheritdoc />
-        public T GetSafe<T>(PropertyKey<T> propertyKey)
+        public T GetSafe<T>([NotNull] PropertyKey<T> propertyKey)
         {
             return inner.GetSafe(propertyKey);
         }
 
         /// <inheritdoc />
-        public T Get<T>(PropertyKey<T> propertyKey)
+        public T Get<T>([NotNull] PropertyKey<T> propertyKey)
         {
             return inner.Get(propertyKey);
         }
@@ -108,19 +109,19 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc />
-        public bool TryGetValue<T>(PropertyKey<T> propertyKey, out T value)
+        public bool TryGetValue<T>([NotNull] PropertyKey<T> propertyKey, out T value)
         {
             return inner.TryGetValue(propertyKey, out value);
         }
 
         /// <inheritdoc />
-        public void Set<T>(PropertyKey<T> propertyKey, T tagValue)
+        public void Set<T>([NotNull] PropertyKey<T> propertyKey, T tagValue)
         {
             inner.Set(propertyKey, tagValue);
         }
 
         /// <inheritdoc />
-        public void SetObject(PropertyKey propertyKey, object tagValue)
+        public void SetObject([NotNull] PropertyKey propertyKey, object tagValue)
         {
             inner.SetObject(propertyKey, tagValue);
         }
@@ -169,7 +170,7 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc />
-        void IDictionary<PropertyKey, object>.Add(PropertyKey key, object value)
+        void IDictionary<PropertyKey, object>.Add([NotNull] PropertyKey key, object value)
         {
             inner.SetObject(key, value);
         }

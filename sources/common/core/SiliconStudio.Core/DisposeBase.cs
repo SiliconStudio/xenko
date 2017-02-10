@@ -43,7 +43,7 @@ namespace SiliconStudio.Core
         {
             OnAddReference();
 
-            int newCounter = Interlocked.Increment(ref counter);
+            var newCounter = Interlocked.Increment(ref counter);
             if (newCounter <= 1) throw new InvalidOperationException(FrameworkResources.AddReferenceError);
             return newCounter;
         }
@@ -53,7 +53,7 @@ namespace SiliconStudio.Core
         {
             OnReleaseReference();
 
-            int newCounter = Interlocked.Decrement(ref counter);
+            var newCounter = Interlocked.Decrement(ref counter);
             if (newCounter == 0)
             {
                 Destroy();

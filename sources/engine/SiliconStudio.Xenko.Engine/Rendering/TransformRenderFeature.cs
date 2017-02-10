@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         private ConstantBufferOffsetReference time; // TODO: Move this at a more global level so that it applies on everything? (i.e. RootEffectRenderFeature)
         private ConstantBufferOffsetReference view;
-        private ConstantBufferOffsetReference world;
+        private ConstantBufferOffsetReference world, worldInverse;
         private ConstantBufferOffsetReference camera;
 
         struct RenderModelFrameInfo
@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
             view = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(TransformationKeys.View.Name);
             camera = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(CameraKeys.NearClipPlane.Name);
             world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.World.Name);
+            worldInverse = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.WorldInverse.Name);
         }
 
         /// <inheritdoc/>
@@ -161,36 +162,45 @@ namespace SiliconStudio.Xenko.Rendering
                     return;
 
                 var worldOffset = perDrawLayout.GetConstantBufferOffset(this.world);
-                if (worldOffset == -1)
+                var worldInverseOffset = perDrawLayout.GetConstantBufferOffset(this.worldInverse);
+
+                if (worldOffset == -1 && worldInverseOffset == -1)
                     return;
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
                 var renderModelViewInfo = renderModelViewInfoData[renderNode.ViewObjectNode];
 
                 var mappedCB = renderNode.Resources.ConstantBuffer.Data;
-                var perDraw = (PerDraw*)((byte*)mappedCB + worldOffset);
-
-
-                // Fill PerDraw
-                var perDrawData = new PerDraw
+                if (worldOffset != -1)
                 {
-                    World = renderModelObjectInfo.World,
-                    WorldView = renderModelViewInfo.WorldView,
-                    WorldViewProjection = renderModelViewInfo.WorldViewProjection
-                };
+                    var world = (Matrix*)((byte*)mappedCB + worldOffset);
+                    *world = renderModelObjectInfo.World;
+                }
 
-                Matrix.Invert(ref renderModelObjectInfo.World, out perDrawData.WorldInverse);
-                Matrix.Transpose(ref perDrawData.WorldInverse, out perDrawData.WorldInverseTranspose);
-                Matrix.Invert(ref renderModelViewInfo.WorldView, out perDrawData.WorldViewInverse);
+                if (worldInverseOffset != -1)
+                {
+                    var perDraw = (PerDrawExtra*)((byte*)mappedCB + worldInverseOffset);
 
-                perDrawData.WorldScale = new Vector3(
-                    ((Vector3)renderModelObjectInfo.World.Row1).Length(),
-                    ((Vector3)renderModelObjectInfo.World.Row2).Length(),
-                    ((Vector3)renderModelObjectInfo.World.Row3).Length());
-                
-                perDrawData.EyeMS = new Vector4(perDrawData.WorldInverse.M41, perDrawData.WorldInverse.M42, perDrawData.WorldInverse.M43, 1.0f);
+                    // Fill PerDraw
+                    var perDrawData = new PerDrawExtra
+                    {
+                        WorldView = renderModelViewInfo.WorldView,
+                        WorldViewProjection = renderModelViewInfo.WorldViewProjection
+                    };
 
-                *perDraw = perDrawData;
+                    Matrix.Invert(ref renderModelObjectInfo.World, out perDrawData.WorldInverse);
+                    Matrix.Transpose(ref perDrawData.WorldInverse, out perDrawData.WorldInverseTranspose);
+                    Matrix.Invert(ref renderModelViewInfo.WorldView, out perDrawData.WorldViewInverse);
+
+                    perDrawData.WorldScale = new Vector3(
+                        ((Vector3)renderModelObjectInfo.World.Row1).Length(),
+                        ((Vector3)renderModelObjectInfo.World.Row2).Length(),
+                        ((Vector3)renderModelObjectInfo.World.Row3).Length());
+
+                    perDrawData.EyeMS = new Vector4(perDrawData.WorldInverse.M41, perDrawData.WorldInverse.M42, perDrawData.WorldInverse.M43, 1.0f);
+
+                    *perDraw = perDrawData;
+                }
             });
         }
 
@@ -215,9 +225,8 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct PerDraw
+        struct PerDrawExtra
         {
-            public Matrix World;
             public Matrix WorldInverse;
             public Matrix WorldInverseTranspose;
             public Matrix WorldView;

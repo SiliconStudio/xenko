@@ -68,9 +68,10 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             lock (drawLock)
             {
-                context.PushRenderTargets();
-                DrawInternal(context, renderView, renderViewStage, startIndex, endIndex);
-                context.PopRenderTargets();
+                using (context.PushRenderTargetsAndRestore())
+                {
+                    DrawInternal(context, renderView, renderViewStage, startIndex, endIndex);
+                }
             }
         }
 

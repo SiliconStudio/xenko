@@ -70,6 +70,19 @@ namespace SiliconStudio.Assets
         [NotNull, Pure]
         public abstract IEnumerable<TAssetPart> EnumerateChildParts([NotNull] TAssetPart part, bool isRecursive);
 
+        /// <summary>
+        /// Enumerates design parts that are children of the given design part.
+        /// </summary>
+        /// <param name="partDesign">The design part for which to enumerate child parts.</param>
+        /// <param name="hierarchyData">The hierarchy data object in which the design parts can be retrieved.</param>
+        /// <param name="isRecursive">If true, child design parts will be enumerated recursively.</param>
+        /// <returns>A sequence containing the child design parts of the given design part.</returns>
+        [NotNull, Pure]
+        public IEnumerable<TAssetPartDesign> EnumerateChildPartDesigns([NotNull] TAssetPartDesign partDesign, AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchyData, bool isRecursive)
+        {
+            return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => hierarchyData.Parts[e.Id]);
+        }
+        
         /// <inheritdoc/>
         [NotNull]
         public override IEnumerable<AssetPart> CollectParts()
@@ -91,24 +104,18 @@ namespace SiliconStudio.Assets
         }
 
         /// <inheritdoc/>
-        public override Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public override Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
-            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, idRemapping);
-
-            var remappingDictionary = idRemapping ?? new Dictionary<Guid, Guid>();
+            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateDerivedAsset(baseLocation, out idRemapping);
 
             var instanceId = Guid.NewGuid();
-            foreach (var part in newAsset.Hierarchy.Parts)
+            foreach (var part in Hierarchy.Parts)
             {
-                part.Base = new BasePart(new AssetReference(Id, baseLocation), part.Part.Id, instanceId);
-                // Create and register a new id for this part
-                var newId = Guid.NewGuid();
-                remappingDictionary.Add(part.Part.Id, newId);
-                // Apply the new Guid
-                part.Part.Id = newId;
+                var newPart = newAsset.Hierarchy.Parts[idRemapping[part.Part.Id]];
+                newPart.Base = new BasePart(new AssetReference(Id, baseLocation), part.Part.Id, instanceId);
             }
 
-            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, remappingDictionary);
+            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, idRemapping);
 
             return newAsset;
         }
@@ -116,13 +123,40 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
+        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
+        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
+        {
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
         /// <param name="sourceRootIds">The ids that are the roots of the sub-hierarchies to clone.</param>
         /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
+        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
         /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
         [NotNull, Pure]
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies([NotNull] IEnumerable<Guid> sourceRootIds, bool cleanReference, [NotNull] out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies([NotNull] IEnumerable<Guid> sourceRootIds, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
@@ -139,7 +173,11 @@ namespace SiliconStudio.Assets
                     subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreePart.Id]);
             }
             // clone the parts of the sub-tree
-            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy);
+            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, generateNewIdsForIdentifiableObjects ? AssetClonerFlags.GenerateNewIdsForIdentifiableObjects : AssetClonerFlags.None, out idRemapping);
+
+            // Remap ids from the root id collection to the new ids generated during cloning
+            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+
             foreach (var rootEntity in clonedHierarchy.RootPartIds)
             {
                 PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
@@ -148,21 +186,32 @@ namespace SiliconStudio.Assets
             {
                 ClearPartReferences(clonedHierarchy);
             }
-            // Generate part mapping
-            idRemapping = new Dictionary<Guid, Guid>();
-            foreach (var partDesign in clonedHierarchy.Parts)
-            {
-                // Generate new Id
-                var newId = Guid.NewGuid();
-                // Update mappings
-                idRemapping.Add(partDesign.Part.Id, newId);
-                // Update part with new id
-                partDesign.Part.Id = newId;
-            }
-            // Rewrite part references
-            // Should we nullify invalid references?
-            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+
             return clonedHierarchy;
+        }
+
+        /// <summary>
+        /// Generates a hierarchy object from the given part that is compatible with the given asset.
+        /// </summary>
+        /// <typeparam name="TAssetPartDesign">The type of part design for this asset.</typeparam>
+        /// <typeparam name="TAssetPart">The type of part for this asset.</typeparam>
+        /// <param name="partDesign">The root part design for the hierarchy to generate.</param>
+        /// <returns>A hierarchy containing the given part as root and all its children.</returns>
+        /// <remarks>
+        /// The given part design does not need to be a member of the given asset for this method to work.
+        /// </remarks>
+        [NotNull]
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> GenerateHierarchyFromPart([NotNull] TAssetPartDesign partDesign)
+        {
+            if (partDesign == null) throw new ArgumentNullException(nameof(partDesign));
+            var result = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
+            foreach (var child in EnumerateChildPartDesigns(partDesign, Hierarchy, true))
+            {
+                result.Parts.Add(child);
+            }
+            result.Parts.Add(partDesign);
+            result.RootPartIds.Add(partDesign.Part.Id);
+            return result;
         }
 
         /// <summary>

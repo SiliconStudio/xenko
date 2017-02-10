@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core.Annotations;
+
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -31,11 +34,13 @@ namespace SiliconStudio.Core
         /// <value>The property update callback.</value>
         public PropertyContainer.PropertyUpdatedDelegate PropertyUpdateCallback { get; set; }
 
+        [NotNull]
         public static StaticDefaultValueMetadata<T> Static<T>(T defaultValue, bool keepDefaultValue = false)
         {
             return new StaticDefaultValueMetadata<T>(defaultValue, keepDefaultValue);
         }
 
+        [NotNull]
         public static DelegateDefaultValueMetadata<T> Delegate<T>(DelegateDefaultValueMetadata<T>.DefaultValueCallback callback)
         {
             return new DelegateDefaultValueMetadata<T>(callback);

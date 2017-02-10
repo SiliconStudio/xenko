@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -49,7 +50,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets the module name. read-only.
         /// </summary>
         /// <value>The module name.</value>
-        public string Module { get; internal protected set; }
+        public string Module { get; protected internal set; }
 
         /// <summary>
         /// Activates the log for this logger for a range of <see cref="LogMessageType"/>.
@@ -70,7 +71,7 @@ namespace SiliconStudio.Core.Diagnostics
                 toLevel = temp;
             }
 
-            for (int i = 0; i < EnableTypes.Length; i++)
+            for (var i = 0; i < EnableTypes.Length; i++)
                 EnableTypes[i] = (i >= (int)fromLevel && i <= (int)toLevel) ? enabledFlag : !enabledFlag;
         }
 
@@ -97,10 +98,10 @@ namespace SiliconStudio.Core.Diagnostics
             return EnableTypes[(int)type];
         }
 
-        public void Log(ILogMessage logMessage)
+        public void Log([NotNull] ILogMessage logMessage)
         {
             if (logMessage == null)
-                throw new ArgumentNullException("logMessage");
+                throw new ArgumentNullException(nameof(logMessage));
 
             // Even if the type is not enabled, set HasErrors property
             // This allow to know that there is an error even if is is not logger.
@@ -126,7 +127,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>A caller info or null if there is no caller information available.</returns>
-        internal static CallerInfo ExtractCallerInfo(object[] parameters)
+        internal static CallerInfo ExtractCallerInfo([NotNull] object[] parameters)
         {
             return (parameters.Length > 0) ? parameters[parameters.Length - 1] as CallerInfo : null;
         }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -10,13 +11,13 @@ namespace SiliconStudio.Core
         {
         }
 
-        public ServiceNotFoundException(Type serviceType)
+        public ServiceNotFoundException([NotNull] Type serviceType)
             : base(FormatServiceNotFoundMessage(serviceType))
         {
             ServiceType = serviceType;
         }
 
-        public ServiceNotFoundException(Type serviceType, Exception innerException)
+        public ServiceNotFoundException([NotNull] Type serviceType, Exception innerException)
             : base(FormatServiceNotFoundMessage(serviceType), innerException)
         {
             ServiceType = serviceType;
@@ -26,9 +27,10 @@ namespace SiliconStudio.Core
         public Type ServiceType { get; private set; }
 
 
-        private static string FormatServiceNotFoundMessage(Type serviceType)
+        [NotNull]
+        private static string FormatServiceNotFoundMessage([NotNull] Type serviceType)
         {
-            return string.Format("Service [{0}] not found", serviceType.Name);
+            return $"Service [{serviceType.Name}] not found";
         }
     }
 }

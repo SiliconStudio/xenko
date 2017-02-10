@@ -1,7 +1,5 @@
 ﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
-using System;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -22,30 +20,19 @@ namespace SiliconStudio.Xenko.VirtualReality
         private Matrix currentHead;
         private Vector3 currentHeadPos, currentHeadLinearVelocity, currentHeadAngularVelocity;
         private Quaternion currentHeadRot;
-        private int width;
-        private int height;
 
         public override bool CanInitialize => OpenVR.InitDone || OpenVR.Init();
 
-        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool depthStencilResource, bool requireMirror, MSAALevel msaaLevel)
+        public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
-            width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
+            var width = (int)(OptimalRenderFrameSize.Width * RenderFrameScaling);
             width += width % 2;
-            height = (int)(OptimalRenderFrameSize.Height * RenderFrameScaling);
+            var height = (int)(OptimalRenderFrameSize.Height * RenderFrameScaling);
             height += height % 2;
 
+            ActualRenderFrameSize = new Size2(width, height);
+
             needsMirror = requireMirror;
-            RenderFrame = Texture.New2D(device, width, height, PixelFormat.R8G8B8A8_UNorm_SRgb, TextureFlags.RenderTarget | TextureFlags.ShaderResource);
-            RenderFrameDepthStencil = Texture.New2D(
-                device,
-                width,
-                height, 1,
-                PixelFormat.D24_UNorm_S8_UInt,
-                null,
-                depthStencilResource ? TextureFlags.DepthStencil | TextureFlags.ShaderResource : TextureFlags.DepthStencil,
-                1,
-                GraphicsResourceUsage.Default,
-                msaaLevel);
 
             if (needsMirror)
             {
@@ -89,16 +76,16 @@ namespace SiliconStudio.Xenko.VirtualReality
             view = Matrix.LookAtRH(pos, pos + finalForward, finalUp);
         }
 
-        public override void Commit(CommandList commandList)
+        public override void Commit(CommandList commandList, Texture renderFrame)
         {
-            OpenVR.Submit(0, RenderFrame, ref leftView);
-            OpenVR.Submit(1, RenderFrame, ref rightView);
+            OpenVR.Submit(0, renderFrame, ref leftView);
+            OpenVR.Submit(1, renderFrame, ref rightView);
 
             if (needsMirror)
             {
-                var wholeRegion = new ResourceRegion(0, 0, 0, width, height, 1);
+                var wholeRegion = new ResourceRegion(0, 0, 0, ActualRenderFrameSize.Width, ActualRenderFrameSize.Height, 1);
                 commandList.CopyRegion(leftEyeMirror, 0, wholeRegion, bothEyesMirror, 0);
-                commandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, width/2);
+                commandList.CopyRegion(rightEyeMirror, 0, wholeRegion, bothEyesMirror, 0, ActualRenderFrameSize.Width / 2);
             }
         }
 
@@ -116,13 +103,11 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         public override TouchController RightHand => rightHandController;
 
-        public override Texture RenderFrameDepthStencil { get; protected set; }
-
         public override Texture MirrorTexture { get; protected set; }
 
         public override float RenderFrameScaling { get; set; } = 1.4f;
 
-        public override Texture RenderFrame { get; protected set; }
+        public override Size2 ActualRenderFrameSize { get; protected set; }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
     }

@@ -101,6 +101,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             {
                 var constantBufferRaw = shaderReflectionRaw.GetConstantBuffer(i);
                 var constantBufferRawDesc = constantBufferRaw.Description;
+                if (constantBufferRawDesc.Type == SharpDX.D3DCompiler.ConstantBufferType.ResourceBindInformation)
+                    continue;
+
                 var linkBuffer = effectReflection.ConstantBuffers.First(buffer => buffer.Name == constantBufferRawDesc.Name);
 
                 ValidateConstantBufferReflection(constantBufferRaw, ref constantBufferRawDesc, linkBuffer, log);
