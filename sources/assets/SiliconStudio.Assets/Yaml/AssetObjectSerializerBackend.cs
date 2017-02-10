@@ -299,7 +299,7 @@ namespace SiliconStudio.Core.Yaml
             WriteYaml(ref itemObjectcontext);
         }
 
-        public override bool ShouldForceSerialize(IMemberDescriptor member, ref ObjectContext objectContext)
+        public override bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext)
         {
             Dictionary<YamlAssetPath, OverrideType> overrides;
             if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
@@ -315,7 +315,7 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
 
-            return base.ShouldForceSerialize(member, ref objectContext);
+            return base.ShouldSerialize(member, ref objectContext);
         }
 
         private static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)

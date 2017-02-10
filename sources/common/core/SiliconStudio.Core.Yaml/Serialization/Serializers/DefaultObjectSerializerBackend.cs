@@ -169,7 +169,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-        public virtual bool ShouldForceSerialize(IMemberDescriptor member, ref ObjectContext objectContext) => false;
+        public virtual bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext) => member.ShouldSerialize(objectContext.Instance);
 
         protected object ReadYaml(ref ObjectContext objectContext)
         {

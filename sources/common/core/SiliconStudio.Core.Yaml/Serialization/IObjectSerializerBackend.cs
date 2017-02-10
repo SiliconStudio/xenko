@@ -134,12 +134,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         void WriteDictionaryValue(ref ObjectContext objectContext, object key, object value, Type valueType);
 
         /// <summary>
-        /// Indicates if the given member should be forced to be serialized.
+        /// Indicates if the given member should be serialized.
         /// </summary>
         /// <param name="member">The member to evaluate.</param>
         /// <param name="objectContext">The object context.</param>
-        /// <returns>True if the member should be forced to be serialized, False otherwise.</returns>
-        /// <remarks>The member won't be serialized if both <see cref="IMemberDescriptor.ShouldSerialize"/> and this method return false. Otherwise it will be serialized.</remarks>
-        bool ShouldForceSerialize(IMemberDescriptor member, ref ObjectContext objectContext);
+        /// <returns>True if the member should be serialized, False otherwise.</returns>
+        bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext);
     }
 }
