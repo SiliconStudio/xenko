@@ -80,6 +80,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         return extension.Equals(".dds") || extension.Equals(Extension);
                     }
 
+                case RequestType.InvertYUpdate:
                 case RequestType.ExportToXenko:
                     return true;
 
@@ -113,9 +114,48 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 case RequestType.Loading:
                     Load(image, (LoadingRequest)request);
                     break;
+
+                case RequestType.InvertYUpdate:
+                    InvertY(image);
+                    break;
             }
         }
 
+        public unsafe void InvertY(TexImage image)
+        {
+            Log.Verbose($"Inverting Y in a NormalMap texture...");
+
+            var rowPtr = image.Data;
+
+            if (image.Format == PixelFormat.R8G8B8A8_UNorm)
+            {
+                for (var i = 0; i < image.Height; i++)
+                {
+                    var colors = (Core.Mathematics.Color*)rowPtr;
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        colors[x].G = (byte)(255 - colors[x].G);
+                    }
+                    rowPtr = IntPtr.Add(rowPtr, image.RowPitch);
+                }
+            }
+            else if (image.Format == PixelFormat.B8G8R8A8_UNorm)
+            {
+                for (var i = 0; i < image.Height; i++)
+                {
+                    var colors = (Core.Mathematics.ColorBGRA*)rowPtr;
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        colors[x].G = (byte)(255 - colors[x].G);
+                    }
+                    rowPtr = IntPtr.Add(rowPtr, image.RowPitch);
+                }
+            }
+            else if (image.Format == PixelFormat.R8G8B8A8_UNorm_SRgb || image.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
+            {
+                Log.Error($"Inverting Y is intended for nomal map textures, not sRGB...");
+            }
+        }
 
         /// <summary>
         /// Exports the specified image into regular DDS file or a Xenko own file format.
@@ -132,7 +172,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="TexLibraryException">Unsupported file extension.</exception>
         private void Export(TexImage image, XenkoTextureLibraryData libraryDataf, ExportRequest request)
         {
-            Log.Debug("Exporting to " + request.FilePath + " ...");
+            Log.Verbose("Exporting to " + request.FilePath + " ...");
 
             Image xkImage = null;
 
@@ -298,7 +338,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="System.NotImplementedException"></exception>
         private void ExportToXenko(TexImage image, XenkoTextureLibraryData libraryData, ExportToXenkoRequest request)
         {
-            Log.Debug("Exporting to Xenko Image ...");
+            Log.Verbose("Exporting to Xenko Image ...");
 
             Image xkImage = null;
             switch (image.Dimension)
@@ -337,7 +377,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void Load(TexImage image, LoadingRequest request)
         {
-            Log.Debug("Loading Xenko Image ...");
+            Log.Verbose("Loading Xenko Image ...");
 
             var libraryData = new XenkoTextureLibraryData();
             image.LibraryData[this] = libraryData;

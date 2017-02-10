@@ -33,6 +33,7 @@ namespace SiliconStudio.TextureConverter
         ArrayUpdate,
         ArrayInsertion,
         ArrayElementRemoval,
-        CubeCreation
+        CubeCreation,
+        InvertYUpdate
     }
 }

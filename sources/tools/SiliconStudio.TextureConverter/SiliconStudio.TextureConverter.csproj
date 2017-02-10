@@ -45,6 +45,7 @@
     <Compile Include="Backend\Requests\CubeCreationRequest.cs" />
     <Compile Include="Backend\Requests\FlippingSubRequest.cs" />
     <Compile Include="Backend\Requests\GammaCorrectionRequest.cs" />
+    <Compile Include="Backend\Requests\InvertYUpdateRequest.cs" />
     <Compile Include="Backend\Requests\NormalMapGenerationRequest.cs" />
     <Compile Include="Backend\Requests\PreMultiplyAlphaRequest.cs" />
     <Compile Include="Backend\Requests\SwappingRequest.cs" />

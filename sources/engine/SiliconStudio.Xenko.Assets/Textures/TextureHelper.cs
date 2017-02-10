@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             public TextureHint TextureHint;
 
+            public bool InvertY;
+
             public bool GenerateMipmaps;
 
             public bool PremultiplyAlpha;
@@ -68,6 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 DesiredFormat = asset.Format;
                 DesiredAlpha = asset.Description.Alpha;
                 TextureHint = asset.Description.Hint;
+                InvertY = (asset.Description.Hint == TextureHint.NormalMap) ? ((NormapMapDescription)asset.Description).InvertY : false;
                 GenerateMipmaps = asset.GenerateMipmaps;
                 if (asset.Description.Alpha != AlphaFormat.None)
                     PremultiplyAlpha = asset.Description.PremultiplyAlpha;
@@ -419,6 +422,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
             if (parameters.TextureHint == TextureHint.Color && parameters.IsSRgb && (texImage.Format == PixelFormat.R8_UNorm || texImage.Format == PixelFormat.A8_UNorm))
             {
                 textureTool.Convert(texImage, PixelFormat.R8G8B8A8_UNorm_SRgb);
+            }
+
+            if (parameters.TextureHint == TextureHint.NormalMap && parameters.InvertY)
+            {
+                textureTool.InvertY(texImage);
             }
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
