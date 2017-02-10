@@ -11,10 +11,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public static void Initialize()
         {
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
-
-            // Preload these dlls
-            NativeLibrary.PreloadLibrary("libfbxsdk.dll");
-            NativeLibrary.PreloadLibrary("assimp-vc120-mt.dll");
         }
     }
 }
