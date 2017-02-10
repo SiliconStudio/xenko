@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 //                MirrorTexture = RenderFrame; //assign the surface we submit as mirror if needed
 //            }
 
-//            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.Scene.Settings.GraphicsCompositor;
+//            var compositor = (SceneGraphicsCompositorLayers)Game.SceneSystem.SceneInstance.RootScene.Settings.GraphicsCompositor;
 //            compositor.Master.Add(new SceneDelegateRenderer((x, y) =>
 //            {
 //                x.CommandList.Copy(RenderFrameProvider.RenderFrame.RenderTargets[0], nonSrgbFrame);
