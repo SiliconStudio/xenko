@@ -268,17 +268,11 @@ namespace SiliconStudio.Xenko.Engine
 
             public string Name => entity.Name;
 
-            public Entity[] Children
-            {
-                get
-                {
-                    var transformationComponent = entity.Transform;
-                    if (transformationComponent == null)
-                        return null;
+            public Guid Id => entity.Id;
 
-                    return transformationComponent.Children.Select(x => x.Entity).ToArray();
-                }
-            }
+            public Entity Parent => entity.Transform?.Parent?.Entity;
+
+            public Entity[] Children => entity.Transform?.Children.Select(x => x.Entity).ToArray();
 
             public EntityComponent[] Components => entity.Components.ToArray();
         }
