@@ -235,18 +235,18 @@ namespace SiliconStudio.Core.Reflection
         /// Returns an enumerable of the keys in the dictionary
         /// </summary>
         /// <param name="dictionary">The dictionary</param>
-        public IEnumerable GetKeys(object dictionary)
+        public ICollection GetKeys(object dictionary)
         {
-            return (IEnumerable)getKeysMethod.GetValue(dictionary);
+            return (ICollection)getKeysMethod.GetValue(dictionary);
         }
 
         /// <summary>
         /// Returns an enumerable of the values in the dictionary
         /// </summary>
         /// <param name="dictionary">The dictionary</param>
-        public IEnumerable GetValues(object dictionary)
+        public ICollection GetValues(object dictionary)
         {
-            return (IEnumerable)getValuesMethod.GetValue(dictionary);
+            return (ICollection)getValuesMethod.GetValue(dictionary);
         }
 
         /// <summary>
