@@ -83,6 +83,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
 
+        private readonly HashSet<int> ignoredEffectSlots = new HashSet<int>();
+
         private RenderView currentRenderView;
 
         [DataMember]
@@ -90,9 +92,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<LightGroupRendererBase> LightRenderers => lightRenderers;
         
-        [DataMember]
-        public List<RenderStage> StagesToIgnore { get; } = new List<RenderStage>();
-
         [DataMember]
         public IShadowMapRenderer ShadowMapRenderer
         {
@@ -179,12 +178,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
-            
-            HashSet<int> ignoredEffectSlots = new HashSet<int>();
-            foreach (var stageToIgnore in StagesToIgnore)
+
+            ignoredEffectSlots.Clear();
+            if (shadowMapRenderer != null)
             {
-                var shadowMapEffectSlot = stageToIgnore != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(stageToIgnore) : EffectPermutationSlot.Invalid;
-                ignoredEffectSlots.Add(shadowMapEffectSlot.Index);
+                foreach (var lightShadowMapRenderer in shadowMapRenderer.Renderers)
+                {
+                    var shadowMapEffectSlot = lightShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(lightShadowMapRenderer.ShadowCasterRenderStage) : EffectPermutationSlot.Invalid;
+                    ignoredEffectSlots.Add(shadowMapEffectSlot.Index);
+                }
             }
 
             // Counter number of RenderView to process

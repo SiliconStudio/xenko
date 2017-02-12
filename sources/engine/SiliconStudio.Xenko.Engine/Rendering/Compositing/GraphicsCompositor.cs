@@ -198,15 +198,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
-            var shadowCasterCubemapRenderStage = new RenderStage("ShadowMapCasterCubemap", "ShadowMapCasterCubemap") { SortMode = new FrontToBackSortMode() };
-            var shadowCasterParabolaRenderStage = new RenderStage("ShadowMapCasterParabola", "ShadowMapCasterParabola") { SortMode = new FrontToBackSortMode() };
 
             var singleView = new ForwardRenderer
             {
                 Clear = { Color = clearColor ?? Color.CornflowerBlue },
                 OpaqueRenderStage = opaqueRenderStage,
                 TransparentRenderStage = transparentRenderStage,
-                ShadowMapRenderStages = { shadowCasterRenderStage, shadowCasterCubemapRenderStage, shadowCasterParabolaRenderStage }              ,
+                ShadowMapRenderStages = { shadowCasterRenderStage },
                 PostEffects = enablePostEffects
                     ? new PostProcessingEffects
                     {
@@ -240,10 +238,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         Renderers =
                         {
-                            new LightPointShadowMapRendererCubeMap
-                            {
-                                ShadowCasterRenderStage = shadowCasterCubemapRenderStage
-                            },
                             new LightDirectionalShadowMapRenderer
                             {
                                 ShadowCasterRenderStage = shadowCasterRenderStage
@@ -254,7 +248,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             }
                         },
                     },
-                    StagesToIgnore = { shadowCasterRenderStage },
                 }
                 : new ForwardLightingRenderFeature
                 {
@@ -278,8 +271,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     opaqueRenderStage,
                     transparentRenderStage,
                     shadowCasterRenderStage,
-                    shadowCasterCubemapRenderStage,
-                    shadowCasterParabolaRenderStage
                 },
                 RenderFeatures =
                 {
@@ -306,23 +297,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                 EffectName = modelEffectName + ".ShadowMapCaster",
                                 ShadowMapRenderStage = shadowCasterRenderStage,
                             },
-                            new ShadowMapRenderStageSelector
-                            {
-                                EffectName = modelEffectName + ".ShadowMapCasterCubeMap",
-                                ShadowMapRenderStage = shadowCasterCubemapRenderStage,
-                            },
-                            new ShadowMapRenderStageSelector
-                            {
-                                EffectName = modelEffectName + ".ShadowMapCasterParabola",
-                                ShadowMapRenderStage = shadowCasterParabolaRenderStage,
-                            },
                         },
                         PipelineProcessors =
                         {
                             new MeshPipelineProcessor { TransparentRenderStage = transparentRenderStage },
                             new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterRenderStage },
-                            new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterCubemapRenderStage },
-                            new ShadowMeshPipelineProcessor { ShadowMapRenderStage = shadowCasterParabolaRenderStage },
                         }
                     },
                     new SpriteRenderFeature

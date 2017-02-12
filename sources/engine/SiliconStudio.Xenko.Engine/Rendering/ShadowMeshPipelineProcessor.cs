@@ -1,4 +1,5 @@
-﻿using SiliconStudio.Xenko.Graphics;
+﻿using System.ComponentModel;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -9,7 +10,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public RenderStage ShadowMapRenderStage { get; set; }
 
-        public bool DepthClipping = false;
+        [DefaultValue(false)]
+        public bool DepthClipping { get; set; } = false;
 
         public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
