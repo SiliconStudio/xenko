@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var minmaxBuffer = NewScopedRenderTarget2D(256, 256, PixelFormat.R32G32_Float);
 
             // Create a single channel light buffer
-            int lightBufferDownsampleLevel = 1;
+            int lightBufferDownsampleLevel = 2;
             var lightBuffer = NewScopedRenderTarget2D(depthInput.Width/lightBufferDownsampleLevel, depthInput.Height/lightBufferDownsampleLevel, PixelFormat.R16_Float);
             scatteringEffectShader.SetOutput(lightBuffer);
             //scatteringEffectShader.SetOutput(GetSafeOutput(0));
