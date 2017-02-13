@@ -198,24 +198,32 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
             var shadowCasterRenderStage = new RenderStage("ShadowMapCaster", "ShadowMapCaster") { SortMode = new FrontToBackSortMode() };
 
+            var postProcessingEffects = enablePostEffects
+                ? new PostProcessingEffects
+                {
+                    ColorTransforms =
+                    {
+                        Transforms =
+                        {
+                            new ToneMap()
+                        },
+                    },
+                }
+                : null;
+
+            if (postProcessingEffects != null)
+            {
+                postProcessingEffects.DisableAll();
+                postProcessingEffects.ColorTransforms.Enabled = true;
+            }
+
             var singleView = new ForwardRenderer
             {
                 Clear = { Color = clearColor ?? Color.CornflowerBlue },
                 OpaqueRenderStage = opaqueRenderStage,
                 TransparentRenderStage = transparentRenderStage,
                 ShadowMapRenderStage = shadowCasterRenderStage,
-                PostEffects = enablePostEffects
-                    ? new PostProcessingEffects
-                    {
-                        ColorTransforms =
-                        {
-                            Transforms =
-                            {
-                                new ToneMap()
-                            },
-                        },
-                    }
-                    : null,
+                PostEffects = postProcessingEffects,
             };
 
             var forwardLighting = graphicsProfile >= GraphicsProfile.Level_10_0
