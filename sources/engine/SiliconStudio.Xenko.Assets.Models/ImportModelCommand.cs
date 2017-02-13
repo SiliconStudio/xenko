@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 foreach (var assetMaterial in Materials)
                 {
-                    var material = Package.FindAssetFromAttachedReference(assetMaterial.MaterialInstance.Material);
+                    var material = Package.FindAssetFromProxyObject(assetMaterial.MaterialInstance.Material);
                     if (material != null)
                     {
                         yield return new ObjectUrl(UrlType.ContentLink, material.Location);
