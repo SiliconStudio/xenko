@@ -63,12 +63,12 @@ namespace SiliconStudio.Xenko.Assets
                         if (animationComponent != null && model != null)
                         {
                             var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
-                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
+                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetLocation == modelReference.Location);
 
                             foreach (var animation in animationComponent.Animations)
                             {
                                 var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
-                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
+                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetLocation == animationReference.Location);
 
                                 if (modelAsset != null && animationAsset != null)
                                 {
@@ -84,8 +84,8 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     // Comparing absolute path of assets
                     var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(
-                        x => UPath.Combine(animationAsset.Asset.AssetPath.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
-                             == UPath.Combine(x.Asset.AssetPath.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
+                        x => UPath.Combine(animationAsset.Asset.AssetLocation.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
+                             == UPath.Combine(x.Asset.AssetLocation.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
                     if (modelAsset != null)
                     {
                         animToModelMapping[animationAsset] = modelAsset;
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -133,8 +133,8 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
                 }
 
                 // Remove Nodes from models
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -233,7 +233,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }

@@ -76,7 +76,7 @@ namespace SiliconStudio.Presentation.Quantum
             using (var transaction = actionService?.CreateTransaction())
             {
                 node.Update(converter(value));
-                actionService.SetName(transaction, $"Update property {propertyName}");
+                actionService?.SetName(transaction, $"Update property {propertyName}");
             }
         }
 

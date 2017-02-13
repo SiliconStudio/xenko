@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
         /// <inheritdoc />
         public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
         {
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     if ((orderValue >> SpawnOrderConst.GroupBitOffset) != (oldOrderValue >> SpawnOrderConst.GroupBitOffset)) 
                     {
-                        ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle);
+                        ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle, ref viewProj);
                         ribbonizer.RibbonSplit();
                     }
 
@@ -161,7 +161,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle);
+            ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle, ref viewProj);
 
             ribbonizer.Free();
 
@@ -259,6 +259,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 // Camera-oriented
                 var unitX = axis0 + axis1;
+                unitX -= Vector3.Dot(invViewZ, unitX) * invViewZ;
                 var rotationQuaternion = Quaternion.RotationAxis(invViewZ, -MathUtil.PiOverTwo);
                 rotationQuaternion.Rotate(ref unitX);
                 unitX.Normalize();
@@ -369,7 +370,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <param name="invViewX">Unit vector X in clip space as calculated from the inverse view matrix</param>
             /// <param name="invViewY">Unit vector Y in clip space as calculated from the inverse view matrix</param>
             /// <param name="quadsPerParticle">The required number of quads per each particle</param>
-            public unsafe void Ribbonize(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
+            public unsafe void Ribbonize(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle, ref Matrix viewProj)
             {
                 if (lastParticle <= 0)
                     return;
@@ -415,11 +416,19 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var invViewZ = Vector3.Cross(invViewX, invViewY);
                 invViewZ.Normalize();
 
-                var axis0 = positions[0] - positions[1];
+                Vector4 projectedPosition;
+                Vector3.Transform(ref positions[0], ref viewProj, out projectedPosition);
+                var projPt0 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                Vector3.Transform(ref positions[1], ref viewProj, out projectedPosition);
+                var projPt1 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                var axis0 = projPt0 - projPt1;
                 axis0.Normalize();
 
                 var oldPoint = positions[0];
-                var oldUnitX = GetWidthVector(sizes[0], ref invViewZ, ref axis0, ref axis0);
+                var oldUnitX = axis0 * (sizes[0] * 0.5f);
+                oldUnitX = oldUnitX.Y * invViewX - oldUnitX.X * invViewY;
 
                 // Step 2 - Draw each particle, connecting it to the previous (front) position
 
@@ -432,10 +441,33 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     var particleSize = sizes[i];
 
                     // Directions for smoothing
-                    var axis1 = (i + 1 < lastParticle) ? positions[i] - positions[i + 1] : positions[lastParticle - 2] - positions[lastParticle - 1];
+                    var axis1 = Vector3.Zero;
+                    if (i + 1 < lastParticle)
+                    {
+                        Vector3.Transform(ref positions[i], ref viewProj, out projectedPosition);
+                        projPt0 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                        Vector3.Transform(ref positions[i+1], ref viewProj, out projectedPosition);
+                        projPt1 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                        axis1 = projPt0 - projPt1;
+                    }
+                    else
+                    {
+                        Vector3.Transform(ref positions[lastParticle - 2], ref viewProj, out projectedPosition);
+                        projPt0 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                        Vector3.Transform(ref positions[lastParticle - 1], ref viewProj, out projectedPosition);
+                        projPt1 = new Vector3(projectedPosition.X / projectedPosition.W, projectedPosition.Y / projectedPosition.W, 0);
+
+                        axis1 = projPt0 - projPt1;
+                    }
                     axis1.Normalize();
 
-                    var unitX = GetWidthVector(particleSize, ref invViewZ, ref axis0, ref axis1);
+                    var axisAvg = axis0 + axis1;
+                    axisAvg.Normalize();
+                    var unitX = axisAvg * (particleSize * 0.5f);
+                    unitX = unitX.Y * invViewX - unitX.X * invViewY;
 
                     axis0 = axis1;
 

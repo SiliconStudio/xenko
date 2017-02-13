@@ -14,11 +14,13 @@ namespace SiliconStudio.Xenko.Animations
         /// <summary>
         /// Linear blend operation.
         /// </summary>
+        [Display("Linear blend")]
         LinearBlend = 0,
 
         /// <summary>
         /// Add operation.
         /// </summary>
+        [Display("Additive")]
         Add = 1,
     }
 

@@ -102,14 +102,14 @@ namespace SiliconStudio.Core.Collections
         {
             get
             {
-                int index = BinarySearch(key);
+                var index = BinarySearch(key);
                 if (index < 0)
                     throw new KeyNotFoundException();
                 return Items[index];
             }
             set
             {
-                int index = BinarySearch(key);
+                var index = BinarySearch(key);
                 if (index >= 0)
                     Items[index] = value;
                 else
@@ -119,7 +119,7 @@ namespace SiliconStudio.Core.Collections
 
         public bool TryGetValue(TKey key, out T value)
         {
-            int index = BinarySearch(key);
+            var index = BinarySearch(key);
             if (index < 0)
             {
                 value = default(T);
@@ -215,12 +215,12 @@ namespace SiliconStudio.Core.Collections
         public int BinarySearch(TKey searchKey)
         {
             var values = Items.Items;
-            int start = 0;
-            int end = Items.Count - 1;
+            var start = 0;
+            var end = Items.Count - 1;
 
             while (start <= end)
             {
-                int middle = start + ((end - start) >> 1);
+                var middle = start + ((end - start) >> 1);
                 var itemKey = GetKeyForItem(values[middle]);
 
                 var compareResult = comparer.Compare(itemKey, searchKey);

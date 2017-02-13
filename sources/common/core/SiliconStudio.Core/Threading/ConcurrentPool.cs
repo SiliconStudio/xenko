@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Threading
 {
@@ -15,7 +16,7 @@ namespace SiliconStudio.Core.Threading
             items = new ConcurrentQueue<T>();
         }
 
-        public ConcurrentPool(IEnumerable<T> collection, Func<T> factory)
+        public ConcurrentPool([NotNull] IEnumerable<T> collection, Func<T> factory)
         {
             items = new ConcurrentQueue<T>(collection);
             this.factory = factory;

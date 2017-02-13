@@ -14,6 +14,7 @@ using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
@@ -21,7 +22,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// A session for editing a package.
     /// </summary>
-    public sealed class PackageSession : IDisposable
+    public sealed class PackageSession : IDisposable, IAssetFinder
     {
         private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
@@ -286,6 +287,28 @@ namespace SiliconStudio.Assets
             var analysis = new PackageAnalysis(package, GetPackageAnalysisParametersForLoad());
             analysis.Run(logger);
 
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return Packages.Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return Packages.Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst all the packages of this session.</remarks>
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
+        {
+            var reference = AttachedReferenceManager.GetAttachedReference(proxyObject);
+            return reference != null ? (FindAsset(reference.Id) ?? FindAsset(reference.Url)) : null;
         }
 
         /// <summary>
@@ -843,7 +866,7 @@ namespace SiliconStudio.Assets
                 // If the package doesn't have a meta name, fix it here (This is supposed to be done in the above disabled analysis - but we still need to do it!)
                 if (string.IsNullOrWhiteSpace(package.Meta.Name) && package.FullPath != null)
                 {
-                    package.Meta.Name = package.FullPath.GetFileName();
+                    package.Meta.Name = package.FullPath.GetFileNameWithoutExtension();
                     package.IsDirty = true;
                 }
 
@@ -1100,7 +1123,7 @@ namespace SiliconStudio.Assets
                     {
                         // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
-                        log.Error($"The package {package.FullPath?.GetFileName() ?? "[Untitled]"} depends on package {packageDependency} which is not installed");
+                        log.Error($"The package {package.FullPath?.GetFileNameWithoutExtension() ?? "[Untitled]"} depends on package {packageDependency} which is not installed");
                         packageDependencyErrors = true;
                         continue;
                     }

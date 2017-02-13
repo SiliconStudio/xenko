@@ -26,7 +26,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             SamplerSize?.UpdateChanges();
         }
 
-        public override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+        public override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter, ref Matrix viewProj)
         {
             return 0;
         }

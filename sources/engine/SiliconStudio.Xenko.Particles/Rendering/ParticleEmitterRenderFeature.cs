@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 Matrix viewInverse; // TODO Build this per view, not per node!!!
                 Matrix.Invert(ref renderNode.RenderView.View, out viewInverse);
-                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse);
+                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse, ref renderNode.RenderView.ViewProjection);
             });
 
             commandList.UnmapSubresource(mappedVertices);

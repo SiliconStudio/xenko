@@ -81,8 +81,12 @@ namespace SiliconStudio.Xenko.Assets.Models
                         return ResultStatus.Failed;
                 }
 
-                if (exportedObject != null)
-                    assetManager.Save(Location, exportedObject);
+                if (exportedObject == null)
+                {
+                    return ResultStatus.Failed;
+                }
+
+                assetManager.Save(Location, exportedObject);
 
                 commandContext.Logger.Verbose($"The {ContextAsString} has been successfully imported.");
 

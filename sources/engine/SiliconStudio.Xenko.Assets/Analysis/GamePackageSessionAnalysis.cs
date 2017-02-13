@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 // Create game settings if not done yet
                 if (gameSettingsAssetItem == null)
                 {
-                    log.Error(package, null, AssetMessageCode.AssetForPackageNotFound, GameSettingsAsset.GameSettingsLocation, package.FullPath.GetFileName());
+                    log.Error(package, null, AssetMessageCode.AssetForPackageNotFound, GameSettingsAsset.GameSettingsLocation, package.FullPath.GetFileNameWithoutExtension());
 
                     var gameSettingsAsset = GameSettingsFactory.Create();
 

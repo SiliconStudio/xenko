@@ -85,6 +85,22 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Returns <c>true</c> if the specified animation is in the list of currently playing animations
+        /// </summary>
+        /// <param name="name">The name of the animation to check</param>
+        /// <returns><c>true</c> if the animation is playing, <c>false</c> otherwise</returns>
+        public bool IsPlaying(string name)
+        {
+            foreach (var playingAnimation in playingAnimations)
+            {
+                if (playingAnimation.Name.Equals(name))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Adds a new playing animation at the end of the list. It doesn't alter currently playing animations.
         /// </summary>
         /// <param name="clip">Animation clip to add to the list of playing animations</param>

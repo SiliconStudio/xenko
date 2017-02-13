@@ -24,28 +24,16 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public ICollection<TKey> Keys
-        {
-            get { return dictionary.Keys; }
-        }
+        public ICollection<TKey> Keys => dictionary.Keys;
 
         /// <inheritdoc/>
-        public ICollection<TValue> Values
-        {
-            get { return dictionary.Values; }
-        }
+        public ICollection<TValue> Values => dictionary.Values;
 
         /// <inheritdoc/>
-        public int Count
-        {
-            get { return dictionary.Count; }
-        }
+        public int Count => dictionary.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         /// <inheritdoc/>
         public TValue this[TKey key]

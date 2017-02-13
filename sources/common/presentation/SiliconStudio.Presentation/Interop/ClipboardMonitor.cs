@@ -6,9 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Presentation.Interop;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Presentation.Interop
 {
     /// <summary>
     /// Enables to register listener to the native clipboard changed event (also called clipboard viewers)
@@ -88,7 +87,7 @@ namespace SiliconStudio.Presentation.Extensions
             var hwndSource = HwndSource.FromHwnd(hwnd);
             hwndSource?.Dispatcher.InvokeAsync(() =>
             {
-                if (Clipboard.ContainsText())
+                if (SafeClipboard.ContainsText())
                 {
                     ClipboardTextChanged?.Invoke(hwndSource.RootVisual, EventArgs.Empty);
                 }

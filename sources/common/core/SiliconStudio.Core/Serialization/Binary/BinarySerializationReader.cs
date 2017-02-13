@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Serialization
@@ -15,32 +16,32 @@ namespace SiliconStudio.Core.Serialization
         /// Initializes a new instance of the <see cref="BinarySerializationReader"/> class.
         /// </summary>
         /// <param name="inputStream">The input stream.</param>
-        public BinarySerializationReader(Stream inputStream)
+        public BinarySerializationReader([NotNull] Stream inputStream)
         {
             Reader = new BinaryReader(inputStream);
             NativeStream = inputStream.ToNativeStream();
         }
 
-        private BinaryReader Reader { get; set; }
+        private BinaryReader Reader { get; }
 
         /// <inheritdoc />
         public override void Serialize(ref bool value)
         {
-            int result = NativeStream.ReadByte();
+            var result = NativeStream.ReadByte();
             if (result == -1)
                 throw new EndOfStreamException();
             value = result != 0;
         }
 
         /// <inheritdoc />
-        public unsafe override void Serialize(ref float value)
+        public override unsafe void Serialize(ref float value)
         {
             fixed (float* valuePtr = &value)
                 *((uint*)valuePtr) = NativeStream.ReadUInt32();
         }
 
         /// <inheritdoc />
-        public unsafe override void Serialize(ref double value)
+        public override unsafe void Serialize(ref double value)
         {
             fixed (double* valuePtr = &value)
                 *((ulong*)valuePtr) = NativeStream.ReadUInt64();
@@ -83,7 +84,7 @@ namespace SiliconStudio.Core.Serialization
         }
 
         /// <inheritdoc />
-        public override void Serialize(ref string value)
+        public override void Serialize([NotNull] ref string value)
         {
             value = Reader.ReadString();
         }
@@ -97,7 +98,7 @@ namespace SiliconStudio.Core.Serialization
         /// <inheritdoc />
         public override void Serialize(ref byte value)
         {
-            int result = NativeStream.ReadByte();
+            var result = NativeStream.ReadByte();
             if (result == -1)
                 throw new EndOfStreamException();
             value = (byte)result;
@@ -106,14 +107,14 @@ namespace SiliconStudio.Core.Serialization
         /// <inheritdoc />
         public override void Serialize(ref sbyte value)
         {
-            int result = NativeStream.ReadByte();
+            var result = NativeStream.ReadByte();
             if (result == -1)
                 throw new EndOfStreamException();
             value = (sbyte)(byte)result;
         }
 
         /// <inheritdoc />
-        public override void Serialize(byte[] values, int offset, int count)
+        public override void Serialize([NotNull] byte[] values, int offset, int count)
         {
             Reader.Read(values, offset, count);
         }
