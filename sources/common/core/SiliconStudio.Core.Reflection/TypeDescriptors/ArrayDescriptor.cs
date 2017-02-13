@@ -39,5 +39,16 @@ namespace SiliconStudio.Core.Reflection
         {
             return Array.CreateInstance(ElementType, dimension);
         }
+
+        /// <summary>
+        /// Retrieves the item corresponding to the given index in the array.
+        /// </summary>
+        /// <param name="array">The array in which to read the item.</param>
+        /// <param name="index">The index of the item to read.</param>
+        /// <returns>The item corresponding to the given index in the array.</returns>
+        public object GetValue(object array, int index)
+        {
+            return ((Array)array).GetValue(index);
+        }
     }
 }
