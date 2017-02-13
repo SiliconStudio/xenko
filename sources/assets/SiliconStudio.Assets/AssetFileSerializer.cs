@@ -31,7 +31,6 @@ namespace SiliconStudio.Assets
         public bool AliasOccurred { get; }
 
         public IDictionary<YamlAssetPath, OverrideType> Overrides { get; }
-
     }
     /// <summary>
     /// Main entry point for serializing/deserializing <see cref="Asset"/>.
@@ -112,6 +111,7 @@ namespace SiliconStudio.Assets
             }
             bool aliasOccurred;
             Dictionary<YamlAssetPath, OverrideType> overrides;
+            ISet<YamlAssetPath> objectReferences;
             var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out overrides);
             // Let's fixup references after deserialization
             (asset as Asset)?.FixupPartReferences();
@@ -156,7 +156,7 @@ namespace SiliconStudio.Assets
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
+        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;

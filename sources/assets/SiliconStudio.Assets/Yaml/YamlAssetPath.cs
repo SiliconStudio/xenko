@@ -149,22 +149,22 @@ namespace SiliconStudio.Core.Yaml
                         var arrayDescriptor = typeDescriptor as ArrayDescriptor;
                         if (arrayDescriptor != null)
                         {
-                            if (!(item.Value is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an array.");
-                            memberPath.Push(arrayDescriptor, (int)item.Value);
+                            if (!(key is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an array.");
+                            memberPath.Push(arrayDescriptor, (int)key);
                             currentObject = arrayDescriptor.GetValue(currentObject, (int)key);
                         }
                         var collectionDescriptor = typeDescriptor as CollectionDescriptor;
                         if (collectionDescriptor != null)
                         {
-                            if (!(item.Value is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on a collection.");
-                            memberPath.Push(collectionDescriptor, (int)item.Value);
+                            if (!(key is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on a collection.");
+                            memberPath.Push(collectionDescriptor, (int)key);
                             currentObject = collectionDescriptor.GetValue(currentObject, (int)key);
                         }
                         var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
                         if (dictionaryDescriptor != null)
                         {
-                            if (item.Value == null) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an dictionary.");
-                            memberPath.Push(dictionaryDescriptor, item.Value);
+                            if (key == null) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an dictionary.");
+                            memberPath.Push(dictionaryDescriptor, key);
                             currentObject = dictionaryDescriptor.GetValue(currentObject, key);
                         }
                         break;

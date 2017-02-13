@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
         private static readonly PropertyKey<YamlAssetPath> MemberPathKey = new PropertyKey<YamlAssetPath>("MemberPath", typeof(AssetObjectSerializerBackend));
         public static readonly PropertyKey<Dictionary<YamlAssetPath, OverrideType>> OverrideDictionaryKey = new PropertyKey<Dictionary<YamlAssetPath, OverrideType>>("OverrideDictionary", typeof(AssetObjectSerializerBackend));
-        public static readonly PropertyKey<ISet<YamlAssetPath>> ObjectReferencesKey = new PropertyKey<ISet<YamlAssetPath>>("ObjectReferences", typeof(AssetObjectSerializerBackend));
+        public static readonly PropertyKey<Dictionary<YamlAssetPath, Guid>> ObjectReferencesKey = new PropertyKey<Dictionary<YamlAssetPath, Guid>>("ObjectReferences", typeof(AssetObjectSerializerBackend));
 
         public AssetObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
@@ -300,7 +300,7 @@ namespace SiliconStudio.Core.Yaml
             WriteYaml(ref itemObjectcontext);
         }
 
-        private static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
+        public static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
         {
             YamlAssetPath path;
             path = objectContext.Properties.TryGetValue(MemberPathKey, out path) ? path : new YamlAssetPath();

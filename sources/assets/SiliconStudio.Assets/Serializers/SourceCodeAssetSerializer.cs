@@ -42,11 +42,10 @@ namespace SiliconStudio.Assets.Serializers
 
             // No override in source code assets
             overrides = new Dictionary<YamlAssetPath, OverrideType>();
-
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
+        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }
