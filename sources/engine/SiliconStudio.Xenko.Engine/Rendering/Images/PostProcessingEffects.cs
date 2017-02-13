@@ -220,6 +220,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             depthOfField.Enabled = false;
             bloom.Enabled = false;
             lightStreak.Enabled = false;
+            lightShafts.Enabled = false;
             lensFlare.Enabled = false;
             ssaa.Enabled = false;
             colorTransformsGroup.Enabled = false;
