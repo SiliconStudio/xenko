@@ -12,10 +12,10 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering;
 using SiliconStudio.Xenko.Rendering.Images.SphericalHarmonics;
 using SiliconStudio.Xenko.Rendering.LightProbes;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 
 namespace SiliconStudio.Xenko.Rendering.LightProbes
 {
@@ -25,141 +25,83 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         public static List<LightProbeComponent> GenerateCoefficients(ISceneRendererContext context)
         {
-            var lightProbeCamera = new CameraComponent
+            using (var cubemapRenderer = new CubemapSceneRenderer(context, 256))
             {
-                UseCustomProjectionMatrix = true,
-                UseCustomViewMatrix = true,
-                Slot = context.SceneSystem.GraphicsCompositor.Cameras.Count,
-            };
+                // Create target cube texture
+                var cubeTexture = Texture.NewCube(context.GraphicsDevice, 256, PixelFormat.R16G16B16A16_Float);
 
-            context.SceneSystem.GraphicsCompositor.Cameras.Add(new SceneCameraSlot(lightProbeCamera));
-
-            // Replace graphics compositor (don't want post fx, etc...)
-            var gameCompositor = context.SceneSystem.GraphicsCompositor.Game;
-            context.SceneSystem.GraphicsCompositor.Game = new SceneCameraRenderer { Child = context.SceneSystem.GraphicsCompositor.SingleView, Camera = lightProbeCamera.Slot };
-
-            // Setup projection matrix
-            lightProbeCamera.ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(90.0f), 1.0f, lightProbeCamera.NearClipPlane, lightProbeCamera.FarClipPlane);
-
-            // Create target cube texture
-            var cubeTexture = Texture.NewCube(context.GraphicsDevice, 256, PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource);
-
-            // We can't render directly to the texture cube before feature level 10.1, so let's copy instead
-            var renderTarget = Texture.New2D(context.GraphicsDevice, 256, 256, PixelFormat.R16G16B16A16_Float, TextureFlags.RenderTarget);
-            var depthStencil = Texture.New2D(context.GraphicsDevice, 256, 256, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
-
-            var renderContext = RenderContext.GetShared(context.Services);
-
-            // Prepare shader for SH prefiltering
-            var lamberFiltering = new LambertianPrefilteringSHNoCompute(renderContext)
-            {
-                HarmonicOrder = LambertHamonicOrder,
-                RadianceMap = cubeTexture,
-            };
-            var renderSHEffect = new SphericalHarmonicsRendererEffect();
-            var renderDrawContext = new RenderDrawContext(context.Services, renderContext, context.GraphicsContext);
-
-            var lightProbes = new List<LightProbeComponent>();
-
-            using (renderDrawContext.PushRenderTargetsAndRestore())
-            {
-                // Render light probe
-                context.GraphicsContext.CommandList.BeginProfile(Color.Red, "LightProbes");
-
-                int lightProbeIndex = 0;
-                foreach (var entity in context.SceneSystem.SceneInstance)
+                // Prepare shader for SH prefiltering
+                var lambertFiltering = new LambertianPrefilteringSHNoCompute(cubemapRenderer.DrawContext.RenderContext)
                 {
-                    var lightProbe = entity.Get<LightProbeComponent>();
-                    if (lightProbe == null)
-                        continue;
+                    HarmonicOrder = LambertHamonicOrder,
+                    RadianceMap = cubeTexture,
+                };
+                var renderSHEffect = new SphericalHarmonicsRendererEffect();
 
-                    lightProbes.Add(lightProbe);
+                var lightProbes = new List<LightProbeComponent>();
 
-                    var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
-                    context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
+                using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
+                {
+                    // Render light probe
+                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, "LightProbes");
 
-                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, $"LightProbes {lightProbeIndex}");
-                    lightProbeIndex++;
-
-                    for (int face = 0; face < 6; ++face)
+                    int lightProbeIndex = 0;
+                    foreach (var entity in context.SceneSystem.SceneInstance)
                     {
-                        // Place camera
-                        switch ((CubeMapFace)face)
+                        var lightProbe = entity.Get<LightProbeComponent>();
+                        if (lightProbe == null)
+                            continue;
+
+                        lightProbes.Add(lightProbe);
+
+                        var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
+                        context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
+
+                        context.GraphicsContext.CommandList.BeginProfile(Color.Red, $"LightProbes {lightProbeIndex}");
+                        lightProbeIndex++;
+
+                        cubemapRenderer.Draw(lightProbePosition, cubeTexture);
+
+                        context.GraphicsContext.CommandList.BeginProfile(Color.Red, "Prefilter SphericalHarmonics");
+
+                        // Compute SH coefficients
+                        lambertFiltering.Draw(cubemapRenderer.DrawContext);
+
+                        var coefficients = lambertFiltering.PrefilteredLambertianSH.Coefficients;
+                        lightProbe.Coefficients = new FastList<Color3>();
+                        for (int i = 0; i < coefficients.Length; i++)
                         {
-                            case CubeMapFace.PositiveX:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition + Vector3.UnitX, Vector3.UnitY);
-                                break;
-                            case CubeMapFace.NegativeX:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition - Vector3.UnitX, Vector3.UnitY);
-                                break;
-                            case CubeMapFace.PositiveY:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition + Vector3.UnitY, Vector3.UnitZ);
-                                break;
-                            case CubeMapFace.NegativeY:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition - Vector3.UnitY, -Vector3.UnitZ);
-                                break;
-                            case CubeMapFace.PositiveZ:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition - Vector3.UnitZ, Vector3.UnitY);
-                                break;
-                            case CubeMapFace.NegativeZ:
-                                lightProbeCamera.ViewMatrix = Matrix.LookAtRH(lightProbePosition, lightProbePosition + Vector3.UnitZ, Vector3.UnitY);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
+                            lightProbe.Coefficients.Add(coefficients[i]*SphericalHarmonics.BaseCoefficients[i]);
                         }
 
-                        context.GraphicsContext.CommandList.BeginProfile(Color.Red, $"Face {(CubeMapFace)face}");
+                        using (var outputCubemap = Texture.NewCube(context.GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource))
+                        {
+                            renderSHEffect.InputSH = lambertFiltering.PrefilteredLambertianSH;
+                            renderSHEffect.SetOutput(outputCubemap);
+                            renderSHEffect.Draw(cubemapRenderer.DrawContext);
 
-                        // Draw
-                        context.GraphicsContext.CommandList.SetRenderTargetAndViewport(depthStencil, renderTarget);
-                        context.GameSystems.Draw(context.DrawTime);
+                            // Save cubemaps to HDD for debugging purpose
+                            //using (var file = File.Create($"test{lightProbeIndex}.dds"))
+                            //    cubeTexture.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
+                            //
+                            //using (var file = File.Create($"test{lightProbeIndex}-filtered.dds"))
+                            //    outputCubemap.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
+                        }
 
-                        // Copy to texture cube
-                        context.GraphicsContext.CommandList.CopyRegion(renderTarget, 0, null, cubeTexture, face);
+                        context.GraphicsContext.CommandList.EndProfile(); // Prefilter SphericalHarmonics
 
-                        context.GraphicsContext.CommandList.EndProfile();
+                        context.GraphicsContext.CommandList.EndProfile(); // Face XXX
+
+                        // Debug render
                     }
 
-                    context.GraphicsContext.CommandList.BeginProfile(Color.Red, "Prefilter SphericalHarmonics");
-
-                    // Compute SH coefficients
-                    lamberFiltering.Draw(renderDrawContext);
-
-                    var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
-                    lightProbe.Coefficients = new FastList<Color3>();
-                    for (int i = 0; i < coefficients.Length; i++)
-                    {
-                        lightProbe.Coefficients.Add(coefficients[i] * SphericalHarmonics.BaseCoefficients[i]);
-                    }
-
-                    using (var outputCubemap = Texture.NewCube(context.GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource))
-                    {
-                        renderSHEffect.InputSH = lamberFiltering.PrefilteredLambertianSH;
-                        renderSHEffect.SetOutput(outputCubemap);
-                        renderSHEffect.Draw(renderDrawContext);
-
-                        // Save cubemaps to HDD for debugging purpose
-                        //using (var file = File.Create($"test{lightProbeIndex}.dds"))
-                        //    cubeTexture.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
-                        //
-                        //using (var file = File.Create($"test{lightProbeIndex}-filtered.dds"))
-                        //    outputCubemap.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
-                    }
-
-                    context.GraphicsContext.CommandList.EndProfile(); // Prefilter SphericalHarmonics
-
-                    context.GraphicsContext.CommandList.EndProfile(); // Face XXX
-
-                    // Debug render
+                    context.GraphicsContext.CommandList.EndProfile(); // LightProbes
                 }
 
-                context.GraphicsContext.CommandList.EndProfile(); // LightProbes
+                cubeTexture.Dispose();
+
+                return lightProbes;
             }
-
-            context.SceneSystem.GraphicsCompositor.Game = gameCompositor;
-            context.SceneSystem.GraphicsCompositor.Cameras.RemoveAt(context.SceneSystem.GraphicsCompositor.Cameras.Count - 1);
-
-            return lightProbes;
         }
 
         public static unsafe LightProbeRuntimeData GenerateRuntimeData(SceneInstance sceneInstance)

@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         public ShaderSource Generate(SkyboxGeneratorContext context)
         {
             // If the skybox is only used for lighting, don't generate a shader for the background
-            if (context.Skybox.Usage == SkyboxUsage.Lighting)
+            if (context.Skybox.Usage == SkyboxUsage.Lighting || context.Skybox.Usage == SkyboxUsage.SpecularLighting)
             {
                 return null;
             }

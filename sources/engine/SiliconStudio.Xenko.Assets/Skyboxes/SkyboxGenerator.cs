@@ -108,24 +108,28 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // TODO: This following code should be pluggable (like asset.Model.Generate(context);) but it is currently not
                 if (asset.Usage != SkyboxUsage.Background)
                 {
-                    // -------------------------------------------------------------------
-                    // Calculate Diffuse prefiltering
-                    // -------------------------------------------------------------------
-                    var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.RenderContext)
+                    // Specular lighting only?
+                    if (asset.Usage != SkyboxUsage.SpecularLighting)
                     {
-                        HarmonicOrder = (int)asset.DiffuseSHOrder,
-                        RadianceMap = skyboxTexture
-                    };
-                    lamberFiltering.Draw(context.RenderDrawContext);
+                        // -------------------------------------------------------------------
+                        // Calculate Diffuse prefiltering
+                        // -------------------------------------------------------------------
+                        var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.RenderContext)
+                        {
+                            HarmonicOrder = (int)asset.DiffuseSHOrder,
+                            RadianceMap = skyboxTexture
+                        };
+                        lamberFiltering.Draw(context.RenderDrawContext);
 
-                    var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
-                    for (int i = 0; i < coefficients.Length; i++)
-                    {
-                        coefficients[i] = coefficients[i] * SphericalHarmonics.BaseCoefficients[i];
+                        var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
+                        for (int i = 0; i < coefficients.Length; i++)
+                        {
+                            coefficients[i] = coefficients[i]*SphericalHarmonics.BaseCoefficients[i];
+                        }
+
+                        skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
+                        skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
                     }
-
-                    skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
-                    skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
 
                     // -------------------------------------------------------------------
                     // Calculate Specular prefiltering
