@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
     public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
@@ -125,14 +124,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
             if (gameSettings != null)
             {
                 yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
-        }
-
-        private class TransformSRgbToColorSpace : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
             }
         }
 
