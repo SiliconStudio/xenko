@@ -71,18 +71,21 @@ namespace SiliconStudio.Assets.Compiler
 
             //run time deps
             var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out | AssetDependencySearchOptions.Recursive, ContentLinkType.Reference);
-            foreach (var assetDependency in dependencies.LinksOut)
+            if (dependencies != null)
             {
-                var assetType = assetDependency.Item.Asset.GetType();
-                if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
+                foreach (var assetDependency in dependencies.LinksOut)
                 {
-                    var result = BuildStepsQueue.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
-                    if (result.HasErrors)
+                    var assetType = assetDependency.Item.Asset.GetType();
+                    if (mainCompiler.CompileTimeDependencyTypes.Contains(assetType))
                     {
-                        result.CopyTo(compilerResult);
-                        return compilerResult;
+                        var result = BuildStepsQueue.CompileAndSubmit(context, compilerResult.BuildSteps, assetDependency.Item, this);
+                        if (result.HasErrors)
+                        {
+                            result.CopyTo(compilerResult);
+                            return compilerResult;
+                        }
+                        processedItems.Add(assetDependency.Item.Location);
                     }
-                    processedItems.Add(assetDependency.Item.Location);
                 }
             }
 
