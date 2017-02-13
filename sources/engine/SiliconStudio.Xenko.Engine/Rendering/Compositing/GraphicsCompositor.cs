@@ -72,6 +72,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         public ISceneRenderer SingleView { get; set; }
 
+        /// <summary>
+        /// The entry point for a compositor used by the scene editor.
+        /// </summary>
+        public ISceneRenderer Editor { get; set; }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
