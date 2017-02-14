@@ -334,6 +334,10 @@
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Textures\ColorTextureType.cs" />
+    <Compile Include="Textures\GrayscaleTextureType.cs" />
+    <Compile Include="Textures\ITextureType.cs" />
+    <Compile Include="Textures\NormalMapTextureType.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />
