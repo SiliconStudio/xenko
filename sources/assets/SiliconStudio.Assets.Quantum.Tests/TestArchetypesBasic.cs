@@ -31,7 +31,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
             run.FirstChangeCheck();
             run.SecondChange();
             run.SecondChangeCheck();
-
         }
 
         [Test]

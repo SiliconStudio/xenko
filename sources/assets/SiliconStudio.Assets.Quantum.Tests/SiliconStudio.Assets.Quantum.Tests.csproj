@@ -39,6 +39,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\GuidGenerator.cs">
+      <Link>Helpers\GuidGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Assets.Tests\Helpers\IdentifierGenerator.cs">
+      <Link>Helpers\IdentifierGenerator.cs</Link>
+    </Compile>
     <Compile Include="DeriveAssetTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

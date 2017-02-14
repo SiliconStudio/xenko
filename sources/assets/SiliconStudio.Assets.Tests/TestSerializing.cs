@@ -6,42 +6,13 @@ using System.IO;
 using System.Linq;
 
 using NUnit.Framework;
+using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Tests
 {
-    // TODO: this class is duplicated in several tests. We need a common base assembly fot tests
-    public static class IdentifierGenerator
-    {
-        public static ItemId Get(int index)
-        {
-            var bytes = ToBytes(index);
-            return new ItemId(bytes);
-        }
-
-        public static bool Match(ItemId guid, int index)
-        {
-            var bytes = ToBytes(index);
-            var id = new ItemId(bytes);
-            return guid == id;
-        }
-
-        private static byte[] ToBytes(int index)
-        {
-            var bytes = new byte[16];
-            for (int i = 0; i < 4; ++i)
-            {
-                bytes[4 * i] = (byte)(index);
-                bytes[4 * i + 1] = (byte)(index >> 8);
-                bytes[4 * i + 2] = (byte)(index >> 16);
-                bytes[4 * i + 3] = (byte)(index >> 24);
-            }
-            return bytes;
-        }
-    }
-
     [TestFixture]
     public partial class TestSerializing : TestBase
     {

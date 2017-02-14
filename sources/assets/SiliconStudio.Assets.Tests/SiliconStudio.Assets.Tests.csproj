@@ -42,6 +42,8 @@
       <Link>TestMemberPathBase.cs</Link>
     </Compile>
     <Compile Include="CustomParameterCollection.cs" />
+    <Compile Include="Helpers\GuidGenerator.cs" />
+    <Compile Include="Helpers\IdentifierGenerator.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PropertyKeySerializerTest.cs" />
     <Compile Include="TestAssetCloner.cs" />

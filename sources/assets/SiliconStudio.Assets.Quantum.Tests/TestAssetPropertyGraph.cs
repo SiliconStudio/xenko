@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using SiliconStudio.Assets.Tests.Helpers;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Quantum.Tests
