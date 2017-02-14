@@ -1,64 +1,41 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_NULL 
-using System;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using SiliconStudio.Core.Mathematics;
-using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    /// <summary>
+    /// Provides methods to retrieve and manipulate graphics adapters.
+    /// </summary>
     public partial class GraphicsAdapter
     {
         /// <summary>
-        /// Tests to see if the adapter supports the requested profile.
+        /// Gets the description of this adapter.
         /// </summary>
-        /// <param name="graphicsProfile">The graphics profile.</param>
-        /// <returns>true if the profile is supported</returns>
-        public bool IsProfileSupported(GraphicsProfile graphicsProfile)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets the current display mode.
-        /// </summary>
-        public DisplayMode CurrentDisplayMode
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves a string used for presentation to the user.
-        /// </summary>
+        /// <value>The description.</value>
         public string Description
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                NullHelper.ToImplement();
+                return string.Empty;
+            }
         }
 
         /// <summary>
-        /// Retrieves a value that is used to help identify a particular chip set.
+        /// Gets or sets the vendor identifier.
         /// </summary>
-        public int DeviceId
+        /// <value>
+        /// The vendor identifier.
+        /// </value>
+        public int VendorId
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves a string that contains the device name for a Microsoft Windows Graphics Device Interface (GDI).
-        /// </summary>
-        public string DeviceName
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves bounds of the desktop coordinates.
-        /// </summary>
-        public Rectangle DesktopBounds
-        {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                NullHelper.ToImplement();
+                return 0;
+            }
         }
 
         /// <summary>
@@ -66,63 +43,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public bool IsDefaultAdapter
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                NullHelper.ToImplement();
+                return true;
+            }
         }
 
         /// <summary>
-        /// Determines if the graphics adapter is in widescreen mode.
+        /// Tests to see if the adapter supports the requested profile.
         /// </summary>
-        public bool IsWideScreen
+        /// <param name="graphicsProfile">The graphics profile.</param>
+        /// <returns>true if the profile is supported</returns>
+        public bool IsProfileSupported(GraphicsProfile graphicsProfile)
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves the handle of the monitor associated with the Microsoft Direct3D object.
-        /// </summary>
-        public IntPtr MonitorHandle
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves a value used to help identify the revision level of a particular chip set.
-        /// </summary>
-        public int Revision
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves a value used to identify the subsystem.
-        /// </summary>
-        public int SubSystemId
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Returns a collection of supported display modes for the current adapter.
-        /// </summary>
-        public ReadOnlyCollection<DisplayMode> SupportedDisplayModes
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Retrieves a value used to identify the manufacturer.
-        /// </summary>
-        public int VendorId
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        /// <summary>
-        /// Gets the best graphics profile supported by this adapter.
-        /// </summary>
-        public GraphicsProfile GraphicsProfile
-        {
-            get { throw new NotImplementedException(); }
+            NullHelper.ToImplement();
+            return false;
         }
     }
 } 
