@@ -289,7 +289,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var texturePath = new UFile(textureFullPath);
 
                 var source = texturePath;
-                var texture = new TextureAsset { Source = source, Description = new ColorTextureDescription { PremultiplyAlpha = false } };
+                var texture = new TextureAsset { Source = source, Type = new ColorTextureType { PremultiplyAlpha = false } };
 
                 // Create asset reference
                 assetReferences.Add(new AssetItem(texturePath.GetFileNameWithoutExtension(), texture));

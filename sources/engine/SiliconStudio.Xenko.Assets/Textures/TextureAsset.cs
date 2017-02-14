@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
     public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
@@ -116,7 +117,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(60)]
         [NotNull]
         [Display(null, "Format", Expand = ExpandRule.Always)]
-        public ITextureDescription Description { get; set; } = new ColorTextureDescription();
+        public ITextureType Type { get; set; } = new ColorTextureType();
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
@@ -127,29 +128,37 @@ namespace SiliconStudio.Xenko.Assets.Textures
             }
         }
 
+        private class TransformSRgbToColorSpace : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
+            }
+        }
+
         private class DescriptionUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
                 if (asset.Hint == "NormalMap")
                 {
-                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
-                    description.Node.Tag = "!NormalMapDescription";
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!NormalMapTextureType";
                 }
                 else if (asset.Hint == "Grayscale")
                 {
-                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
-                    description.Node.Tag = "!GrayscaleTextureDescription";
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!GrayscaleTextureType";
                 }
                 else
                 {
-                    dynamic description = asset.Description = new DynamicYamlMapping(new YamlMappingNode());
-                    description.Node.Tag = "!ColorTextureDescription";
-                    description.SRGB = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
-                    description.ColorKeyEnabled = asset.ColorKeyEnabled;
-                    description.ColorKeyColor = asset.ColorKeyColor;
-                    description.Alpha = asset.Alpha;
-                    description.PremultiplyAlpha = asset.PremultiplyAlpha;
+                    dynamic textureType = asset.Type = new DynamicYamlMapping(new YamlMappingNode());
+                    textureType.Node.Tag = "!ColorTextureType";
+                    textureType.SRGB = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
+                    textureType.ColorKeyEnabled = asset.ColorKeyEnabled;
+                    textureType.ColorKeyColor = asset.ColorKeyColor;
+                    textureType.Alpha = asset.Alpha;
+                    textureType.PremultiplyAlpha = asset.PremultiplyAlpha;
                 }
 
                 asset.RemoveChild("ColorSpace");
@@ -162,7 +171,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         }
     }
 
-    public interface ITextureDescription
+    public interface ITextureType
     {
         bool IsSRGBTexture(ColorSpace colorSpaceReference);
 
@@ -177,9 +186,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
         TextureHint Hint { get; }
     }
 
-    [DataContract("NormalMapDescription")]
+    [DataContract("NormalMapTextureType")]
     [Display("Normal Map")]
-    public class NormapMapDescription : ITextureDescription
+    public class NormapMapTextureType : ITextureType
     {
         public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
 
@@ -193,15 +202,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(true)]
         public bool InvertY { get; set; } = true;
 
-        bool ITextureDescription.ColorKeyEnabled => false;
+        bool ITextureType.ColorKeyEnabled => false;
 
-        Color ITextureDescription.ColorKeyColor => new Color();
+        Color ITextureType.ColorKeyColor => new Color();
 
-        AlphaFormat ITextureDescription.Alpha => AlphaFormat.None;
+        AlphaFormat ITextureType.Alpha => AlphaFormat.None;
 
-        bool ITextureDescription.PremultiplyAlpha => false;
+        bool ITextureType.PremultiplyAlpha => false;
 
-        TextureHint ITextureDescription.Hint => TextureHint.NormalMap;
+        TextureHint ITextureType.Hint => TextureHint.NormalMap;
     }
 
     /// <summary>
@@ -210,28 +219,28 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// <userdoc>
     /// A single channel texture which can be used for luminance, height map, specular texture, etc.
     /// </userdoc>
-    [DataContract("GrayscaleTextureDescription")]
+    [DataContract("GrayscaleTextureType")]
     [Display("Grayscale")]
-    public class GrayscaleTextureDescription : ITextureDescription
+    public class GrayscaleTextureType : ITextureType
     {
         public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
 
-        bool ITextureDescription.ColorKeyEnabled => false;
+        bool ITextureType.ColorKeyEnabled => false;
 
-        Color ITextureDescription.ColorKeyColor => new Color();
+        Color ITextureType.ColorKeyColor => new Color();
 
-        AlphaFormat ITextureDescription.Alpha => AlphaFormat.None;
+        AlphaFormat ITextureType.Alpha => AlphaFormat.None;
 
-        bool ITextureDescription.PremultiplyAlpha => false;
+        bool ITextureType.PremultiplyAlpha => false;
 
-        TextureHint ITextureDescription.Hint => TextureHint.Grayscale;
+        TextureHint ITextureType.Hint => TextureHint.Grayscale;
     }
 
 
     [CategoryOrder(40, "Transparency", Expand = ExpandRule.Never)]
-    [DataContract("ColorTextureDescription")]
+    [DataContract("ColorTextureType")]
     [Display("Color")]
-    public class ColorTextureDescription : ITextureDescription
+    public class ColorTextureType : ITextureType
     {
         /// <summary>
         /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
@@ -293,6 +302,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [Display(null, "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
 
-        TextureHint ITextureDescription.Hint => TextureHint.Color;
+        TextureHint ITextureType.Hint => TextureHint.Color;
     }
 }

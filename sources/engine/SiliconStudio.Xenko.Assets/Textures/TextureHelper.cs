@@ -64,18 +64,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 // Compute SRgb usage
                 // If Texture is in auto mode, use the global settings, else use the settings overridden by the texture asset. 
-                IsSRgb = textureParameters.Texture.Description.IsSRGBTexture(textureParameters.ColorSpace);
+                IsSRgb = textureParameters.Texture.Type.IsSRGBTexture(textureParameters.ColorSpace);
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
                 DesiredFormat = asset.Format;
-                DesiredAlpha = asset.Description.Alpha;
-                TextureHint = asset.Description.Hint;
-                InvertY = (asset.Description.Hint == TextureHint.NormalMap) ? ((NormapMapDescription)asset.Description).InvertY : false;
+                DesiredAlpha = asset.Type.Alpha;
+                TextureHint = asset.Type.Hint;
+                InvertY = (asset.Type.Hint == TextureHint.NormalMap) ? ((NormapMapTextureType)asset.Type).InvertY : false;
                 GenerateMipmaps = asset.GenerateMipmaps;
-                if (asset.Description.Alpha != AlphaFormat.None)
-                    PremultiplyAlpha = asset.Description.PremultiplyAlpha;
-                ColorKeyColor  = asset.Description.ColorKeyColor;
-                ColorKeyEnabled = asset.Description.ColorKeyEnabled;
+                if (asset.Type.Alpha != AlphaFormat.None)
+                    PremultiplyAlpha = asset.Type.PremultiplyAlpha;
+                ColorKeyColor  = asset.Type.ColorKeyColor;
+                ColorKeyEnabled = asset.Type.ColorKeyEnabled;
                 TextureQuality = textureParameters.TextureQuality;
                 GraphicsPlatform = textureParameters.GraphicsPlatform;
                 GraphicsProfile = textureParameters.GraphicsProfile;

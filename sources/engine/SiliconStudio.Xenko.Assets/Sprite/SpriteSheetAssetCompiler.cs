@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         
                         Format = asset.Format,
                         GenerateMipmaps = asset.GenerateMipmaps,
-                        Description = new ColorTextureDescription
+                        Type = new ColorTextureType
                         {
                             Alpha = asset.Alpha,
                             PremultiplyAlpha = asset.PremultiplyAlpha,

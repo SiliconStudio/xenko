@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
                     Format = TextureFormat.Color32Bits,
                     GenerateMipmaps = true,
-                    Description = new ColorTextureDescription
+                    Type = new ColorTextureType
                     {
                         Alpha = AlphaFormat.Auto,
                         PremultiplyAlpha = true,
