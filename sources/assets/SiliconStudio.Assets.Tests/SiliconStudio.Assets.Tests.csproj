@@ -127,9 +127,9 @@
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
+    <None Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
