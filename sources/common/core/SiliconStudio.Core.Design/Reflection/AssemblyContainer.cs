@@ -206,7 +206,7 @@ namespace SiliconStudio.Core.Reflection
             }
             catch (Exception exception)
             {
-                log.Error("Error while loading assembly reference [{0}]", exception, assemblyFullPath);
+                log.Error($"Error while loading assembly reference [{assemblyFullPath}]", exception);
                 var loaderException = exception as ReflectionTypeLoadException;
                 if (loaderException != null)
                 {

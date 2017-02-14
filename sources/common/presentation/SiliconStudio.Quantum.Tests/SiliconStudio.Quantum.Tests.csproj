@@ -32,6 +32,7 @@
     <Compile Include="Module.cs" />
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
     <Compile Include="Obsolete\ObsoleteTestLists.cs" />
+    <Compile Include="TestCollections.cs" />
     <Compile Include="TestDynamicNode.cs" />
     <Compile Include="TestGraphNodeChangeListener.cs" />
     <Compile Include="TestGraphNodeLinker.cs" />
@@ -45,6 +46,11 @@
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

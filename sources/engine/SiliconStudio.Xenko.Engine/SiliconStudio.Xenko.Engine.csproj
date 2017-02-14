@@ -2627,7 +2627,10 @@
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />
     <Compile Include="Updater\DataMemberUpdatableAttribute.cs" />
+    <Compile Include="Updater\EnterChecker.cs" />
+    <Compile Include="Updater\ListEnterChecker.cs" />
     <Compile Include="Updater\ListUpdateResolver.cs" />
+    <Compile Include="Updater\UpdatableArrayAccessor.cs" />
     <Compile Include="Updater\UpdatableCustomAccessor.cs" />
     <Compile Include="Updater\UpdatableField.cs" />
     <Compile Include="Updater\UpdatableFieldT.cs" />
@@ -3894,6 +3897,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>

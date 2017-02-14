@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.Tests
             Assert.That(log.Messages[0].Type, Is.EqualTo(LogMessageType.Info));
             Assert.That(log.Messages[0].Text, Is.EqualTo("#0"));
 
-            log.Info("#{0}", 1);
+            log.Info("#1");
             Assert.That(log.Messages.Count, Is.EqualTo(2));
             Assert.That(log.Messages[1].Type, Is.EqualTo(LogMessageType.Info));
             Assert.That(log.Messages[1].Text, Is.EqualTo("#1"));
@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Tests
 
             Assert.That(log.HasErrors, Is.True);
 
-            log.Error("#{0}", 3);
+            log.Error("#3");
             Assert.That(log.Messages.Count, Is.EqualTo(4));
             Assert.That(log.Messages[3].Type, Is.EqualTo(LogMessageType.Error));
             Assert.That(log.Messages[3].Text, Is.EqualTo("#3"));
@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.Tests
 
             // Use the caller information
             log.Info("#0", CallerInfo.Get());
-            log.Info("#{0}", 1, CallerInfo.Get());
+            log.Info("#1", CallerInfo.Get());
 
             Assert.That(log.Messages.Count, Is.EqualTo(2));
             Assert.That(((LogMessage)log.Messages[0]).CallerInfo, Is.Not.Null);

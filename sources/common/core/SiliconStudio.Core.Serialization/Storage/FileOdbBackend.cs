@@ -135,7 +135,7 @@ namespace SiliconStudio.Core.Storage
                 }
             }
 
-            MoveToDatabase(tmpFileName, objectId);
+            MoveToDatabase(tmpFileName, objectId, forceWrite);
 
             return objectId;
         }
@@ -152,20 +152,31 @@ namespace SiliconStudio.Core.Storage
         }
 
         /// <inheritdoc/>
-        private ObjectId MoveToDatabase(string temporaryFilePath, ObjectId objId)
+        private void MoveToDatabase(string temporaryFilePath, ObjectId objId, bool forceWrite = false)
         {
             string fileUrl = BuildUrl(vfsRootUrl, objId);
 
             lock (LockOnMove)
             {
+                var fileExists = virtualFileProvider.FileExists(fileUrl);
+
                 // File may already exists, in this case we decide to not override it.
-                if (!virtualFileProvider.FileExists(fileUrl))
+                if (!fileExists || forceWrite)
                 {
                     try
                     {
-                        // Remove the second part of ObjectId to get the path (cf BuildUrl)
-                        virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
-                        virtualFileProvider.FileMove(temporaryFilePath, BuildUrl(vfsRootUrl, objId));
+                        if (fileExists)
+                        {
+                            // In case we force write, delete old file so that move succeed
+                            virtualFileProvider.FileDelete(fileUrl);
+                        }
+                        else
+                        {
+                            // Remove the second part of ObjectId to get the path (cf BuildUrl)
+                            virtualFileProvider.CreateDirectory(fileUrl.Substring(0, fileUrl.Length - (ObjectId.HashStringLength - 2)));
+                        }
+
+                        virtualFileProvider.FileMove(temporaryFilePath, fileUrl);
                     }
                     catch (IOException e)
                     {
@@ -185,8 +196,6 @@ namespace SiliconStudio.Core.Storage
                     virtualFileProvider.FileDelete(temporaryFilePath);
                 }
             }
-
-            return objId;
         }
 
         /// <inheritdoc/>

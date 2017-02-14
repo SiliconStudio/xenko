@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -18,6 +19,7 @@ namespace SiliconStudio.Core.Extensions
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>The return value of <see cref="object.ToString"/>, or "(null)" if <see ref="obj"/> is null, or (ExceptionInToString)" if <see cref="object.ToString"/> thrown an exception.</returns>
+        [NotNull]
         public static string ToStringSafe(this object obj)
         {
             try
@@ -67,7 +69,8 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="argumentName">The name of the argument, in case an <see cref="ArgumentNullException"/> must be thrown.</param>
         /// <returns>The given object.</returns>
         /// <remarks>This method can be used to test for null argument when forwarding members of the object to the <c>base</c> or <c>this</c> constructor.</remarks>
-        public static T SafeArgument<T>(this T obj, string argumentName) where T : class
+        [NotNull]
+        public static T SafeArgument<T>([NotNull] this T obj, [NotNull] string argumentName) where T : class
         {
             if (argumentName == null) throw new ArgumentNullException(nameof(argumentName));
             if (obj == null) throw new ArgumentNullException(argumentName);

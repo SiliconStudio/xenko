@@ -6,16 +6,17 @@ using System.Threading.Tasks;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
     public class VirtualNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IGraphNode node;
+        private readonly IContentNode node;
         private readonly Index index;
-        protected readonly ObservableViewModelService Service;
+        protected readonly GraphViewModelService Service;
 
-        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IGraphNode node, Index index)
+        public VirtualNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, IContentNode node, Index index)
             : base(serviceProvider)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));
@@ -23,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum
             this.node = node;
             this.index = index;
             NodeCommand = nodeCommand;
-            Service = serviceProvider.Get<ObservableViewModelService>();
+            Service = serviceProvider.Get<GraphViewModelService>();
         }
 
         public override string Name => NodeCommand.Name;
@@ -34,10 +35,10 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            using (var transaction = ActionService.CreateTransaction())
+            using (var transaction = UndoRedoService.CreateTransaction())
             {
-                await NodeCommand.Execute(node.Content, index, parameter);
-                ActionService.SetName(transaction, ActionName);
+                await NodeCommand.Execute(node, index, parameter);
+                UndoRedoService.SetName(transaction, ActionName);
             }
         }
     }

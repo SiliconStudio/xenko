@@ -148,7 +148,6 @@
     <Compile Include="Tokens\FlowSequenceStart.cs" />
     <Compile Include="Tokens\Key.cs" />
     <Compile Include="Tokens\Scalar.cs" />
-    <Compile Include="ScalarStyle.cs" />
     <Compile Include="Tokens\StreamEnd.cs" />
     <Compile Include="Tokens\StreamStart.cs" />
     <Compile Include="Tokens\Tag.cs" />
@@ -164,10 +163,12 @@
     <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

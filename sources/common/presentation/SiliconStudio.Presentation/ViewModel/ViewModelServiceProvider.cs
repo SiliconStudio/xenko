@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -95,6 +96,7 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public object Get(Type serviceType)
         {
             var result = TryGet(serviceType);
@@ -103,6 +105,7 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public T Get<T>() where T : class
         {
             var result = (T)TryGet(typeof(T));

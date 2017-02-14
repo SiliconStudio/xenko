@@ -3,50 +3,177 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class AssetNode : GraphNode
+    public interface IAssetNode : IContentNode
     {
-        internal bool contentUpdating;
-        private Func<object, object> cloner;
+        AssetPropertyGraph PropertyGraph { get; }
+
+        IContentNode BaseContent { get; }
+
+        void SetContent(string key, IContentNode content);
+
+        IContentNode GetContent(string key);
+
+        /// <summary>
+        /// Resets the overrides attached to this node and its descendants, recursively.
+        /// </summary>
+        /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
+        void ResetOverride(Index indexToReset);
+    }
+
+    internal interface IAssetNodeInternal : IAssetNode
+    {
+        void SetPropertyGraph([NotNull] AssetPropertyGraph assetPropertyGraph);
+
+        void SetBaseContent(IContentNode content);
+    }
+
+    public class AssetObjectNode : ObjectContent, IAssetNode, IAssetNodeInternal
+    {
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+
+        public AssetObjectNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
+            : base(value, guid, descriptor, isPrimitive, reference)
+        {
+        }
+
+        public AssetPropertyGraph PropertyGraph { get; private set; }
+
+        public IContentNode BaseContent { get; private set; }
+
+        public void SetContent(string key, IContentNode content)
+        {
+            contents[key] = content;
+        }
+
+        public IContentNode GetContent(string key)
+        {
+            IContentNode content;
+            contents.TryGetValue(key, out content);
+            return content;
+        }
+
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
+        {
+            PropertyGraph.ResetOverride(this, indexToReset);
+        }
+
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
+    }
+
+    public class AssetBoxedNode : BoxedContent, IAssetNode, IAssetNodeInternal
+    {
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+
+        public AssetBoxedNode(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(value, guid, descriptor, isPrimitive)
+        {
+        }
+
+        public AssetPropertyGraph PropertyGraph { get; private set; }
+
+        public IContentNode BaseContent { get; private set; }
+
+        public void SetContent(string key, IContentNode content)
+        {
+            contents[key] = content;
+        }
+
+        public IContentNode GetContent(string key)
+        {
+            IContentNode content;
+            contents.TryGetValue(key, out content);
+            return content;
+        }
+
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
+        {
+            PropertyGraph.ResetOverride(this, indexToReset);
+        }
+
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
+    }
+
+    public class AssetMemberNode : MemberContent, IAssetNode, IAssetNodeInternal
+    {
+        private AssetPropertyGraph propertyGraph;
+        private readonly Dictionary<string, IContentNode> contents = new Dictionary<string, IContentNode>();
+
         private OverrideType contentOverride;
         private readonly Dictionary<ItemId, OverrideType> itemOverrides = new Dictionary<ItemId, OverrideType>();
         private readonly Dictionary<ItemId, OverrideType> keyOverrides = new Dictionary<ItemId, OverrideType>();
         private CollectionItemIdentifiers collectionItemIdentifiers;
         private ItemId restoringId;
 
-        public AssetNode(string name, IContent content, Guid guid)
-            : base(name, content, guid)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
+            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
-            Cloner = CloneFromBase;
-            Content.PrepareChange += (sender, e) => contentUpdating = true;
-            Content.FinalizeChange += (sender, e) => contentUpdating = false;
-            Content.Changed += ContentChanged;
-            IsNonIdentifiableCollectionContent = (Content as MemberContent)?.Member.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
-            CanOverride = (Content as MemberContent)?.Member.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
+            Changed += ContentChanged;
+            IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
+            CanOverride =MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }
-
-        public sealed override IContent Content => base.Content;
-
-        public Func<object, object> Cloner { get { return cloner; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); cloner = value; } }
-
-        public IContent BaseContent { get; private set; }
 
         public bool IsNonIdentifiableCollectionContent { get; }
 
-        internal bool ResettingOverride { get; set; }
-
         public bool CanOverride { get; }
 
-        public AssetPropertyGraph PropertyGraph { get; internal set; }
+        internal bool ResettingOverride { get; set; }
 
         public event EventHandler<EventArgs> OverrideChanging;
 
         public event EventHandler<EventArgs> OverrideChanged;
+
+        public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
+
+        public IContentNode BaseContent { get; private set; }
+
+        public void SetContent(string key, IContentNode content)
+        {
+            contents[key] = content;
+        }
+
+        public IContentNode GetContent(string key)
+        {
+            IContentNode content;
+            contents.TryGetValue(key, out content);
+            return content;
+        }
+
+        void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        {
+            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
+            PropertyGraph = assetPropertyGraph;
+        }
+
+        void IAssetNodeInternal.SetBaseContent(IContentNode content)
+        {
+            BaseContent = content;
+        }
 
         public void OverrideContent(bool isOverridden)
         {
@@ -81,7 +208,7 @@ namespace SiliconStudio.Assets.Quantum
         public void OverrideDeletedItem(bool isOverridden, ItemId deletedId)
         {
             CollectionItemIdentifiers ids;
-            if (CanOverride && TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (CanOverride && TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 OverrideChanging?.Invoke(this, EventArgs.Empty);
                 SetOverride(isOverridden ? OverrideType.New : OverrideType.Base, deletedId, itemOverrides);
@@ -97,11 +224,33 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
+        public bool IsItemDeleted(ItemId itemId)
+        {
+            var collection = Retrieve();
+            CollectionItemIdentifiers ids;
+            if (!TryGetCollectionItemIds(collection, out ids))
+                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return ids.IsDeleted(itemId);
+        }
+
+        public bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
+        {
+            if (collectionItemIdentifiers != null)
+            {
+                itemIds = collectionItemIdentifiers;
+                return true;
+            }
+
+            var result = CollectionItemIdHelper.TryGetCollectionItemIds(instance, out collectionItemIdentifiers);
+            itemIds = collectionItemIdentifiers;
+            return result;
+        }
+
         public void Restore(object restoredItem, ItemId id)
         {
             CollectionItemIdentifiers oldIds = null;
             CollectionItemIdentifiers ids;
-            if (!IsNonIdentifiableCollectionContent && TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (!IsNonIdentifiableCollectionContent && TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
@@ -110,9 +259,9 @@ namespace SiliconStudio.Assets.Quantum
                 ids.CloneInto(oldIds, null);
             }
             // Actually restore the item.
-            Content.Add(restoredItem);
+            Add(restoredItem);
 
-            if (TryGetCollectionItemIds(Content.Retrieve(), out ids) && oldIds != null)
+            if (TryGetCollectionItemIds(Retrieve(), out ids) && oldIds != null)
             {
                 // Find the new id that has been generated by the Add
                 var idToReplace = oldIds.FindMissingId(ids);
@@ -124,10 +273,10 @@ namespace SiliconStudio.Assets.Quantum
         public void Restore(object restoredItem, Index index, ItemId id)
         {
             restoringId = id;
-            Content.Add(restoredItem, index);
+            Add(restoredItem, index);
             restoringId = ItemId.Empty;
             CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
@@ -136,12 +285,184 @@ namespace SiliconStudio.Assets.Quantum
 
         public void RemoveAndDiscard(object item, Index itemIndex, ItemId id)
         {
-            Content.Remove(item, itemIndex);
+            Remove(item, itemIndex);
             CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(Content.Retrieve(), out ids))
+            if (TryGetCollectionItemIds(Retrieve(), out ids))
             {
                 // Remove the item from deleted ids if it was here.
                 ids.UnmarkAsDeleted(id);
+            }
+        }
+
+        internal bool HasId(ItemId id)
+        {
+            Index index;
+            return TryIdToIndex(id, out index);
+        }
+
+        internal Index IdToIndex(ItemId id)
+        {
+            Index index;
+            if (!TryIdToIndex(id, out index)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return index;
+        }
+
+        internal bool TryIdToIndex(ItemId id, out Index index)
+        {
+            if (id == ItemId.Empty)
+            {
+                index = Index.Empty;
+                return true;
+            }
+
+            var collection = Retrieve();
+            CollectionItemIdentifiers ids;
+            if (TryGetCollectionItemIds(collection, out ids))
+            {
+                index = new Index(ids.GetKey(id));
+                return !index.IsEmpty;
+            }
+            index = Index.Empty;
+            return false;
+
+        }
+
+        internal ItemId IndexToId(Index index)
+        {
+            ItemId id;
+            if (!TryIndexToId(index, out id)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
+            return id;
+        }
+
+        public bool TryIndexToId(Index index, out ItemId id)
+        {
+            if (index == Index.Empty)
+            {
+                id = ItemId.Empty;
+                return true;
+            }
+
+            var collection = Retrieve();
+            CollectionItemIdentifiers ids;
+            if (TryGetCollectionItemIds(collection, out ids))
+            {
+                return ids.TryGet(index.Value, out id);
+            }
+            id = ItemId.Empty;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public void ResetOverride(Index indexToReset)
+        {
+            if (indexToReset.IsEmpty)
+            {
+                OverrideContent(false);
+            }
+            else
+            {
+                OverrideItem(false, indexToReset);
+            }
+            PropertyGraph.ResetOverride(this, indexToReset);
+        }
+
+        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        {
+            // Make sure that we have item ids everywhere we're supposed to.
+            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());
+
+            // Clear the cached item identifier collection.
+            collectionItemIdentifiers = null;
+
+            var node = (AssetMemberNode)e.Member;
+            if (node.IsNonIdentifiableCollectionContent)
+                return;
+
+            // Create new ids for collection items
+            var baseNode = (AssetMemberNode)BaseContent;
+            var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
+            var removedId = ItemId.Empty;
+            switch (e.ChangeType)
+            {
+                case ContentChangeType.ValueChange:
+                case ContentChangeType.CollectionUpdate:
+                    break;
+                case ContentChangeType.CollectionAdd:
+                    {
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
+                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                        // Compute the id we will add for this item
+                        ItemId itemId;
+                        if (baseNode != null && PropertyGraph.UpdatingPropertyFromBase)
+                        {
+                            var baseCollection = baseNode.Retrieve();
+                            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
+                            itemId = itemIds.FindMissingId(baseIds);
+                        }
+                        else
+                        {
+                            itemId = restoringId != ItemId.Empty ? restoringId : ItemId.New();
+                        }
+                        // Add the id to the proper location (insert or add)
+                        if (collectionDescriptor != null)
+                        {
+                            if (e.Index != Index.Empty)
+                            {
+                                itemIds.Insert(e.Index.Int, itemId);
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("An item has been added to a collection that does not have a predictable Add. Consider using NonIdentifiableCollectionItemsAttribute on this collection.");
+                            }
+                        }
+                        else
+                        {
+                            itemIds[e.Index.Value] = itemId;
+                        }
+                    }
+                    break;
+                case ContentChangeType.CollectionRemove:
+                    {
+                        var collectionDescriptor = e.Member.Descriptor as CollectionDescriptor;
+                        if (collectionDescriptor != null)
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                            removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
+                        }
+                        else
+                        {
+                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Member.Retrieve());
+                            removedId = itemIds.Delete(e.Index.Value, isOverriding);
+                        }
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+
+            // Don't update override if propagation from base is disabled.
+            if (PropertyGraph?.Container?.PropagateChangesFromBase == false)
+                return;
+
+            // Mark it as New if it does not come from the base
+            if (baseNode != null && !PropertyGraph.UpdatingPropertyFromBase && !ResettingOverride)
+            {
+                if (e.ChangeType != ContentChangeType.CollectionRemove)
+                {
+                    if (e.Index == Index.Empty)
+                    {
+                        OverrideContent(!ResettingOverride);
+                    }
+                    else
+                    {
+                        OverrideItem(!ResettingOverride, e.Index);
+                    }
+                }
+                else
+                {
+                    OverrideDeletedItem(true, removedId);
+                }
             }
         }
 
@@ -256,8 +577,9 @@ namespace SiliconStudio.Assets.Quantum
                 yield break;
 
             CollectionItemIdentifiers ids;
-            var collection = Content.Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
+            var collection = Retrieve();
+            if (!TryGetCollectionItemIds(collection, out ids))
+                yield break;
 
             foreach (var flags in itemOverrides)
             {
@@ -278,8 +600,9 @@ namespace SiliconStudio.Assets.Quantum
                 yield break;
 
             CollectionItemIdentifiers ids;
-            var collection = Content.Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
+            var collection = Retrieve();
+            if (!TryGetCollectionItemIds(collection, out ids))
+                yield break;
 
             foreach (var flags in keyOverrides)
             {
@@ -297,371 +620,6 @@ namespace SiliconStudio.Assets.Quantum
         internal Dictionary<ItemId, OverrideType> GetAllOverrides()
         {
             return itemOverrides;
-        }
-
-        // TODO: move this in AssetPropertyGraph as a private method, it's the only usage (could also be inlined or split in 3 methods)
-        internal Index RetrieveDerivedIndex(Index baseIndex, ContentChangeType changeType)
-        {
-            var baseMemberContent = BaseContent as MemberContent;
-            if (baseMemberContent == null)
-                return Index.Empty;
-
-            switch (changeType)
-            {
-                case ContentChangeType.ValueChange:
-                {
-                    if (baseIndex.IsEmpty)
-                        return baseIndex;
-
-                    var baseNode = (AssetNode)BaseContent.OwnerNode;
-                    ItemId baseId;
-                    if (!baseNode.TryIndexToId(baseIndex, out baseId))
-                        return Index.Empty;
-
-                    Index index;
-                    // Find the index of the item in this instance corresponding to the modified item in the base.
-                    return TryIdToIndex(baseId, out index) ? index : Index.Empty;
-                }
-                case ContentChangeType.CollectionAdd:
-                {
-                    if (baseIndex.IsEmpty)
-                        return Index.Empty;
-
-                    var baseNode = (AssetNode)BaseContent.OwnerNode;
-                    ItemId baseId;
-                    if (!baseNode.TryIndexToId(baseIndex, out baseId))
-                        throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
-
-                    if (BaseContent.Descriptor is CollectionDescriptor)
-                    {
-                        var currentBaseIndex = baseIndex.Int - 1;
-                        // Find the first item before the new one that also exists (in term of id) in the local node
-                        while (currentBaseIndex >= 0)
-                        {
-                            if (!baseNode.TryIndexToId(new Index(currentBaseIndex), out baseId))
-                                throw new InvalidOperationException("Cannot find an identifier matching the index in the base collection");
-
-                            Index localIndex;
-                            // If we have an matching item, we want to insert right after it
-                            if (TryIdToIndex(baseId, out localIndex))
-                                return new Index(localIndex.Int + 1);
-
-                            currentBaseIndex--;
-                        }
-                        // Otherwise, insert at 0
-                        return new Index(0);
-                    }
-                    return baseIndex;
-                }
-                case ContentChangeType.CollectionRemove:
-                {
-                    // If we're removing, we need to find the item id that still exists in our instance but not in the base anymore.
-                    var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseMemberContent.Retrieve());
-                    var instanceIds = CollectionItemIdHelper.GetCollectionItemIds(Content.Retrieve());
-                    var missingIds = baseIds.FindMissingIds(instanceIds);
-                    var foundUnique = false;
-                    var index = Index.Empty;
-                    foreach (var id in missingIds)
-                    {
-                        if (TryIdToIndex(id, out index))
-                        {
-                            if (foundUnique)
-                                throw new InvalidOperationException("Couldn't find a unique item id in the instance collection corresponding to the item removed in the base collection");
-                            foundUnique = true;
-                        }
-                    }
-                    return index;
-                }
-                default:
-                    throw new ArgumentException(@"Cannot retrieve index in derived asset for a remove operation.", nameof(changeType));
-            }
-        }
-
-        /// <summary>
-        /// Clones the given object, remove any override information on it, and propagate its id (from <see cref="IdentifiableHelper"/>) to the cloned object.
-        /// </summary>
-        /// <param name="value">The object to clone.</param>
-        /// <returns>A clone of the given object.</returns>
-        /// <remarks>If the given object is null, this method returns null.</remarks>
-        /// <remarks>If the given object is a content reference, the given object won't be cloned but directly returned.</remarks>
-        public static object CloneFromBase(object value)
-        {
-            if (value == null)
-                return null;
-
-            // TODO: check if the cloner is aware of the content type (attached reference) and does not already avoid cloning them.
-
-            // TODO FIXME
-            //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
-            //    return value;
-
-            var result = AssetCloner.Clone(value);
-            return result;
-        }
-
-        internal void SetBase(IContent baseContent)
-        {
-            BaseContent = baseContent;
-        }
-
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
-        {
-            // Make sure that we have item ids everywhere we're supposed to.
-            AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Content.Retrieve());
-
-            var node = (AssetNode)e.Content.OwnerNode;
-            if (node.IsNonIdentifiableCollectionContent)
-                return;
-
-            // Create new ids for collection items
-            var baseNode = (AssetNode)BaseContent?.OwnerNode;
-            var isOverriding = !baseNode?.contentUpdating == true;
-            var removedId = ItemId.Empty;
-            switch (e.ChangeType)
-            {
-                case ContentChangeType.ValueChange:
-                    break;
-                case ContentChangeType.CollectionAdd:
-                    {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
-                        var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                        // Compute the id we will add for this item
-                        ItemId itemId;
-                        if (baseNode?.contentUpdating == true)
-                        {
-                            var baseCollection = baseNode.Content.Retrieve();
-                            var baseIds = CollectionItemIdHelper.GetCollectionItemIds(baseCollection);
-                            itemId = itemIds.FindMissingId(baseIds);
-                        }
-                        else
-                        {
-                            itemId = restoringId != ItemId.Empty ? restoringId : ItemId.New();
-                        }
-                        // Add the id to the proper location (insert or add)
-                        if (collectionDescriptor != null)
-                        {
-                            if (e.Index != Index.Empty)
-                            {
-                                itemIds.Insert(e.Index.Int, itemId);
-                            }
-                            else
-                            {
-                                throw new InvalidOperationException("An item has been added to a collection that does not have a predictable Add. Consider using NonIdentifiableCollectionItemsAttribute on this collection.");
-                            }
-                        }
-                        else
-                        {
-                            itemIds[e.Index.Value] = itemId;
-                        }
-                    }
-                    break;
-                case ContentChangeType.CollectionRemove:
-                    {
-                        var collectionDescriptor = e.Content.Descriptor as CollectionDescriptor;
-                        if (collectionDescriptor != null)
-                        {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            removedId = itemIds.DeleteAndShift(e.Index.Int, isOverriding);
-                        }
-                        else
-                        {
-                            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(e.Content.Retrieve());
-                            removedId = itemIds.Delete(e.Index.Value, isOverriding);
-                        }
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-
-            // Don't update override if propagation from base is disabled.
-            if (PropertyGraph?.Container?.PropagateChangesFromBase == false)
-                return;
-
-            // Mark it as New if it does not come from the base
-            if (!baseNode?.contentUpdating == true && !ResettingOverride)
-            {
-                if (e.ChangeType != ContentChangeType.CollectionRemove)
-                {
-                    if (e.Index == Index.Empty)
-                    {
-                        OverrideContent(!ResettingOverride);
-                    }
-                    else
-                    {
-                        OverrideItem(!ResettingOverride, e.Index);
-                    }
-                }
-                else
-                {
-                    OverrideDeletedItem(true, removedId);
-                }
-            }
-        }
-
-        public void ResetOverride(Index indexToReset)
-        {
-            // TODO: comment
-
-            if (indexToReset.IsEmpty)
-            {
-                OverrideContent(false);
-            }
-            else
-            {
-                OverrideItem(false, indexToReset);
-            }
-            var visitor = new GraphVisitorBase { SkipRootNode = true };
-            visitor.Visiting += (node, path) =>
-            {
-                var childNode = (AssetNode)node;
-                childNode.OverrideContent(false);
-                foreach (var overrideItem in childNode.GetOverriddenItemIndices())
-                {
-                    childNode.OverrideItem(false, overrideItem);
-                }
-                foreach (var overrideKey in childNode.GetOverriddenKeyIndices())
-                {
-                    childNode.OverrideKey(false, overrideKey);
-                }
-            };
-            visitor.Visit(this);
-
-            // TODO: we should reconcile directly only assetNode, not the whole asset
-            PropertyGraph.ReconcileWithBase();
-        }
-
-        internal bool HasId(ItemId id)
-        {
-            Index index;
-            return TryIdToIndex(id, out index);
-        }
-
-        internal Index IdToIndex(ItemId id)
-        {
-            Index index;
-            if (!TryIdToIndex(id, out index)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
-            return index;
-        }
-
-        internal bool TryIdToIndex(ItemId id, out Index index)
-        {
-            if (id == ItemId.Empty)
-            {
-                index = Index.Empty;
-                return true;
-            }
-
-            var collection = Content.Retrieve();
-            CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(collection, out ids))
-            {
-                index = new Index(ids.GetKey(id));
-                return !index.IsEmpty;
-            }
-            index = Index.Empty;
-            return false;
-
-        }
-
-        internal ItemId IndexToId(Index index)
-        {
-            ItemId id;
-            if (!TryIndexToId(index, out id)) throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
-            return id;
-        }
-
-        public bool TryIndexToId(Index index, out ItemId id)
-        {
-            if (index == Index.Empty)
-            {
-                id = ItemId.Empty;
-                return true;
-            }
-
-            var collection = Content.Retrieve();
-            CollectionItemIdentifiers ids;
-            if (TryGetCollectionItemIds(collection, out ids))
-            {
-                return ids.TryGet(index.Value, out id);
-            }
-            id = ItemId.Empty;
-            return false;
-        }
-
-        public AssetNode ResolveObjectPath(YamlAssetPath path, out Index index, out bool overrideOnKey)
-        {
-            var currentNode = this;
-            index = Index.Empty;
-            overrideOnKey = false;
-            for (var i = 0; i < path.Items.Count; i++)
-            {
-                var item = path.Items[i];
-                switch (item.Type)
-                {
-                    case YamlAssetPath.ItemType.Member:
-                        index = Index.Empty;
-                        overrideOnKey = false;
-                        if (currentNode.Content.IsReference)
-                        {
-                            currentNode = (AssetNode)((IGraphNode)currentNode).Target;
-                        }
-                        string name = item.AsMember();
-                        currentNode = (AssetNode)((IGraphNode)currentNode).TryGetChild(name);
-                        break;
-                    case YamlAssetPath.ItemType.Index:
-                        index = new Index(item.Value);
-                        overrideOnKey = true;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
-                        {
-                            Index index1 = new Index(item.Value);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
-                        }
-                        break;
-                    case YamlAssetPath.ItemType.ItemId:
-                        var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Content.Retrieve());
-                        var key = ids.GetKey(item.AsItemId());
-                        index = new Index(key);
-                        overrideOnKey = false;
-                        if (currentNode.Content.IsReference && i < path.Items.Count - 1)
-                        {
-                            Index index1 = new Index(key);
-                            currentNode = (AssetNode)((IGraphNode)currentNode).IndexedTarget(index1);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                // Something wrong happen, the node is unreachable.
-                if (currentNode == null)
-                    return null;
-            }
-
-            return currentNode;
-        }
-
-        public bool IsItemDeleted(ItemId itemId)
-        {
-            var collection = Content.Retrieve();
-            CollectionItemIdentifiers ids;
-            if (!TryGetCollectionItemIds(collection, out ids))
-                throw new InvalidOperationException("No Collection item identifier associated to the given collection.");
-            return ids.IsDeleted(itemId);
-        }
-
-        public bool TryGetCollectionItemIds(object instance, out CollectionItemIdentifiers itemIds)
-        {
-            if (collectionItemIdentifiers != null)
-            {
-                itemIds = collectionItemIdentifiers;
-                return true;
-            }
-
-            var result = CollectionItemIdHelper.TryGetCollectionItemIds(instance, out collectionItemIdentifiers);
-            itemIds = collectionItemIdentifiers;
-            return result;
         }
     }
 }

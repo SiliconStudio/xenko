@@ -223,7 +223,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         private void HandleSynchronousException(ScriptComponent script, Exception e)
         {
-            Log.Error("Unexpected exception while executing a script. Reason: {0}", new object[] { e });
+            Log.Error("Unexpected exception while executing a script.", e);
 
             // Only crash if live scripting debugger is not listening
             if (Scheduler.PropagateExceptions)

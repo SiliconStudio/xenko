@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Gets the undo/redo service used by this view model.
         /// </summary>
-        public IUndoRedoService ActionService => ServiceProvider.Get<IUndoRedoService>();
+        public IUndoRedoService UndoRedoService => ServiceProvider.Get<IUndoRedoService>();
 
         protected void RegisterMemberCollectionForActionStack(string name, INotifyCollectionChanged collection)
         {
@@ -190,10 +190,10 @@ namespace SiliconStudio.Presentation.ViewModel
                 {
                     var propertyInfo = GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
                     var postEditValue = propertyInfo.GetValue(this);
-                    if (!ActionService.UndoRedoInProgress && !Equals(preEditValue, postEditValue))
+                    if (!UndoRedoService.UndoRedoInProgress && !Equals(preEditValue, postEditValue))
                     {
                         var operation = CreatePropertyChangeOperation(displayName, propertyName, preEditValue);
-                        ActionService.PushOperation(operation);
+                        UndoRedoService.PushOperation(operation);
                     }
                 }
                 preEditValues.Remove(propertyName);
@@ -203,14 +203,14 @@ namespace SiliconStudio.Presentation.ViewModel
         protected virtual Operation CreatePropertyChangeOperation(string displayName, string propertyName, object preEditValue)
         {
             var operation = new PropertyChangeOperation(propertyName, this, preEditValue, Dirtiables);
-            ActionService.SetName(operation, displayName);
+            UndoRedoService.SetName(operation, displayName);
             return operation;
         }
 
         protected virtual Operation CreateCollectionChangeOperation(string displayName, IList list, NotifyCollectionChangedEventArgs args)
         {
             var operation = new CollectionChangeOperation(list, args, Dirtiables);
-            ActionService.SetName(operation, displayName);
+            UndoRedoService.SetName(operation, displayName);
             return operation;
         }
 
@@ -222,11 +222,11 @@ namespace SiliconStudio.Presentation.ViewModel
             if (EqualityComparer<T>.Default.Equals(field, value) == false)
             {
                 ITransaction transaction = null;
-                if (!ActionService.UndoRedoInProgress && createTransaction)
+                if (!UndoRedoService.UndoRedoInProgress && createTransaction)
                 {
-                    transaction = ActionService.CreateTransaction();
+                    transaction = UndoRedoService.CreateTransaction();
                     var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
-                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
+                    UndoRedoService.SetName(transaction, $"Update property {concatPropertyName}");
                 }
                 try
                 {
@@ -234,7 +234,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 }
                 finally
                 {
-                    if (!ActionService.UndoRedoInProgress && createTransaction)
+                    if (!UndoRedoService.UndoRedoInProgress && createTransaction)
                     {
                         if (transaction == null)
                             throw new InvalidOperationException("A transaction failed to be created.");
@@ -253,11 +253,11 @@ namespace SiliconStudio.Presentation.ViewModel
             if (hasChangedFunction == null || hasChangedFunction())
             {
                 ITransaction transaction = null;
-                if (!ActionService.UndoRedoInProgress && createTransaction)
+                if (!UndoRedoService.UndoRedoInProgress && createTransaction)
                 {
-                    transaction = ActionService.CreateTransaction();
+                    transaction = UndoRedoService.CreateTransaction();
                     var concatPropertyName = string.Join(", ", propertyNames.Where(x => !uncancellableChanges.Contains(x)).Select(s => $"'{s}'"));
-                    ActionService.SetName(transaction, $"Update property {concatPropertyName}");
+                    UndoRedoService.SetName(transaction, $"Update property {concatPropertyName}");
                 }
                 try
                 {
@@ -265,7 +265,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 }
                 finally
                 {
-                    if (!ActionService.UndoRedoInProgress && createTransaction)
+                    if (!UndoRedoService.UndoRedoInProgress && createTransaction)
                     {
                         if (transaction == null)
                             throw new InvalidOperationException("A transaction failed to be created.");
@@ -286,12 +286,12 @@ namespace SiliconStudio.Presentation.ViewModel
                 if (toIListMethod != null)
                     list = (IList)toIListMethod.Invoke(sender, new object[0]);
             }
-            if (!ActionService.UndoRedoInProgress && !suspendedCollections.Contains(collectionName))
+            if (!UndoRedoService.UndoRedoInProgress && !suspendedCollections.Contains(collectionName))
             {
-                using (ActionService.CreateTransaction())
+                using (UndoRedoService.CreateTransaction())
                 {
                     var operation = CreateCollectionChangeOperation(displayName, list, e);
-                    ActionService.PushOperation(operation);
+                    UndoRedoService.PushOperation(operation);
                 }
             }
         }

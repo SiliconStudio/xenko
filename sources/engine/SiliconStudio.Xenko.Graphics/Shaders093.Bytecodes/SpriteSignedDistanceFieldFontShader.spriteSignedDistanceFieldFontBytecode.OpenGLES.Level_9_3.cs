@@ -4,7 +4,7 @@
 //     Xenko Effect Compiler File Generated:
 //     Effect [SpriteSignedDistanceFieldFontShader]
 //
-//     Command Line: C:\work\Stash\Xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --profile=Windows-OpenGLES --platform=Windows --output-path=C:\work\Stash\Xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\obj\app_data --build-path=C:\work\Stash\Xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\obj\build_app_data --package-file=Graphics.xkpkg
+//     Command Line: C:\Dev\xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --profile=Windows-OpenGLES --platform=Windows --output-path=C:\Dev\xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\obj\app_data --build-path=C:\Dev\xenko\sources\engine\SiliconStudio.Xenko.Graphics\Shaders093.Bytecodes\obj\build_app_data --package-file=Graphics.xkpkg
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 // </auto-generated>

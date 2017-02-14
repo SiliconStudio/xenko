@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Presentation.Resources;
 
 namespace SiliconStudio.Presentation.Windows
@@ -32,7 +33,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             base.OnInitialized(e);
 
-            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => SafeClipboard.SetDataObject(Content ?? string.Empty, true)));
         }
 
         public ImageSource Image

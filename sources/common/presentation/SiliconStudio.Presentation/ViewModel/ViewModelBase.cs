@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -22,6 +23,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// An <see cref="IViewModelServiceProvider"/> that allows to retrieve various service objects.
         /// </summary>
+        [NotNull]
         public IViewModelServiceProvider ServiceProvider = ViewModelServiceProvider.NullServiceProvider;
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace SiliconStudio.Presentation.ViewModel
         {
         }
 
-        protected ViewModelBase(IViewModelServiceProvider serviceProvider)
+        protected ViewModelBase([NotNull] IViewModelServiceProvider serviceProvider)
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             ServiceProvider = serviceProvider;

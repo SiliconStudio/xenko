@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -51,6 +52,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public class MyAsset5 : MyAssetBase
         {
             public List<IMyInterface> MyInterfaces { get; set; } = new List<IMyInterface>();
+            public IMyInterface MyInterface { get; set; }
         }
 
         [DataContract]
@@ -84,6 +86,13 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public SomeObject MyObject { get; set; }
         }
 
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAsset10 : MyAssetBase
+        {
+            [DefaultValue(true)]
+            public bool MyBool { get; set; } = true;
+        }
 
         [DataContract]
         public struct StructWithList
@@ -114,21 +123,21 @@ namespace SiliconStudio.Assets.Quantum.Tests
     [AssetPropertyGraph(typeof(Types.MyAssetBase))]
     public class MyAssetBasePropertyGraph : AssetPropertyGraph
     {
-        private readonly Dictionary<IGraphNode, IGraphNode> customBases = new Dictionary<IGraphNode, IGraphNode>();
+        private readonly Dictionary<IContentNode, IContentNode> customBases = new Dictionary<IContentNode, IContentNode>();
 
         public MyAssetBasePropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
         {
         }
 
-        public void RegisterCustomBaseLink(IGraphNode node, IGraphNode baseNode)
+        public void RegisterCustomBaseLink(IContentNode node, IContentNode baseNode)
         {
             customBases.Add(node, baseNode);
         }
 
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public override IContentNode FindTarget(IContentNode sourceNode, IContentNode target)
         {
-            IGraphNode baseNode;
+            IContentNode baseNode;
             return customBases.TryGetValue(sourceNode, out baseNode) ? baseNode : base.FindTarget(sourceNode, target);
         }
     }

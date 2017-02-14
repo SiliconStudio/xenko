@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Compiler
                 }
                 catch (Exception ex)
                 {
-                    log.Error("Unable to instantiate compiler [{0}]", ex, compilerAttribute.TypeName);
+                    log.Error($"Unable to instantiate compiler [{compilerAttribute.TypeName}]", ex);
                 }
             }
         }
@@ -71,14 +71,14 @@ namespace SiliconStudio.Assets.Compiler
             var compilerType = AssemblyRegistry.GetType(compilerAttribute.TypeName);
             if (compilerType == null)
             {
-                log.Error("Unable to find compiler [{0}] for asset [{1}]", compilerAttribute.TypeName, type);
+                log.Error($"Unable to find compiler [{compilerAttribute.TypeName}] for asset [{type}]");
                 return false;
             }
 
             var compilerInstance = Activator.CreateInstance(compilerType) as I;
             if (compilerInstance == null)
             {
-                log.Error("Invalid compiler type [{0}], must inherit from IAssetCompiler", compilerAttribute.TypeName);
+                log.Error($"Invalid compiler type [{compilerAttribute.TypeName}], must inherit from IAssetCompiler");
                 return false;
             }
 

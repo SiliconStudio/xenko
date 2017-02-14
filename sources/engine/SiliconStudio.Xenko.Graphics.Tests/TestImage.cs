@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     using (var stream = File.Open("map2.bin", FileMode.Create))
                         image.Save(stream, imageFileType);
                 }
-                Log.Info("Save [{0}] {1} in {2}ms", Count, imageFileType, clock.ElapsedMilliseconds);
+                Log.Info($"Save [{Count}] {imageFileType} in {clock.ElapsedMilliseconds}ms");
             }
 
             image.Dispose();
@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             var testMemoryBefore = GC.GetTotalMemory(true);
 
-            Log.Info("Testing {0}", intermediateFormat);
+            Log.Info($"Testing {intermediateFormat}");
             Console.Out.Flush();
             var imageCount = 0;
             var clock = Stopwatch.StartNew();
@@ -320,7 +320,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GC.Collect();
             GC.WaitForPendingFinalizers();
             var testMemoryAfter = GC.GetTotalMemory(true);
-            Log.Info("Loaded {0} and convert to (Dds, Jpg, Png, Gif, Bmp, Tiff) image from DirectXSDK test Memory: {1} bytes, in {2}ms", imageCount, testMemoryAfter - testMemoryBefore, time);
+            Log.Info($"Loaded {imageCount} and convert to (Dds, Jpg, Png, Gif, Bmp, Tiff) image from DirectXSDK test Memory: {testMemoryAfter - testMemoryBefore} bytes, in {time}ms");
         }
 
         internal static void CompareImage(Image from, Image to, bool ignoreAlpha, int allowedDifference = 0, string file = null)

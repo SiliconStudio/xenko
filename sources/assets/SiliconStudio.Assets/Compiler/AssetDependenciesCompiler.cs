@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Compiler
 
             if (assetItem.Package == null)
             {
-                compilerResult.Warning("Asset [{0}] is not attached to a package", assetItem);
+                compilerResult.Warning($"Asset [{assetItem}] is not attached to a package");
                 return compilerResult;
             }
 

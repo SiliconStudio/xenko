@@ -186,7 +186,7 @@ namespace SiliconStudio.Core.MicroThreading
                 }
                 catch (Exception e)
                 {
-                    Scheduler.Log.Error("Unexpected exception while executing a micro-thread. Reason: {0}", new object[] {e});
+                    Scheduler.Log.Error("Unexpected exception while executing a micro-thread.", e);
                     SetException(e);
                 }
                 finally

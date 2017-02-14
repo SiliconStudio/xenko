@@ -114,11 +114,11 @@ internal:
 			if (mappingMode > (int)FbxLayerElement::eAllSame)
 				mappingMode = (int)FbxLayerElement::eAllSame;
 			const char* layerName = layerElement->GetName();
-			logger->Warning("'{0}' mapping mode for layer '{1}' in mesh '{2}' is not supported by the FBX importer.{3}",
+			logger->Warning(String::Format("'{0}' mapping mode for layer '{1}' in mesh '{2}' is not supported by the FBX importer.{3}",
 				gcnew String(MappingModeName[mappingMode]),
 				strlen(layerName) > 0 ? gcnew String(layerName) : gcnew String("Unknown"),
 				meshName,
-				gcnew String(MappingModeSuggestion[mappingMode]));
+				gcnew String(MappingModeSuggestion[mappingMode])), (CallerInfo^)nullptr);
 		}
 
 		return groupIndex;
@@ -1108,7 +1108,7 @@ public:
 		case FbxLayeredTexture::eOverlay:
 			return BinaryOperator::Overlay;
 		default:
-			logger->Error("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode));
+			logger->Error(String::Format("Material blending mode '{0}' is not supported yet. Multiplying blending mode will be used instead.", gcnew Int32(blendMode)), (CallerInfo^)nullptr);
 			return BinaryOperator::Multiply;
 		}
 	}
@@ -1134,7 +1134,7 @@ public:
 		auto fileNameToUse = Path::Combine(inputPath, relFileName);
 		if(fileNameToUse->StartsWith("\\\\"))
 		{
-			logger->Warning("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse);
+			logger->Warning(String::Format("Importer detected a network address in referenced assets. This may temporary block the build if the file does not exist. [Address='{0}']", fileNameToUse), (CallerInfo^)nullptr);
 		}
 		if (!File::Exists(fileNameToUse) && !String::IsNullOrEmpty(absFileName))
 		{
@@ -1760,7 +1760,7 @@ private:
 				}
 				else
 				{
-					logger->Warning("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName);
+					logger->Warning(String::Format("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
 				}
 
 				models->Add(meshParams);
@@ -1837,9 +1837,9 @@ private:
 			if (!String::IsNullOrEmpty(texturePath))
 			{
 				if (texturePath->Contains(".fbm\\"))
-					logger->Info("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath);
+					logger->Info(String::Format("Importer detected an embedded texture. It has been extracted at address '{0}'.", texturePath), (CallerInfo^)nullptr);
 				if (!File::Exists(texturePath))
-					logger->Warning("Importer detected a texture not available on disk at address '{0}'", texturePath);
+					logger->Warning(String::Format("Importer detected a texture not available on disk at address '{0}'", texturePath), (CallerInfo^)nullptr);
 
 				textureNames->Add(texturePath);
 			}
@@ -1959,7 +1959,7 @@ public:
 				}
 				else
 				{
-					logger->Warning("Model references material '{0}', but it was not defined in the ModelAsset.", materialName);
+					logger->Warning(String::Format("Model references material '{0}', but it was not defined in the ModelAsset.", materialName), (CallerInfo^)nullptr);
 				}
 			}
 

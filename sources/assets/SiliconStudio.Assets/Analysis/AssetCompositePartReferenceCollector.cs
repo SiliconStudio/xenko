@@ -10,8 +10,6 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public class AssetCompositePartReferenceCollector : AssetVisitorBase
     {
-        private AssetCompositeVisitorContext context;
-
         /// <summary>
         /// A structure representing a reference to an asset part.
         /// </summary>
@@ -39,16 +37,30 @@ namespace SiliconStudio.Assets.Analysis
         public void VisitAsset(AssetComposite asset)
         {
             Result.Clear();
-            context = new AssetCompositeVisitorContext(asset.GetType());
             Visit(asset);
-            context = null;
+        }
+
+        public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+        {
+            // AssetCompositeSerializer.ReadMemberValue/WriteMemberValue is not run with CustomDataVisitor, so we need to Enter/Leave memebers ourselves
+            // TODO: Unify IDataCustomVisitor and AssetVisitorBase?
+            var removeLastEnteredNode = AssetCompositeSerializer.LocalContext.Value?.EnterNode(member) ?? false;
+            try
+            {
+                base.VisitObjectMember(container, containerDescriptor, member, value);
+            }
+            finally
+            {
+                AssetCompositeSerializer.LocalContext.Value?.LeaveNode(removeLastEnteredNode);
+            }
         }
 
         /// <inheritdoc/>
         public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
         {
-            var shouldRemove = context.EnterNode(descriptor.Type);
-            if (context.SerializeAsReference)
+            // Same as previous VisitObjectMember() remark, we should probably unify IDataCustomVisitor and AssetVisitorBase
+            var context = AssetCompositeSerializer.LocalContext.Value;
+            if (context?.SerializeAsReference ?? false)
             {
                 Result.Add(new AssetPartReference { AssetPart = obj, Path = CurrentPath.Clone() });
             }
@@ -56,7 +68,6 @@ namespace SiliconStudio.Assets.Analysis
             {
                 base.VisitObject(obj, descriptor, visitMembers);
             }
-            context.LeaveNode(descriptor.Type, shouldRemove);
         }
     }
 }

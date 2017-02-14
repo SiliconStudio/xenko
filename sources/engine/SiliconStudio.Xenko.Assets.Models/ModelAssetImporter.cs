@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
                 asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton");
+            var skeletonUrl = new UFile(localPath.GetFileNameWithoutExtension() + " Skeleton");
             var assetItem = new AssetItem(skeletonUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var assetSource = localPath;
 
                 var asset = new AnimationAsset { Source = assetSource };
-                var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
+                var animUrl = localPath.GetFileNameWithoutExtension() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)
                     asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (skeletonAsset != null)
                 asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
-            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""));
+            var modelUrl = new UFile(localPath.GetFileNameWithoutExtension() + (shouldPostFixName?" Model": ""));
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
         }
@@ -279,7 +279,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var texture = new TextureAsset { Source = source, PremultiplyAlpha = false };
 
                 // Create asset reference
-                assetReferences.Add(new AssetItem(texturePath.GetFileName(), texture));
+                assetReferences.Add(new AssetItem(texturePath.GetFileNameWithoutExtension(), texture));
             }
         }
     }

@@ -206,7 +206,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 if (!bytecodes.ContainsKey(newBytecodeId))
                 {
-                    log.Verbose("New effect compiled #{0} [{1}] (db: {2})\r\n{3}", effectCompileCount, mixinObjectId, newBytecodeId, compilerParameters?.ToStringPermutationsDetailed());
+                    log.Verbose($"New effect compiled #{effectCompileCount} [{mixinObjectId}] (db: {newBytecodeId})\r\n{compilerParameters?.ToStringPermutationsDetailed()}");
                     Interlocked.Increment(ref effectCompileCount);
 
                     // Replace or add new bytecode

@@ -87,7 +87,6 @@
     <Compile Include="Shapes\ConeColliderShape.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="ShapeOrientation.cs" />
-    <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
     <Compile Include="Shapes\CapsuleColliderShape.cs" />
     <Compile Include="ColliderShape.cs" />

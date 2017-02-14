@@ -7,15 +7,31 @@ namespace SiliconStudio.Quantum.Contents
 {
     public class BoxedContent : ObjectContent
     {
-        private ContentBase boxedStructureOwner;
+        private ContentNode boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
-        public BoxedContent(object value, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(value, descriptor, isPrimitive, null)
+        public BoxedContent(object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
+            : base(value, guid, descriptor, isPrimitive, null)
         {
         }
 
         protected internal override void UpdateFromMember(object newValue, Index index)
+        {
+            Update(newValue, index, true);
+        }
+
+        internal void UpdateFromOwner(object newValue)
+        {
+            Update(newValue, Index.Empty, false);
+        }
+
+        internal void SetOwnerContent(IContentNode ownerContent, Index index)
+        {
+            boxedStructureOwner = (ContentNode)ownerContent;
+            boxedStructureOwnerIndex = index;
+        }
+
+        private void Update(object newValue, Index index, bool updateStructureOwner)
         {
             if (!index.IsEmpty)
             {
@@ -35,14 +51,16 @@ namespace SiliconStudio.Quantum.Contents
             else
             {
                 SetValue(newValue);
-                boxedStructureOwner?.UpdateFromMember(newValue, boxedStructureOwnerIndex);
+                if (updateStructureOwner)
+                {
+                    boxedStructureOwner?.UpdateFromMember(newValue, boxedStructureOwnerIndex);
+                }
             }
         }
 
-        internal void SetOwnerContent(IContent ownerContent, Index index)
+        public override string ToString()
         {
-            boxedStructureOwner = (ContentBase)ownerContent;
-            boxedStructureOwnerIndex = index;
+            return $"{{Node: Boxed {Type.Name} = [{Value}]}}";
         }
     }
 }

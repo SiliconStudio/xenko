@@ -651,7 +651,7 @@ private:
 		std::set<std::string> visitedNodeNames;
 
 		if (scene->mNumAnimations > 1)
-			Logger->Warning("There is {0} animations in this file, using only the first one.", scene->mNumAnimations,
+			Logger->Warning(String::Format("There is {0} animations in this file, using only the first one.", scene->mNumAnimations),
 				CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 
 		for (unsigned int i = 0; i < min(1, scene->mNumAnimations); ++i)
@@ -673,7 +673,7 @@ private:
 			for(unsigned int meshAnimId = 0; meshAnimId<aiAnim->mNumMeshChannels; ++meshAnimId)
 			{
 				auto meshName = aiStringToString(aiAnim->mMeshChannels[meshAnimId]->mName);
-				Logger->Warning("Mesh animation are not currently supported. Animation '{0}' on mesh {1} will be ignored", animName, meshName,
+				Logger->Warning(String::Format("Mesh animation are not currently supported. Animation '{0}' on mesh {1} will be ignored", animName, meshName),
 								CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 			}
 
@@ -689,7 +689,7 @@ private:
 				}
 				else
 				{
-					Logger->Error("Animation '{0}' uses two nodes with the same name ({1}). The animation cannot be resolved.", animName, aiStringToString(nodeAnim->mNodeName),
+					Logger->Error(String::Format("Animation '{0}' uses two nodes with the same name ({1}). The animation cannot be resolved.", animName, aiStringToString(nodeAnim->mNodeName)),
 								  CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
 					return nullptr;
 				}
@@ -741,7 +741,7 @@ private:
 			if (!isRootElement)
 			{
 				if (compositionFathers->Count == 0)
-					Logger->Error(String::Format("Texture Stack Invalid : Operand without Operation."));
+					Logger->Error("Texture Stack Invalid : Operand without Operation.", (CallerInfo^)nullptr);
 
 				curCompositionFather = (IComputeColor^)compositionFathers->Pop();
 			}
@@ -828,7 +828,7 @@ private:
 				}
 				else
 				{
-					Logger->Error(String::Format("Texture Stack Invalid : Invalid Operand Number {0}.", set));
+					Logger->Error(String::Format("Texture Stack Invalid : Invalid Operand Number {0}.", set), (CallerInfo^)nullptr);
 				}	
 			}
 

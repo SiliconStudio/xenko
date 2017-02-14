@@ -8,8 +8,11 @@ using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
 {
+    // TODO: these methods should be compilant with collection/dictionary descriptors. Since they're used only for design-time, they should be removed from here anyway
+    [Obsolete("This class will be removed in a future version")]
     public static class TypeHelper
     {
+        [Obsolete("This method will be removed in a future version")]
         public static bool IsCollection(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -36,6 +39,7 @@ namespace SiliconStudio.Core.Reflection
             return false;
         }
 
+        [Obsolete("This method will be removed in a future version")]
         public static bool IsDictionary(this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));

@@ -72,14 +72,14 @@ namespace SiliconStudio.Assets.Analysis
 
                     if (existingAsset != null)
                     {
-                        log.Error("Assets [{0}] with id [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Id, package.FullPath, existingAsset.Package.FullPath);
+                        log.Error($"Assets [{existingAsset.FullPath}] with id [{existingAsset.Id}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                     }
                     else
                     {
                         existingAsset = otherPackage.Assets.Find(assetItem.Location);
                         if (existingAsset != null)
                         {
-                            log.Error("Assets [{0}] with location [{1}] from Package [{2}] is already loaded from package [{3}]", existingAsset.FullPath, existingAsset.Location, package.FullPath, existingAsset.Package.FullPath);
+                            log.Error($"Assets [{existingAsset.FullPath}] with location [{existingAsset.Location}] from Package [{package.FullPath}] is already loaded from package [{existingAsset.Package.FullPath}]");
                         }
                     }
                 }
@@ -105,7 +105,7 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
-            var packageName = package.FullPath?.GetFileName() ?? "(Undefined path)";
+            var packageName = package.FullPath?.GetFileNameWithoutExtension() ?? "(Undefined path)";
             bool shouldSetDirtyFlag = false;
 
             // Update reference
@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets.Analysis
                         var packageFound = package.Session.Packages.FirstOrDefault(x => x.FindAsset(contentReference.Location) != null);
                         if (packageFound != null)
                         {
-                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileName());
+                            log.Warning(package, contentReference, AssetMessageCode.AssetFoundInDifferentPackage, contentReference, packageFound.FullPath.GetFileNameWithoutExtension());
                         }
                     }
                     else

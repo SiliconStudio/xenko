@@ -102,17 +102,6 @@ namespace SiliconStudio.Assets
         public AssetReference Archetype { get; set; }
 
         /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-450)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [Obsolete]
-        public int BuildOrder { get; set; }
-
-        /// <summary>
         /// Gets the main source file for this asset, used in the editor.
         /// </summary>
         [DataMemberIgnore]
@@ -125,10 +114,22 @@ namespace SiliconStudio.Assets
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        public Asset CreateDerivedAsset(string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
+
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        public virtual Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
@@ -136,7 +137,7 @@ namespace SiliconStudio.Assets
             AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
-            var newAsset = AssetCloner.Clone(this);
+            var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();

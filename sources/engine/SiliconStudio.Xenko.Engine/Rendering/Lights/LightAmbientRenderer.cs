@@ -53,6 +53,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override void UpdateShaderPermutationEntry(ForwardLightingRenderFeature.LightShaderPermutationEntry shaderEntry)
         {
+            // Always merge ambient lighting code to avoid shader permutations
             shaderEntry.EnvironmentLights.Add(lightShaderGroup);
         }
 
@@ -64,6 +65,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public LightAmbientShaderGroup()
                 : base(new ShaderClassSource("LightSimpleAmbient"))
             {
+            }
+
+            public override void Reset()
+            {
+                base.Reset();
+                if (AmbientColor != null)
+                {
+                    for (int i = 0; i < AmbientColor.Length; i++)
+                    {
+                        AmbientColor[i] = new Color3(0.0f);
+                    }
+                }
             }
 
             public override void UpdateLayout(string compositionName)

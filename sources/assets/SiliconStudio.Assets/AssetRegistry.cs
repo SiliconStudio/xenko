@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +9,6 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -242,18 +240,6 @@ namespace SiliconStudio.Assets
             }
         }
 
-        /// <summary>
-        /// Returns an array of asset types that can be instanced with <see cref="ObjectFactory.NewInstance"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="Type"/> elements.</returns>
-        public static Type[] GetInstantiableTypes()
-        {
-            lock (RegistryLock)
-            {
-                return ObjectFactory.FindRegisteredFactories().Where(type => typeof(Asset).IsAssignableFrom(type) && type.IsPublic).ToArray();
-            }
-        }
-
         public static bool IsAssetTypeAlwaysMarkAsRoot(Type type)
         {
             lock (AlwaysMarkAsRootAssetTypes)
@@ -379,7 +365,15 @@ namespace SiliconStudio.Assets
         {
             lock (RegistryLock)
             {
-                return RegisteredAssetCompositePartTypes.ContainsKey(type);
+                var currentType = type;
+                while (currentType != null)
+                {
+                    if (RegisteredAssetCompositePartTypes.ContainsKey(currentType))
+                        return true;
+
+                    currentType = currentType.BaseType;
+                }
+                return false;
             }
         }
 
@@ -400,7 +394,7 @@ namespace SiliconStudio.Assets
                 var currentType = type;
                 while (currentType != null)
                 {
-                    if (RegisteredContentTypes.ContainsKey(type))
+                    if (RegisteredContentTypes.ContainsKey(currentType))
                         return true;
 
                     currentType = currentType.BaseType;
@@ -476,7 +470,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate serializer factory [{0}]", ex, type);
+                            Log.Error($"Unable to instantiate serializer factory [{type}]", ex);
                         }
                     }
                     // Custom visitors
@@ -490,7 +484,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate custom visitor [{0}]", ex, type);
+                            Log.Error($"Unable to instantiate custom visitor [{type}]", ex);
                         }
                     }
                     // Asset importer
@@ -505,7 +499,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate importer [{0}]", ex, type.Name);
+                            Log.Error($"Unable to instantiate importer [{type.Name}]", ex);
                         }
                     }
 
@@ -535,7 +529,7 @@ namespace SiliconStudio.Assets
                         }
                         catch (Exception ex)
                         {
-                            Log.Error("Unable to instantiate package upgrader [{0}]", ex, type.Name);
+                            Log.Error($"Unable to instantiate package upgrader [{type.Name}]", ex);
                         }
                     }
 

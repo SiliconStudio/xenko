@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Make sure that the code is compatible with the current installed version.
+            // TODO: Newest version of RenderDoc changed their API and we should call RENDERDOC_GetAPI which returns other function pointers
             if (RENDERDOC_API_VERSION != RENDERDOC_GetAPIVersion())
             {
                 return;

@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
     {
         private bool premultiplyAlpha;
-        private bool hasChanged;
+        private bool hasChanged = true;
 
         // Possible optimization will be to keep this on the ComputeValueBase<T> side
         private Color4 cachedColor;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             }
             else
             {
-                context.Log.Error("Unexpected ParameterKey [{0}] for type [{0}]. Expecting a [Vector3/Color3] or [Vector4/Color4]", key, key.PropertyType);
+                context.Log.Error($"Unexpected ParameterKey [{key}] for type [{key.PropertyType}]. Expecting a [Vector3/Color3] or [Vector4/Color4]");
             }
             UsedKey = key;
 
