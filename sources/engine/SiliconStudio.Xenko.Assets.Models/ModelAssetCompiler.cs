@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromProxyObject(asset.Skeleton);
 
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)

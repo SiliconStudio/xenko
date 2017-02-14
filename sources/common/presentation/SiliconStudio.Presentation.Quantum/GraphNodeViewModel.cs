@@ -9,7 +9,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -113,7 +112,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (targetNodePath == null || !targetNodePath.IsValid)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
-                GenerateChildren(targetNode, targetNodePath);
+                GenerateChildren(targetNode, targetNodePath, Index);
             }
 
             isInitialized = true;
@@ -292,25 +291,21 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath)
+        private void GenerateChildren(IContentNode targetNode, GraphNodePath targetNodePath, Index index)
         {
+            // Set the default policy for expanding reference children.
+            ExpandReferencePolicy = ExpandReferencePolicy.Full;
+
             // Node representing a member with a reference to another object
             if (SourceNode != targetNode && SourceNode.IsReference)
             {
-                var objectReference = SourceNode.TargetReference;
+                var objectReference = SourceNode.TargetReference ?? SourceNode.ItemReferences?[index];
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference))
-                    return;
-
-                var refEnum = SourceNode.ItemReferences;
-                if (refEnum != null)
+                if (objectReference != null)
                 {
-                    foreach (var reference in refEnum)
-                    {
-                        // Discard the children of the referenced object if requested by the property provider
-                        if (reference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, reference))
-                            return;
-                    }
+                    ExpandReferencePolicy = Owner.PropertiesProvider.ShouldExpandReference(SourceNode as MemberContent, objectReference);
+                    if (ExpandReferencePolicy == ExpandReferencePolicy.None)
+                        return;
                 }
             }
 
@@ -324,7 +319,7 @@ namespace SiliconStudio.Presentation.Quantum
                 var referenceEnumerable = targetNode.ItemReferences;
                 if (referenceEnumerable != null)
                 {
-                    // We create one node per item of the collection, unless requested by the property provide to not expand the reference.
+                    // We create one node per item of the collection, we will check later if the reference should be expanded.
                     foreach (var reference in referenceEnumerable)
                     {
                         // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
@@ -345,8 +340,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 foreach (var key in dictionary.GetKeys(targetNode.Value))
                 {
-                    var index = new Index(key);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    var newIndex = new Index(key);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, newIndex);
                     AddChild(child);
                     child.Initialize();
                     initializedChildren.Add(child);
@@ -359,8 +354,8 @@ namespace SiliconStudio.Presentation.Quantum
                 // We create one node per item of the collection.
                 for (int i = 0; i < list.GetCollectionCount(targetNode.Value); ++i)
                 {
-                    var index = new Index(i);
-                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    var newIndex = new Index(i);
+                    var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, newIndex);
                     AddChild(child);
                     child.Initialize();
                     initializedChildren.Add(child);
@@ -377,7 +372,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, ExpandReferencePolicy))
                         {
                             var childPath = targetNodePath.PushMember(memberContent.Name);
                             var child = Owner.GraphViewModelService.GraphNodeViewModelFactory(Owner, memberContent.Name, memberContent.IsPrimitive, memberContent, childPath, memberContent.Type, Index.Empty);
@@ -399,7 +394,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        protected void Refresh()
+        protected override void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             

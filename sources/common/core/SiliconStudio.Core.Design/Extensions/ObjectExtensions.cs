@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="obj">The object.</param>
         /// <returns>The return value of <see cref="object.ToString"/>, or "(null)" if <see ref="obj"/> is null, or (ExceptionInToString)" if <see cref="object.ToString"/> thrown an exception.</returns>
         [NotNull]
-        public static string ToStringSafe(this object obj)
+        public static string ToStringSafe([CanBeNull] this object obj)
         {
             try
             {
@@ -39,6 +39,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="obj">The object to yield.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> that contains the given object as its single item.</returns>
         /// <remarks>This method uses <b>yield return</b> to return the given object as an enumerable.</remarks>
+        [NotNull]
         public static IEnumerable<T> Yield<T>(this T obj)
         {
             yield return obj;
@@ -51,10 +52,12 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="obj">The object to convert to an <see cref="IEnumerable{T}"/>.</param>
         /// <returns>the given object if it is an enumerable, an <see cref="IEnumerable{T}"/> that contains the given object as its single item otherwise.</returns>
         /// <remarks>This method uses <see cref="Yield{T}"/> to return the given object as an enumerable.</remarks>
+        [NotNull]
         public static IEnumerable<T> ToEnumerable<T>(this object obj)
         {
-            if (obj is IEnumerable<T>)
-                return (IEnumerable<T>)obj;
+            var enumerableT = obj as IEnumerable<T>;
+            if (enumerableT != null)
+                return enumerableT;
 
             var enumerable = obj as IEnumerable;
             return enumerable?.Cast<T>() ?? Yield((T)obj);

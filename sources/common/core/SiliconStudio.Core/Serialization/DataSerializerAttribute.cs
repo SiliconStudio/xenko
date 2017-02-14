@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Core.Serialization
         /// Initializes a new instance of the <see cref="DataSerializerAttribute"/> class.
         /// </summary>
         /// <param name="dataSerializerType">Type of the data serializer.</param>
-        public DataSerializerAttribute(Type dataSerializerType)
+        public DataSerializerAttribute([NotNull] Type dataSerializerType)
         {
             DataSerializerType = dataSerializerType;
         }
@@ -25,6 +26,7 @@ namespace SiliconStudio.Core.Serialization
         /// <value>
         /// The type of the data serializer.
         /// </value>
+        [NotNull]
         public Type DataSerializerType;
 
         public DataSerializerGenericMode Mode;

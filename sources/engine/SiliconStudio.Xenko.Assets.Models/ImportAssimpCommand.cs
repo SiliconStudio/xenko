@@ -56,6 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
+
             duration = sceneData.Duration;
             return sceneData.AnimationClips;
         }

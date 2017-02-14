@@ -252,6 +252,11 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
+        /// Refreshes this node, updating its properties and its child nodes.
+        /// </summary>
+        protected abstract void Refresh();
+
+        /// <summary>
         /// Indicates whether this node can be moved.
         /// </summary>
         /// <param name="newParent">The new parent of the node once moved.</param>

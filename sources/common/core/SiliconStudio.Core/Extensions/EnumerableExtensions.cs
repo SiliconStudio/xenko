@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -28,13 +30,25 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
+        /// Indicates whether the specified string is null or an empty string.
+        /// </summary>
+        /// <param name="value">The string to test.</param>
+        /// <returns><c>true</c> if the value parameter is null or an empty string (""); otherwise, <c>false</c>.</returns>
+        [Obsolete("Use string.IsNullOrEmpty() instead")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
+        /// <summary>
         /// Executes an action for each (casted) item of the given enumerable.
         /// </summary>
         /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="action">Action performed for each item in the enumerable.</param>
         /// <remarks>This extension method do not yield. It acts just like a foreach statement, and performs a cast to a typed enumerable in the middle.</remarks>
-        public static void ForEach<T>(this IEnumerable source, Action<T> action)
+        public static void ForEach<T>([NotNull] this IEnumerable source, [NotNull] Action<T> action)
         {
             source.Cast<T>().ForEach(action);
         }
@@ -46,10 +60,12 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="action">Action performed for each item in the enumerable.</param>
         /// <remarks>This extension method do not yield. It acts just like a foreach statement.</remarks>
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        public static void ForEach<T>([NotNull] this IEnumerable<T> source, [NotNull] Action<T> action)
         {
             foreach (var item in source)
+            {
                 action(item);
+            }
         }
 
         /// <summary>
@@ -59,7 +75,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the first element matching.</returns>
-        public static int IndexOf<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+        public static int IndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var index = 0;
             foreach (var item in source)
@@ -78,7 +94,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="source">Input enumerable to work on.</param>
         /// <param name="predicate">The predicate.</param>
         /// <returns>The index of the last element matching.</returns>
-        public static int LastIndexOf<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+        public static int LastIndexOf<T>([NotNull] this IEnumerable<T> source, [NotNull] Func<T, bool> predicate)
         {
             var list = source as IList<T>;
             if (list != null)
@@ -108,7 +124,8 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T">Generic type parameter.</typeparam>
         /// <param name="source">Input enumerable to work on.</param>
         /// <returns>An enumeration of all items in <paramref name="source"/> that are not <c>null</c>.</returns>
-        public static IEnumerable<T> NotNull<T>(this IEnumerable<T> source) where T : class
+        [ItemNotNull, NotNull]
+        public static IEnumerable<T> NotNull<T>([NotNull] this IEnumerable<T> source) where T : class
         {
             return source.Where(x => x != null);
         }
@@ -119,7 +136,8 @@ namespace SiliconStudio.Core.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="list">The linked list.</param>
         /// <returns>An enumeration of the linked list nodes.</returns>
-        internal static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>(this LinkedList<T> list)
+        [ItemNotNull, NotNull]
+        internal static IEnumerable<LinkedListNode<T>> EnumerateNodes<T>([NotNull] this LinkedList<T> list)
         {
             var node = list.First;
             while (node != null)

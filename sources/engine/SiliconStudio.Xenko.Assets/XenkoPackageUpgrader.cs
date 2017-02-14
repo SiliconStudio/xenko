@@ -27,7 +27,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.9.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -301,6 +301,11 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha01"))
+            {
+                ConvertAdditiveAnimationToAnimation(assetFiles);
+            }
+
             return true;
         }
 
@@ -537,6 +542,40 @@ namespace SiliconStudio.Xenko.Assets
                 }
 
                 return base.VisitIdentifierName(node);
+            }
+        }
+
+        private void ConvertAdditiveAnimationToAnimation(IList<PackageLoadingAssetFile> assetFiles)
+        {
+            //var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
+            var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim");
+
+            foreach (var assetFile in animAssets)
+            {
+                if (!IsYamlAsset(assetFile))
+                    continue;
+
+                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                using (var yamlAsset = assetFile.AsYamlAsset())
+                {
+                    dynamic asset = yamlAsset.DynamicRootNode;
+
+                    var assetTag = asset.Node.Tag;
+                    if (assetTag != "!AdditiveAnimation")
+                        continue;
+
+                    asset.Node.Tag = "!Animation";
+                    dynamic newType = new DynamicYamlMapping(new YamlMappingNode());
+                    newType.Node.Tag = "!DifferenceAnimationAssetType";
+                    newType["BaseSource"] = asset["BaseSource"];
+                    newType["Mode"] = asset["Mode"];
+
+                    asset.RemoveChild("BaseSource");
+                    asset.RemoveChild("Mode");
+                    asset.RemoveChild("Type");
+
+                    asset.AddChild("Type", newType);
+                }
             }
         }
     }

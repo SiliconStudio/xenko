@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
@@ -42,7 +43,7 @@ namespace SiliconStudio.Core.Serialization
         /// </summary>
         /// <remarks>This method should be thread-safe and OK to call multiple times.</remarks>
         /// <param name="serializerSelector">The serializer.</param>
-        public virtual void Initialize(SerializerSelector serializerSelector)
+        public virtual void Initialize([NotNull] SerializerSelector serializerSelector)
         {
         }
 
@@ -52,7 +53,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="obj">The object to serialize or deserialize.</param>
         /// <param name="mode">The serialization mode.</param>
         /// <param name="stream">The stream to serialize or deserialize to.</param>
-        public abstract void Serialize(ref object obj, ArchiveMode mode, SerializationStream stream);
+        public abstract void Serialize(ref object obj, ArchiveMode mode, [NotNull] SerializationStream stream);
 
         /// <summary>
         /// Performs the first step of serialization or deserialization.
@@ -63,7 +64,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="obj">The object to process.</param>
         /// <param name="mode">The serialization mode.</param>
         /// <param name="stream">The stream to serialize or deserialize to.</param>
-        public abstract void PreSerialize(ref object obj, ArchiveMode mode, SerializationStream stream);
+        public abstract void PreSerialize(ref object obj, ArchiveMode mode, [NotNull] SerializationStream stream);
     }
 
     /// <summary>
@@ -73,10 +74,11 @@ namespace SiliconStudio.Core.Serialization
     public abstract class DataSerializer<T> : DataSerializer
     {
         /// <inheritdoc/>
-        public override Type SerializationType { get { return typeof(T); } }
+        [NotNull]
+        public override Type SerializationType => typeof(T);
 
         /// <inheritdoc/>
-        public override bool IsBlittable { get { return false; } }
+        public override bool IsBlittable => false;
 
         /// <inheritdoc/>
         public override void Serialize(ref object obj, ArchiveMode mode, SerializationStream stream)
@@ -92,7 +94,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="obj">The object to serialize or deserialize.</param>
         /// <param name="stream">The stream to serialize or deserialize to.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Serialize(T obj, SerializationStream stream)
+        public void Serialize(T obj, [NotNull] SerializationStream stream)
         {
             Serialize(ref obj, ArchiveMode.Serialize, stream);
         }
@@ -124,6 +126,6 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="obj">The object to serialize or deserialize.</param>
         /// <param name="mode">The serialization mode.</param>
         /// <param name="stream">The stream to serialize or deserialize to.</param>
-        public abstract void Serialize(ref T obj, ArchiveMode mode, SerializationStream stream);
+        public abstract void Serialize(ref T obj, ArchiveMode mode, [NotNull] SerializationStream stream);
     }
 }

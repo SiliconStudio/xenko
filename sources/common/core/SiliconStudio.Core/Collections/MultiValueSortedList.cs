@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Core.Collections
         {
             public IEnumerator<TValue> GetEnumerator() { return enumerable.GetEnumerator(); }
             IEnumerator IEnumerable.GetEnumerator() { return enumerable.GetEnumerator(); } 
-            public TKey Key { get { return key; } }
+            public TKey Key => key;
             public Grouping(TKey key, IEnumerable<TValue> values) { this.key = key; enumerable = values; }
             private readonly TKey key;
             private readonly IEnumerable<TValue> enumerable;
@@ -32,17 +33,20 @@ namespace SiliconStudio.Core.Collections
             public void Dispose() { keys.Dispose(); }
             public bool MoveNext() { return keys.MoveNext(); }
             public void Reset() { keys.Reset(); }
-            public IGrouping<TKey, TValue> Current { get { return new Grouping(keys.Current, list[keys.Current]); } }
-            object IEnumerator.Current { get { return new Grouping(keys.Current, list[keys.Current]); } }
-            public GroupingEnumerator(MultiValueSortedList<TKey, TValue> list) { keys = list.DistinctKeys().GetEnumerator(); this.list = list; }
-            readonly IEnumerator<TKey> keys;
-            readonly MultiValueSortedList<TKey, TValue> list;
+            [NotNull]
+            public IGrouping<TKey, TValue> Current => new Grouping(keys.Current, list[keys.Current]);
+            [NotNull]
+            object IEnumerator.Current => new Grouping(keys.Current, list[keys.Current]);
+            public GroupingEnumerator([NotNull] MultiValueSortedList<TKey, TValue> list) { keys = list.DistinctKeys().GetEnumerator(); this.list = list; }
+            private readonly IEnumerator<TKey> keys;
+            private readonly MultiValueSortedList<TKey, TValue> list;
         }
 
         private readonly List<KeyValuePair<TKey, TValue>> list = new List<KeyValuePair<TKey, TValue>>();
         private readonly List<TKey> keys = new List<TKey>();
 
-        public IEnumerable<TKey> Keys { get { return DistinctKeys(); } }
+        public IEnumerable<TKey> Keys => DistinctKeys();
+        [NotNull]
         public IEnumerable<TValue> Values { get { return list.Select(x => x.Value); } }
 
         private IEnumerable<TKey> DistinctKeys()
@@ -50,11 +54,11 @@ namespace SiliconStudio.Core.Collections
             if (keys.Count == 0)
                 return keys;
 
-            bool first = true;
-            TKey distinctKey = default(TKey);
+            var first = true;
+            var distinctKey = default(TKey);
             return keys.Where(x =>
                 {
-                    bool result = first || !distinctKey.Equals(x);
+                    var result = first || !distinctKey.Equals(x);
                     distinctKey = x;
                     first = false;
                     return result;
@@ -84,9 +88,9 @@ namespace SiliconStudio.Core.Collections
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            int lower = 0;
-            int greater = list.Count;
-            int current = (lower + greater) >> 1;
+            var lower = 0;
+            var greater = list.Count;
+            var current = (lower + greater) >> 1;
             while (greater - lower > 1)
             {
                 if (keys[current].CompareTo(item.Key) < 0)
@@ -131,8 +135,8 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            bool removed = false;
-            for (int i = KeyToIndex(item.Key); i >= 0; i = KeyToIndex(item.Key))
+            var removed = false;
+            for (var i = KeyToIndex(item.Key); i >= 0; i = KeyToIndex(item.Key))
             {
                 list.RemoveAt(i);
                 keys.RemoveAt(i);
@@ -151,21 +155,21 @@ namespace SiliconStudio.Core.Collections
             return KeyToIndex(key) >= 0;
         }
 
-        public int Count { get { return list.Count; } }
+        public int Count => list.Count;
 
         public IEnumerable<TValue> this[TKey key] { get { return list.Skip(KeyToIndex(key)).TakeWhile(x => x.Key.Equals(key)).Select(x => x.Value); } }
 
-        int ICollection.Count { get { return list.Count; } }
+        int ICollection.Count => list.Count;
 
-        public object SyncRoot { get { return ((ICollection)list).SyncRoot; } }
+        public object SyncRoot => ((ICollection)list).SyncRoot;
 
-        public bool IsSynchronized { get { return ((ICollection)list).IsSynchronized; } }
+        public bool IsSynchronized => ((ICollection)list).IsSynchronized;
 
-        int ICollection<KeyValuePair<TKey, TValue>>.Count { get { return list.Count; } }
+        int ICollection<KeyValuePair<TKey, TValue>>.Count => list.Count;
 
-        public bool IsFixedSize { get { return false; } }
+        public bool IsFixedSize => false;
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly { get { return false; } }
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         public bool ContainsKey(TKey key)
         {
@@ -179,8 +183,8 @@ namespace SiliconStudio.Core.Collections
 
         public bool Remove(TKey key)
         {
-            bool removed = false;
-            for (int i = KeyToIndex(key); i >= 0; i = KeyToIndex(key))
+            var removed = false;
+            for (var i = KeyToIndex(key); i >= 0; i = KeyToIndex(key))
             {
                 list.RemoveAt(i);
                 keys.RemoveAt(i);

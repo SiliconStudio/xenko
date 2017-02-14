@@ -62,7 +62,8 @@ namespace SiliconStudio.Presentation.Quantum
         private GraphViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
-            GraphViewModelService = serviceProvider.Get<GraphViewModelService>();
+            GraphViewModelService = serviceProvider.TryGet<GraphViewModelService>();
+            if (GraphViewModelService == null) throw new InvalidOperationException($"{nameof(GraphViewModel)} requires a {nameof(GraphViewModelService)} in the service provider.");
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
 
@@ -78,8 +79,8 @@ namespace SiliconStudio.Presentation.Quantum
             if (graphNode == null) throw new ArgumentNullException(nameof(graphNode));
             PropertiesProvider = propertyProvider;
             var node = GraphViewModelService.GraphNodeViewModelFactory(this, "Root", graphNode.IsPrimitive, graphNode, new GraphNodePath(graphNode), graphNode.Type, Index.Empty);
-            node.Initialize();
             RootNode = node;
+            node.Initialize();
             node.FinalizeInitialization();
             node.CheckConsistency();
         }
@@ -134,8 +135,8 @@ namespace SiliconStudio.Presentation.Quantum
 
             var service = serviceProvider.Get<GraphViewModelService>();
             var rootCombinedNode = service.CombinedNodeViewModelFactory(combinedViewModel, "Root", rootNodeType, rootNodes, Index.Empty);
-            rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
+            rootCombinedNode.Initialize();
             return combinedViewModel;
         }
 

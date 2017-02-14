@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Core.Reflection
     public static class TypeHelper
     {
         [Obsolete("This method will be removed in a future version")]
-        public static bool IsCollection(this Type type)
+        public static bool IsCollection([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();
@@ -40,7 +41,7 @@ namespace SiliconStudio.Core.Reflection
         }
 
         [Obsolete("This method will be removed in a future version")]
-        public static bool IsDictionary(this Type type)
+        public static bool IsDictionary([NotNull] this Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             var typeInfo = type.GetTypeInfo();
