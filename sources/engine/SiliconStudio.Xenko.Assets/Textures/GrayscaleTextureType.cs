@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display("Grayscale")]
     public class GrayscaleTextureType : ITextureType
     {
-        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
+        public bool IsSRgb(ColorSpace colorSpaceReference) => false;
 
         bool ITextureType.ColorKeyEnabled => false;
 

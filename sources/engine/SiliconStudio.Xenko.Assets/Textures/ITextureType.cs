@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 {
     public interface ITextureType
     {
-        bool IsSRGBTexture(ColorSpace colorSpaceReference);
+        bool IsSRgb(ColorSpace colorSpaceReference);
 
         bool ColorKeyEnabled { get; }
 

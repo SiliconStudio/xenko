@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [Display("Normal Map")]
     public class NormapMapTextureType : ITextureType
     {
-        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => false;
+        public bool IsSRgb(ColorSpace colorSpaceReference) => false;
 
         /// <summary>
         /// Indicating whether the Y-component of normals should be inverted, to compensate for a flipped tangent-space.

@@ -23,9 +23,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DataMember(20)]
         [DefaultValue(true)]
         [Display("sRGB sampling")]
-        public bool SRGB { get; set; } = true;
+        public bool UseSRrgbSampling { get; set; } = true;
 
-        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && SRGB);
+        public bool IsSRgb(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && UseSRrgbSampling);
 
         /// <summary>
         /// Gets or sets a value indicating whether to enable color key. Default is false.
