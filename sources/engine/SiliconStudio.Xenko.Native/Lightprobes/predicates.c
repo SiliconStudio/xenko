@@ -1,3 +1,5 @@
+#if defined(WINDOWS_DESKTOP) || !defined(__clang__)
+
 /*****************************************************************************/
 /*                                                                           */
 /*  Routines for Arbitrary Precision Floating-point Arithmetic               */
@@ -4290,3 +4292,5 @@ REAL *pe;
 
 	return insphereadapt(pa, pb, pc, pd, pe, permanent);
 }
+
+#endif
