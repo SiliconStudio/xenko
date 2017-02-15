@@ -190,7 +190,6 @@ namespace SiliconStudio.Xenko.Graphics
         };
 
         internal Buffer SquareBuffer;
-        internal CommandList MainCommandList; // temporary because of state changes done during UseOpenGLCreationContext
 
         /// <summary>
         /// Gets the status of this device.
@@ -916,7 +915,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             // Create the main command list
-            InternalMainCommandList = new CommandList(this);
+            InternalMainCommandList = CommandList.New(this);
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
