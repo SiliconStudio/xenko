@@ -79,7 +79,7 @@ Referenceable1:
     Id: 00000001-0001-0000-0100-000001000000
     Value: Test
 Referenceable2: null
-Referenceable3: ref!! 00000001-0001-0000-0100-000001000000
+Referenceable3: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
 Referenceable4: null
 ";
 
@@ -98,7 +98,7 @@ Referenceable2: null
 Referenceable3: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests
     Id: 00000001-0001-0000-0100-000001000000
     Value: Test
-Referenceable4: ref!! 00000001-0001-0000-0100-000001000000
+Referenceable4: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
 ";
 
         private const string ConcreteReferenceableListYaml = @"!SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+CollectionContainer,SiliconStudio.Assets.Tests
@@ -115,7 +115,7 @@ AbstractRefDictionary: {}
         private const string AbstractReferenceableListYaml = @"!SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+CollectionContainer,SiliconStudio.Assets.Tests
 ConcreteRefList: {}
 AbstractRefList:
-    01000000010000000100000001000000: ref!! 00000001-0001-0000-0100-000001000000
+    01000000010000000100000001000000: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
     02000000020000000200000002000000: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests
         Id: 00000001-0001-0000-0100-000001000000
         Value: Test
@@ -139,7 +139,7 @@ ConcreteRefList: {}
 AbstractRefList: {}
 ConcreteRefDictionary: {}
 AbstractRefDictionary:
-    01000000010000000100000001000000~Item1: ref!! 00000001-0001-0000-0100-000001000000
+    01000000010000000100000001000000~Item1: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
     02000000020000000200000002000000~Item2: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests
         Id: 00000001-0001-0000-0100-000001000000
         Value: Test
@@ -158,7 +158,7 @@ AbstractRefDictionary: {}
         private const string AbstractNonIdentifiableReferenceableListYaml = @"!SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+NonIdentifiableCollectionContainer,SiliconStudio.Assets.Tests
 ConcreteRefList: []
 AbstractRefList:
-    - ref!! 00000001-0001-0000-0100-000001000000
+    - !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
     - !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests
         Id: 00000001-0001-0000-0100-000001000000
         Value: Test
@@ -182,7 +182,7 @@ ConcreteRefList: []
 AbstractRefList: []
 ConcreteRefDictionary: {}
 AbstractRefDictionary:
-    Item1: ref!! 00000001-0001-0000-0100-000001000000
+    Item1: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests ref!! 00000001-0001-0000-0100-000001000000
     Item2: !SiliconStudio.Assets.Tests.Yaml.TestObjectReferenceSerialization+Referenceable,SiliconStudio.Assets.Tests
         Id: 00000001-0001-0000-0100-000001000000
         Value: Test
@@ -194,7 +194,7 @@ AbstractRefDictionary:
             var obj = new Container { Referenceable1 = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" } };
             var yaml = SerializeAsString(obj, null);
             Assert.AreEqual(ExpandedObjectYaml, yaml);
-            yaml = SerializeAsString(obj, new Dictionary<YamlAssetPath, Guid>());
+            yaml = SerializeAsString(obj, new YamlAssetMetadata<Guid>());
             Assert.AreEqual(ExpandedObjectYaml, yaml);
         }
 
@@ -215,10 +215,10 @@ AbstractRefDictionary:
         {
             var obj = new Container { Referenceable1 = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" } };
             obj.Referenceable2 = obj.Referenceable1;
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(Container.Referenceable2));
-            objectReferences.Add(path, obj.Referenceable2.Id);
+            objectReferences.Set(path, obj.Referenceable2.Id);
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteReferenceConcreteObjectYaml, yaml);
         }
@@ -241,10 +241,10 @@ AbstractRefDictionary:
         {
             var obj = new Container { Referenceable1 = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" } };
             obj.Referenceable3 = obj.Referenceable1;
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(Container.Referenceable3));
-            objectReferences.Add(path, obj.Referenceable3.Id);
+            objectReferences.Set(path, obj.Referenceable3.Id);
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractReferenceConcreteObjectYaml, yaml);
         }
@@ -267,10 +267,10 @@ AbstractRefDictionary:
         {
             var obj = new Container { Referenceable3 = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" } };
             obj.Referenceable2 = (Referenceable)obj.Referenceable3;
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(Container.Referenceable2));
-            objectReferences.Add(path, obj.Referenceable2.Id);
+            objectReferences.Set(path, obj.Referenceable2.Id);
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteReferenceAbstractObjectYaml, yaml);
         }
@@ -293,10 +293,10 @@ AbstractRefDictionary:
         {
             var obj = new Container { Referenceable3 = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" } };
             obj.Referenceable4 = (Referenceable)obj.Referenceable3;
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(Container.Referenceable4));
-            objectReferences.Add(path, obj.Referenceable4.Id);
+            objectReferences.Set(path, obj.Referenceable4.Id);
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractReferenceAbstractObjectYaml, yaml);
         }
@@ -321,14 +321,14 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.ConcreteRefList.Add(item);
             obj.ConcreteRefList.Add(item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.ConcreteRefList);
             ids[0] = IdentifierGenerator.Get(1);
             ids[1] = IdentifierGenerator.Get(2);
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.ConcreteRefList));
             path.PushItemId(IdentifierGenerator.Get(1));
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteReferenceableListYaml, yaml);
         }
@@ -354,14 +354,14 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.AbstractRefList.Add(item);
             obj.AbstractRefList.Add(item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.AbstractRefList);
             ids[0] = IdentifierGenerator.Get(1);
             ids[1] = IdentifierGenerator.Get(2);
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.AbstractRefList));
             path.PushItemId(IdentifierGenerator.Get(1));
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractReferenceableListYaml, yaml);
         }
@@ -387,14 +387,14 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.ConcreteRefDictionary.Add("Item1", item);
             obj.ConcreteRefDictionary.Add("Item2", item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.ConcreteRefDictionary);
             ids["Item1"] = IdentifierGenerator.Get(1);
             ids["Item2"] = IdentifierGenerator.Get(2);
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.ConcreteRefDictionary));
             path.PushItemId(IdentifierGenerator.Get(1));
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteReferenceableDictionaryYaml, yaml);
         }
@@ -420,14 +420,14 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.AbstractRefDictionary.Add("Item1", item);
             obj.AbstractRefDictionary.Add("Item2", item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.AbstractRefDictionary);
             ids["Item1"] = IdentifierGenerator.Get(1);
             ids["Item2"] = IdentifierGenerator.Get(2);
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.AbstractRefDictionary));
             path.PushItemId(IdentifierGenerator.Get(1));
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractReferenceableDictionaryYaml, yaml);
         }
@@ -453,11 +453,11 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.ConcreteRefList.Add(item);
             obj.ConcreteRefList.Add(item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.ConcreteRefList));
             path.PushIndex(0);
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteNonIdentifiableReferenceableListYaml, yaml);
         }
@@ -480,11 +480,11 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.AbstractRefList.Add(item);
             obj.AbstractRefList.Add(item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.AbstractRefList));
             path.PushIndex(0);
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractNonIdentifiableReferenceableListYaml, yaml);
         }
@@ -507,14 +507,14 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.ConcreteRefDictionary.Add("Item1", item);
             obj.ConcreteRefDictionary.Add("Item2", item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var ids = CollectionItemIdHelper.GetCollectionItemIds(obj.ConcreteRefDictionary);
             ids["Item1"] = IdentifierGenerator.Get(1);
             ids["Item2"] = IdentifierGenerator.Get(2);
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.ConcreteRefDictionary));
             path.PushIndex("Item1");
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(ConcreteNonIdentifiableReferenceableDictionaryYaml, yaml);
         }
@@ -537,11 +537,11 @@ AbstractRefDictionary:
             var item = new Referenceable { Id = GuidGenerator.Get(1), Value = "Test" };
             obj.AbstractRefDictionary.Add("Item1", item);
             obj.AbstractRefDictionary.Add("Item2", item);
-            var objectReferences = new Dictionary<YamlAssetPath, Guid>();
+            var objectReferences = new YamlAssetMetadata<Guid>();
             var path = new YamlAssetPath();
             path.PushMember(nameof(CollectionContainer.AbstractRefDictionary));
             path.PushIndex("Item1");
-            objectReferences.Add(path, GuidGenerator.Get(1));
+            objectReferences.Set(path, GuidGenerator.Get(1));
             var yaml = SerializeAsString(obj, objectReferences);
             Assert.AreEqual(AbstractNonIdentifiableReferenceableDictionaryYaml, yaml);
         }
@@ -557,11 +557,17 @@ AbstractRefDictionary:
             Assert.AreEqual("Test", obj.AbstractRefDictionary["Item1"].Value);
         }
 
-        private static string SerializeAsString(object instance, Dictionary<YamlAssetPath, Guid> objectReferences)
+        private static string SerializeAsString(object instance, YamlAssetMetadata<Guid> objectReferences)
         {
             using (var stream = new MemoryStream())
             {
-                new YamlAssetSerializer().Save(stream, instance, null, null);
+                var metadata = new AttachedYamlAssetMetadata();
+                if (objectReferences != null)
+                {
+                    metadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, objectReferences);
+                }
+
+                new YamlAssetSerializer().Save(stream, instance, metadata);
                 stream.Flush();
                 stream.Position = 0;
                 return new StreamReader(stream).ReadToEnd();

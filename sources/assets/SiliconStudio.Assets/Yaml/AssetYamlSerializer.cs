@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -191,18 +192,21 @@ namespace SiliconStudio.Core.Yaml
                         ComparerForKeySorting = new DefaultMemberComparer(),
                         PreSerializer = new ContextAttributeSerializer(),
                         PostSerializer = new ErrorRecoverySerializer(),
-                        SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets")
+                        SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets"),
+                        ChainedSerializerFactory = serializer =>
+                        {
+                            var routingSerializer = serializer.FindNext<RoutingSerializer>();
+                            if (routingSerializer == null)
+                                throw new InvalidOperationException("RoutingSerializer expected in the chain of serializers");
+                            // Prepend the IdentifiableObjectSerializer just before the routing serializer
+                            routingSerializer.Prepend(new IdentifiableObjectSerializer());
+                            // Prepend the ContextAttributeSerializer just before the routing serializer
+                            routingSerializer.Prepend(new ContextAttributeSerializer());
+                            // Prepend the ErrorRecoverySerializer at the beginning
+                            routingSerializer.First.Prepend(new ErrorRecoverySerializer());
+                        }
                     };
 
-                    config.ChainedSerializerFactory = serializer =>
-                    {
-                        var routingSerializer = serializer.FindNext<RoutingSerializer>();
-                        if (routingSerializer == null) throw new InvalidOperationException("RoutingSerializer expected in the chain of serializers");
-                        // Prepend the ContextAttributeSerializer just before the routing serializer
-                        routingSerializer.Prepend(new ContextAttributeSerializer());
-                        // Prepend the ErrorRecoverySerializer at the beginning
-                        routingSerializer.First.Prepend(new ErrorRecoverySerializer());
-                    };
                     config.Attributes.PrepareMembersCallback += (objDesc, members) => PrepareMembersCallback(generateIds, objDesc, members);
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
