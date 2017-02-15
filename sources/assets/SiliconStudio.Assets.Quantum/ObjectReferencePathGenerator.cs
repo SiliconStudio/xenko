@@ -1,22 +1,21 @@
+using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Yaml;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Quantum
 {
     public class ObjectReferencePathGenerator : AssetNodeMetadataCollector
     {
-        public HashSet<YamlAssetPath> Result { get; } = new HashSet<YamlAssetPath>();
-
-        public void Reset()
-        {
-            Result.Clear();
-        }
+        public YamlAssetMetadata<Guid> Result { get; } = new YamlAssetMetadata<Guid>();
 
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
             if (((AssetMemberNode)memberNode).IsObjectReference)
             {
-                Result.Add(currentPath);
+                var id = ((IIdentifiable)memberNode.Retrieve()).Id;
+                Result.Set(currentPath, id);
             }
         }
 
@@ -24,10 +23,11 @@ namespace SiliconStudio.Assets.Quantum
         {
             foreach (var index in ((AssetObjectNode)objectNode).GetObjectReferenceIndices())
             {
-                var id = objectNode.IndexToId(index);
+                var itemId = objectNode.IndexToId(index);
                 var itemPath = currentPath.Clone();
-                itemPath.PushItemId(id);
-                Result.Add(itemPath);
+                itemPath.PushItemId(itemId);
+                var id = ((IIdentifiable)objectNode.Retrieve(index)).Id;
+                Result.Set(itemPath, id);
             }
         }
     }

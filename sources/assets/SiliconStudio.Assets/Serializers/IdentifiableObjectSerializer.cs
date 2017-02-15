@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
@@ -28,24 +29,17 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             // Add the path to the currently deserialized object to the list of object references
-            Dictionary<YamlAssetPath, Guid> objectReferences;
+            YamlAssetMetadata<Guid> objectReferences;
             if (!context.SerializerContext.Properties.TryGetValue(AssetObjectSerializerBackend.ObjectReferencesKey, out objectReferences))
             {
-                objectReferences = new Dictionary<YamlAssetPath, Guid>();
+                objectReferences = new YamlAssetMetadata<Guid>();
                 context.SerializerContext.Properties.Add(AssetObjectSerializerBackend.ObjectReferencesKey, objectReferences);
             }
             var path = AssetObjectSerializerBackend.GetCurrentPath(ref context, true);
-            objectReferences.Add(path, identifier);
+            objectReferences.Set(path, identifier);
 
             // Return default(T)
             return !context.Descriptor.Type.IsValueType ? null : Activator.CreateInstance(context.Descriptor.Type);
-            //if (context.Descriptor.Type.GetConstructor(Type.EmptyTypes) != null)
-            //{
-            //    var proxyObject = (IIdentifiable)Activator.CreateInstance(context.Descriptor.Type);
-            //    proxyObject.Id = identifier;
-            //    return proxyObject;
-            //}
-            //throw new NotSupportedException();
         }
 
         public override string ConvertTo(ref ObjectContext objectContext)
@@ -64,12 +58,12 @@ namespace SiliconStudio.Assets.Serializers
 
         protected override bool ShouldSerializeAsScalar(ref ObjectContext objectContext)
         {
-            Dictionary<YamlAssetPath, Guid> objectReferences;
+            YamlAssetMetadata<Guid> objectReferences;
             if (!objectContext.SerializerContext.Properties.TryGetValue(AssetObjectSerializerBackend.ObjectReferencesKey, out objectReferences))
                 return false;
 
             var path = AssetObjectSerializerBackend.GetCurrentPath(ref objectContext, true);
-            return objectReferences.ContainsKey(path);
+            return objectReferences.TryGet(path) != Guid.Empty;
         }
 
         private static bool TryParse(string text, out Guid identifier)

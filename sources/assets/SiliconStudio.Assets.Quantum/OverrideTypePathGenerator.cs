@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 
@@ -6,18 +7,13 @@ namespace SiliconStudio.Assets.Quantum
 {
     public class OverrideTypePathGenerator : AssetNodeMetadataCollector
     {
-        public Dictionary<YamlAssetPath, OverrideType> Result { get; } = new Dictionary<YamlAssetPath, OverrideType>();
-
-        public void Reset()
-        {
-            Result.Clear();
-        }
+        public YamlAssetMetadata<OverrideType> Result { get; } = new YamlAssetMetadata<OverrideType>();
 
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
             if (memberNode?.IsContentOverridden() == true)
             {
-                Result.Add(currentPath, memberNode.GetContentOverride());
+                Result.Set(currentPath, memberNode.GetContentOverride());
             }
         }
 
@@ -28,14 +24,14 @@ namespace SiliconStudio.Assets.Quantum
                 var id = objectNode.IndexToId(index);
                 var itemPath = currentPath.Clone();
                 itemPath.PushItemId(id);
-                Result.Add(itemPath, objectNode.GetItemOverride(index));
+                Result.Set(itemPath, objectNode.GetItemOverride(index));
             }
             foreach (var index in objectNode.GetOverriddenKeyIndices())
             {
                 var id = objectNode.IndexToId(index);
                 var itemPath = currentPath.Clone();
                 itemPath.PushIndex(id);
-                Result.Add(itemPath, objectNode.GetKeyOverride(index));
+                Result.Set(itemPath, objectNode.GetKeyOverride(index));
             }
         }
     }

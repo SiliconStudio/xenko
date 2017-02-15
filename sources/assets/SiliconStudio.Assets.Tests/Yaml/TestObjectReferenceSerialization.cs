@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Assets.Tests.Helpers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -560,7 +561,7 @@ AbstractRefDictionary:
         {
             using (var stream = new MemoryStream())
             {
-                new YamlAssetSerializer().Save(stream, instance, null, null, objectReferences);
+                new YamlAssetSerializer().Save(stream, instance, null, null);
                 stream.Flush();
                 stream.Position = 0;
                 return new StreamReader(stream).ReadToEnd();
@@ -575,8 +576,8 @@ AbstractRefDictionary:
             writer.Flush();
             stream.Position = 0;
             bool aliasOccurred;
-            Dictionary<YamlAssetPath, OverrideType> overrides;
-            var instance = new YamlAssetSerializer().Load(stream, "MyAsset", null, out aliasOccurred, out overrides);
+            AttachedYamlAssetMetadata metadata;
+            var instance = new YamlAssetSerializer().Load(stream, "MyAsset", null, out aliasOccurred, out metadata);
             return instance;
         }
     }

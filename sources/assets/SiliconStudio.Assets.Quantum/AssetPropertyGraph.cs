@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -60,7 +61,8 @@ namespace SiliconStudio.Assets.Quantum
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
             Asset = assetItem.Asset;
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
-            ApplyOverrides(RootNode, assetItem.Overrides);
+            var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
+            ApplyOverrides(RootNode, overrides);
             nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
@@ -166,7 +168,7 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(rootNode);
         }
 
-        public virtual bool IsObjectReference(IGraphNode targetNode, object value)
+        public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             return false;
         }
@@ -196,8 +198,8 @@ namespace SiliconStudio.Assets.Quantum
             if (assetItem.Asset != Asset) throw new ArgumentException($@"The given {nameof(AssetItem)} does not match the asset associated with this instance", nameof(assetItem));
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);
             CollectionItemIdsAnalysis.FixupItemIds(assetItem, logger);
-            assetItem.Overrides = GenerateOverridesForSerialization(RootNode);
-            assetItem.ObjectReferences = GenerateObjectReferencesForSerialization(RootNode);
+            assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, GenerateOverridesForSerialization(RootNode));
+            assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, GenerateObjectReferencesForSerialization(RootNode));
         }
 
         // TODO: check if this can/should be turned private
@@ -272,7 +274,7 @@ namespace SiliconStudio.Assets.Quantum
             return currentNode;
         }
 
-        public static Dictionary<YamlAssetPath, OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
+        public static YamlAssetMetadata<OverrideType> GenerateOverridesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
@@ -281,7 +283,7 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.Result;
         }
 
-        public static HashSet<YamlAssetPath> GenerateObjectReferencesForSerialization(IGraphNode rootNode)
+        public static YamlAssetMetadata<Guid> GenerateObjectReferencesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
@@ -290,7 +292,7 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.Result;
         }
 
-        public static void ApplyOverrides(IAssetNode rootNode, IDictionary<YamlAssetPath, OverrideType> overrides)
+        public static void ApplyOverrides(IAssetNode rootNode, YamlAssetMetadata<OverrideType> overrides)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
@@ -488,7 +490,7 @@ namespace SiliconStudio.Assets.Quantum
             previousOverrides.Remove(e.Member);
             var node = (AssetMemberNode)e.Member;
             var overrideValue = node.GetContentOverride();
-            node.IsObjectReference = IsObjectReference(e.Member, e.NewValue);
+            node.IsObjectReference = IsObjectReference(e.Member, Index.Empty, e.NewValue);
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, ItemId.Empty));
         }
 
@@ -533,7 +535,7 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ids.TryGet(e.Index.Value, out itemId);
                 }
-                node.SetObjectReference(e.Index, IsObjectReference(e.Node, e.NewValue));
+                node.SetObjectReference(e.Index, IsObjectReference(e.Node, e.Index, e.NewValue));
 
             }
             else if (e.ChangeType == ContentChangeType.CollectionRemove)

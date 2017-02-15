@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -15,13 +16,13 @@ namespace SiliconStudio.Assets
 {
     public class AssetLoadResult<T>
     {
-        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, IDictionary<YamlAssetPath, OverrideType> overrides)
+        public AssetLoadResult(T asset, ILogger logger, bool aliasOccurred, AttachedYamlAssetMetadata yamlMetadata)
         {
-            if (overrides == null) throw new ArgumentNullException(nameof(overrides));
+            if (yamlMetadata == null) throw new ArgumentNullException(nameof(yamlMetadata));
             Asset = asset;
             Logger = logger;
             AliasOccurred = aliasOccurred;
-            Overrides = overrides;
+            YamlMetadata = yamlMetadata;
         }
 
         public T Asset { get; }
@@ -31,7 +32,9 @@ namespace SiliconStudio.Assets
         public bool AliasOccurred { get; }
 
         public IDictionary<YamlAssetPath, OverrideType> Overrides { get; }
+        public AttachedYamlAssetMetadata YamlMetadata { get; }
     }
+
     /// <summary>
     /// Main entry point for serializing/deserializing <see cref="Asset"/>.
     /// </summary>
@@ -110,12 +113,11 @@ namespace SiliconStudio.Assets
                 throw new InvalidOperationException("Unable to find a serializer for [{0}]".ToFormat(assetFileExtension));
             }
             bool aliasOccurred;
-            Dictionary<YamlAssetPath, OverrideType> overrides;
-            ISet<YamlAssetPath> objectReferences;
-            var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out overrides);
+            AttachedYamlAssetMetadata yamlMetadata;
+            var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out yamlMetadata);
             // Let's fixup references after deserialization
             (asset as Asset)?.FixupPartReferences();
-            return new AssetLoadResult<T>(asset, log, aliasOccurred, overrides ?? new Dictionary<YamlAssetPath, OverrideType>());
+            return new AssetLoadResult<T>(asset, log, aliasOccurred, yamlMetadata);
         }
 
         /// <summary>
@@ -123,10 +125,10 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <param name="asset">The asset object.</param>
+        /// <param name="yamlMetadata"></param>
         /// <param name="log">The logger.</param>
-        /// <param name="overrides"></param>
         /// <exception cref="System.ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, ISet<YamlAssetPath> objectReferences = null)
+        public static void Save(string filePath, object asset, AttachedYamlAssetMetadata yamlMetadata, ILogger log = null)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
@@ -140,7 +142,7 @@ namespace SiliconStudio.Assets
 
             using (var stream = new MemoryStream())
             {
-                Save(stream, asset, log, overrides);
+                Save(stream, asset, yamlMetadata, log);
                 File.WriteAllBytes(filePath, stream.ToArray());
             }
         }
@@ -150,13 +152,14 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="asset">The asset object.</param>
+        /// <param name="yamlMetadata"></param>
         /// <param name="log">The logger.</param>
         /// <exception cref="System.ArgumentNullException">
         /// stream
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null)
+        public static void Save(Stream stream, object asset, AttachedYamlAssetMetadata yamlMetadata, ILogger log = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;
@@ -172,7 +175,7 @@ namespace SiliconStudio.Assets
             {
                 throw new InvalidOperationException($"Unable to find a serializer for [{assetFileExtension}]");
             }
-            serializer.Save(stream, asset, log, overrides, objectReferences);
+            serializer.Save(stream, asset, yamlMetadata, log);
         }
     }
 }

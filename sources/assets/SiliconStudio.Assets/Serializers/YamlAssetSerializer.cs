@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -18,13 +19,12 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     public class YamlAssetSerializer : IAssetSerializer, IAssetSerializerFactory
     {
-        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata)
         {
             PropertyContainer properties;
-            Dictionary<YamlAssetPath, Guid> objectReferences;
             var result = AssetYamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
-            properties.TryGetValue(AssetObjectSerializerBackend.OverrideDictionaryKey, out overrides);
-            properties.TryGetValue(AssetObjectSerializerBackend.ObjectReferencesKey, out objectReferences);
+            yamlMetadata = AttachedYamlAssetMetadata.FromPropertyContainer(properties);
+            var objectReferences = yamlMetadata.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
             if (objectReferences != null)
             {
                 FixupObjectReference.RunFixupPass(result, objectReferences, true, log);
@@ -32,13 +32,15 @@ namespace SiliconStudio.Assets.Serializers
             return result;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null)
+        public void Save(Stream stream, object asset, AttachedYamlAssetMetadata yamlMetadata, ILogger log = null)
         {
             var settings = new SerializerContextSettings(log);
+            var overrides = yamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             if (overrides != null)
             {
                 settings.Properties.Add(AssetObjectSerializerBackend.OverrideDictionaryKey, overrides);
             }
+            var objectReferences = yamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
             if (objectReferences != null)
             {
                 settings.Properties.Add(AssetObjectSerializerBackend.ObjectReferencesKey, objectReferences);

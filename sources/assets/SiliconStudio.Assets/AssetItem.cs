@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -139,6 +141,12 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
 
+        /// <summary>
+        /// Gets the attached metadata for YAML serialization.
+        /// </summary>
+        [DataMemberIgnore]
+        public AttachedYamlAssetMetadata YamlMetadata { get; internal set; } = new AttachedYamlAssetMetadata();
+
         [DataMemberIgnore]
         public ISet<YamlAssetPath> ObjectReferences { get; set; }
 
@@ -186,7 +194,6 @@ namespace SiliconStudio.Assets
                 isDirty = isDirty,
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
-                Overrides = Overrides != null ? new Dictionary<YamlAssetPath, OverrideType>(Overrides) : null
             };
             return item;
         }

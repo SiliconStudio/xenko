@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -18,8 +19,8 @@ namespace SiliconStudio.Assets.Serializers
 
     public interface IAssetSerializer
     {
-        object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides);
+        object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata);
 
-        void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null);
+        void Save(Stream stream, object asset, AttachedYamlAssetMetadata yamlMetadata, ILogger log = null);
     }
 }

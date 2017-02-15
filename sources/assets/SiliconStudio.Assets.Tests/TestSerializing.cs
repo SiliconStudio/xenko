@@ -7,6 +7,7 @@ using System.Linq;
 
 using NUnit.Framework;
 using SiliconStudio.Assets.Tests.Helpers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
@@ -136,7 +137,7 @@ namespace SiliconStudio.Assets.Tests
         private static string ToText(List<AssetItem> assetCollection)
         {
             var stream = new MemoryStream();
-            AssetFileSerializer.Default.Save(stream, assetCollection);
+            AssetFileSerializer.Default.Save(stream, assetCollection, null);
             stream.Position = 0;
             return new StreamReader(stream).ReadToEnd();
         }
@@ -152,8 +153,8 @@ namespace SiliconStudio.Assets.Tests
             stream.Position = 0;
 
             bool aliasOccurred;
-            Dictionary<YamlAssetPath, OverrideType> overrides;
-            var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, out aliasOccurred, out overrides);
+            AttachedYamlAssetMetadata metadata;
+            var assetItems = (List<AssetItem>)AssetFileSerializer.Default.Load(stream, null, null, out aliasOccurred, out metadata);
             if (aliasOccurred)
             {
                 foreach (var assetItem in assetItems)

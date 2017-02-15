@@ -2,14 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -17,7 +14,7 @@ namespace SiliconStudio.Assets.Serializers
     {
         public static readonly SourceCodeAssetSerializer Default = new SourceCodeAssetSerializer();
 
-        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out Dictionary<YamlAssetPath, OverrideType> overrides)
+        public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata)
         {
             aliasOccurred = false;
 
@@ -41,11 +38,11 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             // No override in source code assets
-            overrides = new Dictionary<YamlAssetPath, OverrideType>();
+            yamlMetadata = new AttachedYamlAssetMetadata();
             return asset;
         }
 
-        public void Save(Stream stream, object asset, ILogger log = null, Dictionary<YamlAssetPath, OverrideType> overrides = null, Dictionary<YamlAssetPath, Guid> objectReferences = null)
+        public void Save(Stream stream, object asset, AttachedYamlAssetMetadata yamlMetadata, ILogger log = null)
         {
             ((SourceCodeAsset)asset).Save(stream);
         }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Serializers
         /// <param name="objectReferences">The path to each object reference and the <see cref="Guid"/> of the tar</param>
         /// <param name="throwOnDuplicateIds">If true, an exception will be thrown if two <see cref="IIdentifiable"/></param>
         /// <param name="logger">An optional logger.</param>
-        public static void RunFixupPass(object root, Dictionary<YamlAssetPath, Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
+        public static void RunFixupPass(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
         {
             // First collect IIdentifiable objects
             var visitor = new FixupObjectReferenceVisitor(throwOnDuplicateIds, logger);

@@ -100,7 +100,10 @@
     <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Serializers\IdentifiableAssetPartReferenceSerializer.cs" />
     <Compile Include="Serializers\IdentifiableObjectSerializer.cs" />
+    <Compile Include="Yaml\AttachedYamlAssetMetadata.cs" />
+    <Compile Include="Yaml\IYamlAssetMetadata.cs" />
     <Compile Include="Serializers\ScalarOrObjectSerializer.cs" />
+    <Compile Include="Yaml\YamlAssetMetadata.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets.Tests.Helpers;
+using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
@@ -28,17 +30,19 @@ namespace SiliconStudio.Assets.Quantum.Tests
                 assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
             graph.PrepareForSave(null, assetItem);
             var stream = new MemoryStream();
-            AssetFileSerializer.Save(stream, assetItem.Asset, null, (Dictionary<YamlAssetPath, OverrideType>)assetItem.Overrides);
+            AssetFileSerializer.Save(stream, assetItem.Asset, assetItem.YamlMetadata, null);
             stream.Position = 0;
             var streamReader = new StreamReader(stream);
             var yaml = streamReader.ReadToEnd();
             Assert.AreEqual(expectedYaml, yaml);
         }
 
-        private static void SerializeAndCompare(object instance, Dictionary<YamlAssetPath, OverrideType> overrides, string expectedYaml)
+        private static void SerializeAndCompare(object instance, YamlAssetMetadata<OverrideType> overrides, string expectedYaml)
         {
             var stream = new MemoryStream();
-            AssetFileSerializer.Default.Save(stream, instance, null, overrides);
+            var metadata = new AttachedYamlAssetMetadata();
+            metadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, overrides);
+            AssetFileSerializer.Default.Save(stream, instance, metadata, null);
             stream.Position = 0;
             var streamReader = new StreamReader(stream);
             var yaml = streamReader.ReadToEnd();
@@ -782,24 +786,30 @@ Value*: OverriddenString
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
-            Assert.AreEqual(1, overrides.Count);
-            Assert.True(overrides.ContainsKey(expectedPath));
-            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            Assert.AreEqual(1, overridesAsDictionary.Count);
+            Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // We expect the same resulting path both from the member node and the target object node
             overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode.Target);
-            Assert.AreEqual(1, overrides.Count);
-            Assert.True(overrides.ContainsKey(expectedPath));
-            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            Assert.AreEqual(1, overridesAsDictionary.Count);
+            Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // Test deserialization
             SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
             bool aliasOccurred;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
+            AttachedYamlAssetMetadata metadata;
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out metadata);
+            overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
+            Assert.NotNull(overrides);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
             Assert.AreEqual("OverriddenString", instance.Value);
-            Assert.AreEqual(1, overrides.Count);
-            Assert.True(overrides.ContainsKey(expectedPath));
-            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+            Assert.AreEqual(1, overridesAsDictionary.Count);
+            Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
         }
 
         [Test]
@@ -816,18 +826,23 @@ Value*: OverriddenString
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
-            Assert.AreEqual(1, overrides.Count);
-            Assert.True(overrides.ContainsKey(expectedPath));
-            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            Assert.AreEqual(1, overridesAsDictionary.Count);
+            Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // Test deserialization
             SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
             bool aliasOccurred;
-            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out overrides);
+            AttachedYamlAssetMetadata metadata;
+            var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(DeriveAssetTestBase.ToStream(expectedYaml), null, null, out aliasOccurred, out metadata);
+            overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
+            Assert.NotNull(overrides);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
             Assert.AreEqual("OverriddenString", instance.Value);
-            Assert.AreEqual(1, overrides.Count);
-            Assert.True(overrides.ContainsKey(expectedPath));
-            Assert.AreEqual(OverrideType.New, overrides[expectedPath]);
+            Assert.AreEqual(1, overridesAsDictionary.Count);
+            Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
+            Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
         }
     }
 }

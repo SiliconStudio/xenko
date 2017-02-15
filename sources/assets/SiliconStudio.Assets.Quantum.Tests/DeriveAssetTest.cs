@@ -15,10 +15,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
         protected void BuildGraph()
         {
             var baseGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, BaseAssetItem, null);
-            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
             BaseGraph = (MyAssetBasePropertyGraph)baseGraph;
             var derivedGraph = AssetQuantumRegistry.ConstructPropertyGraph(Container, DerivedAssetItem, null);
-            Assert.IsAssignableFrom<MyAssetBasePropertyGraph>(baseGraph);
+            Assert.IsInstanceOf<MyAssetBasePropertyGraph>(baseGraph);
             DerivedGraph = (MyAssetBasePropertyGraph)derivedGraph;
             DerivedGraph.RefreshBase(BaseGraph);
         }
