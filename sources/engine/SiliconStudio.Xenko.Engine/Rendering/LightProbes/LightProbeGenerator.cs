@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
     {
         private const int LambertHamonicOrder = 3;
 
-        public static List<LightProbeComponent> GenerateCoefficients(ISceneRendererContext context)
+        public static Dictionary<LightProbeComponent, FastList<Color3>> GenerateCoefficients(ISceneRendererContext context)
         {
             using (var cubemapRenderer = new CubemapSceneRenderer(context, 256))
             {
@@ -36,9 +36,8 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                     HarmonicOrder = LambertHamonicOrder,
                     RadianceMap = cubeTexture,
                 };
-                var renderSHEffect = new SphericalHarmonicsRendererEffect();
 
-                var lightProbes = new List<LightProbeComponent>();
+                var lightProbes = new Dictionary<LightProbeComponent, FastList<Color3>>();
 
                 using (cubemapRenderer.DrawContext.PushRenderTargetsAndRestore())
                 {
@@ -51,8 +50,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                         var lightProbe = entity.Get<LightProbeComponent>();
                         if (lightProbe == null)
                             continue;
-
-                        lightProbes.Add(lightProbe);
 
                         var lightProbePosition = lightProbe.Entity.Transform.WorldMatrix.TranslationVector;
                         context.GraphicsContext.ResourceGroupAllocator.Reset(context.GraphicsContext.CommandList);
@@ -68,25 +65,13 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
                         lambertFiltering.Draw(cubemapRenderer.DrawContext);
 
                         var coefficients = lambertFiltering.PrefilteredLambertianSH.Coefficients;
-                        lightProbe.Coefficients = new FastList<Color3>();
+                        var lightProbeCoefficients = new FastList<Color3>();
                         for (int i = 0; i < coefficients.Length; i++)
                         {
-                            lightProbe.Coefficients.Add(coefficients[i]*SphericalHarmonics.BaseCoefficients[i]);
+                            lightProbeCoefficients.Add(coefficients[i]*SphericalHarmonics.BaseCoefficients[i]);
                         }
 
-                        using (var outputCubemap = Texture.NewCube(context.GraphicsDevice, 256, 1, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget | TextureFlags.ShaderResource))
-                        {
-                            renderSHEffect.InputSH = lambertFiltering.PrefilteredLambertianSH;
-                            renderSHEffect.SetOutput(outputCubemap);
-                            renderSHEffect.Draw(cubemapRenderer.DrawContext);
-
-                            // Save cubemaps to HDD for debugging purpose
-                            //using (var file = File.Create($"test{lightProbeIndex}.dds"))
-                            //    cubeTexture.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
-                            //
-                            //using (var file = File.Create($"test{lightProbeIndex}-filtered.dds"))
-                            //    outputCubemap.Save(context.GraphicsContext.CommandList, file, ImageFileType.Dds);
-                        }
+                        lightProbes.Add(lightProbe, lightProbeCoefficients);
 
                         context.GraphicsContext.CommandList.EndProfile(); // Prefilter SphericalHarmonics
 
