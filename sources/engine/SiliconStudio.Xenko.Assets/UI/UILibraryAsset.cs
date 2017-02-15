@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             // TODO: make a common base method in AssetCompositeHierarchy - the beginning of the method is similar to CreatePrefabInstance
             var idRemapping = new Dictionary<Guid, Guid>();
-            var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, idRemapping);
+            var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, out idRemapping);
 
             var rootElementId = idRemapping[elementId];
             if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))

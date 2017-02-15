@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -11,6 +12,11 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class AssimpAssetImporter : ModelAssetImporter
     {
+        static AssimpAssetImporter()
+        {
+            NativeLibrary.PreloadLibrary("assimp-vc120-mt.dll");
+        }
+
         // Supported file extensions for this importer
         private const string FileExtensions = ".dae;.3ds;.obj;.blend;.x;.md2;.md3;.dxf";
 

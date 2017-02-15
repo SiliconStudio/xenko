@@ -288,7 +288,8 @@ namespace SiliconStudio.Assets
         /// <returns>A new asset inheriting the values of this asset.</returns>
         public Asset CreateDerivedAsset()
         {
-            return Asset.CreateDerivedAsset(Location);
+            Dictionary<Guid, Guid> idRemapping;
+            return Asset.CreateDerivedAsset(Location, out idRemapping);
         }
 
         /// <summary>
