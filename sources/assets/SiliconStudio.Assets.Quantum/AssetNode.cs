@@ -42,6 +42,12 @@ namespace SiliconStudio.Assets.Quantum
 
     internal interface IAssetObjectNodeInternal : IAssetObjectNode, IAssetNodeInternal
     {
+        void SetObjectReference(Index index, bool isReference);
+
+        bool IsObjectReference(Index index);
+
+        IEnumerable<Index> GetObjectReferenceIndices();
+
         void NotifyOverrideChanging();
 
         void NotifyOverrideChanged();
@@ -655,11 +661,11 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
-        internal void SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
+        void IAssetObjectNodeInternal.SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
 
-        internal bool IsObjectReference(Index index) => ex.IsObjectReference(index);
+        bool IAssetObjectNodeInternal.IsObjectReference(Index index) => ex.IsObjectReference(index);
 
-        internal IEnumerable<Index> GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
+        IEnumerable<Index> IAssetObjectNodeInternal.GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
 
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 
@@ -743,11 +749,11 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
-        internal void SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
+        void IAssetObjectNodeInternal.SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
 
-        internal bool IsObjectReference(Index index) => ex.IsObjectReference(index);
+        bool IAssetObjectNodeInternal.IsObjectReference(Index index) => ex.IsObjectReference(index);
 
-        internal IEnumerable<Index> GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
+        IEnumerable<Index> IAssetObjectNodeInternal.GetObjectReferenceIndices() => ex.GetObjectReferenceIndices();
 
         void IAssetObjectNodeInternal.NotifyOverrideChanging() => OverrideChanging?.Invoke(this, EventArgs.Empty);
 

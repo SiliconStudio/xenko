@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum
 
         protected override void VisitObjectNode(IAssetObjectNode objectNode, YamlAssetPath currentPath)
         {
-            foreach (var index in ((AssetObjectNode)objectNode).GetObjectReferenceIndices())
+            foreach (var index in ((IAssetObjectNodeInternal)objectNode).GetObjectReferenceIndices())
             {
                 var itemId = objectNode.IndexToId(index);
                 var itemPath = currentPath.Clone();

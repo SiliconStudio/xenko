@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
             }
 
-            var objectNode = (IObjectNode)node;
+            var objectNode = node as IObjectNode ?? ((IMemberNode)node).Target;
             if (index.IsEmpty)
             {
                 objectNode.Add(itemToAdd);

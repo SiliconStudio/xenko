@@ -546,8 +546,8 @@ namespace SiliconStudio.Presentation.Quantum
                 var targetNode = GetTargetNode(memberNode, Index.Empty) as IObjectNode;
                 if (targetNode != null)
                 {
-                    targetNode.ItemChanging += ContentChanging;
-                    targetNode.ItemChanged += ContentChanged;
+                    targetNode.ItemChanging -= ContentChanging;
+                    targetNode.ItemChanged -= ContentChanged;
                 }
             }
             base.Destroy();

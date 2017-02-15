@@ -522,7 +522,7 @@ namespace SiliconStudio.Assets.Quantum
 
             var itemId = ItemId.Empty;
             var overrideValue = OverrideType.Base;
-            var node = (AssetObjectNode)e.Node;
+            var node = (IAssetObjectNodeInternal)e.Node;
             var collection = node.Retrieve();
             if (e.ChangeType == ContentChangeType.CollectionUpdate || e.ChangeType == ContentChangeType.CollectionAdd)
             {
