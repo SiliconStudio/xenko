@@ -119,6 +119,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public IPostProcessingEffects PostEffects { get; set; }
 
         /// <summary>
+        /// Light shafts effect
+        /// </summary>
+        public LightShafts LightShafts { get; set; }
+
+        /// <summary>
         /// Virtual Reality related settings
         /// </summary>
         public VRRendererSettings VRSettings { get; set; } = new VRRendererSettings();
@@ -268,6 +273,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                             CollectView(context);
 
+                            LightShafts?.Collect(context);
+
                             PostEffects?.Collect(context);
                         }
                     }
@@ -278,6 +285,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
 
                     CollectView(context);
+
+                    LightShafts?.Collect(context);
 
                     PostEffects?.Collect(context);
                 }
@@ -413,6 +422,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
                 }
 
+
                 if (PostEffects != null)
                 {
                     //Make sure we run post effects without MSAA
@@ -427,6 +437,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         peInputTargets = ViewTargetsCompositionNoMSAA;
                         peInputDepth = ViewDepthStencilNoMSAA;
                     }
+
+                    //Shafts if we have them
+                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
 
                     // Run post effects
                     PostEffects.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);

@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private Bloom bloom;
         private LightStreak lightStreak;
         private LensFlare lensFlare;
-        private LightShafts lightShafts;
         private ColorTransformGroup colorTransformsGroup;
         private IScreenSpaceAntiAliasingEffect ssaa;
 
@@ -55,7 +54,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             lightStreak = new LightStreak();
             lensFlare = new LensFlare();
             ssaa = new FXAAEffect();
-            lightShafts = new LightShafts();
             colorTransformsGroup = new ColorTransformGroup();
         }
 
@@ -165,16 +163,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        [DataMember(60)]
-        [Category]
-        public LightShafts LightShafts
-        {
-            get
-            {
-                return lightShafts;
-            }
-        }
-
         /// <summary>
         /// Gets the final color transforms.
         /// </summary>
@@ -220,7 +208,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             depthOfField.Enabled = false;
             bloom.Enabled = false;
             lightStreak.Enabled = false;
-            lightShafts.Enabled = false;
             lensFlare.Enabled = false;
             ssaa.Enabled = false;
             colorTransformsGroup.Enabled = false;
@@ -253,10 +240,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public void Collect(RenderContext context)
         {
-            if (lightShafts.Enabled)
-            {
-                lightShafts.Collect(context);
-            }
         }
 
         public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
@@ -326,25 +309,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 depthOfField.Draw(context);
                 currentInput = dofOutput;
             }
-
-            //var nativeDevice = GraphicsDevice.NativeDevice;
-            //var query = new Query(nativeDevice, new QueryDescription { Type = QueryType.Timestamp, Flags = QueryFlags.None });
-            //GraphicsDevice.NativeDeviceContext.Begin(query);
-            //
-            //Stopwatch timer = new Stopwatch();
-            //timer.Start();
-            if (lightShafts.Enabled)
-            {
-                // Set common inputs for light shafts once
-                //lightShafts.SetInput(0, currentInput);
-                lightShafts.SetInput(0, GetInput(1)); // Depth
-                lightShafts.SetOutput(currentInput);
-                lightShafts.Draw(context);
-            }
-
-            //GraphicsDevice.NativeDeviceContext.End(query);
-            //var time = GraphicsDevice.NativeDeviceContext.GetData<UInt64>(query);
-            //Debug.WriteLine($"Shader Time: {time}");
 
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this

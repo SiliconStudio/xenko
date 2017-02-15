@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         private PoolListStruct<LightShaftData> activeLightShafts = new PoolListStruct<LightShaftData>(4, () => new LightShaftData());
 
-        public IEnumerable<LightShaftData> LightShafts => activeLightShafts;
+        public PoolListStruct<LightShaftData> LightShafts => activeLightShafts;
         
         protected override LightShaftData GenerateComponentData(Entity entity, LightShaftComponent component)
         {

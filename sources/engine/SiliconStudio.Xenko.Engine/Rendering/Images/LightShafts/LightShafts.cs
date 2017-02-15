@@ -242,6 +242,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        {
+            var colorInput = inputTargetsComposition as IColorTarget;
+            if (colorInput == null) return;
+
+            SetInput(0, inputDepthStencil);
+            SetOutput(colorInput.Color);
+            Draw(drawContext);
+        }
+
         private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft)
         {
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
