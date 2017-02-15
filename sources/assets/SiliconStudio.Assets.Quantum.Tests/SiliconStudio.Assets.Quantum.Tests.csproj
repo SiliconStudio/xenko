@@ -52,6 +52,7 @@
     <Compile Include="TestArchetypesBasic.cs" />
     <Compile Include="TestAssetPropertyGraph.cs" />
     <Compile Include="TestCollectionUpdates.cs" />
+    <Compile Include="TestObjectReferences.cs" />
     <Compile Include="TestOverrideSerialization.cs" />
     <Compile Include="TestReconcileWithBase.cs" />
     <Compile Include="Types.cs" />

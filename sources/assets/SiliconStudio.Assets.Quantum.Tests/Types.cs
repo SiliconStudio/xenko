@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -83,6 +84,28 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public class MyAsset9 : MyAssetBase
         {
             public SomeObject MyObject { get; set; }
+        }
+
+        [DataContract]
+        public class MyReferenceable : IIdentifiable
+        {
+            public MyReferenceable() { Id = Guid.NewGuid(); }
+            public string Value { get; set; }
+            public Guid Id { get; set; }
+        }
+
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAssetWithRef : MyAssetBase
+        {
+            public MyReferenceable MyObject1 { get; set; }
+
+            public MyReferenceable MyObject2 { get; set; }
+
+            public List<MyReferenceable> MyObjects { get; set; } = new List<MyReferenceable>();
+
+            [NonIdentifiableCollectionItems]
+            public List<MyReferenceable> MyNonIdObjects { get; set; } = new List<MyReferenceable>();
         }
 
 

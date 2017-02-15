@@ -120,6 +120,18 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
+        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        {
+            var member = targetNode as IMemberNode;
+            if (member != null && typeof(TAssetPart).IsAssignableFrom(targetNode.Type))
+            {
+                // Check if we're the part referenced by a part design - other cases are references
+                return member.Parent.Type != typeof(TAssetPartDesign);
+            }
+            return base.IsObjectReference(targetNode, index, value);
+        }
+
+
         public override bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
         {
             // If we're not accessing the target node through a member (eg. the target node is the root node of the visit)

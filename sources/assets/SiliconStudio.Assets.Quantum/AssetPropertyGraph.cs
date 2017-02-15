@@ -63,6 +63,8 @@ namespace SiliconStudio.Assets.Quantum
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
+            var objectReferences = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
+            ApplyObjectReferences(RootNode, objectReferences);
             nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
@@ -202,13 +204,19 @@ namespace SiliconStudio.Assets.Quantum
             assetItem.YamlMetadata.AttachMetadata(AssetObjectSerializerBackend.ObjectReferencesKey, GenerateObjectReferencesForSerialization(RootNode));
         }
 
-        // TODO: check if this can/should be turned private
         [CanBeNull]
-        public static IAssetNode ResolveObjectPath([NotNull] IAssetNode rootNode, [NotNull] YamlAssetPath path, out Index index, out bool overrideOnKey)
+        private static IAssetNode ResolveObjectPath([NotNull] IAssetNode rootNode, [NotNull] YamlAssetPath path, out Index index)
+        {
+            bool unused;
+            return ResolveObjectPath(rootNode, path, out index, out unused);
+        }
+
+        [CanBeNull]
+        private static IAssetNode ResolveObjectPath([NotNull] IAssetNode rootNode, [NotNull] YamlAssetPath path, out Index index, out bool resolveOnIndex)
         {
             var currentNode = rootNode;
             index = Index.Empty;
-            overrideOnKey = false;
+            resolveOnIndex = false;
             for (var i = 0; i < path.Items.Count; i++)
             {
                 var item = path.Items[i];
@@ -217,7 +225,7 @@ namespace SiliconStudio.Assets.Quantum
                     case YamlAssetPath.ItemType.Member:
                     {
                         index = Index.Empty;
-                        overrideOnKey = false;
+                        resolveOnIndex = false;
                         if (currentNode.IsReference)
                         {
                             var memberNode = currentNode as IMemberNode;
@@ -233,7 +241,7 @@ namespace SiliconStudio.Assets.Quantum
                     case YamlAssetPath.ItemType.Index:
                     {
                         index = new Index(item.Value);
-                        overrideOnKey = true;
+                        resolveOnIndex = true;
                         var memberNode = currentNode as IMemberNode;
                         if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
                         currentNode = (IAssetNode)memberNode.Target;
@@ -250,7 +258,7 @@ namespace SiliconStudio.Assets.Quantum
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentNode.Retrieve());
                         var key = ids.GetKey(item.AsItemId());
                         index = new Index(key);
-                        overrideOnKey = false;
+                        resolveOnIndex = false;
                         var memberNode = currentNode as IMemberNode;
                         if (memberNode == null) throw new InvalidOperationException($"An IMemberNode was expected when processing the path [{path}]");
                         currentNode = (IAssetNode)memberNode.Target;
@@ -283,11 +291,11 @@ namespace SiliconStudio.Assets.Quantum
             return visitor.Result;
         }
 
-        public static YamlAssetMetadata<Guid> GenerateObjectReferencesForSerialization(IGraphNode rootNode)
+        public YamlAssetMetadata<Guid> GenerateObjectReferencesForSerialization(IGraphNode rootNode)
         {
             if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
 
-            var visitor = new ObjectReferencePathGenerator();
+            var visitor = new ObjectReferencePathGenerator(this);
             visitor.Visit(rootNode);
             return visitor.Result;
         }
@@ -323,6 +331,30 @@ namespace SiliconStudio.Assets.Quantum
                         objectNode.OverrideKey(true, index);
                     }
                 }
+            }
+        }
+
+        private void ApplyObjectReferences(IAssetObjectNode rootNode, YamlAssetMetadata<Guid> objectReferences)
+        {
+            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
+
+            if (objectReferences == null)
+                return;
+
+            foreach (var objectReference in objectReferences)
+            {
+                Index index;
+                var node = ResolveObjectPath(rootNode, objectReference.Key, out index);
+                // The node is unreachable, skip this override.
+                if (node == null)
+                    continue;
+
+                var memberNode = node as AssetMemberNode;
+                if (memberNode != null)
+                    memberNode.IsObjectReference = true;
+
+                var objectNode = node as IAssetObjectNodeInternal;
+                objectNode?.SetObjectReference(index, true);
             }
         }
 
