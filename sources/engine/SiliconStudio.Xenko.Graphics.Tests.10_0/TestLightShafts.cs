@@ -29,20 +29,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.InitialSceneUrl = "LightShafts";
             SceneSystem.GraphicsCompositor = GraphicsCompositor.CreateDefault(true);
             var fwr = ((SceneSystem.GraphicsCompositor.Game as SceneCameraRenderer).Child as ForwardRenderer);
-            if (fwr.PostEffects != null)
-            {
-                var postEffects = new PostProcessingEffects();
-                postEffects.LightShafts.Enabled = true;
-                postEffects.DepthOfField.Enabled = false;
-                postEffects.AmbientOcclusion.Enabled = false;
-                postEffects.Antialiasing.Enabled = false;
-                postEffects.BrightFilter.Enabled = false;
-                postEffects.Bloom.Enabled = false;
-                postEffects.LensFlare.Enabled = false;
-                postEffects.ColorTransforms.Transforms.Add(new ToneMap());
-
-                fwr.PostEffects = postEffects;
-            }
+            fwr.LightShafts = new LightShafts();
         }
 
         protected override async Task LoadContent()
