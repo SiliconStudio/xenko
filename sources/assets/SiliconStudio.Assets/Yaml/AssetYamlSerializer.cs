@@ -6,6 +6,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Core.Yaml
@@ -193,6 +194,15 @@ namespace SiliconStudio.Core.Yaml
                         SerializerFactorySelector = new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Assets")
                     };
 
+                    config.ChainedSerializerFactory = serializer =>
+                    {
+                        var routingSerializer = serializer.FindNext<RoutingSerializer>();
+                        if (routingSerializer == null) throw new InvalidOperationException("RoutingSerializer expected in the chain of serializers");
+                        // Prepend the ContextAttributeSerializer just before the routing serializer
+                        routingSerializer.Prepend(new ContextAttributeSerializer());
+                        // Prepend the ErrorRecoverySerializer at the beginning
+                        routingSerializer.First.Prepend(new ErrorRecoverySerializer());
+                    };
                     config.Attributes.PrepareMembersCallback += (objDesc, members) => PrepareMembersCallback(generateIds, objDesc, members);
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
