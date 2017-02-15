@@ -26,7 +26,6 @@
     <Compile Include="BuildResultCode.cs" />
     <Compile Include="BuildStepExtensions.cs" />
     <Compile Include="BuildThreadMonitor.cs" />
-    <Compile Include="CommandDependsOnAttribute.cs" />
     <Compile Include="BuildStepLogger.cs" />
     <Compile Include="DatabaseMountInfo.cs" />
     <Compile Include="BuildScript.cs" />
