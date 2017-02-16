@@ -379,18 +379,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                 drawContext.CommandList.EndProfile();
 
-                using (drawContext.PushRenderTargetsAndRestore())
-                {
-                    // If MSAA, resolve depth here (and no need to do it later)
-                    if (actualMSAALevel != MSAALevel.None)
-                    {
-                        ResolveDepthMSAA(drawContext);
-                        drawContext.CommandList.SetRenderTarget(ViewDepthStencilNoMSAA, null);
-                    }
-
-                    // Bake lightprobes against Z-buffer
-                    BakeLightProbes(context, drawContext);
-                }
+                // Bake lightprobes against Z-buffer
+                BakeLightProbes(context, drawContext);
             }
 
             using (drawContext.PushRenderTargetsAndRestore())
@@ -428,6 +418,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     //Make sure we run post effects without MSAA
                     var peInputTargets = ViewTargetsComposition;
                     var peInputDepth = ViewDepthStencil;
+
+                    //Shafts if we have them, with MSAA if we have it
+                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
+
+                    //Remove MSAA
                     if (actualMSAALevel != MSAALevel.None)
                     {
                         ResolveMSAA(drawContext);
@@ -437,9 +432,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         peInputTargets = ViewTargetsCompositionNoMSAA;
                         peInputDepth = ViewDepthStencilNoMSAA;
                     }
-
-                    //Shafts if we have them
-                    LightShafts?.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
 
                     // Run post effects
                     PostEffects.Draw(drawContext, peInputTargets, peInputDepth, ViewOutputTarget);
