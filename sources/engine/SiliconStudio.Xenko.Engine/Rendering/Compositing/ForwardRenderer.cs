@@ -427,10 +427,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         ResolveMSAA(drawContext);
                         // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
-                        if (!lightProbes)
-                            ResolveDepthMSAA(drawContext);
+                        //if (!lightProbes)
+                        //    ResolveDepthMSAA(drawContext);
                         peInputTargets = ViewTargetsCompositionNoMSAA;
-                        peInputDepth = ViewDepthStencilNoMSAA;
+                        //peInputDepth = ViewDepthStencilNoMSAA;
                     }
 
                     // Run post effects
