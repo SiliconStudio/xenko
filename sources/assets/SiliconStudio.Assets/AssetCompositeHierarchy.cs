@@ -170,9 +170,27 @@ namespace SiliconStudio.Assets
             }
             if (cleanReference)
             {
-                ClearPartReferences(clonedHierarchy);
+                // set to null reference outside of the sub-tree
+                var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(GetType());
+                tempAsset.Hierarchy = clonedHierarchy;
+                tempAsset.FixupPartReferences();
             }
-
+            else
+            {
+                // restore initial ids for reference outside of the subtree, so they can be fixed up later.
+                var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(GetType());
+                tempAsset.Hierarchy = clonedHierarchy;
+                var visitor = new AssetCompositePartReferenceCollector();
+                visitor.VisitAsset(tempAsset);
+                var references = visitor.Result;
+                var revertedIdMapping = idRemapping.ToDictionary(x => x.Value, x => x.Key);
+                foreach (var referencedPart in references.Select(x => x.AssetPart).OfType<IIdentifiable>())
+                {
+                    var realPart = ResolvePartReference(referencedPart);
+                    if (realPart == null)
+                        referencedPart.Id = revertedIdMapping[referencedPart.Id];
+                }
+            }
             return clonedHierarchy;
         }
 
@@ -198,15 +216,6 @@ namespace SiliconStudio.Assets
             result.Parts.Add(partDesign);
             result.RootPartIds.Add(partDesign.Part.Id);
             return result;
-        }
-
-        /// <summary>
-        /// Clears the part references on the cloned hierarchy. Called by <see cref="CloneSubHierarchies"/> when parameter <i>cleanReference</i> is <c>true</c>.
-        /// </summary>
-        /// <param name="clonedHierarchy">The cloned hierarchy.</param>
-        protected virtual void ClearPartReferences(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> clonedHierarchy)
-        {
-            // default implementation does nothing
         }
 
         /// <summary>
