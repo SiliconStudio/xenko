@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Initializes a new instance of the <see cref="ImageScaler"/> class.
         /// </summary>
         /// <param name="samplingPattern">9 taps multi-sampler (Cross9) or 1-tap Point sampling (Box)</param>
-        public ImageScaler(SamplingPattern samplingPattern)
+        public ImageScaler(SamplingPattern samplingPattern, bool delaySetRenderTargets = false) : base(null, delaySetRenderTargets)
         {
             EffectName = samplingPattern == SamplingPattern.Cross9 ? "ImageSuperSamplerScalerEffect" : "ImageScalerEffect";
         }

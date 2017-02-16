@@ -57,7 +57,8 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if (audioEngineSingleton == null)
                 {
-                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine(RequestedAudioDevice);
+                    var settings = ((Game)Game)?.Settings?.Configurations?.Get<AudioEngineSettings>();
+                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine(RequestedAudioDevice, settings !=null && settings.HrtfSupport ? AudioLayer.DeviceFlags.Hrtf : AudioLayer.DeviceFlags.None);
                 }
                 else
                 {

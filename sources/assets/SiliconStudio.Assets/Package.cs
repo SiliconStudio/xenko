@@ -14,8 +14,10 @@ using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -58,7 +60,7 @@ namespace SiliconStudio.Assets
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     [AssetUpgrader("Assets", 2, 3, typeof(RemoveWindowsStoreAndPhone))]
     [AssetUpgrader("Assets", 3, 4, typeof(RemoveProperties))]
-    public sealed partial class Package : IIdentifiable, IFileSynchronizable
+    public sealed partial class Package : IIdentifiable, IFileSynchronizable, IAssetFinder
     {
         private const int PackageFileVersion = 4;
 
@@ -102,7 +104,6 @@ namespace SiliconStudio.Assets
                 SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
             }
 
-            Tags = new TagCollection();
             Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
             IsDirty = true;
@@ -114,7 +115,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the unique identifier of this package.
         /// </summary>
         /// <value>The identifier.</value>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
         [NonOverridable]
         [Display(Browsable = false)]
         public Guid Id
@@ -137,27 +138,13 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
         [NonOverridable]
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
-
-        // Note: Please keep this code in sync with Asset class
-        /// <summary>
-        /// Gets the tags for this asset.
-        /// </summary>
-        /// <value>
-        /// The tags for this asset.
-        /// </value>
-        [DataMember(-900)]
-        [Display(Browsable = false)]
-        [NonIdentifiableCollectionItems]
-        [NonOverridable]
-        [MemberCollection(NotNullItems = true)]
-        public TagCollection Tags { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this package is a system package.
@@ -384,8 +371,30 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected exception while loading project [{0}]", ex, pathToMsproj);
+                logger.Error($"Unexpected exception while loading project [{pathToMsproj}]", ex);
             }
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(AssetId assetId)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(assetId)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAsset(UFile location)
+        {
+            return this.GetPackagesWithDependencies().Select(p => p.Assets.Find(location)).NotNull().FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
+        {
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(proxyObject);
+            return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 
         internal UDirectory GetDefaultAssetFolder()
@@ -611,7 +620,7 @@ namespace SiliconStudio.Assets
                                     new List<KeyValuePair<string, string>>
                                     {
                                     new KeyValuePair<string, string>("Generator", generatorAsset.Generator),
-                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("LastGenOutput", new UFile(generatedInclude).GetFileName())
                                     });
 
                                 project.AddItem("Compile", generatedInclude,
@@ -620,7 +629,7 @@ namespace SiliconStudio.Assets
                                     new KeyValuePair<string, string>("AutoGen", "True"),
                                     new KeyValuePair<string, string>("DesignTime", "True"),
                                     new KeyValuePair<string, string>("DesignTimeSharedInput", "True"),
-                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileNameWithExtension())
+                                    new KeyValuePair<string, string>("DependentUpon", new UFile(projectInclude).GetFileName())
                                     });
                             }
                             else
@@ -770,7 +779,7 @@ namespace SiliconStudio.Assets
 
             if (!File.Exists(filePath))
             {
-                log.Error("Package file [{0}] was not found", filePath);
+                log.Error($"Package file [{filePath}] was not found");
                 return null;
             }
 
@@ -792,7 +801,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, filePath);
+                log.Error($"Error while pre-loading package [{filePath}]", ex);
             }
 
             return null;
@@ -832,7 +841,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -876,7 +885,7 @@ namespace SiliconStudio.Assets
             }
             catch (Exception ex)
             {
-                log.Error("Error while pre-loading package [{0}]", ex, FullPath);
+                log.Error($"Error while pre-loading package [{FullPath}]", ex);
 
                 return false;
             }
@@ -974,13 +983,13 @@ namespace SiliconStudio.Assets
                 assetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
             }
 
-            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
+            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileName()}]";
 
             // Display this message at least once if the logger does not log progress (And it shouldn't in this case)
             var loggerResult = log as LoggerResult;
             if (loggerResult == null || !loggerResult.IsLoggingProgressAsInfo)
             {
-                log.Info(progressMessage);
+                log.Verbose(progressMessage);
             }
 
 
@@ -1049,7 +1058,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = assetFile.AssetPath;
+                var assetPath = assetFile.AssetLocation;
 
                 var assetFullPath = fileUPath.ToWindowsPath();
                 var assetContent = assetFile.AssetContent;
@@ -1153,10 +1162,10 @@ namespace SiliconStudio.Assets
                     try
                     {
                         var forwardingLogger = new ForwardingLoggerResult(log);
-                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
+                        assemblyPath = VSProjectHelper.GetOrCompileProjectAssembly(Session?.SolutionPath, fullProjectLocation, forwardingLogger, "Build", loadParameters.AutoCompileProjects, loadParameters.ForceNugetRestore, loadParameters.BuildConfiguration, extraProperties: loadParameters.ExtraCompileProperties, onlyErrors: true);
                         if (String.IsNullOrWhiteSpace(assemblyPath))
                         {
-                            log.Error("Unable to locate assembly reference for project [{0}]", fullProjectLocation);
+                            log.Error($"Unable to locate assembly reference for project [{fullProjectLocation}]");
                             continue;
                         }
 
@@ -1165,14 +1174,14 @@ namespace SiliconStudio.Assets
 
                         if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
-                            log.Error("Unable to build assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to build assembly reference [{assemblyPath}]");
                             continue;
                         }
 
                         var assembly = assemblyContainer.LoadAssemblyFromPath(assemblyPath, log);
                         if (assembly == null)
                         {
-                            log.Error("Unable to load assembly reference [{0}]", assemblyPath);
+                            log.Error($"Unable to load assembly reference [{assemblyPath}]");
                         }
 
                         loadedAssembly.Assembly = assembly;
@@ -1185,7 +1194,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Unexpected error while loading project [{0}] or assembly reference [{1}]", ex, fullProjectLocation, assemblyPath);
+                        log.Error($"Unexpected error while loading project [{fullProjectLocation}] or assembly reference [{assemblyPath}]", ex);
                     }
                 }
             }
@@ -1220,7 +1229,7 @@ namespace SiliconStudio.Assets
                     if (asset.SourceFolder == null)
                     {
                         //var assetProjectFolder = asset.Location.FullPath;
-                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileNameWithoutExtension()));
                         if (lib != null)
                         {
                             asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);
@@ -1263,7 +1272,7 @@ namespace SiliconStudio.Assets
                         var file = new FileInfo(filePath);
                         if (!file.Exists)
                         {
-                            log.Warning("Template [{0}] does not exist ", file);
+                            log.Warning($"Template [{file}] does not exist ");
                             continue;
                         }
 
@@ -1273,7 +1282,7 @@ namespace SiliconStudio.Assets
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Error while loading template from [{0}]", ex, filePath);
+                        log.Error($"Error while loading template from [{filePath}]", ex);
                     }
                 }
             }

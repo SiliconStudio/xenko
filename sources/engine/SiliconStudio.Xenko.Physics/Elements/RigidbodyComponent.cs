@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -71,6 +72,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The mass of this Rigidbody
         /// </userdoc>
         [DataMember(80)]
+        [DataMemberRange(0, float.MaxValue)]
         public float Mass
         {
             get
@@ -79,6 +81,11 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("the Mass of a Rigidbody cannot be negative.");
+                }
+
                 mass = value;
 
                 if(InternalRigidBody == null) return;
@@ -106,9 +113,14 @@ namespace SiliconStudio.Xenko.Physics
             {
                 ProtectedColliderShape = value;
 
-                if (InternalRigidBody == null) return;
+                if (value == null)
+                    return;
 
-                NativeCollisionObject.CollisionShape = value.InternalShape;
+                if (InternalRigidBody == null)
+                    return;
+
+                if (NativeCollisionObject != null)
+                    NativeCollisionObject.CollisionShape = value.InternalShape;
 
                 var inertia = ProtectedColliderShape.InternalShape.CalculateLocalInertia(mass);
                 InternalRigidBody.SetMassProps(mass, inertia);
@@ -351,7 +363,8 @@ namespace SiliconStudio.Xenko.Physics
             MotionState.Dispose();
             MotionState.Clear();
 
-            if (NativeCollisionObject == null) return;
+            if (NativeCollisionObject == null)
+                return;
 
             //Remove constraints safely
             var toremove = new FastList<Constraint>();
@@ -369,6 +382,8 @@ namespace SiliconStudio.Xenko.Physics
             //~Remove constraints
 
             Simulation.RemoveRigidBody(this);
+
+            InternalRigidBody = null;
 
             base.OnDetach();
         }

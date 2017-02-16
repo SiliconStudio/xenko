@@ -24,6 +24,7 @@ using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.SpriteStudio.Offline;
+using SiliconStudio.Xenko.VisualStudio.Debugging;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -149,6 +150,22 @@ namespace SiliconStudio.Assets.CompilerApp
                     }
                 }
                 },
+                {
+                    "reattach-debugger=", "Reattach to a Visual Studio debugger", v =>
+                    {
+                        int debuggerProcessId;
+                        if (!string.IsNullOrEmpty(v) && int.TryParse(v, out debuggerProcessId))
+                        {
+                            if (!Debugger.IsAttached)
+                            {
+                                using (var debugger = VisualStudioDebugger.GetByProcess(debuggerProcessId))
+                                {
+                                    debugger?.Attach();
+                                }
+                            }
+                        }
+                    }
+                },
             };
 
             TextWriterLogListener fileLogListener = null;
@@ -249,12 +266,12 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             catch (OptionException e)
             {
-                options.Logger.Error("Command option '{0}': {1}", e.OptionName, e.Message);
+                options.Logger.Error($"Command option '{e.OptionName}': {e.Message}");
                 exitCode = BuildResultCode.CommandLineError;
             }
             catch (Exception e)
             {
-                options.Logger.Error("Unhandled exception: {0}", e, e.Message);
+                options.Logger.Error($"Unhandled exception", e);
                 exitCode = BuildResultCode.BuildError;
             }
             finally

@@ -1,4 +1,5 @@
 ﻿using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Assets.Serializers
     /// will therefore be fully serialized, only if they are contained in a part of the type indicated by the <see cref="ReferenceableType"/> type.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [BaseTypeRequired(typeof(AssetComposite))]
     public class AssetPartReferenceAttribute : Attribute
     {
         /// <summary>
@@ -43,5 +45,15 @@ namespace SiliconStudio.Assets.Serializers
         /// The default value is <see cref="IdentifiableAssetPartReference"/>.
         /// </remarks>
         public Type ReferenceType { get; set; } = typeof(IdentifiableAssetPartReference);
+
+        /// <summary>
+        /// Gets or sets a boolean that specifies if type info should be saved. If not, it won't be available during <see cref="IAssetPartReference.GenerateProxyPart"/>
+        /// </summary>
+        public bool KeepTypeInfo { get; set; } = true;
+
+        /// <summary>
+        /// A boolean that specifies if the type <see cref="ReferenceableType"/> is fully serialized when found at the top level. If set to false (default), <see cref="AssetPartContainedAttribute"/> will be necessary on containing members.
+        /// </summary>
+        public bool ExistsTopLevel { get; set; } = false;
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Sorters;
@@ -33,6 +34,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         /// <summary>
         /// <see cref="IComputeColor"/> allows several channels to be blended together, including textures, vertex streams and fixed values.
+        /// Emissive Map should be allowed to be None because some particles might not need to render, but be used as parents for other particle systems
         /// </summary>
         /// <userdoc>
         /// Emissive component ignores light and defines a fixed color this particle should use (emit) when rendered.
@@ -112,6 +114,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                     HasVertexLayoutChanged = true;
                 }
+            }
+            else
+            {
+                shaderSource = null;
             }
         }
 

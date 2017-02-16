@@ -113,7 +113,43 @@ namespace SiliconStudio.Core.Mathematics
         private const float Pi4 = 4 * MathUtil.Pi;
         private const float Pi16 = 16 * MathUtil.Pi;
         private const float Pi64 = 64 * MathUtil.Pi;
-        private readonly float sqrtPi = (float)Math.Sqrt(MathUtil.Pi);
+        private static readonly float sqrtPi = (float)Math.Sqrt(MathUtil.Pi);
+
+        /// <summary>
+        /// Base coefficients for SH.
+        /// </summary>
+        public static readonly float[] BaseCoefficients =
+        {
+            (float)(1.0/(2.0*sqrtPi)),
+
+            (float)(-Math.Sqrt(3.0/Pi4)),
+            (float)(Math.Sqrt(3.0/Pi4)),
+            (float)(-Math.Sqrt(3.0/Pi4)),
+
+            (float)(Math.Sqrt(15.0/Pi4)),
+            (float)(-Math.Sqrt(15.0/Pi4)),
+            (float)(Math.Sqrt(5.0/Pi16)),
+            (float)(-Math.Sqrt(15.0/Pi4)),
+            (float)(Math.Sqrt(15.0/Pi16)),
+
+            -(float)Math.Sqrt(70/Pi64),
+            (float)Math.Sqrt(105/Pi4),
+            -(float)Math.Sqrt(42/Pi64),
+            (float)Math.Sqrt(7/Pi16),
+            -(float)Math.Sqrt(42/Pi64),
+            (float)Math.Sqrt(105/Pi16),
+            -(float)Math.Sqrt(70/Pi64),
+
+            3*(float)Math.Sqrt(35/Pi16),
+            -3*(float)Math.Sqrt(70/Pi64),
+            3*(float)Math.Sqrt(5/Pi16),
+            -3*(float)Math.Sqrt(10/Pi64),
+            (float)(1.0/(16.0*sqrtPi)),
+            -3*(float)Math.Sqrt(10/Pi64),
+            3*(float)Math.Sqrt(5/Pi64),
+            -3*(float)Math.Sqrt(70/Pi64),
+            3*(float)Math.Sqrt(35/(4*Pi64)),
+        };
 
         internal SphericalHarmonics()
         {

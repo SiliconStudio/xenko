@@ -24,12 +24,16 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.9.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
+        public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
+        public static readonly string DefaultGraphicsCompositorLevel10Url = "Compositing/DefaultGraphicsCompositorLevel10";
+
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
             if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha01"))
@@ -63,12 +67,12 @@ namespace SiliconStudio.Xenko.Assets
                         if (animationComponent != null && model != null)
                         {
                             var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
-                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
+                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetLocation == modelReference.Location);
 
                             foreach (var animation in animationComponent.Animations)
                             {
                                 var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
-                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
+                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetLocation == animationReference.Location);
 
                                 if (modelAsset != null && animationAsset != null)
                                 {
@@ -84,8 +88,8 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     // Comparing absolute path of assets
                     var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(
-                        x => UPath.Combine(animationAsset.Asset.AssetPath.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
-                             == UPath.Combine(x.Asset.AssetPath.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
+                        x => UPath.Combine(animationAsset.Asset.AssetLocation.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
+                             == UPath.Combine(x.Asset.AssetLocation.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
                     if (modelAsset != null)
                     {
                         animToModelMapping[animationAsset] = modelAsset;
@@ -119,7 +123,7 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
                         modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
                     }
 
@@ -133,8 +137,8 @@ namespace SiliconStudio.Xenko.Assets
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
                 }
 
                 // Remove Nodes from models
@@ -156,7 +160,7 @@ namespace SiliconStudio.Xenko.Assets
                 // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -230,10 +234,10 @@ namespace SiliconStudio.Xenko.Assets
 
             if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
             {
-                // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
+                // Delete EffectLogAsset
                 foreach (var assetFile in assetFiles)
                 {
-                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
                     {
                         assetFile.Deleted = true;
                     }
@@ -297,6 +301,75 @@ namespace SiliconStudio.Xenko.Assets
                         {
                             e.Ignore();
                         }
+                    }
+                }
+            }
+
+            // Additive animation changes
+            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha01"))
+            {
+                ConvertAdditiveAnimationToAnimation(assetFiles);
+            }
+
+            // Graphics Compositor asset
+            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
+            {
+                // Find game settings (if there is none, it's not a game and nothing to do)
+                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettings != null)
+                {
+                    using (var gameSettingsYaml = gameSettings.AsYamlAsset())
+                    {
+                        // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
+                        var graphicsProfile = GraphicsProfile.Level_10_0;
+                        try
+                        {
+                            foreach (var mapping in gameSettingsYaml.DynamicRootNode.Defaults)
+                            {
+                                if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics")
+                                {
+                                    if (mapping.DefaultGraphicsProfile != null)
+                                        Enum.TryParse((string)mapping.DefaultGraphicsProfile, out graphicsProfile);
+                                    break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If something goes wrong, keep going with the default value
+                        }
+
+                        // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
+                        var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
+                        var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
+                        if (defaultGraphicsCompositor == null)
+                        {
+                            log.Error($"Could not find graphics compositor in Xenko package at location [{graphicsCompositorUrl}]");
+                            return false;
+                        }
+
+                        // Note: we create a derived asset without its content
+                        // We don't use defaultGraphicsCompositor content because it might be a newer version that next upgrades might not understand.
+                        // The override system will restore all the properties for us.
+                        var graphicsCompositorAssetId = AssetId.New();
+                        var graphicsCompositorAsset = new PackageLoadingAssetFile(dependentPackage, "GraphicsCompositor.xkgfxcomp", null)
+                        {
+                            AssetContent = System.Text.Encoding.UTF8.GetBytes($"!GraphicsCompositorAsset\r\nId: {graphicsCompositorAssetId}\r\nArchetype: {defaultGraphicsCompositor.ToReference()}"),
+                        };
+
+                        assetFiles.Add(graphicsCompositorAsset);
+
+                        // Update game settings to point to our newly created compositor
+                        gameSettingsYaml.DynamicRootNode.GraphicsCompositor = new AssetReference(graphicsCompositorAssetId, graphicsCompositorAsset.AssetLocation).ToString();
+                    }
+                }
+
+                // Delete EffectLogAsset
+                foreach (var assetFile in assetFiles)
+                {
+                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    {
+                        assetFile.Deleted = true;
                     }
                 }
             }
@@ -386,7 +459,7 @@ namespace SiliconStudio.Xenko.Assets
                         }
                         else
                         {
-                            log.Error("Cannot locate {0}.", f.FullName);
+                            log.Error($"Cannot locate project {f.FullName}.");
                         }
                     }
                 }))
@@ -537,6 +610,40 @@ namespace SiliconStudio.Xenko.Assets
                 }
 
                 return base.VisitIdentifierName(node);
+            }
+        }
+
+        private void ConvertAdditiveAnimationToAnimation(IList<PackageLoadingAssetFile> assetFiles)
+        {
+            //var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
+            var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim");
+
+            foreach (var assetFile in animAssets)
+            {
+                if (!IsYamlAsset(assetFile))
+                    continue;
+
+                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
+                using (var yamlAsset = assetFile.AsYamlAsset())
+                {
+                    dynamic asset = yamlAsset.DynamicRootNode;
+
+                    var assetTag = asset.Node.Tag;
+                    if (assetTag != "!AdditiveAnimation")
+                        continue;
+
+                    asset.Node.Tag = "!Animation";
+                    dynamic newType = new DynamicYamlMapping(new YamlMappingNode());
+                    newType.Node.Tag = "!DifferenceAnimationAssetType";
+                    newType["BaseSource"] = asset["BaseSource"];
+                    newType["Mode"] = asset["Mode"];
+
+                    asset.RemoveChild("BaseSource");
+                    asset.RemoveChild("Mode");
+                    asset.RemoveChild("Type");
+
+                    asset.AddChild("Type", newType);
+                }
             }
         }
     }

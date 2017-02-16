@@ -101,6 +101,11 @@ namespace SiliconStudio.Xenko.Graphics
             return InitializeFrom(newTextureDescription);
         }
 
+        internal Texture InitializeFrom(ShaderResourceView srv)
+        {
+            return InitializeFrom(new Texture2D(srv.Resource.NativePointer), false);
+        }
+
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
             if (ParentTexture != null)

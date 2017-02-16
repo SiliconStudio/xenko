@@ -12,9 +12,12 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AdditiveAnimationAsset.cs" />
+    <Compile Include="AdditiveAnimationBaseMode.cs" />
     <Compile Include="AnimationAsset.cs" />
+    <Compile Include="AnimationAsset.Upgrader.cs" />
     <Compile Include="AnimationAssetCompiler.cs" />
+    <Compile Include="AnimationAssetDuration.cs" />
+    <Compile Include="AnimationAssetType.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="FbxAssetImporter.cs" />
@@ -79,6 +82,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

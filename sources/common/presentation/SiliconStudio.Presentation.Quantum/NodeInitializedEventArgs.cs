@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// Arguments for the <see cref="ObservableViewModelService.NodeInitialized"/> event.
+    /// Arguments for the <see cref="GraphViewModelService.NodeInitialized"/> event.
     /// 
     /// </summary>
     public class NodeInitializedEventArgs : EventArgs
@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="NodeInitializedEventArgs"/>
         /// </summary>
         /// <param name="node">The node that has been initialized.</param>
-        public NodeInitializedEventArgs(SingleObservableNode node)
+        public NodeInitializedEventArgs(SingleNodeViewModel node)
         {
             Node = node;
         }
@@ -22,6 +22,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the node that has been initialized.
         /// </summary>
-        public SingleObservableNode Node { get; private set; }
+        public SingleNodeViewModel Node { get; private set; }
     }
 }

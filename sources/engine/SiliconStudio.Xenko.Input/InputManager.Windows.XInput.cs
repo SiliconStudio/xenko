@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Input
                         controllers[i] = null;
 
                     Logger.Warning("XInput dll was not found on the computer. GamePad detection will not fully work for the current game instance. " +
-                                   "To fix the problem, please install or repair DirectX installation. [Exception details: {0}]", ex.Message);
+                                   "To fix the problem, please install or repair DirectX installation.", ex);
 
                     yield break;
                 }

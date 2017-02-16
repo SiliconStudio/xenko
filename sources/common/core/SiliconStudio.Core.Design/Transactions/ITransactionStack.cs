@@ -86,8 +86,9 @@ namespace SiliconStudio.Core.Transactions
         /// created transaction.
         /// </summary>
         /// <remarks>The transaction will be completed when the returned <see cref="ITransaction"/> object is disposed or when <see cref="ITransaction.Complete"/> is called.</remarks>
+        /// <param name="flags">The flags to set on the new transaction.</param>
         /// <returns>A transaction object that must be completed in order to add the transaction to the stack.</returns>
-        ITransaction CreateTransaction();
+        ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None);
 
         /// <summary>
         /// Clears the transaction stack.

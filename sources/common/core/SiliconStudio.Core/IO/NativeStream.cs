@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.IO
             if (temporaryBuffer == null)
                 temporaryBuffer = nativeStreamBuffer = new byte[NativeStreamBufferSize];
 
-            int currentReadSize = Read(temporaryBuffer, 0, sizeof(ushort));
+            var currentReadSize = Read(temporaryBuffer, 0, sizeof(ushort));
             if (currentReadSize != sizeof(ushort))
                 throw new InvalidOperationException("Reached end of stream.");
 
@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.IO
             if (temporaryBuffer == null)
                 temporaryBuffer = nativeStreamBuffer = new byte[NativeStreamBufferSize];
 
-            int currentReadSize = Read(temporaryBuffer, 0, sizeof(uint));
+            var currentReadSize = Read(temporaryBuffer, 0, sizeof(uint));
             if (currentReadSize != sizeof(uint))
                 throw new InvalidOperationException("Reached end of stream.");
 
@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.IO
             if (temporaryBuffer == null)
                 temporaryBuffer = nativeStreamBuffer = new byte[NativeStreamBufferSize];
 
-            int currentReadSize = Read(temporaryBuffer, 0, sizeof(ulong));
+            var currentReadSize = Read(temporaryBuffer, 0, sizeof(ulong));
             if (currentReadSize != sizeof(ulong))
                 throw new InvalidOperationException("Reached end of stream.");
 
@@ -112,17 +112,17 @@ namespace SiliconStudio.Core.IO
             if (temporaryBuffer == null)
                 temporaryBuffer = nativeStreamBuffer = new byte[NativeStreamBufferSize];
 
-            int readSize = 0;
+            var readSize = 0;
 
-            for (int offset = 0; offset < count; offset += NativeStreamBufferSize, buffer += NativeStreamBufferSize)
+            for (var offset = 0; offset < count; offset += NativeStreamBufferSize, buffer += NativeStreamBufferSize)
             {
                 // Compute missing bytes in this block
-                int blockSize = count - offset;
+                var blockSize = count - offset;
                 if (blockSize > NativeStreamBufferSize)
                     blockSize = NativeStreamBufferSize;
 
 
-                int currentReadSize = Read(temporaryBuffer, 0, blockSize);
+                var currentReadSize = Read(temporaryBuffer, 0, blockSize);
                 readSize += currentReadSize;
                 Utilities.Write(buffer, temporaryBuffer, 0, currentReadSize);
 
@@ -139,16 +139,16 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="buffer">The buffer containing data to write to the stream.</param>
         /// <param name="count">The number of bytes to be written to the current stream. </param>
-        public unsafe virtual void Write(IntPtr buffer, int count)
+        public virtual unsafe void Write(IntPtr buffer, int count)
         {
             var temporaryBuffer = nativeStreamBuffer;
             if (temporaryBuffer == null)
                 temporaryBuffer = nativeStreamBuffer = new byte[NativeStreamBufferSize];
 
-            for (int offset = 0; offset < count; offset += NativeStreamBufferSize, buffer += NativeStreamBufferSize)
+            for (var offset = 0; offset < count; offset += NativeStreamBufferSize, buffer += NativeStreamBufferSize)
             {
                 // Compute missing bytes in this block
-                int blockSize = count - offset;
+                var blockSize = count - offset;
                 if (blockSize > NativeStreamBufferSize)
                     blockSize = NativeStreamBufferSize;
 

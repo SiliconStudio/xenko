@@ -16,7 +16,6 @@ String^ aiStringToString(aiString str)
 
 	const char* pAiData = str.C_Str(); // pointer to the underlying data of he aiString
         // Check `str' cannot be more than the size of a int.
-    assert(str.length <= INT32_MAX);
 	array<unsigned char>^ buffer = gcnew array<unsigned char>((int) str.length);
 	for(unsigned int i=0; i<str.length; ++i)
 		buffer[i] = pAiData[i];

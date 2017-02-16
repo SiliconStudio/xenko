@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             process.Start();
             new AttachedChildProcessJob(process);
 
-            Log.Info("iOS Device connected: {0}; successfully mapped port {1}:{2}", device.Name, testedLocalPort, RouterClient.DefaultListenPort);
+            Log.Info($"iOS Device connected: {device.Name}; successfully mapped port {testedLocalPort}:{RouterClient.DefaultListenPort}");
 
             return process;
         }
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     thisRunDevices.Add(args.Data);
                     if (devices.ContainsKey(args.Data)) return;
 
-                    Log.Info(@"New iOS devices: {0}", args.Data);
+                    Log.Info($"New iOS devices: {args.Data}");
 
                     var newDev = new ConnectedDevice
                     {
@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
                     devices.Remove(device.Key);
 
-                    Log.Info(@"Disconnected iOS devices: {0}", device);
+                    Log.Info($"Disconnected iOS devices: {device}");
                 }
 
                 await Task.Delay(1000);

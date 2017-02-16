@@ -3,6 +3,7 @@
 #if !SILICONSTUDIO_PLATFORM_UWP
 using System.IO;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.IO
 {
@@ -15,19 +16,19 @@ namespace SiliconStudio.Core.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void FileDelete(string name)
+        public static void FileDelete([NotNull] string name)
         {
             File.Delete(name);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void FileMove(string sourceFileName, string destFileName)
+        public static void FileMove([NotNull] string sourceFileName, [NotNull] string destFileName)
         {
             File.Move(sourceFileName, destFileName);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long FileSize(string name)
+        public static long FileSize([NotNull] string name)
         {
             var fileInfo = new FileInfo(name);
             return fileInfo.Length;
@@ -40,7 +41,7 @@ namespace SiliconStudio.Core.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DirectoryCreate(string path)
+        public static void DirectoryCreate([NotNull] string path)
         {
             Directory.CreateDirectory(path);
         }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -13,7 +14,7 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">Type of the interface contract of the service</typeparam>
         /// <param name="registry">The registry.</param>
         /// <returns>An instance of the requested service registered to this registry.</returns>
-        public static T GetServiceAs<T>(this IServiceRegistry registry)
+        public static T GetServiceAs<T>([NotNull] this IServiceRegistry registry)
         {
             return (T)registry.GetService(typeof(T));
         }
@@ -25,7 +26,7 @@ namespace SiliconStudio.Core
         /// <param name="registry">The registry.</param>
         /// <exception cref="ServiceNotFoundException">If the service was not found</exception>
         /// <returns>An instance of the requested service registered to this registry.</returns>
-        public static T GetSafeServiceAs<T>(this IServiceRegistry registry)
+        public static T GetSafeServiceAs<T>([NotNull] this IServiceRegistry registry)
         {
             var serviceFound = (T)registry.GetService(typeof(T));
             if (Equals(serviceFound, default(T)))
@@ -43,7 +44,7 @@ namespace SiliconStudio.Core
         /// <param name="serviceReady">The service ready.</param>
         /// <returns>An instance of the requested service registered to this registry.</returns>
         /// <exception cref="ServiceNotFoundException">If the service was not found</exception>
-        public static void GetServiceLate<T>(this IServiceRegistry registry, Action<T> serviceReady)
+        public static void GetServiceLate<T>([NotNull] this IServiceRegistry registry, Action<T> serviceReady)
         {
             var instance = GetServiceAs<T>(registry);
             if (Equals(instance, null))
@@ -73,7 +74,7 @@ namespace SiliconStudio.Core
                 services.ServiceAdded += Services_ServiceAdded;
             }
 
-            void Services_ServiceAdded(object sender, ServiceEventArgs args)
+            private void Services_ServiceAdded(object sender, [NotNull] ServiceEventArgs args)
             {
                 if (args.ServiceType == typeof(T))
                 {

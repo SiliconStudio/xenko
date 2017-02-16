@@ -22,5 +22,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         public static readonly ObjectParameterKey<Buffer> LightIndices = ParameterKeys.NewObject<Buffer>();
         public static readonly ValueParameterKey<float> ClusterDepthScale = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> ClusterDepthBias = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector2> ClusterStride = ParameterKeys.NewValue<Vector2>();
     }
 }

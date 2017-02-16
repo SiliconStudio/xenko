@@ -93,6 +93,25 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Sampler")]
         public SpriteSampler Sampler { get; set; } = SpriteSampler.LinearClamp;
 
+
+        /// <summary>
+        /// Specifies the swizzle method for sampling (how to access and mix the color channels)
+        /// </summary>
+        /// <userdoc>
+        /// Specifies the swizzle method for sampling (how to access and mix the color channels)
+        /// </userdoc>
+        [DataMember(80)]
+        [DefaultValue(SwizzleMode.None)]
+        [Display("Swizzle")]
+        public SwizzleMode Swizzle { get; set; } = SwizzleMode.None;
+
+        /// <summary>
+        /// The render group for this component.
+        /// </summary>
+        [DataMember(90)]
+        [DefaultValue(RenderGroup.Group0)]
+        public RenderGroup RenderGroup { get; set; }
+
         [DataMemberIgnore]
         internal double ElapsedTime;
 

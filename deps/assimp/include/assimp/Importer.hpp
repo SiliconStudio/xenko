@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2016, assimp team
 
 All rights reserved.
 
@@ -42,16 +42,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file  Importer.hpp
  *  @brief Defines the C++-API to the Open Asset Import Library.
  */
-#ifndef INCLUDED_AI_ASSIMP_HPP
-#define INCLUDED_AI_ASSIMP_HPP
+#pragma once
+#ifndef AI_ASSIMP_HPP_INC
+#define AI_ASSIMP_HPP_INC
 
 #ifndef __cplusplus
 #   error This header requires C++ to be used. Use assimp.h for plain C.
-#endif
+#endif // __cplusplus
 
 // Public ASSIMP data structures
-#include "types.h"
-#include "config.h"
+#include <assimp/types.h>
+#include <assimp/config.h>
 
 namespace Assimp    {
     // =======================================================================
@@ -114,6 +115,11 @@ namespace Assimp    {
 * threads for loading, each thread should maintain its own Importer instance.
 */
 class ASSIMP_API Importer   {
+public:
+    /**
+     *  @brief The upper limit for hints.
+     */
+    static const unsigned int MaxLenHint = 200;
 
 public:
 
@@ -218,7 +224,7 @@ public:
     /** Set a floating-point configuration property.
      * @see SetPropertyInteger()
      */
-    bool SetPropertyFloat(const char* szName, float fValue);
+    bool SetPropertyFloat(const char* szName, ai_real fValue);
 
     // -------------------------------------------------------------------
     /** Set a string configuration property.
@@ -263,8 +269,8 @@ public:
     /** Get a floating-point configuration property
      * @see GetPropertyInteger()
      */
-    float GetPropertyFloat(const char* szName,
-        float fErrorReturn = 10e10f) const;
+    ai_real GetPropertyFloat(const char* szName,
+        ai_real fErrorReturn = 10e10) const;
 
     // -------------------------------------------------------------------
     /** Get a string configuration property
@@ -453,11 +459,13 @@ public:
      *    to the #Importer instance.  */
     const aiScene* ApplyPostProcessing(unsigned int pFlags);
 
+    const aiScene* ApplyCustomizedPostProcessing( BaseProcess *rootProcess, bool requestValidation );
+
     // -------------------------------------------------------------------
     /** @brief Reads the given file and returns its contents if successful.
      *
      * This function is provided for backward compatibility.
-     * See the const char* version for detailled docs.
+     * See the const char* version for detailed docs.
      * @see ReadFile(const char*, pFlags)  */
     const aiScene* ReadFile(
         const std::string& pFile,
@@ -651,4 +659,5 @@ AI_FORCE_INLINE bool Importer::IsExtensionSupported(const std::string& szExtensi
 }
 
 } // !namespace Assimp
-#endif // INCLUDED_AI_ASSIMP_HPP
+
+#endif // AI_ASSIMP_HPP_INC

@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Settings
 
             if (!File.Exists(filePath))
             {
-                Logger.Error("Settings file [{0}] was not found", filePath);
+                Logger.Error($"Settings file [{filePath}] was not found");
                 return null;
             }
 
@@ -146,7 +146,6 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
                 return null;
             }
 
@@ -177,7 +176,7 @@ namespace SiliconStudio.Core.Settings
             if (filePath == null) throw new ArgumentException("profile");
             if (!File.Exists(filePath))
             {
-                Logger.Error("Settings file [{0}] was not found", filePath);
+                Logger.Error($"Settings file [{filePath}] was not found");
                 throw new ArgumentException("profile");
             }
 
@@ -191,7 +190,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while loading settings file [{0}]: {1}", e, filePath, e.FormatFull());
+                Logger.Error($"Error while loading settings file [{filePath}].", e);
             }
 
             var handler = SettingsFileLoaded;
@@ -246,7 +245,7 @@ namespace SiliconStudio.Core.Settings
             }
             catch (Exception e)
             {
-                Logger.Error("Error while saving settings file [{0}]: {1}", e, filePath, e.FormatFull());
+                Logger.Error($"Error while saving settings file [{filePath}]", e);
                 return false;
             }
             finally

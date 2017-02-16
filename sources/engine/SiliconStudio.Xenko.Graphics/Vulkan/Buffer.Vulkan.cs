@@ -18,15 +18,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
         /// </summary>
-        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
-        protected Buffer(GraphicsDevice device)
-            : base(device)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Buffer" /> class.
-        /// </summary>
         /// <param name="description">The description.</param>
         /// <param name="viewFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
@@ -108,37 +99,45 @@ namespace SiliconStudio.Xenko.Graphics
             //if (bufferDescription.Usage != GraphicsResourceUsage.Immutable)
                 createInfo.Usage |= BufferUsageFlags.TransferDestination;
 
-            if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
+            if (Usage == GraphicsResourceUsage.Staging)
             {
-                createInfo.Usage |= BufferUsageFlags.VertexBuffer;
-                NativeAccessMask |= AccessFlags.VertexAttributeRead;
-                NativePipelineStageMask |= PipelineStageFlags.VertexInput;
+                NativeAccessMask = AccessFlags.HostRead | AccessFlags.HostWrite;
+                NativePipelineStageMask |= PipelineStageFlags.Host;
             }
-
-            if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
+            else
             {
-                createInfo.Usage |= BufferUsageFlags.IndexBuffer;
-                NativeAccessMask |= AccessFlags.IndexRead;
-                NativePipelineStageMask |= PipelineStageFlags.VertexInput;
-            }
-
-            if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
-            {
-                createInfo.Usage |= BufferUsageFlags.UniformBuffer;
-                NativeAccessMask |= AccessFlags.UniformRead;
-                NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
-            }
-
-            if ((ViewFlags & BufferFlags.ShaderResource) != 0)
-            {
-                createInfo.Usage |= BufferUsageFlags.UniformTexelBuffer;
-                NativeAccessMask |= AccessFlags.ShaderRead;
-                NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
-
-                if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
+                if ((ViewFlags & BufferFlags.VertexBuffer) != 0)
                 {
-                    createInfo.Usage |= BufferUsageFlags.StorageTexelBuffer;
-                    NativeAccessMask |= AccessFlags.ShaderWrite;
+                    createInfo.Usage |= BufferUsageFlags.VertexBuffer;
+                    NativeAccessMask |= AccessFlags.VertexAttributeRead;
+                    NativePipelineStageMask |= PipelineStageFlags.VertexInput;
+                }
+
+                if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
+                {
+                    createInfo.Usage |= BufferUsageFlags.IndexBuffer;
+                    NativeAccessMask |= AccessFlags.IndexRead;
+                    NativePipelineStageMask |= PipelineStageFlags.VertexInput;
+                }
+
+                if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
+                {
+                    createInfo.Usage |= BufferUsageFlags.UniformBuffer;
+                    NativeAccessMask |= AccessFlags.UniformRead;
+                    NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
+                }
+
+                if ((ViewFlags & BufferFlags.ShaderResource) != 0)
+                {
+                    createInfo.Usage |= BufferUsageFlags.UniformTexelBuffer;
+                    NativeAccessMask |= AccessFlags.ShaderRead;
+                    NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
+
+                    if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
+                    {
+                        createInfo.Usage |= BufferUsageFlags.StorageTexelBuffer;
+                        NativeAccessMask |= AccessFlags.ShaderWrite;
+                    }
                 }
             }
 
@@ -147,12 +146,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Allocate memory
             var memoryProperties = MemoryPropertyFlags.DeviceLocal;
-            if (bufferDescription.Usage == GraphicsResourceUsage.Staging)
-            {
-                throw new NotImplementedException();
-            }
-            else if (Usage == GraphicsResourceUsage.Dynamic)
-            {
+            if (bufferDescription.Usage == GraphicsResourceUsage.Staging || Usage == GraphicsResourceUsage.Dynamic)
+            { 
                 memoryProperties = MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent;
             }
 

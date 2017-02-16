@@ -231,6 +231,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopDownRPG.Game", "Template
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopDownRPG.Windows", "Templates\TopDownRPG\TopDownRPG\TopDownRPG.Windows\TopDownRPG.Windows.csproj", "{436E0287-CC11-4E08-BD1B-C7AB4B20B0DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MaterialPackage", "MaterialPackage", "{31044D7A-FBDB-446D-AF96-15596AD3EB6D}"
+	ProjectSection(SiliconStudioPackage) = preProject
+		Templates/Packs/MaterialPackage/MaterialPackage.xkpkg = Templates/Packs/MaterialPackage/MaterialPackage.xkpkg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU

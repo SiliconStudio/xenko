@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.References
             var isCollection = HasCollectionReference(objectValue?.GetType() ?? objectType);
             if (objectValue != null && isCollection && index.IsEmpty)
             {
-                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType, index);
+                reference = new ReferenceEnumerable((IEnumerable)objectValue, objectType);
             }
             else
             {
@@ -39,12 +39,6 @@ namespace SiliconStudio.Quantum.References
         private static bool HasCollectionReference(Type type)
         {
             return type.IsArray || CollectionDescriptor.IsCollection(type) || DictionaryDescriptor.IsDictionary(type);
-        }
-
-        [Obsolete]
-        internal static Type GetReferenceType(object objectValue, Index index)
-        {
-            return objectValue != null && HasCollectionReference(objectValue.GetType()) && index.IsEmpty ? typeof(ReferenceEnumerable) : typeof(ObjectReference);
         }
 
         internal static void CheckReferenceCreationSafeGuard()

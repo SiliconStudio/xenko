@@ -27,6 +27,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         protected override void Destroy()
         {
+            if (threadContext == null)
+            {
+                return;
+            }
+
             base.Destroy();
 
             foreach (var context in threadContext.Values)
@@ -39,6 +44,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
+            var isMsaa = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel != MSAALevel.None;
+
             var batchContext = threadContext.Value;
 
             Matrix viewInverse;
@@ -47,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             uint previousBatchState = uint.MaxValue;
 
             //TODO string comparison ...?
-            var isPicking = renderViewStage.RenderStage.Name == "Picking";
+            var isPicking = RenderSystem.RenderStages[renderViewStage.Index].Name == "Picking";
 
             bool hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)
@@ -84,6 +91,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                     var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
+                    if (isMsaa)
+                        blendState.AlphaToCoverageEnable = true;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
                     if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
@@ -104,7 +113,14 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                         batchContext.SpriteBatch.End();
                     }
 
-                    batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, RasterizerStates.CullNone, currentEffect);
+                    var rasterizerState = RasterizerStates.CullNone;
+                    if (isMsaa)
+                    {
+                        rasterizerState.MultiSampleLevel = RenderSystem.RenderStages[renderViewStage.Index].Output.MultiSampleLevel;
+                        rasterizerState.MultiSampleAntiAliasLine = true;
+                    }
+
+                    batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, rasterizerState, currentEffect);
                     hasBegin = true;
                 }
                 previousBatchState = currentBatchState;
@@ -115,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
                 {
                     var compId = RuntimeIdHelper.ToRuntimeId(spriteComp);
-                    color = new Color4(compId);
+                    color = new Color4(compId, 0.0f, 0.0f, 0.0f);
                 }
 
                 // skip the sprite if no texture is set.
@@ -155,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
                 // draw the sprite
-                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
+                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, spriteComp.Swizzle, projectedZ);
             }
 
             if (hasBegin)

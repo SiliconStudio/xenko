@@ -7,7 +7,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
     {
         protected DeriveAssetTestBase(Asset baseAsset, Asset derivedAsset)
         {
-            Container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer());
+            Container = new AssetPropertyGraphContainer(new PackageSession(), new AssetNodeContainer { NodeBuilder = { ContentFactory = new AssetNodeFactory() } });
             BaseAssetItem = new AssetItem("MyAsset", baseAsset);
             DerivedAssetItem = new AssetItem("MyDerivedAsset", derivedAsset);
         }

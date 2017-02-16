@@ -41,8 +41,9 @@ namespace Sockets.Plugin
         /// </summary>
         /// <param name="port">The port to listen on.</param>
         /// <param name="listenOn">The <code>CommsInterface</code> to listen on. If unspecified, all interfaces will be bound.</param>
+        /// <param name="inheritHandle">Allows handle inheritance. Might be ignored depending on platform.</param>
         /// <returns></returns>
-        public Task StartListeningAsync(int port, ICommsInterface listenOn = null)
+        public Task StartListeningAsync(int port, ICommsInterface listenOn = null, bool inheritHandle = false)
         {
             if (listenOn != null && !listenOn.IsUsable)
                 throw new InvalidOperationException("Cannot listen on an unusable interface. Check the IsUsable property before attemping to bind.");

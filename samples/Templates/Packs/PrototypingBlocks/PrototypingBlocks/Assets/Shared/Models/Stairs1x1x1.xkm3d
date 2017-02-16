@@ -10,3 +10,5 @@ Materials:
         MaterialInstance:
             Material: 12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
 Skeleton: null
+~SourceHashes:
+    cbde98fc22cc6dae142187a28ed38c02~../../../Resources/Models/Stairs1x1x1.fbx: 605b755c584fe1b958040c894be579f5

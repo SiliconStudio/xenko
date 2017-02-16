@@ -12,10 +12,10 @@ namespace SiliconStudio.Xenko.Rendering
         // -----------------------------------------------
         // Add light groups
         // -----------------------------------------------
-        var directLightGroups = LightingKeys.DirectLightGroups;
+        ShaderSourceCollection directLightGroups = LightingKeys.DirectLightGroups;
         if (directLightGroups != null)
         {
-            foreach(var directLightGroup in directLightGroups)
+            foreach(ShaderSource directLightGroup in directLightGroups)
             {
                 // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
                 mixin compose directLightGroups += (directLightGroup);
@@ -25,10 +25,10 @@ namespace SiliconStudio.Xenko.Rendering
         // -----------------------------------------------
         // Add environment light groups
         // -----------------------------------------------
-        var environmentLights = LightingKeys.EnvironmentLights;
+        ShaderSourceCollection environmentLights = LightingKeys.EnvironmentLights;
         if (environmentLights != null)
         {
-            foreach(var environmentLight in environmentLights)
+            foreach(ShaderSource environmentLight in environmentLights)
             {
                 // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
                 mixin compose environmentLights += (environmentLight);
@@ -49,18 +49,20 @@ namespace SiliconStudio.Xenko.Rendering
         // -----------------------------------------------
         // Mix material and lighting shading for Pixel Shader
         // -----------------------------------------------
-        var extensionPixelStageSurfaceShaders = MaterialKeys.PixelStageSurfaceShaders;
+        ShaderSource extensionPixelStageSurfaceShaders = MaterialKeys.PixelStageSurfaceShaders;
         if (extensionPixelStageSurfaceShaders != null)
         {
             mixin MaterialSurfacePixelStageCompositor;
             mixin compose materialPixelStage = (extensionPixelStageSurfaceShaders);
             mixin compose streamInitializerPixelStage = MaterialKeys.PixelStageStreamInitializer;
 
-            var extensionPixelStageSurfaceFilter = MaterialKeys.PixelStageSurfaceFilter;
+            ShaderSource extensionPixelStageSurfaceFilter = MaterialKeys.PixelStageSurfaceFilter;
             if (extensionPixelStageSurfaceFilter != null)
             {
                 mixin (extensionPixelStageSurfaceFilter);
             }
+
+            mixin child GBuffer;
         }
 
         // -----------------------------------------------
@@ -69,5 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
         mixin XenkoLighting;
 
         mixin child ShadowMapCaster;
+        mixin child ShadowMapCasterParaboloid;
+        mixin child ShadowMapCasterCubeMap;
     };
 }

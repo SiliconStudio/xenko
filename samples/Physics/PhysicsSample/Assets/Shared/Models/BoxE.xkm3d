@@ -14,3 +14,5 @@ Materials:
         MaterialInstance:
             Material: 09acefa2-d919-43d4-ba56-2c7bbb56f2f7:Materials/MaskD
 Skeleton: null
+~SourceHashes:
+    16e8a1067912bc25bb0eab23214c4fcd~../../../Resources/Models/xenko_box.fbx: 6e3a5526c1cdb7001c9b7ea51ac583a0

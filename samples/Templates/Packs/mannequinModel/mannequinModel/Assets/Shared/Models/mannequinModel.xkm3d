@@ -30,3 +30,5 @@ Materials:
         MaterialInstance:
             Material: dbf44423-b639-4e84-8eca-fcea83343296:Materials/LambertMT
 Skeleton: a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
+~SourceHashes:
+    6b7e5b3e9c4180ffe5d731fa352283a4~../../../Resources/Models/mannequinModel.fbx: 41531d1299044bd0f0b265374610fb1d

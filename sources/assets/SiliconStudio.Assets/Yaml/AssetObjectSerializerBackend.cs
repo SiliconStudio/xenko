@@ -46,7 +46,10 @@ namespace SiliconStudio.Core.Yaml
 
         public override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
-            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType))
+            {
+                ScalarStyle = memberDescriptor.ScalarStyle,
+            };
 
             bool nonIdentifiableItems;
             // We allow compact style only for collection with non-identifiable items
@@ -294,6 +297,25 @@ namespace SiliconStudio.Core.Yaml
             var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
             SetCurrentPath(ref itemObjectcontext, path);
             WriteYaml(ref itemObjectcontext);
+        }
+
+        public override bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext)
+        {
+            Dictionary<YamlAssetPath, OverrideType> overrides;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
+            {
+                var path = GetCurrentPath(ref objectContext, true);
+                path.PushMember(member.Name);
+
+                OverrideType overrideType;
+                if (overrides.TryGetValue(path, out overrideType))
+                {
+                    if (overrideType != OverrideType.Base)
+                        return true;
+                }
+            }
+
+            return base.ShouldSerialize(member, ref objectContext);
         }
 
         private static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)

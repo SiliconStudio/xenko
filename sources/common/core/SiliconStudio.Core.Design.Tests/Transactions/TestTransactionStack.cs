@@ -80,5 +80,57 @@ namespace SiliconStudio.Core.Design.Tests.Transactions
             Assert.AreEqual(true, stack.IsFull);
             Assert.AreEqual(true, stack.IsEmpty);
         }
+
+        [Test]
+        public void TestInterleavedTransactionThrows()
+        {
+            var stack = (TransactionStack)TransactionStackFactory.Create(5);
+            SimpleOperation operation;
+
+            // Root transaction
+            var transaction1 = stack.CreateTransaction();
+            operation = new SimpleOperation();
+            stack.PushOperation(operation);
+
+            // Nested transaction
+            stack.CreateTransaction();
+            operation = new SimpleOperation();
+            stack.PushOperation(operation);
+
+            // Complete root transaction
+            Assert.Throws(typeof(TransactionException), () => transaction1.Complete());
+        }
+
+        [Test]
+        public void TestKeepParentAlive()
+        {
+            var stack = (TransactionStack)TransactionStackFactory.Create(5);
+            SimpleOperation operation;
+
+            // Root transaction
+            var transaction1 = stack.CreateTransaction();
+            operation = new SimpleOperation();
+            stack.PushOperation(operation);
+
+            // Nested transaction
+            var transaction2 = stack.CreateTransaction(TransactionFlags.KeepParentsAlive);
+            operation = new SimpleOperation();
+            stack.PushOperation(operation);
+
+            transaction1.Complete();
+
+            // transaction1 is still kept alive by transaction2
+            Assert.That(stack.TransactionInProgress);
+
+            stack.PushOperation(operation);
+
+            transaction2.Complete();
+
+            // All transactions should be done now
+            Assert.That(!stack.TransactionInProgress);
+
+            // And stack has one transaction
+            Assert.That(!stack.IsEmpty);
+        }
     }
 }

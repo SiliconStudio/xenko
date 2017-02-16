@@ -5,17 +5,19 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 0d62e611-521c-4c5e-b886-95ad0b24173c/c0ff009d-25ea-486e-85d6-e077da30f129:Materials/wood_nongloss/wood_nongloss_nml
+            Texture: c0ff009d-25ea-486e-85d6-e077da30f129:Materials/wood_nongloss/wood_nongloss_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        IsXYNormal: true
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeBinaryScalar
             Operator: Multiply
             LeftChild: !ComputeTextureScalar
-                Texture: 436382c9-f100-4a43-ac6d-dd35fd2989bd/c6a34678-7014-45dd-8493-ad220ad468c5:Materials/wood_nongloss/wood_nongloss_gls
+                Texture: c6a34678-7014-45dd-8493-ad220ad468c5:Materials/wood_nongloss/wood_nongloss_gls
                 FallbackValue:
                     Value: 1.0
                 Scale: {X: 1.0, Y: 1.0}
@@ -24,27 +26,24 @@ Attributes:
                 Value: 10.0
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Swizzle: null
-            Texture: 7ea8d724-9682-4ff0-bc98-9324f9ab79e5/1159fc7f-74c6-4aa3-a1dc-8f000a21db0d:Materials/wood_nongloss/wood_nongloss_dif
+            Texture: 1159fc7f-74c6-4aa3-a1dc-8f000a21db0d:Materials/wood_nongloss/wood_nongloss_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeTextureScalar
-            Texture: 9b71d6c0-d6d1-4159-a6b8-35faa67202cd/743101bb-b224-4641-bcfe-cc9cebdce624:Materials/wood_nongloss/wood_nongloss_spc
+            Texture: 743101bb-b224-4641-bcfe-cc9cebdce624:Materials/wood_nongloss/wood_nongloss_spc
             FallbackValue:
                 Value: 1.0
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
-        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
-            ~Id: bbe0cce1-9ca8-47ca-85da-4422dfb43b02
-        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
-            ~Id: 63908472-4207-45c8-bc8f-4c49f6aa4b6f
-        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
-            ~Id: 719591ea-8b34-4476-85c2-bdb83b2432eb
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
-Layers: []
+Layers: {}

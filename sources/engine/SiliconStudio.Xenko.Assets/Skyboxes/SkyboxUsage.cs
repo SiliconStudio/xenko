@@ -17,6 +17,11 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         Lighting,
 
         /// <summary>
+        /// The skybox is used only for specular lighting. Useful in combination with light probes.
+        /// </summary>
+        SpecularLighting,
+
+        /// <summary>
         /// The skybox is used only for the background.
         /// </summary>
         Background,

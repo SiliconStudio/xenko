@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     int index;
                     if (!fontCollection.FindFamilyName(FontName, out index))
                     {
-                        result?.Error("Cannot find system font '{0}'. Make sure it is installed on this machine.", FontName);
+                        result?.Error($"Cannot find system font '{FontName}'. Make sure it is installed on this machine.");
                         return null;
                     }
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                         font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
                         if (font == null)
                         {
-                            result?.Error("Cannot find style '{0}' for font family {1}. Make sure it is installed on this machine.", Style, FontName);
+                            result?.Error($"Cannot find style '{Style}' for font family {FontName}. Make sure it is installed on this machine.");
                             return null;
                         }
                     }

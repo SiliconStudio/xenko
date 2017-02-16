@@ -1,273 +1,310 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2012-2016 Silicon Studio Corporation (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // File AUTO-GENERATED, do not edit!
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
     /// <summary>
     /// Extensions for <see cref="ILogger"/>.
     /// </summary>
-    public static partial class LoggerExtensions
+    public static class LoggerExtensions
     {
         /// <summary>
         /// Logs the specified verbose message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The verbose message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Verbose(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Verbose([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Verbose, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Verbose, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified verbose message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The verbose message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Verbose(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Verbose([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Verbose(log, message, null, callerInfo);
+            Verbose(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified verbose message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The verbose message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Verbose(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Verbose([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Verbose(log, messageFormat, null, parameters);
+            Verbose(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified verbose message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The verbose message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Verbose(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Verbose([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Verbose(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Verbose(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
         /// <summary>
         /// Logs the specified debug message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The debug message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Debug(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Debug([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Debug, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Debug, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified debug message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The debug message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Debug(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Debug([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Debug(log, message, null, callerInfo);
+            Debug(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified debug message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The debug message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Debug(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Debug([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Debug(log, messageFormat, null, parameters);
+            Debug(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified debug message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The debug message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Debug(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Debug([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Debug(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Debug(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
         /// <summary>
         /// Logs the specified info message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The info message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Info(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Info([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Info, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Info, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified info message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The info message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Info(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Info([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Info(log, message, null, callerInfo);
+            Info(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified info message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The info message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Info(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Info([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Info(log, messageFormat, null, parameters);
+            Info(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified info message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The info message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Info(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Info([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Info(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Info(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
         /// <summary>
         /// Logs the specified warning message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The warning message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Warning(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Warning([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Warning, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Warning, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified warning message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The warning message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Warning(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Warning([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Warning(log, message, null, callerInfo);
+            Warning(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified warning message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The warning message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Warning(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Warning([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Warning(log, messageFormat, null, parameters);
+            Warning(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified warning message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The warning message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Warning(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Warning([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Warning(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Warning(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
         /// <summary>
         /// Logs the specified error message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The error message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Error(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Error([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Error, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Error, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified error message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The error message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Error(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Error([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Error(log, message, null, callerInfo);
+            Error(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified error message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The error message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Error(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Error([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Error(log, messageFormat, null, parameters);
+            Error(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified error message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The error message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Error(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Error([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Error(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Error(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
         /// <summary>
         /// Logs the specified fatal message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The fatal message.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Fatal(this ILogger log, string message, Exception exception, CallerInfo callerInfo = null)
+        public static void Fatal([NotNull] this ILogger logger, string message, Exception exception, CallerInfo callerInfo = null)
         {
-            log.Log(new LogMessage(log.Module, LogMessageType.Fatal, message, exception, callerInfo));
+            logger.Log(new LogMessage(logger.Module, LogMessageType.Fatal, message, exception, callerInfo));
         }
 
         /// <summary>
         /// Logs the specified fatal message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="message">The fatal message.</param>
         /// <param name="callerInfo">Information about the caller. Default is null, otherwise use <see cref="CallerInfo.Get"/>.</param>
-        public static void Fatal(this ILogger log, string message, CallerInfo callerInfo = null)
+        public static void Fatal([NotNull] this ILogger logger, string message, CallerInfo callerInfo = null)
         {
-            Fatal(log, message, null, callerInfo);
+            Fatal(logger, message, null, callerInfo);
         }
 
         /// <summary>
         /// Logs the specified fatal message.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The fatal message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public static void Fatal(this ILogger log, string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Fatal([NotNull] this ILogger logger, [NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
-            Fatal(log, messageFormat, null, parameters);
+            Fatal(logger, messageFormat, null, parameters);
         }
 
         /// <summary>
         /// Logs the specified fatal message with an exception.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="messageFormat">The fatal message to format.</param>
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static void Fatal(this ILogger log, string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public static void Fatal([NotNull] this ILogger logger, [NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            Fatal(log, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Fatal(logger, string.Format(messageFormat, parameters), exception, Logger.ExtractCallerInfo(parameters));
         }
     }
 }

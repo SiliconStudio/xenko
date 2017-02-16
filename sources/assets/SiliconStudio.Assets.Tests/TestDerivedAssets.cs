@@ -62,14 +62,11 @@ namespace SiliconStudio.Assets.Tests
             var stream = new MemoryStream();
             serializer.Save(stream, asset);
             stream.Position = 0;
-            var sr = new StreamReader(stream);
-            var yaml = sr.ReadToEnd();
-            stream.Position = 0;
             bool aliasOccurred;
             Dictionary<YamlAssetPath, OverrideType> overrides;
             var loadedAsset = (MyAsset)serializer.Load(stream, null, null, out aliasOccurred, out overrides);
             var asset2Ids = CollectionItemIdHelper.GetCollectionItemIds(loadedAsset.Strings);
-            Assert.AreEqual(2, asset2Ids.Count);
+            Assert.AreEqual(2, asset2Ids.KeyCount);
             Assert.AreEqual(asset1Ids[0], asset2Ids[0]);
             Assert.AreEqual(asset1Ids[1], asset2Ids[1]);
         }

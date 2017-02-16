@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // For unsigned textures we need to convert (0, 1) to (-1, 1) range
             if (TScaleAndBias)
             {
-                normal.xy = (2.0f * normal.xy) - 1.0f;
+                normal = (2.0f * normal) - 1.0f;
             }
 
             // Flip along bitangent, if the normal map was generated as left-handed,
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // If Z is calculated from XY do it here
             if (TIsNormalXY1)
             {
-                normal.z = sqrt(1.0f - ((normal.x * normal.x) + (normal.y * normal.y)));
+                normal.z = sqrt(max(0, 1.0f - (normal.x * normal.x + normal.y * normal.y)));
             }
 
             // Note! Don't normalize the streams.matNormal here, it's being normalize when streams.normalWS is calculated

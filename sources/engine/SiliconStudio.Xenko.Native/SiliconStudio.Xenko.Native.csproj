@@ -30,22 +30,21 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Audio\Celt.cs" />
     <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
-    <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Navigation\Navigation.cs" />
-    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
       <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -64,22 +63,10 @@
     <None Include="Sprite\SpriteBatchNative.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\OpenAL.cpp" />
-    <None Include="Audio\XAudio2.cpp" />
-    <None Include="Audio\Celt.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Audio\OpenSLES.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="DirectInput\XInputChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LinuxAllocator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Audio\Common.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Navigation\Navigation.cpp" />
@@ -88,6 +75,9 @@
     <None Include="Navigation\NavigationBuilder.hpp" />
     <None Include="Navigation\NavigationMesh.cpp" />
     <None Include="Navigation\NavigationMesh.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lightprobes\predicates.c" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

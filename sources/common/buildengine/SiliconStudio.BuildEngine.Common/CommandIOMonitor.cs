@@ -58,7 +58,7 @@ namespace SiliconStudio.BuildEngine
                 foreach (ObjectUrl inputUrl in inputFiles)
                 {
                     if (inputHash.Contains(inputUrl))
-                        logger.Error("The command '{0}' has several times the file '{1}' as input. Input Files must not be duplicated", command.Title, inputUrl.Path);
+                        logger.Error($"The command '{command.Title}' has several times the file '{inputUrl.Path}' as input. Input Files must not be duplicated");
                     inputHash.Add(inputUrl);
 
                     ObjectAccesses inputAccesses;
@@ -91,7 +91,7 @@ namespace SiliconStudio.BuildEngine
                     {
                         foreach (TimeInterval<BuildStep> input in inputAccess.Reads.Where(input => input.Object != command && input.Overlap(startTime, endTime)))
                         {
-                            logger.Error("Command {0} is writing {1} while command {2} is reading it", command, outputUrl, input.Object);
+                            logger.Error($"Command {command} is writing {outputUrl} while command {input.Object} is reading it");
                         }
                     }
 
@@ -104,7 +104,7 @@ namespace SiliconStudio.BuildEngine
                     foreach (var output in outputAccess.Writes.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
                     {
                         if (outputObject.Value != output.Object.Value)
-                            logger.Error("Commands {0} and {1} are both writing {2} at the same time, but they are different objects", command, output.Object, outputUrl);
+                            logger.Error($"Commands {command} and {output.Object} are both writing {outputUrl} at the same time, but they are different objects");
                     }
 
                     outputAccess.Writes.Add(new TimeInterval<KeyValuePair<BuildStep, ObjectId>>(new KeyValuePair<BuildStep, ObjectId>(command, outputObject.Value), startTime, endTime));
@@ -117,7 +117,7 @@ namespace SiliconStudio.BuildEngine
                     {
                         foreach (TimeInterval<KeyValuePair<BuildStep, ObjectId>> output in outputAccess.Writes.Where(output => output.Object.Key != command && output.Overlap(startTime, endTime)))
                         {
-                            logger.Error("Command {0} is writing {1} while command {2} is reading it", output.Object, inputUrl, command);
+                            logger.Error($"Command {output.Object} is writing {inputUrl} while command {command} is reading it");
                         }
                     }
                 }

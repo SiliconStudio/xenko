@@ -8,8 +8,8 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
-    [AssetPartReference(typeof(Entity), typeof(EntityComponent))]
+    [AssetPartReference(typeof(Entity), typeof(EntityComponent), ExistsTopLevel = true)]
     [AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="writer">A text writer output</param>
         /// <param name="name">Name of this asset</param>
         /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
-        public bool DumpTo(TextWriter writer, string name)
+        public bool DumpTo([NotNull] TextWriter writer, string name)
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        protected override void PostClonePart(Entity part)
+        protected override void PostClonePart([NotNull] Entity part)
         {
             // disconnect the cloned entity
             part.Transform.Parent = null;

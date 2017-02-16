@@ -6,7 +6,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -14,7 +13,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset : IIdentifiable
+    public abstract class Asset
     {
         private AssetId id;
 
@@ -50,7 +49,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The identifier.</value>
         /// <exception cref="System.InvalidOperationException">Cannot change an Asset Object Id once it is locked</exception>
-        [DataMember(-2000)]
+        [DataMember(-10000)]
         [NonOverridable]
         [Display(Browsable = false)]
         public AssetId Id
@@ -74,7 +73,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataMember(-8000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
@@ -82,36 +81,24 @@ namespace SiliconStudio.Assets
         [NonIdentifiableCollectionItems]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
-        [DataMember(-900)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [DefaultValue(null)]
-        public AssetReference Archetype { get; set; }
-
-        /// <summary>
-        /// Gets or sets the build order for this asset.
-        /// </summary>
-        /// <value>The build order.</value>
-        [DataMember(-980)]
-        [DefaultValue(0)]
-        [Display(Browsable = false)]
-        [NonOverridable]
-        [Obsolete]
-        public int BuildOrder { get; set; }
-
-        // Note: Please keep this code in sync with Asset class
         /// <summary>
         /// Gets the tags for this asset.
         /// </summary>
         /// <value>
         /// The tags for this asset.
         /// </value>
-        [DataMember(-900)]
+        [DataMember(-1000)]
         [Display(Browsable = false)]
         [NonIdentifiableCollectionItems]
         [NonOverridable]
         [MemberCollection(NotNullItems = true)]
         public TagCollection Tags { get; private set; }
+
+        [DataMember(-500)]
+        [Display(Browsable = false)]
+        [NonOverridable]
+        [DefaultValue(null)]
+        public AssetReference Archetype { get; set; }
 
         /// <summary>
         /// Gets the main source file for this asset, used in the editor.
@@ -119,8 +106,18 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
 
-        /// <inheritdoc/>
-        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="baseLocation">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
+        [NotNull]
+        public Asset CreateDerivedAsset([NotNull] string baseLocation)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CreateDerivedAsset(baseLocation, out idRemapping);
+        }
 
         /// <summary>
         /// Creates an asset that inherits from this asset.
@@ -129,7 +126,8 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
+        [NotNull]
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
@@ -137,7 +135,7 @@ namespace SiliconStudio.Assets
             AssetCollectionItemIdHelper.GenerateMissingItemIds(this);
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
-            var newAsset = AssetCloner.Clone(this);
+            var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();

@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -17,9 +17,9 @@ namespace SiliconStudio.Assets.Analysis
         /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
         /// <param name="hierarchy">The hierarchy of parts.</param>
         /// <param name="idRemapping">The identifier remapping.</param>
-        public static void RemapPartsId<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy, IDictionary<Guid, Guid> idRemapping)
-            where TAssetPartDesign : IAssetPartDesign<TAssetPart>
-            where TAssetPart : IIdentifiable
+        public static void RemapPartsId<TAssetPartDesign, TAssetPart>([NotNull] AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy, [NotNull] IDictionary<Guid, Guid> idRemapping)
+            where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
+            where TAssetPart : class, IIdentifiable
         {
             Guid newId;
 
@@ -46,13 +46,16 @@ namespace SiliconStudio.Assets.Analysis
         /// <typeparam name="TAssetPartDesign"></typeparam>
         /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
         /// <param name="hierarchy">The hierarchy which part groups should have new identifiers.</param>
-        public static void GenerateNewBaseInstanceIds<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy)
+        public static void GenerateNewBaseInstanceIds<TAssetPartDesign, TAssetPart>([NotNull] AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
-            where TAssetPart : IIdentifiable
+            where TAssetPart : class, IIdentifiable
         {
             var baseInstanceMapping = new Dictionary<Guid, Guid>();
-            foreach (var part in hierarchy.Parts.Where(x => x.Base != null))
+            foreach (var part in hierarchy.Parts)
             {
+                if (part.Base == null)
+                    continue;
+
                 Guid newInstanceId;
                 if (!baseInstanceMapping.TryGetValue(part.Base.InstanceId, out newInstanceId))
                 {

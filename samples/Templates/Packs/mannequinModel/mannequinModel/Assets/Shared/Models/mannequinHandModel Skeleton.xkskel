@@ -7,8 +7,8 @@ PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
     2b83a4a0d5dde6216f7c2fe8b32bbfe2: {Name: RootNode, Depth: 0}
     7cc0b1436abfe3d174e36d1ede8f1cd2: {Name: mannequinHandModel, Depth: 1}
-    4be4bfacc63ce3dffbefed02fbefed02: {Name: hand, Depth: 2}
     fce39dea684497af3d13ccc53d13ccc5: {Name: arm, Depth: 2}
+    4be4bfacc63ce3dffbefed02fbefed02: {Name: hand, Depth: 2}
     28586bf0fa7285b47a11ce317a11ce31: {Name: root, Depth: 1}
     0cbe6a26aaf6a2f537d6bd06d0a6a7e6: {Name: CATRigHub002, Depth: 2}
     6fd6ab5a79b14a29b1d187518fa0f7ac: {Name: CATRigLArmCollarbone, Depth: 3}
@@ -51,3 +51,5 @@ Nodes:
     7bb44ba048176a8881b022f9e4a8d483: {Name: CATRigRArmDigit53, Depth: 9}
     03e237740e7e0f2dcb716c0f625130ef: {Name: MachinegunBone, Depth: 2}
     ad4be2b5f6a7fe7a48a3c9571d457d91: {Name: MagazineBone, Depth: 3}
+~SourceHashes:
+    f64565ce5917b6b69308f9b0672b7184~../../../Resources/Models/mannequinHandModel.fbx: db1befd09793cb26baaafc47576b4e4f

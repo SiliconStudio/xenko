@@ -10,6 +10,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
@@ -31,7 +32,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
             //CurrentVersion = 2;
-            CurrentVersion = 3; // Fix normal maps
+            //CurrentVersion = 3; // Fix normal maps
+            //CurrentVersion = 4; // Fix normal maps again
+            CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
@@ -47,6 +50,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         protected override async Task LoadContent()
         {
             await base.LoadContent();
+
+            // Load default graphics compositor
+            SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
             var cube = SceneSystem.SceneInstance.First(x => x.Name == "Cube");
             var sphere = SceneSystem.SceneInstance.First(x => x.Name == "Sphere");

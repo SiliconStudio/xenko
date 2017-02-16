@@ -113,7 +113,8 @@ Example of use:
   -->
   <Target Name="Publish">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <!-- Waiting 30min in case NuGet.Gallery/Server takes time to process -->
+    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) -Timeout 1800 '/>
   </Target>
 
   <!--

@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
             if (string.IsNullOrEmpty(shaderSourceText))
             {
-                log.Error("No code generated for effect [{0}]", fullEffectName);
+                log.Error($"No code generated for effect [{fullEffectName}]");
                 return new EffectBytecodeCompilerResult(null, log);
             }
 

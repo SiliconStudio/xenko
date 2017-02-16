@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -9,6 +10,8 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     public class AssetCompositeVisitorContext
     {
+        private readonly Stack<State> states = new Stack<State>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetCompositeVisitorContext"/> class.
         /// </summary>
@@ -20,7 +23,7 @@ namespace SiliconStudio.Assets.Serializers
 
             var attributes = assetCompositeType.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToArray();
             References = attributes;
-            EnteredTypes = new Stack<AssetPartReferenceAttribute>();
+            states.Push(new State(null, attributes.Where(x => x.ExistsTopLevel).Select(x => x.ReferenceableType).ToArray()));
         }
 
         /// <summary>
@@ -31,18 +34,12 @@ namespace SiliconStudio.Assets.Serializers
         {
             var attributes = assetPartReferenceAttributes.ToArray();
             References = attributes;
-            EnteredTypes = new Stack<AssetPartReferenceAttribute>();
         }
 
         /// <summary>
         /// Gets the collection of <see cref="AssetPartReferenceAttribute"/> describing part types and their behavior during serialization.
         /// </summary>
         public AssetPartReferenceAttribute[] References { get; }
-
-        /// <summary>
-        /// Gets the stack of part type that have been entered by visit.
-        /// </summary>
-        public Stack<AssetPartReferenceAttribute> EnteredTypes { get; }
 
         /// <summary>
         /// Gets whether the node currently entered is an asset part that should be serialized as a reference.
@@ -53,7 +50,7 @@ namespace SiliconStudio.Assets.Serializers
         /// Notifies that the visitor entered a node.
         /// </summary>
         /// <param name="type">The type of node the visitor entered.</param>
-        /// <returns>True if this call has pushed a value to <see cref="EnteredTypes"/>, False otherwise.</returns>
+        /// <returns>True if this call has pushed a value to <see cref="states"/>, False otherwise.</returns>
         /// <remarks>The value returned by this method should be passed to the corresponding call to <see cref="LeaveNode"/>.</remarks>
         public bool EnterNode(Type type)
         {
@@ -66,37 +63,72 @@ namespace SiliconStudio.Assets.Serializers
             if (typeAttribute != null)
             {
                 // What is the last referenceable type we entered? (serialized as-is instead of referenced)
-                var lastEntered = EnteredTypes.Count > 0 ? EnteredTypes.Peek() : null;
+                var lastEntered = states.Count > 0 ? (State?)states.Peek() : null;
 
                 // It is a container for the type we're evaluating?
-                if (lastEntered != null && !lastEntered.ContainedTypes.Any(x => x.IsAssignableFrom(type)))
+                if (lastEntered != null && !lastEntered.Value.ContainedTypes.Any(x => x.IsAssignableFrom(type)))
                 {
                     // Otherwise, serialize a reference to this object instead.
                     SerializeAsReference = true;
                 }
 
-                EnteredTypes.Push(typeAttribute);
+                states.Push(new State(typeAttribute, typeAttribute.ContainedTypes));
                 return true;
             }
+            return false;
+        }
+
+        public bool EnterNode(IMemberDescriptor member)
+        {
+            var assetPartContainedAttribute = member.GetCustomAttributes<AssetPartContainedAttribute>(true).FirstOrDefault();
+            if (assetPartContainedAttribute != null)
+            {
+                states.Push(new State(null, assetPartContainedAttribute.ContainedTypes));
+                return true;
+            }
+
             return false;
         }
 
         /// <summary>
         /// Notifies that the visitor left a node.
         /// </summary>
-        /// <param name="type">The type of node the visitor left.</param>
-        /// <param name="removeLastEnteredType">If True, the last value on the <see cref="EnteredTypes"/> stack will be removed.</param>
-        /// <remarks>The value passed to <paramref name="removeLastEnteredType"/> should be the return value of <see cref="EnterNode"/>.</remarks>
-        public void LeaveNode(Type type, bool removeLastEnteredType)
+        /// <param name="removeLastEnteredNode"></param>
+        /// <remarks>The value passed to <paramref name="removeLastEnteredNode"/> should be the return value of <see cref="EnterNode"/>.</remarks>
+        public void LeaveNode(bool removeLastEnteredNode)
         {
             // Reset this flag for sanity
             SerializeAsReference = false;
 
             // Did we enter a referenceable type and actually serialized it?
-            if (removeLastEnteredType)
+            if (removeLastEnteredNode)
             {
-                EnteredTypes.Pop();
+                states.Pop();
             }
+        }
+
+        struct State
+        {
+            public readonly AssetPartReferenceAttribute EnteredType;
+            public readonly Type[] ContainedTypes;
+
+            public State(AssetPartReferenceAttribute enteredType, Type[] containedTypes)
+            {
+                EnteredType = enteredType;
+                ContainedTypes = containedTypes;
+            }
+        }
+
+        public AssetPartReferenceAttribute GetLastEnteredType()
+        {
+            // Reminder: Stack<T> enumerates backward
+            foreach (var state in states)
+            {
+                if (state.EnteredType != null)
+                    return state.EnteredType;
+            }
+
+            return null;
         }
     }
 }

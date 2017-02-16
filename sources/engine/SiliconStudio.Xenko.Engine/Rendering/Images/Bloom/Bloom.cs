@@ -33,6 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             SigmaRatio = 3.5f;
             Distortion = new Vector2(1);
             afterimage = new Afterimage { Enabled = false };
+            EnableSetRenderTargets = false;
         }
 
         /// <summary>

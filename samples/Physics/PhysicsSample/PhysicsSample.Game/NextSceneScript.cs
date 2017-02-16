@@ -9,6 +9,8 @@ namespace PhysicsSample
 {
     public class NextSceneScript : SyncScript
     {
+        private Scene targetScene;
+
         public Scene NextScene;
 
         public Scene PreviousScene;
@@ -17,10 +19,17 @@ namespace PhysicsSample
 
         public override void Start()
         {
-            SetupUI();            
+            SetupUI();
         }
 
-        public override void Update() { }
+        public override void Update()
+        {
+            if (targetScene != null)
+            {
+                SceneSystem.SceneInstance.RootScene = targetScene;
+                targetScene = null;
+            }
+        }
 
         private void SetupUI()
         {
@@ -38,8 +47,8 @@ namespace PhysicsSample
                         CreateButton("<<", 72, 0, PreviousScene),
                         CreateButton(">>", 72, 2, NextScene)
                     },
-                    
-                    ColumnDefinitions                    =
+
+                    ColumnDefinitions =
                     {
                         new StripDefinition(StripType.Auto, 10),
                         new StripDefinition(StripType.Star, 80),
@@ -50,7 +59,7 @@ namespace PhysicsSample
             };
         }
 
-        private Button CreateButton(string text, int textSize, int columnId, Scene targetScene)
+        private Button CreateButton(string text, int textSize, int columnId, Scene newTargetScene)
         {
             var button = new Button
             {
@@ -64,8 +73,7 @@ namespace PhysicsSample
 
             button.Click += (sender, args) =>
             {
-                SceneSystem.SceneInstance.Scene = targetScene;
-                Cancel();
+                targetScene = newTargetScene;
             };
 
             return button;

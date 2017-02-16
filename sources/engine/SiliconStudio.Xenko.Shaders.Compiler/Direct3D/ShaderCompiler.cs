@@ -101,6 +101,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             {
                 var constantBufferRaw = shaderReflectionRaw.GetConstantBuffer(i);
                 var constantBufferRawDesc = constantBufferRaw.Description;
+                if (constantBufferRawDesc.Type == SharpDX.D3DCompiler.ConstantBufferType.ResourceBindInformation)
+                    continue;
+
                 var linkBuffer = effectReflection.ConstantBuffers.First(buffer => buffer.Name == constantBufferRawDesc.Name);
 
                 ValidateConstantBufferReflection(constantBufferRaw, ref constantBufferRawDesc, linkBuffer, log);
@@ -128,7 +131,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                 if (linkKeyName == null)
                 {
-                    log.Error("Resource [{0}] has no link", boundResourceDesc.Name);
+                    log.Error($"Resource [{boundResourceDesc.Name}] has no link");
                 }
                 else
                 {
@@ -323,14 +326,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
 
                 if (variableTypeDescription.Offset != 0)
                 {
-                    log.Error("Unexpected offset [{0}] for variable [{1}] in constant buffer [{2}]", variableTypeDescription.Offset, variableDescription.Name, constantBuffer.Name);
+                    log.Error($"Unexpected offset [{variableTypeDescription.Offset}] for variable [{variableDescription.Name}] in constant buffer [{constantBuffer.Name}]");
                 }
 
                 var binding = constantBuffer.Members[i];
                 // Retrieve Link Member
                 if (binding.RawName != variableDescription.Name)
                 {
-                    log.Error("Variable [{0}] in constant buffer [{1}] has no link", variableDescription.Name, constantBuffer.Name);
+                    log.Error($"Variable [{variableDescription.Name}] in constant buffer [{constantBuffer.Name}] has no link");
                 }
                 else
                 {
@@ -355,7 +358,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
                         || ((parameter.Type.Class != EffectParameterClass.Struct) && // Ignore columns/rows if it's a struct (sometimes it contains weird data)
                                (parameter.Type.RowCount != binding.Type.RowCount || parameter.Type.ColumnCount != binding.Type.ColumnCount)))
                     {
-                        log.Error("Variable [{0}] in constant buffer [{1}] binding doesn't match what was expected", variableDescription.Name, constantBuffer.Name);
+                        log.Error($"Variable [{variableDescription.Name}] in constant buffer [{constantBuffer.Name}] binding doesn't match what was expected");
                     }
                 }
             }
@@ -521,7 +524,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.Direct3D
             EffectParameterType effectParameterType;
             if (!MapTypes.TryGetValue(type, out effectParameterType))
             {
-                log.Error("Type [{0}] from D3DCompiler not supported", type);
+                log.Error($"Type [{type}] from D3DCompiler not supported");
             }
             return effectParameterType;
         }

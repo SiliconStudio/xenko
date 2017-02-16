@@ -26,3 +26,5 @@ Nodes:
     89d21f07fa62bd0aa29c046d96a07809: {Name: CATRigLArmDigit52, Depth: 6}
     78a8cf90d1739f16b9c67d3c05dcfcf1: {Name: CATRigLArmDigit53, Depth: 7}
     c1051fb7bb692408e4f30531eaacbfd8: {Name: handLeft, Depth: 2}
+~SourceHashes:
+    56f80657105e08688c8ec240cb5a44b8~../../../Resources/Models/HandModelLeft.fbx: 335e0e2de46ea68c9918da4ae7680215

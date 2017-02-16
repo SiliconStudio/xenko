@@ -11,6 +11,11 @@ namespace SiliconStudio.Xenko.Graphics
     public enum GraphicsPlatform
     {
         /// <summary>
+        /// The Null Shader.
+        /// </summary>
+        Null,
+
+        /// <summary>
         /// HLSL Direct3D Shader.
         /// </summary>
         Direct3D11,

@@ -8,11 +8,22 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Entry-point for implementing rendering feature.
     /// </summary>
+    [DataContract(Inherited = true, DefaultMemberMode = DataMemberMode.Never)]
     public abstract class RenderFeature : ComponentBase, IGraphicsRendererCore
     {
+        private RenderSystem renderSystem;
+
         protected RenderContext Context { get; private set; }
 
-        public RenderSystem RenderSystem { get; internal set; }
+        public RenderSystem RenderSystem
+        {
+            get { return renderSystem; }
+            internal set
+            {
+                renderSystem = value;
+                OnRenderSystemChanged();
+            }
+        }
 
         public bool Initialized { get; private set; }
 
@@ -92,6 +103,16 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Performs GPU updates and/or drawing, everytime a render view changes.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="renderView"></param>
+        /// <param name="renderViewStage"></param>
+        public virtual void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage)
+        {
+        }
+
+        /// <summary>
         /// Performs GPU updates and/or draw.
         /// </summary>
         /// <param name="context"></param>
@@ -109,6 +130,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="context"></param>
         public virtual void Flush(RenderDrawContext context)
         {            
+        }
+
+        protected virtual void OnRenderSystemChanged()
+        {
         }
     }
 }

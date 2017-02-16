@@ -392,7 +392,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return;
 
             // Skip any member that we won't serialize
-            if (!member.ShouldSerialize(objectContext.Instance))
+            if (!objectContext.SerializerContext.ObjectSerializerBackend.ShouldSerialize(member, ref objectContext))
                 return;
 
             // Emit the key name

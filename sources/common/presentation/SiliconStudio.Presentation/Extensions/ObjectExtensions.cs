@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Extensions
 {
@@ -11,20 +13,20 @@ namespace SiliconStudio.Presentation.Extensions
     {
         private static readonly Dictionary<Type, Delegate> CachedMemberwiseCloneMethods = new Dictionary<Type, Delegate>();
 
-        public static object MemberwiseClone(this object instance)
+        [NotNull]
+        public static object MemberwiseClone([NotNull] this object instance)
         {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
 
             Delegate method;
 
-            Type instanceType = instance.GetType();
+            var instanceType = instance.GetType();
 
             if (CachedMemberwiseCloneMethods.TryGetValue(instanceType, out method) == false)
             {
-                DynamicMethod dynamicMethod = GenerateDynamicMethod(instanceType);
+                var dynamicMethod = GenerateDynamicMethod(instanceType);
 
-                Type methodType = typeof(Func<,>).MakeGenericType(instanceType, instanceType);
+                var methodType = typeof(Func<,>).MakeGenericType(instanceType, instanceType);
                 method = dynamicMethod.CreateDelegate(methodType);
 
                 CachedMemberwiseCloneMethods.Add(instanceType, method);
@@ -33,18 +35,19 @@ namespace SiliconStudio.Presentation.Extensions
             return method.DynamicInvoke(instance);
         }
 
-        public static T MemberwiseClone<T>(this T instance)
+        [NotNull]
+        public static T MemberwiseClone<T>([NotNull] this T instance)
         {
             if (instance == null)
-                throw new ArgumentNullException("instance");
+                throw new ArgumentNullException(nameof(instance));
 
-            Delegate method = null;
+            Delegate method;
 
-            Type instanceType = typeof(T);
+            var instanceType = typeof(T);
 
             if (CachedMemberwiseCloneMethods.TryGetValue(instanceType, out method) == false)
             {
-                DynamicMethod dynamicMethod = GenerateDynamicMethod(instanceType);
+                var dynamicMethod = GenerateDynamicMethod(instanceType);
 
                 method = dynamicMethod.CreateDelegate(typeof(Func<T, T>));
 
@@ -54,15 +57,16 @@ namespace SiliconStudio.Presentation.Extensions
             return ((Func<T, T>)method)(instance);
         }
 
-        private static DynamicMethod GenerateDynamicMethod(Type instanceType)
+        [NotNull]
+        private static DynamicMethod GenerateDynamicMethod([NotNull] Type instanceType)
         {
-            DynamicMethod dymMethod = new DynamicMethod("DynamicCloneMethod", instanceType, new Type[] { instanceType }, true);
+            var dymMethod = new DynamicMethod("DynamicCloneMethod", instanceType, new[] { instanceType }, true);
 
-            ILGenerator generator = dymMethod.GetILGenerator();
+            var generator = dymMethod.GetILGenerator();
 
             generator.DeclareLocal(instanceType);
 
-            bool isValueType = instanceType.IsValueType;
+            var isValueType = instanceType.IsValueType;
 
             if (isValueType)
             {
@@ -71,12 +75,12 @@ namespace SiliconStudio.Presentation.Extensions
             }
             else
             {
-                ConstructorInfo constructorInfo = instanceType.GetConstructor(new Type[0]);
+                var constructorInfo = instanceType.GetConstructor(new Type[0]);
                 generator.Emit(OpCodes.Newobj, constructorInfo);
                 generator.Emit(OpCodes.Stloc_0);
             }
 
-            foreach (FieldInfo field in instanceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (var field in instanceType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 // Load the new object on the eval stack... (currently 1 item on eval stack)
                 if (isValueType)

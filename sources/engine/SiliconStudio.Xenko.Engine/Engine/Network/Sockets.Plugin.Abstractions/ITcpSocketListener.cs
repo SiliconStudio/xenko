@@ -15,8 +15,9 @@ namespace Sockets.Plugin.Abstractions
         /// </summary>
         /// <param name="port">The port to listen on.</param>
         /// <param name="listenOn">The <code>CommsInterface</code> to listen on. If unspecified, all interfaces will be bound.</param>
+        /// <param name="inheritHandle">Allows handle inheritance. Might be ignored depending on platform.</param>
         /// <returns></returns>
-        Task StartListeningAsync(int port, ICommsInterface listenOn);
+        Task StartListeningAsync(int port, ICommsInterface listenOn, bool inheritHandle);
 
         /// <summary>
         ///     Stops the <code>TcpSocketListener</code> from listening for new TCP connections.

@@ -16,10 +16,12 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of <see cref="ShadowObjectPropertyKey"/>
         /// </summary>
         /// <param name="item1">The first part of this key. Cannot be null</param>
-        public ShadowObjectPropertyKey(object item1) : this()
+        /// <param name="copyValueOnClone">Indicate whether this shadow object property should be copied when the host object is cloned.</param>
+        public ShadowObjectPropertyKey(object item1, bool copyValueOnClone) : this()
         {
             if (item1 == null) throw new ArgumentNullException(nameof(item1));
             Item1 = item1;
+            CopyValueOnClone = copyValueOnClone;
         }
 
         /// <summary>
@@ -27,11 +29,13 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="item1">The first part of this key. Cannot be null</param>
         /// <param name="item2">The second part of this key. Can be null</param>
-        public ShadowObjectPropertyKey(object item1, object item2)
+        /// <param name="copyValueOnClone">Indicate whether this shadow object property should be copied when the host object is cloned.</param>
+        public ShadowObjectPropertyKey(object item1, object item2, bool copyValueOnClone)
         {
             if (item1 == null) throw new ArgumentNullException(nameof(item1));
             Item1 = item1;
             Item2 = item2;
+            CopyValueOnClone = copyValueOnClone;
         }
 
         /// <summary>
@@ -43,6 +47,11 @@ namespace SiliconStudio.Core.Reflection
         /// Second part of this key.
         /// </summary>
         public readonly object Item2;
+
+        /// <summary>
+        /// Indicate whether this shadow object property should be copied when the host object is cloned.
+        /// </summary>
+        public readonly bool CopyValueOnClone;
 
         public bool Equals(ShadowObjectPropertyKey other)
         {

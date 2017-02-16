@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2016, assimp team
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
@@ -41,10 +41,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file quaternion.h
  *  @brief Quaternion structure, including operators when compiling in C++
  */
+#pragma once
 #ifndef AI_QUATERNION_H_INC
 #define AI_QUATERNION_H_INC
 
 #ifdef __cplusplus
+
+#include "defs.h"
 
 template <typename TReal> class aiVector3t;
 template <typename TReal> class aiMatrix3x3t;
@@ -60,7 +63,7 @@ public:
         : w(pw), x(px), y(py), z(pz) {}
 
     /** Construct from rotation matrix. Result is undefined if the matrix is not orthonormal. */
-    aiQuaterniont( const aiMatrix3x3t<TReal>& pRotMatrix);
+    explicit aiQuaterniont( const aiMatrix3x3t<TReal>& pRotMatrix);
 
     /** Construct from euler angles */
     aiQuaterniont( TReal rotx, TReal roty, TReal rotz);
@@ -69,7 +72,7 @@ public:
     aiQuaterniont( aiVector3t<TReal> axis, TReal angle);
 
     /** Construct from a normalized quaternion stored in a vec3 */
-    aiQuaterniont( aiVector3t<TReal> normalized);
+    explicit aiQuaterniont( aiVector3t<TReal> normalized);
 
     /** Returns a matrix representation of the quaternion */
     aiMatrix3x3t<TReal> GetMatrix() const;
@@ -112,15 +115,14 @@ public:
     TReal w, x, y, z;
 } ;
 
-typedef aiQuaterniont<float> aiQuaternion;
+typedef aiQuaterniont<ai_real> aiQuaternion;
 
 #else
 
 struct aiQuaternion {
-    float w, x, y, z;
+    ai_real w, x, y, z;
 };
 
 #endif
-
 
 #endif // AI_QUATERNION_H_INC

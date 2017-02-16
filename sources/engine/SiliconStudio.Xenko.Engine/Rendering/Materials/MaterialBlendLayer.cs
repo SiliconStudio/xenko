@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var material = context.FindAsset(Material) as IMaterialDescriptor;
             if (material == null)
             {
-                context.Log.Error("Unable to find material [{0}]", Material);
+                context.Log.Error($"Unable to find material [{Material}]");
                 return;
             }
 

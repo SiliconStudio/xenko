@@ -1,7 +1,7 @@
-using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -15,31 +15,47 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
+        /// <remarks>
+        /// This constructor is used only for serialization.
+        /// </remarks>
         public EntityDesign()
-            : this(null)
+            // ReSharper disable once AssignNullToNotNullAttribute
+            : this(null, string.Empty)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
         /// </summary>
-        /// <param name="entity">The entity</param>
-        public EntityDesign(Entity entity)
+        /// <param name="entity">The entity contained in this instance.</param>
+        public EntityDesign([NotNull] Entity entity)
         {
             Entity = entity;
         }
 
         /// <summary>
-        /// Gets or sets the folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        /// <param name="entity">The entity contained in this instance.</param>
+        /// <param name="folder">The folder in which this entity is contained.</param>
+        public EntityDesign([NotNull] Entity entity, string folder)
+        {
+            Entity = entity;
+            Folder = folder;
+        }
+
+        /// <summary>
+        /// The folder where the entity is attached (folder is relative to parent folder). If null or empty, the entity doesn't belong to a folder.
         /// </summary>
         [DataMember(10)]
-        [DefaultValue(null)]
+        [DefaultValue("")]
         public string Folder { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity
+        /// The entity.
         /// </summary>
         [DataMember(10)]
+        [NotNull]
         public Entity Entity { get; set; }
 
         /// <inheritdoc/>
@@ -48,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public BasePart Base { get; set; }
 
         /// <inheritdoc/>
-        Entity IAssetPartDesign<Entity>.Part => Entity;
+        Entity IAssetPartDesign<Entity>.Part { get { return Entity; } set { Entity = value; } }
 
         /// <inheritdoc/>
         public override string ToString()

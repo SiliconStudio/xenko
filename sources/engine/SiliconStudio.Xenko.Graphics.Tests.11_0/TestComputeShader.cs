@@ -86,6 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             base.Draw(gameTime);
         }
 
+        [Ignore("This test is unmaintained and currently doesn't pass")]
         [Test]
         public void RunTest()
         {

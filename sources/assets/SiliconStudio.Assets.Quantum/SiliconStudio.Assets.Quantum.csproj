@@ -48,15 +48,24 @@
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
     <Compile Include="AssetCompositePartVisitor.cs" />
     <Compile Include="AssetCompositePropertyGraph.cs" />
-    <Compile Include="AssetContentChangeEventArgs.cs" />
+    <Compile Include="AssetMemberNodeChangeEventArgs.cs" />
     <Compile Include="AssetNode.cs" />
     <Compile Include="AssetNodeContainer.cs" />
     <Compile Include="AssetPropertyGraphContainer.cs" />
     <Compile Include="AssetPropertyGraph.cs" />
     <Compile Include="AssetQuantumRegistry.cs" />
     <Compile Include="AssetToBaseNodeLinker.cs" />
+    <Compile Include="Commands\AbstractNodeDifferentValues.cs" />
+    <Compile Include="Commands\AbstractNodeEntry.cs" />
+    <Compile Include="Commands\AbstractNodeType.cs" />
+    <Compile Include="Commands\AbstractNodeValue.cs" />
+    <Compile Include="Commands\AddNewItemCommand.cs" />
+    <Compile Include="Commands\AddPrimitiveKeyCommand.cs" />
+    <Compile Include="Commands\CreateNewInstanceCommand.cs" />
+    <Compile Include="Commands\MoveItemCommand.cs" />
+    <Compile Include="Commands\RemoveItemCommand.cs" />
+    <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="MultiContentNode.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
     <Compile Include="OverrideTypePathGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,10 +90,12 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
@@ -104,6 +115,7 @@
     <ProjectReference Include="..\..\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
       <Project>{1D4210BD-FA51-4709-951B-50647617F97E}</Project>
       <Name>SiliconStudio.Quantum</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
@@ -118,6 +130,7 @@
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
       <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +138,7 @@
     <None Include="packages.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

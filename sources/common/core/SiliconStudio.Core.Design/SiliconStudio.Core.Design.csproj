@@ -41,6 +41,10 @@
     <Compile Include="..\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Windows\NativeLockFile.cs</Link>
     </Compile>
+    <Compile Include="Annotations\BaseTypeRequiredAttribute.cs" />
+    <Compile Include="Annotations\CollectionAccessAttribute.cs" />
+    <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
+    <Compile Include="Annotations\NoEnumerationAttribute.cs" />
     <Compile Include="Collections\HybridDictionary.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
@@ -88,6 +92,7 @@
     <Compile Include="Transactions\Transaction.cs" />
     <Compile Include="Transactions\TransactionEventArgs.cs" />
     <Compile Include="Transactions\TransactionException.cs" />
+    <Compile Include="Transactions\TransactionFlags.cs" />
     <Compile Include="Transactions\TransactionsDiscardedEventArgs.cs" />
     <Compile Include="Transactions\TransactionStack.cs" />
     <Compile Include="Transactions\TransactionStackFactory.cs" />
@@ -153,6 +158,7 @@
     <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
@@ -162,6 +168,7 @@
     <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>

@@ -196,6 +196,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
@@ -205,10 +206,12 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
       <Project>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</Project>
@@ -218,6 +221,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj">
       <Project>{DE042125-C270-4D1D-9270-0759C167567A}</Project>
       <Name>SiliconStudio.Xenko.Audio</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
@@ -232,6 +236,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
@@ -323,14 +328,33 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Navigation\NavigationMeshAsset.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuild.cs" />
     <Compile Include="Navigation\NavigationMeshCachedBuildObject.cs" />
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Rendering\GraphicsCompositorAssetCompiler.cs" />
+    <Compile Include="Scripts\Accessibility.cs" />
+    <Compile Include="Scripts\CustomExpression.cs" />
+    <Compile Include="Scripts\BlockDropTargetAttribute.cs" />
+    <Compile Include="Scripts\ForeachBlock.cs" />
+    <Compile Include="Scripts\Method.cs" />
+    <Compile Include="Scripts\Property.cs" />
+    <Compile Include="Scripts\Parameter.cs" />
+    <Compile Include="Scripts\ParameterRefKind.cs" />
+    <Compile Include="Scripts\RegenerateSlotsAttribute.cs" />
+    <Compile Include="Scripts\RegenerateTitleAttribute.cs" />
+    <Compile Include="Scripts\RoslynHelper.cs" />
+    <Compile Include="Scripts\ScriptCodeAttribute.cs" />
+    <Compile Include="Scripts\ScriptVariableReferenceAttribute.cs" />
+    <Compile Include="Scripts\SlotGeneratorContext.cs" />
+    <Compile Include="Scripts\VirtualModifier.cs" />
+    <Compile Include="Textures\RenderTextureAsset.cs" />
+    <Compile Include="Textures\RenderTextureAssetCompiler.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
-    <Compile Include="UI\UIElementHierarchyData.cs" />
+    <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
@@ -345,6 +369,19 @@
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />
+    <Compile Include="Scripts\Block.cs" />
+    <Compile Include="Scripts\BlockReference.cs" />
+    <Compile Include="Scripts\ConditionalBranchBlock.cs" />
+    <Compile Include="Scripts\CustomCodeBlock.cs" />
+    <Compile Include="Scripts\Link.cs" />
+    <Compile Include="Scripts\MethodCallBlock.cs" />
+    <Compile Include="Scripts\Slot.cs" />
+    <Compile Include="Scripts\SlotDefinition.cs" />
+    <Compile Include="Scripts\Symbol.cs" />
+    <Compile Include="Scripts\VariableGet.cs" />
+    <Compile Include="Scripts\VariableSet.cs" />
+    <Compile Include="Scripts\VisualScriptAsset.cs" />
+    <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
@@ -387,8 +424,6 @@
     <Compile Include="XenkoConfig.cs" />
     <Compile Include="Physics\ColliderShapeAsset.cs" />
     <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
-    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
-    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />

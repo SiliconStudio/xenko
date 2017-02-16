@@ -65,6 +65,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// The collision group of this element, default is DefaultFilter. Cannot change during run-time.
         /// </userdoc>
+        /// <remarks>
+        /// The collider will still produce events, to allow non trigger rigidbodies or static colliders to act as a trigger if required for certain filtering groups.
+        /// </remarks>
         [DataMember(30)]
         [DefaultValue(CollisionFilterGroups.DefaultFilter)]
         public CollisionFilterGroups CollisionGroup { get; set; } = CollisionFilterGroups.DefaultFilter;
@@ -78,6 +81,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups. Cannot change during run-time.
         /// </userdoc>
+        /// /// <remarks>
+        /// The collider will still produce events, to allow non trigger rigidbodies or static colliders to act as a trigger if required for certain filtering groups.
+        /// </remarks>
         [DataMember(40)]
         [DefaultValue(CollisionFilterGroupFlags.AllFilter)]
         public CollisionFilterGroupFlags CanCollideWith { get; set; } = CollisionFilterGroupFlags.AllFilter;
@@ -231,6 +237,10 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// The friction of this element
         /// </userdoc>
+        /// <remarks>
+        /// It's importantant to realise that friction and restitution are not values of any particular surface, but rather a value of the interaction of two surfaces. 
+        /// So why is it defined for each object? In order to determine the overall friction and restitution between any two surfaces in a collision.
+        /// </remarks>
         [DataMember(65)]
         public float Friction
         {
@@ -361,7 +371,12 @@ namespace SiliconStudio.Xenko.Engine
             set
             {
                 ProtectedColliderShape = value;
-                if (NativeCollisionObject != null) NativeCollisionObject.CollisionShape = value.InternalShape;               
+
+                if (value == null)
+                    return;
+
+                if (NativeCollisionObject != null)
+                    NativeCollisionObject.CollisionShape = value.InternalShape;               
             }
         }
 
@@ -405,11 +420,11 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public Entity DebugEntity { get; set; }
 
-        public void AddDebugEntity(Scene scene, bool alwaysAddOffset = false)
+        public void AddDebugEntity(Scene scene, RenderGroup renderGroup = RenderGroup.Group0, bool alwaysAddOffset = false)
         {
             if (DebugEntity != null) return;
 
-            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, alwaysAddOffset);
+            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, renderGroup, alwaysAddOffset);
             DebugEntity = entity;
 
             if (DebugEntity == null) return;
@@ -716,6 +731,7 @@ namespace SiliconStudio.Xenko.Engine
             if (ColliderShape != null && !ColliderShape.IsPartOfAsset)
             {
                 ColliderShape.Dispose();
+                ColliderShape = null;
             }
         }
 

@@ -3,52 +3,107 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
-    /// <summary>
-    /// The <see cref="IGraphNode"/> interface extends the <see cref="IContentNode"/> by giving access to the <see cref="Parent"/> of this node
-    /// representing the container object of its content, as well as its <see cref="Children"/> nodes representing the members of its content.
-    /// </summary>
-    public interface IGraphNode : IContentNode
+    public interface IObjectNode : IContentNode
     {
         /// <summary>
-        /// Gets the child corresponding to the given name.
+        /// Gets the member corresponding to the given name.
         /// </summary>
-        /// <param name="name">The name of the child to retrieves.</param>
-        /// <returns>The child corresponding to the given name.</returns>
-        /// <exception cref="KeyNotFoundException">This node has no child that matches the given name.</exception>
-        IGraphNode this[string name] { get; }
+        /// <param name="name">The name of the member to retrieve.</param>
+        /// <returns>The member corresponding to the given name.</returns>
+        /// <exception cref="KeyNotFoundException">This node has no member that matches the given name.</exception>
+        IMemberNode this[string name] { get; }
 
         /// <summary>
-        /// Gets or sets the parent node.
+        /// Gets the collection of members of this node.
         /// </summary>
-        IGraphNode Parent { get; }
+        IReadOnlyCollection<IMemberNode> Members { get; }
 
         /// <summary>
-        /// Gets the children collection.
+        /// Attempts to retrieve the child node of this <see cref="IContentNode"/> that matches the given name.
         /// </summary>
-        IReadOnlyCollection<IGraphNode> Children { get; }
+        /// <param name="name">The name of the child to retrieve.</param>
+        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
+        IMemberNode TryGetChild(string name);
+    }
+
+    public interface IMemberNode : IContentNode
+    {
+        /// <summary>
+        /// Gets the member name.
+        /// </summary>
+        [NotNull]
+        string Name { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IObjectNode"/> containing this member node.
+        /// </summary>
+        [NotNull]
+        IObjectNode Parent { get; }
 
         /// <summary>
         /// Gets the target of this node, if this node contains a reference to another node. 
         /// </summary>
         /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
-        IGraphNode Target { get; }
+        IObjectNode Target { get; }
 
         /// <summary>
-        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
+        /// Gets the member descriptor corresponding to this member node.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>
-        /// <exception cref="ArgumentException">The index is empty.</exception>
-        /// <exception cref="KeyNotFoundException">The index does not exist.</exception>
-        IGraphNode IndexedTarget(Index index);
+        [NotNull]
+        IMemberDescriptor MemberDescriptor { get; }
 
         /// <summary>
-        /// Attempts to retrieve the child node of this <see cref="IGraphNode"/> that matches the given name.
+        /// Raised just before a change to this node occurs.
         /// </summary>
-        /// <param name="name">The name of the child to retrieve.</param>
-        /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        IGraphNode TryGetChild(string name);
+        event EventHandler<MemberNodeChangeEventArgs> Changing;
+
+        /// <summary>
+        /// Raised when a change to this node has occurred.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> Changed;
+    }
+
+    public interface IInitializingGraphNode : IContentNode
+    {
+        /// <summary>
+        /// Seal the node, indicating its construction is finished and that no more children or commands will be added.
+        /// </summary>
+        void Seal();
+
+        /// <summary>
+        /// Add a command to this node. The node must not have been sealed yet.
+        /// </summary>
+        /// <param name="command">The node command to add.</param>
+        void AddCommand(INodeCommand command);
+    }
+
+    public interface IInitializingObjectNode : IInitializingGraphNode, IObjectNode
+    {
+        /// <summary>
+        /// Add a member to this node. This node and the member node must not have been sealed yet.
+        /// </summary>
+        /// <param name="member">The member to add to this node.</param>
+        /// <param name="allowIfReference">if set to <c>false</c> throw an exception if <see cref="IContentNode.TargetReference"/> or <see cref="IContentNode.ItemReferences"/> is not null.</param>
+        void AddMember(IMemberNodeInternal member, bool allowIfReference = false);
+    }
+
+    public interface IMemberNodeInternal : IInitializingGraphNode, IMemberNode
+    {
+        /// <summary>
+        /// Raised before a change to this node occurs and before the <see cref="IMemberNode.Changing"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> PrepareChange;
+
+        /// <summary>
+        /// Raised after a change to this node has occurred and after the <see cref="IMemberNode.Changed"/> event is raised.
+        /// </summary>
+        event EventHandler<MemberNodeChangeEventArgs> FinalizeChange;
     }
 }

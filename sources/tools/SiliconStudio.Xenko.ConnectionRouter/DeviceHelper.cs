@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 oldDevice.Value.DeviceDisconnected = true;
                 currentDevices.Remove(oldDevice.Key);
 
-                log.Info("Device removed: {0} ({1})", oldDevice.Value.Name, oldDevice.Key);
+                log.Info($"Device removed: {oldDevice.Value.Name} ({oldDevice.Key})");
             }
 
             // Start new devices

@@ -9,6 +9,7 @@
 //
 // File AUTO-GENERATED, do not edit!
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -41,7 +42,8 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="messageFormat">The <#= name.ToLowerInvariant() #> message to format.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
-        public void <#= name #>(string messageFormat, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void <#= name #>([NotNull] string messageFormat, [NotNull] params object[] parameters)
         {
             <#= name #>(messageFormat, null, parameters);
         }
@@ -53,9 +55,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="exception">An exception to log with the message.</param>
         /// <param name="parameters">The parameters to used with the <see cref="messageFormat" />. The last parameter can be used to store <see cref="CallerInfo"/></param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public void <#= name #>(string messageFormat, Exception exception, params object[] parameters)
+        [Obsolete("This method will be removed in next release. You can use string interpolation to inline the formatting of your string.")]
+        public void <#= name #>([NotNull] string messageFormat, Exception exception, [NotNull] params object[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             <#= name #>(string.Format(messageFormat, parameters), exception, ExtractCallerInfo(parameters));
         }
 <#}#>

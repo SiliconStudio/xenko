@@ -23,10 +23,6 @@
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDiff, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SharpDiff\SharpDiff.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -60,9 +56,11 @@
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
+    <Compile Include="Analysis\IAssetDependencyManager.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetCompositeHierarchyExtensions.cs" />
     <Compile Include="AssetContentTypeAttribute.cs" />
     <Compile Include="AssetItemExtensions.cs" />
     <Compile Include="AssetLogger.cs" />
@@ -78,6 +76,7 @@
     <Compile Include="DynamicYaml\DynamicYamlObject.cs" />
     <Compile Include="DynamicYaml\DynamicYamlScalar.cs" />
     <Compile Include="DynamicYaml\IDynamicYamlNode.cs" />
+    <Compile Include="IAssetFinder.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\ShadowId.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
+    <Compile Include="Serializers\AssetPartContainedAttribute.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
     <Compile Include="Serializers\IAssetPartReference.cs" />
@@ -255,16 +255,7 @@
     </Compile>
     <Compile Include="AssetReference.cs" />
     <Compile Include="AssetAliasAttribute.cs" />
-    <Compile Include="Visitors\DataVisitArrayItem.cs" />
-    <Compile Include="Visitors\DataVisitNodeExtensions.cs" />
-    <Compile Include="Visitors\DataVisitNodeBuilder.cs" />
-    <Compile Include="Visitors\DataVisitDictionaryItem.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Visitors\DataVisitNode.cs" />
-    <Compile Include="Visitors\DataVisitListItem.cs" />
-    <Compile Include="Visitors\DataVisitMember.cs" />
-    <Compile Include="Visitors\DataVisitObject.cs" />
-    <Compile Include="Visitors\IDataVisitNode.cs" />
     <Compile Include="Serializers\AssetReferenceSerializer.cs" />
     <Compile Include="AssetRegistry.cs" />
     <Compile Include="AssetItem.cs" />
@@ -315,10 +306,12 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
       <Name>SiliconStudio.Core.Yaml</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
@@ -333,16 +326,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

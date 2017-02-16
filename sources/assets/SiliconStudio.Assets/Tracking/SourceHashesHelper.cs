@@ -14,42 +14,9 @@ namespace SiliconStudio.Assets.Tracking
     {
         public const string MemberName = "~SourceHashes";
 
-        private static readonly ShadowObjectPropertyKey AbsoluteSourceHashesKey = new ShadowObjectPropertyKey(new object());
-        private static readonly ShadowObjectPropertyKey RelativeSourceHashesKey = new ShadowObjectPropertyKey(new object());
+        private static readonly ShadowObjectPropertyKey AbsoluteSourceHashesKey = new ShadowObjectPropertyKey(new object(), true);
+        private static readonly ShadowObjectPropertyKey RelativeSourceHashesKey = new ShadowObjectPropertyKey(new object(), true);
         private static readonly object LockObj = new object();
-
-        public static bool HasSourceHashes(Asset asset)
-        {
-            lock (LockObj)
-            {
-                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
-                return hashes != null && hashes.Count > 0;
-            }
-        }
-
-        public static ObjectId FindSourceHash(Asset asset, UFile file)
-        {
-            lock (LockObj)
-            {
-                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
-
-                if (hashes == null)
-                    return ObjectId.Empty;
-
-                ObjectId hash;
-                hashes.TryGetValue(file, out hash);
-                return hash;
-            }
-        }
-
-        public static void UpdateHash(Asset asset, UFile file, ObjectId hash)
-        {
-            lock (LockObj)
-            {
-                var hashes = GetOrCreate(asset, AbsoluteSourceHashesKey);
-                hashes[file] = hash;
-            }
-        }
 
         public static void UpdateHashes(Asset asset, IReadOnlyDictionary<UFile, ObjectId> newHashes)
         {
@@ -58,15 +25,6 @@ namespace SiliconStudio.Assets.Tracking
                 var hashes = GetOrCreate(asset, AbsoluteSourceHashesKey);
                 hashes.Clear();
                 newHashes.ForEach(x => hashes.Add(x.Key, x.Value));
-            }
-        }
-
-        public static void RemoveHash(Asset asset, UFile sourceFile)
-        {
-            lock (LockObj)
-            {
-                var hashes = TryGet(asset, AbsoluteSourceHashesKey);
-                hashes?.Remove(sourceFile);
             }
         }
 

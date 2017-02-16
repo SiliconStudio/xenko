@@ -145,7 +145,7 @@ namespace SpriteStudioDemo
                     bullet.Transform.Position = (isAgentFacingRight) ? Entity.Transform.Position + bulletOffset : Entity.Transform.Position + (bulletOffset * new Vector3(-1, 1, 1));
                     bullet.Transform.UpdateWorldMatrix();
 
-                    SceneSystem.SceneInstance.Scene.Entities.Add(bullet);
+                    SceneSystem.SceneInstance.RootScene.Entities.Add(bullet);
 
                     rb.LinearFactor = new Vector3(1, 0, 0);
                     rb.AngularFactor = new Vector3(0, 0, 0);

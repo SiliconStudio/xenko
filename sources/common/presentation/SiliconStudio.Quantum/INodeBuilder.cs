@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -26,7 +25,7 @@ namespace SiliconStudio.Quantum
         ITypeDescriptorFactory TypeDescriptorFactory { get; }
 
         /// <summary>
-        /// Gets or sets the factory that will create instances of <see cref="IContent"/> for nodes.
+        /// Gets or sets the factory that will create instances of <see cref="IContentNode"/> for nodes.
         /// </summary>
         IContentFactory ContentFactory { get; set; }
 
@@ -76,9 +75,8 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
-        /// <param name="nodeFactory">The factory that creates node for each content.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IGraphNode Build(object obj, Guid rootGuid, NodeFactoryDelegate nodeFactory);
+        IObjectNode Build(object obj, Guid rootGuid);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.

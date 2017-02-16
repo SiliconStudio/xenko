@@ -10,3 +10,5 @@ Materials:
         MaterialInstance:
             Material: 219e0c43-1fe7-42ce-9aa8-65aaa0023eb5:Materials/PolishedStone
 Skeleton: null
+~SourceHashes:
+    efa29fde2832fb2f2497a862210e3d38~../../../Resources/Stand/standBowl.fbx: 3a9256a73afacbf5bc0852d6ae92a196

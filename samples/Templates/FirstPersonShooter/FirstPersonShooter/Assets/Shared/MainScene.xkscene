@@ -1,101 +1,8 @@
 !SceneAsset
 Id: bc8d83e5-a707-4213-b92c-d2e699e02d5f
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: 24883e97-efec-4b7a-8f42-56c912875b9b
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            9695c8b9c497374cab99958fc24636bf:
-                Name: null
-                Camera: 49a3257d-dfbc-4a64-a8eb-cb4dfe647e67/79c1cebd-d690-4e7f-b9d1-d3a9197c95a2
-        Layers:
-            b7e4f82df64eca408bccbad32790b13b:
-                Name: SceneGraphicsLayer
-                Output: !LocalRenderFrameProvider
-                    Descriptor:
-                        Format: HDR
-                Renderers:
-                    a65c007002094f4997fd8418a5664101: !ClearRenderFrameRenderer
-                        Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    37e6118eda5e104bb0500ef7a1e0d751: !SceneCameraRenderer
-                        Mode: !CameraRendererModeForward {}
-                        Camera:
-                            Index: 0
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                        ForceAspectRatio: false
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                d13ab0aa37e1f6428504650b9881767d: !SceneEffectRenderer
-                    Input: !ImageEffectRendererInput.LayerInput {}
-                    Effect: !PostProcessingEffects
-                        Camera:
-                            Index: 0
-                        AmbientOcclusion:
-                            Enabled: false
-                        DepthOfField:
-                            Enabled: false
-                            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                        BrightFilter:
-                            Color: {R: 1.0, G: 1.0, B: 1.0}
-                        Bloom:
-                            Distortion: {X: 1.0, Y: 1.0}
-                            Afterimage:
-                                Enabled: false
-                        LightStreak:
-                            Attenuation: 0.7
-                        LensFlare: {}
-                        ColorTransforms:
-                            Transforms:
-                                bc00954153e63a428044431fab00a364: !ToneMap
-                                    Operator: !ToneMapHejl2Operator {}
-                                8b44981055b3fd47a403376d66d2b86b: !FilmGrain
-                                    Enabled: false
-                                a73316aed74ee5458222d974aabf74f9: !Vignetting
-                                    Enabled: false
-                                    Color: {R: 0.0, G: 0.0, B: 0.0}
-                        Antialiasing: !FXAAEffect {}
-                    Output: !CurrentRenderFrameProvider {}
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeHDRSettings
-            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
-            PostProcessingEffects:
-                Camera:
-                    Index: 0
-                AmbientOcclusion:
-                    Enabled: false
-                DepthOfField:
-                    Enabled: false
-                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                BrightFilter:
-                    Color: {R: 1.0, G: 1.0, B: 1.0}
-                Bloom:
-                    Enabled: false
-                    Distortion: {X: 1.0, Y: 1.0}
-                    Afterimage:
-                        Enabled: false
-                LightStreak:
-                    Enabled: false
-                    Attenuation: 0.7
-                LensFlare:
-                    Enabled: false
-                ColorTransforms:
-                    Transforms:
-                        07ad277eed98ce4f92e93c18850ee158: !ToneMap
-                            Operator: !ToneMapHejl2Operator {}
-                        94c6a372b2eb724daf6a78e06fc1f8eb: !FilmGrain
-                            Enabled: false
-                        36686152e2eb1e48ac13e5375320fa92: !Vignetting
-                            Enabled: false
-                            Color: {R: 0.0, G: 0.0, B: 0.0}
-                Antialiasing: !FXAAEffect
-                    Enabled: false
+Parent: null
 Hierarchy:
     RootPartIds:
         - 96a9e8b6-3a2d-4d58-83b0-86ce04c80379
@@ -2501,7 +2408,9 @@ Hierarchy:
                             1fe64d64198b4543bfc6b549158775e4: b1c994b5-3745-4e14-84b3-543f53faa09d/644de61f-8b19-4345-bfc6-b549158775e4
                     bdcec17990d67f4eb9d1d3a9197c95a2: !CameraComponent
                         Id: 79c1cebd-d690-4e7f-b9d1-d3a9197c95a2
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
                     7e880022b3b3f743a0686a19d7ecd8e1: !FirstPersonShooter.FpsCamera,FirstPersonShooter.Game
                         Id: 2200887e-b3b3-43f7-a068-6a19d7ecd8e1
                         RotationSpeed: 0.02355
@@ -5038,7 +4947,7 @@ Hierarchy:
                         CcdMotionThreshold: 0.0
                         CcdSweptSphereRadius: 0.0
                         FallSpeed: 10.0
-                        MaxSlope: {Radians: 0.0}
+                        MaxSlope: {Radians: 0.785398}
                         JumpSpeed: 0.0
                         Gravity: -20.0
                         ColliderShapes:

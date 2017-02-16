@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>A boolean to enable GraphicsDevice.SetDepthAndRenderTargets from output. Default is <c>true</c></value>
         protected bool EnableSetRenderTargets { get; set; }
-        
+
         /// <summary>
         /// Sets an input texture
         /// </summary>

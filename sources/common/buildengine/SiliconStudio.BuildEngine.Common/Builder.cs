@@ -613,19 +613,13 @@ namespace SiliconStudio.BuildEngine
                 }
                 else if (stepCounter.Get(ResultStatus.Failed) > 0 || stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed) > 0)
                 {
-                    Logger.Error("Build finished in {0} steps. Command results: {1} succeeded, {2} up-to-date, {3} failed, {4} not triggered due to previous failure.",
-                       stepCounter.Total, stepCounter.Get(ResultStatus.Successful), stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful),
-                       stepCounter.Get(ResultStatus.Failed), stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed));
-
+                    Logger.Error($"Build finished in {stepCounter.Total} steps. Command results: {stepCounter.Get(ResultStatus.Successful)} succeeded, {stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful)} up-to-date, {stepCounter.Get(ResultStatus.Failed)} failed, {stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed)} not triggered due to previous failure.");
                     Logger.Error("Build failed.");
                     result = BuildResultCode.BuildError;
                 }
                 else
                 {
-                    Logger.Info("Build finished in {0} steps. Command results: {1} succeeded, {2} up-to-date, {3} failed, {4} not triggered due to previous failure.",
-                        stepCounter.Total, stepCounter.Get(ResultStatus.Successful), stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful),
-                        stepCounter.Get(ResultStatus.Failed), stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed));
-
+                    Logger.Info($"Build finished in {stepCounter.Total} steps. Command results: {stepCounter.Get(ResultStatus.Successful)} succeeded, {stepCounter.Get(ResultStatus.NotTriggeredWasSuccessful)} up-to-date, {stepCounter.Get(ResultStatus.Failed)} failed, {stepCounter.Get(ResultStatus.NotTriggeredPrerequisiteFailed)} not triggered due to previous failure.");
                     Logger.Info("Build is successful.");
                     result = BuildResultCode.Successful;
                 }
@@ -700,7 +694,7 @@ namespace SiliconStudio.BuildEngine
 
                 if (looseObjects.Length > 0)
                 {
-                    Logger.Info("Database version number has been updated from {0} to {1}, erasing all objects...", currentVersion, ExpectedVersion);
+                    Logger.Info($"Database version number has been updated from {currentVersion} to {ExpectedVersion}, erasing all objects...");
 
                     // Database version has been updated, let's clean it
                     foreach (var objectId in looseObjects)

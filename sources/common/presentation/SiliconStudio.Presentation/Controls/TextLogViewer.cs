@@ -532,7 +532,8 @@ namespace SiliconStudio.Presentation.Controls
 
             if (shouldScroll)
             {
-                logTextBox.ScrollToEnd();
+                // Sometimes crashing with ExecutionEngineException in Window.GetWindowMinMax() if not ran with a dispatcher low priority
+                Dispatcher.InvokeAsync(() => logTextBox.ScrollToEnd(), System.Windows.Threading.DispatcherPriority.Background);
             }
         }
 

@@ -119,7 +119,6 @@
     <Compile Include="Renderers\UIRenderingContext.cs" />
     <Compile Include="Renderers\RendererManager.cs" />
     <Compile Include="Rendering\UI\RenderUIElement.cs" />
-    <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
     <Compile Include="Rendering\UI\UIRenderFeature.cs" />
     <Compile Include="Rendering\UI\UIRenderFeature.Picking.cs" />
     <Compile Include="Rendering\UI\UIRenderProcessor.cs" />
@@ -169,6 +168,7 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>

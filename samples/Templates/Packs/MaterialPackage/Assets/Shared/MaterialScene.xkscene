@@ -1,142 +1,9 @@
 !SceneAsset
 Id: 0a97d04d-6d2c-4cfb-81b6-13b641b363ff
-SerializedVersion: {Xenko: 1.9.0-beta02}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: a1984e8c-fa84-49dd-926d-0868038eb2b2
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 466256a7-2ad6-4c6d-932a-44e9db0bd7a2
-        Cameras:
-            -   ~Id: f9abf5f2-f7fd-4ef0-affa-8e9093b76487
-                Name: null
-                Camera: 86cb0337-070f-44c2-be1d-8f1551fd9953/6d8c5dbd-0330-4c3a-b687-8f4187b97c9a
-        Layers:
-            -   ~Id: 5b278dfc-d3e6-4135-b324-862224b1ceba
-                Name: SceneGraphicsLayer
-                Output: !LocalRenderFrameProvider
-                    Descriptor:
-                        Format: HDR
-                Renderers:
-                    - !ClearRenderFrameRenderer
-                        ~Id: 76c02829-7d77-44e2-9c19-8e4522fd8cd2
-                        Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    - !SceneCameraRenderer
-                        ~Id: 455fa77b-ce34-48b5-a1e1-19e31a13420b
-                        Mode: !CameraRendererModeForward
-                            ~Id: 84149578-d6ab-4611-a97b-78c3fa3a5ef6
-                        Camera:
-                            ~Id: 82cd2928-5785-4dd8-b20f-7feefe159290
-                            Index: 0
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                        ForceAspectRatio: false
-        Master:
-            ~Id: f39e7719-647e-429b-a132-6e48e94ada39
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !SceneEffectRenderer
-                    ~Id: ccf1d144-769c-4993-b095-d160d7d649b8
-                    Input: !ImageEffectRendererInput.LayerInput {}
-                    Effect: !PostProcessingEffects
-                        ~Id: 84629cbf-c6f1-4e20-9352-226211b73796
-                        Camera:
-                            ~Id: 157a16a3-0af3-40d8-b6f3-7d65ad261faf
-                            Index: 0
-                        AmbientOcclusion:
-                            ~Id: d1e72906-633d-4c30-8a7c-8de105b30553
-                            Enabled: false
-                        DepthOfField:
-                            ~Id: 46a7418c-de56-456a-8690-bccd32cbc0bc
-                            Enabled: false
-                            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                        BrightFilter:
-                            ~Id: 4879e50f-03c5-41e3-8665-2a7eae23903d
-                            Color: {R: 1.0, G: 1.0, B: 1.0}
-                        Bloom:
-                            ~Id: 5b21c625-319d-4363-b655-d754c2bd2d3a
-                            Distortion: {X: 1.0, Y: 1.0}
-                            Afterimage:
-                                ~Id: 98ef7327-9eb4-4326-b3ab-389055eeadfe
-                                Enabled: false
-                        LightStreak:
-                            ~Id: 09e49a74-2d78-419c-9845-c9d657f40065
-                            Attenuation: 0.7
-                        LensFlare:
-                            ~Id: 0102cba3-af55-4509-b2e1-70c892fbc648
-                        ColorTransforms:
-                            ~Id: 3052cd55-3a35-4d1d-bed2-6db0319423b9
-                            Transforms:
-                                - !ToneMap
-                                    ~Id: 0012b035-154b-4e8d-bbdc-30c6a9df335b
-                                    Operator: !ToneMapHejl2Operator
-                                        ~Id: 0829ec76-b492-40e9-9779-6d9e68ee68a3
-                                - !FilmGrain
-                                    ~Id: 0f57036b-e361-44d5-bef5-bbea93cd8ccd
-                                    Enabled: false
-                                - !Vignetting
-                                    ~Id: 5e20b92c-d8e2-438f-8735-582c23880088
-                                    Enabled: false
-                                    Color: {R: 0.0, G: 0.0, B: 0.0}
-                        Antialiasing: !FXAAEffect
-                            ~Id: 70034380-94a9-4b6b-a326-616af03a438c
-                    Output: !CurrentRenderFrameProvider {}
-    EditorSettings:
-        ~Id: 60a60c7f-e101-480c-a569-5a72e6149384
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeHDRSettings
-            ~Id: d042e29d-7698-4dc4-bc24-d849729dc307
-            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
-            PostProcessingEffects:
-                ~Id: 21f1257d-980f-40c7-868a-6d4f5de765aa
-                Camera:
-                    ~Id: f449a96d-0156-4959-97fb-09a973aa7276
-                    Index: 0
-                AmbientOcclusion:
-                    ~Id: 66c496a3-0142-4e09-b7e6-1f353dbb9b33
-                    Enabled: false
-                DepthOfField:
-                    ~Id: ff182cd0-bc08-49e5-a3fe-3169705bcd95
-                    Enabled: false
-                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                BrightFilter:
-                    ~Id: 8404d618-5868-494c-b9af-6eaf1d82a8bf
-                    Color: {R: 1.0, G: 1.0, B: 1.0}
-                Bloom:
-                    ~Id: 881326e4-953d-49ab-b8d6-279306363751
-                    Enabled: false
-                    Distortion: {X: 1.0, Y: 1.0}
-                    Afterimage:
-                        ~Id: ba37fa1c-8e39-4d73-aed4-32d28c9aaf7d
-                        Enabled: false
-                LightStreak:
-                    ~Id: 3315ea77-a084-4e8c-8530-a5c2ef8d8b60
-                    Enabled: false
-                    Attenuation: 0.7
-                LensFlare:
-                    ~Id: 299013ff-dc21-46da-846d-a542f578e3f8
-                    Enabled: false
-                ColorTransforms:
-                    ~Id: 049e0f69-0664-4e60-bdba-e15770ed7e27
-                    Transforms:
-                        - !ToneMap
-                            ~Id: 9fb5f7b5-a9a7-451b-b90d-89f1c8263332
-                            Operator: !ToneMapHejl2Operator
-                                ~Id: a6b1ce5f-aa48-4df3-b92f-141046d9f4d2
-                        - !FilmGrain
-                            ~Id: 8f169605-2cee-477b-87ce-bf4f20fbb805
-                            Enabled: false
-                        - !Vignetting
-                            ~Id: d9ebdf2d-1dbc-4eab-afc6-2e0a35d4ce85
-                            Enabled: false
-                            Color: {R: 0.0, G: 0.0, B: 0.0}
-                Antialiasing: !FXAAEffect
-                    ~Id: b5044a54-31af-44d2-ae0a-d91532115aa3
-                    Enabled: false
+Parent: null
 Hierarchy:
-    ~Id: 5d4e77dd-651e-4a12-a432-20ff6a5b55fa
     RootPartIds:
         - 86cb0337-070f-44c2-be1d-8f1551fd9953
         - fc5f8629-6d2d-4cf2-ab9c-4f644a1567e8
@@ -159,265 +26,259 @@ Hierarchy:
                 Id: 22c324e9-bcc9-4faf-b866-27b2b60f7049
                 Name: IronRusted
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 1.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 59fe7a38-3cb2-431b-b5e1-f97cc5fbe86e/8007f7f0-0264-4cc9-b4b6-0fbb6cb874a1:Materials/iron_rust/iron_rust
-                            - 59fe7a38-3cb2-431b-b5e1-f97cc5fbe86e/8007f7f0-0264-4cc9-b4b6-0fbb6cb874a1:Materials/iron_rust/iron_rust
+                            387afe59b23c1b43b5e1f97cc5fbe86e~0: 8007f7f0-0264-4cc9-b4b6-0fbb6cb874a1:Materials/iron_rust/iron_rust
+                            c260e6bb6d1b771f23251fd83f2a304b~1: 8007f7f0-0264-4cc9-b4b6-0fbb6cb874a1:Materials/iron_rust/iron_rust
         -   Entity:
                 Id: 626f9590-3e1a-44ec-95bf-cac0396a34f3
                 Name: IronPainted
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 3.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 03aebfe1-f0d0-4428-924a-5e3c32966231/d4bbff84-0499-401a-a47e-081c294e7fdb:Materials/iron_paint/iron_paint
-                            - 03aebfe1-f0d0-4428-924a-5e3c32966231/d4bbff84-0499-401a-a47e-081c294e7fdb:Materials/iron_paint/iron_paint
+                            e1bfae03d0f02844924a5e3c32966231~0: d4bbff84-0499-401a-a47e-081c294e7fdb:Materials/iron_paint/iron_paint
+                            72014d04fef2f6420767427f7e5e2976~1: d4bbff84-0499-401a-a47e-081c294e7fdb:Materials/iron_paint/iron_paint
         -   Entity:
                 Id: 65d8dc06-e08c-4f1c-9cb3-21c770954502
                 Name: Sky
                 Components:
-                    - !TransformComponent
-                        ~Id: eb978a6f-2c69-4b58-b394-a1cb33bfbe97
-                        Children: []
+                    6f8a97eb692c584bb394a1cb33bfbe97: !TransformComponent
+                        Id: eb978a6f-2c69-4b58-b394-a1cb33bfbe97
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !SkyboxComponent
-                        ~Id: f19ee178-5e43-4899-b917-03424e9fe8fe
-                        Skybox: e9ea22bb-9b6c-4876-9eb0-c9673ed069df/39265df4-d32a-418d-baa2-ba073d499ee1:BlueSky
+                        Children: {}
+                    78e19ef1435e9948b91703424e9fe8fe: !SkyboxComponent
+                        Id: f19ee178-5e43-4899-b917-03424e9fe8fe
+                        Skybox: 39265df4-d32a-418d-baa2-ba073d499ee1:BlueSky
                         Intensity: 3.0
-                    - !LightComponent
-                        ~Id: 38a65b27-91bd-44f6-bec1-a6f6bbc756c6
-                        Type: !LightSkybox
-                            ~Id: 2d3f0a92-442e-4e61-8eb5-dddb28b0d5d5
+                    275ba638bd91f644bec1a6f6bbc756c6: !LightComponent
+                        Id: 38a65b27-91bd-44f6-bec1-a6f6bbc756c6
+                        Type: !LightSkybox {}
                         Intensity: 0.25
         -   Entity:
                 Id: 6b8e7a54-2a0c-474c-9e74-ad206c6040ec
                 Name: Brick
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - c05b97f6-5ad5-4cf8-b444-4f4833ded355/fd20b4c6-2785-4f61-8ed4-1a185979f6e8:Materials/brick/brick
-                            - c05b97f6-5ad5-4cf8-b444-4f4833ded355/fd20b4c6-2785-4f61-8ed4-1a185979f6e8:Materials/brick/brick
+                            f6975bc0d55af84cb4444f4833ded355~0: fd20b4c6-2785-4f61-8ed4-1a185979f6e8:Materials/brick/brick
+                            00779038677254e69fc02915cd72e6c1~1: fd20b4c6-2785-4f61-8ed4-1a185979f6e8:Materials/brick/brick
         -   Entity:
                 Id: 7e49bb5a-d2df-4d88-8d02-e6d5cbe607f1
                 Name: RoughWood
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - c9199d47-0688-4b52-8729-ca331755b7e2/787aff63-b263-4e7a-9388-15cb162eb44f:Materials/wood_nongloss/wood_nongloss
-                            - c9199d47-0688-4b52-8729-ca331755b7e2/787aff63-b263-4e7a-9388-15cb162eb44f:Materials/wood_nongloss/wood_nongloss
+                            479d19c98806524b8729ca331755b7e2~0: 787aff63-b263-4e7a-9388-15cb162eb44f:Materials/wood_nongloss/wood_nongloss
+                            8fd623993c9f1fb05941c422caf2571a~1: 787aff63-b263-4e7a-9388-15cb162eb44f:Materials/wood_nongloss/wood_nongloss
         -   Entity:
                 Id: 8690a1dd-6a49-4252-a0ec-2d3d6b6e390f
                 Name: PolishedWood
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -1.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 546053b0-a797-429d-9670-36f28fec1b86/e0fd85b9-4d1a-4f86-aecc-fd310e6da743:Materials/wood_gloss/wood_gloss
-                            - 546053b0-a797-429d-9670-36f28fec1b86/e0fd85b9-4d1a-4f86-aecc-fd310e6da743:Materials/wood_gloss/wood_gloss
+                            b053605497a79d42967036f28fec1b86~0: e0fd85b9-4d1a-4f86-aecc-fd310e6da743:Materials/wood_gloss/wood_gloss
+                            ee0a63d59527d249eca1f9d759e765a1~1: e0fd85b9-4d1a-4f86-aecc-fd310e6da743:Materials/wood_gloss/wood_gloss
         -   Entity:
                 Id: 86cb0337-070f-44c2-be1d-8f1551fd9953
                 Name: Camera
                 Components:
-                    - !TransformComponent
-                        ~Id: ca9f4d36-0fc8-4f14-86b6-f72c94b54909
-                        Children: []
+                    364d9fcac80f144f86b6f72c94b54909: !TransformComponent
+                        Id: ca9f4d36-0fc8-4f14-86b6-f72c94b54909
                         Position: {X: -3.0, Y: 3.2, Z: 7.7}
                         Rotation: {X: -0.08583164, Y: -0.1729874, Z: -0.0151344351, W: 0.981060266}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !CameraComponent
-                        ~Id: 6d8c5dbd-0330-4c3a-b687-8f4187b97c9a
+                        Children: {}
+                    bd5d8c6d30033a4cb6878f4187b97c9a: !CameraComponent
+                        Id: 6d8c5dbd-0330-4c3a-b687-8f4187b97c9a
+                        Name: null
                         Projection: Perspective
+                        Slot: {Index: 0}
         -   Entity:
                 Id: 8b03f317-5605-499a-8fce-dad1714fc7e3
                 Name: Rock
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -3.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - f9ba213c-5364-4b8e-aebe-0c669ffd9676/9f9eba4e-0437-4f5a-bf2a-2a693a9b3220:Materials/rock/rock
-                            - f9ba213c-5364-4b8e-aebe-0c669ffd9676/9f9eba4e-0437-4f5a-bf2a-2a693a9b3220:Materials/rock/rock
+                            3c21baf964538e4baebe0c669ffd9676~0: 9f9eba4e-0437-4f5a-bf2a-2a693a9b3220:Materials/rock/rock
+                            a1473ce7da2be54148638fbb5fab8261~1: 9f9eba4e-0437-4f5a-bf2a-2a693a9b3220:Materials/rock/rock
         -   Entity:
                 Id: 92e7a34f-e780-4a68-9dff-eb9431afb184
                 Name: Floor
                 Components:
-                    - !TransformComponent
-                        ~Id: b35c80ca-5454-4536-91a9-2a87e53b32d2
-                        Children: []
+                    ca805cb35454364591a92a87e53b32d2: !TransformComponent
+                        Id: b35c80ca-5454-4536-91a9-2a87e53b32d2
                         Position: {X: 0.0, Y: -0.225163713, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 10.0, Y: 0.2, Z: 10.0}
-                    - !ModelComponent
-                        ~Id: 79481d73-90dc-4fd3-97e2-87bd72403f75
-                        Model: 9bf45461-32a5-4f67-94aa-707fa7dc2588/efeb72e3-bc54-454f-8c0f-e6bf359fe4bb:box
-                        Materials:
-                            - null
+                        Children: {}
+                    731d4879dc90d34f97e287bd72403f75: !ModelComponent
+                        Id: 79481d73-90dc-4fd3-97e2-87bd72403f75
+                        Model: efeb72e3-bc54-454f-8c0f-e6bf359fe4bb:box
+                        Materials: {}
         -   Entity:
                 Id: 9fd25915-53cf-44a5-b631-ff27546d3437
                 Name: Roof
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 1.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - a35400af-f958-4088-b7c1-4a4a02bee7bc/4385df6f-2b72-4789-8fe0-3ad5e048d40b:Materials/rooftile/rooftile
-                            - a35400af-f958-4088-b7c1-4a4a02bee7bc/4385df6f-2b72-4789-8fe0-3ad5e048d40b:Materials/rooftile/rooftile
+                            af0054a358f98840b7c14a4a02bee7bc~0: 4385df6f-2b72-4789-8fe0-3ad5e048d40b:Materials/rooftile/rooftile
+                            924bfe0b7ac4aa8bce53d13892ce7845~1: 4385df6f-2b72-4789-8fe0-3ad5e048d40b:Materials/rooftile/rooftile
         -   Entity:
                 Id: a50a9ef0-45ad-4ed5-9bf3-69ac7b18a749
                 Name: Iron
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -3.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - f3a30f55-a44a-4c57-85d7-51067b543fb1/2a1e2c7f-caad-45d4-b5c7-49377408d361:Materials/iron/iron
-                            - f3a30f55-a44a-4c57-85d7-51067b543fb1/2a1e2c7f-caad-45d4-b5c7-49377408d361:Materials/iron/iron
+                            550fa3f34aa4574c85d751067b543fb1~0: 2a1e2c7f-caad-45d4-b5c7-49377408d361:Materials/iron/iron
+                            d8fcde91b284d72ded13908a8edb1789~1: 2a1e2c7f-caad-45d4-b5c7-49377408d361:Materials/iron/iron
         -   Entity:
                 Id: ac38af2e-727c-4f00-bb7c-389ef0891681
                 Name: Marble
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 3.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 4deb943b-8b8e-4a67-be06-ecefda25ffe4/cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
-                            - 4deb943b-8b8e-4a67-be06-ecefda25ffe4/cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
+                            3b94eb4d8e8b674abe06ecefda25ffe4~0: cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
+                            c02557a5dd4fea6881b9010b9a4b7845~1: cd35da9f-c354-4748-a5ab-106e9ec000f8:Materials/marble/marble
         -   Entity:
                 Id: e07f5bb9-20d2-4f50-9f33-fadb629c1307
                 Name: Silver
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: 1.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 5e5fd905-7f9e-4129-a311-9e7e03a57600/b240330c-8a06-402e-8649-4df1734290e1:Materials/silver/silver
-                            - 5e5fd905-7f9e-4129-a311-9e7e03a57600/b240330c-8a06-402e-8649-4df1734290e1:Materials/silver/silver
+                            05d95f5e9e7f2941a3119e7e03a57600~0: b240330c-8a06-402e-8649-4df1734290e1:Materials/silver/silver
+                            493fe2a6843a75b0f3ddab75deb3a47c~1: b240330c-8a06-402e-8649-4df1734290e1:Materials/silver/silver
         -   Entity:
                 Id: e5128c63-5bf1-4352-aaeb-30c07ec39bd7
                 Name: IronRusting
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -1.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - b92a4577-bf17-436d-91e8-3b0a8a931d34/fba4861b-534b-485b-bc22-1e947993de46:Materials/iron_rust_blend/iron_rust_blend
-                            - b92a4577-bf17-436d-91e8-3b0a8a931d34/fba4861b-534b-485b-bc22-1e947993de46:Materials/iron_rust_blend/iron_rust_blend
+                            77452ab917bf6d4391e83b0a8a931d34~0: fba4861b-534b-485b-bc22-1e947993de46:Materials/iron_rust_blend/iron_rust_blend
+                            ef0420fe57dd6d03e6b26961fa3b0e4c~1: fba4861b-534b-485b-bc22-1e947993de46:Materials/iron_rust_blend/iron_rust_blend
         -   Entity:
                 Id: f5477fc5-ee92-4e62-94fb-bae10af79436
                 Name: Gold
                 Components:
-                    - !TransformComponent
-                        ~Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
-                        Children: []
+                    eeaece2ab1e2c4419d8c5d0348d40691: !TransformComponent
+                        Id: 2aceaeee-e2b1-41c4-9d8c-5d0348d40691
                         Position: {X: -1.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !ModelComponent
-                        ~Id: e35671fa-469e-4409-bf59-68bef22279b8
-                        Model: df5e39fa-ad49-49e4-b242-db44d52ce787/9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
+                        Children: {}
+                    fa7156e39e460944bf5968bef22279b8: !ModelComponent
+                        Id: e35671fa-469e-4409-bf59-68bef22279b8
+                        Model: 9d36467c-19a7-47f1-b19a-0fdf407906dc:MaterialModel
                         Materials:
-                            - 59a12626-d159-46f5-a781-6ce23253b312/1f54f1c3-95d4-4f06-8f39-ab71b4e70d6a:Materials/gold/gold
-                            - 59a12626-d159-46f5-a781-6ce23253b312/1f54f1c3-95d4-4f06-8f39-ab71b4e70d6a:Materials/gold/gold
+                            2626a15959d1f546a7816ce23253b312~0: 1f54f1c3-95d4-4f06-8f39-ab71b4e70d6a:Materials/gold/gold
+                            f6aef075de88f0f1feeaa2f6342d5755~1: 1f54f1c3-95d4-4f06-8f39-ab71b4e70d6a:Materials/gold/gold
         -   Entity:
                 Id: fc5f8629-6d2d-4cf2-ab9c-4f644a1567e8
                 Name: Sunlight
                 Components:
-                    - !TransformComponent
-                        ~Id: b0e9840e-ce68-4f67-951b-79b8a045d266
-                        Children: []
+                    0e84e9b068ce674f951b79b8a045d266: !TransformComponent
+                        Id: b0e9840e-ce68-4f67-951b-79b8a045d266
                         Position: {X: 0.0, Y: 2.0, Z: 0.0}
-                        Rotation: {X: -0.57357645, Y: 0.0, Z: 0.0, W: 0.819152057}
+                        Rotation: {X: -0.813904762, Y: 0.0, Z: 0.0, W: 0.5809985}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !LightComponent
-                        ~Id: c1ef0499-5bfa-40fa-a2d4-22506b6aff11
+                        Children: {}
+                    9904efc1fa5bfa40a2d422506b6aff11: !LightComponent
+                        Id: c1ef0499-5bfa-40fa-a2d4-22506b6aff11
                         Type: !LightDirectional
-                            ~Id: 17a5027b-20a0-4967-b0a9-508498a14f82
                             Color: !ColorRgbProvider
-                                ~Id: 1b5ace72-a538-4b26-abc4-f1bb6befb6b1
                                 Value: {R: 1.0, G: 0.996718764, B: 0.86875}
                             Shadow:
-                                ~Id: 4871a132-731d-43e5-972c-ad7161a5311e
                                 Size: Large
-                                DepthRange:
-                                    ~Id: 28dcb748-ecf2-47e6-aa32-67fdf834c2b0
-                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
-                                    ~Id: e19a283f-4cd7-406d-a75f-6130a38973c2
-                                BiasParameters:
-                                    ~Id: 5be64040-3764-474f-aca5-bf7075c7bac5
+                                DepthRange: {}
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
+                                BiasParameters: {}
                         Intensity: 5.0

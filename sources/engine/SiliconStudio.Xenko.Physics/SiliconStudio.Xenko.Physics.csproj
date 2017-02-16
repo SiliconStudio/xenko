@@ -70,7 +70,6 @@
     <Compile Include="Elements\RigidbodyComponent.cs" />
     <Compile Include="Elements\StaticColliderComponent.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
-    <Compile Include="Engine\PhysicsDebugCameraRendererMode.cs" />
     <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
     <Compile Include="Engine\PhysicsShapesRenderingService.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
@@ -87,7 +86,6 @@
     <Compile Include="Shapes\ConeColliderShape.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="ShapeOrientation.cs" />
-    <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
     <Compile Include="Shapes\CapsuleColliderShape.cs" />
     <Compile Include="ColliderShape.cs" />

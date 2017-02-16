@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Extensions
 {
@@ -16,13 +17,14 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="enumType">The type of flag enum.</param>
         /// <returns>An enumerable of all values in the flag enum, excluding values of zero and values matching multiple bytes.</returns>
-        public static IEnumerable<Enum> GetIndividualFlags(Type enumType)
+        [NotNull]
+        public static IEnumerable<Enum> GetIndividualFlags([NotNull] Type enumType)
         {
             foreach (var value in Enum.GetValues(enumType).Cast<Enum>())
             {
                 ulong flag = 0x1;
 
-                ulong bits = Convert.ToUInt64(value);
+                var bits = Convert.ToUInt64(value);
                 if (bits == 0L)
                     continue; // skip the zero value
 
@@ -39,7 +41,8 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="value">The value for which to return matching flags</param>
         /// <returns>An enumerable of all the flags that are contained in the given value.</returns>
-        public static IEnumerable<Enum> GetAllFlags(this Enum value)
+        [NotNull]
+        public static IEnumerable<Enum> GetAllFlags([NotNull] this Enum value)
         {
             return GetFlags(value, Enum.GetValues(value.GetType()).Cast<Enum>().ToList());
         }
@@ -49,7 +52,8 @@ namespace SiliconStudio.Presentation.Extensions
         /// </summary>
         /// <param name="value">The value for which to return matching flags</param>
         /// <returns>An enumerable of all the flags that are contained in the given value.</returns>
-        public static IEnumerable<Enum> GetIndividualFlags(this Enum value)
+        [NotNull]
+        public static IEnumerable<Enum> GetIndividualFlags([NotNull] this Enum value)
         {
             return GetFlags(value, GetIndividualFlags(value.GetType()).ToList());
         }
@@ -60,9 +64,10 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="enumType">The type of enum.</param>
         /// <param name="flags">The list of flags to set together.</param>
         /// <returns></returns>
-        public static Enum GetEnum(Type enumType, IEnumerable<Enum> flags)
+        [NotNull]
+        public static Enum GetEnum([NotNull] Type enumType, [NotNull] IEnumerable<Enum> flags)
         {
-            ulong value = flags.Select(Convert.ToUInt64).Aggregate<ulong, ulong>(0, (current, bits) => current | bits);
+            var value = flags.Select(Convert.ToUInt64).Aggregate<ulong, ulong>(0, (current, bits) => current | bits);
             return (Enum)Enum.ToObject(enumType, value);
         }
 
@@ -72,17 +77,18 @@ namespace SiliconStudio.Presentation.Extensions
         /// <param name="value">The value for which to return matching flags</param>
         /// <param name="flags">The list of flags to test.</param>
         /// <returns>An enumerable of flags from the list of flags that are contained in the given value.</returns>
+        [NotNull]
         private static IEnumerable<Enum> GetFlags(Enum value, IList<Enum> flags)
         {
-            ulong bits = Convert.ToUInt64(value);
+            var bits = Convert.ToUInt64(value);
             // Empty flag enum
             if (bits == 0L)
                 return Enumerable.Empty<Enum>();
 
             var results = new List<Enum>();
-            for (int i = flags.Count - 1; i >= 0; i--)
+            for (var i = flags.Count - 1; i >= 0; i--)
             {
-                ulong mask = Convert.ToUInt64(flags[i]);
+                var mask = Convert.ToUInt64(flags[i]);
                 if (mask == 0L)
                     continue;
 

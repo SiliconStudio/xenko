@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Storage
@@ -28,7 +29,7 @@ namespace SiliconStudio.Core.Storage
         /// <param name="obj">The object.</param>
         /// <param name="buffer">The buffer containing the serialized object.</param>
         /// <returns>The hash of the object.</returns>
-        public static ObjectId FromObject<T>(T obj, out byte[] buffer)
+        public static ObjectId FromObject<T>(T obj, [NotNull] out byte[] buffer)
         {
             var stream = new MemoryStream();
             var writer = new BinarySerializationWriter(stream);

@@ -122,17 +122,19 @@ namespace SiliconStudio.Core.Yaml
             return currentCharacter;
         }
 
-        private char ReadLine()
+        private void ReadLine(StringBuilder dest)
         {
             if (analyzer.Check("\r\n\x85")) // CR LF -> LF  --- CR|LF|NEL -> LF
             {
                 SkipLine();
-                return '\n';
+                dest.AppendLine();
             }
-
-            char nextChar = analyzer.Peek(0); // LS|PS -> LS|PS
-            SkipLine();
-            return nextChar;
+            else
+            {
+                char nextChar = analyzer.Peek(0); // LS|PS -> LS|PS
+                SkipLine();
+                dest.Append(nextChar);
+            }
         }
 
         /// <summary>
@@ -1424,7 +1426,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Check if we need to fold the leading line break.
 
-                if (!isLiteral && StartsWith(leadingBreak, '\n') && !leadingBlank && !trailingBlank)
+                if (!isLiteral && (StartsWith(leadingBreak, '\r') || StartsWith(leadingBreak, '\n')) && !leadingBlank && !trailingBlank)
                 {
                     // Do we need to join the lines by space?
 
@@ -1459,7 +1461,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Consume the line break.
 
-                leadingBreak.Append(ReadLine());
+                ReadLine(leadingBreak);
 
                 // Eat the following intendation spaces and line breaks.
 
@@ -1525,7 +1527,7 @@ namespace SiliconStudio.Core.Yaml
 
                 // Consume the line break.
 
-                breaks.Append(ReadLine());
+                ReadLine(breaks);
 
                 end = mark;
             }
@@ -1733,12 +1735,12 @@ namespace SiliconStudio.Core.Yaml
                         if (!hasLeadingBlanks)
                         {
                             scanScalarWhitespaces.Length = 0;
-                            scanScalarLeadingBreak.Append(ReadLine());
+                            ReadLine(scanScalarLeadingBreak);
                             hasLeadingBlanks = true;
                         }
                         else
                         {
-                            scanScalarTrailingBreaks.Append(ReadLine());
+                            ReadLine(scanScalarTrailingBreaks);
                         }
                     }
                 }
@@ -1933,12 +1935,12 @@ namespace SiliconStudio.Core.Yaml
                         if (!hasLeadingBlanks)
                         {
                             whitespaces.Length = 0;
-                            leadingBreak.Append(ReadLine());
+                            ReadLine(leadingBreak);
                             hasLeadingBlanks = true;
                         }
                         else
                         {
-                            trailingBreaks.Append(ReadLine());
+                            ReadLine(trailingBreaks);
                         }
                     }
                 }

@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         GC.Collect();
                         GC.WaitForPendingFinalizers();
                         var testMemoryAfter = GC.GetTotalMemory(true);
-                        Log.Info(@"Test loading {0} GPU texture / saving to {1} and compare with original Memory {2} delta bytes, in {3}ms", fileName, intermediateFormat, testMemoryAfter - testMemoryBefore, time);
+                        Log.Info($"Test loading {fileName} GPU texture / saving to {intermediateFormat} and compare with original Memory {testMemoryAfter - testMemoryBefore} delta bytes, in {time}ms");
                     }, 
                     GraphicsProfile.Level_9_1);
             }
@@ -421,8 +421,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     return;
 
                 PerformDrawTest(
-                    (game, context, frame) =>
+                    (game, context) =>
                     {
+                        context.CommandList.Clear(context.CommandList.RenderTarget, Color.Green);
+                        context.CommandList.Clear(context.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+
                         var device = game.GraphicsDevice;
                         var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
                         var filePath = "ImageTypes/" + fileName;

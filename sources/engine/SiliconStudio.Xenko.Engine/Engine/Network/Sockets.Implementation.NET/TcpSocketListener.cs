@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Sockets.Plugin.Abstractions;
@@ -42,8 +43,9 @@ namespace Sockets.Plugin
         /// </summary>
         /// <param name="port">The port to listen on.</param>
         /// <param name="listenOn">The <code>CommsInterface</code> to listen on. If unspecified, all interfaces will be bound.</param>
+        /// <param name="inheritHandle">Allows handle inheritance. Might be ignored depending on platform.</param>
         /// <returns></returns>
-        public Task StartListeningAsync(int port, ICommsInterface listenOn = null)
+        public Task StartListeningAsync(int port, ICommsInterface listenOn = null, bool inheritHandle = false)
         {
             return Task.Run(() =>
             {
@@ -56,6 +58,11 @@ namespace Sockets.Plugin
 
                 _backingTcpListener = new TcpListener(ipAddress, port);
                 _backingTcpListener.Start();
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
+                if (!inheritHandle)
+                    SetHandleInformation(_backingTcpListener.Server.Handle, HANDLE_FLAGS.Inherit, HANDLE_FLAGS.None);
+#endif
 
                 WaitForConnections(_listenCanceller.Token);
             });
@@ -129,10 +136,20 @@ namespace Sockets.Plugin
                     ((IDisposable)_backingTcpListener).Dispose();
             }
         }
-        
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool SetHandleInformation(IntPtr hObject, HANDLE_FLAGS dwMask, HANDLE_FLAGS dwFlags);
+
+        [Flags]
+        enum HANDLE_FLAGS : uint
+        {
+            None = 0,
+            Inherit = 1,
+            ProtectFromClose = 2
+        }
+#endif
     }
-
 
 }
 #endif

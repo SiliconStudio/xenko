@@ -97,3 +97,5 @@ Nodes:
     10752b434ff056c52c1b26fad37c99cf: {Name: CATRigRLegPlatform, Depth: 1}
     f56e18ef821077a1cfc8beea9d7fb036: {Name: CATRigRArmIKTarget, Depth: 1}
     149861784d2d7288eb41824229d7a683: {Name: CATRigLArmIKTarget, Depth: 1}
+~SourceHashes:
+    6eb9d97c22c2bff9a4cf1aef5fa11ed2~../../../Resources/Models/mannequinModel.fbx: 41531d1299044bd0f0b265374610fb1d

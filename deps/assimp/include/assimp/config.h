@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2016, assimp team
 
 All rights reserved.
 
@@ -55,8 +55,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  #aiSetImportPropertyFloat,
  *  #aiSetImportPropertyString
  */
-#ifndef INCLUDED_AI_CONFIG_H
-#define INCLUDED_AI_CONFIG_H
+#pragma once
+#ifndef AI_CONFIG_H_INC
+#define AI_CONFIG_H_INC
 
 
 // ###########################################################################
@@ -562,6 +563,15 @@ enum aiComponent
     "IMPORT_FBX_READ_MATERIALS"
 
 // ---------------------------------------------------------------------------
+/** @brief Set whether the fbx importer will read embedded textures.
+ *
+ * The default value is true (1)
+ * Property type: bool
+ */
+#define AI_CONFIG_IMPORT_FBX_READ_TEXTURES \
+    "IMPORT_FBX_READ_TEXTURES"
+
+// ---------------------------------------------------------------------------
 /** @brief Set whether the fbx importer will read cameras.
  *
  * The default value is true (1)
@@ -886,16 +896,6 @@ enum aiComponent
  */
 #define AI_CONFIG_IMPORT_COLLADA_IGNORE_UP_DIRECTION "IMPORT_COLLADA_IGNORE_UP_DIRECTION"
 
-// ---------------------------------------------------------------------------
-/** @brief Specifies whether the Collada loader will invert the transparency value.
- *
- * If this property is set to true, the transparency value will be interpreted as the
- * inverse of the usual transparency. This is useful because lots of exporters does
- * not respect the standard and do the opposite of what is normally expected.
- * Property type: Bool. Default value: false.
- */
-#define AI_CONFIG_IMPORT_COLLADA_INVERT_TRANSPARENCY "IMPORT_COLLADA_INVERT_TRANSPARENCY"
-
 // ---------- All the Export defines ------------
 
 /** @brief Specifies the xfile use double for real values of float
@@ -904,5 +904,15 @@ enum aiComponent
  */
 
 #define AI_CONFIG_EXPORT_XFILE_64BIT "EXPORT_XFILE_64BIT"
+
+
+// ---------- All the Build/Compile-time defines ------------
+
+/** @brief Specifies if double precision is supported inside assimp
+ *
+ * Property type: Bool. Default value: undefined.
+ */
+
+/* #undef ASSIMP_DOUBLE_PRECISION */
 
 #endif // !! AI_CONFIG_H_INC

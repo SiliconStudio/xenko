@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Physics
         {
             var other = obj as BoxColliderShapeDesc;
             if (other == null) return -1;
-            if (other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation) return 0;
+            if (other.Is2D == Is2D && other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation) return 0;
             return 1;
         }
         

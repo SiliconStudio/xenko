@@ -102,6 +102,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public DataStyle Style { get; set; }
 
         /// <summary>
+        /// The style used when serializing scalars.
+        /// </summary>
+        public ScalarStyle ScalarStyle { get; set; }
+
+        /// <summary>
         /// The dictionary containing custom properties for this context.
         /// </summary>
         public PropertyContainer Properties;
