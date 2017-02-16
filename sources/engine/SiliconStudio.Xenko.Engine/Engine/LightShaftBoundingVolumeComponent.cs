@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Media.Media3D;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;

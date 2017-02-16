@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
         rgroup PerView.LightProbes
         {
-            stage Texture2D<uint> LightProbeTetrahedronIds; // SV_Position => tetrahedron ID
+            stage Texture2DMS<uint> LightProbeTetrahedronIds;  // SV_Position => tetrahedron ID
             stage Buffer<uint4> LightProbeTetrahedronProbeIndices; // tetrahaedron ID => 4 probe IDs
             stage Buffer<float4> LightProbeTetrahedronMatrices; // tetrahaedron ID => world to tetrahedron space matrix
             stage Buffer<float3> LightProbeCoefficients; // probe ID => SH coefficients
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
 
             var shadingPosition = int3(streams.ShadingPosition.xy, 0);
-            uint tetrahedronIndex = LightProbeTetrahedronIds.Load(shadingPosition);
+            uint tetrahedronIndex = LightProbeTetrahedronIds.Load(shadingPosition, 0);
 
             uint4 probeIndices = LightProbeTetrahedronProbeIndices.Load(tetrahedronIndex);
             float3x4 tetrahedronMatrix = float3x4(LightProbeTetrahedronMatrices.Load(tetrahedronIndex * 3 + 0),
