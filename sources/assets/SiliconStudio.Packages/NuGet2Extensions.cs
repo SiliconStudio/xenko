@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Packages
 {
@@ -13,9 +15,12 @@ namespace SiliconStudio.Packages
         /// </summary>
         /// <param name="provider">The provider to convert.</param>
         /// <returns>An instance of conforming type <see cref="NuGet.IPackageConstraintProvider"/> matching <paramref name="provider"/>.</returns>
-        public static NuGet.IPackageConstraintProvider Provider (this ConstraintProvider provider)
+        [NotNull]
+        public static NuGet.IPackageConstraintProvider Provider ([NotNull] this ConstraintProvider provider)
         {
-            if ((provider == null) || (!provider.HasConstraints))
+            if (provider == null) throw new ArgumentNullException(nameof(provider));
+
+            if (!provider.HasConstraints)
             {
                 return NuGet.NullConstraintProvider.Instance;
             }
@@ -30,8 +35,11 @@ namespace SiliconStudio.Packages
             }
         }
 
-        public static PackageVersionRange ToPackageVersionRange(this NuGet.IVersionSpec version)
+        [NotNull]
+        public static PackageVersionRange ToPackageVersionRange([NotNull] this NuGet.IVersionSpec version)
         {
+            if (version == null) throw new ArgumentNullException(nameof(version));
+
             PackageVersion min = null, max = null;
             if (version.MinVersion?.Version != null)
             {
@@ -44,19 +52,27 @@ namespace SiliconStudio.Packages
             return new PackageVersionRange(min, version.IsMinInclusive, max, version.IsMaxInclusive);
         }
 
-        public static PackageVersion ToPackageVersion(this NuGet.SemanticVersion version)
+        [NotNull]
+        public static PackageVersion ToPackageVersion([NotNull] this NuGet.SemanticVersion version)
         {
+            if (version == null) throw new ArgumentNullException(nameof(version));
+
             return new PackageVersion(version.Version, version.SpecialVersion);
         }
 
-        public static NuGet.SemanticVersion ToSemanticVersion(this PackageVersion version)
+        [NotNull]
+        public static NuGet.SemanticVersion ToSemanticVersion([NotNull] this PackageVersion version)
         {
+            if (version == null) throw new ArgumentNullException(nameof(version));
+
             return new NuGet.SemanticVersion(version.Version, version.SpecialVersion);
         }
 
-
-        public static NuGet.VersionSpec ToVersionSpec(this PackageVersionRange range)
+        [NotNull]
+        public static NuGet.VersionSpec ToVersionSpec([NotNull] this PackageVersionRange range)
         {
+            if (range == null) throw new ArgumentNullException(nameof(range));
+
             return new NuGet.VersionSpec()
             {
                 MinVersion = range.MinVersion != null ? range.MinVersion.ToSemanticVersion() : null,
@@ -66,8 +82,11 @@ namespace SiliconStudio.Packages
             };
         }
 
-        public static NuGet.ManifestFile ToManifestFile(this ManifestFile file)
+        [NotNull]
+        public static NuGet.ManifestFile ToManifestFile([NotNull] this ManifestFile file)
         {
+            if (file == null) throw new ArgumentNullException(nameof(file));
+
             return new NuGet.ManifestFile()
             {
                 Source = file.Source,
@@ -76,8 +95,11 @@ namespace SiliconStudio.Packages
             };
         }
 
-        public static NuGet.ManifestMetadata ToManifestMetadata(this ManifestMetadata meta)
+        [NotNull]
+        public static NuGet.ManifestMetadata ToManifestMetadata([NotNull] this ManifestMetadata meta)
         {
+            if (meta == null) throw new ArgumentNullException(nameof(meta));
+
             var nugetMeta = new NuGet.ManifestMetadata()
             {
                 Id = meta.Id,
