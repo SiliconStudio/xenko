@@ -70,12 +70,12 @@
           <Private>False</Private>
         </Reference>
       </ItemGroup>
-	  <ItemGroup>
-		<None Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
-		  <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	  </ItemGroup>
+      <ItemGroup>
+        <None Include="..\..\..\deps\OpenVR\$(SiliconStudioPlatform)\**\openvr_api.*">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
     </When>
   </Choose>
   <Choose>
@@ -102,6 +102,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DeviceState.cs" />
+    <Compile Include="DummyDevice.cs" />
     <Compile Include="Eyes.cs" />
     <Compile Include="Fove\Fove.cs" />
     <Compile Include="Fove\FoveHmd.cs" />
