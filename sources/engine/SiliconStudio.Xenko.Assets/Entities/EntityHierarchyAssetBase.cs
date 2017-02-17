@@ -79,14 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        protected override void PostClonePart([NotNull] Entity part)
-        {
-            // disconnect the cloned entity
-            part.Transform.Parent = null;
-        }
-
-        /// <inheritdoc/>
-        protected override object ResolvePartReference(object partReference)
+        public override object ResolvePartReference(object partReference)
         {
             var entityComponentReference = partReference as EntityComponent;
             if (entityComponentReference != null)

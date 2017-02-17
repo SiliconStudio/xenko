@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         }
 
         /// <inheritdoc/>
-        protected override object ResolvePartReference(object referencedObject)
+        public override object ResolvePartReference(object referencedObject)
         {
             var renderStageReference = referencedObject as RenderStage;
             if (renderStageReference != null)

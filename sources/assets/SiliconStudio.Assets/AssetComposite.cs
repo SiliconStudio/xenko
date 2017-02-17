@@ -58,6 +58,7 @@ namespace SiliconStudio.Assets
         /// a temporary object, or an old version of the actual object. Implementations of this methods are supposed to identify this given object
         /// and retrieve the actual one from the asset itself to return it.
         /// </remarks>
-        protected abstract object ResolvePartReference(object referencedObject);
+        // TODO: turn protected or remove
+        public abstract object ResolvePartReference(object referencedObject);
     }
 }
