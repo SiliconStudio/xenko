@@ -39,6 +39,12 @@ namespace SiliconStudio.Presentation.Behaviors
             DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys?), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(null));
 
         /// <summary>
+        /// Identifies the <see cref="UsePreviewEvents"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty UsePreviewEventsProperty =
+            DependencyProperty.Register(nameof(UsePreviewEvents), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false, UsePreviewEventsChanged));
+        
+        /// <summary>
         /// <c>true</c> if this behavior is enabled; otherwise, <c>false</c>.
         /// </summary>
         public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
@@ -50,6 +56,12 @@ namespace SiliconStudio.Presentation.Behaviors
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
+        public bool UsePreviewEvents
+        {
+            get { return (bool)GetValue(UsePreviewEventsProperty); }
+            set { SetValue(UsePreviewEventsProperty, value); }
+        }
+
         private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (MouseMoveCaptureBehaviorBase<TElement>)d;
@@ -57,6 +69,13 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 behavior.Cancel();
             }
+        }
+
+        private static void UsePreviewEventsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (MouseMoveCaptureBehaviorBase<TElement>)d;
+            behavior.UnsubscribeFromMouseEvents((bool)e.OldValue);
+            behavior.SubscribeToMouseEvents((bool)e.NewValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,8 +113,7 @@ namespace SiliconStudio.Presentation.Behaviors
         ///  <inheritdoc/>
         protected override void OnAttached()
         {
-            AssociatedObject.MouseDown += MouseDown;
-            AssociatedObject.MouseMove += MouseMove;
+            SubscribeToMouseEvents(UsePreviewEvents);
             AssociatedObject.PreviewMouseUp += MouseUp;
             AssociatedObject.LostMouseCapture += OnLostMouseCapture;
         }
@@ -103,8 +121,7 @@ namespace SiliconStudio.Presentation.Behaviors
         ///  <inheritdoc/>
         protected override void OnDetaching()
         {
-            AssociatedObject.MouseDown -= MouseDown;
-            AssociatedObject.MouseMove -= MouseMove;
+            UnsubscribeFromMouseEvents(UsePreviewEvents);
             AssociatedObject.PreviewMouseUp -= MouseUp;
             AssociatedObject.LostMouseCapture -= OnLostMouseCapture;
         }
@@ -156,6 +173,40 @@ namespace SiliconStudio.Presentation.Behaviors
             if (!ReferenceEquals(Mouse.Captured, sender))
             {
                 Cancel();
+            }
+        }
+
+        private void SubscribeToMouseEvents(bool usePreviewEvents)
+        {
+            if (AssociatedObject == null)
+                return;
+
+            if (usePreviewEvents)
+            {
+                AssociatedObject.PreviewMouseDown += MouseDown;
+                AssociatedObject.PreviewMouseMove += MouseMove;
+            }
+            else
+            {
+                AssociatedObject.MouseDown += MouseDown;
+                AssociatedObject.MouseMove += MouseMove;
+            }
+        }
+
+        private void UnsubscribeFromMouseEvents(bool usePreviewEvents)
+        {
+            if (AssociatedObject == null)
+                return;
+
+            if (usePreviewEvents)
+            {
+                AssociatedObject.PreviewMouseDown -= MouseDown;
+                AssociatedObject.PreviewMouseMove -= MouseMove;
+            }
+            else
+            {
+                AssociatedObject.MouseDown -= MouseDown;
+                AssociatedObject.MouseMove -= MouseMove;
             }
         }
     }
