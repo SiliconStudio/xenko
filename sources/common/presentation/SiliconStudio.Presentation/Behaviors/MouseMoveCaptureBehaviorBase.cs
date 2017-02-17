@@ -3,9 +3,14 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
+    /// <summary>
+    /// Base class for behaviors that capture the mouse.
+    /// </summary>
+    /// <typeparam name="TElement"></typeparam>
     public abstract class MouseMoveCaptureBehaviorBase<TElement> : Behavior<TElement>
         where TElement : UIElement
     {
@@ -20,6 +25,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         protected static readonly DependencyPropertyKey IsInProgressPropertyKey =
             DependencyProperty.RegisterReadOnly(nameof(IsInProgress), typeof(bool), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(false));
+
         /// <summary>
         /// Identifies the <see cref="IsInProgress"/> dependency property.
         /// </summary>
@@ -32,12 +38,15 @@ namespace SiliconStudio.Presentation.Behaviors
         public static readonly DependencyProperty ModifiersProperty =
             DependencyProperty.Register(nameof(Modifiers), typeof(ModifierKeys?), typeof(MouseMoveCaptureBehaviorBase<TElement>), new PropertyMetadata(null));
 
-        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
-        
         /// <summary>
-        /// True if an operation is in progress, False otherwise.
+        /// <c>true</c> if this behavior is enabled; otherwise, <c>false</c>.
         /// </summary>
-        public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } protected set { SetValue(IsInProgressPropertyKey, value); } }
+        public bool IsEnabled { get { return (bool)GetValue(IsEnabledProperty); } set { SetValue(IsEnabledProperty, value); } }
+
+        /// <summary>
+        /// <c>true</c> if an operation is in progress; otherwise, <c>false</c>.
+        /// </summary>
+        public bool IsInProgress { get { return (bool)GetValue(IsInProgressProperty); } private set { SetValue(IsInProgressPropertyKey, value); } }
 
         public ModifierKeys? Modifiers { get { return (ModifierKeys?)GetValue(ModifiersProperty); } set { SetValue(ModifiersProperty, value); } }
 
@@ -63,16 +72,23 @@ namespace SiliconStudio.Presentation.Behaviors
             if (!IsInProgress)
                 return;
 
-            IsInProgress = false;
-            if (AssociatedObject.IsMouseCaptured)
-            {
-                AssociatedObject.ReleaseMouseCapture();
-            }
+            ReleaseMouseCapture();
             CancelOverride();
         }
 
         protected virtual void CancelOverride()
         {
+            // Default implementation does nothing
+        }
+
+        /// <summary>
+        /// Captures the mouse to the <see cref="Behavior{TElement}.AssociatedObject"/>.
+        /// </summary>
+        protected void CaptureMouse()
+        {
+            AssociatedObject.Focus();
+            AssociatedObject.CaptureMouse();
+            IsInProgress = true;
         }
 
         ///  <inheritdoc/>
@@ -93,16 +109,22 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.LostMouseCapture -= OnLostMouseCapture;
         }
 
-        protected virtual void OnMouseDown(MouseButtonEventArgs e)
-        {
-        }
+        protected abstract void OnMouseDown([NotNull] MouseButtonEventArgs e);
 
-        protected virtual void OnMouseMove(MouseEventArgs e)
-        {
-        }
+        protected abstract void OnMouseMove([NotNull] MouseEventArgs e);
 
-        protected virtual void OnMouseUp(MouseButtonEventArgs e)
+        protected abstract void OnMouseUp([NotNull] MouseButtonEventArgs e);
+
+        /// <summary>
+        /// Releases the mouse capture, if the <see cref="Behavior{TElement}.AssociatedObject"/> held the capture. 
+        /// </summary>
+        protected void ReleaseMouseCapture()
         {
+            IsInProgress = false;
+            if (AssociatedObject.IsMouseCaptured)
+            {
+                AssociatedObject.ReleaseMouseCapture();
+            }
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
@@ -131,9 +153,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void OnLostMouseCapture(object sender, MouseEventArgs e)
         {
-            var obj = (UIElement)sender;
-
-            if (!ReferenceEquals(Mouse.Captured, obj))
+            if (!ReferenceEquals(Mouse.Captured, sender))
             {
                 Cancel();
             }
