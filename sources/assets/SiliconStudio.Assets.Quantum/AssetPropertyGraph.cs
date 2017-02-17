@@ -650,7 +650,7 @@ namespace SiliconStudio.Assets.Quantum
                 var baseNode = (IAssetObjectNodeInternal)assetNode.BaseNode;
                 objectNode.ResettingOverride = true;
                 // Handle collection and dictionary cases
-                if (assetNode.Descriptor is CollectionDescriptor || assetNode.Descriptor is DictionaryDescriptor)
+                if ((assetNode.Descriptor is CollectionDescriptor || assetNode.Descriptor is DictionaryDescriptor) && CollectionItemIdHelper.HasCollectionItemIds(objectNode.Retrieve()))
                 {
                     // Items to add and to remove are stored in local collections and processed later, since they might affect indices
                     var itemsToRemove = new List<ItemId>();
