@@ -2,8 +2,9 @@
 {
     public enum VRApi
     {
-        Oculus,
-        OpenVR,
+        Oculus = 0,
+        OpenVR = 1,
+        Dummy = 100
         //Fove,
         //Google
     }

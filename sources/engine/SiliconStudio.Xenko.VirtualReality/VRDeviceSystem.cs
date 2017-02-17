@@ -48,6 +48,11 @@ namespace SiliconStudio.Xenko.VirtualReality
                 {
                     switch (hmdApi)
                     {
+                        case VRApi.Dummy:
+                        {
+                            Device = new DummyDevice();
+                        }
+                            break;
                         case VRApi.Oculus:
                         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
