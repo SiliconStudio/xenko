@@ -44,7 +44,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMember(20)]
         [DefaultValue(true)]
         [Display("Input luminance from alpha?")]
-        [Obsolete("This parameter is not used anymore")]
         public bool InputLuminanceInAlpha { get; set; }
 
         /// <summary>

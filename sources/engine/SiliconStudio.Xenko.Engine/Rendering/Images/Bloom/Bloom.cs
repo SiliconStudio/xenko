@@ -97,6 +97,28 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
+        /// <summary>
+        /// Use the "stable bloom" rendering path.
+        /// </summary>
+        /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring.</userdoc>
+        [DataMember(60)]
+        public bool StableConvolution
+        {
+            get { return stableConvolution; }
+            set
+            {
+                var old = stableConvolution;
+                stableConvolution = value;
+                if (value != old)
+                {   
+                    multiScaler?.Dispose();
+                    multiScaler = null;
+                    if (Context != null)
+                        multiScaler = ToLoadAndUnload(new ImageMultiScaler(stableConvolution));
+                }
+            }
+        }
+
         [DataMemberIgnore]
         public bool ShowOnlyBloom { get; set; }
 
@@ -115,13 +137,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
             get { return Math.Max(0, MaxMip - 1); }
         }
 
+        [DataMemberIgnore] private bool stableConvolution = true;
+
         private int MaxMip { get; set; }
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            multiScaler = ToLoadAndUnload(new ImageMultiScaler(true));
+            multiScaler = ToLoadAndUnload(new ImageMultiScaler(StableConvolution));
             blur = ToLoadAndUnload(new GaussianBlur());
             afterimage = ToLoadAndUnload(afterimage);
         }

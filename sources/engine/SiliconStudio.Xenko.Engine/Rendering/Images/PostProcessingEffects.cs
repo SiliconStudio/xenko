@@ -291,9 +291,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
             var currentInput = input;
 
-            // do AA here, first. (hybrid method from Karis2013)
             var fxaa = ssaa as FXAAEffect;
-            if (fxaa != null && fxaa.Enabled)
+            bool aaFirst = bloom != null && bloom.StableConvolution;
+            bool needAA = fxaa != null && fxaa.Enabled;
+
+            // do AA here, first. (hybrid method from Karis2013)
+            if (aaFirst && needAA)
             {
                 // explanation:
                 // The Karis method (Unreal Engine 4.1x), uses a hybrid pipeline to execute AA.
@@ -313,6 +316,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 rangeCompress.Draw(context);
 
                 // do AA:
+                fxaa.InputLuminanceInAlpha = true;
                 ssaa.SetInput(aaSurface);
                 ssaa.SetOutput(currentInput);
                 ssaa.Draw(context);
@@ -403,11 +407,40 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
             }
 
+            bool aaLast = needAA && !aaFirst;
+            var toneOutput = aaLast ? NewScopedRenderTarget2D(input.Width, input.Height, input.Format) : output;
+
+            // When FXAA is enabled we need to detect whether the ColorTransformGroup should output the Luminance into the alpha or not
+            var luminanceToChannelTransform = colorTransformsGroup.PostTransforms.Get<LuminanceToChannelTransform>();
+            if (fxaa != null)
+            {
+                if (luminanceToChannelTransform == null)
+                {
+                    luminanceToChannelTransform = new LuminanceToChannelTransform { ColorChannel = ColorChannel.A };
+                    colorTransformsGroup.PostTransforms.Add(luminanceToChannelTransform);
+                }
+
+                // Only enabled when FXAA is enabled and InputLuminanceInAlpha is true
+                luminanceToChannelTransform.Enabled = fxaa.Enabled && fxaa.InputLuminanceInAlpha;
+            }
+            else if (luminanceToChannelTransform != null)
+            {
+                luminanceToChannelTransform.Enabled = false;
+            }
+
             // Color transform group pass (tonemap, color grading)
-            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
+            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup : Scaler;
             lastEffect.SetInput(currentInput);
-            lastEffect.SetOutput(output);
+            lastEffect.SetOutput(toneOutput);
             lastEffect.Draw(context);
+
+            // do AA here, last, if not already done.
+            if (aaLast)
+            {
+                ssaa.SetInput(toneOutput);
+                ssaa.SetOutput(output);
+                ssaa.Draw(context);
+            }
         }
     }
 }
