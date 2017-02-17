@@ -496,49 +496,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         }
                     }
                 }
-
-            }
-        }
-
-        protected class FixComponentReferenceUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var rootNode = (YamlNode)asset.Node;
-
-                var allScalarNodes = rootNode.AllNodes.OfType<YamlScalarNode>().ToList();
-
-                var nextIsId = false;
-                foreach (var node in allScalarNodes)
-                {
-                    var indexFirstSlash = node.Value.IndexOf('/');
-                    Guid targetGuid = Guid.Empty;
-                    if (indexFirstSlash == -1)
-                    {
-                        Guid.TryParseExact(node.Value, "D", out targetGuid);
-                    }
-                    else
-                    {
-                        Guid entityGuid;
-                        if (Guid.TryParseExact(node.Value.Substring(0, indexFirstSlash), "D", out entityGuid))
-                        {
-                            Guid.TryParseExact(node.Value.Substring(indexFirstSlash + 1), "D", out targetGuid);
-                        }
-                    }
-
-                    if (targetGuid != Guid.Empty && !nextIsId)
-                    {
-                        node.Value = "ref!! " + targetGuid;
-                    }
-                    else
-                    {
-                        if (nextIsId && targetGuid == Guid.Empty)
-                            nextIsId = false;
-
-                        if (node.Value.Contains("Id"))
-                            nextIsId = true;
-                    }
-                }
             }
         }
     }

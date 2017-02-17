@@ -22,13 +22,17 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [Display(82, "Graphics Compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetPartReference(typeof(RenderStage))]
     // TODO: next 2 lines are here to force RenderStage to be serialized as references; ideally it should be separated from asset parts,
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : AssetComposite
     {
+        private const string CurrentVersion = "1.10.0-beta01";
+
         /// <summary>
         /// The default file extension used by the <see cref="GraphicsCompositorAsset"/>.
         /// </summary>
