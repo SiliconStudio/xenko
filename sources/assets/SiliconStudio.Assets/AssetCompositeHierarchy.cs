@@ -186,7 +186,7 @@ namespace SiliconStudio.Assets
                 var revertedIdMapping = idRemapping.ToDictionary(x => x.Value, x => x.Key);
                 foreach (var referencedPart in references.Select(x => x.AssetPart).OfType<IIdentifiable>())
                 {
-                    var realPart = ResolvePartReference(referencedPart);
+                    var realPart = tempAsset.ResolvePartReference(referencedPart);
                     if (realPart == null)
                         referencedPart.Id = revertedIdMapping[referencedPart.Id];
                 }
