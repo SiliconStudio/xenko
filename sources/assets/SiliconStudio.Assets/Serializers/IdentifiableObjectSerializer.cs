@@ -93,7 +93,11 @@ namespace SiliconStudio.Assets.Serializers
                 objectReferences.Set(path, identifier);
 
                 // Return default(T)
-                return !context.Descriptor.Type.IsValueType ? null : Activator.CreateInstance(context.Descriptor.Type);
+                //return !context.Descriptor.Type.IsValueType ? null : Activator.CreateInstance(context.Descriptor.Type);
+                // Return temporary proxy instance
+                var proxy = (IIdentifiable)Activator.CreateInstance(context.Descriptor.Type);
+                proxy.Id = identifier;
+                return proxy;
             }
 
             public override string ConvertTo(ref ObjectContext objectContext)

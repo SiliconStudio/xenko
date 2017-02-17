@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -25,7 +26,8 @@ namespace SiliconStudio.Assets.Serializers
         public static void RunFixupPass(object root, YamlAssetMetadata<Guid> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
         {
             // First collect IIdentifiable objects
-            var visitor = new FixupObjectReferenceVisitor(throwOnDuplicateIds, logger);
+            var hashSet = new HashSet<MemberPath>(objectReferences.Select(x => x.Key.ToMemberPath(root)));
+            var visitor = new FixupObjectReferenceVisitor(hashSet, throwOnDuplicateIds, logger);
             visitor.Visit(root);
 
             // Then resolve and update object references
@@ -45,11 +47,13 @@ namespace SiliconStudio.Assets.Serializers
         private class FixupObjectReferenceVisitor : DataVisitorBase
         {
             public readonly Dictionary<Guid, IIdentifiable> ReferenceableObjects = new Dictionary<Guid, IIdentifiable>();
+            private readonly HashSet<MemberPath> objectReferences;
             private readonly bool throwOnDuplicateIds;
             private readonly ILogger logger;
 
-            public FixupObjectReferenceVisitor(bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
+            public FixupObjectReferenceVisitor(HashSet<MemberPath> objectReferences, bool throwOnDuplicateIds, [CanBeNull] ILogger logger = null)
             {
+                this.objectReferences = objectReferences;
                 this.throwOnDuplicateIds = throwOnDuplicateIds;
                 this.logger = logger;
             }
@@ -59,14 +63,18 @@ namespace SiliconStudio.Assets.Serializers
                 var identifiable = obj as IIdentifiable;
                 if (obj is IIdentifiable)
                 {
-                    if (ReferenceableObjects.ContainsKey(identifiable.Id))
+                    // Skip reference, we're looking for real objects
+                    if (!objectReferences.Any(x => x.Match(CurrentPath)))
                     {
-                        var message = $"Multiple identifiable objects with the same id {identifiable.Id}";
-                        logger?.Error(message);
-                        if (throwOnDuplicateIds)
-                            throw new InvalidOperationException(message);
+                        if (ReferenceableObjects.ContainsKey(identifiable.Id))
+                        {
+                            var message = $"Multiple identifiable objects with the same id {identifiable.Id}";
+                            logger?.Error(message);
+                            if (throwOnDuplicateIds)
+                                throw new InvalidOperationException(message);
+                        }
+                        ReferenceableObjects.Add(identifiable.Id, identifiable);
                     }
-                    ReferenceableObjects.Add(identifiable.Id, identifiable);
                 }
                 base.VisitObject(obj, descriptor, visitMembers);
             }

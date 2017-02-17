@@ -23,10 +23,14 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (propertyGraph.IsObjectReference(memberNode, Index.Empty, memberNode.Retrieve()))
             {
-                var value = memberNode.Retrieve() as IIdentifiable;
+                var value = memberNode.Retrieve();
                 if (value == null)
+                    return;
+
+                var identifiable = value as IIdentifiable;
+                if (identifiable == null)
                     throw new InvalidOperationException("IsObjectReference returned true for an object that is not IIdentifiable");
-                var id = value.Id;
+                var id = identifiable.Id;
                 Result.Set(currentPath, id);
             }
         }
