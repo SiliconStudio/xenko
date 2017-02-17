@@ -88,7 +88,9 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/OfflineRasterizedSpriteFont.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/ColorTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/NormalMapTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/GrayscaleTexture.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Library.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Page.xktpl
     - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
