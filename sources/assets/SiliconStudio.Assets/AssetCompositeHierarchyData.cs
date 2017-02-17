@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
@@ -55,7 +54,10 @@ namespace SiliconStudio.Assets
                     var baseAsset = assetFinder.FindAsset(part.Base.BasePartAsset.Id)?.Asset as AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>;
                     if (baseAsset != null)
                     {
-                        baseAssets.AddRange(baseAsset.Hierarchy.GatherAllBasePartAssets(assetFinder));
+                        foreach (var asset in baseAsset.Hierarchy.GatherAllBasePartAssets(assetFinder))
+                        {
+                            baseAssets.Add(asset);
+                        }
                     }
                 }
             }
