@@ -11,12 +11,6 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
-        public override bool ShouldListenToTargetNode(IMemberNode member, IGraphNode targetNode)
-        {
-            // Make sure it's actually a target (not a member) node.
-            return !IsReferencedPart(member, targetNode) && base.ShouldListenToTargetNode(member, targetNode);
-        }
-
         public virtual bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
         {
             return false;
@@ -24,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
 
         public override GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new AssetCompositePartVisitor(this);
+            return new AssetGraphVisitorBase(this);
         }
 
         protected override bool ShouldReconcileItem(IMemberNode member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)

@@ -22,7 +22,12 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
         /// </summary>
+        [Obsolete]
         internal Func<IMemberNode, IGraphNode, bool> ShouldVisit { get; set; }
+
+        internal Func<IMemberNode, bool> ShouldVisitMemberTargetNode { get; set; }
+
+        internal Func<IObjectNode, Index, bool> ShouldVisitTargetItemNode { get; set; }
 
         /// <summary>
         /// Gets the root node of the current visit.
@@ -45,10 +50,7 @@ namespace SiliconStudio.Quantum
             if (node == null) throw new ArgumentNullException(nameof(node));
             var path = initialPath ?? new GraphNodePath(node);
             RootNode = node;
-            if (ShouldVisitNode(memberNode, node))
-            {
-                VisitNode(node, path);
-            }
+            VisitNode(node, path);
             RootNode = null;
         }
 
@@ -93,10 +95,7 @@ namespace SiliconStudio.Quantum
             foreach (var child in node.Members)
             {
                 var childPath = currentPath.PushMember(child.Name);
-                if (ShouldVisitNode(child, child))
-                {
-                    VisitNode(child, childPath);
-                }
+                VisitNode(child, childPath);
             }
         }
 
@@ -111,8 +110,11 @@ namespace SiliconStudio.Quantum
             if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
             if (node.TargetReference?.TargetNode != null)
             {
-                var targetPath = currentPath.PushTarget();
-                VisitReference(node, node.TargetReference, targetPath);
+                if (ShouldVisitMemberTarget(node))
+                {
+                    var targetPath = currentPath.PushTarget();
+                    VisitReference(node, node.TargetReference, targetPath);
+                }
             }
         }
 
@@ -130,8 +132,11 @@ namespace SiliconStudio.Quantum
             {
                 foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))
                 {
-                    var targetPath = currentPath.PushIndex(reference.Index);
-                    VisitReference(node, reference, targetPath);
+                    if (ShouldVisitTargetItem(node, reference.Index))
+                    {
+                        var targetPath = currentPath.PushIndex(reference.Index);
+                        VisitReference(node, reference, targetPath);
+                    }
                 }
             }
         }
@@ -147,21 +152,20 @@ namespace SiliconStudio.Quantum
             if (referencer == null) throw new ArgumentNullException(nameof(referencer));
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             if (targetPath == null) throw new ArgumentNullException(nameof(targetPath));
-            if (ShouldVisitNode(referencer as MemberNode, reference.TargetNode))
-            {
-                VisitNode(reference.TargetNode, targetPath);
-            }
+            VisitNode(reference.TargetNode, targetPath);
         }
 
-        /// <summary>
-        /// Indicates whether a node should be visited.
-        /// </summary>
-        /// <param name="memberContent">The member content referencing the node to evaluate.</param>
-        /// <param name="targetNode">The node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
-        /// <returns>True if the node should be visited, False otherwise.</returns>
-        protected virtual bool ShouldVisitNode(IMemberNode memberContent, IGraphNode targetNode)
+        protected virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberContent)
         {
-            return !visitedNodes.Contains(targetNode) && (ShouldVisit?.Invoke(memberContent, targetNode) ?? true);
+            if (memberContent == null) throw new ArgumentNullException(nameof(memberContent));
+            return !visitedNodes.Contains(memberContent.Target) && (ShouldVisitMemberTargetNode?.Invoke(memberContent) ?? true);
+        }
+
+        protected virtual bool ShouldVisitTargetItem([NotNull] IObjectNode collectionNode, Index index)
+        {
+            if (collectionNode == null) throw new ArgumentNullException(nameof(collectionNode));
+            var target = collectionNode.IndexedTarget(index);
+            return !visitedNodes.Contains(target) && (ShouldVisitTargetItemNode?.Invoke(collectionNode, index) ?? true);
         }
     }
 }

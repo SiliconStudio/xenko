@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Quantum
             ApplyOverrides(RootNode, overrides);
             var objectReferences = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
             ApplyObjectReferences(RootNode, objectReferences);
-            nodeListener = new GraphNodeChangeListener(RootNode, ShouldListenToTargetNode);
+            nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
@@ -173,12 +173,6 @@ namespace SiliconStudio.Assets.Quantum
         public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
             return false;
-        }
-
-        // TODO: turn protected
-        public virtual bool ShouldListenToTargetNode(IMemberNode member, IGraphNode targetNode)
-        {
-            return true;
         }
 
         /// <summary>
@@ -424,7 +418,6 @@ namespace SiliconStudio.Assets.Quantum
         // TODO: turn private
         public void LinkToBase(IAssetNode sourceRootNode, IAssetNode targetRootNode)
         {
-            baseLinker.ShouldVisit = (member, node) => (node == sourceRootNode || !baseLinkedNodes.ContainsKey((IAssetNode)node)) && ShouldListenToTargetNode(member, node);
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
 

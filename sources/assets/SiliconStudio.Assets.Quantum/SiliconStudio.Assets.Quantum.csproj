@@ -48,6 +48,8 @@
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
     <Compile Include="AssetCompositePartVisitor.cs" />
     <Compile Include="AssetCompositePropertyGraph.cs" />
+    <Compile Include="AssetGraphNodeChangeListener.cs" />
+    <Compile Include="AssetGraphNodeLinker.cs" />
     <Compile Include="AssetMemberNodeChangeEventArgs.cs" />
     <Compile Include="AssetNode.cs" />
     <Compile Include="AssetNodeContainer.cs" />

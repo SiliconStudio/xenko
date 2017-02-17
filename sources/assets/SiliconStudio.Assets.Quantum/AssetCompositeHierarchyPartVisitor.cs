@@ -7,7 +7,7 @@ namespace SiliconStudio.Assets.Quantum
     /// </summary>
     /// <typeparam name="TAssetPartDesign">The type of the design-time object containing the part.</typeparam>
     /// <typeparam name="TAssetPart">The type of the part.</typeparam>
-    public class AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart> : AssetCompositePartVisitor
+    public class AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart> : AssetGraphVisitorBase
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
         where TAssetPart : class, IIdentifiable
     {

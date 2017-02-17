@@ -1,13 +1,14 @@
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    public class AssetGraphVisitorBase : GraphVisitorBase
+    public class AssetGraphNodeLinker : GraphNodeLinker
     {
         private readonly AssetPropertyGraph propertyGraph;
 
-        public AssetGraphVisitorBase(AssetPropertyGraph propertyGraph)
+        public AssetGraphNodeLinker(AssetPropertyGraph propertyGraph)
         {
             this.propertyGraph = propertyGraph;
         }

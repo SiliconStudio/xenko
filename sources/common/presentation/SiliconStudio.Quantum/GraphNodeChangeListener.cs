@@ -16,18 +16,15 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : INotifyContentValueChange, INotifyItemChange, IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Func<IMemberNode, IGraphNode, bool> shouldRegisterNode;
+        private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;
+        private readonly Func<IGraphNode, Index, bool> shouldRegisterItemTarget;
         protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
-        /// </summary>
-        /// <param name="rootNode">The root node for which to track referenced node changes.</param>
-        /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
-        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, IGraphNode, bool> shouldRegisterNode = null)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, bool> shouldRegisterMemberTarget = null, Func<IGraphNode, Index, bool> shouldRegisterItemTarget = null)
         {
             this.rootNode = rootNode;
-            this.shouldRegisterNode = shouldRegisterNode;
+            this.shouldRegisterMemberTarget = shouldRegisterMemberTarget;
+            this.shouldRegisterItemTarget = shouldRegisterItemTarget;
             RegisterAllNodes();
         }
 
@@ -105,7 +102,8 @@ namespace SiliconStudio.Quantum
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode =  shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             visitor.Visit(rootNode);
         }
 
@@ -114,7 +112,8 @@ namespace SiliconStudio.Quantum
             var node = e.Node;
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node1, path) => UnregisterNode(node1);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
@@ -142,7 +141,8 @@ namespace SiliconStudio.Quantum
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisit = shouldRegisterNode;
+            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
+            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:

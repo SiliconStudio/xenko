@@ -47,11 +47,8 @@ namespace SiliconStudio.Quantum
                 {
                     foreach (var child in node.Members)
                     {
-                        if (ShouldVisitNode(child, child))
-                        {
-                            string name = child.Name;
-                            VisitedLinks.Add(child, ((IObjectNode)targetNodeParent)?.TryGetChild(name));
-                        }
+                        string name = child.Name;
+                        VisitedLinks.Add(child, ((IObjectNode)targetNodeParent)?.TryGetChild(name));
                     }
                 }
                 base.VisitChildren(node, currentPath);
@@ -59,26 +56,23 @@ namespace SiliconStudio.Quantum
 
             protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
             {
-                if (ShouldVisitNode(referencer as MemberNode, reference.TargetNode))
+                if (reference.TargetNode != null)
                 {
-                    if (reference.TargetNode != null)
+                    // Prevent re-entrancy in the same object
+                    if (VisitedLinks.ContainsKey(reference.TargetNode))
+                        return;
+
+                    IGraphNode targetNode;
+                    if (VisitedLinks.TryGetValue(referencer, out targetNode))
                     {
-                        // Prevent re-entrancy in the same object
-                        if (VisitedLinks.ContainsKey(reference.TargetNode))
-                            return;
+                        ObjectReference targetReference = null;
+                        if (targetNode != null)
+                            targetReference = linker.FindTargetReference(referencer, targetNode, reference);
 
-                        IGraphNode targetNode;
-                        if (VisitedLinks.TryGetValue(referencer, out targetNode))
-                        {
-                            ObjectReference targetReference = null;
-                            if (targetNode != null)
-                                targetReference = linker.FindTargetReference(referencer, targetNode, reference);
-
-                            VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
-                        }
+                        VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
                     }
-                    base.VisitReference(referencer, reference, targetPath);
                 }
+                base.VisitReference(referencer, reference, targetPath);
             }
         }
 
@@ -89,7 +83,11 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = (memberContent, targetNode) => ShouldVisitSourceNode(memberContent, targetNode) };
+            visitor = new GraphNodeLinkerVisitor(this)
+            {
+                ShouldVisitMemberTargetNode = (member) => ShouldVisitMemberTarget(member),
+                ShouldVisitTargetItemNode = (collectionNode, index) => ShouldVisitTargetItem(collectionNode, index),
+            };
         }
 
         /// <summary>
@@ -108,13 +106,12 @@ namespace SiliconStudio.Quantum
             visitor.Visit(sourceNode);
         }
 
-        /// <summary>
-        /// Indicates whether the linker should visit the given source node.
-        /// </summary>
-        /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
-        /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
-        /// <returns>True if the node should be visited, false otherwise.</returns>
-        protected virtual bool ShouldVisitSourceNode(IMemberNode memberContent, IGraphNode targetNode)
+        protected virtual bool ShouldVisitMemberTarget(IMemberNode member)
+        {
+            return true;
+        }
+
+        protected virtual bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
             return true;
         }
