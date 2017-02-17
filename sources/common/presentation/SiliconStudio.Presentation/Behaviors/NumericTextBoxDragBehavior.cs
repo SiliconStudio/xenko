@@ -5,7 +5,6 @@ using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -31,6 +30,16 @@ namespace SiliconStudio.Presentation.Behaviors
         private Point mouseDownPosition;
         private double mouseMoveDelta;
 
+        /// <summary>
+        /// Identifies the <see cref="NumericTextBox.MouseValidationTrigger"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register(nameof(DragCursor), typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
+        
+        /// <summary>
+        /// Gets or sets the <see cref="Cursor"/> to display when the value can be modified via dragging.
+        /// </summary>
+        public Cursor DragCursor { get { return (Cursor)GetValue(DragCursorProperty); } set { SetValue(DragCursorProperty, value); } }
+
         /// <inheritdoc />
         protected override void CancelOverride()
         {
@@ -43,9 +52,25 @@ namespace SiliconStudio.Presentation.Behaviors
         }
 
         /// <inheritdoc />
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+            AssociatedObject.Initialized += NumericTextBoxInitialized;
+        }
+
+        /// <inheritdoc />
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+            AssociatedObject.Initialized -= NumericTextBoxInitialized;
+            if (AssociatedObject.contentHost != null)
+                AssociatedObject.contentHost.QueryCursor -= HostQueryCursor;
+        }
+
+        /// <inheritdoc />
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!AssociatedObject.IsContentHostPart(e.OriginalSource))
+            if (!IsContentHostPart(e.OriginalSource))
                 return;
 
             if (!AssociatedObject.AllowMouseDrag || AssociatedObject.IsReadOnly || AssociatedObject.IsFocused)
@@ -141,6 +166,30 @@ namespace SiliconStudio.Presentation.Behaviors
             ReleaseMouseCapture();
             Mouse.OverrideCursor = null;
             dragState = DragState.None;
+        }
+        
+        private void HostQueryCursor(object sender, QueryCursorEventArgs e)
+        {
+            if (!IsContentHostPart(e.OriginalSource))
+                return;
+
+            if (!AssociatedObject.AllowMouseDrag || AssociatedObject.IsFocused || DragCursor == null)
+                return;
+
+            e.Cursor = DragCursor;
+            e.Handled = true;
+        }
+        
+        private bool IsContentHostPart(object obj)
+        {
+            var frameworkElement = obj as FrameworkElement;
+            return Equals(obj, AssociatedObject.contentHost) || (frameworkElement != null && Equals(frameworkElement.Parent, AssociatedObject.contentHost));
+        }
+        
+        private void NumericTextBoxInitialized(object sender, EventArgs e)
+        {
+            AssociatedObject.ApplyTemplate();
+            AssociatedObject.contentHost.QueryCursor += HostQueryCursor;
         }
 
         private void RootParentIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
