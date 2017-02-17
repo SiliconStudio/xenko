@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Packages
@@ -97,21 +98,17 @@ namespace SiliconStudio.Packages
                 Tags = meta.Tags,
                 Title = meta.Title
             };
-            // Copy list of dependencies in the first slot of ManifestDependencySet, and create
-            // it if it doesn't exist
-            NuGet.ManifestDependencySet dependencySet;
-            if (nugetMeta.DependencySets.Count == 0)
+            if (meta.Dependencies.Count > 0)
             {
-                dependencySet = new NuGet.ManifestDependencySet();
+                // Copy list of dependencies in the first slot of ManifestDependencySet, and create
+                // it if it doesn't exist
+                nugetMeta.DependencySets = new List<NuGet.ManifestDependencySet>();
+                var dependencySet = new NuGet.ManifestDependencySet();
                 nugetMeta.DependencySets.Add(dependencySet);
-            }
-            else
-            {
-                dependencySet = nugetMeta.DependencySets[0];
-            }
-            foreach (var deps in meta.Dependencies)
-            {
-                dependencySet.Dependencies.Add(new NuGet.ManifestDependency() { Id = deps.Id, Version = deps.Version });
+                foreach (var deps in meta.Dependencies)
+                {
+                    dependencySet.Dependencies.Add(new NuGet.ManifestDependency() { Id = deps.Id, Version = deps.Version });
+                }
             }
 
             return nugetMeta;
