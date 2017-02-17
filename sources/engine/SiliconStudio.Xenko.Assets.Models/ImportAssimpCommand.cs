@@ -14,7 +14,6 @@ using SiliconStudio.Xenko.Rendering.Data;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    [CommandDependsOn(typeof(Xenko.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]
     public class ImportAssimpCommand : ImportModelCommand
     {
