@@ -43,6 +43,8 @@ namespace SiliconStudio.Core.Serialization
                 {
 
 
+
+
                     // Serialize flags
                     stream.Write((byte)SerializeClassFlags.None);
 
@@ -117,6 +119,8 @@ namespace SiliconStudio.Core.Serialization
                 {
 
 
+
+
                     // Serialize flags
                     stream.Write((byte)SerializeClassFlags.None);
 
@@ -182,6 +186,8 @@ namespace SiliconStudio.Core.Serialization
                 }
                 else
                 {
+
+
 
 
                     // Serialize flags
@@ -267,6 +273,8 @@ namespace SiliconStudio.Core.Serialization
                 {
 
 
+
+
                     // Serialize flags
                     stream.Write((byte)SerializeClassFlags.None);
 
@@ -341,6 +349,8 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+
 
                     // If real type is not expected type, we need to store type info as well.
                     var expectedType = objType;
@@ -482,6 +492,8 @@ namespace SiliconStudio.Core.Serialization
                 {
                     flags = SerializeClassFlags.None;
 
+
+
                     // If real type is not expected type, we need to store type info as well.
                     var expectedType = typeof(T);
                     type = isSealed ? expectedType : obj.GetType();
@@ -617,6 +629,8 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+
 
                     // If real type is not expected type, we need to store type info as well.
                     var expectedType = typeof(T);
@@ -771,6 +785,8 @@ namespace SiliconStudio.Core.Serialization
                 {
                     flags = SerializeClassFlags.None;
 
+
+
                     // If real type is not expected type, we need to store type info as well.
                     var expectedType = typeof(T);
                     type = isSealed ? expectedType : obj.GetType();
@@ -896,6 +912,7 @@ namespace SiliconStudio.Core.Serialization
             SerializeClassFlags flags;
             bool reuseReferences = context.SerializerSelector.ReuseReferences;
             int index;
+            bool externalIdentifiableAsGuid = context.SerializerSelector.ExternalIdentifiableAsGuid;
             bool hasTypeInfo;
             DataSerializer objectDataSerializer;
             Type type;
@@ -910,6 +927,20 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+                    if (externalIdentifiableAsGuid)
+                    {
+                        var identifiable = obj as IIdentifiable;
+                        var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+                        if (identifiable != null && externalIdentifiables?.ContainsKey(identifiable.Id) == true)
+                        {
+                            flags |= SerializeClassFlags.IsExternalIdentifiable;
+                            stream.Write((byte)flags);
+                            stream.Write(identifiable.Id);
+                            return;
+                        }
+                    }
+
                     index = -1;
                     if (reuseReferences)
                     {
@@ -1000,12 +1031,21 @@ namespace SiliconStudio.Core.Serialization
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
                 {
                     obj = null;
+                }
+                else if (externalIdentifiableAsGuid && isExternalIdentifiable)
+                {
+                    var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+					var identifier = stream.Read<Guid>();
+					IIdentifiable identifiable;
+					externalIdentifiables.TryGetValue(identifier, out identifiable);
+                    obj = identifiable;
                 }
                 else if (reuseReferences && isReference)
                 {
@@ -1089,6 +1129,7 @@ namespace SiliconStudio.Core.Serialization
             SerializeClassFlags flags;
             bool reuseReferences = context.SerializerSelector.ReuseReferences;
             int index;
+            bool externalIdentifiableAsGuid = context.SerializerSelector.ExternalIdentifiableAsGuid;
             bool hasTypeInfo;
             object objCopy;
             DataSerializer objectDataSerializer;
@@ -1104,6 +1145,20 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+                    if (externalIdentifiableAsGuid)
+                    {
+                        var identifiable = obj as IIdentifiable;
+                        var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+                        if (identifiable != null && externalIdentifiables.ContainsKey(identifiable.Id))
+                        {
+                            flags |= SerializeClassFlags.IsExternalIdentifiable;
+                            stream.Write((byte)flags);
+                            stream.Write(identifiable.Id);
+                            return;
+                        }
+                    }
+
                     index = -1;
                     if (reuseReferences)
                     {
@@ -1187,12 +1242,21 @@ namespace SiliconStudio.Core.Serialization
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
                 {
                     obj = default(T);
+                }
+                else if (externalIdentifiableAsGuid && isExternalIdentifiable)
+                {
+                    var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+					var identifier = stream.Read<Guid>();
+					IIdentifiable identifiable;
+					externalIdentifiables.TryGetValue(identifier, out identifiable);
+                    obj = (T)identifiable;
                 }
                 else if (reuseReferences && isReference)
                 {
@@ -1279,6 +1343,7 @@ namespace SiliconStudio.Core.Serialization
             SerializeClassFlags flags;
             bool reuseReferences = context.SerializerSelector.ReuseReferences;
             int index;
+            bool externalIdentifiableAsGuid = context.SerializerSelector.ExternalIdentifiableAsGuid;
             bool hasTypeInfo;
             object objCopy;
             DataSerializer objectDataSerializer;
@@ -1294,6 +1359,20 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+                    if (externalIdentifiableAsGuid)
+                    {
+                        var identifiable = obj as IIdentifiable;
+                        var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+                        if (identifiable != null && externalIdentifiables.ContainsKey(identifiable.Id))
+                        {
+                            flags |= SerializeClassFlags.IsExternalIdentifiable;
+                            stream.Write((byte)flags);
+                            stream.Write(identifiable.Id);
+                            return;
+                        }
+                    }
+
                     index = -1;
                     if (reuseReferences)
                     {
@@ -1386,12 +1465,21 @@ namespace SiliconStudio.Core.Serialization
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
                 {
                     obj = default(T);
+                }
+                else if (externalIdentifiableAsGuid && isExternalIdentifiable)
+                {
+                    var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+					var identifier = stream.Read<Guid>();
+					IIdentifiable identifiable;
+					externalIdentifiables.TryGetValue(identifier, out identifiable);
+                    obj = (T)identifiable;
                 }
                 else if (reuseReferences && isReference)
                 {
@@ -1486,6 +1574,7 @@ namespace SiliconStudio.Core.Serialization
             SerializeClassFlags flags;
             bool reuseReferences = context.SerializerSelector.ReuseReferences;
             int index;
+            bool externalIdentifiableAsGuid = context.SerializerSelector.ExternalIdentifiableAsGuid;
             bool hasTypeInfo;
             object objCopy;
             DataSerializer objectDataSerializer;
@@ -1501,6 +1590,20 @@ namespace SiliconStudio.Core.Serialization
                 else
                 {
                     flags = SerializeClassFlags.None;
+
+                    if (externalIdentifiableAsGuid)
+                    {
+                        var identifiable = obj as IIdentifiable;
+                        var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+                        if (identifiable != null && externalIdentifiables.ContainsKey(identifiable.Id))
+                        {
+                            flags |= SerializeClassFlags.IsExternalIdentifiable;
+                            stream.Write((byte)flags);
+                            stream.Write(identifiable.Id);
+                            return;
+                        }
+                    }
+
                     index = -1;
                     if (reuseReferences)
                     {
@@ -1584,12 +1687,21 @@ namespace SiliconStudio.Core.Serialization
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
+                var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
 
                 if (isNull)
                 {
                     obj = default(T);
+                }
+                else if (externalIdentifiableAsGuid && isExternalIdentifiable)
+                {
+                    var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
+					var identifier = stream.Read<Guid>();
+					IIdentifiable identifiable;
+					externalIdentifiables.TryGetValue(identifier, out identifiable);
+                    obj = (T)identifiable;
                 }
                 else if (reuseReferences && isReference)
                 {

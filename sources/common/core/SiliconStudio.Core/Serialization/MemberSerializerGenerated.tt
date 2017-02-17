@@ -19,20 +19,23 @@ var supportsNullDataSerializer = false;
 var supportsNonSealed = false;
 var supportsGenerics = false;
 var supportsValueType = false;
-var supportsReuseReferences = false; #>
+var supportsReuseReferences = false;
+var supportsExternalIdentifiableAsGuid = false; #>
 <#@ include file="MemberSerializerClass.ttinclude" #>
 
 <#
 className = "MemberNonSealedSerializer";
 supportsNonSealed = true;
 supportsValueType = false;
-supportsReuseReferences = false; #>
+supportsReuseReferences = false;
+supportsExternalIdentifiableAsGuid = false; #>
 <#@ include file="MemberSerializerClass.ttinclude" #>
 
 <#
 className = "MemberReuseSerializer";
 supportsNonSealed = true;
 supportsValueType = false;
-supportsReuseReferences = true; #>
+supportsReuseReferences = true;
+supportsExternalIdentifiableAsGuid = true; #>
 <#@ include file="MemberSerializerClass.ttinclude" #>
 }
