@@ -315,7 +315,6 @@
     <Compile Include="Effect\EffectLogStore.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
-    <Compile Include="Entities\EntityComponentReferenceSerializer.cs" />
     <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
@@ -324,7 +323,6 @@
     <Compile Include="Entities\EntityHierarchyDataExtensions.cs" />
     <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
-    <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
@@ -334,6 +332,7 @@
     <Compile Include="Navigation\NavigationMeshBuildUtils.cs" />
     <Compile Include="Navigation\NavigationMeshFactory.cs" />
     <Compile Include="Navigation\NavigationMeshInputBuilder.cs" />
+    <Compile Include="Serializers\EntitySerializer.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementDesign.cs" />
     <Compile Include="GameSettingsAsset.cs" />

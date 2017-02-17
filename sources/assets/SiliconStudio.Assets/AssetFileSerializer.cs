@@ -114,8 +114,6 @@ namespace SiliconStudio.Assets
             bool aliasOccurred;
             AttachedYamlAssetMetadata yamlMetadata;
             var asset = (T)serializer.Load(stream, filePath, log, out aliasOccurred, out yamlMetadata);
-            // Let's fixup references after deserialization
-            (asset as Asset)?.FixupPartReferences();
             return new AssetLoadResult<T>(asset, log, aliasOccurred, yamlMetadata);
         }
 
