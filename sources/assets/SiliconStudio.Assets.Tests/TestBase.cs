@@ -32,5 +32,6 @@ namespace SiliconStudio.Assets.Tests
                 return Path.GetDirectoryName(path);
             }
         }
+
     }
 }

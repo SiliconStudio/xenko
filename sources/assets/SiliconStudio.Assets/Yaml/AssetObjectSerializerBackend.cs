@@ -296,6 +296,22 @@ namespace SiliconStudio.Core.Yaml
             WriteYaml(ref itemObjectcontext);
         }
 
+        public override bool ShouldSerialize(IMemberDescriptor member, ref ObjectContext objectContext)
+        {
+            YamlAssetMetadata<OverrideType> overrides;
+            if (objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out overrides))
+            {
+                var path = GetCurrentPath(ref objectContext, true);
+                path.PushMember(member.Name);
+
+                var overrideType = overrides.TryGet(path);
+                if (overrideType != OverrideType.Base)
+                    return true;
+            }
+
+            return base.ShouldSerialize(member, ref objectContext);
+        }
+
         public static YamlAssetPath GetCurrentPath(ref ObjectContext objectContext, bool clone)
         {
             YamlAssetPath path;

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
@@ -84,6 +84,14 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public class MyAsset9 : MyAssetBase
         {
             public SomeObject MyObject { get; set; }
+        }
+
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAsset10 : MyAssetBase
+        {
+            [DefaultValue(true)]
+            public bool MyBool { get; set; } = true;
         }
 
         [DataContract]

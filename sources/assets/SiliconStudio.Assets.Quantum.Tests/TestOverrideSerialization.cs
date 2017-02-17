@@ -60,6 +60,17 @@ Tags: []
 Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
 MyString*: MyDerivedString
 ";
+        private const string SimplePropertyWithOverrideToDefaultValueBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+Tags: []
+MyBool: false
+";
+        private const string SimplePropertyWithOverrideToDefaultValueDerivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset10,SiliconStudio.Assets.Quantum.Tests
+Id: 00000002-0002-0000-0200-000002000000
+Tags: []
+Archetype: 00000001-0001-0000-0100-000001000000:MyAsset
+MyBool*: true
+";
         private const string SimpleCollectionUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAsset2,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
 Tags: []
@@ -244,10 +255,14 @@ MyObjects:
             derivedPropertyNode.Update("MyDerivedString");
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyUpdateBaseYaml, false);
             SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyUpdateDerivedYaml, true);
+        }
 
-            context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
-            basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
-            derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
+        [Test]
+        public void TestSimplePropertyDeserialization()
+        {
+            var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
+            var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
+            var derivedPropertyNode = )context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
 
             Assert.AreEqual("MyBaseString", basePropertyNode.Retrieve());
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Retrieve());
@@ -256,14 +271,26 @@ MyObjects:
         }
 
         [Test]
-        public void TestSimplePropertyDeserialization()
+        public void TestSimplePropertyWithOverrideToDefaultValueSerialization()
         {
-            var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
-            var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
-            var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
+            var asset = new Types.MyAsset10 { MyBool = false };
+            var context = DeriveAssetTest<Types.MyAsset10>.DeriveAsset(asset);
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
 
-            Assert.AreEqual("MyBaseString", basePropertyNode.Retrieve());
-            Assert.AreEqual("MyDerivedString", derivedPropertyNode.Retrieve());
+            derivedPropertyNode.Update(true);
+            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyWithOverrideToDefaultValueBaseYaml, false);
+            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyWithOverrideToDefaultValueDerivedYaml, true);
+        }
+
+        [Test]
+        public void TestSimplePropertyWithOverrideToDefaultValueDeserialization()
+        {
+            var context = DeriveAssetTest<Types.MyAsset10>.LoadFromYaml(SimplePropertyWithOverrideToDefaultValueBaseYaml, SimplePropertyWithOverrideToDefaultValueDerivedYaml);
+            var basePropertyNode = (AssetMemberNode)context.BaseGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
+            var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
+
+            Assert.AreEqual(false, basePropertyNode.Retrieve());
+            Assert.AreEqual(true, derivedPropertyNode.Retrieve());
             Assert.AreEqual(OverrideType.Base, basePropertyNode.GetContentOverride());
             Assert.AreEqual(OverrideType.New, derivedPropertyNode.GetContentOverride());
         }

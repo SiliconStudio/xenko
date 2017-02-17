@@ -168,7 +168,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
             node.Add(rootPart);
-            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, false))
+            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, true))
             {
                 var partDesign = newPartCollection[childPart.Id];
                 InsertPartInPartsCollection(newPartCollection, partDesign);
@@ -177,7 +177,7 @@ namespace SiliconStudio.Assets.Quantum
 
         private void RemovePartFromPartsCollection(TAssetPartDesign rootPart)
         {
-            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, false))
+            foreach (var childPart in AssetHierarchy.EnumerateChildParts(rootPart.Part, true))
             {
                 var partDesign = AssetHierarchy.Hierarchy.Parts[childPart.Id];
                 RemovePartFromPartsCollection(partDesign);

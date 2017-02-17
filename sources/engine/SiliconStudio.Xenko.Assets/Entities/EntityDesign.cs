@@ -44,6 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The folder where the entity is attached (folder is relative to parent folder). If null or empty, the entity doesn't belong to a folder.
         /// </summary>
         [DataMember(10)]
+        [DefaultValue("")]
         public string Folder { get; set; }
 
         /// <summary>

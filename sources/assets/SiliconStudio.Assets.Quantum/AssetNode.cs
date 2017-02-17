@@ -339,7 +339,8 @@ namespace SiliconStudio.Assets.Quantum
 
             CollectionItemIdentifiers ids;
             var collection = node.Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
+            if (!TryGetCollectionItemIds(collection, out ids))
+                yield break;
 
             foreach (var flags in itemOverrides)
             {
@@ -361,7 +362,8 @@ namespace SiliconStudio.Assets.Quantum
 
             CollectionItemIdentifiers ids;
             var collection = node.Retrieve();
-            TryGetCollectionItemIds(collection, out ids);
+            if (!TryGetCollectionItemIds(collection, out ids))
+                yield break;
 
             foreach (var flags in keyOverrides)
             {
@@ -485,6 +487,9 @@ namespace SiliconStudio.Assets.Quantum
 
             // Make sure that we have item ids everywhere we're supposed to.
             AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Node.Retrieve());
+
+            // Clear the cached item identifier collection.
+            collectionItemIdentifiers = null;
 
             // Create new ids for collection items
             var baseNode = (AssetObjectNode)BaseNode;
