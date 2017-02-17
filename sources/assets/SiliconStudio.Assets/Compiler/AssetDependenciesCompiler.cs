@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Compiler
                 return compilerResult;
             }
 
-            BuildStepsQueue.BuildSteps[new AssetBuildOperation(assetItem.Id, assetItem.Version)] = compilerResult.BuildSteps;
+            BuildStepsQueue.BuildSteps[new AssetBuildOperation(assetItem)] = compilerResult.BuildSteps;
 
             var processedItems = new HashSet<string>();
 

@@ -14,18 +14,27 @@ namespace SiliconStudio.Assets.Compiler
 {
     public struct AssetBuildOperation : IEquatable<AssetBuildOperation>
     {
-        public AssetBuildOperation(AssetId assetId, long version)
+        public AssetBuildOperation(AssetId id, long version, int flags = 0)
         {
-            Id = assetId;
+            Id = id;
             Version = version;
+            Flags = flags;
+        }
+
+        public AssetBuildOperation(AssetItem item)
+        {
+            Id = item.Id;
+            Version = item.Version;
+            Flags = 0;
         }
 
         public readonly AssetId Id;
         public readonly long Version;
+        public int Flags;
 
         public bool Equals(AssetBuildOperation other)
         {
-            return Id == other.Id && Version == other.Version;
+            return Id == other.Id && Version == other.Version && Flags == other.Flags;
         }
     }
 
