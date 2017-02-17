@@ -116,11 +116,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register(nameof(MouseValidationTrigger), typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
-
-        /// <summary>
-        /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register(nameof(DragCursor), typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
         
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
@@ -241,11 +236,6 @@ namespace SiliconStudio.Presentation.Controls
         public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value); } }
 
         /// <summary>
-        /// Gets or sets the <see cref="Cursor"/> to display when the value can be modified via dragging.
-        /// </summary>
-        public Cursor DragCursor { get { return (Cursor)GetValue(DragCursorProperty); } set { SetValue(DragCursorProperty, value); } }
-
-        /// <summary>
         /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.
         /// </summary>
         public MouseValidationTrigger MouseValidationTrigger { get { return (MouseValidationTrigger)GetValue(MouseValidationTriggerProperty); } set { SetValue(MouseValidationTriggerProperty, value); } }
@@ -289,8 +279,6 @@ namespace SiliconStudio.Presentation.Controls
             var textValue = FormatValue(Value);
 
             SetCurrentValue(TextProperty, textValue);
-
-            contentHost.QueryCursor += HostQueryCursor;
         }
 
         /// <summary>
@@ -411,25 +399,6 @@ namespace SiliconStudio.Presentation.Controls
             {
                 SetCurrentValue(ValueProperty, value);
             }
-        }
-
-        private void HostQueryCursor(object sender, QueryCursorEventArgs e)
-        {
-            if (!IsContentHostPart(e.OriginalSource))
-                return;
-
-            if (AllowMouseDrag && !IsFocused && DragCursor != null)
-            {
-                e.Cursor = DragCursor;
-                e.Handled = true;
-            }
-        }
-
-        // FIXME: turn back private
-        internal bool IsContentHostPart(object obj)
-        {
-            var frameworkElement = obj as FrameworkElement;
-            return Equals(obj, contentHost) || (frameworkElement != null && Equals(frameworkElement.Parent, contentHost));
         }
 
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
