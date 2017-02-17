@@ -79,14 +79,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         /// <inheritdoc/>
-        protected override void ClearPartReferences(AssetCompositeHierarchyData<EntityDesign, Entity> clonedHierarchy)
-        {
-            // set to null reference outside of the sub-tree
-            var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
-            tempAsset.FixupPartReferences();
-        }
-
-        /// <inheritdoc/>
         protected override void PostClonePart([NotNull] Entity part)
         {
             // disconnect the cloned entity

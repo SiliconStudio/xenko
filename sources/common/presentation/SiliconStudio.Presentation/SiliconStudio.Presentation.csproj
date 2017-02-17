@@ -34,6 +34,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
     <Compile Include="Controls\TextBlockFormatting.cs" />

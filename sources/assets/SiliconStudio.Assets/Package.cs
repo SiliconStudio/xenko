@@ -923,6 +923,11 @@ namespace SiliconStudio.Assets
                     // Fix collection item ids
                     AssetCollectionItemIdHelper.GenerateMissingItemIds(item.Asset);
                     CollectionItemIdsAnalysis.FixupItemIds(item, log);
+
+                    // Fix duplicate identifiable objects
+                    var hasBeenModified = IdentifiableObjectAnalysis.Visit(item.Asset, true, log);
+                    if (hasBeenModified)
+                        item.IsDirty = true;
                 }
 
                 // Don't delete SourceCodeAssets as their files are handled by the package upgrader
