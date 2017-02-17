@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Yaml
             return (YamlAssetMetadata<T>)metadata;
         }
 
-        internal void CopyInto(AttachedYamlAssetMetadata target)
+        public void CopyInto(AttachedYamlAssetMetadata target)
         {
             foreach (var metadata in yamlMetadata)
             {

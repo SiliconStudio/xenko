@@ -135,20 +135,10 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets the collection of overridden members in this asset. It is filled on Load, and must be synchronized before Save.
-        /// </summary>
-        /// <remarks>Properties that are not in this dictionary are considered to have the <see cref="OverrideType.Base"/> type.</remarks>
-        [DataMemberIgnore]
-        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; set; }
-
-        /// <summary>
         /// Gets the attached metadata for YAML serialization.
         /// </summary>
         [DataMemberIgnore]
         public AttachedYamlAssetMetadata YamlMetadata { get; internal set; } = new AttachedYamlAssetMetadata();
-
-        [DataMemberIgnore]
-        public ISet<YamlAssetPath> ObjectReferences { get; set; }
 
         /// <summary>
         /// Converts this item to a reference.

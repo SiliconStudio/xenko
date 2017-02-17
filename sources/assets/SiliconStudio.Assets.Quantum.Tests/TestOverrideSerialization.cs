@@ -262,7 +262,7 @@ MyObjects:
         {
             var context = DeriveAssetTest<Types.MyAsset1>.LoadFromYaml(SimplePropertyUpdateBaseYaml, SimplePropertyUpdateDerivedYaml);
             var basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset1.MyString)];
-            var derivedPropertyNode = )context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
+            var derivedPropertyNode = context.DerivedGraph.RootNode[nameof(Types.MyAsset1.MyString)];
 
             Assert.AreEqual("MyBaseString", basePropertyNode.Retrieve());
             Assert.AreEqual("MyDerivedString", derivedPropertyNode.Retrieve());

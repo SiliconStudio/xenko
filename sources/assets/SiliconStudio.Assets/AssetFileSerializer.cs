@@ -31,7 +31,6 @@ namespace SiliconStudio.Assets
 
         public bool AliasOccurred { get; }
 
-        public IDictionary<YamlAssetPath, OverrideType> Overrides { get; }
         public AttachedYamlAssetMetadata YamlMetadata { get; }
     }
 
