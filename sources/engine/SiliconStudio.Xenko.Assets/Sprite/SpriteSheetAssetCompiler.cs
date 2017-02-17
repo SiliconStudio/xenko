@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                             PremultiplyAlpha = asset.PremultiplyAlpha,
                             ColorKeyColor = asset.ColorKeyColor,
                             ColorKeyEnabled = asset.ColorKeyEnabled,
-                            UseSRrgbSampling = true,
+                            UseSRgbSampling = true,
                         }
                     };
 

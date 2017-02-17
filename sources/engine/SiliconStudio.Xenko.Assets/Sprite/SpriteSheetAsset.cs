@@ -93,9 +93,9 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         [DataMember(45)]
         [DefaultValue(true)]
         [Display("sRGB sampling")]
-        public bool SRGB { get; set; } = true;
+        public bool UseSRgbSampling { get; set; } = true;
 
-        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && SRGB);
+        public bool IsSRGBTexture(ColorSpace colorSpaceReference) => ((colorSpaceReference == ColorSpace.Linear) && UseSRgbSampling);
 
         /// <summary>
         /// Gets or sets the alpha format.
@@ -229,7 +229,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             {
                 if (asset.ColorSpace != null)
                 {
-                    asset.SRGB = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
+                    asset.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
                     asset.RemoveChild("ColorSpace");
                 }
             }

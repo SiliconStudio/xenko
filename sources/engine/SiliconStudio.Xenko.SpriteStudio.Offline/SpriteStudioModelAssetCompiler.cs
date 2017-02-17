@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     {
                         Alpha = AlphaFormat.Auto,
                         PremultiplyAlpha = true,
-                        UseSRrgbSampling = true,
+                        UseSRgbSampling = true,
                     }
                 };
 
