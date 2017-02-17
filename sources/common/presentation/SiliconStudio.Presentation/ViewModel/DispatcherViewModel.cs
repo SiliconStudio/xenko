@@ -29,6 +29,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Gets a dispatcher that is capable of executing code in the UI thread.
         /// </summary>
         [DataMemberIgnore]
+        [NotNull]
         public IDispatcherService Dispatcher { get; }
 
         /// <inheritdoc/>

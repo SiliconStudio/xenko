@@ -5,6 +5,7 @@ Tags: []
 Source: ../../Resources/model/BG/scene/obj01.FBX
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
+Type: !StandardAnimationAssetType {}
 Skeleton: 9308887f-54ac-4b52-b52b-78f2075df74a:obj01 Skeleton
 RootMotion: false
 PreviewModel: f81db4ee-5929-42c9-9008-2cd624296caa:obj01

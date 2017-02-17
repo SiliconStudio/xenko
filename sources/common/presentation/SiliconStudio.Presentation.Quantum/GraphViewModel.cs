@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
     public delegate CombinedNodeViewModel CreateCombinedNodeDelegate(GraphViewModel viewModel, string baseName, Type contentType, IEnumerable<SingleNodeViewModel> combinedNodes, Index index);
 
     /// <summary>
-    /// A view model class to present a graph of <see cref="IGraphNode"/> nodes to a view.
+    /// A view model class to present a graph of <see cref="IContentNode"/> nodes to a view.
     /// </summary>
     public class GraphViewModel : DispatcherViewModel
     {

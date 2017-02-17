@@ -47,6 +47,11 @@ namespace SiliconStudio.Assets.Serializers
         public Type ReferenceType { get; set; } = typeof(IdentifiableAssetPartReference);
 
         /// <summary>
+        /// Gets or sets a boolean that specifies if type info should be saved. If not, it won't be available during <see cref="IAssetPartReference.GenerateProxyPart"/>
+        /// </summary>
+        public bool KeepTypeInfo { get; set; } = true;
+
+        /// <summary>
         /// A boolean that specifies if the type <see cref="ReferenceableType"/> is fully serialized when found at the top level. If set to false (default), <see cref="AssetPartContainedAttribute"/> will be necessary on containing members.
         /// </summary>
         public bool ExistsTopLevel { get; set; } = false;

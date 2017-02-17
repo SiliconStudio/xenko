@@ -25,7 +25,7 @@ namespace UIElementLink
             if (NextScene.IsNullOrEmpty())
                 return;
 
-            SceneSystem.SceneInstance.Scene = Content.Load<Scene>(NextScene);
+            SceneSystem.SceneInstance.RootScene = Content.Load<Scene>(NextScene);
             Cancel();
         }
 

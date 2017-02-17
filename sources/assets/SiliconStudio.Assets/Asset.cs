@@ -6,7 +6,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -14,7 +13,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset : IIdentifiable
+    public abstract class Asset
     {
         private AssetId id;
 
@@ -107,16 +106,14 @@ namespace SiliconStudio.Assets
         [DataMemberIgnore]
         public virtual UFile MainSource => null;
 
-        /// <inheritdoc/>
-        Guid IIdentifiable.Id { get { return (Guid)Id; } set { Id = (AssetId)value; } }
-
         /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public Asset CreateDerivedAsset(string baseLocation)
+        [NotNull]
+        public Asset CreateDerivedAsset([NotNull] string baseLocation)
         {
             Dictionary<Guid, Guid> idRemapping;
             return CreateDerivedAsset(baseLocation, out idRemapping);
@@ -129,7 +126,8 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
         // TODO: turn internal protected and expose only AssetItem.CreateDerivedAsset()
-        public virtual Asset CreateDerivedAsset(string baseLocation, out Dictionary<Guid, Guid> idRemapping)
+        [NotNull]
+        public virtual Asset CreateDerivedAsset([NotNull] string baseLocation, out Dictionary<Guid, Guid> idRemapping)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 

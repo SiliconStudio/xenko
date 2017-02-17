@@ -113,9 +113,14 @@ namespace SiliconStudio.Xenko.Physics
             {
                 ProtectedColliderShape = value;
 
-                if (InternalRigidBody == null) return;
+                if (value == null)
+                    return;
 
-                NativeCollisionObject.CollisionShape = value.InternalShape;
+                if (InternalRigidBody == null)
+                    return;
+
+                if (NativeCollisionObject != null)
+                    NativeCollisionObject.CollisionShape = value.InternalShape;
 
                 var inertia = ProtectedColliderShape.InternalShape.CalculateLocalInertia(mass);
                 InternalRigidBody.SetMassProps(mass, inertia);
@@ -358,7 +363,8 @@ namespace SiliconStudio.Xenko.Physics
             MotionState.Dispose();
             MotionState.Clear();
 
-            if (NativeCollisionObject == null) return;
+            if (NativeCollisionObject == null)
+                return;
 
             //Remove constraints safely
             var toremove = new FastList<Constraint>();
@@ -376,6 +382,8 @@ namespace SiliconStudio.Xenko.Physics
             //~Remove constraints
 
             Simulation.RemoveRigidBody(this);
+
+            InternalRigidBody = null;
 
             base.OnDetach();
         }

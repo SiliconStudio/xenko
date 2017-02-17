@@ -849,10 +849,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -930,10 +928,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -990,10 +986,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1075,10 +1069,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1169,10 +1161,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1294,10 +1284,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1398,10 +1386,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1635,10 +1621,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1800,10 +1784,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup
@@ -1906,10 +1888,8 @@ UsedParameters:
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightClusteredPointGroup
-                    GenericArguments: [64]
         - !ShaderClassSource
             ClassName: LightClusteredSpotGroup
-            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
                 -   ClassName: LightDirectionalGroup

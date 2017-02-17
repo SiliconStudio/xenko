@@ -1,83 +1,20 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Lights;
-using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    public interface ILightShadowMapShaderData
-    {
-    }
-
-    public interface ILightShadowMapShaderGroupData
-    {
-        void ApplyShader(ShaderMixinSource mixin);
-
-        void UpdateLayout(string compositionName);
-        void UpdateLightCount(int lightLastCount, int lightCurrentCount);
-
-        void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights);
-
-        void ApplyDrawParameters(RenderDrawContext context, ParameterCollection parameters, FastListStruct<LightDynamicEntry> currentLights, ref BoundingBoxExt boundingBox);
-    }
-
-    [Flags]
-    public enum LightShadowType : ushort // DO NOT CHANGE the size of this type. It is used to caculate the shaderKeyId in LightComponentForwardRenderer. 
-    {
-        Cascade1 = 0x1,
-        Cascade2 = 0x2,
-        Cascade4 = 0x3,
-        
-        CascadeMask = 0x3,
-
-        Debug = 0x4,
-
-        BlendCascade = 0x8,
-
-        DepthRangeAuto = 0x10,
-
-        FilterMask = 0xF00,
-
-        PCF3x3 = 0x100,
-
-        PCF5x5 = 0x200,
-
-        PCF7x7 = 0x300
-    }
-
     /// <summary>
     /// An allocated shadow map texture associated to a light.
     /// </summary>
     public class LightShadowMapTexture
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LightShadowMapTexture" /> struct.
-        /// </summary>
-        /// <param name="lightComponent">The light component.</param>
-        /// <param name="light">The light component.</param>
-        /// <param name="shadowMap">The light.</param>
-        /// <param name="size">The shadow map.</param>
-        /// <param name="renderer">The renderer.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// lightComponent
-        /// or
-        /// light
-        /// or
-        /// shadowMap
-        /// or
-        /// renderer
-        /// </exception>
-        public LightShadowMapTexture()
-        {
-        }
-
         public LightComponent LightComponent { get; private set; }
 
         public IDirectLight Light { get; private set; }
@@ -113,15 +50,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             FilterType = Shadow.Filter == null || !Shadow.Filter.RequiresCustomBuffer() ? null : Shadow.Filter.GetType();
             Renderer = renderer;
             Atlas = null; // Reset the atlas, It will be setup after
+            CascadeCount = 1;
 
             ShadowType = renderer.GetShadowType(Shadow);
         }
 
         public Rectangle GetRectangle(int i)
         {
-            if (i < 0 || i > CascadeCount)
+            if (i < 0 || i > CascadeCount || i > MaxRectangles)
             {
-                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount[");
+                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount]");
             }
             unsafe
             {
@@ -134,9 +72,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public void SetRectangle(int i, Rectangle value)
         {
-            if (i < 0 || i > CascadeCount)
+            if (i < 0 || i > CascadeCount || i > MaxRectangles)
             {
-                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount[");
+                throw new ArgumentOutOfRangeException("i", "Must be in the range [0, CascadeCount]");
             }
             unsafe
             {
@@ -150,11 +88,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         // Even if C# things Rectangle1, Rectangle2 and Rectangle3 are not used,
         // they are indirectly in `GetRectangle' and `SetRectangle' through pointer
         // arithmetics.
+        // MaxRectangles should be updated to match the actual number of rectangles to detected out of range errors
+        public const int MaxRectangles = 6;
         private Rectangle Rectangle0;
 #pragma warning disable 169
         private Rectangle Rectangle1;
         private Rectangle Rectangle2;
         private Rectangle Rectangle3;
+        private Rectangle Rectangle4;
+        private Rectangle Rectangle5;
 #pragma warning restore 169
 
     }

@@ -605,6 +605,82 @@ namespace SiliconStudio.Xenko.Graphics
             GL.Viewport((int)viewports[0].X, (int)viewports[0].Y, (int)viewports[0].Width, (int)viewports[0].Height);
         }
 
+        internal void CopyScaler2D(Texture sourceTexture, Rectangle sourceRectangle, Rectangle destRectangle, bool needSRgbConversion = false, bool flipY = false)
+        {
+            // Use rendering
+            GL.Viewport(0, 0, sourceTexture.Description.Width, sourceTexture.Description.Height);
+
+            var sourceRegionSize = new Vector2(sourceRectangle.Width, sourceRectangle.Height);
+            var destRegionSize = new Vector2(destRectangle.Width, destRectangle.Height);
+
+            // Source
+            var sourceSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+            var sourceRegionLeftTop = new Vector2(sourceRectangle.Left, sourceRectangle.Top);
+            var sourceScale = new Vector2(sourceRegionSize.X / sourceSize.X, sourceRegionSize.Y / sourceSize.Y);
+            var sourceOffset = new Vector2(sourceRegionLeftTop.X / sourceSize.X, sourceRegionLeftTop.Y / sourceSize.Y);
+
+            // Dest
+            var destSize = new Vector2(sourceTexture.Width, sourceTexture.Height);
+            var destRegionLeftTop = new Vector2(destRectangle.X, flipY ? destRectangle.Bottom : destRectangle.Y);
+            var destScale = new Vector2(destRegionSize.X / destSize.X, destRegionSize.Y / destSize.Y);
+            var destOffset = new Vector2(destRegionLeftTop.X / destSize.X, destRegionLeftTop.Y / destSize.Y);
+
+            if (flipY)
+                destScale.Y = -destScale.Y;
+
+            var enabledColors = new bool[4];
+            GL.GetBoolean(GetPName.ColorWritemask, enabledColors);
+            var isDepthTestEnabled = GL.IsEnabled(EnableCap.DepthTest);
+            var isCullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
+            var isBlendEnabled = GL.IsEnabled(EnableCap.Blend);
+            var isStencilEnabled = GL.IsEnabled(EnableCap.StencilTest);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.StencilTest);
+            GL.ColorMask(true, true, true, true);
+
+            int offsetLocation, scaleLocation;
+            var program = GraphicsDevice.GetCopyProgram(needSRgbConversion, out offsetLocation, out scaleLocation);
+
+            GL.UseProgram(program);
+
+            activeTexture = 0;
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, sourceTexture.TextureId);
+            boundShaderResourceViews[0] = null;
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            sourceTexture.BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
+
+            vboDirty = true;
+            enabledVertexAttribArrays |= 1 << 0;
+            GL.EnableVertexAttribArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, GraphicsDevice.GetSquareBuffer().BufferId);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+            GL.Uniform4(offsetLocation, sourceOffset.X, sourceOffset.Y, destOffset.X, destOffset.Y);
+            GL.Uniform4(scaleLocation, sourceScale.X, sourceScale.Y, destScale.X, destScale.Y);
+            GL.Viewport(0, 0, sourceTexture.Width, sourceTexture.Height);
+            GL.DrawArrays(PrimitiveTypeGl.TriangleStrip, 0, 4);
+            GL.UseProgram(boundProgram);
+
+            // Restore context
+            if (isDepthTestEnabled)
+                GL.Enable(EnableCap.DepthTest);
+            if (isCullFaceEnabled)
+                GL.Enable(EnableCap.CullFace);
+            if (isBlendEnabled)
+                GL.Enable(EnableCap.Blend);
+            if (isStencilEnabled)
+                GL.Enable(EnableCap.StencilTest);
+            GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
+
+            // Restore viewport
+            GL.Viewport((int)viewports[0].X, (int)viewports[0].Y, (int)viewports[0].Width, (int)viewports[0].Height);
+        }
+
         /// <summary>
         /// Copy a <see cref="GraphicsResource"/> into another.
         /// </summary>

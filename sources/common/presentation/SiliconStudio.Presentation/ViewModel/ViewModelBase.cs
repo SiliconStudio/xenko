@@ -21,12 +21,6 @@ namespace SiliconStudio.Presentation.ViewModel
 #endif
 
         /// <summary>
-        /// An <see cref="IViewModelServiceProvider"/> that allows to retrieve various service objects.
-        /// </summary>
-        [NotNull]
-        public IViewModelServiceProvider ServiceProvider = ViewModelServiceProvider.NullServiceProvider;
-
-        /// <summary>
         /// A collection of property names that are dependent. For each entry of this collection, if the key property name is notified
         /// as being changed, then the property names in the value will also be notified as being changed.
         /// </summary>
@@ -41,6 +35,12 @@ namespace SiliconStudio.Presentation.ViewModel
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             ServiceProvider = serviceProvider;
         }
+
+        /// <summary>
+        /// An <see cref="IViewModelServiceProvider"/> that allows to retrieve various service objects.
+        /// </summary>
+        [NotNull]
+        public IViewModelServiceProvider ServiceProvider { get; protected set; } = ViewModelServiceProvider.NullServiceProvider;
 
         /// <summary>
         /// Gets whether this view model has been destroyed.

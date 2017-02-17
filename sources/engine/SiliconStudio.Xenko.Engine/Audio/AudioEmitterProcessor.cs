@@ -141,14 +141,14 @@ namespace SiliconStudio.Xenko.Audio
                 }
 
                 var emitter = associatedData.AudioEmitter;
-                var worldMatrix = associatedData.TransformComponent.WorldMatrix;
-                var pos = worldMatrix.TranslationVector;
+                emitter.WorldTransform = associatedData.TransformComponent.WorldMatrix;
+                var pos = emitter.WorldTransform.TranslationVector;
 
                 // First update the emitter data if required.
                 emitter.Velocity = pos - emitter.Position;
                 emitter.Position = pos;
-                emitter.Forward = Vector3.Normalize((Vector3)worldMatrix.Row3);
-                emitter.Up = Vector3.Normalize((Vector3)worldMatrix.Row2);
+                emitter.Forward = Vector3.Normalize((Vector3)emitter.WorldTransform.Row3);
+                emitter.Up = Vector3.Normalize((Vector3)emitter.WorldTransform.Row2);
 
                 // Then apply 3D localization
                 foreach (var controller in associatedData.AudioEmitterComponent.SoundToController.Values)

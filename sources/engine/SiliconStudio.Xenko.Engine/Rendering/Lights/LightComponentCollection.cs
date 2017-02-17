@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
-    /// A list of <see cref="LightComponent"/> for a specified <see cref="EntityGroupMask"/>.
+    /// A list of <see cref="LightComponent"/> for a specified <see cref="RenderGroupMask"/>.
     /// </summary>
     public class LightComponentCollection : FastList<LightComponent>
     {
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// Gets or sets the culling mask.
         /// </summary>
         /// <value>The culling mask.</value>
-        public EntityGroupMask CullingMask { get; internal set; }
+        public RenderGroupMask CullingMask { get; internal set; }
 
         /// <summary>
         /// Tags attached.

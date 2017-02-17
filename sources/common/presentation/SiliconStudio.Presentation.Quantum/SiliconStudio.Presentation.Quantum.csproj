@@ -45,6 +45,7 @@
     <Compile Include="GraphViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelNodeCommandWrapper.cs" />
+    <Compile Include="SinglePropertyProvider.cs" />
     <Compile Include="View\NodeViewModelTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />

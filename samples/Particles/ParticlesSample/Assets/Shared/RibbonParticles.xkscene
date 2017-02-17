@@ -1,34 +1,8 @@
 !SceneAsset
 Id: 6736d805-6194-40bf-8056-7c52758e2e4b
-SerializedVersion: {Xenko: 1.9.0-beta06}
+SerializedVersion: {Xenko: 1.10.0-beta01}
 Tags: []
-SceneSettings:
-    Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        Cameras:
-            df9dba2d5fa79546b491465de66097a7:
-                Name: null
-                Camera: b5279763-d0ee-4fc2-bf4c-710ff412bd93/794a9a18-82e3-4894-aeaa-84772e97d29e
-        Layers: {}
-        Master:
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                d98b310606d4a84db157a9fd3118db61: !ClearRenderFrameRenderer
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                6df645d5674afb46b8b3c9c39aef7cb3: !SceneCameraRenderer
-                    Mode: !CameraRendererModeForward {}
-                    Camera:
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Parent: null
 Hierarchy:
     RootPartIds:
         - b5279763-d0ee-4fc2-bf4c-710ff412bd93
@@ -1084,9 +1058,11 @@ Hierarchy:
                         Children: {}
                     189a4a79e3829448aeaa84772e97d29e: !CameraComponent
                         Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+                        Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
+                        Slot: {Index: 0}
         -   Entity:
                 Id: bb339fa8-eea4-497d-a251-030c192d0ac3
                 Name: SwordModel

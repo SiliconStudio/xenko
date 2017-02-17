@@ -162,6 +162,7 @@
     <Compile Include="SpriteRotationTests.cs" />
     <Compile Include="SpriteTestGame.cs" />
     <Compile Include="SpriteTests.cs" />
+    <Compile Include="TestBowyerWatsonTetrahedralization.cs" />
     <Compile Include="TestCamera.cs" />
     <Compile Include="SpriteAnimationTest.cs" />
     <Compile Include="TesselationTest.cs" />

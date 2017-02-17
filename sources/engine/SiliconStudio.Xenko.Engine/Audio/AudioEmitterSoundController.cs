@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -33,10 +31,8 @@ namespace SiliconStudio.Xenko.Audio
     [DebuggerDisplay("Controller for {sound.Name}")]
     public class AudioEmitterSoundController: IPlayableSound
     {
-        /// <summary>
-        /// The underlying <see cref="sound"/>
-        /// </summary>
         private readonly Sound sound;
+        private readonly AudioEmitterComponent emitter;
 
         /// <summary>
         /// The instances of <see cref="sound"/> currently created by this controller (one for each listener).
@@ -56,6 +52,7 @@ namespace SiliconStudio.Xenko.Audio
                 throw new ArgumentNullException(nameof(sound));
 
             this.sound = sound;
+            emitter = parent;
 
             Volume = 1;
         }
@@ -66,7 +63,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <returns>The new sound effect instance created</returns>
         internal SoundInstance CreateSoundInstance(AudioListenerComponent listener, bool forget)
         {
-            var newInstance = sound.CreateInstance(listener.Listener);
+            var newInstance = sound.CreateInstance(listener.Listener, false, emitter.UseHRTF, emitter.DirectionalFactor, emitter.Environment);
 
             if (!forget)
             {

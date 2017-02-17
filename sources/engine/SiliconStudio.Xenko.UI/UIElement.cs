@@ -836,12 +836,14 @@ namespace SiliconStudio.Xenko.UI
         /// Gets the logical parent of this element.
         /// </summary>
         [DataMemberIgnore]
+        [CanBeNull]
         public UIElement Parent { get; protected set; }
 
         /// <summary>
         /// Gets the visual parent of this element.
         /// </summary>
         [DataMemberIgnore]
+        [CanBeNull]
         public UIElement VisualParent { get; protected set; }
 
         /// <summary>
@@ -1152,7 +1154,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <param name="child">The child to which set the parent.</param>
         /// <param name="parent">The parent of the child.</param>
-        protected static void SetParent(UIElement child, UIElement parent)
+        protected static void SetParent([NotNull] UIElement child, [CanBeNull] UIElement parent)
         {
             if (parent != null && child.Parent != null && parent != child.Parent)
                 throw new InvalidOperationException("The UI element 'Name="+child.Name+"' has already as parent the element 'Name="+child.Parent.Name+"'.");
@@ -1165,7 +1167,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <param name="child">The child to which set the visual parent.</param>
         /// <param name="parent">The parent of the child.</param>
-        protected static void SetVisualParent(UIElement child, UIElement parent)
+        protected static void SetVisualParent([NotNull] UIElement child, [CanBeNull] UIElement parent)
         {
             if (child == null) throw new ArgumentNullException(nameof(child));
             if (parent != null && child.VisualParent != null && parent != child.VisualParent)

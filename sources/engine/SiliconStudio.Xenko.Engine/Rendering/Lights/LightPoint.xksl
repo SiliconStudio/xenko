@@ -32,8 +32,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             float lightInvSquareRadius = light.InvSquareRadius;
 
             float attenuation = 1;
-            attenuation *= GetDistanceAttenuation(lightVector , lightInvSquareRadius);
+            attenuation *= GetDistanceAttenuation(lightVector, lightInvSquareRadius);
 
+            streams.lightPositionWS = light.PositionWS;
             streams.lightColor = light.Color * attenuation;
             streams.lightDirectionWS = lightVectorNorm;
         }

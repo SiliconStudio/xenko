@@ -1,10 +1,12 @@
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -23,6 +25,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         [DataMember(10)]
         [NonIdentifiableCollectionItems]
+        [NotNull]
         public List<Guid> RootPartIds { get; } = new List<Guid>();
 
         /// <summary>
@@ -30,6 +33,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         [DataMember(20)]
         [NonIdentifiableCollectionItems]
+        [ItemNotNull, NotNull]
         public AssetPartCollection<TAssetPartDesign, TAssetPart> Parts { get; } = new AssetPartCollection<TAssetPartDesign, TAssetPart>();
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <returns></returns>
         [NotNull]
-        public ICollection<AssetId> GatherAllBasePartAssets(IAssetFinder assetFinder)
+        public ICollection<AssetId> GatherAllBasePartAssets([NotNull] IAssetFinder assetFinder)
         {
             var baseAssets = new HashSet<AssetId>();
             GatherAllBasePartAssetsRecursively(assetFinder, baseAssets);
