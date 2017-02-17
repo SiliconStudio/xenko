@@ -1910,6 +1910,13 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+    <Setter Property="interactivity:Interaction.Behaviors">
+      <Setter.Value>
+        <interactivity:BehaviorCollection>
+          <behaviors:NumericTextBoxDragBehavior UsePreviewEvents="True" />
+        </interactivity:BehaviorCollection>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Color x:Key="TextBoxFocusBrush">#FF374C5C</Color>
