@@ -437,7 +437,7 @@ namespace SiliconStudio.Packages
         }
 
         /// <summary>
-        /// Uninstall <paramref name="package"/>, while still keepin the downloaded file in the cache.
+        /// Uninstall <paramref name="package"/>, while still keeping the downloaded file in the cache.
         /// </summary>
         /// <remarks>It is safe to call it concurrently be cause we operations are done using the FileLock.</remarks>
         /// <param name="package">Package to uninstall.</param>
@@ -560,6 +560,18 @@ namespace SiliconStudio.Packages
             return res;
         }
 #endregion
+
+
+        /// <summary>
+        /// Clean all temporary files created thus far during store operations.
+        /// </summary>
+        public void PurgeCache()
+        {
+            // Whenever we look at the content of a package or extract it using the default
+            // repository, NuGet expands the files in a global temporary folders. It needs to
+            // be purged.
+            OptimizedZipPackage.PurgeCache();
+        }
     }
 
     internal class ConfigurationConstants

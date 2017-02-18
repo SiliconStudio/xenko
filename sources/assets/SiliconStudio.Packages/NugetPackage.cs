@@ -122,10 +122,9 @@ namespace SiliconStudio.Packages
         /// </summary>
         public DateTimeOffset? Published => IPackage?.Published;
 
-        public IEnumerable<PackageFile> GetFiles([NotNull] string root)
+        [NotNull]
+        public IEnumerable<PackageFile> GetFiles()
         {
-            if (root == null) throw new ArgumentNullException(nameof(root));
-
             var res = new List<PackageFile>();
             var files = IPackage?.GetFiles();
             if (files != null)
