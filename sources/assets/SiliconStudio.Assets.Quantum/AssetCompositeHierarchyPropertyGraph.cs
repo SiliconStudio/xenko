@@ -6,7 +6,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Quantum;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -149,8 +151,15 @@ namespace SiliconStudio.Assets.Quantum
                 foreach (var subTreePart in AssetHierarchy.EnumerateChildParts(AssetHierarchy.Hierarchy.Parts[rootId].Part, true))
                     subTreeHierarchy.Parts.Add(AssetHierarchy.Hierarchy.Parts[subTreePart.Id]);
             }
+
+            var preCloningAsset = (AssetCompositeHierarchy < TAssetPartDesign, TAssetPart> )Activator.CreateInstance(AssetHierarchy.GetType());
+            preCloningAsset.Hierarchy = subTreeHierarchy;
+            var preCloningAssetGraph = (AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>)AssetQuantumRegistry.ConstructPropertyGraph(Container, new AssetItem("", preCloningAsset), null);
+            var externalReferences = SubHierarchyVisitor.GetExternalReferences(preCloningAssetGraph);
+            preCloningAssetGraph.Dispose();
+
             // clone the parts of the sub-tree
-            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, generateNewIdsForIdentifiableObjects ? AssetClonerFlags.GenerateNewIdsForIdentifiableObjects : AssetClonerFlags.None, out idRemapping);
+            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, generateNewIdsForIdentifiableObjects ? AssetClonerFlags.GenerateNewIdsForIdentifiableObjects : AssetClonerFlags.None, externalReferences, out idRemapping);
 
             // Remap ids from the root id collection to the new ids generated during cloning
             AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
@@ -187,6 +196,53 @@ namespace SiliconStudio.Assets.Quantum
                 AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;
+        }
+
+        private class SubHierarchyVisitor : AssetGraphVisitorBase
+        {
+            private readonly AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph;
+
+            private readonly HashSet<IIdentifiable> internalReferences = new HashSet<IIdentifiable>();
+            private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
+
+            private SubHierarchyVisitor(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph)
+                : base(propertyGraph)
+            {
+                this.propertyGraph = propertyGraph;
+            }
+
+            public static HashSet<IIdentifiable> GetExternalReferences(AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> propertyGraph)
+            {
+                var visitor = new SubHierarchyVisitor(propertyGraph);
+                visitor.Visit(propertyGraph.RootNode);
+                // An IIdentifiable can have been recorded both as internal and external reference. In this case we still want to clone it so let's remove it from external references
+                visitor.externalReferences.ExceptWith(visitor.internalReferences);
+                return visitor.externalReferences;
+            }
+
+            protected override void VisitMemberTarget(IMemberNode node, GraphNodePath currentPath)
+            {
+                ProcessIdentifiable(node.Target, Index.Empty);
+                base.VisitMemberTarget(node, currentPath);
+            }
+
+            protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
+            {
+                node.ItemReferences?.ForEach(x => ProcessIdentifiable(x.TargetNode, x.Index));
+                base.VisitItemTargets(node, currentPath);
+            }
+
+            private void ProcessIdentifiable(IGraphNode node, Index index)
+            {
+                var identifiable = node?.Retrieve() as IIdentifiable;
+                if (identifiable == null)
+                    return;
+
+                if (propertyGraph.IsObjectReference(node, index, node.Retrieve()))
+                    externalReferences.Add(identifiable);
+                else
+                    internalReferences.Add(identifiable);
+            }
         }
 
         /// <summary>

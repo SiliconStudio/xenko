@@ -123,7 +123,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node being visited.</param>
         /// <param name="currentPath">The path of the node being visited.</param>
-        public virtual void VisitItemTargets([NotNull] IObjectNode node, [NotNull] GraphNodePath currentPath)
+        protected virtual void VisitItemTargets([NotNull] IObjectNode node, [NotNull] GraphNodePath currentPath)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (currentPath == null) throw new ArgumentNullException(nameof(currentPath));
