@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.IO;
+using NuGet;
 
 namespace SiliconStudio.Packages
 {
@@ -10,20 +11,21 @@ namespace SiliconStudio.Packages
     /// </summary>
     public class PackageFile
     {
+        private readonly IPackageFile packageFile;
+
         /// <summary>
         /// Initializes a new instance of <see cref="PackageFile"/> located in <paramref name="path"/>.
         /// </summary>
-        /// <param name="root">Path to the root of the package.</param>
-        /// <param name="path">Path of the file in the package.</param>
-        public PackageFile(string root, string path)
+        /// <param name="file">Nuget package file</param>
+        public PackageFile(IPackageFile file)
         {
-            Path = path;
+            packageFile = file;
         }
 
         /// <summary>
         /// Gets the full path of the file inside the package.
         /// </summary>
-        public string Path { get; }
+        public string Path => packageFile.Path;
 
         /// <summary>
         /// Access to the stream content in read mode.
@@ -31,7 +33,7 @@ namespace SiliconStudio.Packages
         /// <returns>A new stream reading file pointed by <see cref="Path"/>.</returns>
         public Stream GetStream()
         {
-            return File.OpenRead(Path);
+            return packageFile.GetStream();
         }
     }
 }
