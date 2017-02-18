@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Packages
 {
@@ -120,7 +121,7 @@ namespace SiliconStudio.Packages
         /// </summary>
         public DateTimeOffset? Published => IPackage?.Published;
 
-        public IEnumerable<PackageFile> GetFiles(string root)
+        public IEnumerable<PackageFile> GetFiles([NotNull] string root)
         {
             if (root == null) throw new ArgumentNullException(nameof(root));
 
@@ -130,7 +131,7 @@ namespace SiliconStudio.Packages
             {
                 foreach (var file in files)
                 {
-                    // TODO: Verify when testing selfupdate that `root` + `file.Path` gives us the right path
+                    // TODO: Verify when testing self-update that `root` + `file.Path` gives us the right path
                     res.Add(new PackageFile(root, file.Path));
                 }
             }
