@@ -51,10 +51,11 @@ RenderFeatures:
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
                     dd1f1a507851fc458e94f428ac7ae06d: !SiliconStudio.Xenko.Rendering.Lights.LightClusteredPointSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
                 ShadowMapRenderer: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderer,SiliconStudio.Xenko.Engine
-                    ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
                     Renderers:
-                        7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine {}
-                        1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine {}
+                        7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+                        1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine

@@ -50,10 +50,11 @@ RenderFeatures:
                     411fdcfb9fc388449a0443173dfa3f27: !SiliconStudio.Xenko.Rendering.Lights.LightSkyboxRenderer,SiliconStudio.Xenko.Engine {}
                     dd1f1a507851fc458e94f428ac7ae06d: !SiliconStudio.Xenko.Rendering.Lights.LightClusteredPointSpotGroupRenderer,SiliconStudio.Xenko.Engine {}
                 ShadowMapRenderer: !SiliconStudio.Xenko.Rendering.Shadows.ShadowMapRenderer,SiliconStudio.Xenko.Engine
-                    ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
                     Renderers:
-                        7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine {}
-                        1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine {}
+                        7c3d3d4c86834c3551bacde2527b3836: !SiliconStudio.Xenko.Rendering.Shadows.LightDirectionalShadowMapRenderer,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+                        1c204b09435636256a3fcfd6f9ddb347: !SiliconStudio.Xenko.Rendering.Shadows.LightSpotShadowMapRenderer,SiliconStudio.Xenko.Engine
+                            ShadowCasterRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
     28e9bf54a5adbe063f59fb17acb2723e: !SiliconStudio.Xenko.Rendering.Sprites.SpriteRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             d74665cff080638a2439c4422e542d85: !SiliconStudio.Xenko.Rendering.Sprites.SpriteTransparentRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -91,7 +92,8 @@ SharedRenderers:
             Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
         OpaqueRenderStage: 50671147-a5c1-49d4-b4ad-3625f71439b3
         TransparentRenderStage: 0fa30591-02ee-486d-9347-2b6aee83d035
-        ShadowMapRenderStage: c0524e55-4061-464d-84dd-7c4c70f70e0e
+        ShadowMapRenderStages:
+            fc4d1e0de5c2b0bbc27bcf96e9a848fd: c0524e55-4061-464d-84dd-7c4c70f70e0e
         PostEffects: !PostProcessingEffects 608bf04d-8640-469d-b710-1ecf6a46f794
     34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794

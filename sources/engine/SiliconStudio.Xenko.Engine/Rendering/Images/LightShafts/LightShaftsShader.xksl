@@ -1,0 +1,92 @@
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    shader LightShaftsShader : ImageEffectShader, ShadowMapCommon<PerFrame>, PostEffectBoundingRay<0, 0, 16, 1>
+    {
+        cbuffer PerFrame
+        {
+            // World to shadow matrix
+            stage matrix ShadowViewProjection;
+
+            // Shadow map boundary for the current shadow map in the shadow atlas
+            stage float4 ShadowTextureFactor;
+
+            [Color]
+            stage float3 LightColor;
+        
+            // Light position (if applicable)
+            stage float3 ShadowLightOffset;
+            // Light direction (if applicable)
+            stage float3 ShadowLightDirection;
+
+            stage float ExtinctionFactor;
+            stage float DensityFactor;
+
+            // Unused
+            stage float ShadowMapDistance;
+            stage float ExtinctionRatio;
+        };
+
+        override float3 ComputeColorIn(float4 positionWS, float3 eyeVS, float stepSize, int stepIndex)
+        {
+            const float4 ScreenLimits = float4(-1, -1, 1, 1);
+            float3 lightResult = 0;
+            float3 sigmaT = ComputeExtinction(positionWS);
+            float3 sigmaS = ComputeInScattering(positionWS);
+            float3 stepExtinction = exp(-sigmaT * stepSize);
+
+            float4 positionLS = mul(positionWS, ShadowViewProjection);
+            float positionDepth = dot(ShadowLightDirection, positionWS - ShadowLightOffset) / ShadowMapDistance;
+            float2 screenPosition = positionLS.xy / positionLS.w;
+
+            positionDepth = positionLS.z / positionLS.w;
+
+            //return Texture2.SampleLevel(LinearSampler, positionLS.xy, 0.0f) > positionLS.z;
+
+            if (all(screenPosition > ShadowTextureFactor.xy) && all(screenPosition < ShadowTextureFactor.zw) )
+            {
+                // TODO: Make minmax work
+                //float2 shadowDepthMinMax = Texture2.SampleLevel(PointSampler, screenPosition.xy * 2.0f, 0.0).xy;
+                float weight = 0;
+                //if (positionDepth >= shadowDepthMinMax.x && positionDepth <= shadowDepthMinMax.y)
+                {
+                    //screenPosition = lerp(ShadowTextureFactor.xy, ShadowTextureFactor.zw, screenPosition);
+
+                    // Simple 2x2 PCF
+                    for(int j = 0; j < 4; j++)
+                    {
+                        float shadowMapDepth = Texture1.SampleLevel(PointSampler, screenPosition.xy, 0.0, int2(j&2, j/2)).x;
+                        if (positionDepth < shadowMapDepth) 
+                        {
+                            weight += 1.0/4.0f;
+                        }
+                    }
+                }
+                //else if (positionDepth < shadowMapDepth)
+                //{
+                //    weight = 1.0f;
+                //}
+                lightResult =  stepExtinction * sigmaS * stepSize * weight;
+                lightResult *= 2.0f; // temp value to increase light shafts
+            }
+            return lightResult;
+        }
+
+        float3 ComputeInScattering(float3 positionVS)
+        {
+            return ComputeDensity(positionVS) * ExtinctionFactor * ExtinctionRatio;
+        }
+
+        float ComputeDensity(float positionVS)
+        {
+            return DensityFactor;
+        }
+
+        float3 ComputeExtinction(float positionVS)
+        {
+            return ComputeDensity(positionVS) * ExtinctionFactor;
+        }
+    };
+}

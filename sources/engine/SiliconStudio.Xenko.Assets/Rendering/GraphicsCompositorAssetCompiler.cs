@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
                     graphicsCompositor.RenderFeatures.Add(renderFeature);
                 graphicsCompositor.Game = Parameters.Game;
                 graphicsCompositor.SingleView = Parameters.SingleView;
+                graphicsCompositor.Editor = Parameters.Editor;
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, graphicsCompositor);

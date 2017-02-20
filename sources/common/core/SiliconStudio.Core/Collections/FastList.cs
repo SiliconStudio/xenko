@@ -26,6 +26,7 @@ namespace SiliconStudio.Core.Collections
         /// <summary>
         /// Gets the items.
         /// </summary>
+        [DataMemberIgnore]
         public T[] Items { get; private set; }
 
         private int _size;

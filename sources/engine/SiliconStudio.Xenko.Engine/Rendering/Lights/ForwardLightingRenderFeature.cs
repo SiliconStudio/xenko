@@ -83,13 +83,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
 
+        private readonly HashSet<int> ignoredEffectSlots = new HashSet<int>();
+
         private RenderView currentRenderView;
 
         [DataMember]
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public TrackingCollection<LightGroupRendererBase> LightRenderers => lightRenderers;
-
+        
         [DataMember]
         public IShadowMapRenderer ShadowMapRenderer
         {
@@ -159,10 +161,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectVisibleLights();
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
-            CollectActiveLightRenderers(RenderSystem.RenderContextOld);
+            CollectActiveLightRenderers(Context);
 
             // Collect shadow maps
-            ShadowMapRenderer?.Collect(RenderSystem.RenderContextOld, renderViewDatas);
+            ShadowMapRenderer?.Collect(Context, renderViewDatas);
         }
 
         /// <inheritdoc/>
@@ -177,7 +179,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            var shadowMapEffectSlot = ShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(ShadowMapRenderer.ShadowMapRenderStage) : EffectPermutationSlot.Invalid;
+            ignoredEffectSlots.Clear();
+            if (shadowMapRenderer != null)
+            {
+                foreach (var lightShadowMapRenderer in shadowMapRenderer.Renderers)
+                {
+                    var shadowMapEffectSlot = lightShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(lightShadowMapRenderer.ShadowCasterRenderStage) : EffectPermutationSlot.Invalid;
+                    ignoredEffectSlots.Add(shadowMapEffectSlot.Index);
+                }
+            }
 
             // Counter number of RenderView to process
             renderViews.Clear();
@@ -266,8 +276,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     // Don't apply lighting for shadow casters
-                    if (i == shadowMapEffectSlot.Index)
-                        continue;
+                    if (ignoredEffectSlots.Contains(i))
+                            continue;
 
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
@@ -459,13 +469,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Invalidate per-view data
             currentRenderView = null;
-        }
-
-        protected void RegisterLightGroupRenderer(LightGroupRendererBase renderer)
-        {
-            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
-            lightRenderers.Add(renderer);
-            renderer.Initialize(Context);
         }
 
         protected override void OnRenderSystemChanged()

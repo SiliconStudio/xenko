@@ -97,3 +97,33 @@ Settings:
                 - Transform
             NavigationVisible: false
             NavigationWireframes: false
+        6a8212fb-d3f3-4e1d-84be-67aca35be26e:
+            CamPosition: {X: -7.33975029, Y: 24.64952, Z: -0.556150258}
+            CamPitchYaw: {X: 1.33612084, Y: 39.3457947}
+            CamProjection: Perspective
+            CamVerticalFieldOfView: 45.0
+            CamOrthographicSize: 10.0
+            CamNearClipPlane: 0.1
+            CamFarClipPlane: 1000.0
+            CamAspectRatio: 1.77777779
+            TranslationSnapActive: false
+            TranslationSnapValue: 1.0
+            RotationSnapActive: false
+            RotationSnapValue: 22.5
+            ScaleSnapActive: false
+            ScaleSnapValue: 1.1
+            SceneUnit: 1.0
+            SelectionMaskVisible: true
+            GridVisible: false
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+            CameraPreviewVisible: true
+            RenderMode: Lighting
+            ActiveStream: 
+            TransformationGizmoSize: 1.0
+            ComponentGizmoSize: 1.0
+            FixedSizeGizmos: false
+            HiddenGizmos:
+                - Physics
+                - Transform
+            NavigationVisible: false
+            NavigationWireframes: false

@@ -105,7 +105,8 @@ namespace SiliconStudio.Xenko.Rendering
             var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
 
             // TODO: This should be configured by the creator of the view. E.g. near clipping can be enabled for spot light shadows.
-            var ignoreDepthPlanes = view is ShadowMapRenderView;
+            var shadowView = view as ShadowMapRenderView;
+            var ignoreDepthPlanes = shadowView?.VisiblityIgnoreDepthPlanes ?? false;
 
             // Prepare culling mask
             foreach (var renderViewStage in view.RenderStages)
@@ -217,7 +218,7 @@ namespace SiliconStudio.Xenko.Rendering
             view.RenderObjects.Close();
         }
 
-        private static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
+        public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
         {
             unsafe
             {

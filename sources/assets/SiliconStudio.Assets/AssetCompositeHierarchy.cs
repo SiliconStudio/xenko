@@ -127,10 +127,10 @@ namespace SiliconStudio.Assets
         /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
         /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds)
         {
             Dictionary<Guid, Guid> idRemapping;
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
         }
 
         /// <summary>
@@ -141,9 +141,9 @@ namespace SiliconStudio.Assets
         /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
         {
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
         }
 
         /// <summary>
@@ -155,8 +155,7 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
         /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
-        [NotNull, Pure]
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies([NotNull] IEnumerable<Guid> sourceRootIds, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
@@ -205,6 +204,10 @@ namespace SiliconStudio.Assets
                         referencedPart.Id = revertedIdMapping[referencedPart.Id];
                 }
             }
+
+            if (generateNewBaseInstanceIds)
+                AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
+
             return clonedHierarchy;
         }
 

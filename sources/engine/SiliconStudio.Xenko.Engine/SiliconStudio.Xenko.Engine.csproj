@@ -135,7 +135,11 @@
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IndexingDictionary.cs" />
+    <Compile Include="Engine\ISceneRendererContext.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
+    <Compile Include="Engine\LightProbeComponent.cs" />
+    <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
+    <Compile Include="Engine\LightShaftComponent.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\NavigationComponent.cs" />
@@ -182,6 +186,7 @@
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.cs" />
+    <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
@@ -222,7 +227,41 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Compositing\SceneRendererBase.cs" />
+    <Compile Include="Rendering\Images\LightShafts\PostEffectBoundingRay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectBoundingRay.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\PostEffectMinMax.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PostEffectMinMax.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
+    <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AdditiveLightShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\LightShafts.cs" />
+    <Compile Include="Rendering\Images\LightShafts\LightShaftsShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LightShaftsShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LightShafts\VolumeMinMaxShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VolumeMinMaxShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
+    <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
     <Compile Include="Rendering\Images\Dither\Dither.cs" />
     <Compile Include="Rendering\Images\Dither\Dither2.cs">
       <AutoGen>True</AutoGen>
@@ -230,6 +269,41 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Dither.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Deferred\GBuffer1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBuffer.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\SphericalHarmonics\SphericalHarmonicsUtils.cs">
+      <DependentUpon>SphericalHarmonicsUtils.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\LightProbes\BakeLightProbeShader.cs">
+      <DependentUpon>BakeLightProbeShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\LightProbes\BowyerWatsonTetrahedralization.cs" />
+    <Compile Include="Rendering\LightProbes\LightProbeGenerator.cs" />
+    <Compile Include="Rendering\LightProbes\LightProbeVertex.cs" />
+    <Compile Include="Rendering\LightProbes\LightProbeShader.cs">
+      <DependentUpon>LightProbeShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\LightProbes\TetrahedronSortKey.cs" />
+    <Compile Include="Rendering\LightProbes\XenkoBakeLightProbeEffect.cs">
+      <DependentUpon>XenkoBakeLightProbeEffect.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\LightProbes\LightProbeRenderer.cs" />
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingLightRamp.cs" />
@@ -238,6 +312,26 @@
     <None Include="Rendering\Images\Dither\Dither.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Dither2.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\AdditiveLightShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AdditiveLightShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\LightShaftsShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightShaftsShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\PostEffectBoundingRay.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectBoundingRay.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\PostEffectMinMax.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PostEffectMinMax.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\VolumeMinMaxShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>VolumeMinMaxShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingLightFunction.xksl" />
@@ -477,12 +571,55 @@
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\RootRenderFeatureFilter.cs" />
     <Compile Include="Rendering\ShadowMeshPipelineProcessor.cs" />
+    <Compile Include="Rendering\Shadows\ILightShadowMapShaderData.cs" />
+    <Compile Include="Rendering\Shadows\ILightShadowMapShaderGroupData.cs" />
     <Compile Include="Rendering\Shadows\IShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRendererCubeMap.cs" />
+    <Compile Include="Rendering\Shadows\LightPointShadowMapRendererParaboloid.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowMapShaderGroupDataBase.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowType.cs" />
+    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowCasterRenderFeature.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCasterCubeMap.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterCubeMap.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapCasterCubeMapProjection1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterCubeMapProjection.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapCasterParaboloid1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterParaboloid.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapCasterParaboloidProjection1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterParaboloidProjection.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapReceiverPointCubeMap.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverPointParaboloid.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapReceiverPointParaboloid.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapRenderStageSelector.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
-    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
@@ -494,6 +631,12 @@
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="Rendering\LightProbes\ComputeSphericalHarmonics.cs">
+      <DependentUpon>ComputeSphericalHarmonics.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\SortKey.cs" />
     <Compile Include="Rendering\SortMode.cs" />
     <Compile Include="Rendering\SortModeDistance.cs" />
@@ -507,6 +650,26 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Deferred\GBuffer.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBuffer1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\SphericalHarmonics\SphericalHarmonicsUtils.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SphericalHarmonicsUtils.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\LightProbes\BakeLightProbeShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>BakeLightProbeShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\LightProbes\LightProbeShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightProbeShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\LightProbes\XenkoBakeLightProbeEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>XenkoBakeLightProbeEffect.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Lights\DirectLightGroupPerDraw.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DirectLightGroupPerDraw.cs</LastGenOutput>
@@ -543,6 +706,34 @@
     <None Include="Rendering\Lights\LightClusteredPointGroup.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterCubeMap.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterCubeMapProjection.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterCubeMapProjection1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterParaboloid.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterParaboloid1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterParaboloidProjection.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterParaboloidProjection1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverPointCubeMap.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapReceiverPointParaboloid.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapReceiverPointParaboloid.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3821,11 +4012,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
-    <Folder Include="Rendering\Lightprobes\" />
+    <Folder Include="Rendering\Lightshafts\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
+      <Project>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</Project>
+      <Name>SiliconStudio.Core.Native</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -3869,6 +4064,11 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
       <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
       <Name>SiliconStudio.Xenko.Input</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">

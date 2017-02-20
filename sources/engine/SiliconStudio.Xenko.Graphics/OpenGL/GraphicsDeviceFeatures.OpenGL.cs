@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Graphics
             var isOpenGLES3 = deviceRoot.currentVersion >= 300;
 
             deviceRoot.HasDepth24 = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_depth24");
-            deviceRoot.HasPackedDepthStencilExtension = SupportedExtensions.Contains("GL_OES_packed_depth_stencil");
+            deviceRoot.HasPackedDepthStencilExtension = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_packed_depth_stencil");
             deviceRoot.HasExtTextureFormatBGRA8888 = SupportedExtensions.Contains("GL_EXT_texture_format_BGRA8888")
                                        || SupportedExtensions.Contains("GL_APPLE_texture_format_BGRA8888");
             deviceRoot.HasTextureFloat = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_texture_float");

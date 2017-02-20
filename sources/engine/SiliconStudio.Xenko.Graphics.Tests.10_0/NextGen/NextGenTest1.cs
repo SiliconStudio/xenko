@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         public NextGenTest1()
         {
-            //GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             //Profiler.EnableAll();
         }
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     (float)rand.NextDouble() * 20.0f - 10.0f,
                     (float)rand.NextDouble() * 20.0f - 10.0f
                     );
-                Scene.Entities.Add(pointLight1);
+                //Scene.Entities.Add(pointLight1);
             }
 
 
