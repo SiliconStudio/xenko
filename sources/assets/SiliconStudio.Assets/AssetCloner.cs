@@ -25,11 +25,11 @@ namespace SiliconStudio.Assets
 
         private readonly List<object> invariantObjects;
         private readonly object[] objectReferences;
+        private readonly Dictionary<Guid, IIdentifiable> externalIdentifiables;
         private readonly Dictionary<object, object> clonedObjectMapping;
         private Dictionary<Guid, Guid> cloningIdRemapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
-        private Dictionary<Guid, IIdentifiable> externalIdentifiables;
 
         static AssetCloner()
         {

@@ -100,7 +100,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
             public MyReferenceable() { Id = Guid.NewGuid(); }
             public string Value { get; set; }
+            [NonOverridable]
             public Guid Id { get; set; }
+            public override string ToString() => $"[{Id}] {Value}";
         }
 
         [DataContract]
@@ -110,6 +112,9 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public MyReferenceable MyObject1 { get; set; }
 
             public MyReferenceable MyObject2 { get; set; }
+
+            [DefaultValue(null)]
+            public MyReferenceable MyObject3 { get; set; }
 
             public List<MyReferenceable> MyObjects { get; set; } = new List<MyReferenceable>();
 

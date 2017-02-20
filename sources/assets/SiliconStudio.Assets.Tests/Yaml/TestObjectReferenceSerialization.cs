@@ -23,6 +23,7 @@ namespace SiliconStudio.Assets.Tests.Yaml
 
         public class Referenceable : IReferenceable
         {
+            [NonOverridable]
             public Guid Id { get; set; }
 
             public string Value { get; set; }

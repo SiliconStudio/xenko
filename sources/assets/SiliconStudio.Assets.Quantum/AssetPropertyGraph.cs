@@ -44,6 +44,7 @@ namespace SiliconStudio.Assets.Quantum
                 ItemChange = itemChange;
             }
         }
+
         private readonly Dictionary<IGraphNode, OverrideType> previousOverrides = new Dictionary<IGraphNode, OverrideType>();
         private readonly Dictionary<IGraphNode, ItemId> removedItemIds = new Dictionary<IGraphNode, ItemId>();
 
@@ -52,6 +53,7 @@ namespace SiliconStudio.Assets.Quantum
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
+        private IBaseToDerivedRegistry baseToDerivedRegistry;
 
         public AssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
         {
@@ -113,6 +115,8 @@ namespace SiliconStudio.Assets.Quantum
         /// Raised when a base content has changed, after updating the related content of this graph.
         /// </summary>
         public Action<INodeChangeEventArgs, IGraphNode> BaseContentChanged;
+
+        private IBaseToDerivedRegistry BaseToDerivedRegistry => baseToDerivedRegistry ?? (baseToDerivedRegistry = CreateBaseToDerivedRegistry());
 
         public void RefreshBase(AssetPropertyGraph baseAssetGraph)
         {
@@ -422,6 +426,12 @@ namespace SiliconStudio.Assets.Quantum
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
 
+        [NotNull]
+        protected virtual IBaseToDerivedRegistry CreateBaseToDerivedRegistry()
+        {
+            return new AssetBaseToDerivedRegistry(this);
+        }
+
         // TODO: this method is should be called in every scenario of ReconcileWithBase, it is not the case yet.
         protected virtual bool CanUpdate(IAssetNode node, ContentChangeType changeType, Index index, object value)
         {
@@ -461,6 +471,9 @@ namespace SiliconStudio.Assets.Quantum
             var assetNode = (IAssetNode)currentNode;
             ((IAssetNodeInternal)assetNode).SetPropertyGraph(this);
             ((IAssetNodeInternal)assetNode).SetBaseContent(baseNode);
+
+            BaseToDerivedRegistry.RegisterBaseToDerived((IAssetNode)baseNode, (IAssetNode)currentNode);
+
             if (!baseLinkedNodes.ContainsKey(assetNode))
             {
                 EventHandler<MemberNodeChangeEventArgs> valueChange = null;
@@ -479,7 +492,6 @@ namespace SiliconStudio.Assets.Quantum
                         itemChange = (s, e) => OnBaseContentChanged(e, currentNode);
                         objectNode.ItemChanged += itemChange;
                     }
-
                 }
                 baseLinkedNodes.Add(assetNode, new NodeChangeHandlers(valueChange, itemChange));
             }
@@ -601,7 +613,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             var memberNode = assetNode as AssetMemberNode;
             var objectNode = assetNode as IAssetObjectNodeInternal;
-            if (assetNode?.BaseNode == null || !memberNode?.CanOverride == true)
+            // Non-overridable members should not be reconcilied.
             if (assetNode?.BaseNode == null || !memberNode?.CanOverride == true)
                 return;
 
@@ -614,28 +626,15 @@ namespace SiliconStudio.Assets.Quantum
                 if (!memberNode.IsContentOverridden())
                 {
                     memberNode.ResettingOverride = true;
-                    // Handle null cases first
-                    if (localValue == null || baseValue == null)
+                    if (ShouldReconcileMember(memberNode))
                     {
-                        if (localValue == null && baseValue != null)
-                        {
-                            var clonedValue = CloneValueFromBase(baseValue, assetNode);
-                            memberNode.Update(clonedValue);
-                        }
-                        else if (localValue != null /*&& baseValue == null*/)
-                        {
-                            memberNode.Update(null);
-                        }
-                    }
-                    // Handle all other single properties
-                    else
-                    {
-                        var targetNode = memberNode.TargetReference?.TargetNode;
-                        if (ShouldReconcileItem(memberNode, targetNode, localValue, baseValue, memberNode.TargetReference != null))
-                        {
-                            var clonedValue = CloneValueFromBase(baseValue, assetNode);
-                            memberNode.Update(clonedValue);
-                        }
+                        object clonedValue;
+                        // Object references
+                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, baseValue))
+                            clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
+                        else
+                            clonedValue = CloneValueFromBase(baseValue, assetNode);
+                        memberNode.Update(clonedValue);
                     }
                     memberNode.ResettingOverride = false;
                 }
@@ -718,23 +717,26 @@ namespace SiliconStudio.Assets.Quantum
                         else
                         {
                             // If the item is present in both the instance and the base, check if we need to reconcile the value
-                            var member = assetNode as IMemberNode;
-                            var targetNode = objectNode.ItemReferences?[localIndex]?.TargetNode;
                             // Skip it if it's overridden
                             if (!objectNode.IsItemOverridden(localIndex))
                             {
-                                var localItemValue = assetNode.Retrieve(localIndex);
-                                var baseItemValue = baseNode.Retrieve(index);
-                                if (ShouldReconcileItem(member, targetNode, localItemValue, baseItemValue, objectNode.ItemReferences != null))
+                                if (ShouldReconcileItem(objectNode, localIndex, index))
                                 {
-                                    var clonedValue = CloneValueFromBase(baseItemValue, assetNode);
+                                    object clonedValue;
+                                    var baseItemValue = objectNode.BaseNode.Retrieve(index);
+                                    // Object references
+                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, baseItemValue))
+                                        clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
+                                    else
+                                        clonedValue = CloneValueFromBase(baseItemValue, assetNode);
+
                                     objectNode.Update(clonedValue, localIndex);
                                 }
                             }
                             // In dictionaries, the keys might be different between the instance and the base. We need to reconcile them too
                             if (objectNode.Descriptor is DictionaryDescriptor && !objectNode.IsKeyOverridden(localIndex))
                             {
-                                if (ShouldReconcileItem(member, targetNode, localIndex.Value, index.Value, false))
+                                if (ShouldReconcileIndex(localIndex, index))
                                 {
                                     // Reconcile using a move (Remove + Add) of the key-value pair
                                     var clonedIndex = new Index(CloneValueFromBase(index.Value, assetNode));
@@ -804,24 +806,69 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        protected virtual bool ShouldReconcileItem(IMemberNode member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
+        private bool ShouldReconcileMember([NotNull] IAssetMemberNode memberNode)
         {
-            if (isReference)
+            var localValue = memberNode.Retrieve();
+            var baseValue = memberNode.BaseNode.Retrieve();
+
+            // Object references
+            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, baseValue))
             {
-                // Reference type, we check matches by type
-                return baseValue?.GetType() != localValue?.GetType();
+                var derivedTarget = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
+                return !Equals(localValue, derivedTarget);
             }
 
-            // Content reference (note: they are not treated as reference
-            if (AssetRegistry.IsContentType(localValue?.GetType()) || AssetRegistry.IsContentType(localValue?.GetType()))
+            // Non value type and non primitive types
+            if (memberNode.IsReference || memberNode.BaseNode.IsReference)
+            {
+                return localValue?.GetType() != baseValue?.GetType();
+            }
+
+            // Content reference (note: they are not treated as reference but as primitive type)
+            if (AssetRegistry.IsContentType(localValue?.GetType()) || AssetRegistry.IsContentType(baseValue?.GetType()))
             {
                 var localRef = AttachedReferenceManager.GetAttachedReference(localValue);
                 var baseRef = AttachedReferenceManager.GetAttachedReference(baseValue);
                 return localRef?.Id != baseRef?.Id || localRef?.Url != baseRef?.Url;
             }
-            
+
             // Value type, we check for equality
             return !Equals(localValue, baseValue);
+        }
+
+        private bool ShouldReconcileItem(IAssetObjectNode node, Index localIndex, Index baseIndex)
+        {
+            var localValue = node.Retrieve(localIndex);
+            var baseValue = node.BaseNode.Retrieve(baseIndex);
+
+            // Object references
+            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, baseValue))
+            {
+                var derivedTarget = BaseToDerivedRegistry.ResolveFromBase(baseValue, node);
+                return !Equals(localValue, derivedTarget);
+            }
+
+            // Non value type and non primitive types
+            if (node.IsReference || node.BaseNode.IsReference)
+            {
+                return localValue?.GetType() != baseValue?.GetType();
+            }
+
+            // Content reference (note: they are not treated as reference but as primitive type)
+            if (AssetRegistry.IsContentType(localValue?.GetType()) || AssetRegistry.IsContentType(baseValue?.GetType()))
+            {
+                var localRef = AttachedReferenceManager.GetAttachedReference(localValue);
+                var baseRef = AttachedReferenceManager.GetAttachedReference(baseValue);
+                return localRef?.Id != baseRef?.Id || localRef?.Url != baseRef?.Url;
+            }
+
+            // Value type, we check for equality
+            return !Equals(localValue, baseValue);
+        }
+
+        private static bool ShouldReconcileIndex(Index localIndex, Index baseIndex)
+        {
+            return !Equals(localIndex, baseIndex);
         }
     }
 }

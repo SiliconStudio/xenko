@@ -44,6 +44,8 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssetBaseToDerivedRegistry.cs" />
+    <Compile Include="AssetCompositeBaseToDerivedRegistry.cs" />
     <Compile Include="AssetCompositeHierarchyPartVisitor.cs" />
     <Compile Include="AssetCompositeHierarchyPropertyGraph.cs" />
     <Compile Include="AssetCompositePartVisitor.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
+    <Compile Include="IBaseToDerivedRegistry.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodesToOwnerPartVisitor.cs" />
     <Compile Include="ObjectReferencePathGenerator.cs" />

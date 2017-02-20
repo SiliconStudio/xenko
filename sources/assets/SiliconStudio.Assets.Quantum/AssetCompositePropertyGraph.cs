@@ -1,6 +1,5 @@
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -21,14 +20,9 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetGraphVisitorBase(this);
         }
 
-        protected override bool ShouldReconcileItem(IMemberNode member, IGraphNode targetNode, object localValue, object baseValue, bool isReference)
+        protected sealed override IBaseToDerivedRegistry CreateBaseToDerivedRegistry()
         {
-            // Always reconcile referenced parts
-            if (isReference && IsReferencedPart(member, targetNode))
-            {
-                return true;
-            }
-            return base.ShouldReconcileItem(member, targetNode, localValue, baseValue, isReference);
+            return new AssetCompositeBaseToDerivedRegistry(this);
         }
     }
 }

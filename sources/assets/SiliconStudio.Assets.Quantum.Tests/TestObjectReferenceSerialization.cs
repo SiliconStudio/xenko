@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
         }
 
-        public Func<IGraphNode, Index, object, bool> IsObjectReferenceFunc { get; set; }
+        public static Func<IGraphNode, Index, object, bool> IsObjectReferenceFunc { get; set; }
 
         public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
@@ -60,13 +60,13 @@ MyNonIdObjects: []
         [Test]
         public void TestSimpleReference()
         {
-            var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
-            var asset = new Types.MyAssetWithRef { MyObject1 = obj, MyObject2 = obj };
-            var context = DeriveAssetTest<Types.MyAssetWithRef>.DeriveAsset(asset);
-            ((AssetWithRefPropertyGraph)context.BaseGraph).IsObjectReferenceFunc = (targetNode, index, value) =>
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) =>
             {
                 return (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             };
+            var obj = new Types.MyReferenceable { Id = GuidGenerator.Get(2), Value = "MyInstance" };
+            var asset = new Types.MyAssetWithRef { MyObject1 = obj, MyObject2 = obj };
+            var context = DeriveAssetTest<Types.MyAssetWithRef>.DeriveAsset(asset);
             SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleReferenceYaml, false);
 
             context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(SimpleReferenceYaml, SimpleReferenceYaml);

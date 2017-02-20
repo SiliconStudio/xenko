@@ -19,6 +19,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         [DataContract("MyPart")]
         public class MyPart : IIdentifiable
         {
+            [NonOverridable]
             public Guid Id { get; set; }
             public string Name { get; set; }
             public MyPart Parent { get; set; }
