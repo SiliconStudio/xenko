@@ -1,4 +1,4 @@
-﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -77,7 +77,7 @@
                     {
                         var identifiable = obj as IIdentifiable;
                         var externalIdentifiables = context.Get(MemberSerializer.ExternalIdentifiables);
-                        if (identifiable != null && externalIdentifiables?.ContainsKey(identifiable.Id) == true))
+                        if (identifiable != null && externalIdentifiables?.ContainsKey(identifiable.Id) == true)
                         {
                             flags |= SerializeClassFlags.IsExternalIdentifiable;
                             stream.Write((byte)flags);
@@ -203,7 +203,7 @@
                 var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 var isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 var isExternalIdentifiable = (flags & SerializeClassFlags.IsExternalIdentifiable) == SerializeClassFlags.IsExternalIdentifiable;
-                index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
+                index = reuseReferences && !isNull && !isExternalIdentifiable ? stream.ReadInt32() : -1;
 <# } #>
 <# if (supportsNonSealed) { #>
                 hasTypeInfo = (flags & SerializeClassFlags.IsTypeInfo) == SerializeClassFlags.IsTypeInfo;
