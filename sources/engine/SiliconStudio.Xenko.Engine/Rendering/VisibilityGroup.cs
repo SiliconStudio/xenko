@@ -218,6 +218,21 @@ namespace SiliconStudio.Xenko.Rendering
             view.RenderObjects.Close();
         }
 
+        public void Copy(RenderView source, RenderView target)
+        {
+            // Mark view as collected
+            target.LastFrameCollected = RenderSystem.FrameCounter;
+
+            // Copy min and max distances
+            target.MinimumDistance = source.MinimumDistance;
+            target.MaximumDistance = source.MaximumDistance;
+
+            // Copy collected objects
+            foreach (var renderObject in source.RenderObjects)
+                target.RenderObjects.Add(renderObject);
+            target.RenderObjects.Close();
+        }
+
         public static bool FrustumContainsBox(ref BoundingFrustum frustum, ref BoundingBoxExt boundingBoxExt, bool ignoreDepthPlanes)
         {
             unsafe

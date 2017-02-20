@@ -71,6 +71,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly TrackingCollection<LightGroupRendererBase> lightRenderers = new TrackingCollection<LightGroupRendererBase>();
 
         private readonly Dictionary<RenderView, RenderViewLightData> renderViewDatas = new Dictionary<RenderView, RenderViewLightData>();
+        // Preallocted for CollectVisibleLights
+        private readonly HashSet<RenderView> processedRenderViews = new HashSet<RenderView>();
 
         private readonly FastList<RenderView> renderViews = new FastList<RenderView>();
 
@@ -180,9 +182,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             ignoredEffectSlots.Clear();
-            if (shadowMapRenderer != null)
+            if (ShadowMapRenderer != null)
             {
-                foreach (var lightShadowMapRenderer in shadowMapRenderer.Renderers)
+                foreach (var lightShadowMapRenderer in ShadowMapRenderer.Renderers)
                 {
                     var shadowMapEffectSlot = lightShadowMapRenderer != null ? ((RootEffectRenderFeature)RootRenderFeature).GetEffectPermutationSlot(lightShadowMapRenderer.ShadowCasterRenderStage) : EffectPermutationSlot.Invalid;
                     ignoredEffectSlots.Add(shadowMapEffectSlot.Index);
@@ -198,7 +200,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData))
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData))
                     continue;
 
                 renderViewData.ViewIndex = renderViews.Count;
@@ -223,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData))
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData))
                     continue;
 
                 // Prepare shader permutations
@@ -319,7 +321,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var viewFeature = view.Features[RootRenderFeature.Index];
 
                 RenderViewLightData renderViewData;
-                if (!renderViewDatas.TryGetValue(view, out renderViewData) || viewFeature.Layouts.Count == 0)
+                if (!renderViewDatas.TryGetValue(view.LightingView ?? view, out renderViewData) || viewFeature.Layouts.Count == 0)
                     continue;
 
                 // Find a PerView layout from an effect in normal state
@@ -511,11 +513,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderView.GetType() != typeof(RenderView))
                     continue;
 
+                var lightRenderView = renderView.LightingView ?? renderView;
+
+                // Check if already processed
+                if (!processedRenderViews.Add(lightRenderView))
+                    continue;
+
                 RenderViewLightData renderViewLightData;
-                if (!renderViewDatas.TryGetValue(renderView, out renderViewLightData))
+                if (!renderViewDatas.TryGetValue(lightRenderView, out renderViewLightData))
                 {
                     renderViewLightData = new RenderViewLightData();
-                    renderViewDatas.Add(renderView, renderViewLightData);
+                    renderViewDatas.Add(lightRenderView, renderViewLightData);
                 }
                 else
                 {
@@ -526,17 +534,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 renderViewLightData.VisibleLights.Clear();
                 renderViewLightData.VisibleLightsWithShadows.Clear();
 
-                lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
+                lightProcessor = lightRenderView.SceneInstance.GetProcessor<LightProcessor>();
 
                 // No light processors means no light in the scene, so we can early exit
                 if (lightProcessor == null)
                     continue;
 
                 // TODO GRAPHICS REFACTOR
-                var sceneCullingMask = renderView.CullingMask;
+                var sceneCullingMask = lightRenderView.CullingMask;
 
                 // 2) Cull lights with the frustum
-                var frustum = renderView.Frustum;
+                var frustum = lightRenderView.Frustum;
                 foreach (var light in lightProcessor.Lights)
                 {
                     // TODO: New mechanism for light selection (probably in ForwardLighting configuration)
@@ -580,6 +588,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     lightGroup.AddLight(light);
                 }
             }
+
+            processedRenderViews.Clear();
         }
 
         private static void PrepareLightGroups(RenderDrawContext context, FastList<RenderView> renderViews, RenderView renderView, RenderViewLightData renderViewData, IShadowMapRenderer shadowMapRenderer, RenderGroup group)

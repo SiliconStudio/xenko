@@ -201,9 +201,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void CollectView(RenderContext context)
         {
-            // Mark this view as requiring shadows
-            shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
-
             // Fill RenderStage formats and register render stages to main view
             if (OpaqueRenderStage != null)
             {
@@ -223,13 +220,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        protected override void CollectCore(RenderContext context)
+        protected override unsafe void CollectCore(RenderContext context)
         {
             var camera = context.GetCurrentCamera();
 
             // Setup pixel formats for RenderStage
             using (context.SaveRenderOutputAndRestore())
             {
+                // Mark this view as requiring shadows
+                shadowMapRenderer?.RenderViewsWithShadows.Add(context.RenderView);
+
                 context.RenderOutput = new RenderOutputDescription(PostEffects != null ? PixelFormat.R16G16B16A16_Float : context.RenderOutput.RenderTargetFormat0, PixelFormat.D24_UNorm_S8_UInt);
 
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
@@ -244,6 +244,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     else
                     {
                         camera.ViewMatrix.Decompose(out cameraScale, out cameraRot, out cameraPos);
+                        cameraRot.Transpose();
+                        Vector3.Negate(ref cameraPos, out cameraPos);
+                        Vector3.TransformCoordinate(ref cameraPos, ref cameraRot, out cameraPos);
                     }
 
                     if (VRSettings.IgnoreCameraRotation)
@@ -251,7 +254,35 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         cameraRot = Matrix.Identity;
                     }
 
-                    var sceneInstance = context.RenderView.SceneInstance;
+                    // Compute both view and projection matrices
+                    Matrix* viewMatrices = stackalloc Matrix[2];
+                    Matrix* projectionMatrices = stackalloc Matrix[2];
+                    for (var i = 0; i < 2; ++i)
+                        VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out viewMatrices[i], out projectionMatrices[i]);
+
+                    // Compute a view matrix and projection matrix that cover both eyes for shadow map and culling
+                    var commonView = context.RenderView;
+                    commonView.View = viewMatrices[0];
+                    // We assume view matrices are similar except for a translation; we can take the average to have the "center eye" position
+                    commonView.View.M41 = commonView.View.M41 * 0.5f + viewMatrices[1].M41 * 0.5f;
+                    commonView.View.M42 = commonView.View.M42 * 0.5f + viewMatrices[1].M42 * 0.5f;
+                    commonView.View.M43 = commonView.View.M43 * 0.5f + viewMatrices[1].M43 * 0.5f;
+
+                    // Also need to move it backward little bit
+                    // http://computergraphics.stackexchange.com/questions/1736/vr-and-frustum-culling
+
+                    // Projection: Need to extend size to cover equivalent of both eyes
+                    // So we cancel the left/right off-center and add it to the width to compensate
+                    commonView.Projection = projectionMatrices[0];
+                    // Compute left and right
+                    var left0 = commonView.NearClipPlane * (projectionMatrices[0].M31 - 1.0f) / projectionMatrices[0].M11;
+                    var right1 = commonView.NearClipPlane * (projectionMatrices[1].M31 + 1.0f) / projectionMatrices[1].M11;
+                    commonView.Projection.M11 = 2.0f * commonView.NearClipPlane / (right1 - left0);
+                    commonView.Projection.M31 = (right1 + left0) / (right1 - left0);
+
+                    // Collect now, and use result for both eyes
+                    CollectView(context);
+                    context.VisibilityGroup.TryCollect(commonView);
 
                     for (var i = 0; i < 2; i++)
                     {
@@ -259,17 +290,22 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (context.SaveViewportAndRestore())
                         {
                             context.RenderSystem.Views.Add(context.RenderView);
-                            context.RenderView.SceneInstance = sceneInstance;
+                            context.RenderView.SceneInstance = commonView.SceneInstance;
+                            context.RenderView.LightingView = commonView;
                             context.ViewportState.Viewport0 = new Viewport(0, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height);
 
                             //change camera params for eye
-                            VRSettings.VRDevice.ReadEyeParameters(i == 0 ? Eyes.Left : Eyes.Right, camera.NearClipPlane, camera.FarClipPlane, ref cameraPos, ref cameraRot, out camera.ViewMatrix, out camera.ProjectionMatrix);
+                            camera.ViewMatrix = viewMatrices[i];
+                            camera.ProjectionMatrix = projectionMatrices[i];
                             camera.UseCustomProjectionMatrix = true;
                             camera.UseCustomViewMatrix = true;
                             camera.Update();
 
                             //write params to view
                             SceneCameraRenderer.UpdateCameraToRenderView(context, context.RenderView, camera);
+
+                            // Copy culling results
+                            context.VisibilityGroup.Copy(commonView, context.RenderView);
 
                             CollectView(context);
 
@@ -385,9 +421,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
-                // Render Shadow maps
-                shadowMapRenderer?.Draw(drawContext);
-
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
@@ -558,6 +591,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
+                // Render Shadow maps
+                shadowMapRenderer?.Draw(drawContext);
+
                 if (VRSettings.Enabled && VRSettings.VRDevice != null)
                 {
                     using (drawContext.PushRenderTargetsAndRestore())
