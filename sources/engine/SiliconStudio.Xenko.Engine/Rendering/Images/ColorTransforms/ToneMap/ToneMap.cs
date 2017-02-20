@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         }
 
         /// <summary>
-        /// Gets or sets the manual exposure value. Absolute value if <see cref="AutoExposure"/> is <c>false</c>, otherwise relative to the automatic exposure (added) if <see cref="AutoExposure"/> is <c>true</c>.
+        /// Gets or sets the manual exposure value if <see cref="AutoExposure"/> is <c>false</c>.
         /// </summary>
         /// <value>The exposure value.</value>
         [DataMember(32)]
