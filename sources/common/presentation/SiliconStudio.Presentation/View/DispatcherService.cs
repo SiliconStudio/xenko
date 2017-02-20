@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.View
@@ -21,6 +21,7 @@ namespace SiliconStudio.Presentation.View
         /// Creates a new instance of the <see cref="DispatcherService"/> class using the dispatcher of the current thread.
         /// </summary>
         /// <returns></returns>
+        [NotNull]
         public static DispatcherService Create()
         {
             return new DispatcherService(Dispatcher.CurrentDispatcher);
@@ -30,7 +31,7 @@ namespace SiliconStudio.Presentation.View
         /// Initializes a new instance of the <see cref="DispatcherService"/> class using the associated dispatcher.
         /// </summary>
         /// <param name="dispatcher">The dispatcher to use for this instance of <see cref="DispatcherService"/>.</param>
-        public DispatcherService(Dispatcher dispatcher)
+        public DispatcherService([NotNull] Dispatcher dispatcher)
         {
             if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             this.dispatcher = dispatcher;
@@ -88,14 +89,16 @@ namespace SiliconStudio.Presentation.View
             return InvokeTask(dispatcher, task);
         }
 
-        public static Task InvokeTask(Dispatcher dispatcher, Func<Task> task)
+        [NotNull]
+        public static Task InvokeTask([NotNull] Dispatcher dispatcher, Func<Task> task)
         {
             var tcs = new TaskCompletionSource<int>();
             dispatcher.InvokeAsync(async () => { await task(); tcs.SetResult(0); });
             return tcs.Task;
         }
 
-        public static Task<TResult> InvokeTask<TResult>(Dispatcher dispatcher, Func<Task<TResult>> task)
+        [NotNull]
+        public static Task<TResult> InvokeTask<TResult>([NotNull] Dispatcher dispatcher, Func<Task<TResult>> task)
         {
             var tcs = new TaskCompletionSource<TResult>();
             dispatcher.InvokeAsync(async () => tcs.SetResult(await task()));

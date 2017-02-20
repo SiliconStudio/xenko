@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Windows;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
@@ -122,6 +122,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Coerce the value of the Length so it is always positive
         /// </summary>
+        [NotNull]
         private static object CoerceLengthValue(DependencyObject sender, object baseValue)
         {
             baseValue = CoerceComponentValue(sender, baseValue);

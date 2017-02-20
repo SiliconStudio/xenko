@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Controls;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -15,7 +16,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="IsEnabled"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register("IsEnabled", typeof(bool), typeof(TextBoxCloseWindowBehavior));
+        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(TextBoxCloseWindowBehavior));
 
         /// <summary>
         /// Gets or sets whether this behavior is currently enabled.
@@ -36,7 +37,7 @@ namespace SiliconStudio.Presentation.Behaviors
             base.OnDetaching();
         }
         
-        private void KeyUp(object sender, KeyEventArgs e)
+        private void KeyUp(object sender, [NotNull] KeyEventArgs e)
         {
             if (e.Key != Key.Enter || !IsEnabled || AssociatedObject.HasChangesToValidate)
             {

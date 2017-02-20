@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         }
 
         /// <inheritdoc/>
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBack(object value, [NotNull] Type targetType, object parameter, CultureInfo culture)
         {
             try
             {

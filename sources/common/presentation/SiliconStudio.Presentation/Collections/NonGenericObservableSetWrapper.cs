@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -11,23 +13,24 @@ namespace SiliconStudio.Presentation.Collections
     /// when the <see cref="IList"/> interface is required.
     /// </summary>
     /// <typeparam name="T">The type of item contained in the <see cref="ObservableSet{T}"/>.</typeparam>
+    [Obsolete("This class is identical to NonGenericObservableListWrapper.")]
     public class NonGenericObservableSetWrapper<T> : NonGenericObservableCollectionWrapper<T>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NonGenericObservableSetWrapper{T}"/> class.
         /// </summary>
         /// <param name="list">The <see cref="ObservableSet{T}"/> to wrap.</param>
-        public NonGenericObservableSetWrapper(ObservableSet<T> list)
+        public NonGenericObservableSetWrapper([NotNull] ObservableSet<T> list)
             : base(list)
         {
         }
 
-        public void AddRange(IEnumerable values)
+        public void AddRange([NotNull] IEnumerable values)
         {
             ((ObservableSet<T>)List).AddRange(values.Cast<T>());
         }
 
-        public void AddRange(IEnumerable<T> values)
+        public void AddRange([NotNull] IEnumerable<T> values)
         {
             ((ObservableSet<T>)List).AddRange(values);
         }

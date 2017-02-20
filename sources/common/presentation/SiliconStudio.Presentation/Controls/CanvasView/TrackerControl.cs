@@ -34,6 +34,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
@@ -119,12 +120,12 @@ namespace SiliconStudio.Presentation.Controls
         
         public Visibility VerticalLineVisibility { get { return (Visibility)GetValue(VerticalLineVisibilityProperty); }  set { SetValue(VerticalLineVisibilityProperty, value); } }
 
-        private static void OnPositionChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnPositionChanged([NotNull] DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            ((TrackerControl)sender).OnPositionChanged(e);
+            ((TrackerControl)sender).OnPositionChanged();
         }
 
-        private static void OnTrackMouseChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private static void OnTrackMouseChanged([NotNull] DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             ((TrackerControl)sender).OnTrackMouseChanged(e);
         }
@@ -143,14 +144,14 @@ namespace SiliconStudio.Presentation.Controls
                 parent.MouseMove += OnMouseMove;
         }
 
-        private void OnMouseMove(object sender, MouseEventArgs e)
+        private void OnMouseMove(object sender, [NotNull] MouseEventArgs e)
         {
             if (!TrackMouse)
                 return;
             Position = e.GetPosition(this);
         }
         
-        private void OnPositionChanged(DependencyPropertyChangedEventArgs e)
+        private void OnPositionChanged()
         {
             UpdatePositionAndBorder();
         }
