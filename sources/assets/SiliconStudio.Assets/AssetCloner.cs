@@ -29,6 +29,7 @@ namespace SiliconStudio.Assets
         private Dictionary<Guid, Guid> cloningIdRemapping;
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
+        private Dictionary<Guid, IIdentifiable> externalIdentifiables;
 
         static AssetCloner()
         {
@@ -65,7 +66,10 @@ namespace SiliconStudio.Assets
                 writer.Context.Set(InvariantObjectListProperty, invariantObjects);
                 writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 if (externalIdentifiables != null)
-                    writer.Context.Set(MemberSerializer.ExternalIdentifiables, externalIdentifiables.ToDictionary(x => x.Id));
+                {
+                    this.externalIdentifiables = externalIdentifiables.ToDictionary(x => x.Id);
+                    writer.Context.Set(MemberSerializer.ExternalIdentifiables, this.externalIdentifiables);
+                }
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
                 writer.Flush();
 
@@ -108,6 +112,13 @@ namespace SiliconStudio.Assets
                     : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
                 reader.Context.Set(InvariantObjectListProperty, invariantObjects);
                 reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
+                if (externalIdentifiables != null)
+                {
+                    if ((flags & AssetClonerFlags.ClearExternalReferences) != 0)
+                        externalIdentifiables.Clear();
+
+                    reader.Context.Set(MemberSerializer.ExternalIdentifiables, externalIdentifiables);
+                }
                 reader.Context.Set(MemberSerializer.ObjectDeserializeCallback, OnObjectDeserialized);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
