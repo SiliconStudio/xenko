@@ -21,6 +21,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private Vector2 distortion;
 
+        private bool stableConvolution;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Bloom"/> class.
         /// </summary>
@@ -34,6 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Distortion = new Vector2(1);
             afterimage = new Afterimage { Enabled = false };
             EnableSetRenderTargets = false;
+            stableConvolution = true;
         }
 
         /// <summary>
@@ -102,6 +105,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring.</userdoc>
         [DataMember(60)]
+        [DefaultValue(true)]
         public bool StableConvolution
         {
             get { return stableConvolution; }
@@ -136,8 +140,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get { return Math.Max(0, MaxMip - 1); }
         }
-
-        [DataMemberIgnore] private bool stableConvolution = true;
 
         private int MaxMip { get; set; }
 
