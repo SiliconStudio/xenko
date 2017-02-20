@@ -57,6 +57,7 @@
     <Compile Include="Analysis\AssetPartsAnalysis.cs" />
     <Compile Include="Analysis\CollectionItemIdsAnalysis.cs" />
     <Compile Include="Analysis\IAssetDependencyManager.cs" />
+    <Compile Include="Analysis\IdentifiableObjectAnalysis.cs" />
     <Compile Include="AssetCollectionItemIdHelper.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />

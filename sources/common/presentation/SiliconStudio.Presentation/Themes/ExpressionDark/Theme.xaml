@@ -1878,7 +1878,6 @@
     <Setter Property="BorderThickness" Value="1,1,1,1"/>
     <Setter Property="Padding" Value="1,1,1,1"/>
     <Setter Property="SelectAllOnFocus" Value="True"/>
-    <Setter Property="DragCursor" Value="/SiliconStudio.Presentation;component/Resources/Cursors/CursorDrag.cur"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ctrl:NumericTextBox">
@@ -1908,6 +1907,13 @@
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="interactivity:Interaction.Behaviors">
+      <Setter.Value>
+        <interactivity:BehaviorCollection>
+          <behaviors:NumericTextBoxDragBehavior UsePreviewEvents="True" DragCursor="/SiliconStudio.Presentation;component/Resources/Cursors/CursorDrag.cur" />
+        </interactivity:BehaviorCollection>
       </Setter.Value>
     </Setter>
   </Style>

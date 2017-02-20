@@ -72,14 +72,6 @@ namespace SiliconStudio.Xenko.Assets.UI
             return enumerator.NotNull().Cast<UIElement>();
         }
 
-        /// <inheritdoc/>
-        protected override void ClearPartReferences(AssetCompositeHierarchyData<UIElementDesign, UIElement> clonedHierarchy)
-        {
-            // set to null reference outside of the sub-tree
-            var tempAsset = new UILibraryAsset { Hierarchy = clonedHierarchy };
-            tempAsset.FixupPartReferences();
-        }
-
         protected class BasePartsRemovalComponentUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
