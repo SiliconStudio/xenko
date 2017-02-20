@@ -58,7 +58,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 if ((notifyChanged != null) && (newList != null))
                 {
                     notifyChanged.CollectionChanged += behavior.OnSelectedVertexItemsCollectionChanged;
-                    if (behavior.AssociatedObject != null)
+                    if (behavior.graph_area_ != null)
                     {
                         // Remove any items not in new list
                         behavior.selected_vertices_.RemoveWhere(x => !newList.Contains(x));
@@ -95,7 +95,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 if ((notifyChanged != null) && (newList != null))
                 {
                     notifyChanged.CollectionChanged += behavior.OnSelectedEdgeItemsCollectionChanged;
-                    if (behavior.AssociatedObject != null)
+                    if (behavior.graph_area_ != null)
                     {
                         // Remove any items not in new list
                         behavior.selected_edges_.RemoveWhere(x => !newList.Contains(x));
@@ -278,7 +278,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 return;
 
             // Change from dependency property collection -> internal collection
-            if (AssociatedObject != null)
+            if (graph_area_ != null)
             {
                 updating_vertex_collection_ = true;
 
@@ -370,7 +370,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 return;
 
             // Change from dependency property collection -> internal collection
-            if (AssociatedObject != null)
+            if (graph_area_ != null)
             {
                 updating_edge_collection_ = true;
 

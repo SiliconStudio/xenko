@@ -39,5 +39,7 @@ namespace SiliconStudio.Assets.Quantum.Commands
         {
             return type.GetInheritedInstantiableTypes().Where(x => Attribute.GetCustomAttribute(x, typeof(NonInstantiableAttribute)) == null).Select(x => new AbstractNodeType(x));
         }
+
+        public override string ToString() => DisplayValue;
     }
 }
