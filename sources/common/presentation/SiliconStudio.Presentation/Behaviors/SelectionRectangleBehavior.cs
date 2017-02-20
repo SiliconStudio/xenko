@@ -40,26 +40,26 @@ namespace SiliconStudio.Presentation.Behaviors
             behavior.OnCanvasChanged(e);
         }
 
+        ///  <inheritdoc/>
         protected override void CancelOverride()
         {
-            base.CancelOverride();
             IsDragging = false;
             Canvas.Visibility = Visibility.Collapsed;
         }
 
+        ///  <inheritdoc/>
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
-            AssociatedObject.Focus();
-            AssociatedObject.CaptureMouse();
-            IsInProgress = true;
+            CaptureMouse();
             
             originPoint = e.GetPosition(AssociatedObject);
         }
 
+        ///  <inheritdoc/>
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (e.MouseDevice.LeftButton != MouseButtonState.Pressed)
@@ -88,20 +88,20 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
+        ///  <inheritdoc/>
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Left)
                 return;
 
             e.Handled = true;
-            IsInProgress = false;
-            AssociatedObject.ReleaseMouseCapture();
+            ReleaseMouseCapture();
 
-            if (IsDragging)
-            {
-                IsDragging = false;
-                ApplyDragSelectionRect();
-            }
+            if (!IsDragging)
+                return;
+
+            IsDragging = false;
+            ApplyDragSelectionRect();
         }
 
         private void CreateSelectionRectangle()

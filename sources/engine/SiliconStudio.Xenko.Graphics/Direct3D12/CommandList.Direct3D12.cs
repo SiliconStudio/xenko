@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new CommandList(device);
         }
 
-        internal CommandList(GraphicsDevice device) : base(device)
+        private CommandList(GraphicsDevice device) : base(device)
         {
             Reset();
         }

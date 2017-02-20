@@ -3,20 +3,15 @@
 
 using System;
 using System.Globalization;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
-using SiliconStudio.Presentation.Interop;
-using Point = System.Windows.Point;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -62,27 +57,16 @@ namespace SiliconStudio.Presentation.Controls
             DecreaseButton,
         }
 
-        private enum DragState
-        {
-            None,
-            Starting,
-            Dragging,
-        }
-
-        private DragState dragState;
-        private double mouseMoveDelta;
-        private Point mouseDownPosition;
-        private DragDirectionAdorner adorner;
-        private Orientation dragOrientation;
         private RepeatButton increaseButton;
         private RepeatButton decreaseButton;
-        private ScrollViewer contentHost;
+        // FIXME: turn back private
+        internal ScrollViewer contentHost;
         private bool updatingValue;
 
         /// <summary>
         /// The amount of pixel to move the mouse in order to add/remove a <see cref="SmallChange"/> to the current <see cref="Value"/>.
         /// </summary>
-        public static double DragSpeed = 3;
+        public static readonly double DragSpeed = 3;
 
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
@@ -133,11 +117,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register(nameof(MouseValidationTrigger), typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
-
-        /// <summary>
-        /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty DragCursorProperty = DependencyProperty.Register(nameof(DragCursor), typeof(Cursor), typeof(NumericTextBox), new PropertyMetadata(Cursors.ScrollAll));
         
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
@@ -258,11 +237,6 @@ namespace SiliconStudio.Presentation.Controls
         public bool AllowMouseDrag { get { return (bool)GetValue(AllowMouseDragProperty); } set { SetValue(AllowMouseDragProperty, value); } }
 
         /// <summary>
-        /// Gets or sets the <see cref="Cursor"/> to display when the value can be modified via dragging.
-        /// </summary>
-        public Cursor DragCursor { get { return (Cursor)GetValue(DragCursorProperty); } set { SetValue(DragCursorProperty, value); } }
-
-        /// <summary>
         /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.
         /// </summary>
         public MouseValidationTrigger MouseValidationTrigger { get { return (MouseValidationTrigger)GetValue(MouseValidationTriggerProperty); } set { SetValue(MouseValidationTriggerProperty, value); } }
@@ -281,17 +255,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Raised when one of the repeat button is released.
         /// </summary>
         public event EventHandler<RepeatButtonPressedRoutedEventArgs> RepeatButtonReleased { add { AddHandler(RepeatButtonReleasedEvent, value); } remove { RemoveHandler(RepeatButtonReleasedEvent, value); } }
-
-        /// <summary>
-        /// Raised when the mouse starts to drag the cursor to change the value.
-        /// </summary>
-        public event EventHandler<DragStartedEventArgs> DragStarted;
-
-        /// <summary>
-        /// Raised when the mouse stops to drag the cursor to change the value, after the validation of the change.
-        /// </summary>
-        public event EventHandler<DragCompletedEventArgs> DragCompleted;
-
+        
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
@@ -316,8 +280,6 @@ namespace SiliconStudio.Presentation.Controls
             var textValue = FormatValue(Value);
 
             SetCurrentValue(TextProperty, textValue);
-
-            contentHost.QueryCursor += HostQueryCursor;
         }
 
         /// <summary>
@@ -334,166 +296,8 @@ namespace SiliconStudio.Presentation.Controls
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
         }
-
-        private void RootParentIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs args)
-        {
-            if ((bool)args.NewValue == false)
-            {
-                // Cancel dragging in progress
-                if (dragState == DragState.Dragging)
-                {
-                    if (adorner != null)
-                    {
-                        var adornerLayer = AdornerLayer.GetAdornerLayer(this);
-                        if (adornerLayer != null)
-                        {
-                            adornerLayer.Remove(adorner);
-                            adorner = null;
-                        }
-                    }
-                    Cancel();
-
-                    var handler = DragCompleted;
-                    if (handler != null)
-                    {
-                        var position = Mouse.GetPosition(this);
-                        var dx = Math.Abs(position.X - mouseDownPosition.X);
-                        var dy = Math.Abs(position.Y - mouseDownPosition.Y);
-                        handler(this, new DragCompletedEventArgs(dx, dy, true));
-                    }
-
-                    Mouse.OverrideCursor = null;
-                    dragState = DragState.None;
-
-                }
-
-                var root = this.FindVisualRoot() as FrameworkElement;
-                if (root != null)
-                    root.IsKeyboardFocusWithinChanged -= RootParentIsKeyboardFocusWithinChanged;
-            }
-        }
-
+        
         /// <inheritdoc/>
-        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
-        {
-            base.OnPreviewMouseDown(e);
-
-            if (!IsContentHostPart(e.OriginalSource))
-                return;
-
-            if (AllowMouseDrag && IsReadOnly == false && IsFocused == false)
-            {
-                dragState = DragState.Starting;
-
-                if (adorner == null)
-                {
-                    adorner = new DragDirectionAdorner(this, contentHost.ActualWidth);
-                    var adornerLayer = AdornerLayer.GetAdornerLayer(this);
-                    adornerLayer?.Add(adorner);
-                }
-
-                mouseDownPosition = e.GetPosition(this);
-
-                Mouse.OverrideCursor = Cursors.None;
-                e.Handled = true;
-            }
-        }
-
-
-        /// <inheritdoc/>
-        protected override void OnPreviewMouseMove([NotNull] MouseEventArgs e)
-        {
-            base.OnPreviewMouseMove(e);
-
-            var position = e.GetPosition(this);
-
-            if (AllowMouseDrag && dragState == DragState.Starting && e.LeftButton == MouseButtonState.Pressed)
-            {
-                var dx = Math.Abs(position.X - mouseDownPosition.X);
-                var dy = Math.Abs(position.Y - mouseDownPosition.Y);
-                dragOrientation = dx >= dy ? Orientation.Horizontal : Orientation.Vertical;
-
-                if (dx > SystemParameters.MinimumHorizontalDragDistance || dy > SystemParameters.MinimumVerticalDragDistance)
-                {
-                    var root = this.FindVisualRoot() as FrameworkElement;
-                    if (root != null)
-                        root.IsKeyboardFocusWithinChanged += RootParentIsKeyboardFocusWithinChanged;
-
-                    mouseDownPosition = position;
-                    mouseMoveDelta = 0;
-                    dragState = DragState.Dragging;
-
-                    e.MouseDevice.Capture(this);
-                    DragStarted?.Invoke(this, new DragStartedEventArgs(mouseDownPosition.X, mouseDownPosition.Y));
-                    SelectAll();
-                    adorner?.SetOrientation(dragOrientation);
-                }
-            }
-
-            if (dragState == DragState.Dragging)
-            {
-                if (dragOrientation == Orientation.Horizontal)
-                    mouseMoveDelta += position.X - mouseDownPosition.X;
-                else
-                    mouseMoveDelta += mouseDownPosition.Y - position.Y;
-
-                var deltaUsed = Math.Floor(mouseMoveDelta / DragSpeed);
-                mouseMoveDelta -= deltaUsed;
-                var newValue = Value + deltaUsed * SmallChange;
-
-                SetCurrentValue(ValueProperty, newValue);
-
-                if (MouseValidationTrigger == MouseValidationTrigger.OnMouseMove)
-                {
-                    Validate();
-                }
-                NativeHelper.SetCursorPos(PointToScreen(mouseDownPosition));
-            }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnPreviewMouseUp([NotNull] MouseButtonEventArgs e)
-        {
-            base.OnPreviewMouseUp(e);
-
-            if (ReferenceEquals(e.MouseDevice.Captured, this))
-                e.MouseDevice.Capture(null);
-
-            if (dragState == DragState.Starting)
-            {
-                Select(0, Text.Length);
-                if (!IsFocused)
-                {
-                    Keyboard.Focus(this);
-                }
-            }
-            else if (dragState == DragState.Dragging && AllowMouseDrag)
-            {
-                if (adorner != null)
-                {
-                    var adornerLayer = AdornerLayer.GetAdornerLayer(this);
-                    if (adornerLayer != null)
-                    {
-                        adornerLayer.Remove(adorner);
-                        adorner = null;
-                    }
-                }
-                Validate();
-
-                var handler = DragCompleted;
-                if (handler != null)
-                {
-                    var position = e.GetPosition(this);
-                    var dx = Math.Abs(position.X - mouseDownPosition.X);
-                    var dy = Math.Abs(position.Y - mouseDownPosition.Y);
-                    handler(this, new DragCompletedEventArgs(dx, dy, false));
-                }
-            }
-
-            Mouse.OverrideCursor = null;
-            dragState = DragState.None;
-        }
-
         protected sealed override void OnCancelled()
         {
             var expression = GetBindingExpression(ValueProperty);
@@ -598,24 +402,6 @@ namespace SiliconStudio.Presentation.Controls
             {
                 SetCurrentValue(ValueProperty, value);
             }
-        }
-
-        private void HostQueryCursor(object sender, [NotNull] QueryCursorEventArgs e)
-        {
-            if (!IsContentHostPart(e.OriginalSource))
-                return;
-
-            if (AllowMouseDrag && !IsFocused && DragCursor != null)
-            {
-                e.Cursor = DragCursor;
-                e.Handled = true;
-            }
-        }
-
-        private bool IsContentHostPart(object obj)
-        {
-            var frameworkElement = obj as FrameworkElement;
-            return Equals(obj, contentHost) || (frameworkElement != null && Equals(frameworkElement.Parent, contentHost));
         }
 
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -735,129 +521,5 @@ namespace SiliconStudio.Presentation.Controls
                 throw new InvalidOperationException(message);
             }
         }
-
-        private class DragDirectionAdorner : Adorner
-        {
-            private readonly double contentWidth;
-            private static readonly ImageSource CursorHorizontalImageSource;
-            private static readonly ImageSource CursorVerticalImageSource;
-
-            static DragDirectionAdorner()
-            {
-                var asmName = Assembly.GetExecutingAssembly().GetName().Name;
-                CursorHorizontalImageSource = ImageExtensions.ImageSourceFromFile($"pack://application:,,,/{asmName};component/Resources/Images/cursor_west_east.png");
-                CursorVerticalImageSource = ImageExtensions.ImageSourceFromFile($"pack://application:,,,/{asmName};component/Resources/Images/cursor_north_south.png");
-            }
-
-            private Orientation dragOrientation;
-            private bool ready;
-
-            internal DragDirectionAdorner([NotNull] UIElement adornedElement, double contentWidth)
-                : base(adornedElement)
-            {
-                this.contentWidth = contentWidth;
-            }
-
-            internal void SetOrientation(Orientation orientation)
-            {
-                ready = true;
-                dragOrientation = orientation;
-                InvalidateVisual();
-            }
-
-            protected override void OnRender(DrawingContext drawingContext)
-            {
-                base.OnRender(drawingContext);
-
-                if (ready == false)
-                    return;
-
-                VisualEdgeMode = EdgeMode.Aliased;
-                var source = dragOrientation == Orientation.Horizontal ? CursorHorizontalImageSource : CursorVerticalImageSource;
-                var left = Math.Round(contentWidth - source.Width);
-                var top = Math.Round((AdornedElement.RenderSize.Height - source.Height) * 0.5);
-                drawingContext.DrawImage(source, new Rect(new Point(left, top), new Size(source.Width, source.Height)));
-            }
-        }
-
-        // TODO: Constraint accepted characters? Legacy code that can help here:
-        //public static readonly string NumberDecimalSeparator;
-        //public static readonly string NumberGroupSeparator;
-        //public static readonly string NegativeSign;
-
-        // Previously in static constructor:
-        //NumberFormatInfo numberFormatInfo = CultureInfo.CurrentCulture.NumberFormat;
-        //NumberDecimalSeparator = numberFormatInfo.NumberDecimalSeparator;
-        //NumberGroupSeparator = numberFormatInfo.NumberGroupSeparator;
-        //NegativeSign = numberFormatInfo.NegativeSign;
-        // -> But we should fetch these value each time we need them because the current culture can be changed at runtime!
-
-        //protected override void OnPreviewKeyDown(KeyEventArgs e)
-        //{
-        //    if (IsInvalidCommon(e.Key))
-        //    {
-        //        e.Handled = true;
-        //        return;
-        //    }
-
-        //    base.OnPreviewKeyDown(e);
-        //}
-
-        //protected virtual bool IsInvalidCommon(Key key)
-        //{
-        //    return false;
-        //}
-        
-        //protected override void OnPreviewTextInput(TextCompositionEventArgs e)
-        //{
-        //    base.OnPreviewTextInput(e);
-
-        //    string str = e.Text;
-        //    if (str == null || str.Length != 1)
-        //    {
-        //        e.Handled = true;
-        //        return;
-        //    }
-
-        //    e.Handled = !IsValidStringElement(str);
-        //}
-        
-        //protected virtual bool IsValidStringElement(string c)
-        //{
-        //    return IsValidFloatingPointStringElement(c);
-        //}
-        
-        //public static bool IsValidFloatingPointStringElement(string c)
-        //{
-        //    if (c == NumberDecimalSeparator || c == NumberGroupSeparator || c == NegativeSign)
-        //        return true;
-
-        //    char cc = c[0];
-        //    if (cc >= '0' && cc <= '9')
-        //        return true;
-
-        //    return false;
-        //}
-
-        //public static bool IsValidIntegerStringElement(string c)
-        //{
-        //    if (c == NumberGroupSeparator || c == NegativeSign)
-        //        return true;
-
-        //    char cc = c[0];
-        //    if (cc >= '0' && cc <= '9')
-        //        return true;
-
-        //    return false;
-        //}
-
-        //public static bool IsValidHexadecimalStringElement(string c)
-        //{
-        //    char cc = c[0];
-        //    if ((cc >= 'a' && cc <= 'f') || (cc >= 'A' && cc <= 'F'))
-        //        return true;
-
-        //    return false;
-        //}
     }
 }

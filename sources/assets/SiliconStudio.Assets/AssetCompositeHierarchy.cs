@@ -114,10 +114,10 @@ namespace SiliconStudio.Assets
         /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
         /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds)
         {
             Dictionary<Guid, Guid> idRemapping;
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
         }
 
         /// <summary>
@@ -128,9 +128,9 @@ namespace SiliconStudio.Assets
         /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
         {
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), cleanReference, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace SiliconStudio.Assets
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
         /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, bool cleanReference, bool generateNewIdsForIdentifiableObjects, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, bool cleanReference, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
@@ -170,8 +170,30 @@ namespace SiliconStudio.Assets
             }
             if (cleanReference)
             {
-                ClearPartReferences(clonedHierarchy);
+                // set to null reference outside of the sub-tree
+                var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(GetType());
+                tempAsset.Hierarchy = clonedHierarchy;
+                tempAsset.FixupPartReferences();
             }
+            else
+            {
+                // restore initial ids for reference outside of the subtree, so they can be fixed up later.
+                var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(GetType());
+                tempAsset.Hierarchy = clonedHierarchy;
+                var visitor = new AssetCompositePartReferenceCollector();
+                visitor.VisitAsset(tempAsset);
+                var references = visitor.Result;
+                var revertedIdMapping = idRemapping.ToDictionary(x => x.Value, x => x.Key);
+                foreach (var referencedPart in references.Select(x => x.AssetPart).OfType<IIdentifiable>())
+                {
+                    var realPart = tempAsset.ResolvePartReference(referencedPart);
+                    if (realPart == null)
+                        referencedPart.Id = revertedIdMapping[referencedPart.Id];
+                }
+            }
+
+            if (generateNewBaseInstanceIds)
+                AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;
         }
@@ -198,15 +220,6 @@ namespace SiliconStudio.Assets
             result.Parts.Add(partDesign);
             result.RootPartIds.Add(partDesign.Part.Id);
             return result;
-        }
-
-        /// <summary>
-        /// Clears the part references on the cloned hierarchy. Called by <see cref="CloneSubHierarchies"/> when parameter <i>cleanReference</i> is <c>true</c>.
-        /// </summary>
-        /// <param name="clonedHierarchy">The cloned hierarchy.</param>
-        protected virtual void ClearPartReferences(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> clonedHierarchy)
-        {
-            // default implementation does nothing
         }
 
         /// <summary>
