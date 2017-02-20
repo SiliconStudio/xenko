@@ -117,6 +117,19 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public List<MyReferenceable> MyNonIdObjects { get; set; } = new List<MyReferenceable>();
         }
 
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        public class MyAssetWithRef2 : MyAssetBase
+        {
+            public MyReferenceable NonReference { get; set; }
+
+            public MyReferenceable Reference { get; set; }
+
+            public List<MyReferenceable> References { get; set; } = new List<MyReferenceable>();
+
+            public static int MemberCount => 4 + 3; // 4 (number of members in Asset) + 3 (number of members in Types.MyAssetWithRef2)
+        }
+
 
         [DataContract]
         public struct StructWithList

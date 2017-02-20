@@ -12,6 +12,27 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
+    [Flags]
+    public enum SubHierarchyCloneFlags
+    {
+        /// <summary>
+        /// No specific flag.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Clean any reference to an <see cref="IIdentifiable"/> object that is external to the sub-hierarchy.
+        /// </summary>
+        CleanExternalReferences = 1,
+        /// <summary>
+        /// Generates new identifiers for any <see cref="IIdentifiable"/> object that is internal to the sub-hierarchy.
+        /// </summary>
+        GenerateNewIdsForIdentifiableObjects = 2,
+        /// <summary>
+        /// Generates new identifiers for the <see cref="BasePart.InstanceId"/> of any part of the sub-hierarchy.
+        /// </summary>
+        GenerateNewBaseInstanceIds = 4,
+    }
+
     public abstract class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
@@ -177,29 +198,6 @@ namespace SiliconStudio.Assets.Quantum
             foreach (var rootEntity in clonedHierarchy.RootPartIds)
             {
                 PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
-            }
-            if (cleanExternalReferences)
-            {
-                //// set to null reference outside of the sub-tree
-                //var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(AssetHierarchy.GetType());
-                //tempAsset.Hierarchy = clonedHierarchy;
-                //tempAsset.FixupPartReferences();
-            }
-            else
-            {
-                // restore initial ids for reference outside of the subtree, so they can be fixed up later.
-                //var tempAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)Activator.CreateInstance(AssetHierarchy.GetType());
-                //tempAsset.Hierarchy = clonedHierarchy;
-                //var visitor = new AssetCompositePartReferenceCollector();
-                //visitor.VisitAsset(tempAsset);
-                //var references = visitor.Result;
-                //var revertedIdMapping = idRemapping.ToDictionary(x => x.Value, x => x.Key);
-                //foreach (var referencedPart in references.Select(x => x.AssetPart).OfType<IIdentifiable>())
-                //{
-                //    var realPart = tempAsset.ResolvePartReference(referencedPart);
-                //    if (realPart == null)
-                //        referencedPart.Id = revertedIdMapping[referencedPart.Id];
-                //}
             }
 
             if (generateNewBaseInstanceIds)

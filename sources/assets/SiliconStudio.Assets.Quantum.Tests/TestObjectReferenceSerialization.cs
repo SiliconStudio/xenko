@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
     }
 
     [TestFixture]
-    public class TestObjectReferences
+    public class TestObjectReferenceSerialization
     {
         private static readonly AssetId BaseId = (AssetId)GuidGenerator.Get(1);
         private static readonly AssetId DerivedId = (AssetId)GuidGenerator.Get(2);

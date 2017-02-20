@@ -61,6 +61,8 @@ namespace SiliconStudio.Assets.Quantum
         [NotNull]
         new IAssetMemberNode this[string name] { get; }
 
+        new IAssetObjectNode IndexedTarget(Index index);
+
         void OverrideItem(bool isOverridden, Index index);
 
         void OverrideKey(bool isOverridden, Index index);
@@ -666,6 +668,8 @@ namespace SiliconStudio.Assets.Quantum
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
 
+        IAssetObjectNode IAssetObjectNode.IndexedTarget(Index index) => (IAssetObjectNode)IndexedTarget(index);
+
         void IAssetObjectNodeInternal.SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
 
         bool IAssetObjectNodeInternal.IsObjectReference(Index index) => ex.IsObjectReference(index);
@@ -753,6 +757,8 @@ namespace SiliconStudio.Assets.Quantum
         public Index IdToIndex(ItemId id) => ex.IdToIndex(id);
 
         public bool TryIdToIndex(ItemId id, out Index index) => ex.TryIdToIndex(id, out index);
+
+        IAssetObjectNode IAssetObjectNode.IndexedTarget(Index index) => (IAssetObjectNode)IndexedTarget(index);
 
         void IAssetObjectNodeInternal.SetObjectReference(Index index, bool isReference) => ex.SetObjectReference(index, isReference);
 
