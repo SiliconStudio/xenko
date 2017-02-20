@@ -4,6 +4,7 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.MarkupExtensions
 {
@@ -37,6 +38,7 @@ namespace SiliconStudio.Presentation.MarkupExtensions
             this.scalingMode = scalingMode;
         }
 
+        [NotNull]
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             var image = new Image { Source = source };

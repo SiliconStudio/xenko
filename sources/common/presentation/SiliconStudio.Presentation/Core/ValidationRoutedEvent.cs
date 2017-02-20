@@ -6,7 +6,7 @@ namespace SiliconStudio.Presentation.Core
 {
     public class ValidationRoutedEventArgs : RoutedEventArgs
     {
-        public object Value { get; private set; }
+        public object Value { get; }
 
         public ValidationRoutedEventArgs(RoutedEvent routedEvent, object value)
             : base(routedEvent)
@@ -17,7 +17,7 @@ namespace SiliconStudio.Presentation.Core
 
     public class ValidationRoutedEventArgs<T> : ValidationRoutedEventArgs
     {
-        public new T Value { get { return (T)base.Value; } }
+        public new T Value => (T)base.Value;
 
         public ValidationRoutedEventArgs(RoutedEvent routedEvent, T value)
             : base(routedEvent, value)

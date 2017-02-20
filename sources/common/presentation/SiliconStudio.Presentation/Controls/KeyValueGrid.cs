@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -29,12 +30,12 @@ namespace SiliconStudio.Presentation.Controls
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.0, GridUnitType.Star) });
         }
 
-        public static bool GetUseFullRow(DependencyObject obj)
+        public static bool GetUseFullRow([NotNull] DependencyObject obj)
         {
             return (bool)obj.GetValue(UseFullRowProperty);
         }
 
-        public static void SetUseFullRow(DependencyObject obj, bool value)
+        public static void SetUseFullRow([NotNull] DependencyObject obj, bool value)
         {
             obj.SetValue(UseFullRowProperty, value);
         }
@@ -44,20 +45,20 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private void InvalidateGridParameters()
         {
-            RowDefinitionCollection rowCollection = RowDefinitions;
-            UIElementCollection children = Children;
+            var rowCollection = RowDefinitions;
+            var children = Children;
 
             // Determine how many rows we need
             int remainder;
-            int neededRowCount = Math.DivRem(children.Count, 2, out remainder) + remainder;
+            var neededRowCount = Math.DivRem(children.Count, 2, out remainder) + remainder;
 
-            int currentRowCount = rowCollection.Count;
-            int deltaRowCount = neededRowCount - currentRowCount;
+            var currentRowCount = rowCollection.Count;
+            var deltaRowCount = neededRowCount - currentRowCount;
 
             // Add/remove rows
             if (deltaRowCount > 0)
             {
-                for (int i = 0; i < deltaRowCount; i++)
+                for (var i = 0; i < deltaRowCount; i++)
                     rowCollection.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
             }
             else if (deltaRowCount < 0)
@@ -66,8 +67,8 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             // Update Grid.Row and Grid.Column dependency properties on each child control
-            int row = 0;
-            int column = 0;
+            var row = 0;
+            var column = 0;
             foreach (UIElement element in children)
             {
                 element.SetValue(ColumnProperty, column);

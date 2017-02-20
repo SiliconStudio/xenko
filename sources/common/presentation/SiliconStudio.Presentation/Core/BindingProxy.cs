@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Windows;
+using SiliconStudio.Core.Annotations;
 
 // http://www.thomaslevesque.com/2011/03/21/wpf-how-to-bind-to-data-when-the-datacontext-is-not-inherited/
 
@@ -23,6 +24,7 @@ namespace SiliconStudio.Presentation.Core
         public object Data { get { return GetValue(DataProperty); } set { SetValue(DataProperty, value); } }
 
         /// <inheritdoc/>
+        [NotNull]
         protected override Freezable CreateInstanceCore()
         {
             return new BindingProxy();
