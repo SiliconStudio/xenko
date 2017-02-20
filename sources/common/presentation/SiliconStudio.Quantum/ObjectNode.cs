@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum.Contents
     /// An implementation of <see cref="IGraphNode"/> that gives access to an object or a boxed struct.
     /// </summary>
     /// <remarks>This content is not serialized by default.</remarks>
-    public class ObjectNode : GraphNodeBase, IInitializingObjectNode
+    public class ObjectNode : GraphNodeBase, IInitializingObjectNode, IGraphNodeInternal
     {
         private readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private readonly List<IMemberNode> children = new List<IMemberNode>();
@@ -277,7 +277,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        void IInitializingObjectNode.AddMember(IMemberNodeInternal member, bool allowIfReference)
+        void IInitializingObjectNode.AddMember(IMemberNode member, bool allowIfReference)
         {
             if (isSealed)
                 throw new InvalidOperationException("Unable to add a child to a GraphNode that has been sealed");

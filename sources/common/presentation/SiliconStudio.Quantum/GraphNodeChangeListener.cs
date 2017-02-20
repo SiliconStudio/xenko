@@ -55,11 +55,11 @@ namespace SiliconStudio.Quantum
             // A node can be registered multiple times when it is referenced via multiple paths
             if (RegisteredNodes.Add(node))
             {
+                ((IGraphNodeInternal)node).PrepareChange += ContentPrepareChange;
+                ((IGraphNodeInternal)node).FinalizeChange += ContentFinalizeChange;
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    ((IMemberNodeInternal)memberNode).PrepareChange += ContentPrepareChange;
-                    ((IMemberNodeInternal)memberNode).FinalizeChange += ContentFinalizeChange;
                     memberNode.Changing += ContentChanging;
                     memberNode.Changed += ContentChanged;
                 }
@@ -79,11 +79,11 @@ namespace SiliconStudio.Quantum
         {
             if (RegisteredNodes.Remove(node))
             {
+                ((IGraphNodeInternal)node).PrepareChange -= ContentPrepareChange;
+                ((IGraphNodeInternal)node).FinalizeChange -= ContentFinalizeChange;
                 var memberNode = node as IMemberNode;
                 if (memberNode != null)
                 {
-                    ((IMemberNodeInternal)memberNode).PrepareChange -= ContentPrepareChange;
-                    ((IMemberNodeInternal)memberNode).FinalizeChange -= ContentFinalizeChange;
                     memberNode.Changing -= ContentChanging;
                     memberNode.Changed -= ContentChanged;
                 }
