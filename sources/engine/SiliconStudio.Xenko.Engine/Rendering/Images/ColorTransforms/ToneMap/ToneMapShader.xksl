@@ -72,6 +72,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
 	            float linearExposure = (keyValue / avgLuminance);
 	            exposure = max(linearExposure, 0.0001f);
+
+                // We still apply user exposure as a difference
+                exposure += Exposure;
             }
             else
             {
