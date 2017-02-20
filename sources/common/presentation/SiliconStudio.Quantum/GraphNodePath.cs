@@ -301,7 +301,10 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return IsValid ? "(root)" + path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "(invalid)";
+            if (!IsValid)
+                return "(invalid)";
+
+            return "(root)" + (path.Count > 0 ? path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "");
         }
 
         /// <summary>
