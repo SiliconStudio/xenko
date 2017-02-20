@@ -74,6 +74,7 @@
     <Compile Include="OverrideTypePathGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetPropertyGraphAttribute.cs" />
+    <Compile Include="SubHierarchyCloneFlags.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Yaml;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -450,7 +451,8 @@ namespace SiliconStudio.Assets.Quantum
             //if (SessionViewModel.Instance.ContentReferenceService.IsContentType(value.GetType()))
             //    return value;
 
-            var result = AssetCloner.Clone(value);
+            Dictionary<Guid, Guid> remapping;
+            var result = AssetCloner.Clone<object>(value, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out remapping);
             return result;
         }
 

@@ -12,27 +12,6 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Assets.Quantum
 {
-    [Flags]
-    public enum SubHierarchyCloneFlags
-    {
-        /// <summary>
-        /// No specific flag.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Clean any reference to an <see cref="IIdentifiable"/> object that is external to the sub-hierarchy.
-        /// </summary>
-        CleanExternalReferences = 1,
-        /// <summary>
-        /// Generates new identifiers for any <see cref="IIdentifiable"/> object that is internal to the sub-hierarchy.
-        /// </summary>
-        GenerateNewIdsForIdentifiableObjects = 2,
-        /// <summary>
-        /// Generates new identifiers for the <see cref="BasePart.InstanceId"/> of any part of the sub-hierarchy.
-        /// </summary>
-        GenerateNewBaseInstanceIds = 4,
-    }
-
     public abstract class AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> : AssetCompositePropertyGraph
         where TAssetPart : class, IIdentifiable
         where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
@@ -125,38 +104,35 @@ namespace SiliconStudio.Assets.Quantum
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
         /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanExternalReferences">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanExternalReferences, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, SubHierarchyCloneFlags flags)
         {
             Dictionary<Guid, Guid> idRemapping;
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanExternalReferences, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), flags, out idRemapping);
         }
 
         /// <summary>
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
         /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanExternalReferences">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanExternalReferences, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, SubHierarchyCloneFlags flags, out Dictionary<Guid, Guid> idRemapping)
         {
-            return CloneSubHierarchies(sourceRootId.Yield(), cleanExternalReferences, generateNewIdsForIdentifiableObjects, generateNewBaseInstanceIds, out idRemapping);
+            return CloneSubHierarchies(sourceRootId.Yield(), flags, out idRemapping);
         }
 
         /// <summary>
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
         /// <param name="sourceRootIds">The ids that are the roots of the sub-hierarchies to clone.</param>
-        /// <param name="cleanExternalReferences">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <param name="generateNewIdsForIdentifiableObjects">If true, the cloned objects that implement <see cref="IIdentifiable"/> will have new ids.</param>
+        /// <param name="flags">The flags customizing the cloning operation.</param>
         /// <param name="idRemapping">A dictionary containing the remapping of <see cref="IIdentifiable.Id"/> if <see cref="AssetClonerFlags.GenerateNewIdsForIdentifiableObjects"/> has been passed to the cloner.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
         /// <remarks>The parts passed to this methods must be independent in the hierarchy.</remarks>
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, bool cleanExternalReferences, bool generateNewIdsForIdentifiableObjects, bool generateNewBaseInstanceIds, out Dictionary<Guid, Guid> idRemapping)
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, SubHierarchyCloneFlags flags, out Dictionary<Guid, Guid> idRemapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
@@ -180,14 +156,14 @@ namespace SiliconStudio.Assets.Quantum
             preCloningAssetGraph.Dispose();
 
             // clone the parts of the sub-tree
-            var flags = AssetClonerFlags.None;
+            var clonerFlags = AssetClonerFlags.None;
 
-            if (generateNewIdsForIdentifiableObjects)
-                flags |= AssetClonerFlags.GenerateNewIdsForIdentifiableObjects;
-            if (cleanExternalReferences)
-                flags |= AssetClonerFlags.ClearExternalReferences;
+            if ((flags & SubHierarchyCloneFlags.GenerateNewIdsForIdentifiableObjects) != 0)
+                clonerFlags |= AssetClonerFlags.GenerateNewIdsForIdentifiableObjects;
+            if ((flags & SubHierarchyCloneFlags.CleanExternalReferences) != 0)
+                clonerFlags |= AssetClonerFlags.ClearExternalReferences;
 
-            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, flags, externalReferences, out idRemapping);
+            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
 
             // Remap ids from the root id collection to the new ids generated during cloning
             if (idRemapping != null)
@@ -200,7 +176,7 @@ namespace SiliconStudio.Assets.Quantum
                 PostClonePart(clonedHierarchy.Parts[rootEntity].Part);
             }
 
-            if (generateNewBaseInstanceIds)
+            if ((flags & SubHierarchyCloneFlags.GenerateNewBaseInstanceIds) != 0)
                 AssetPartsAnalysis.GenerateNewBaseInstanceIds(clonedHierarchy);
 
             return clonedHierarchy;

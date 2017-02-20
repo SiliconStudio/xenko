@@ -62,7 +62,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, false, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -93,7 +93,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, false, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -125,7 +125,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, false, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -157,7 +157,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, true, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -188,7 +188,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, true, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
@@ -220,7 +220,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Debug.Write(PrintHierarchy(graph.AssetHierarchy));
             var originalRoot = graph.AssetHierarchy.Hierarchy.Parts[graph.AssetHierarchy.Hierarchy.RootPartIds[1]];
             Dictionary<Guid, Guid> remapping;
-            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, true, false, false, out remapping);
+            var clone = graph.CloneSubHierarchy(originalRoot.Part.Id, SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootPartIds.Single()];
             Assert.IsNull(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
