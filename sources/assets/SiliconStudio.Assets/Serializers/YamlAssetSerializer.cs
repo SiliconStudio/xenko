@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -19,16 +20,23 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     public class YamlAssetSerializer : IAssetSerializer, IAssetSerializerFactory
     {
+        public static AttachedYamlAssetMetadata CreateAndProcessMetadata(PropertyContainer yamlPropertyContainer, object deserializedObject, [CanBeNull] ILogger log = null)
+        {
+            var yamlMetadata = AttachedYamlAssetMetadata.FromPropertyContainer(yamlPropertyContainer);
+            var objectReferences = yamlMetadata.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
+            if (objectReferences != null)
+            {
+                // This metadata is consumed here, no need to return it as attached metadata
+                FixupObjectReference.RunFixupPass(deserializedObject, objectReferences, true, log);
+            }
+            return yamlMetadata;
+        }
+
         public object Load(Stream stream, UFile filePath, ILogger log, out bool aliasOccurred, out AttachedYamlAssetMetadata yamlMetadata)
         {
             PropertyContainer properties;
             var result = AssetYamlSerializer.Default.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred, out properties);
-            yamlMetadata = AttachedYamlAssetMetadata.FromPropertyContainer(properties);
-            var objectReferences = yamlMetadata.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
-            if (objectReferences != null)
-            {
-                FixupObjectReference.RunFixupPass(result, objectReferences, true, log);
-            }
+            yamlMetadata = CreateAndProcessMetadata(properties, result, log);
             return result;
         }
 
