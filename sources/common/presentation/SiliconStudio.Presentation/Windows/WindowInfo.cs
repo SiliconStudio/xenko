@@ -200,7 +200,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public bool Equals(WindowInfo other)
         {
-            return Equals(other?.Window) && Equals(other?.Hwnd);
+            return other != null && Equals(other.Window) && Equals(other.Hwnd);
         }
 
         /// <inheritdoc/>
