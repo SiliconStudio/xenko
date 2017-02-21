@@ -60,7 +60,14 @@ namespace SiliconStudio.Assets.Quantum.Commands
             else
             {
                 var elementType = collectionDescriptor.ElementType;
-                itemToAdd = parameter ?? (IsReferenceType(elementType) ? null : ObjectFactoryRegistry.NewInstance(elementType));
+                itemToAdd = parameter;
+                if (itemToAdd == null)
+                {
+                    var propertyGraph = (node as IAssetNode)?.PropertyGraph;
+                    var newInstance = ObjectFactoryRegistry.NewInstance(elementType);
+                    if (!IsReferenceType(elementType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index, newInstance)))
+                        itemToAdd = newInstance;
+                }
             }
 
             var objectNode = node as IObjectNode ?? ((IMemberNode)node).Target;
@@ -79,6 +86,6 @@ namespace SiliconStudio.Assets.Quantum.Commands
 
         private static bool CanConstruct(Type elementType) => !elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType == typeof(string);
 
-        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsAssetPartType(elementType) || AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
+        private static bool IsReferenceType(Type elementType) => AssetRegistry.IsContentType(elementType) || typeof(AssetReference).IsAssignableFrom(elementType);
     }
 }
