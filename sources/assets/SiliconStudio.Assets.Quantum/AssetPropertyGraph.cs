@@ -359,9 +359,6 @@ namespace SiliconStudio.Assets.Quantum
                 var memberNode = node as AssetMemberNode;
                 if (memberNode != null)
                     memberNode.IsObjectReference = true;
-
-                var objectNode = node as IAssetObjectNodeInternal;
-                objectNode?.SetObjectReference(index, true);
             }
         }
 
@@ -584,8 +581,6 @@ namespace SiliconStudio.Assets.Quantum
                     var ids = CollectionItemIdHelper.GetCollectionItemIds(collection);
                     ids.TryGet(e.Index.Value, out itemId);
                 }
-                node.SetObjectReference(e.Index, IsObjectReference(e.Node, e.Index, e.NewValue));
-
             }
             else if (e.ChangeType == ContentChangeType.CollectionRemove)
             {
