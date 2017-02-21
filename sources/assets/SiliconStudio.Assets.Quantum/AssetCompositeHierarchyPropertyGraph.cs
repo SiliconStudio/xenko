@@ -212,7 +212,7 @@ namespace SiliconStudio.Assets.Quantum
 
             protected override void VisitItemTargets(IObjectNode node, GraphNodePath currentPath)
             {
-                node.ItemReferences?.ForEach(x => ProcessIdentifiable(x.TargetNode, x.Index));
+                node.ItemReferences?.ForEach(x => ProcessIdentifiable(node, x.Index));
                 base.VisitItemTargets(node, currentPath);
             }
 
@@ -245,16 +245,16 @@ namespace SiliconStudio.Assets.Quantum
 
         public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
         {
+            if (targetNode is IObjectNode && index.IsEmpty)
+                return base.IsObjectReference(targetNode, index, value);
+
             if (value is TAssetPart)
             {
+                // Check if we're the part referenced by a part design - other cases are references
                 var member = targetNode as IMemberNode;
-                if (member != null)
-                {
-                    // Check if we're the part referenced by a part design - other cases are references
-                    return member.Parent.Type != typeof(TAssetPartDesign);
-                }
-                return true;
+                return member == null || member.Parent.Type != typeof(TAssetPartDesign);
             }
+
             return base.IsObjectReference(targetNode, index, value);
         }
 

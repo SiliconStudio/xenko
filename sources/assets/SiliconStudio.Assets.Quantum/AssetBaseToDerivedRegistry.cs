@@ -26,23 +26,28 @@ namespace SiliconStudio.Assets.Quantum
                 if (baseValue is IIdentifiable)
                 {
                     baseToDerived[baseNode] = derivedNode;
-                }
-                var objectNode = derivedNode as IObjectNode;
-                if (objectNode?.ItemReferences != null)
-                {
-                    foreach (var reference in objectNode.ItemReferences)
+                    var baseMemberNode = baseNode as IAssetMemberNode;
+                    if (baseMemberNode?.Target != null)
                     {
-                        var target = propertyGraph.baseLinker.FindTargetReference(derivedNode, baseNode, reference);
-                        if (target == null)
-                            continue;
+                        baseToDerived[baseMemberNode.Target] = ((IAssetMemberNode)derivedNode).Target;
+                    }
+                }
+            }
+            var objectNode = derivedNode as IObjectNode;
+            if (objectNode?.ItemReferences != null)
+            {
+                foreach (var reference in objectNode.ItemReferences)
+                {
+                    var target = propertyGraph.baseLinker.FindTargetReference(derivedNode, baseNode, reference);
+                    if (target == null)
+                        continue;
 
-                        baseValue = target.TargetNode?.Retrieve();
-                        if (!propertyGraph.IsObjectReference(baseNode, target.Index, baseValue))
+                    baseValue = target.TargetNode?.Retrieve();
+                    if (!propertyGraph.IsObjectReference(baseNode, target.Index, baseValue))
+                    {
+                        if (baseValue is IIdentifiable)
                         {
-                            if (baseValue is IIdentifiable)
-                            {
-                                baseToDerived[(IAssetNode)target.TargetNode] = (IAssetNode)objectNode.IndexedTarget(reference.Index);
-                            }
+                            baseToDerived[(IAssetNode)target.TargetNode] = (IAssetNode)objectNode.IndexedTarget(reference.Index);
                         }
                     }
                 }

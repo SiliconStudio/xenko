@@ -67,8 +67,6 @@ namespace SiliconStudio.Assets.Quantum
             RootNode = (AssetObjectNode)Container.NodeContainer.GetOrCreateNode(assetItem.Asset);
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
-            var objectReferences = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.ObjectReferencesKey);
-            ApplyObjectReferences(RootNode, objectReferences);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, this);
             nodeListener.Changing += AssetContentChanging;
             nodeListener.Changed += AssetContentChanged;
@@ -341,27 +339,6 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        private void ApplyObjectReferences(IAssetObjectNode rootNode, YamlAssetMetadata<Guid> objectReferences)
-        {
-            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
-
-            if (objectReferences == null)
-                return;
-
-            foreach (var objectReference in objectReferences)
-            {
-                Index index;
-                var node = ResolveObjectPath(rootNode, objectReference.Key, out index);
-                // The node is unreachable, skip this override.
-                if (node == null)
-                    continue;
-
-                var memberNode = node as AssetMemberNode;
-                if (memberNode != null)
-                    memberNode.IsObjectReference = true;
-            }
-        }
-
         public List<NodeOverride> ClearAllOverrides()
         {
             // Unregister handlers - must be done first!
@@ -424,9 +401,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-
-        // TODO: turn private
-        public void LinkToBase(IAssetNode sourceRootNode, IAssetNode targetRootNode)
+        private void LinkToBase(IAssetNode sourceRootNode, IAssetNode targetRootNode)
         {
             baseLinker.LinkGraph(sourceRootNode, targetRootNode);
         }
@@ -443,7 +418,7 @@ namespace SiliconStudio.Assets.Quantum
             return true;
         }
 
-        protected internal virtual object CloneValueFromBase(object value, IAssetNode node)
+        protected virtual object CloneValueFromBase(object value, IAssetNode node)
         {
             return CloneFromBase(value);
         }
@@ -534,7 +509,6 @@ namespace SiliconStudio.Assets.Quantum
             previousOverrides.Remove(e.Member);
             var node = (AssetMemberNode)e.Member;
             var overrideValue = node.GetContentOverride();
-            node.IsObjectReference = IsObjectReference(e.Member, Index.Empty, e.NewValue);
             // Link the node that has changed to its base.
             LinkToBase(node, (IAssetNode)node.BaseNode);
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, ItemId.Empty));

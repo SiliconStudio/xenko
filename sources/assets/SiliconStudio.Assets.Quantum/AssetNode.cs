@@ -736,8 +736,6 @@ namespace SiliconStudio.Assets.Quantum
 
         internal bool ResettingOverride { get; set; }
 
-        internal bool IsObjectReference { get; set; }
-
         public event EventHandler<EventArgs> OverrideChanging;
 
         public event EventHandler<EventArgs> OverrideChanged;

@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Quantum
         public void RegisterBaseToDerived(IAssetNode baseNode, IAssetNode derivedNode)
         {
             var ownerPart = derivedNode.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName);
-            var instanceId = (ownerPart?.Retrieve() as IIdentifiable)?.Id ?? Guid.Empty;
+            var instanceId = (ownerPart?.Retrieve() as IAssetPartDesign)?.Base?.InstanceId ?? Guid.Empty;
             AssetBaseToDerivedRegistry derivedRegistry;
             if (!baseToInstances.TryGetValue(instanceId, out derivedRegistry))
                 baseToInstances[instanceId] = derivedRegistry = new AssetBaseToDerivedRegistry(propertyGraph);
@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Quantum
         {
             if (derivedReferencerNode == null) throw new ArgumentNullException(nameof(derivedReferencerNode));
             var ownerPart = derivedReferencerNode.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName);
-            var instanceId = (ownerPart?.Retrieve() as IIdentifiable)?.Id ?? Guid.Empty;
+            var instanceId = (ownerPart?.Retrieve() as IAssetPartDesign)?.Base?.InstanceId ?? Guid.Empty;
             AssetBaseToDerivedRegistry derivedRegistry;
             if (!baseToInstances.TryGetValue(instanceId, out derivedRegistry))
                 return null;
