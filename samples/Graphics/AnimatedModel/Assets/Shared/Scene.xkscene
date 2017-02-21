@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 84efeed8-fdd2-4e9b-9cfb-d4ea3e5aa6aa
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 8d53bdc7-e8e9-4787-b777-58a26278b79a
@@ -168,16 +168,16 @@ Hierarchy:
                 Group: Group1
                 Components:
                     d8db6c5da878184da0683a2cef4e0a19: !TransformComponent
-                        Id: 5d6cdbd8-78a8-4d18-a068-3a2cef4e0a19
+                        Id: 41ca3886-2abb-4396-8ea5-49a22c6a12d8
                         Position: {X: -1.0, Y: 0.5, Z: -1.4}
                         Rotation: {X: 0.0, Y: 0.382683456, Z: 0.0, W: 0.9238795}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     1f8e1dc3f2536a45a02655ebe9720de5: !AnimatedModel.SetSpriteSource,AnimatedModel.Game
-                        Id: c31d8e1f-53f2-456a-a026-55ebe9720de5
+                        Id: cef7def1-bd18-4e01-a2c4-749543858beb
                         RenderFrame: 2355d4e2-1680-48ca-8ad6-34d291c1489d:RenderFrame
                     18d30692ec0eaa4bac05b1cd6e893efa: !SpriteComponent
-                        Id: 9206d318-0eec-4baa-ac05-b1cd6e893efa
+                        Id: 80d6e9aa-4d05-4132-90c1-3ed633fbbaac
                         SpriteProvider: !SpriteFromTexture
                             Texture: 99561296-5d13-4f43-b743-4f4c9bcf5502:Placeholder
                             PixelsPerUnit: 450.0

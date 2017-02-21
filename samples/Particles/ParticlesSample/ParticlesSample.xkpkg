@@ -1,7 +1,6 @@
 !Package
 Id: 2b920979-d010-44fa-a415-e52d97e51df3
 SerializedVersion: {Assets: 0.0.4}
-Tags: []
 Meta:
     Name: ParticlesSample
     Version: 1.0.0.0
@@ -10,7 +9,7 @@ Meta:
     RootNamespace: ParticlesSample
     Dependencies:
         -   Name: Xenko
-            Version: 1.9.0-beta
+            Version: 1.9.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

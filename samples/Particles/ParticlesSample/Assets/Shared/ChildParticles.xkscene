@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 71292a97-5a05-4865-9ac8-e113ffad9561
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 2b632eac-33e9-4d59-91cd-410162839997
@@ -115,13 +115,13 @@ Hierarchy:
                 Name: Stand (6)
                 Components:
                     e6457adafddcbc40a9b2dc4672fb10e8: !TransformComponent
-                        Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
+                        Id: 191e57a2-deaf-42ec-b8f7-f150f93eb88d
                         Position: {X: 3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
-                        Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Id: 625b0f22-ee02-45df-baba-a09e7ae1e08f
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials: {}
         -   Entity:
@@ -677,13 +677,13 @@ Hierarchy:
                 Name: Stand (7)
                 Components:
                     e6457adafddcbc40a9b2dc4672fb10e8: !TransformComponent
-                        Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
+                        Id: 2bb6e3ce-1a4f-42af-b1fa-ebae6e25b1d4
                         Position: {X: -3.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
-                        Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Id: 1a901449-acc9-47be-b572-37da6a0559c4
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials: {}
         -   Entity:
@@ -731,13 +731,13 @@ Hierarchy:
                 Name: Stand (8)
                 Components:
                     e6457adafddcbc40a9b2dc4672fb10e8: !TransformComponent
-                        Id: da7a45e6-dcfd-40bc-a9b2-dc4672fb10e8
+                        Id: d4fad31d-1096-4a1f-aaec-504fb5aaa245
                         Position: {X: -3.0, Y: 0.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     cf6083984b2a1d46b8c2297e3be13bf4: !ModelComponent
-                        Id: 988360cf-2a4b-461d-b8c2-297e3be13bf4
+                        Id: 86b6618c-e7de-46af-8017-bd8a6124d2db
                         Model: dd5840dc-2183-4a8d-8609-4c5f81fc42ae:Models/Stand
                         Materials: {}
         -   Entity:
@@ -1153,13 +1153,13 @@ Hierarchy:
                 Name: Colliding Particles
                 Components:
                     df4667ca4899b14aa8233099b697ba41: !TransformComponent
-                        Id: ca6746df-9948-4ab1-a823-3099b697ba41
+                        Id: 3bae27e2-53fc-4c7f-944f-a2961ed6cc99
                         Position: {X: 1.0, Y: 0.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     bf1fe4b13873014684062641dc83069a: !ParticleSystemComponent
-                        Id: b1e41fbf-7338-4601-8406-2641dc83069a
+                        Id: 2ce204cf-f65c-4b51-8826-fc316dfaec09
                         Control:
                             ResetSeconds: 0.0
                             Control: Play

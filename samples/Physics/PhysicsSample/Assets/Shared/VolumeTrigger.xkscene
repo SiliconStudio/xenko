@@ -1,6 +1,6 @@
 !SceneAsset
 Id: a5a4f13e-6366-43de-b071-a87c1dfff115
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 5e74f5af-2766-44b5-8e0c-b362a3b3590d
@@ -82,7 +82,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: cda9f3e4-5ea7-42c3-b749-c71420973c85/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: cda9f3e4-5ea7-42c3-b749-c71420973c85/bcf8d384-4569-441b-ab80-9a0b9c92cd5d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 4ef8e448-3dd6-4213-b207-f35a39e330fb
@@ -92,7 +92,7 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: 27ec0c28-732e-431e-8cd9-7314dc7ff3ea
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -190,13 +190,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: 894d5183-d171-4d03-982e-01f633a885c2
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 93336ed9-cf93-4e74-8da9-63df61f816db
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -215,11 +215,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: c359792b-982b-4ddb-a503-3fcb591313dd
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: d4b3e59f-154f-4762-8964-c27a35deae02
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -269,7 +269,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 9e7d905e-a425-441e-93af-82f619fb12c5/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 9e7d905e-a425-441e-93af-82f619fb12c5/5624d54a-a9a0-4f5d-a241-d79152218392
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 31484307-1472-485b-aec3-396a7826efcc
@@ -279,13 +279,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: cf7b78d8-ec27-4e4a-82aa-5554014d12c7
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 31538b07-a8e0-4ebf-9fb7-97e2135cdd30
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -304,11 +304,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 67737096-09b6-4269-a9fe-af34f6b6cffe
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: e96dbd0e-3cb0-4ff0-a7b3-1f8682b83f00
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -319,13 +319,13 @@ Hierarchy:
                 Name: WallRight
                 Components:
                     a20b9f94ad93e742bb1c89b6e1d6aee7: !TransformComponent
-                        Id: 949f0ba2-93ad-42e7-bb1c-89b6e1d6aee7
+                        Id: 6983c527-dfdb-4195-906a-a2b8d139e742
                         Position: {X: 15.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.707106769, W: 0.707106769}
                         Scale: {X: 0.3, Y: 0.4, Z: 0.4}
                         Children: {}
                     98dd040862ed394997c363d697c8f29f: !StaticColliderComponent
-                        Id: 0804dd98-ed62-4939-97c3-63d697c8f29f
+                        Id: 8bbd58aa-719b-4862-94bf-8edd54caa9a5
                         CanCollideWith: DefaultFilter, SensorTrigger, CharacterFilter
                         CanSleep: true
                         Restitution: 0.0
@@ -348,7 +348,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: e4f55f46-c077-42c5-911e-bde90510fc88/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: e4f55f46-c077-42c5-911e-bde90510fc88/d6aee1ec-d195-42c0-95ef-9988c0495b2e
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 18051666-bb22-4986-b371-72d21899b411
@@ -369,13 +369,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: 5624d54a-a9a0-4f5d-a241-d79152218392
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: f15c0263-e0ef-4b40-b4a1-d78af5ada570
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -394,11 +394,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: ee0d6490-adb2-4133-9d5e-bb2c1e45121c
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: 75e33397-8bf0-4214-8f3b-8f7c462fdde9
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -409,13 +409,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: 8a12c1a0-baac-407b-a43c-5bba1cfc5596
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: b2da8550-7dd6-419c-973e-e1bcc1f88f26
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -434,11 +434,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: f8ee20aa-b21d-4d19-87a9-e89b2858527d
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: 78a884b0-37d2-420d-b530-0063d6ae73f5
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -454,7 +454,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 416a74a2-d5f7-4476-a822-50c85dc7321e/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 416a74a2-d5f7-4476-a822-50c85dc7321e/894d5183-d171-4d03-982e-01f633a885c2
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 56669c47-e2b6-45e3-91f4-a8b6acd5d039
@@ -469,7 +469,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: a895e017-7954-4d48-8600-5c413bed9053/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: a895e017-7954-4d48-8600-5c413bed9053/8a12c1a0-baac-407b-a43c-5bba1cfc5596
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: bc5f26af-6469-4cf0-a790-bd6a14871134
@@ -503,7 +503,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 5902c9d2-d95c-40e4-bee8-8b2964a3a986/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 5902c9d2-d95c-40e4-bee8-8b2964a3a986/cf7b78d8-ec27-4e4a-82aa-5554014d12c7
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: c3724f85-5c97-40f5-9705-4df71886b546
@@ -576,7 +576,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: e314077a-b44f-43c3-8abd-8989459e2d96/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: e314077a-b44f-43c3-8abd-8989459e2d96/2a077ad1-82f8-4be7-802b-0cee117557c9
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: a3b24894-59b3-47d9-88eb-783d547ae444
@@ -586,13 +586,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: bcf8d384-4569-441b-ab80-9a0b9c92cd5d
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 9d35a335-68ae-4f40-ad43-6168933ef813
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -611,11 +611,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 3c730cd9-bd7f-467e-8e70-2bd627b9dc00
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: c4b8a366-d8b5-4541-aa01-c5102e86c8da
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -665,7 +665,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 27aa568d-fd34-4711-82e3-4aa2a95ee63e
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -684,11 +684,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 991c1f68-c1e6-4fe9-b3b0-b7769531513c
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: 142c27b5-02dd-418b-a50c-0f166f853663
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -699,13 +699,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: 2a077ad1-82f8-4be7-802b-0cee117557c9
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 21ed55ac-d912-4c62-96bc-6c9e83a85ce4
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -724,11 +724,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 4bb9512a-d9a2-42b4-9c7b-d4c75ec34fe5
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: 6f1102bb-b6d2-4a4e-aead-8477c3ff247c
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -739,13 +739,13 @@ Hierarchy:
                 Name: crate
                 Components:
                     41f03e2e802fb24d95a774c7f12119bd: !TransformComponent
-                        Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                        Id: d6aee1ec-d195-42c0-95ef-9988c0495b2e
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     b8c6c588b5610144adb1357b024c4015: !RigidbodyComponent
-                        Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
+                        Id: 72d7d166-640c-4699-9da9-cbaf55c20c47
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -764,11 +764,11 @@ Hierarchy:
                             7d102f94372bb148b1442fd78041aa91: !ColliderShapeAssetDesc
                                 Shape: cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     f8939861c2b39c4494f061673c9dfdcd: !ModelComponent
-                        Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Id: 6b934a09-793a-45b3-b060-91427abf3021
                         Model: e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials: {}
                     1265a4274509e643b3a143f3c17ccd84: !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        Id: 22508d91-adba-4948-8392-1b0b4540fe93
                         TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
@@ -784,7 +784,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            41f03e2e802fb24d95a774c7f12119bd: 23e1d796-b1f5-4cb4-8de5-d1a703205f92/2e3ef041-2f80-4db2-95a7-74c7f12119bd
+                            41f03e2e802fb24d95a774c7f12119bd: 23e1d796-b1f5-4cb4-8de5-d1a703205f92/27ec0c28-732e-431e-8cd9-7314dc7ff3ea
             Base:
                 BasePartAsset: e13cbc01-7701-438b-b6d4-c97e66098dd8:Colliders
                 BasePartId: 9bee9b07-1441-4f50-b6df-99932f3b0395
@@ -794,13 +794,13 @@ Hierarchy:
                 Name: Ground
                 Components:
                     a20b9f94ad93e742bb1c89b6e1d6aee7: !TransformComponent
-                        Id: 949f0ba2-93ad-42e7-bb1c-89b6e1d6aee7
+                        Id: 620b5fe2-7ad9-4286-b5ba-e538bf780801
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 0.3, Y: 0.4, Z: 0.4}
                         Children: {}
                     98dd040862ed394997c363d697c8f29f: !StaticColliderComponent
-                        Id: 0804dd98-ed62-4939-97c3-63d697c8f29f
+                        Id: 75f76ce0-13fa-4cf0-96a7-31c16e64f578
                         CanCollideWith: DefaultFilter, SensorTrigger, CharacterFilter
                         CanSleep: true
                         Restitution: 0.0

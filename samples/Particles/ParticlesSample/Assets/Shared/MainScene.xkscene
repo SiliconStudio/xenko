@@ -1,6 +1,6 @@
 !SceneAsset
 Id: b4210f42-14a3-4917-80b6-006d7f81b1c6
-SerializedVersion: {Xenko: 1.9.0-beta05}
+SerializedVersion: {Xenko: 1.9.0-beta06}
 Tags: []
 SceneSettings:
     Id: 2b632eac-33e9-4d59-91cd-410162839997
@@ -308,13 +308,13 @@ Hierarchy:
                 Name: Smoke
                 Components:
                     df4667ca4899b14aa8233099b697ba41: !TransformComponent
-                        Id: ca6746df-9948-4ab1-a823-3099b697ba41
+                        Id: c6acdf54-ec9d-4342-8a8b-5ef8271e9ebe
                         Position: {X: -4.0, Y: 0.0, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     bf1fe4b13873014684062641dc83069a: !ParticleSystemComponent
-                        Id: b1e41fbf-7338-4601-8406-2641dc83069a
+                        Id: 2308302d-00ef-4d72-9557-91f6d7aec940
                         Control:
                             ResetSeconds: 2.0
                             Control: Play
@@ -469,13 +469,13 @@ Hierarchy:
                 Name: standCurved
                 Components:
                     ecc6ca3efcea894d804d6cd8aae59097: !TransformComponent
-                        Id: 3ecac6ec-eafc-4d89-804d-6cd8aae59097
+                        Id: ade7bad5-779d-443b-b076-c36e05702e22
                         Position: {X: 0.0, Y: -0.4, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children: {}
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
-                        Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
+                        Id: 3a1e7fed-2d62-406b-9495-0f26e0e3636a
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials: {}
         -   Entity:
@@ -523,13 +523,13 @@ Hierarchy:
                 Name: standCurved (2)
                 Components:
                     ecc6ca3efcea894d804d6cd8aae59097: !TransformComponent
-                        Id: 3ecac6ec-eafc-4d89-804d-6cd8aae59097
+                        Id: 365e922b-be30-44e6-b394-202b5bee6856
                         Position: {X: 4.0, Y: -0.4, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children: {}
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
-                        Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
+                        Id: 35d5d332-9eb3-45bf-a28a-a73de8d8a799
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials: {}
         -   Entity:
@@ -552,13 +552,13 @@ Hierarchy:
                 Name: standCurved (4)
                 Components:
                     ecc6ca3efcea894d804d6cd8aae59097: !TransformComponent
-                        Id: 3ecac6ec-eafc-4d89-804d-6cd8aae59097
+                        Id: 12bd105f-9f01-420f-b6b2-02d7582a20a5
                         Position: {X: -4.0, Y: -0.4, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children: {}
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
-                        Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
+                        Id: 9a04833b-ff4d-4834-98e9-6f5517d1e98c
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials: {}
         -   Entity:
@@ -566,13 +566,13 @@ Hierarchy:
                 Name: Big Fire
                 Components:
                     df4667ca4899b14aa8233099b697ba41: !TransformComponent
-                        Id: ca6746df-9948-4ab1-a823-3099b697ba41
+                        Id: 25eb44a7-80b4-407b-9067-5fac933dff49
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     bf1fe4b13873014684062641dc83069a: !ParticleSystemComponent
-                        Id: b1e41fbf-7338-4601-8406-2641dc83069a
+                        Id: 52375a8b-d8e8-45b1-8af3-94f2e7af37e1
                         Control:
                             ResetSeconds: 0.0
                             Control: Play
@@ -893,13 +893,13 @@ Hierarchy:
                 Name: Colliding Particles
                 Components:
                     df4667ca4899b14aa8233099b697ba41: !TransformComponent
-                        Id: ca6746df-9948-4ab1-a823-3099b697ba41
+                        Id: 61687b76-9d1d-41c4-975b-e9a3fd353137
                         Position: {X: 3.70162416, Y: 0.208704561, Z: 5.687781}
                         Rotation: {X: 0.0, Y: 0.611050248, Z: 0.0, W: 0.7915918}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     bf1fe4b13873014684062641dc83069a: !ParticleSystemComponent
-                        Id: b1e41fbf-7338-4601-8406-2641dc83069a
+                        Id: 2e09a81c-75d4-4515-b7bb-f7216c84f571
                         Control:
                             ResetSeconds: 0.0
                             Control: Play
@@ -1037,13 +1037,13 @@ Hierarchy:
                 Name: standCurved (5)
                 Components:
                     ecc6ca3efcea894d804d6cd8aae59097: !TransformComponent
-                        Id: 3ecac6ec-eafc-4d89-804d-6cd8aae59097
+                        Id: c1bbfde0-5ad4-40bd-9e11-0fe419636805
                         Position: {X: 4.0, Y: -0.4, Z: -4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children: {}
                     033f7a2e5327c04085ab60b209d14a00: !ModelComponent
-                        Id: 2e7a3f03-2753-40c0-85ab-60b209d14a00
+                        Id: c6957fce-5361-478b-947f-d928d076b2cd
                         Model: 9a60e886-acea-482a-98b1-dd0d90ed6568:Models/standCurved
                         Materials: {}
         -   Entity:
@@ -1051,13 +1051,13 @@ Hierarchy:
                 Name: Simple Fountain
                 Components:
                     df4667ca4899b14aa8233099b697ba41: !TransformComponent
-                        Id: ca6746df-9948-4ab1-a823-3099b697ba41
+                        Id: d9da02b7-fa13-4c29-9ded-f712ed988c76
                         Position: {X: -4.0, Y: 0.0, Z: 4.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
                     bf1fe4b13873014684062641dc83069a: !ParticleSystemComponent
-                        Id: b1e41fbf-7338-4601-8406-2641dc83069a
+                        Id: 5b2973d3-e0be-438f-b72e-2c2a1e65d91f
                         Control:
                             ResetSeconds: 0.0
                             Control: Play
