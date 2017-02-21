@@ -27,6 +27,8 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
+        protected bool CanExpand => HasItems;
+
         /// <summary>
         /// Raised when this <see cref="ExpandableItemsControl"/> is expanded.
         /// </summary>
