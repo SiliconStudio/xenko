@@ -10,6 +10,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Assets.Scripts;
@@ -18,6 +19,18 @@ using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets.Rendering
 {
+    // TODO: this list is here just to easily identify object references. It can be removed once we have access to the path from IsObjectReference
+    [DataContract]
+    public class RenderStageCollection : List<RenderStage>
+    {
+    }
+
+    // TODO: this list is here just to easily identify object references. It can be removed once we have access to the path from IsObjectReference
+    [DataContract]
+    public class SharedRendererCollection : TrackingCollection<ISharedRenderer>
+    {
+    }
+
     [DataContract("GraphicsCompositorAsset")]
     [Display(82, "Graphics Compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
@@ -28,7 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     //       be a member attribute on RenderStages such as [ContainFullType(typeof(RenderStage))] and everywhere else is references
     [AssetPartReference(typeof(ISharedRenderer))]
     [AssetCompiler(typeof(GraphicsCompositorAssetCompiler))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
     public class GraphicsCompositorAsset : AssetComposite
     {
         private const string CurrentVersion = "1.10.0-beta01";
@@ -52,15 +64,15 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        [AssetPartContained(typeof(RenderStage))]
-        public List<RenderStage> RenderStages { get; } = new List<RenderStage>();
+        //[AssetPartContained(typeof(RenderStage))]
+        public RenderStageCollection RenderStages { get; } = new RenderStageCollection();
 
         /// <summary>
         /// The list of render features.
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        [AssetPartContained(typeof(RootRenderFeature))]
+        //[AssetPartContained(typeof(RootRenderFeature))]
         public List<RootRenderFeature> RenderFeatures { get; } = new List<RootRenderFeature>();
 
         /// <summary>
@@ -68,8 +80,8 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// </summary>
         [Category]
         [MemberCollection(CanReorderItems = true, NotNullItems = true)]
-        [AssetPartContained(typeof(ISharedRenderer))]
-        public List<ISharedRenderer> SharedRenderers { get; } = new List<ISharedRenderer>();
+        //[AssetPartContained(typeof(ISharedRenderer))]
+        public SharedRendererCollection SharedRenderers { get; } = new SharedRendererCollection();
 
         /// <summary>
         /// The entry point for the game compositor.

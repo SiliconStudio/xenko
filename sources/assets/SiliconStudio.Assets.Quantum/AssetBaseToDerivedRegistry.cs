@@ -17,11 +17,34 @@ namespace SiliconStudio.Assets.Quantum
 
         public void RegisterBaseToDerived(IAssetNode baseNode, IAssetNode derivedNode)
         {
-            if (baseNode != null)
+            var baseValue = baseNode?.Retrieve();
+            if (baseValue == null)
+                return;
+
+            if (!propertyGraph.IsObjectReference(baseNode, Index.Empty, baseValue))
             {
-                if (!propertyGraph.IsObjectReference(baseNode, Index.Empty, baseNode.Retrieve()))
+                if (baseValue is IIdentifiable)
                 {
                     baseToDerived[baseNode] = derivedNode;
+                }
+                var objectNode = derivedNode as IObjectNode;
+                if (objectNode?.ItemReferences != null)
+                {
+                    foreach (var reference in objectNode.ItemReferences)
+                    {
+                        var target = propertyGraph.baseLinker.FindTargetReference(derivedNode, baseNode, reference);
+                        if (target == null)
+                            continue;
+
+                        baseValue = target.TargetNode?.Retrieve();
+                        if (!propertyGraph.IsObjectReference(baseNode, target.Index, baseValue))
+                        {
+                            if (baseValue is IIdentifiable)
+                            {
+                                baseToDerived[(IAssetNode)target.TargetNode] = (IAssetNode)objectNode.IndexedTarget(reference.Index);
+                            }
+                        }
+                    }
                 }
             }
         }

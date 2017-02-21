@@ -49,7 +49,8 @@ namespace SiliconStudio.Assets.Quantum
         private readonly Dictionary<IGraphNode, ItemId> removedItemIds = new Dictionary<IGraphNode, ItemId>();
 
         protected readonly Asset Asset;
-        private readonly AssetToBaseNodeLinker baseLinker;
+        // TODO: turn back private
+        internal readonly AssetToBaseNodeLinker baseLinker;
         private readonly GraphNodeChangeListener nodeListener;
         private AssetPropertyGraph baseGraph;
         private readonly Dictionary<IAssetNode, NodeChangeHandlers> baseLinkedNodes = new Dictionary<IAssetNode, NodeChangeHandlers>();
@@ -136,10 +137,17 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(RootNode);
         }
 
-        public void ReconcileWithBase(IAssetNode rootNode)
+        private void ReconcileWithBase(IAssetNode rootNode)
         {
+            // Two passes: first pass will reconcile almost everything, but skip object reference.
+            // The reason is that the target of the reference might not exist yet (might need to be reconcilied)
             var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node);
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, false);
+            visitor.Visit(rootNode);
+            // Second pass: this one should only reconcile remaining object reference.
+            // TODO: these two passes could be improved!
+            visitor = CreateReconcilierVisitor();
+            visitor.Visiting += (node, path) => ReconcileWithBaseNode((IAssetNode)node, true);
             visitor.Visit(rootNode);
         }
 
@@ -150,8 +158,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
         public void ResetOverride(IAssetNode rootNode, Index indexToReset)
         {
-            var visitor = CreateReconcilierVisitor();
-            visitor.SkipRootNode = true;
+            var visitor = new AssetGraphVisitorBase(this) { SkipRootNode = true };
             visitor.Visiting += (node, path) =>
             {
                 var memberNode = node as AssetMemberNode;
@@ -184,9 +191,10 @@ namespace SiliconStudio.Assets.Quantum
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
+        // TODO: this should be removable!
         public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
-            return new GraphVisitorBase();
+            return new AssetGraphVisitorBase(this);
         }
 
         public virtual IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
@@ -530,6 +538,8 @@ namespace SiliconStudio.Assets.Quantum
             var node = (AssetMemberNode)e.Member;
             var overrideValue = node.GetContentOverride();
             node.IsObjectReference = IsObjectReference(e.Member, Index.Empty, e.NewValue);
+            // Link the node that has changed to its base.
+            LinkToBase(node, (IAssetNode)node.BaseNode);
             Changed?.Invoke(sender, new AssetMemberNodeChangeEventArgs(e, previousOverride, overrideValue, ItemId.Empty));
         }
 
@@ -588,6 +598,10 @@ namespace SiliconStudio.Assets.Quantum
                 }
             }
 
+            // Link the node that has changed to its base.
+            // TODO: can link only the changed item instead of the whole collection
+            LinkToBase(node, (IAssetNode)node.BaseNode);
+
             ItemChanged?.Invoke(sender, new AssetItemNodeChangeEventArgs(e, previousOverride, overrideValue, itemId));
         }
 
@@ -600,16 +614,13 @@ namespace SiliconStudio.Assets.Quantum
             UpdatingPropertyFromBase = true;
             // TODO: we want to refresh the base only starting from the modified node!
             RefreshBase(baseGraph);
-            var rootNode = (IAssetNode)node;
-            var visitor = CreateReconcilierVisitor();
-            visitor.Visiting += (assetNode, path) => ReconcileWithBaseNode((IAssetNode)assetNode);
-            visitor.Visit(rootNode);
+            ReconcileWithBase((IAssetNode)node);
             UpdatingPropertyFromBase = false;
 
             BaseContentChanged?.Invoke(e, node);
         }
 
-        private void ReconcileWithBaseNode(IAssetNode assetNode)
+        private void ReconcileWithBaseNode(IAssetNode assetNode, bool reconcileObjectReference)
         {
             var memberNode = assetNode as AssetMemberNode;
             var objectNode = assetNode as IAssetObjectNodeInternal;
@@ -626,7 +637,7 @@ namespace SiliconStudio.Assets.Quantum
                 if (!memberNode.IsContentOverridden())
                 {
                     memberNode.ResettingOverride = true;
-                    if (ShouldReconcileMember(memberNode))
+                    if (ShouldReconcileMember(memberNode, reconcileObjectReference))
                     {
                         object clonedValue;
                         // Object references
@@ -720,7 +731,7 @@ namespace SiliconStudio.Assets.Quantum
                             // Skip it if it's overridden
                             if (!objectNode.IsItemOverridden(localIndex))
                             {
-                                if (ShouldReconcileItem(objectNode, localIndex, index))
+                                if (ShouldReconcileItem(objectNode, localIndex, index, reconcileObjectReference))
                                 {
                                     object clonedValue;
                                     var baseItemValue = objectNode.BaseNode.Retrieve(index);
@@ -806,7 +817,7 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        private bool ShouldReconcileMember([NotNull] IAssetMemberNode memberNode)
+        private bool ShouldReconcileMember([NotNull] IAssetMemberNode memberNode, bool reconcileObjectReference)
         {
             var localValue = memberNode.Retrieve();
             var baseValue = memberNode.BaseNode.Retrieve();
@@ -814,6 +825,9 @@ namespace SiliconStudio.Assets.Quantum
             // Object references
             if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, baseValue))
             {
+                if (!reconcileObjectReference)
+                    return false;
+
                 var derivedTarget = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                 return !Equals(localValue, derivedTarget);
             }
@@ -836,7 +850,7 @@ namespace SiliconStudio.Assets.Quantum
             return !Equals(localValue, baseValue);
         }
 
-        private bool ShouldReconcileItem(IAssetObjectNode node, Index localIndex, Index baseIndex)
+        private bool ShouldReconcileItem(IAssetObjectNode node, Index localIndex, Index baseIndex, bool reconcileObjectReference)
         {
             var localValue = node.Retrieve(localIndex);
             var baseValue = node.BaseNode.Retrieve(baseIndex);
@@ -844,6 +858,9 @@ namespace SiliconStudio.Assets.Quantum
             // Object references
             if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, baseValue))
             {
+                if (!reconcileObjectReference)
+                    return false;
+
                 var derivedTarget = BaseToDerivedRegistry.ResolveFromBase(baseValue, node);
                 return !Equals(localValue, derivedTarget);
             }

@@ -154,10 +154,11 @@ namespace SiliconStudio.Quantum
         /// <remarks>
         /// The source reference can either be directly the <see cref="IGraphNode.TargetReference"/> of the source node if this reference is
         /// an <see cref="ObjectReference"/>, or one of the reference contained inside <see cref="IGraphNode.ItemReferences"/> if this reference
-        /// is a <see cref="ReferenceEnumerable"/>. The <see cref="IReference.Index"/> property indicates the index of the reference in this case.
+        /// is a <see cref="ReferenceEnumerable"/>. The <see cref="Index"/> property indicates the index of the reference in this case.
         /// The default implementation returns a reference in the target node that matches the index of the source reference, if available.
         /// </remarks>
-        protected virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+        // TODO: turn back protected!
+        public virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
         {
             if (sourceNode is IMemberNode)
                 return (targetNode as IMemberNode)?.TargetReference;

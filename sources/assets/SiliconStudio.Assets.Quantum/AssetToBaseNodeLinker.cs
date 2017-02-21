@@ -26,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum
             return propertyGraph.FindTarget(sourceNode, defaultTarget);
         }
 
-        protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+        public override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
         {
             // Not identifiable - default applies
             if (sourceReference.Index.IsEmpty || sourceReference.ObjectValue == null)

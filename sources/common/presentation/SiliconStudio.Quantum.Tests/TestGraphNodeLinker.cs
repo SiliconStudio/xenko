@@ -103,7 +103,7 @@ namespace SiliconStudio.Quantum.Tests
 
         public class CustomFindTargetReferenceLinker : TestLinker
         {
-            protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+            public override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
             {
                 if (sourceReference.Index.IsEmpty)
                     return base.FindTargetReference(sourceNode, targetNode, sourceReference);

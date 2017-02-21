@@ -25,7 +25,7 @@ MyObject1:
     Id: 00000003-0003-0000-0300-000003000000
 MyObject2: ref!! 00000003-0003-0000-0300-000003000000
 ";
-
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObject2;
             context.DerivedGraph.ReconcileWithBase();
@@ -131,7 +131,7 @@ MyObject2: ref!! 00000004-0004-0004-0400-000004000000
             Assert.AreNotEqual(context.BaseAsset.MyObject1, context.DerivedAsset.MyObject1);
             Assert.AreNotEqual(context.BaseAsset.MyObject2, context.DerivedAsset.MyObject2);
             Assert.NotNull(context.DerivedAsset.MyObject1);
-            Assert.AreNotEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObject2);
+            Assert.AreEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObject2);
         }
 
         [Test]
@@ -266,7 +266,79 @@ MyObjects:
             Assert.AreNotEqual(context.BaseAsset.MyObject1, context.DerivedAsset.MyObject1);
             Assert.AreNotEqual(context.BaseAsset.MyObjects[0], context.DerivedAsset.MyObjects[0]);
             Assert.NotNull(context.DerivedAsset.MyObject1);
-            Assert.AreNotEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObjects[0]);
+            Assert.AreEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObjects[0]);
         }
+
+        [Test]
+        public void TestAllMissing()
+        {
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+MyObject1:
+    Value: MyInstance
+    Id: 00000002-0002-0000-0200-000002000000
+MyObject2: ref!! 00000002-0002-0000-0200-000002000000
+";
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 20000000-0000-0000-0000-000000000000
+Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+";
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
+            context.DerivedGraph.ReconcileWithBase();
+            Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObject1.Id);
+            Assert.AreEqual(context.BaseAsset.MyObject1, context.BaseAsset.MyObject2);
+            Assert.AreNotEqual(GuidGenerator.Get(2), context.DerivedAsset.MyObject1.Id);
+            Assert.AreEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObject2);
+        }
+
+        [Test]
+        public void TestAllMissingInvertOrder()
+        {
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+MyObject1: ref!! 00000002-0002-0000-0200-000002000000
+MyObject2:
+    Value: MyInstance
+    Id: 00000002-0002-0000-0200-000002000000
+";
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 20000000-0000-0000-0000-000000000000
+Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+";
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject1);
+            var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
+            context.DerivedGraph.ReconcileWithBase();
+            Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObject1.Id);
+            Assert.AreEqual(context.BaseAsset.MyObject1, context.BaseAsset.MyObject2);
+            Assert.AreNotEqual(GuidGenerator.Get(2), context.DerivedAsset.MyObject1.Id);
+            Assert.AreEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObject2);
+        }
+
+        [Test]
+        public void TestAllMissingInList()
+        {
+            const string baseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 00000001-0001-0000-0100-000001000000
+MyObjects:
+    0a0000000a0000000a0000000a000000:
+        Value: MyInstance
+        Id: 00000002-0002-0000-0200-000002000000
+    0a0000000b0000000b0000000b000000: ref!! 00000002-0002-0000-0200-000002000000
+";
+            const string derivedYaml = @"!SiliconStudio.Assets.Quantum.Tests.Types+MyAssetWithRef,SiliconStudio.Assets.Quantum.Tests
+Id: 20000000-0000-0000-0000-000000000000
+Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
+";
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => index.IsInt && index.Int == 1;
+            var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
+            context.DerivedGraph.ReconcileWithBase();
+            Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObjects[0].Id);
+            Assert.AreEqual(context.BaseAsset.MyObjects[1], context.BaseAsset.MyObjects[0]);
+            Assert.AreEqual(2, context.DerivedAsset.MyObjects.Count);
+            Assert.AreNotEqual(GuidGenerator.Get(2), context.DerivedAsset.MyObjects[0].Id);
+            Assert.AreEqual(context.DerivedAsset.MyObjects[1], context.DerivedAsset.MyObjects[0]);
+        }
+
     }
 }
