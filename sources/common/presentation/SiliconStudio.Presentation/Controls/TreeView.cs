@@ -212,6 +212,20 @@ namespace SiliconStudio.Presentation.Controls
             item.ForceFocus();
         }
 
+        internal virtual void SelectParentFromKey()
+        {
+            var item = GetFocusedItem()?.ParentTreeViewItem;
+            if (item == null) return;
+            
+            // if ctrl is pressed just focus it, so it can be selected by space. Otherwise select it.
+            if (!IsControlKeyDown)
+            {
+                SelectSingleItem(item);
+            }
+
+            item.ForceFocus();
+        }
+
         internal virtual void SelectPreviousFromKey()
         {
             var items = TreeViewElementFinder.FindAll(this, true).ToList();
