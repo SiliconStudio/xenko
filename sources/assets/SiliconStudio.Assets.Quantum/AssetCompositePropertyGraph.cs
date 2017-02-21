@@ -1,3 +1,4 @@
+using System;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Quantum;
 
@@ -10,6 +11,7 @@ namespace SiliconStudio.Assets.Quantum
         {
         }
 
+        [Obsolete("This method will be removed soon")]
         public virtual bool IsReferencedPart(IMemberNode member, IGraphNode targetNode)
         {
             return false;

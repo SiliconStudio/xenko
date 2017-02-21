@@ -238,26 +238,6 @@ namespace SiliconStudio.Assets.Quantum
             // default implementation does nothing
         }
 
-        protected internal override object CloneValueFromBase(object value, IAssetNode node)
-        {
-            var part = value as TAssetPart;
-            // Part reference
-            if (part != null)
-            {
-                // We need to find out for which entity we are cloning this (other) entity
-                var owner = (TAssetPartDesign)node?.GetContent(NodesToOwnerPartVisitor.OwnerPartContentName).Retrieve();
-                if (owner != null)
-                {
-                    // Then instead of creating a clone, we just return the corresponding part in this asset (in term of base and base instance)
-                    var partInDerived = AssetHierarchy.Hierarchy.Parts.FirstOrDefault(x => x.Base?.BasePartId == part.Id && x.Base?.InstanceId == owner.Base?.InstanceId);
-                    return partInDerived?.Part;
-                }
-            }
-
-            var result = base.CloneValueFromBase(value, node);
-            return result;
-        }
-
         public override GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
