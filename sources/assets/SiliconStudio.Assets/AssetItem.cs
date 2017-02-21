@@ -186,6 +186,7 @@ namespace SiliconStudio.Assets
                 SourceFolder = SourceFolder,
                 SourceProject = SourceProject,
             };
+            YamlMetadata.CopyInto(item.YamlMetadata);
             return item;
         }
 
