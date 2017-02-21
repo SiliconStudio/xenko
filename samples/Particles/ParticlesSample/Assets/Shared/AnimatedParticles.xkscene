@@ -633,11 +633,6 @@ Hierarchy:
                     61ee314d4a66904a9544cf5405d608c8: !CameraComponent
                         Id: 4d31ee61-664a-4a90-9544-cf5405d608c8
                         Projection: Perspective
-                    2ab5a7ab8c6a394891c8d9b17504d930: !ParticlesSample.NextSceneScript,ParticlesSample.Game
-                        Id: aba7b52a-6a8c-4839-91c8-d9b17504d930
-                        Next: null
-                        Previous: null
-                        Font: null
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation
