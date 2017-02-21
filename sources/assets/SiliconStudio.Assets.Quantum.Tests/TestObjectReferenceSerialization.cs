@@ -17,11 +17,11 @@ namespace SiliconStudio.Assets.Quantum.Tests
         {
         }
 
-        public static Func<IGraphNode, Index, object, bool> IsObjectReferenceFunc { get; set; }
+        public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index)
         {
-            return IsObjectReferenceFunc?.Invoke(targetNode, index, value) ?? base.IsObjectReference(targetNode, index, value);
+            return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index);
         }
     }
 
@@ -60,7 +60,7 @@ MyNonIdObjects: []
         [Test]
         public void TestSimpleReference()
         {
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) =>
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) =>
             {
                 return (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             };

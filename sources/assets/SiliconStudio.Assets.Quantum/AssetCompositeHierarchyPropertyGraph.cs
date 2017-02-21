@@ -222,7 +222,7 @@ namespace SiliconStudio.Assets.Quantum
                 if (identifiable == null)
                     return;
 
-                if (propertyGraph.IsObjectReference(node, index, node.Retrieve()))
+                if (propertyGraph.IsObjectReference(node, index))
                     externalReferences.Add(identifiable);
                 else
                     internalReferences.Add(identifiable);
@@ -243,11 +243,12 @@ namespace SiliconStudio.Assets.Quantum
             return new AssetCompositeHierarchyPartVisitor<TAssetPartDesign, TAssetPart>(this);
         }
 
-        public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        public override bool IsObjectReference(IGraphNode targetNode, Index index)
         {
             if (targetNode is IObjectNode && index.IsEmpty)
-                return base.IsObjectReference(targetNode, index, value);
+                return base.IsObjectReference(targetNode, index);
 
+            var value = targetNode.Retrieve(index);
             if (value is TAssetPart)
             {
                 // Check if we're the part referenced by a part design - other cases are references
@@ -255,7 +256,7 @@ namespace SiliconStudio.Assets.Quantum
                 return member == null || member.Parent.Type != typeof(TAssetPartDesign);
             }
 
-            return base.IsObjectReference(targetNode, index, value);
+            return base.IsObjectReference(targetNode, index);
         }
 
 

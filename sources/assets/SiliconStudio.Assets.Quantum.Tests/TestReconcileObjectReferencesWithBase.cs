@@ -25,7 +25,7 @@ MyObject1:
     Id: 00000003-0003-0000-0300-000003000000
 MyObject2: ref!! 00000003-0003-0000-0300-000003000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObject2;
             context.DerivedGraph.ReconcileWithBase();
@@ -57,7 +57,7 @@ MyObject3:
     Value: MyModifiedInstance
     Id: 00000004-0004-0000-0400-000004000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObject2;
             Assert.AreNotEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObject2);
@@ -93,7 +93,7 @@ MyObject3:
     Value: MyInstance
     Id: 00000004-0004-0000-0400-000004000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObject2;
             Assert.AreEqual(context.DerivedAsset.MyObject3, context.DerivedAsset.MyObject2);
@@ -123,7 +123,7 @@ Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 MyObject1: null
 MyObject2: ref!! 00000004-0004-0004-0400-000004000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObject2;
             context.DerivedGraph.ReconcileWithBase();
@@ -188,7 +188,7 @@ MyObject2:
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000004-0004-0000-0400-000004000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IObjectNode)?.ItemReferences != null;
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IObjectNode)?.ItemReferences != null;
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObjects[0];
             Assert.AreNotEqual(context.DerivedAsset.MyObject1, context.DerivedAsset.MyObjects[0]);
@@ -226,7 +226,7 @@ MyObject2:
 MyObjects:
     0a0000000a0000000a0000000a000000*: ref!! 00000004-0004-0000-0400-000004000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IObjectNode)?.ItemReferences != null;
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IObjectNode)?.ItemReferences != null;
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObjects[0];
             Assert.AreEqual(context.DerivedAsset.MyObject2, context.DerivedAsset.MyObjects[0]);
@@ -258,7 +258,7 @@ MyObject1: null
 MyObjects:
     0a0000000a0000000a0000000a000000: ref!! 00000002-0002-0000-0200-000002000000
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IObjectNode)?.ItemReferences != null;
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IObjectNode)?.ItemReferences != null;
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             var prevInstance = context.DerivedAsset.MyObjects[0];
             context.DerivedGraph.ReconcileWithBase();
@@ -283,7 +283,7 @@ MyObject2: ref!! 00000002-0002-0000-0200-000002000000
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject2);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObject1.Id);
@@ -306,7 +306,7 @@ MyObject2:
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject1);
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => (targetNode as IMemberNode)?.Name == nameof(Types.MyAssetWithRef.MyObject1);
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObject1.Id);
@@ -330,7 +330,7 @@ MyObjects:
 Id: 20000000-0000-0000-0000-000000000000
 Archetype: 10000000-0000-0000-0000-000000000000:MyAsset
 ";
-            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index, value) => index.IsInt && index.Int == 1;
+            AssetWithRefPropertyGraph.IsObjectReferenceFunc = (targetNode, index) => index.IsInt && index.Int == 1;
             var context = DeriveAssetTest<Types.MyAssetWithRef>.LoadFromYaml(baseYaml, derivedYaml);
             context.DerivedGraph.ReconcileWithBase();
             Assert.AreEqual(GuidGenerator.Get(2), context.BaseAsset.MyObjects[0].Id);

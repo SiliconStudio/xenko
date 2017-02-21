@@ -180,7 +180,7 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(rootNode);
         }
 
-        public virtual bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+        public virtual bool IsObjectReference(IGraphNode targetNode, Index index)
         {
             return false;
         }
@@ -610,7 +610,7 @@ namespace SiliconStudio.Assets.Quantum
                     {
                         object clonedValue;
                         // Object references
-                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, baseValue))
+                        if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty))
                             clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseValue, memberNode);
                         else
                             clonedValue = CloneValueFromBase(baseValue, assetNode);
@@ -705,7 +705,7 @@ namespace SiliconStudio.Assets.Quantum
                                     object clonedValue;
                                     var baseItemValue = objectNode.BaseNode.Retrieve(index);
                                     // Object references
-                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index, baseItemValue))
+                                    if (baseItemValue is IIdentifiable && IsObjectReference(objectNode.BaseNode, index))
                                         clonedValue = BaseToDerivedRegistry.ResolveFromBase(baseItemValue, objectNode);
                                     else
                                         clonedValue = CloneValueFromBase(baseItemValue, assetNode);
@@ -792,7 +792,7 @@ namespace SiliconStudio.Assets.Quantum
             var baseValue = memberNode.BaseNode.Retrieve();
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty, baseValue))
+            if (baseValue is IIdentifiable && IsObjectReference(memberNode.BaseNode, Index.Empty))
             {
                 if (!reconcileObjectReference)
                     return false;
@@ -825,7 +825,7 @@ namespace SiliconStudio.Assets.Quantum
             var baseValue = node.BaseNode.Retrieve(baseIndex);
 
             // Object references
-            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex, baseValue))
+            if (baseValue is IIdentifiable && IsObjectReference(node.BaseNode, baseIndex))
             {
                 if (!reconcileObjectReference)
                     return false;

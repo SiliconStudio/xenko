@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Quantum
             if (baseValue == null)
                 return;
 
-            if (!propertyGraph.IsObjectReference(baseNode, Index.Empty, baseValue))
+            if (!propertyGraph.IsObjectReference(baseNode, Index.Empty))
             {
                 if (baseValue is IIdentifiable)
                 {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Quantum
                         continue;
 
                     baseValue = target.TargetNode?.Retrieve();
-                    if (!propertyGraph.IsObjectReference(baseNode, target.Index, baseValue))
+                    if (!propertyGraph.IsObjectReference(baseNode, target.Index))
                     {
                         if (baseValue is IIdentifiable)
                         {

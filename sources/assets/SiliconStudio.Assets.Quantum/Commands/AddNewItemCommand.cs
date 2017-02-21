@@ -64,9 +64,8 @@ namespace SiliconStudio.Assets.Quantum.Commands
                 if (itemToAdd == null)
                 {
                     var propertyGraph = (node as IAssetNode)?.PropertyGraph;
-                    var newInstance = ObjectFactoryRegistry.NewInstance(elementType);
-                    if (!IsReferenceType(elementType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index, newInstance)))
-                        itemToAdd = newInstance;
+                    if (!IsReferenceType(elementType) && (propertyGraph == null || !propertyGraph.IsObjectReference(node, index)))
+                        itemToAdd = ObjectFactoryRegistry.NewInstance(elementType);
                 }
             }
 

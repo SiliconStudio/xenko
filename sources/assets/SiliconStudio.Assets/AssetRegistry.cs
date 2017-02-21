@@ -361,6 +361,7 @@ namespace SiliconStudio.Assets
             }
         }
 
+        [Obsolete]
         public static bool IsAssetPartType(Type type)
         {
             lock (RegistryLock)
