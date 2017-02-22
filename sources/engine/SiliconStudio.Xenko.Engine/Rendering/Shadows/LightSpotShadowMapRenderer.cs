@@ -85,9 +85,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
             // Update the shadow camera
-            var viewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
+            var viewMatrix = Matrix.LookAtRH(position, target, upDirection); // View;;
             // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
-            var projectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
+            var projectionMatrix = Matrix.PerspectiveFovRH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
             Matrix viewProjectionMatrix;
             Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
