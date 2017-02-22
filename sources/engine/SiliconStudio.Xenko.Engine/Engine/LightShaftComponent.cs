@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Engine
         public Matrix LightWorld;
         public IDirectLight Light;
         public LightComponent LightComponent;
-        public LightShadowMapTexture ShadowMapTexture;
         public float ExtinctionFactor;
         public float ExtinctionRatio;
         public float DensityFactor;

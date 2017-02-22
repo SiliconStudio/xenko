@@ -90,10 +90,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
         }
 
-        public virtual LightShadowMapTexture CreateShadowMapTexture(LightComponent lightComponent, IDirectLight light, int shadowMapSize)
+        public virtual LightShadowMapTexture CreateShadowMapTexture(RenderView renderView, LightComponent lightComponent, IDirectLight light, int shadowMapSize)
         {
             var shadowMap = ShadowMaps.Add();
-            shadowMap.Initialize(lightComponent, light, light.Shadow, shadowMapSize, this);
+            shadowMap.Initialize(renderView, lightComponent, light, light.Shadow, shadowMapSize, this);
             return shadowMap;
         }
 

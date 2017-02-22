@@ -56,15 +56,24 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool Disc
         else 
         {
             // Compute Depth from UV
-            float3 positionVS = float3((1.0 - streams.TexCoord.xy * 2.0) * ProjScreenRay, 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
+            //float4 positionVS4 = mul(float4(1.0 - float2(streams.TexCoord.x, streams.TexCoord.y) * 2.0, 0.0f, 0.0f), ProjectionInverse);
+            //float3 positionVS = float3(positionVS4.xy, 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
+            //float3 positionVS = float3((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f) * float2(ProjectionInverse._11, ProjectionInverse._22) + float2(ProjectionInverse._41, ProjectionInverse._42), 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
+
+            // Original:
+            //float3 positionVS = float3((1.0 - streams.TexCoord.xy * 2.0) * ProjScreenRay, 1.0f) * this.ComputeDepthFromUV(streams.TexCoord.xy);
+
+            float4 positionClipSpace = float4((1.0 - streams.TexCoord.xy * 2.0) * float2(-1.0f, 1.0f), GetZProjDepthFromUV(streams.TexCoord.xy), 1.0f);
+            float4 positionVS4 = mul(positionClipSpace, ProjectionInverse);
+            float3 positionVS = positionVS4.xyz / positionVS4.w;
             float3 eyeVS = -normalize(positionVS);
-            eyeVS.z = -eyeVS.z;
+
             float3 lightResult   = 0.0f;
 
             // Minmax is stored as 1.0 - depth
             float bbNearDistance;
             float bbFarDistance = ComputeDepthFromZProj(1.0 - minmax.y);
-            float currentDistance = positionVS.z;
+            float currentDistance = -positionVS.z;
 
             if (minmax.x == 0 || minmax.x < minmax.y) {
                 bbNearDistance = ComputeDepthFromZProj(IsZReverse ? 1.0 : 0.0);
@@ -77,7 +86,7 @@ shader PostEffectBoundingRay<bool Debug, bool IsZReverse, int NbSteps, bool Disc
             if (currentDistance <= bbNearDistance) 
             {
                 if (Debug)
-                    streams.ColorTarget = float4(0, 1, 0, 1);
+                    streams.ColorTarget = float4(0.1, 0, 0, 1);
                 else
                     streams.ColorTarget = this.ComputeColorOut();
 

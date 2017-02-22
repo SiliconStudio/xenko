@@ -62,7 +62,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Clears the current <see cref="System.Windows.Controls.TextBox.Text"/> of a text box.
         /// </summary>
-        public static RoutedCommand ClearTextCommand { get; private set; }
+        public static RoutedCommand ClearTextCommand { get; }
         
         static TextBox()
         {

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.Windows;
 
@@ -61,7 +62,7 @@ namespace SiliconStudio.Presentation.Controls
             CloseWithCancel();
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnClosing([NotNull] CancelEventArgs e)
         {
             if (!e.Cancel)
                 closing = true;
@@ -88,7 +89,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        protected bool IsMouseOverWindow(MouseEventArgs e)
+        protected bool IsMouseOverWindow([NotNull] MouseEventArgs e)
         {
             var position = e.GetPosition(this);
             return position.X >= 0 && position.Y >= 0 && position.X < ActualWidth && position.Y < ActualHeight;

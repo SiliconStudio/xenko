@@ -152,10 +152,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (lightShaft.LightComponent == null)
                     continue; // Skip entities without a light component
 
-                if (!shadowMapRenderer.ShadowMaps.TryGetValue(lightShaft.LightComponent, out lightShaft.ShadowMapTexture))
-                    continue;
-
-                if (lightShaft.ShadowMapTexture == null)
+                var shadowMapTexture = shadowMapRenderer.FindShadowMap(renderView, lightShaft.LightComponent);
+                if (shadowMapTexture == null)
                     continue; // Skip lights without shadow map
 
                 var boundingVolumes = lightShaftBoundingVolumeProcessor.GetBoundingVolumesForComponent(lightShaft.Component);
@@ -186,13 +184,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         // Perform shadow map min max
                         if (false) // Min-max optim currently disabled
                         {
-                            if (lightShaft.ShadowMapTexture.ShaderData is DirectionalShaderData)
+                            if (shadowMapTexture.ShaderData is DirectionalShaderData)
                             {
-                                var shaderData = (DirectionalShaderData)lightShaft.ShadowMapTexture.ShaderData;
+                                var shaderData = (DirectionalShaderData)shadowMapTexture.ShaderData;
                                 minmaxEffectShader.Parameters.Set(PostEffectMinMaxKeys.MinMaxCoords, shaderData.TextureCoords[0]);
                             }
 
-                            minmaxEffectShader.SetInput(0, lightShaft.ShadowMapTexture.Atlas.Texture);
+                            minmaxEffectShader.SetInput(0, shadowMapTexture.Atlas.Texture);
                             minmaxEffectShader.SetOutput(minmaxBuffer);
                             minmaxEffectShader.Draw(context);
                         }
@@ -201,6 +199,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     // Setup parameters for Z reconstruction
                     scatteringEffectShader.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(renderView.NearClipPlane, renderView.FarClipPlane));
                     scatteringEffectShader.Parameters.Set(TransformationKeys.ProjScreenRay, new Vector2(-1.0f/renderView.Projection.M11, 1.0f/renderView.Projection.M22));
+                    scatteringEffectShader.Parameters.Set(TransformationKeys.Projection, renderView.Projection);
+                    Matrix projectionInverse;
+                    Matrix.Invert(ref renderView.Projection, out projectionInverse);
+                    scatteringEffectShader.Parameters.Set(TransformationKeys.ProjectionInverse, projectionInverse);
 
                     if (!lightBufferUsed)
                     {
@@ -216,11 +218,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                     // Set min/max input
                     scatteringEffectShader.SetInput(0, boundingBoxBuffer);
-                    scatteringEffectShader.SetInput(1, lightShaft.ShadowMapTexture.Atlas.Texture);
+                    scatteringEffectShader.SetInput(1, shadowMapTexture.Atlas.Texture);
                     scatteringEffectShader.SetInput(2, minmaxBuffer);
 
                     // Light accumulation pass (on low resolution buffer)
-                    DrawLightShaft(context, lightShaft);
+                    DrawLightShaft(context, lightShaft, shadowMapTexture);
                 }
 
                 // Everything was outside, skip
@@ -228,10 +230,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     continue;
 
                 // Blur the result
-                //blur.Radius = lightBufferDownsampleLevel;
-                //blur.SetInput(lightBuffer);
-                //blur.SetOutput(lightBuffer);
-                //blur.Draw(context);
+                blur.Radius = lightBufferDownsampleLevel;
+                blur.SetInput(lightBuffer);
+                blur.SetOutput(lightBuffer);
+                blur.Draw(context);
 
                 // Additive blend pass
                 Color3 lightColor = lightShaft.Light.ComputeColor(context.GraphicsDevice.ColorSpace, lightShaft.LightComponent.Intensity);
@@ -252,18 +254,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft)
+        private void DrawLightShaft(RenderDrawContext context, LightShaftData lightShaft, LightShadowMapTexture shadowMapTexture)
         {
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionFactor, lightShaft.ExtinctionFactor);
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ExtinctionRatio, lightShaft.ExtinctionRatio);
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
 
-            var shadowMapTexture = lightShaft.ShadowMapTexture.Atlas.Texture;
-
             // Bind shadow atlas
-            scatteringEffectShader.Parameters.Set(ShadowMapKeys.Texture, lightShaft.ShadowMapTexture.Atlas.Texture);
+            var texture = shadowMapTexture.Atlas.Texture;
+            scatteringEffectShader.Parameters.Set(ShadowMapKeys.Texture, texture);
 
-            var shadowMapTextureSize = new Vector2(shadowMapTexture.Width, shadowMapTexture.Height);
+            var shadowMapTextureSize = new Vector2(texture.Width, texture.Height);
             var shadowMapTextureTexelSize = 1.0f/shadowMapTextureSize;
             scatteringEffectShader.Parameters.Set(ShadowMapKeys.TextureSize, shadowMapTextureSize);
             scatteringEffectShader.Parameters.Set(ShadowMapKeys.TextureTexelSize, shadowMapTextureTexelSize);
@@ -276,9 +277,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowLightDirection, lightShaft.LightWorld.Forward);
 
             // Change inputs depending on light type
-            if (lightShaft.ShadowMapTexture.ShaderData is DirectionalShaderData)
+            if (shadowMapTexture.ShaderData is DirectionalShaderData)
             {
-                var shaderData = (DirectionalShaderData)lightShaft.ShadowMapTexture.ShaderData;
+                var shaderData = (DirectionalShaderData)shadowMapTexture.ShaderData;
 
                 scatteringEffectShader.Parameters.Set(LightShaftsShaderKeys.ShadowTextureFactor, shaderData.TextureCoords[0]);
 

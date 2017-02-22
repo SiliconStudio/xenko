@@ -30,14 +30,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
-        private readonly Dictionary<LightComponent, LightShadowMapTexture> shadowMaps = new Dictionary<LightComponent, LightShadowMapTexture>();
+        private readonly List<LightShadowMapTexture> shadowMaps = new List<LightShadowMapTexture>();
         
         public ShadowMapRenderer()
         {
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
         }
-
-        public IReadOnlyDictionary<LightComponent, LightShadowMapTexture> ShadowMaps => shadowMaps;
 
         [DataMember]
         public List<ILightShadowMapRenderer> Renderers { get; } = new List<ILightShadowMapRenderer>();
@@ -60,6 +58,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return null;
         }
 
+        public LightShadowMapTexture FindShadowMap(RenderView renderView, LightComponent lightComponent)
+        {
+            foreach (var shadowMap in shadowMaps)
+            {
+                if (shadowMap.RenderView == renderView && shadowMap.LightComponent == lightComponent)
+                    return shadowMap;
+            }
+
+            return null;
+        }
+
         public void Collect(RenderContext context, Dictionary<RenderView, ForwardLightingRenderFeature.RenderViewLightData> renderViewLightDatas)
         {
             // Reset the state of renderers
@@ -67,6 +76,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 renderer.Reset(context);
             }
+
+            shadowMaps.Clear();
 
             foreach (var renderViewData in renderViewLightDatas)
             {
@@ -213,8 +224,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         private void CollectShadowMaps(RenderView renderView, ForwardLightingRenderFeature.RenderViewLightData renderViewLightData)
         {
-            shadowMaps.Clear();
-
             // TODO GRAPHICS REFACTOR Only lights of current scene!
             foreach (var lightComponent in renderViewLightData.VisibleLightsWithShadows)
             {
@@ -255,14 +264,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     continue;
                 }
 
-                var shadowMapTexture = renderer.CreateShadowMapTexture(lightComponent, light, shadowMapSize);
+                var shadowMapTexture = renderer.CreateShadowMapTexture(renderView, lightComponent, light, shadowMapSize);
 
                 // Assign rectangles for shadowmap
                 AssignRectangle(shadowMapTexture);
 
                 renderViewLightData.LightComponentsWithShadows.Add(lightComponent, shadowMapTexture);
 
-                shadowMaps.Add(lightComponent, shadowMapTexture);
+                shadowMaps.Add(shadowMapTexture);
             }
         }
 
