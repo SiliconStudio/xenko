@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +87,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 serviceFound = service;
             }
 
-            return parentProvider != null && serviceFound == null ? parentProvider.TryGet(serviceType) : serviceFound;
+            return serviceFound ?? parentProvider?.TryGet(serviceType);
         }
 
         /// <inheritdoc/>
@@ -96,7 +97,6 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public object Get(Type serviceType)
         {
             var result = TryGet(serviceType);
@@ -105,7 +105,6 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public T Get<T>() where T : class
         {
             var result = (T)TryGet(typeof(T));

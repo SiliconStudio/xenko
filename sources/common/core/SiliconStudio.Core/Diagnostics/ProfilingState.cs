@@ -16,20 +16,17 @@ namespace SiliconStudio.Core.Diagnostics
     public struct ProfilingState : IDisposable
     {
         private static readonly Logger Logger = Profiler.Logger;
-        private readonly int profilingId;
-        private readonly ProfilingKey profilingKey;
         private bool isEnabled;
-        private ProfilerDisposeEventDelegate disposeProfileDelegate;
         private Dictionary<object, object> attributes;
         private long startTime;
         private string beginText;
 
         internal ProfilingState(int profilingId, ProfilingKey profilingKey, bool isEnabled)
         {
-            this.profilingId = profilingId;
-            this.profilingKey = profilingKey;
+            ProfilingId = profilingId;
+            ProfilingKey = profilingKey;
             this.isEnabled = isEnabled;
-            this.disposeProfileDelegate = null;
+            DisposeDelegate = null;
             attributes = null;
             beginText = null;
             startTime = 0;
@@ -39,53 +36,25 @@ namespace SiliconStudio.Core.Diagnostics
         /// Gets a value indicating whether this instance is initialized.
         /// </summary>
         /// <value><c>true</c> if this instance is initialized; otherwise, <c>false</c>.</value>
-        public bool IsInitialized
-        {
-            get
-            {
-                return profilingKey != null;
-            }
-        }
+        public bool IsInitialized => ProfilingKey != null;
 
         /// <summary>
         /// Gets the profiling unique identifier.
         /// </summary>
         /// <value>The profiling unique identifier.</value>
-        public int ProfilingId
-        {
-            get
-            {
-                return profilingId;
-            }
-        }
+        public int ProfilingId { get; }
 
         /// <summary>
         /// Gets the profiling key.
         /// </summary>
         /// <value>The profiling key.</value>
-        public ProfilingKey ProfilingKey
-        {
-            get
-            {
-                return profilingKey;
-            }
-        }
+        public ProfilingKey ProfilingKey { get; }
 
         /// <summary>
         /// Gets or sets the dispose profile delegate.
         /// </summary>
         /// <value>The dispose profile delegate.</value>
-        public ProfilerDisposeEventDelegate DisposeDelegate
-        {
-            get
-            {
-                return disposeProfileDelegate;
-            }
-            set
-            {
-                disposeProfileDelegate = value;
-            }
-        }
+        public ProfilerDisposeEventDelegate DisposeDelegate { get; set; }
 
         /// <summary>
         /// Checks if the profiling key is enabled and update this instance. See remarks.
@@ -96,7 +65,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// </remarks>
         public void CheckIfEnabled()
         {
-            isEnabled = Profiler.IsEnabled(profilingKey);
+            isEnabled = Profiler.IsEnabled(ProfilingKey);
         }
 
         /// <summary>
@@ -140,7 +109,7 @@ namespace SiliconStudio.Core.Diagnostics
             if (!isEnabled) return;
 
             // Give a chance to the profiling to end and put some property in this profiler state
-            disposeProfileDelegate?.Invoke(ref this);
+            DisposeDelegate?.Invoke(ref this);
 
             End();
         }
@@ -328,7 +297,7 @@ namespace SiliconStudio.Core.Diagnostics
 
             // Create profiler event
             // TODO ideally we should make a copy of the attributes
-            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
+            var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
 
             // Send profiler event to Profiler
             Profiler.ProcessEvent(ref profilerEvent);
@@ -357,7 +326,7 @@ namespace SiliconStudio.Core.Diagnostics
 
             // Create profiler event
             // TODO ideally we should make a copy of the attributes
-            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
+            var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
 
             // Send profiler event to Profiler
             Profiler.ProcessEvent(ref profilerEvent);
@@ -382,7 +351,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
 
             // Create profiler event
-            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, beginText ?? text, attributes, value0, value1, value2, value3);
+            var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, beginText ?? text, attributes, value0, value1, value2, value3);
 
             if (profilingType == ProfilingMessageType.End)
             {

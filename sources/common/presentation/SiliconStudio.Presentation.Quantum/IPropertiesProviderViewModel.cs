@@ -25,15 +25,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="member">The member content containing the reference.</param>
         /// <param name="reference">The reference to a <see cref="GraphNode"/> contained in a parent node.</param>
-        /// <returns><c>True</c> if the members of the referenced node should be constructed, <c>False</c> otherwise.</returns>
+        /// <returns><see cref="ExpandReferencePolicy.Full"/> or <see cref="ExpandReferencePolicy.Partial"/> if respectively all or some of the members of the referenced node should be constructed, <see cref="ExpandReferencePolicy.None"/> otherwise.</returns>
         // TODO: in some case of "boxing" the reference can actually be contained in an ObjectContent. Might need to update the signature of this method for proper support
-        bool ShouldExpandReference(IMemberNode member, ObjectReference reference);
+        ExpandReferencePolicy ShouldExpandReference(IMemberNode member, ObjectReference reference);
 
         /// <summary>
         /// Indicates whether the member corresponding to the given content should be constructed for the view model.
         /// </summary>
         /// <param name="content">The content of the member to evaluate.</param>
+        /// <param name="expandReferencePolicy">The result from previous call to <see cref="ShouldExpandReference"/>.</param>
         /// <returns><c>True</c> if the member node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldConstructMember(IMemberNode content);
+        bool ShouldConstructMember(IMemberNode content, ExpandReferencePolicy expandReferencePolicy);
     }
 }

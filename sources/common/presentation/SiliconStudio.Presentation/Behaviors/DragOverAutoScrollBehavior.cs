@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Extensions;
 
 // Remark: The drag'n'drop is pretty broken in WPF, especially the DragLeave event (see https://social.msdn.microsoft.com/Forums/vstudio/en-US/d326384b-e182-4f48-ab8b-841a2c2ca4ab/whats-up-with-dragleave-and-egetposition?forum=wpf&prof=required)
@@ -104,7 +105,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        private async Task ScrollTask(ScrollViewer scrollViewer, double delaySeconds)
+        private async Task ScrollTask([NotNull] ScrollViewer scrollViewer, double delaySeconds)
         {
             const int refreshDelay = 25;
 

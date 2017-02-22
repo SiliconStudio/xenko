@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
@@ -58,13 +59,13 @@ namespace SiliconStudio.Core.Serialization
             DataContractAliases = new List<KeyValuePair<string, Type>>();
         }
 
-        public Assembly Assembly { get; private set; }
+        public Assembly Assembly { get; }
 
-        public List<Module> Modules { get; private set; }
+        public List<Module> Modules { get; }
 
         public List<KeyValuePair<string, Type>> DataContractAliases { get; }
 
-        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; private set; }
+        public Dictionary<string, AssemblySerializersPerProfile> Profiles { get; }
 
         public override string ToString()
         {
@@ -88,14 +89,14 @@ namespace SiliconStudio.Core.Serialization
         // List of serializers per profile
         internal static readonly Dictionary<string, Dictionary<Type, AssemblySerializerEntry>> DataSerializersPerProfile = new Dictionary<string, Dictionary<Type, AssemblySerializerEntry>>();
 
-        private static Dictionary<string, Type> dataContractAliasMapping = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, Type> DataContractAliasMapping = new Dictionary<string, Type>();
 
         public static void RegisterSerializerSelector(SerializerSelector serializerSelector)
         {
             SerializerSelectors.Add(new WeakReference<SerializerSelector>(serializerSelector));
         }
 
-        public static AssemblySerializerEntry GetSerializer(string profile, Type type)
+        public static AssemblySerializerEntry GetSerializer([NotNull] string profile, Type type)
         {
             lock (Lock)
             {
@@ -108,17 +109,18 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        internal static Type GetTypeFromAlias(string alias)
+        [CanBeNull]
+        internal static Type GetTypeFromAlias([NotNull] string alias)
         {
             lock (Lock)
             {
                 Type type;
-                dataContractAliasMapping.TryGetValue(alias, out type);
+                DataContractAliasMapping.TryGetValue(alias, out type);
                 return type;
             }
         }
 
-        public static void RegisterSerializationAssembly(AssemblySerializers assemblySerializers)
+        public static void RegisterSerializationAssembly([NotNull] AssemblySerializers assemblySerializers)
         {
             lock (Lock)
             {
@@ -158,7 +160,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        public static void RegisterSerializationAssembly(Assembly assembly)
+        public static void RegisterSerializationAssembly([NotNull] Assembly assembly)
         {
             lock (Lock)
             {
@@ -170,11 +172,9 @@ namespace SiliconStudio.Core.Serialization
 
         public static void UnregisterSerializationAssembly(Assembly assembly)
         {
-            AssemblySerializers removedAssemblySerializer;
-
             lock (Lock)
             {
-                removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
+                var removedAssemblySerializer = AssemblySerializers.FirstOrDefault(x => x.Assembly == assembly);
                 if (removedAssemblySerializer == null)
                     return;
 
@@ -184,13 +184,13 @@ namespace SiliconStudio.Core.Serialization
                 foreach (var dataContractAliasEntry in removedAssemblySerializer.DataContractAliases)
                 {
                     // TODO: Warning, exception or override if collision? (currently exception, easiest since we can remove them without worry when unloading assembly)
-                    dataContractAliasMapping.Remove(dataContractAliasEntry.Key);
+                    DataContractAliasMapping.Remove(dataContractAliasEntry.Key);
                 }
 
                 // Rebuild serializer list
                 // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
                 DataSerializersPerProfile.Clear();
-                dataContractAliasMapping.Clear();
+                DataContractAliasMapping.Clear();
 
                 foreach (var assemblySerializer in AssemblySerializers)
                 {
@@ -210,7 +210,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        private static void RegisterSerializers(AssemblySerializers assemblySerializers)
+        private static void RegisterSerializers([NotNull] AssemblySerializers assemblySerializers)
         {
             // Register data contract aliases
             foreach (var dataContractAliasEntry in assemblySerializers.DataContractAliases)
@@ -218,11 +218,11 @@ namespace SiliconStudio.Core.Serialization
                 try
                 {
                     // TODO: Warning, exception or override if collision? (currently exception)
-                    dataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
+                    DataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
                 }
                 catch (Exception)
                 {
-                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Key}]: {dataContractAliasEntry.Value} and {dataContractAliasMapping[dataContractAliasEntry.Key]}");
+                    throw new InvalidOperationException($"Two different classes have the same DataContract Alias [{dataContractAliasEntry.Key}]: {dataContractAliasEntry.Value} and {DataContractAliasMapping[dataContractAliasEntry.Key]}");
                 }
             }
 

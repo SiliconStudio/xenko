@@ -227,8 +227,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 }
 
                 // Update the shadow camera
-                var viewMatrix = Matrix.LookAtLH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterLH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var viewMatrix = Matrix.LookAtRH(target + direction * cascadeMinBoundLS.Z, target, upDirection); // View;;
+                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
@@ -356,13 +356,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Reserve 1/3 of the guard distance for the min distance
                 minDistance = Math.Max(cameraNear, shadowContext.CurrentView.MinimumDistance - shadow.DepthRange.GuardDistance / 3);
-                minDistance = LogFloor(minDistance);
+                //minDistance = LogFloor(minDistance);
 
                 // Reserve 2/3 of the guard distance for the max distance
                 var guardMaxDistance = minDistance + shadow.DepthRange.GuardDistance * 2 / 3;
                 maxDistance = Math.Max(shadowContext.CurrentView.MaximumDistance, guardMaxDistance);
                 // snap to a 'closest floor' of sorts, to improve stability:
-                maxDistance = LogCeiling(maxDistance);
+                //maxDistance = LogCeiling(maxDistance);
             }
             else
             {

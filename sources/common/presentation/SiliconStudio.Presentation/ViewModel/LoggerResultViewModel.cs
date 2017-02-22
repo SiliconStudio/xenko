@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Services;
@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Initializes a new instance of the <see cref="LoggerResultViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
-        public LoggerResultViewModel(IViewModelServiceProvider serviceProvider)
+        public LoggerResultViewModel([NotNull] IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
         }
@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
         /// <param name="loggerResult">The <see cref="LoggerResult"/> to monitor.</param>
-        public LoggerResultViewModel(IViewModelServiceProvider serviceProvider, LoggerResult loggerResult)
+        public LoggerResultViewModel([NotNull] IViewModelServiceProvider serviceProvider, [NotNull] LoggerResult loggerResult)
             : base(serviceProvider, loggerResult)
         {
             var messages = (ObservableList<ILogMessage>)Messages;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> to use for this view model.</param>
         /// <param name="loggerResults"></param>
-        public LoggerResultViewModel(IViewModelServiceProvider serviceProvider, IEnumerable<LoggerResult> loggerResults)
+        public LoggerResultViewModel([NotNull] IViewModelServiceProvider serviceProvider, [NotNull] IEnumerable<LoggerResult> loggerResults)
             : base(serviceProvider, loggerResults)
         {
             var messages = (ObservableList<ILogMessage>)Messages;

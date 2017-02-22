@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="AnonymousDisposable"/> class.
         /// </summary>
         /// <param name="onDispose">The anonymous function to invoke when this object is disposed.</param>
-        public AnonymousDisposable(Action onDispose)
+        public AnonymousDisposable([NotNull] Action onDispose)
         {
             if (onDispose == null) throw new ArgumentNullException(nameof(onDispose));
 

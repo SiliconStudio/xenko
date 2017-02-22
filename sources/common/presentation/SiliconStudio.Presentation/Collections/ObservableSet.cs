@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Collections
 {
@@ -12,23 +14,27 @@ namespace SiliconStudio.Presentation.Collections
         private readonly HashSet<T> hashSet;
         private readonly List<T> list;
 
+        [CollectionAccess(CollectionAccessType.None)]
         public ObservableSet()
             : this(EqualityComparer<T>.Default)
         {
         }
 
-        public ObservableSet(IEnumerable<T> collection)
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
+        public ObservableSet([NotNull] IEnumerable<T> collection)
               : this(EqualityComparer<T>.Default, collection)
         {
         }
 
+        [CollectionAccess(CollectionAccessType.None)]
         public ObservableSet(IEqualityComparer<T> comparer)
         {
             hashSet = new HashSet<T>(comparer);
             list = new List<T>();
         }
 
-        public ObservableSet(IEqualityComparer<T> comparer, IEnumerable<T> collection)
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
+        public ObservableSet(IEqualityComparer<T> comparer, [NotNull] IEnumerable<T> collection)
         {
             list = new List<T>();
             hashSet = new HashSet<T>(comparer);
@@ -39,6 +45,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.None)]
         public ObservableSet(int capacity)
         {
             hashSet = new HashSet<T>();
@@ -47,10 +54,9 @@ namespace SiliconStudio.Presentation.Collections
 
         public T this[int index]
         {
-            get
-            {
-                return list[index];
-            }
+            [CollectionAccess(CollectionAccessType.Read)]
+            get { return list[index]; }
+            [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
             set
             {
                 var oldItem = list[index];
@@ -62,29 +68,35 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.None)]
         public bool IsReadOnly => false;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [CollectionAccess(CollectionAccessType.None)]
         public int Count => list.Count;
 
+        [Pure]
         public IEnumerator<T> GetEnumerator()
         {
             return list.GetEnumerator();
         }
 
+        [Pure]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return list.GetEnumerator();
         }
 
+        [NotNull, Pure]
         public IList ToIList()
         {
-            return new NonGenericObservableSetWrapper<T>(this);
+            return new NonGenericObservableListWrapper<T>(this);
         }
 
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
         public void Add(T item)
         {
             if (hashSet.Add(item))
@@ -106,6 +118,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public void Clear()
         {
             var raiseEvent = list.Count > 0;
@@ -118,16 +131,19 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
         public bool Contains(T item)
         {
             return hashSet.Contains(item);
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
         public void CopyTo(T[] array, int arrayIndex)
         {
             list.CopyTo(array, arrayIndex);
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public bool Remove(T item)
         {
             if (!hashSet.Contains(item))
@@ -140,11 +156,13 @@ namespace SiliconStudio.Presentation.Collections
             return index != -1;
         }
 
+        [CollectionAccess(CollectionAccessType.Read)]
         public int IndexOf(T item)
         {
             return list.IndexOf(item);
         }
 
+        [CollectionAccess(CollectionAccessType.UpdatedContent)]
         public void Insert(int index, T item)
         {
             if (hashSet.Add(item))
@@ -155,6 +173,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
+        [CollectionAccess(CollectionAccessType.ModifyExistingContent)]
         public void RemoveAt(int index)
         {
             var item = list[index];
@@ -166,12 +185,13 @@ namespace SiliconStudio.Presentation.Collections
         }
 
         /// <inheritdoc/>
+        [CollectionAccess(CollectionAccessType.None)]
         public override string ToString()
         {
             return $"{{ObservableSet}} Count = {Count}";
         }
 
-        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs arg)
+        protected void OnCollectionChanged([NotNull] NotifyCollectionChangedEventArgs arg)
         {
             CollectionChanged?.Invoke(this, arg);
 
@@ -185,7 +205,7 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs arg)
+        protected void OnPropertyChanged([NotNull] PropertyChangedEventArgs arg)
         {
             PropertyChanged?.Invoke(this, arg);
         }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Diagnostics
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// Initializes a new instance of the <see cref="SerializableLogMessage"/> class from a <see cref="LogMessage"/> instance.
         /// </summary>
         /// <param name="message">The <see cref="LogMessage"/> instance to use to initialize properties.</param>
-        public SerializableLogMessage(LogMessage message)
+        public SerializableLogMessage([NotNull] LogMessage message)
         {
             Module = message.Module;
             Type = message.Type;
@@ -36,10 +37,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="type">The type.</param>
         /// <param name="text">The text.</param>
         /// <param name="exceptionInfo">The exception information. This parameter can be null.</param>
-        public SerializableLogMessage(string module, LogMessageType type, string text, ExceptionInfo exceptionInfo = null)
+        public SerializableLogMessage([NotNull] string module, LogMessageType type, [NotNull] string text, ExceptionInfo exceptionInfo = null)
         {
-            if (module == null) throw new ArgumentNullException("module");
-            if (text == null) throw new ArgumentNullException("text");
+            if (module == null) throw new ArgumentNullException(nameof(module));
+            if (text == null) throw new ArgumentNullException(nameof(text));
             Module = module;
             Type = type;
             Text = text;

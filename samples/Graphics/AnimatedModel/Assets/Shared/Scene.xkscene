@@ -161,7 +161,7 @@ Hierarchy:
                         Children: {}
                     77fd36bd095b584a92ce82be90aa012f: !BackgroundComponent
                         Id: bd36fd77-5b09-4a58-92ce-82be90aa012f
-                        Texture: 51b041a7-2f3e-4327-aa2f-9ac598ddedb1:XenkoBackground
+                        Texture: b237783b-085e-40e5-b6b4-c41c2b98eb41:XenkoBackground
         -   Entity:
                 Id: cbaa8520-30cd-4b52-a6cb-f55adc4dab16
                 Name: RenderToTextureTilted
@@ -242,13 +242,6 @@ Hierarchy:
                         Animations:
                             32dcc5bc35e03f4a9e71163f7ad1735b~Idle: b692bb69-eff0-4ca2-871e-a70cee4e7353:Animations/Idle
                             6bf5123a5efd8b49a0aa5f4e6a0b65d7~Run: 79c55d71-b446-46f3-8c23-e722f3e734b3:Animations/Run
-                        PlayingAnimations:
-                            72e1a8709bd1f643b6510c4ce8d231d6:
-                                Name: null
-                                Clip: 79c55d71-b446-46f3-8c23-e722f3e734b3:Animations/Run
-                                RepeatMode: LoopInfinite
-                                BlendOperation: LinearBlend
-                                CurrentTime: 0:00:00:00.0000000
                     d7056203248a9441a48427af5acff6e0: !ModelComponent
                         Id: 036205d7-8a24-4194-a484-27af5acff6e0
                         Model: cfb9a357-ac8d-4b98-b49b-923308cf386d:Models/mannequinModel

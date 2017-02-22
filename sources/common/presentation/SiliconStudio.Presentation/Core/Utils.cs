@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Text.RegularExpressions;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Core
 {
@@ -19,8 +20,9 @@ namespace SiliconStudio.Presentation.Core
         /// The index of the factor <c>1.0</c> in the <see cref="ZoomFactors"/> array.
         /// </summary>
         public static readonly int ZoomFactorIdentityIndex = 10;
-         
-        public static string SplitCamelCase(string input)
+
+        [NotNull]
+        public static string SplitCamelCase([NotNull] string input)
         {
             return Regex.Replace(input, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
         }

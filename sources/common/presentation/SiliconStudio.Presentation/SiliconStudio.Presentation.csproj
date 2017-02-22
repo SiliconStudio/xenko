@@ -138,10 +138,7 @@
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
-    <Compile Include="Behaviors\RegisterKeyBindingBehavior.cs" />
     <Compile Include="Behaviors\SetFocusOnLoadBehavior.cs" />
-    <Compile Include="Behaviors\TextBoxValidationBehavior.cs" />
-    <Compile Include="Behaviors\TextTrimmingBehavior.cs" />
     <Compile Include="Behaviors\TilePanelNavigationBehavior.cs" />
     <Compile Include="Core\AutoUnsubscribeHandler.cs" />
     <Compile Include="Core\BindingProxy.cs" />
@@ -258,7 +255,6 @@
     <Compile Include="ValueConverters\AndMultiConverter.cs" />
     <Compile Include="ValueConverters\BoolToParam.cs" />
     <Compile Include="ValueConverters\Chained.cs" />
-    <Compile Include="MarkupExtensions\ReferenceMarkupExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\ValidationRoutedEvent.cs" />
     <Compile Include="ValueConverters\CamelCaseTextConverter.cs" />

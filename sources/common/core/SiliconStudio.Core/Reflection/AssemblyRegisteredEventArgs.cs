@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -16,10 +17,10 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="categories">The categories.</param>
-        public AssemblyRegisteredEventArgs(Assembly assembly, HashSet<string> categories)
+        public AssemblyRegisteredEventArgs([NotNull] Assembly assembly, [NotNull] HashSet<string> categories)
         {
-            if (assembly == null) throw new ArgumentNullException("assembly");
-            if (categories == null) throw new ArgumentNullException("categories");
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (categories == null) throw new ArgumentNullException(nameof(categories));
             Assembly = assembly;
             Categories = categories;
         }

@@ -391,9 +391,9 @@ namespace SiliconStudio.Assets
 
         /// <inheritdoc />
         /// <remarks>Looks for the asset amongst the current package and its dependencies.</remarks>
-        public AssetItem FindAssetFromAttachedReference(object container)
+        public AssetItem FindAssetFromProxyObject(object proxyObject)
         {
-            var attachedReference = AttachedReferenceManager.GetAttachedReference(container);
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(proxyObject);
             return attachedReference != null ? this.FindAsset(attachedReference) : null;
         }
 

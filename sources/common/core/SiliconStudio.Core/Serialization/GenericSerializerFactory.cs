@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using SiliconStudio.Core.Storage;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -26,6 +27,7 @@ namespace SiliconStudio.Core.Serialization
             this.serializerGenericType = serializerGenericType;
         }
 
+        [CanBeNull]
         public override DataSerializer GetSerializer(SerializerSelector selector, ref ObjectId typeId)
         {
             DataSerializer dataSerializer;
@@ -33,7 +35,8 @@ namespace SiliconStudio.Core.Serialization
             return dataSerializer;
         }
 
-        public override DataSerializer GetSerializer(SerializerSelector selector, Type type)
+        [CanBeNull]
+        public override DataSerializer GetSerializer(SerializerSelector selector, [NotNull] Type type)
         {
             DataSerializer dataSerializer;
             if (!serializersByType.TryGetValue(type, out dataSerializer))
