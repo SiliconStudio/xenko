@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -95,8 +96,9 @@ namespace SiliconStudio.Core.Reflection
 
             private readonly bool inherit;
 
-            public MemberInfoKey(MemberInfo memberInfo, bool inherit)
+            public MemberInfoKey([NotNull] MemberInfo memberInfo, bool inherit)
             {
+                if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
                 this.memberInfo = memberInfo;
                 this.inherit = inherit;
             }
