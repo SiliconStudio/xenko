@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
 
@@ -26,11 +27,14 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// Collects the <see cref="IIdentifiable"/> objects that are visited through nodes that are not representing object references.
         /// </summary>
         /// <param name="propertyGraph">The <see cref="AssetPropertyGraph"/> used to analyze object references.</param>
+        /// <param name="rootNode">The root object from which to collect. If null, <see cref="AssetPropertyGraph.RootNode"/> will be used.</param>
         /// <returns>A dictionary mapping <see cref="IIdentifiable"/> object by their identifier.</returns>
-        public static Dictionary<Guid, IIdentifiable> Collect(AssetPropertyGraph propertyGraph)
+        [NotNull]
+        public static Dictionary<Guid, IIdentifiable> Collect([NotNull] AssetPropertyGraph propertyGraph, [CanBeNull] IGraphNode rootNode = null)
         {
+            if (propertyGraph == null) throw new ArgumentNullException(nameof(propertyGraph));
             var visitor = new IdentifiableObjectCollector(propertyGraph);
-            visitor.Visit(propertyGraph.RootNode);
+            visitor.Visit(rootNode ?? propertyGraph.RootNode);
             return visitor.result;
         }
 

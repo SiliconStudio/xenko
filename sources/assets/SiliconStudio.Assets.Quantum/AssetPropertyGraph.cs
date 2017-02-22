@@ -187,6 +187,19 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <summary>
+        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
+        /// </summary>
+        /// <param name="obj">The target object for which to clear references.</param>
+        public virtual void ClearReferencesToObject([CanBeNull] IIdentifiable obj)
+        {
+            if (obj == null)
+                return;
+
+            var visitor = new ClearObjectReferenceVisitor(this, obj.Id);
+            visitor.Visit(RootNode);
+        }
+
+        /// <summary>
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>

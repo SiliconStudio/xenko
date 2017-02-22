@@ -60,6 +60,19 @@ namespace SiliconStudio.Assets.Quantum
         public abstract bool IsChildPartReference(IGraphNode node, Index index);
 
         /// <summary>
+        /// Clears all object reference targeting the given <see cref="IIdentifiable"/> object.
+        /// </summary>
+        /// <param name="obj">The target object for which to clear references.</param>
+        public override void ClearReferencesToObject(IIdentifiable obj)
+        {
+            if (obj == null)
+                return;
+
+            var visitor = new ClearObjectReferenceVisitor(this, obj.Id, (node, index) => !IsChildPartReference(node, index));
+            visitor.Visit(RootNode);
+        }
+
+        /// <summary>
         /// Adds a part to this asset. This method updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.Parts"/> collection.
         /// If <paramref name="parent"/> is null, it also updates the <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}.RootPartIds"/> collection.
         /// Otherwise, it updates the collection containing the list of children from the parent part.
@@ -105,6 +118,39 @@ namespace SiliconStudio.Assets.Quantum
                 rootPartsNode.Remove(partDesign.Part.Id, index);
             }
             RemovePartFromPartsCollection(partDesign);
+        }
+
+        /// <summary>
+        /// Deletes the given part and all its children, recursively, and clear all object references to it.
+        /// </summary>
+        /// <param name="part">The part to delete.</param>
+        public virtual void DeletePart(TAssetPart part)
+        {
+            var partsToDelete = new Stack<TAssetPart>();
+            partsToDelete.Push(part);
+            while (partsToDelete.Count > 0)
+            {
+                // We need to remove children first to keep consistency in our data
+                var partToDelete = partsToDelete.Peek();
+                var children = AssetHierarchy.EnumerateChildParts(partToDelete, false).ToList();
+                if (children.Count > 0)
+                {
+                    // Enqueue children if there is any, and re-process the stack
+                    children.ForEach(x => partsToDelete.Push(x));
+                    continue;
+                }
+                // No children to process, we can safely remove the current entity from the stack
+                partToDelete = partsToDelete.Pop();
+                // First remove all references to the entity (and its component!) we are deleting
+                // Note: we must do this first so instances of this prefabs will be able to properly make the connection with the base entity being cleared
+                var containedIdentifiable = IdentifiableObjectCollector.Collect(this, Container.NodeContainer.GetNode(partToDelete));
+                foreach (var identifiable in containedIdentifiable)
+                {
+                    ClearReferencesToObject(identifiable.Value);
+                }
+                // Then actually remove the entity from the hierarchy
+                RemovePartFromAsset(AssetHierarchy.Hierarchy.Parts[partToDelete.Id]);
+            }
         }
 
         public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
