@@ -102,7 +102,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             Matrix viewInverse = view.View;
             viewInverse.Invert();
-            var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
+            var planeNormal = viewInverse.Forward;
+            var pointOnPlane = viewInverse.TranslationVector + viewInverse.Forward * view.NearClipPlane;
+            var plane = new Plane(planeNormal, Vector3.Dot(pointOnPlane, planeNormal)); // TODO: Point-normal-constructor seems wrong. Check.
 
             // TODO: This should be configured by the creator of the view. E.g. near clipping can be enabled for spot light shadows.
             var shadowView = view as ShadowMapRenderView;
