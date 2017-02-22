@@ -28,6 +28,11 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// </summary>
         public YamlAssetMetadata<Guid> Result { get; } = new YamlAssetMetadata<Guid>();
 
+        /// <summary>
+        /// Gets or sets a method that indicates if a given identifier should be output to the list of object references.
+        /// </summary>
+        public Func<Guid, bool> ShouldOutputReference { get; set; }
+
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, YamlAssetPath currentPath)
         {
@@ -40,8 +45,10 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 var identifiable = value as IIdentifiable;
                 if (identifiable == null)
                     throw new InvalidOperationException("IsObjectReference returned true for an object that is not IIdentifiable");
+
                 var id = identifiable.Id;
-                Result.Set(currentPath, id);
+                if (ShouldOutputReference?.Invoke(id) ?? true)
+                    Result.Set(currentPath, id);
             }
         }
 
@@ -70,7 +77,8 @@ namespace SiliconStudio.Assets.Quantum.Visitors
                 if (value == null)
                     throw new InvalidOperationException("IsObjectReference returned true for an object that is not IIdentifiable");
                 var id = value.Id;
-                Result.Set(itemPath, id);
+                if (ShouldOutputReference?.Invoke(id) ?? true)
+                    Result.Set(itemPath, id);
             }
         }
     }

@@ -54,7 +54,11 @@ namespace SiliconStudio.Assets.Serializers
                 }
                 else
                 {
-                    path.Apply(root, MemberPathAction.ValueSet, target);
+                    var current = path.GetValue(root);
+                    if (!Equals(current, target))
+                    {
+                        path.Apply(root, MemberPathAction.ValueSet, target);
+                    }
                 }
             }
         }
