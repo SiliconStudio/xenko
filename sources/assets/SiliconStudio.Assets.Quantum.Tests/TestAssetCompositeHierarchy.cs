@@ -16,6 +16,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
     [TestFixture]
     public class TestAssetCompositeHierarchy
     {
+        // TODO: we don't want to have to do this to detect children!
+        [DataContract]
+        public class ChildrenList : List<MyPart> { }
+
         [DataContract("MyPart")]
         public class MyPart : IIdentifiable
         {
@@ -34,6 +38,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
         public class MyPartDesign : IAssetPartDesign<MyPart>
         {
             public BasePart Base { get; set; }
+            // ReSharper disable once NotNullMemberIsNotInitialized
             public MyPart Part { get; set; }
             public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
         }
@@ -54,6 +59,10 @@ namespace SiliconStudio.Assets.Quantum.Tests
             public MyAssetPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
             protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
             protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
+            public override bool IsChildPartReference(IGraphNode node, Index index)
+            {
+                return node.Type == typeof(ChildrenList);
+            }
         }
 
         [Test]
