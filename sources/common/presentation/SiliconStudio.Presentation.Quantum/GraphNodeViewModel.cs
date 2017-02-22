@@ -522,6 +522,12 @@ namespace SiliconStudio.Presentation.Quantum
                     targetNode.ItemChanged += ContentChanged;
                 }
             }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging += ContentChanging;
+                objectNode.ItemChanged += ContentChanged;
+            }
         }
 
         /// <summary>
@@ -549,6 +555,12 @@ namespace SiliconStudio.Presentation.Quantum
                     targetNode.ItemChanging -= ContentChanging;
                     targetNode.ItemChanged -= ContentChanged;
                 }
+            }
+            var objectNode = SourceNode as IObjectNode;
+            if (objectNode != null)
+            {
+                objectNode.ItemChanging -= ContentChanging;
+                objectNode.ItemChanged -= ContentChanged;
             }
             base.Destroy();
         }
