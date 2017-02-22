@@ -49,6 +49,7 @@
     <Compile Include="Interop\SafeClipboard.cs" />
     <Compile Include="Interop\ClipboardMonitor.cs" />
     <Compile Include="MarkupExtensions\GuidExtension.cs" />
+    <Compile Include="MarkupExtensions\VisibilityExtension.cs" />
     <Compile Include="Resources\KeyGestures.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
